@@ -42,6 +42,12 @@
 | 2026-09-28 | Winning is manual: after an accepted claim the host can add more winners, then closes the tier by hand; the next number waits until it is closed. The game ends only when the host ends it, including after the last Full House (TAM-145, TAM-075). | Owner |
 | 2026-09-28 | A game with money that ends with no prize won hands every contribution back, as with Discard (TAM-144). | Owner |
 | 2026-09-28 | A product owner role: Claude in the desktop app, in its own clone `pocket-game-night-product/`, owns `docs/` (guides, journeys, UX guidelines, decisions, new-game designs and scenario drafts). Rules to be baselined when the orchestrator is idle. | Owner |
+| 2026-09-28 | Money of prizes nobody won goes back to the players, equally per ticket, instead of to the winners (TAM-088, TAM-144). "Equally per ticket" to confirm. | Owner |
+| 2026-09-28 | Paper tickets: trust the anchor. The anchor checks the ticket in the room; the host only records the win and the player; no numbers typed (TAM-037). | Owner |
+| 2026-09-28 | Phone tickets: the player's phone shows a claim QR; the host scans it to verify, offline (TAM-177); typing the ticket number is the fallback. | Owner |
+| 2026-09-28 | Calling screen and setup redesign: one screen, no scrolling, number dominant (docs/games/tambola/ux-calling-screen.md). | Owner |
+| 2026-09-28 | Android is the hand-checked phone; iPhone is covered by automated checks only until an iPhone joins a play-test. | Owner |
+| 2026-09-28 | Order: finish Tambola completely (feedback fixes, play-test, 1b, phone tickets, feedback reports), then simulations and extended testing (Jev); new games on hold. | Owner |
 
 "Convention" means the established Tambola rule in `docs/games/tambola/guide.md`, chosen because the owner asked
 Claude to follow game conventions. Every Tambola rule above is also a host setting with this default.

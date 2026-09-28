@@ -87,8 +87,8 @@ Many groups add a **Second (and Third) Full House**, and hosts sometimes invent 
    claims must come before the next number, a pattern that was already complete when they joined
    can't be claimed. Pocket Game Night allows joining until 10 numbers have been called.
 8. **Unclaimed prizes:** some groups roll them over to the next round ("Progressive Tambola").
-   Pocket Game Night keeps each game self-contained: an unclaimed prize is spread across the
-   prizes won in that game. If nobody won anything, everyone gets their contribution back.
+   Pocket Game Night keeps each game self-contained: the money of any prize nobody won is handed
+   back to the players, equally per ticket. If nobody won anything, everyone gets their contribution back.
 9. **House rules are fine.** Patterns, prizes, bogey penalties and the number of tickets vary
    between groups. Agree them before the first number.
 
@@ -105,8 +105,9 @@ Many groups add a **Second (and Third) Full House**, and hosts sometimes invent 
 - The anchor still calls aloud; the phone only draws the number and shows the rhyme.
 - The host enters players, tickets and the contribution; the app suggests how to split the pot,
   and the anchor confirms the prizes out loud before the first number.
-- Players still shout claims. With paper tickets, the host types the numbers the player reads out;
-  with phone tickets, just the ticket number. The phone checks the claim instantly and shows the room.
+- Players still shout claims. With **paper tickets, the anchor checks the ticket** in front of the room,
+  and the host just records the win (prize and player). With **phone tickets**, the player's phone shows a
+  claim QR and the host scans it: the app checks it instantly and shows the room.
 - At the end, the app shows who won what. Money changes hands between people, never through the app.
 - Shortcuts (phone speaks the calls, auto-marking, Claim buttons) exist but are off by default,
   because the shouting and checking are the fun.

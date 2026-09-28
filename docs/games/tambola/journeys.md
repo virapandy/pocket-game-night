@@ -85,8 +85,8 @@ The app suggests tiers from the number of tickets in play, so small groups get f
 | Hand out tickets | **Paper:** players pick tickets from the book; the host can note ticket numbers against names. **Phone:** each ticket is pre-assigned to a player ("Ticket 3 → Riya, 1 of 2"), the host can change it, then shows the QR; the QR carries the name, and the host phone keeps who holds which ticket; "7 of 10 joined". | Paper: nothing extra. Phone: the QR and join counter. |
 | Call | Taps **Next number**; the anchor reads it aloud | The number, huge, with its rhyme; the last five calls |
 | Repeat | Taps **Repeat** when asked | The same number and rhyme again |
-| Claim | A player shouts; the host taps **Check a claim** and picks the pattern. **Paper:** types the numbers the player reads out. **Phone:** enters the ticket number. | Numbers in green (called) or red (not called), then **Accepted: ₹60 to Riya** or **Bogey** |
-| Late claim | Checks a claim made after the next number | "Bogey: too late. Top Line was complete at 45" (paper tickets: judged from the numbers read out, since the last of them must be the latest call) |
+| Claim | A player shouts. **Paper:** the anchor checks the ticket in the room; the host taps **Record a win**, picks the prize and the player (several for a tie). **Phone:** the player shows a claim QR; the host taps **Scan a claim** (typing the ticket number is the fallback). | Paper: **Top Line: ✓ Riya, ₹60**. Phone: **✓ Accepted, ₹60 to Riya** or **✗ Bogey: 72 not called** |
+| Late claim | Checks a claim made after the next number | "Bogey: too late. Top Line was complete at 45" (phone tickets; with paper tickets the anchor judges) |
 | Tie | Two players claim the same pattern on the same number | "Shared: ₹30 each" (split to the rupee, adding up exactly) |
 | Mistake | Taps **Undo** on a wrongly accepted claim | The claim and its payout removed; the pattern open again |
 | Close a tier | After an accepted claim: **Add another winner** (a tie on the same number) or **Close Top Line**; the next number waits until the tier is closed | "Top Line: Riya ₹60 · closed" |
@@ -113,7 +113,7 @@ The host settles in cash or UPI, outside the app.
 |---|---|---|
 | Before | Pays their contribution to the host; picks tickets from the book | The pot and tiers, read out by the anchor |
 | During | Listens and crosses off numbers | The anchor's call and rhyme; can ask for a repeat |
-| Claim | Shouts the pattern, then reads their numbers aloud | The host phone turned towards the room: green and red numbers, then the verdict and prize |
+| Claim | Shouts the pattern; shows the ticket to the anchor | The anchor's verdict; the host phone shows the win and the prize |
 | After | Collects their prize from the host | The payout summary |
 
 ### Phone tickets
@@ -122,7 +122,7 @@ The host settles in cash or UPI, outside the app.
 | Before the day | Opens the shared app link once, with internet | "You're ready for game night" |
 | Join | Pays the host; scans the QR | Their own ticket and ticket number, plus the prize tiers for this game |
 | During | Listens and **taps** numbers to mark them (no auto-marking by default); taps again to unmark | Their ticket with their marks |
-| Claim | Shouts; tells the host their ticket number | Nothing on their own phone by default; the verdict is on the host phone |
+| Claim | Shouts; taps **Show claim**, picks the prize; shows the claim QR to the host | Their claim QR; the verdict appears on the host phone |
 | Phone dies | Tells the host | Switches to a paper ticket from the book, or the host reads out their app ticket from the host phone |
 | After | Collects their prize | The payout summary is on the host phone |
 
@@ -136,7 +136,7 @@ numbers (TAM-050 to TAM-055).
 |---|---|
 | Host leaves a game unfinished | Saved at every step. Back within 12 hours: resumes, paused. Later: "Resume", "End it" or "Discard it". Never ended automatically. |
 | Host starts a new game while one is unfinished | Asked to resume, end or discard the current one first (one game at a time) |
-| **End game** | Prizes won so far are paid; unclaimed tiers are spread across the won ones (TAM-088) |
+| **End game** | Prizes won are paid; money of unclaimed prizes goes back to the players, equally per ticket (TAM-088) |
 | **Discard game** | Void: nobody is paid; the summary lists each player's contribution to hand back |
 | Several games in one gathering | Grouped in a named session; the session tally gives each person one net amount across ended, unsettled games; Settle marks them done (Phase 1b) |
 | Looking back | History, newest first; each game opens read-only with every call and claim, for disputes |
