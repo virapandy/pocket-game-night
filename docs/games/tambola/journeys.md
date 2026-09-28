@@ -33,7 +33,7 @@ optional: a group can play for chocolates instead, using text prize labels.
 | Step | Host does | Host phone shows |
 |---|---|---|
 | 1. Start | Opens the app, taps **Tambola → New game** | Ticket mode: **Paper tickets** or **Phone tickets** |
-| 2. Players | Enters the number of players, and optionally names | "8 players" |
+| 2. Players | The shared players step (every game): number of players and names, with one-tap suggestions from names used before; blanks become Player 1, 2 … | "8 players" |
 | 3. Tickets | Sets tickets per player (default 1, maximum 3); a player can take extra tickets | "10 tickets in play" |
 | 4. Contribution | Enters the contribution per ticket, e.g. ₹50, or chooses **No money** | "Pot: 10 tickets × ₹50 = **₹500**" |
 | 5. Tiers | Reviews the tiers the app suggests for this many tickets (below); removes or adds back tiers | Each tier with its % and ₹ amount; the total always equals the pot |
@@ -82,7 +82,7 @@ The app suggests tiers from the number of tickets in play, so small groups get f
 
 | Stage | Host does | Host phone shows |
 |---|---|---|
-| Hand out tickets | **Paper:** players pick tickets from the book; the host can note ticket numbers against names. **Phone:** shows the QR to each player in turn; "7 of 10 joined". | Paper: nothing extra. Phone: the QR and join counter. |
+| Hand out tickets | **Paper:** players pick tickets from the book; the host can note ticket numbers against names. **Phone:** each ticket is pre-assigned to a player ("Ticket 3 → Riya, 1 of 2"), the host can change it, then shows the QR; the QR carries the name, and the host phone keeps who holds which ticket; "7 of 10 joined". | Paper: nothing extra. Phone: the QR and join counter. |
 | Call | Taps **Next number**; the anchor reads it aloud | The number, huge, with its rhyme; the last five calls |
 | Repeat | Taps **Repeat** when asked | The same number and rhyme again |
 | Claim | A player shouts; the host taps **Check a claim** and picks the pattern. **Paper:** types the numbers the player reads out. **Phone:** enters the ticket number. | Numbers in green (called) or red (not called), then **Accepted: ₹60 to Riya** or **Bogey** |

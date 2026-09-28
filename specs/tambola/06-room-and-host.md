@@ -12,7 +12,7 @@ And players have no Claim button (they shout)
 And verdicts are shown on the host phone only
 
 ## TAM-061: Turning on a shortcut shows a friendly warning, once
-Status: draft
+Status: approved, owner, 2026-09-28
 Phase: Phase 1b
 When the host turns on "Phone speaks the call"
 Then a short warning appears: the anchor's calling is part of the fun
@@ -20,7 +20,7 @@ And the host can confirm or cancel
 And turning the same setting on again later in this game does not show the warning again
 
 ## TAM-062: Each shortcut has its own warning
-Status: draft
+Status: approved, owner, 2026-09-28
 Phase: Phase 1b (the Phase 6 part waits for connected mode)
 Then "Phone speaks the call" and "Auto-call" (TAM-120) each show their own warning the first time
 they are turned on
@@ -94,7 +94,7 @@ Status: approved, owner, 2026-09-28
 Phase: Phase 1a
 When the host starts a new game
 Then the first choice is "Paper tickets" or "Phone tickets" (Phase 2)
-And names are optional; without them players are "Player 1", "Player 2" …
+And the players step is the shared one (PLT-024): names are captured there, and blanks become "Player 1", "Player 2" …
 
 ## TAM-180: The phone's voice calls the number, only if the host wants it
 Status: decided 2026-09-28 (owner: the anchor calling is the fun; phone voice is optional)

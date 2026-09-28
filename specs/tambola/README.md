@@ -11,7 +11,7 @@ tests once the owner approves it. All are **draft** until approved.
 | [02-calling.md](02-calling.md) | Drawing and calling numbers | TAM-010 – TAM-017 |
 | [03-claims.md](03-claims.md) | Checking claims: accepted, bogey, already won, paper tickets | TAM-020 – TAM-039 |
 | [04-house-rules.md](04-house-rules.md) | Scenarios that depend on owner decisions | TAM-040 – TAM-049 |
-| [05-secrets-and-seeds.md](05-secrets-and-seeds.md) | Nobody sees what they shouldn't; phone tickets | TAM-050 – TAM-058, TAM-131 – TAM-133, TAM-170 – TAM-171 |
+| [05-secrets-and-seeds.md](05-secrets-and-seeds.md) | Nobody sees what they shouldn't; phone tickets | TAM-050 – TAM-058, TAM-131 – TAM-133, TAM-170 – TAM-176 |
 | [06-room-and-host.md](06-room-and-host.md) | Fun-friction defaults, host controls, late joiners, play again | TAM-060 – TAM-069, TAM-130, TAM-137, TAM-180 |
 | [07-undo-replay-end.md](07-undo-replay-end.md) | Undo, replay, and how the game ends | TAM-070 – TAM-078 |
 | [08-prizes.md](08-prizes.md) | Contribution, pot, suggested split, payouts; no money moved | TAM-080 – TAM-091 |

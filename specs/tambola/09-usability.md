@@ -168,7 +168,7 @@ When a player opens their phone ticket
 Then it is shown in landscape with cells at least 44 CSS px, and turning the phone to portrait still works
 
 ## TAM-134: Dark mode is an option, not the default
-Status: draft
+Status: approved, owner, 2026-09-28
 Phase: Phase 1b
 Then the app starts in light mode
 And the host or a player can switch to dark mode, where text stays at least as large

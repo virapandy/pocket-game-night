@@ -53,7 +53,7 @@ Then the game is marked Abandoned in history, with everything that happened up t
 And for games with money, the game's own rule applies (Tambola: TAM-140)
 
 ## PLT-006: An unfinished setup is remembered
-Status: draft
+Status: approved, owner, 2026-09-28
 Phase: Phase 1b
 Given the host started setting up a game but did not confirm it
 When they come back to set up a game
@@ -75,14 +75,14 @@ Then the summary is shown, plus every call and claim in order
 And nothing in it can be edited
 
 ## PLT-009: Play again from a past game's setup
-Status: draft
+Status: approved, owner, 2026-09-28
 Phase: Phase 1b
 When the host opens a past game and taps "Use this setup"
 Then a new game starts in Setup with the same players, contribution, tiers and house rules
 And new tickets and a new draw seed
 
 ## PLT-010: Deleting a past game
-Status: draft
+Status: approved, owner, 2026-09-28
 Phase: Phase 1b
 When the host deletes a past game
 Then it disappears at once, with "Deleted. Undo" for 5 seconds
@@ -90,7 +90,7 @@ And after that it is gone for good
 And a game in progress or paused cannot be deleted: it must be ended or discarded first
 
 ## PLT-011: Clearing all history
-Status: draft
+Status: approved, owner, 2026-09-28
 Phase: Phase 1b
 When the host taps "Clear all history"
 Then a confirmation asks "Delete all 23 past games from this phone? This can't be undone."
@@ -161,7 +161,7 @@ And later games in the same session start a new tally
 And settled games show "Settled" in history and can no longer be tallied
 
 ## PLT-020: The same person across games
-Status: draft
+Status: approved, owner, 2026-09-28
 Phase: Phase 1b
 Then the tally matches people across games in a session by the name used in each game
 And Play again and "Use this setup" keep the same names, so the match is automatic
@@ -175,14 +175,24 @@ Then it records, for each person, what they paid and what they won in that game
 And the tally uses only that record, so a new game with money needs no change to the tally
 
 ## PLT-022: Sessions can be seen and renamed
-Status: draft
+Status: approved, owner, 2026-09-28
 Phase: Phase 1b
 When the host opens Sessions
 Then every session is listed, newest first, with its games and whether its tally is settled
 And the host can rename a session at any time
 
 ## PLT-023: Games without money stay out of the tally
-Status: draft
+Status: approved, owner, 2026-09-28
 Phase: Phase 1b
 Given a game was played with "No money"
 Then it appears in the session's history but never in its tally
+
+## PLT-024: Every game's setup captures players' names
+Status: decided 2026-09-28 (owner: names are captured at setup, in every game)
+Phase: Phase 1a
+When the host sets up any game
+Then there is one players step, the same in every game: the number of players and their names
+And names can be typed quickly or picked from names used before on this phone, shown as one-tap suggestions
+And a name left blank becomes "Player 1", "Player 2" …, which the host can rename at any time during the game
+And Play again and "Use this setup" bring the same names back (PLT-009, TAM-068)
+And two players cannot have the same name in one game (the app asks to add an initial: "Riya S")

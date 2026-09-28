@@ -103,3 +103,42 @@ Given a player's phone shows ticket 3 with 9 numbers marked
 When the phone locks, the browser reloads, or the player switches apps and comes back
 Then ticket 3 is still there with the same 9 marks
 And it stays until the player scans a ticket for a new game
+
+## TAM-172: Each phone ticket is handed to a named player
+Status: approved, owner, 2026-09-28
+Phase: Phase 2 (phone tickets)
+Given the players and their tickets per player were set at setup (PLT-024, TAM-045)
+When the host hands out tickets
+Then the host screen shows the next ticket already assigned: "Ticket 3 → Riya (1 of 2)"
+And the host can pick a different player from the list before showing the QR
+And the QR carries that player's name, so their phone shows "Riya, ticket 3"
+And the host phone keeps the record of which ticket belongs to whom; it is the only record
+
+## TAM-173: A player with several tickets keeps them on one phone
+Status: approved, owner, 2026-09-28
+Phase: Phase 2 (phone tickets)
+Given Riya has 2 tickets
+When she scans both QR codes on her phone
+Then both tickets are on her phone, one above the other (or one tap apart), each with its own marks
+
+## TAM-174: A phone-ticket claim credits the ticket's owner automatically
+Status: approved, owner, 2026-09-28
+Phase: Phase 2 (phone tickets)
+When the host checks a claim by entering ticket 3
+Then the verdict shows the owner ("Top Line: ✓ Accepted, ₹60 to Riya")
+And the prize is credited to Riya, with no need to pick the player (unlike paper tickets, TAM-039)
+
+## TAM-175: The host can correct who holds a ticket
+Status: approved, owner, 2026-09-28
+Phase: Phase 2 (phone tickets)
+Given ticket 3 was assigned to Riya by mistake and Arjun has it
+When the host changes ticket 3's owner to Arjun
+Then any prize ticket 3 wins from then on, and any it already won, is credited to Arjun
+And the change is recorded in the game's history (so a replay shows it)
+And Arjun's phone still shows "Riya" on the ticket until he rescans; that label is only a display
+
+## TAM-176: Tickets that were never handed out are not in the game
+Status: approved, owner, 2026-09-28
+Phase: Phase 2 (phone tickets)
+Given the host made a sheet of 6 but handed out only 4 tickets
+Then the other 2 tickets are not in play, count for nothing in the pot, and any claim on them is refused (TAM-032)
