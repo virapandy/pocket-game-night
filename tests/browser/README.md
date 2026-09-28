@@ -30,7 +30,7 @@ The shared steps live in `helpers.ts`.
 
 ## Fields (label)
 `Number of players` · `Name of player 1`, `Name of player 2` … · `Contribution per ticket` ·
-`Top Line amount` (one per tier: "<Pattern> amount") · `Numbers read out` (Check numbers only; accepts "4 23 41 62 85").
+`Top Line amount` (one per tier: "<Pattern> amount"; the only place each tier's amount is shown, TAM-183, and what TAM-081/TAM-084 read) · `Numbers read out` (Check numbers only; accepts "4 23 41 62 85").
 `Contribution per ticket` holds a real value, 50, when the step opens (TAM-182); a refused value shows a one-line
 reason in an element with `role="alert"`.
 
@@ -42,7 +42,6 @@ reason in an element with `role="alert"`.
 | `last-calls` | Recent calls; each number in an element with `data-number` |
 | `board` | The 1–90 board; each cell has `data-number`, called ones `data-called="true"` |
 | `room-view` | "Show the room"; contains its own `current-number`, `current-rhyme`, `last-calls`; a tap anywhere returns |
-| `tier-amount` | Each tier's amount on the prizes step |
 | `claim-result` | A recorded win or bogey, in large text (at least 24 CSS px): "Top Line: ✓ Riya, ₹60" ("Player 4" if unnamed; no ₹ with No money), or "✗ Bogey" with the name and pattern; "Shared" for a tie. With paper tickets no ticket or numbers are shown (no `data-called` inside) |
 | `check-result` | The Check numbers helper: each typed number as "23 ✓" or "91 ✗" with `data-called="true"/"false"`, and whether they complete the pattern ("complete" / "not complete"); a one-line reason for wrong input, such as "Top Line needs 5 numbers" |
 | `top-bar` | The calling screen's top bar |

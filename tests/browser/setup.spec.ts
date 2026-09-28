@@ -59,7 +59,15 @@ test('TAM-080 and TAM-081: the pot and the suggested tiers show before prizes ar
   for (const tier of ['Early Five', 'Top Line', 'Middle Line', 'Bottom Line', 'Full House']) {
     await expect(page.getByText(tier, { exact: true }).first()).toBeVisible();
   }
-  await expect(page.getByTestId('tier-amount')).toHaveCount(5);
+  // Each tier's amount is shown once, in its own "<Pattern> amount" field (TAM-183); the five add up to the pot.
+  const shown = await Promise.all(
+    ['Early Five', 'Top Line', 'Middle Line', 'Bottom Line', 'Full House'].map(async (tier) => {
+      const field = page.getByLabel(`${tier} amount`, { exact: true });
+      await expect(field).toBeVisible();
+      return Number((await field.inputValue()).replace(/[^\d]/g, ''));
+    }),
+  );
+  expect(shown.reduce((a, b) => a + b, 0)).toBe(300);
   await expect(page.getByRole('button', { name: 'Confirm prizes' })).toBeVisible();
   await expect(nextNumber(page)).toHaveCount(0);
 });
@@ -74,7 +82,12 @@ test('TAM-084: the anchor can change a tier; the total still equals the pot', as
   await page.getByRole('button', { name: 'Next' }).click();
   await page.getByLabel('Top Line amount').fill('80');
   await page.getByLabel('Top Line amount').blur();
-  const amounts = await page.locator('[data-testid="tier-amount"]').allTextContents();
+  // The anchor sees each tier's amount in its "<Pattern> amount" field (TAM-183: shown once, in the field).
+  const tiers = ['Early Five', 'Top Line', 'Middle Line', 'Bottom Line', 'Full House'];
+  const amounts = await Promise.all(
+    tiers.map((tier) => page.getByLabel(`${tier} amount`, { exact: true }).inputValue()),
+  );
+  expect(Number(amounts[1].replace(/[^\d]/g, ''))).toBe(80);
   const total = amounts.map((t) => Number(t.replace(/[^\d]/g, ''))).reduce((a, b) => a + b, 0);
   expect(total).toBe(500);
   await page.getByRole('button', { name: 'Confirm prizes' }).click();
