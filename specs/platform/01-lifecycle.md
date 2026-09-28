@@ -21,13 +21,13 @@ Phase: Phase 1
 Then every game is in exactly one state: Setup, In progress, Paused, Ended or Abandoned
 And only In progress and Paused games can change; Ended and Abandoned games are read-only
 
-## PLT-002: One game in progress at a time
-Status: draft (recommended)
+## PLT-002: Several unfinished games are allowed
+Status: decided 2026-09-28 (owner: no one-game limit unless absolutely necessary)
 Phase: Phase 1
 Given a game is in progress or paused
 When the host starts a new game
-Then the app asks: "Resume the current game", "End it (with payouts so far)" or "Discard it"
-And no second game starts until one of those is chosen
+Then the new game starts without asking anything about the other one
+And the home screen lists every unfinished game ("Tambola, 8:40 pm, 23 numbers called") to continue
 
 ## PLT-003: Every change is saved at once
 Status: draft
@@ -36,7 +36,7 @@ When anything changes in a game (a call, a claim, a setting)
 Then it is saved on the phone immediately, so closing the app never loses it (TAM-065, TAM-111, TAM-112)
 
 ## PLT-004: Coming back to an unfinished game
-Status: draft (recommended)
+Status: decided 2026-09-28 (owner)
 Phase: Phase 1
 Given a game was left in progress
 When the host opens the app within 12 hours
@@ -65,7 +65,7 @@ Phase: Phase 1
 When the host opens History
 Then each game shows the game name, date and time, number of players, and result
 (for example "Full House: Dad", or "Abandoned")
-And games played one after another with Play again are grouped as one game night
+And games are grouped by session (PLT-016)
 
 ## PLT-008: A past game can be looked at, but not changed
 Status: draft
@@ -98,7 +98,7 @@ with buttons "Delete all" and "Keep"
 And a game in progress is not affected
 
 ## PLT-012: No limit on history, but no surprises either
-Status: draft (recommended)
+Status: decided 2026-09-28 (owner)
 Phase: Phase 1
 Given a finished game takes a few kilobytes
 Then the app keeps every past game until the host deletes it
@@ -122,8 +122,46 @@ Then every past game and any game in progress still opens, with nothing lost
 (Saved games carry a format version from the first release.)
 
 ## PLT-015: Games played without the app are not entered by hand
-Status: draft (recommended)
+Status: decided 2026-09-28 (owner)
 Phase: later, with the Scoreboard game
 When a group played on paper without the app
 Then there is no way to type that game into Tambola history
 (Manual score entry belongs to the Scoreboard game, game four.)
+
+## PLT-016: Every game belongs to a named session
+Status: decided 2026-09-28 (owner)
+Phase: Phase 1b
+When the host starts the first game of a gathering
+Then the app asks for a session name, suggesting one ("Sunday 28 Sep")
+And every game started after that joins the same session by default
+When the host starts a game more than 3 hours after the last game in that session ended
+Then the app asks: "Continue 'Diwali at Nani's' or start a new session?"
+
+## PLT-017: The tally covers finished, unsettled games in one session
+Status: decided 2026-09-28 (owner)
+Phase: Phase 1b
+When the host opens the tally for a session
+Then it adds up only games that are Ended and not yet settled
+And it leaves out games in progress, paused or abandoned
+And for each person it shows what they paid, what they won, and one net amount
+And its totals balance: everything paid in equals everything paid out
+
+## PLT-018: Games in different sessions are never tallied together
+Status: decided 2026-09-28 (owner)
+Phase: Phase 1b
+Then a tally only ever includes games from one session
+And there is no way to add a game from another session
+
+## PLT-019: Settling marks the games done
+Status: decided 2026-09-28 (owner)
+Phase: Phase 1b
+When the host taps "Settle" on a tally and confirms
+Then every game in that tally is marked Settled, and the tally is empty again
+And later games in the same session start a new tally
+And settled games show "Settled" in history and can no longer be tallied
+
+## PLT-020: The same person across games
+Status: draft
+Phase: Phase 1b
+Then the tally matches people across games in a session by the name used in each game
+And Play again and "Use this setup" keep the same names, so the match is automatic

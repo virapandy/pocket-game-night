@@ -19,11 +19,15 @@
 | 2026-09-28 | Rhymes in English and Hindi first; phone voice in Indian English first. | Claude, on owner's instruction |
 | 2026-09-28 | Auto-call: off by default; host sets and can change the timer at any time; one-tap pause (TAM-120). | Owner |
 | 2026-09-28 | Undo last call within 5 seconds of a mis-tap (TAM-119). | Owner |
+| 2026-09-28 | Several unfinished games allowed; no one-game limit unless absolutely necessary (PLT-002). | Owner |
+| 2026-09-28 | Resume straight away within 12 hours, otherwise ask; never ended automatically (PLT-004). | Owner |
+| 2026-09-28 | No limit on history; ask before removing anything; no hand-entered games (PLT-012, PLT-015). | Owner |
+| 2026-09-28 | Discard means the game is void and contributions are handed back (TAM-140). | Owner |
+| 2026-09-28 | Games are grouped in named sessions; a tally covers ended, unsettled games in one session; Settle marks them done; sessions are never tallied together (PLT-016 to PLT-020). | Owner |
 | 2026-09-28 | Games two to four, in order: Impostor, Dumb Charades, Scoreboard / Rummy scorekeeper. | Claude, on owner's instruction |
 
 "Convention" means the established Tambola rule in `docs/games/tambola/guide.md`, chosen because the owner asked
 Claude to follow game conventions. Every Tambola rule above is also a host setting with this default.
 
 ## Open
-- Lifecycle recommendations to confirm: one game in progress at a time (PLT-002); resume straight away within 12 hours, otherwise ask (PLT-004); no limit on history, ask before removing anything (PLT-012); no hand-entered past games (PLT-015); Discard means void with contributions returned (TAM-140); one net amount per person per night (TAM-141)
 - Approval of the Tambola scenarios in `specs/tambola/`

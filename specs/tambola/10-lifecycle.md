@@ -4,7 +4,7 @@ The shared lifecycle rules are in `specs/platform/01-lifecycle.md` (PLT-001 to P
 These scenarios cover what is special to Tambola: the prize pool.
 
 ## TAM-140: Ending versus discarding a game with money
-Status: draft (recommended)
+Status: decided 2026-09-28 (owner)
 Phase: Phase 1
 When the host taps "End game" (TAM-066)
 Then prizes already won are paid, and unclaimed tiers follow TAM-088
@@ -12,15 +12,12 @@ When the host taps "Discard game" instead (PLT-005)
 Then the game is void: nobody is paid, and the summary shows each player's contribution to hand back
 And if prizes had already been accepted, the confirmation says so: "2 prizes were already won. Discard anyway?"
 
-## TAM-141: One total per person for the whole night
-Status: draft (recommended)
+## TAM-141: A game shows only its own winnings; the tally is separate
+Status: decided 2026-09-28 (owner)
 Phase: Phase 1
-Given three games were played one after another with Play again
-When the host opens the night's summary
-Then each person shows what they paid and won in each game, and one net amount for the night
-("Riya: paid ₹150, won ₹220, receives ₹70")
-And the night's totals balance: everything paid in equals everything paid out
-So cash or UPI can be settled once, at the end of the night
+When a Tambola game ends
+Then its summary shows only that game: what each person paid and won
+And totals across games live in the session tally (PLT-017 to PLT-019, Phase 1b)
 
 ## TAM-142: A roll-over never gets lost
 Status: draft (recommended)
