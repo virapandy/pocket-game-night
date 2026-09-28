@@ -9,13 +9,13 @@ tests once the owner approves it. All are **draft** until approved.
 |---|---|---|
 | [01-tickets.md](01-tickets.md) | What a valid ticket and sheet look like | TAM-001 – TAM-008 |
 | [02-calling.md](02-calling.md) | Drawing and calling numbers | TAM-010 – TAM-017 |
-| [03-claims.md](03-claims.md) | Checking claims: accepted, bogey, already won, paper tickets | TAM-020 – TAM-038 |
+| [03-claims.md](03-claims.md) | Checking claims: accepted, bogey, already won, paper tickets | TAM-020 – TAM-039 |
 | [04-house-rules.md](04-house-rules.md) | Scenarios that depend on owner decisions | TAM-040 – TAM-049 |
-| [05-secrets-and-seeds.md](05-secrets-and-seeds.md) | Nobody sees what they shouldn't; phone tickets | TAM-050 – TAM-058 |
-| [06-room-and-host.md](06-room-and-host.md) | Fun-friction defaults, host controls, late joiners, play again | TAM-060 – TAM-069 |
+| [05-secrets-and-seeds.md](05-secrets-and-seeds.md) | Nobody sees what they shouldn't; phone tickets | TAM-050 – TAM-058, TAM-131 – TAM-133 |
+| [06-room-and-host.md](06-room-and-host.md) | Fun-friction defaults, host controls, late joiners, play again | TAM-060 – TAM-069, TAM-130, TAM-137 |
 | [07-undo-replay-end.md](07-undo-replay-end.md) | Undo, replay, and how the game ends | TAM-070 – TAM-078 |
 | [08-prizes.md](08-prizes.md) | Contribution, pot, suggested split, payouts; no money moved | TAM-080 – TAM-091 |
-| [09-usability.md](09-usability.md) | Mis-touches, legibility, offline, interruptions (from docs/ux-guidelines.md) | TAM-100 – TAM-122 |
+| [09-usability.md](09-usability.md) | Mis-touches, legibility, offline, interruptions (from docs/ux-guidelines.md) | TAM-100 – TAM-122, TAM-134 – TAM-136 |
 
 ## How to approve
 Read a file. For each scenario, either leave it (approve), change the words, or delete it.
@@ -30,6 +30,22 @@ Scenarios in `04-house-rules.md` show the choices. Pick one per question, and th
 - **Bogey**: a false claim.
 - **Pattern**: what a player claims (Early Five, Top Line, Full House …).
 - **Seed**: a secret starting number that decides the random draw or a ticket. The same seed always gives the same result.
+
+## Phases
+Every scenario has a **Phase** line. **Phase 1** is Tambola with paper tickets on one host phone
+(80 scenarios). **Phase 2** adds tickets on phones (34). One scenario has a part that waits for
+connected mode (Phase 6).
+
+## Readiness check (28 September 2026)
+Checked three ways, following `docs/new-game-process.md` step 9.
+
+| Check | Result |
+|---|---|
+| Guide ↔ scenarios | Every rule has a scenario. Added: the bogey consequence (TAM-044 made concrete) and house rules as settings (TAM-130). |
+| Journeys ↔ scenarios | Added: who is claiming with paper tickets (TAM-039), setup mode and names (TAM-137), marking and unmarking (TAM-131), join counter (TAM-132). Fixed: host board shows the last 5 calls, the room view the last 3 (TAM-016, TAM-107). |
+| UX guidelines ↔ scenarios | Added: player's own "last calls" (TAM-133), dark mode not default (TAM-134), vibration and sound (TAM-135), no dragging (TAM-136). Guidelines 5, 7 and 44 (edges, testing at distance, real devices) are for design and play-tests, not scenarios. |
+| Consistency | Fixed: TAM-071 now matches the 5-second undo (TAM-119); TAM-013 has a precise fairness test; TAM-062 separates Phase 1 and Phase 6 shortcuts; TAM-066 shows payouts; TAM-100 uses CSS px. |
+| Contract | Fits, with four points the engine must support from Phase 0 (`docs/games/tambola/guide.md`, "Contract check"). |
 
 ## Checked against the guide (28 September 2026)
 | Result | Scenarios |

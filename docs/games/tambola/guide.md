@@ -108,6 +108,31 @@ Many groups add a **Second (and Third) Full House**, and hosts sometimes invent 
 - Mistakes are forgiving: the host can undo a wrongly entered claim. A number already called
   can't be taken back, because the room has heard it.
 
+## Contract check (for the builders)
+How Tambola answers the seven contract questions in `src/engine/CLAUDE.md`. Checked 28 September 2026.
+
+| Question | Tambola's answer |
+|---|---|
+| Setup | Ticket mode, players (names optional), tickets per player, contribution, prize tiers confirmed by the anchor, house-rule settings, a host-only draw seed; with phone tickets, one seed per ticket |
+| Legal moves | Host: call next number, undo last call (within 5 s), check a claim (player or ticket, pattern, and with paper tickets the numbers read out), undo a claim, add a late joiner (until 10 calls), end the game. Setup moves: edit, remove or add back a tier; confirm prizes. |
+| Apply | A call adds the next number from the draw; a claim is accepted, shared, refused as already won, or a bogey (late claims too); prizes are credited; a bogeyed ticket is out |
+| View | Host: everything. Room: the called number, the last 3 calls, verdicts. Player (phone tickets): own ticket and called numbers only |
+| Game over | The last Full House tier in play is won, or the host ends the game |
+| Invariants | No number twice; at most 90 calls; valid tickets; claims judged only on numbers called at the time; tiers and payouts always add up to the pot; no view leaks another ticket or an upcoming number |
+| Undo | Claims: any time. Calls: only within 5 seconds. Game end: never (it has a confirmation instead) |
+
+**Fits the contract, with four points the engine must support from Phase 0:**
+1. **Moves carry a time.** The 5-second undo window needs a time on each move record, because rules
+   may not read the clock.
+2. **A "room" viewer** alongside host and players, for what the whole room may see.
+3. **Moves with details.** "Check a claim" carries a pattern, a player or ticket, and sometimes typed
+   numbers. For the generic Jev player, a player's choices stay a short list ("claim Top Line", "wait").
+4. **Player marks live only on the player's phone.** They never change the game state (TAM-035), so
+   they sit outside the host's game.
+
+Auto-call timers, the screen wake lock and sounds are app features, not rules.
+Secrets with their own seeds: the draw (host only) and each phone ticket.
+
 ---
 *Sources (checked 28 September 2026):* rules and patterns from
 [Party Tambola: rules](https://www.partytambola.in/tambola-rules),
