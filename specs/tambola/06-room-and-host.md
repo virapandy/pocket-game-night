@@ -96,10 +96,12 @@ When the host starts a new game
 Then the first choice is "Paper tickets" or "Phone tickets" (Phase 2)
 And names are optional; without them players are "Player 1", "Player 2" …
 
-## TAM-180: The phone's voice calls the number
-Status: draft
+## TAM-180: The phone's voice calls the number, only if the host wants it
+Status: decided 2026-09-28 (owner: the anchor calling is the fun; phone voice is optional)
 Phase: Phase 1b
-When "Phone speaks the call" or auto-call is on and a number is called
+Given the anchor calls aloud by default, and the phone's voice is off in every new game
+When the host turns on "Phone speaks the call" or auto-call (with the one-time warning, TAM-061)
+And a number is called
 Then the phone says the number, the rhyme, and the number again ("Five. Man alive. Five.")
 And it uses an Indian English voice if the phone has one, otherwise any English voice
 And a Hindi rhyme is spoken only if the phone has a Hindi voice; otherwise only the number is spoken
