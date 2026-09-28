@@ -69,11 +69,14 @@ Given Top Line is worth ₹50 and three tickets win it on the same number
 Then they get ₹17, ₹17 and ₹16 (split to the rupee, adding up to ₹50 exactly)
 And the extra rupee goes in ticket-number order
 
-## TAM-088: An unclaimed tier is spread across the won tiers
-Status: draft (owner direction 2026-09-28, to confirm)
+## TAM-088: An unclaimed tier rolls over to the next game, or is spread across the won tiers
+Status: decided 2026-09-28 (convention: unclaimed prizes roll over to the next round; owner: totals always match the pot)
 Given the game ends with Four Corners (₹50) unclaimed
+When the host taps "Play again"
+Then the ₹50 is added to the same tier in the next game's pot, and the anchor sees it when confirming prizes
+When the host ends the session instead
 Then the ₹50 is spread across the tiers that were won, in proportion to their amounts
-And the payouts still add up to the pot exactly
+And in both cases the payouts add up to the pot exactly
 
 ## TAM-089: The payout summary balances
 Status: draft

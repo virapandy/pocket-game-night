@@ -72,14 +72,19 @@ Many groups add a **Second (and Third) Full House**, and hosts sometimes invent 
 1. **Claims are checked against called numbers only.** A number you forgot to mark still counts;
    a number you marked by mistake doesn't.
 2. **Claim before the next number is called.** A claim after that is late and is treated as a bogey.
-3. **Bogey (false or late claim):** traditionally, that ticket is out of the game. Many family
-   games are gentler and just carry on; the host decides before starting.
+3. **Bogey (false or late claim):** traditionally, that ticket is out of the game. That is
+   Pocket Game Night's default; for gentle family games the host can switch to "carry on".
 4. **Ties:** if two or more tickets complete the same pattern on the same number and claim in time,
    they **share** the prize.
 5. **One winner per pattern.** Once a pattern is won, later claims for it don't count.
 6. **The game ends** when the last Full House is won. If all 90 numbers are called, every ticket
    is complete.
-7. **House rules are fine.** Patterns, prizes, bogey penalties and the number of tickets vary
+7. **Late joiners** may join a game in progress and cross off the numbers already called. Because
+   claims must come before the next number, a pattern that was already complete when they joined
+   can't be claimed. Pocket Game Night allows joining until 10 numbers have been called.
+8. **Unclaimed prizes** roll over to the next round. If there is no next round, Pocket Game Night
+   spreads them across the prizes that were won.
+9. **House rules are fine.** Patterns, prizes, bogey penalties and the number of tickets vary
    between groups. Agree them before the first number.
 
 ## A few traditional calls
@@ -108,7 +113,9 @@ Many groups add a **Second (and Third) Full House**, and hosts sometimes invent 
 [Party Tambola: rules](https://www.partytambola.in/tambola-rules),
 [Party Tambola: how to play](https://www.partytambola.in/how-to-play-tambola),
 [TambolaCaller: rules](https://tambolacaller.com/rules) and
-[Octro Tambola: how to play](https://tambola.octro.com/HowToPlay/index.php); ticket structure,
+[Octro Tambola: how to play](https://tambola.octro.com/HowToPlay/index.php); late joiners from
+[Crownit Tambola FAQ](https://crownit.in/tambola-faqs/); rolling over unclaimed prizes from
+[Party Tambola: game ideas](https://www.partytambola.in/tambola-game-ideas); ticket structure,
 strips of 6, and claim timing also from
 [Wikipedia: Bingo (British version)](https://en.wikipedia.org/wiki/Bingo_(British_version)).
 Sources differ slightly on column ranges (some use 1–10, 11–20 … 81–90); this guide uses the

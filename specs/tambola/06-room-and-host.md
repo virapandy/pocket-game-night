@@ -46,7 +46,7 @@ When the host taps "End game" and confirms
 Then the game ends and a summary shows the winners so far
 
 ## TAM-067: A late joiner can get a ticket mid-game
-Status: waiting for owner decision (recommended rule below)
+Status: decided 2026-09-28 (convention: numbers already called count; the claim-before-next-number rule means a pattern already complete on joining cannot be claimed)
 Given 6 numbers have been called, and late joining is allowed until 10 numbers (host setting; 0 turns it off)
 When a new player arrives and the host adds them with a ticket (paper or phone)
 Then the numbers already called count on their ticket, as in paper Tambola

@@ -1,4 +1,6 @@
-# House rules: needs owner decisions
+# House rules
+
+All decided on 2026-09-28. The owner asked Claude to follow Tambola conventions (see `docs/tambola-guide.md` and `docs/decisions.md`). Each is still a host setting with this default.
 
 Each scenario below has a question. Pick one option (or write your own), and the scenario is finished.
 Every choice becomes a **setting** with a default the host can change. These are the defaults.
@@ -7,7 +9,7 @@ Every choice becomes a **setting** with a default the host can change. These are
 **Recommended** is Claude's suggestion for family play, where it differs from the norm.
 
 ## TAM-040: Which patterns are in a game by default?
-Status: waiting for owner decision
+Status: decided 2026-09-28: replaced by tiers suggested from the ticket count (TAM-081)
 Options:
 - A. Early Five, Top Line, Middle Line, Bottom Line, Full House
 - B. A plus Four Corners (**norm**: the standard six dividends)
@@ -17,7 +19,7 @@ When the host starts a new game without changing settings
 Then exactly the chosen default patterns are available to claim
 
 ## TAM-041: Two players claim the same pattern at the same moment
-Status: waiting for owner decision
+Status: decided 2026-09-28 by convention (owner asked Claude to follow Tambola norms): A, the prize is shared
 Options:
 - A. Both win and share the prize (**norm**)
 - B. The first claim entered by the host wins
@@ -28,14 +30,14 @@ When both players claim before the next number is called
 Then the chosen rule is applied, every time
 
 ## TAM-042: What counts as "the same moment"?
-Status: waiting for owner decision
+Status: decided 2026-09-28 by convention (owner asked Claude to follow Tambola norms): A, the same called number, both claimed before the next number
 Options:
 - A. Both completed their pattern on the same called number, and both claimed before the next number (**norm**)
 - B. Only if the host entered them within a few seconds of each other
 Scenario once chosen: the rule in TAM-041 applies only to claims that match this definition.
 
 ## TAM-043: Late claims
-Status: waiting for owner decision
+Status: decided 2026-09-28 by convention (owner asked Claude to follow Tambola norms): B, a late claim is a bogey
 A player's pattern was complete after number 45 was called, but they only claimed after 12 was called next.
 Options:
 - A. Still valid (gentler)
@@ -46,7 +48,7 @@ Then it is accepted (A) or treated as a bogey with the reason "too late" (B)
 (For B, the app records which number completed each ticket's pattern, so "late" is exact.)
 
 ## TAM-044: What happens after a bogey?
-Status: waiting for owner decision
+Status: decided 2026-09-28 by convention (owner asked Claude to follow Tambola norms): B, the ticket is out of the game. The host can switch to "carry on" in settings for gentle family games. The ticket's contribution stays in the pot.
 Options:
 - A. Nothing; the room laughs and play continues (**recommended** for family play)
 - B. That ticket is out of the game (**norm**: the ticket is "cancelled")
@@ -56,7 +58,7 @@ Given ticket 3 made a bogey on Top Line
 Then the chosen consequence applies, and the host sees it clearly
 
 ## TAM-045: How many tickets may one player hold?
-Status: waiting for owner decision
+Status: decided 2026-09-28 by convention (owner asked Claude to follow Tambola norms): B, 1 to 3 tickets per player, default 1
 Options:
 - A. One
 - B. Up to a limit the host sets, default 3 (**norm**: 1 to 3 tickets per player)
@@ -65,7 +67,7 @@ When the host hands out tickets
 Then no player gets more than the allowed number
 
 ## TAM-046: Second and third Full House
-Status: waiting for owner decision
+Status: decided 2026-09-28: the game ends when the last Full House tier in play is won (one Full House, or two with Second Full House from TAM-081)
 Options:
 - A. The game ends at the first Full House (**norm**)
 - B. The host can allow a second (and third) Full House before the game ends (a common extra)
@@ -73,17 +75,17 @@ For 25 or more tickets the app suggests a Second Full House tier (TAM-081); the 
 Scenario once chosen: see TAM-075.
 
 ## TAM-047: Prizes
-Status: replaced 2026-09-28 by the prize-pool scenarios in 08-prizes.md (TAM-080 to TAM-089)
+Status: replaced 2026-09-28 by the prize-pool scenarios in 08-prizes.md (TAM-080 to TAM-091)
 
 ## TAM-048: Phone tickets per game
-Status: waiting for owner decision
+Status: decided 2026-09-28 by convention (owner asked Claude to follow Tambola norms): A, phone tickets are handed out from sheets of 6
 Options:
 - A. Hand out tickets one by one, from full sheets of 6 (so numbers spread evenly) (**norm**: tickets come in strips of 6)
 - B. Every ticket made independently
 Scenario once chosen: TAM-006 applies to every group of 6 tickets handed out (A), or only when printing full sheets (B).
 
 ## TAM-049: First languages for rhymes and the voice caller
-Status: waiting for owner decision
+Status: decided 2026-09-28 by Claude on the owner's instruction: English and Hindi rhymes first; the phone voice in Indian English first. The traditional calls are English ("Kelly's eye"), and Hindi reaches the most Indian families. Other languages come later as content packs.
 Options: English, Hindi, Tamil, others (choose one or two to start)
 Scenario once chosen:
 Given the host picks a language
