@@ -12,4 +12,5 @@
 - Bogey (false claim) penalty
 - Tickets per player, and how they are handed out
 - First languages for rhymes and voice
+- Late joiners: do numbers called before they joined count towards their claims?
 - Order of games two to four (Impostor, Dumb Charades, Scoreboard / Rummy scorekeeper)
