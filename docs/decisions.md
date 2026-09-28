@@ -61,6 +61,10 @@
 | 2026-09-28 | Tally shows net amounts; an explicit "Settle up" lists who pays whom in the fewest hand-overs, then "Mark as settled"; settling can be undone for 5 seconds (PLT-027, PLT-028). | Owner + product owner |
 | 2026-09-28 | Weekly long runs report failures only; they never hold back the preview link. Mutation target: at least 80% for rules and money code (PLT-118, PLT-119). | Owner + product owner |
 
+| 2026-09-29 | Setup, first step: tapping "Paper tickets" moves on at once; no separate "Next" on a one-choice step (TAM-181). | Claude, on owner's instruction (most user-friendly) |
+| 2026-09-29 | With paper tickets the anchor judges late claims; the app's record of which number completed a pattern applies to phone tickets only (TAM-043). | Owner |
+| 2026-09-29 | Landscape calling screen: the number's digits are at least 160 px tall and never smaller than in portrait (TAM-129). | Claude, on owner's instruction (most user-friendly) |
+
 "Convention" means the established Tambola rule in `docs/games/tambola/guide.md`, chosen because the owner asked
 Claude to follow game conventions. Every Tambola rule above is also a host setting with this default.
 
