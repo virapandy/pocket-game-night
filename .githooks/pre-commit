@@ -1,0 +1,3 @@
+#!/bin/sh
+# Blocks a Claude session from committing the other workspace's files. See CLAUDE.md.
+exec node "$(git rev-parse --show-toplevel)/.claude/hooks/role-guard.mjs" commit

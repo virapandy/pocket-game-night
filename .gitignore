@@ -1,0 +1,12 @@
+node_modules/
+dist/
+coverage/
+playwright-report/
+test-results/
+reports/stryker/
+reports/runs/
+.env
+.env.*
+.claude/settings.local.json
+.DS_Store
+*.pdf
