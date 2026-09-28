@@ -251,3 +251,18 @@ describe('TAM-143 and PLT-021: what a finished game keeps', () => {
     if (r.ok) expect(moneyProblems(r.game.money!)).toEqual([]);
   });
 });
+
+describe('TAM-144: a game that ends with no prize won hands every contribution back', () => {
+  it('nobody wins, and each person gets back exactly what they paid', () => {
+    const g = new Game({ players: [{ id: 'p1', name: 'Riya', tickets: 2 }, { id: 'p2', name: 'Asha' }, { id: 'p3', name: 'Dad', tickets: 3 }] }).call(12);
+    g.claim('p2', 'top-line', [...g.called.slice(-4), uncalled(g)[0]!]); // a bogey wins nothing
+    g.do({ type: 'end' });
+    const s = g.summary;
+    expect(s.result).toBe('ended');
+    for (const t of s.tiers) expect(t.winners).toEqual([]);
+    expect(moneyProblems(s.money)).toEqual([]);
+    expect(Object.fromEntries(s.money.people.map((p: any) => [p.personId, [p.paid, p.won]]))).toEqual({
+      p1: [100, 100], p2: [50, 50], p3: [150, 150],
+    });
+  });
+});

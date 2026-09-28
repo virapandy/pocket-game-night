@@ -8,10 +8,10 @@
 | Architecture, principles, two-workspace split | Decided (`CLAUDE.md`) |
 | Tambola rules, journeys, UX guidelines, lifecycle | Written and cross-checked (`docs/games/tambola/`, `docs/ux-guidelines.md`) |
 | Owner decisions | All made (`docs/decisions.md`) |
-| Scenarios | Every phase has scenarios: 1a 98 (**approved**), 1b 18, 2 36, 2.5 14, 6 11, 7 6 (drafts until each phase comes up) |
+| Scenarios | Every phase has scenarios: 1a 100 (**all approved**, including TAM-144 and TAM-145 added on 28 September), 1b 18, 2 36, 2.5 14, 6 11, 7 6 (drafts until each phase comes up) |
 | Rhyme catalog | `docs/games/tambola/rhymes.md` and `rhymes.csv` (409 rhymes, English and Hindi, 4–6 per number); **approved by the owner** |
-| Tests | None yet. The Test workspace writes them after approval and after Phase 0 exists |
-| Code | None yet. **Phase 0 can start now**; it doesn't depend on approval |
+| Tests | **Phase 1a tests written and pushed** (see "Phase 1a tests ready" at the end). They fail until Phase 1a is built |
+| Code | Phase 0 built (engine, app shell, automation). **Next: Phase 1a**, against the tests |
 
 ## Read in this order
 1. `CLAUDE.md` (root), then `src/CLAUDE.md` and `src/engine/CLAUDE.md`
@@ -88,3 +88,39 @@ For the Test workspace:
 - Rhyme pack built: `content/tambola/rhymes.json` (format 1, 409 rhymes, fields `n`, `lang`, `style`,
   `familyFriendly`, `text`, plus `styleWeights`). Rebuilt from the catalog with `npm run build:rhymes`.
   TAM-150, TAM-156 and TAM-157 can be tested against this file.
+
+## Phase 1a tests ready (Test workspace, 28 September 2026)
+For the Build workspace. Every approved Phase 1a scenario now has tests; build until they pass.
+
+**Read first**
+1. `reports/latest.md`: what passes now, what fails, and requests.
+2. `tests/games/tambola/README.md`: the names and shapes the rule tests import from
+   `src/games/tambola/index.ts` (`tambolaRules`, `tambolaDefaults`, `suggestTiers`, `planPrizes`,
+   `pickRhyme`, `rules` on the registration), the moves, the views and the summary.
+3. `tests/browser/README.md`: the button words, field labels and `data-testid`s the browser tests look for.
+
+**Two owner decisions made while writing the tests** (both in `docs/decisions.md`)
+- **TAM-145: prizes are closed by hand, and the host ends the game.** After an accepted claim the tier stays
+  open ("Add another winner" / "Close Top Line"); Next number waits until it is closed; closing the last
+  Full House does not end the game; the host taps "End game and show payouts". TAM-075 changed to match.
+  `src/games/tambola/CLAUDE.md` still says the game ends at Full House: please update it.
+- **TAM-144: no prize won means contributions are handed back**, as with Discard.
+
+**Where things stand**
+| Layer | Command | Now |
+|---|---|---|
+| Rules, contract, property, simulation, replays | `npm test` | 112 pass (engine, rhyme pack); 131 wait for Tambola's rules |
+| Browser (Android and iPhone sizes) | `npm run build && npm run test:browser` | 5 pass (home, install, offline, fast first load); the rest wait for Phase 1a screens |
+
+The rule tests were checked against a throwaway Tambola written only for that purpose (never committed):
+all pass against it, so a failure means the app differs from the tests. Automation stops at the first failing
+layer, so the browser tests run there once the rule tests pass. The live link updates only when everything is green.
+
+**Suggested order:** rules module → setup screens → calling → claim check and closing tiers → end, discard,
+play again → saving, resume, history → usability. Build only Phase 1a.
+
+**Paste this into Claude Code in VS Code**
+> Pull, then read `docs/handover.md` ("Phase 1a tests ready"), `reports/latest.md`,
+> `tests/games/tambola/README.md` and `tests/browser/README.md`. Build Phase 1a in the suggested order,
+> starting with Tambola's rules module. Type-check and push after each step. If a test looks wrong, write it
+> in `docs/test-questions.md` instead of working around it. Explain each change to me in plain English.
