@@ -13,4 +13,4 @@ None.
   with test scripts pointing at configs in tests/.
 
 ## Notes for the owner (plain English)
-The testing workspace is ready. The first job is drafting the Tambola scenarios once the house rules are decided.
+65 Tambola scenarios are drafted in specs/tambola/ and waiting for approval. 10 of them (04-house-rules.md) need the owner to pick an option. No test code yet: it gets written from approved scenarios once Phase 0 has set up the test runner and the game contract.
