@@ -15,7 +15,7 @@ None.
   (docs/games/tambola/guide.md): a time on each move record, a "room" viewer, moves with details,
   and player-only state (marks) outside the host's game state.
 - Saved games need a format version from the first release (PLT-014), since Phase 1 reaches real families.
-- Rhymes: convert docs/games/tambola/rhymes.csv into a content pack in content/tambola/ once the owner marks the review done (docs/games/tambola/rhymes.md). Selection rules: specs/tambola/11-rhymes.md.
+- Rhymes: the catalog is approved. Convert docs/games/tambola/rhymes.csv (409 rhymes) into a content pack in content/tambola/. Selection rules, including Indian references being twice as likely (TAM-158): specs/tambola/11-rhymes.md.
 - Start with docs/handover.md.
 - Build Phase 1a first: scenarios marked "Phase: Phase 1a" (Tambola with paper tickets on one host phone, one game at a time done well). Phase 1b follows.
 - Every finished game with money must record, for each person, what they paid and won (PLT-021), so the Phase 1b tally needs no change to games.

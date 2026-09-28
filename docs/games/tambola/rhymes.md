@@ -1,26 +1,29 @@
 # Tambola rhyme catalog
 
-The rhymes are what make calling fun. The catalog is [rhymes.csv](rhymes.csv): **402 rhymes** for
-numbers 1 to 90. Draft, 28 September 2026; **needs a person's review before it ships**.
+The rhymes are what make calling fun. The catalog is [rhymes.csv](rhymes.csv): **409 rhymes** for
+numbers 1 to 90. **Approved by the owner, 28 September 2026.**
 
 ## What's in it
 | Style | Language | Rhymes | What it is |
 |---|---|---|---|
 | classic | English | 110 | Traditional calls from British bingo and Indian Housie ("Kelly's eye", "Legs eleven") |
-| indian | English | 56 | Indian-flavoured English calls ("Pack of cards", "Dil maange more", "Voting age") |
+| indian | English | 63 | Indian-flavoured English calls ("Pack of cards", "Dil maange more", "Voting age") |
 | playful | English | 69 | New rhymes written for this app ("Sixty, still nifty", "Two snowmen") |
 | cricket | English | 41 | India players' shirt numbers and cricket moments ("Thala Dhoni's seven", "1983, Kapil's Devils") |
 | bollywood | English | 10 | Film titles with the number in them ("3 Idiots", "Special 26") |
 | festival | English | 8 | Dates and history ("Independence Day, 15 August", "Republic Day, 26 January") |
 | hindi | Hindi (Roman script) | 108 | Hindi and Hinglish calls ("Teen tigaada, kaam bigaada", "Chhappan bhog", "Shagun ka lifaafa") |
 
-Every number has at least 3 English rhymes (at least 2 of them family-friendly) and at least 1 Hindi rhyme.
+Every number has at least 3 English rhymes (at least 2 of them family-friendly), at least 1 Hindi rhyme,
+and at least 1 family-friendly English rhyme with an Indian reference.
 Every rhyme is 40 characters or fewer, so it fits under the number and reads aloud in a breath.
 
 ## How the app uses it
 - On each call, one rhyme for that number is picked **at random** from those the host's settings
   allow: language (English, Hindi or both) and the family-friendly filter (on by default).
 - The pick comes from the game's seed, so a replayed game shows the same rhymes.
+- **Indian references come first.** Rhymes in the indian, cricket, bollywood, festival and hindi styles
+  are twice as likely to be picked as classic or playful ones (owner, 28 September 2026).
 - The anchor can tap **Another rhyme** for a different one for the same number.
 - Scenarios: `specs/tambola/11-rhymes.md` (TAM-150 to TAM-157).
 
@@ -36,7 +39,7 @@ Every rhyme is 40 characters or fewer, so it fits under the number and reads alo
   every number also has rhymes that land with Indian players.
 - **1857** is called "the first freedom war", not "Mutiny year".
 
-## Review checklist (for the person reviewing)
+## Review checklist (done; keep for future updates)
 1. **34 cricket rhymes are marked "verify"**: shirt numbers come from two cricket sites checked on
    28 September 2026 (myKhel, CricHeroes). Numbers change and players retire, so check before release.
 2. **Hindi spellings** are Roman script, as people type on phones. Check they read naturally aloud;

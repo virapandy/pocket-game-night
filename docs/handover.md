@@ -9,7 +9,7 @@
 | Tambola rules, journeys, UX guidelines, lifecycle | Written and cross-checked (`docs/games/tambola/`, `docs/ux-guidelines.md`) |
 | Owner decisions | All made (`docs/decisions.md`) |
 | Scenarios | 126 Tambola + 21 platform, drafted and cross-checked; **Phase 1a approved** (97 scenarios); 1b and 2 still drafts |
-| Rhyme catalog | `docs/games/tambola/rhymes.md` and `rhymes.csv` (402 rhymes, English and Hindi, 4–6 per number); **needs a human review before shipping** |
+| Rhyme catalog | `docs/games/tambola/rhymes.md` and `rhymes.csv` (409 rhymes, English and Hindi, 4–6 per number); **approved by the owner** |
 | Tests | None yet. The Test workspace writes them after approval and after Phase 0 exists |
 | Code | None yet. **Phase 0 can start now**; it doesn't depend on approval |
 
@@ -45,7 +45,7 @@
    - saved games carry a **format version** from the first release (PLT-014)
    - every finished game with money records what each person paid and won (PLT-021)
 4. **Rhyme content pack.** Convert `docs/games/tambola/rhymes.csv` into `content/tambola/`
-   once the owner's reviewer has marked it approved. Selection rules are below.
+   now (approved). Selection rules are below.
 
 Then wait for tests: the Test workspace pushes them after the owner approves Phase 1a, and you build
 against them (`reports/latest.md` says what's failing).
@@ -53,7 +53,8 @@ against them (`reports/latest.md` says what's failing).
 ## Rhymes: how they are chosen
 - Each number has several rhymes, in English and Hindi, with style tags (classic, Indian, Bollywood,
   cricket, festival, playful).
-- On each call, one rhyme is picked **at random from the ones allowed by the host's settings**
+- On each call, one rhyme is picked **at random from the ones allowed by the host's settings**,
+  with Indian-reference styles twice as likely as classic or playful ones (TAM-158)
   (language: English, Hindi or both; family-friendly filter on by default).
 - The pick comes from the game's seeded random generator, never `Math.random()`, so a replay shows
   the same rhymes (TAM-073).

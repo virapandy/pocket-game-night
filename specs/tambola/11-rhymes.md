@@ -58,3 +58,12 @@ Phase: Phase 1a
 Then every entry has a number from 1 to 90, a language, a style, a family-friendly flag and text
 And no number has the same rhyme twice
 And the pack carries a format version, so later packs (more languages, community packs) load the same way
+
+## TAM-158: Indian references come first
+Status: decided 2026-09-28 (owner)
+Phase: Phase 1a
+Given a number has allowed rhymes with Indian references (styles indian, cricket, bollywood, festival, hindi)
+and allowed rhymes without (classic, playful)
+Then each Indian-reference rhyme is twice as likely to be picked as each other rhyme
+And over many games, Indian-reference rhymes come up about twice as often per rhyme, within normal random variation
+And every number has at least one family-friendly English rhyme with an Indian reference
