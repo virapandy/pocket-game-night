@@ -52,12 +52,18 @@ tickets, or if the tier amounts don't add up to the pot (tickets × contribution
 | `{ type: 'call' }` | Draw the next number. Refused with a reason containing "All 90 numbers called" after 90 |
 | `{ type: 'another-rhyme' }` | Show a different allowed rhyme for the current number (TAM-155) |
 | `{ type: 'claim', playerId, pattern, numbers }` | Check a paper-ticket claim from the numbers read out (a *detail move*) |
+| `{ type: 'close-tier', pattern }` | Close a won tier: no more winners for it (TAM-145). For a tier nobody won, accepted and changes nothing |
 | `{ type: 'rename', playerId, name }` | Rename a player during the game; a duplicate name is refused (PLT-024) |
 | `{ type: 'end' }` | End the game now (TAM-066) |
 | `{ type: 'discard' }` | Discard the game: void, contributions handed back (TAM-140) |
 
-`legalMoves(state, HOST)` lists `call` (while fewer than 90 are called), `end` and `discard` until the
-game is over. `detailMoves` includes `'claim'` and `'rename'`.
+`legalMoves(state, HOST)`, until the game is over:
+- while a won tier is waiting to be closed: one `close-tier` per such tier, `end`, `discard` (no `call`: the next
+  number waits, TAM-145);
+- once the last Full House tier is closed: only `end` and `discard` (no more calls, TAM-075);
+- otherwise: `call` (while fewer than 90 are called), `end`, `discard`.
+After the game is over: nothing. `detailMoves` includes `'claim'` and `'rename'`.
+`call` is refused (`ok: false`) while a won tier waits to be closed, and after the last Full House tier is closed.
 
 `apply` returns `ok: false` (nothing changes) for: a pattern not in this game (TAM-031); a pattern
 already won on an earlier number, with a reason containing "already won" (TAM-030); the wrong count of
@@ -68,8 +74,10 @@ A bogey is **not** `ok: false`: it is `ok: true` with the verdict in the state.
 1. Every number read out must have been called (TAM-037, TAM-035: marks never matter).
 2. The most recently called of them must be the latest call; otherwise it is **late**: a bogey with
    `reason: 'late'` and `completedAt` = the number that completed it (TAM-038, TAM-043).
-3. A pattern already won stays claimable, and the prize is shared, only until the next number is
-   called (TAM-041, TAM-042).
+3. A won pattern stays claimable, and the prize is shared, until the host closes it with `close-tier`
+   (TAM-145, TAM-041, TAM-042). Since the next number waits for that, extra winners are always on the same
+   number. After closing, a claim for it is refused with "already won" (TAM-030).
+   `second-full-house` can be claimed only after `full-house` is closed.
 4. A bogey is recorded against the player (TAM-044). With paper tickets the app does not block that
    player's later claims (the room keeps the ticket out; they may hold another).
 
@@ -79,8 +87,7 @@ A bogey is **not** `ok: false`: it is `ok: true` with the verdict in the state.
 - `end` and `discard`: never.
 
 ### Game over
-When the last Full House tier in play is accepted (`full-house`, or `second-full-house` if that tier
-is in play), or after `end` or `discard` (TAM-075, TAM-046).
+Only after `end` or `discard`. Accepting or closing a Full House never ends the game by itself (TAM-075, TAM-145).
 
 ## View (`view(state, viewer)`)
 ```ts
@@ -91,7 +98,9 @@ TambolaView = {
   current: { number: number; rhyme: Rhyme | null } | null,
   lastCalls: number[],              // most recent first, current included: host 5 (TAM-016), room 3 (TAM-107)
   allCalled: boolean,               // TAM-076
-  openPatterns: Pattern[],          // tiers in play that can still be claimed (TAM-031)
+  openPatterns: Pattern[],          // tiers in play not yet closed: still claimable (TAM-031, TAM-145)
+  awaitingClose: Pattern[],         // won, not yet closed: the host may add winners or close (TAM-145)
+  readyToEnd: boolean,              // the last Full House tier is closed: only End or Discard now (TAM-075)
   claims: ClaimView[],              // host: every claim in order; room: at least the latest
   over: boolean,
   summary: TambolaSummary | null,   // once over

@@ -25,7 +25,7 @@ describe('TAM-072: undo after later moves keeps those later moves', () => {
     const g = new Game().call(10);
     g.claim('p1', 'top-line', g.onTimeNumbers('top-line'));
     const claimRec = g.lastRecordOf('claim');
-    g.call(3);
+    g.close('top-line').call(3);
     const called = g.called;
     expect(g.undo(claimRec.seq, g.clock + 1).ok).toBe(true);
     expect(g.called).toEqual(called);
@@ -48,8 +48,9 @@ describe('TAM-073: any game can be replayed exactly', () => {
     g.do({ type: 'another-rhyme' });
     g.claim('p1', 'early-five', g.onTimeNumbers('early-five'));
     g.claim('p2', 'top-line', [...g.called.slice(-4), uncalled(g)[0]!]);
-    g.call(30);
+    g.close('early-five').call(30);
     g.claim('p3', 'full-house', g.onTimeNumbers('full-house'));
+    g.finish();
     const again = g.replayed();
     expect(again.state).toEqual(g.match.state);
     expect(rules.view(again.state, { kind: 'host' })).toEqual(g.host);
@@ -65,12 +66,18 @@ describe('TAM-073: any game can be replayed exactly', () => {
   });
 });
 
-describe('TAM-075 and TAM-046: the game ends when the last Full House tier in play is won', () => {
-  it('ends at Full House, and the summary shows every pattern and who won it', () => {
+describe('TAM-075 and TAM-046: the host ends the game after closing the last Full House tier', () => {
+  it('Full House is closed by hand, then the host ends the game; the summary shows every pattern and who won it', () => {
     const g = new Game().call(8);
     g.claim('p1', 'early-five', g.onTimeNumbers('early-five'));
-    g.call(20);
+    g.close('early-five').call(20);
     g.claim('p3', 'full-house', g.onTimeNumbers('full-house'));
+    expect(g.over).toBe(false);
+    g.close('full-house');
+    expect(g.over).toBe(false);
+    expect(g.host.readyToEnd).toBe(true);
+    expect(g.try({ type: 'call' }).ok).toBe(false);
+    g.do({ type: 'end' });
     expect(g.over).toBe(true);
     expect(g.host.over).toBe(true);
     const tiers = g.summary.tiers;
@@ -80,7 +87,7 @@ describe('TAM-075 and TAM-046: the game ends when the last Full House tier in pl
     expect(g.try({ type: 'call' }).ok).toBe(false);
   });
 
-  it('with a Second Full House tier, the first Full House does not end the game; the second does', () => {
+  it('with a Second Full House tier, calling goes on after Full House is closed, until Second Full House is closed', () => {
     const tiers = [
       { pattern: 'early-five' as Pattern, amount: 40 },
       { pattern: 'full-house' as Pattern, amount: 160 },
@@ -88,9 +95,14 @@ describe('TAM-075 and TAM-046: the game ends when the last Full House tier in pl
     ];
     const g = new Game({ tiers }).call(30);
     g.claim('p1', 'full-house', g.onTimeNumbers('full-house'));
-    expect(g.over).toBe(false);
+    expect(g.claim('p2', 'second-full-house', g.onTimeNumbers('second-full-house')).ok).toBe(false); // Full House first
+    g.close('full-house');
+    expect(g.host.readyToEnd).toBe(false);
     g.call(5);
     g.claim('p2', 'second-full-house', g.onTimeNumbers('second-full-house'));
+    g.close('second-full-house');
+    expect(g.host.readyToEnd).toBe(true);
+    g.do({ type: 'end' });
     expect(g.over).toBe(true);
   });
 });
@@ -115,14 +127,15 @@ describe('TAM-078 and TAM-089: the end-of-game summary is correct and balances',
     ] }).call(6);
     g.claim('p2', 'early-five', g.onTimeNumbers('early-five'));
     g.claim('p4', 'top-line', [...g.called.slice(-4), uncalled(g)[0]!]);
-    g.call(10);
+    g.closeAll().call(10);
     g.claim('p1', 'top-line', g.onTimeNumbers('top-line'));
-    g.call(4);
+    g.closeAll().call(4);
     g.claim('p3', 'middle-line', g.onTimeNumbers('middle-line'));
-    g.call(3);
+    g.closeAll().call(3);
     g.claim('p1', 'bottom-line', g.onTimeNumbers('bottom-line'));
-    g.call(20);
+    g.closeAll().call(20);
     g.claim('p3', 'full-house', g.onTimeNumbers('full-house'));
+    g.finish();
 
     const s = g.summary;
     expect(s.result).toBe('ended');
@@ -157,9 +170,9 @@ describe('TAM-066 and TAM-088: ending early pays the winners so far and spreads 
     ];
     const g = new Game({ tiers }).call(8);
     g.claim('p1', 'early-five', g.onTimeNumbers('early-five'));
-    g.call(5);
+    g.closeAll().call(5);
     g.claim('p2', 'top-line', g.onTimeNumbers('top-line'));
-    g.call(5);
+    g.closeAll().call(5);
     g.do({ type: 'end' });
 
     const s = g.summary;
@@ -200,8 +213,9 @@ describe('TAM-090: a game with no money', () => {
     const g = new Game({ contribution: null, tiers }).call(10);
     g.claim('p1', 'top-line', g.onTimeNumbers('top-line'));
     expect(g.lastClaim.verdict).toBe('accepted');
-    g.call(20);
+    g.closeAll().call(20);
     g.claim('p2', 'full-house', g.onTimeNumbers('full-house'));
+    g.finish();
     const s = g.summary;
     expect(s.money).toBeNull();
     expect(s.pot).toBeNull();
@@ -227,6 +241,7 @@ describe('TAM-143 and PLT-021: what a finished game keeps', () => {
   it('a saved game with its money record reads back in the current format', () => {
     const g = new Game().call(40);
     g.claim('p1', 'full-house', g.onTimeNumbers('full-house'));
+    g.finish();
     const saved = {
       format: SAVED_GAME_FORMAT, gameType: 'tambola', id: 'g1', createdAt: 1, updatedAt: 2,
       status: 'ended', setup: g.match.setup, records: g.records, money: g.summary.money,

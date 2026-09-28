@@ -60,3 +60,18 @@ test('TAM-070: the host can undo a wrongly accepted claim, after confirming', as
   await page.getByRole('button', { name: 'Riya', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Early Five', exact: true })).toBeVisible();
 });
+
+test('TAM-145: after an accepted claim the host can add another winner or close the tier; the next number waits', async ({ page }) => {
+  const calls = await callMany(page, 6);
+  await checkClaim(page, 'Riya', 'Top Line', calls.slice(-5));
+  await expect(page.getByRole('button', { name: 'Add another winner' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Close Top Line' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Next number' })).toBeDisabled();
+  await page.getByRole('button', { name: 'Add another winner' }).click();
+  await page.getByRole('button', { name: 'Asha', exact: true }).click();
+  await page.getByLabel('Numbers read out').fill(calls.slice(-5).join(' '));
+  await page.getByRole('button', { name: 'Check', exact: true }).click();
+  await expect(page.getByTestId('claim-result').getByText(/Shared/)).toBeVisible();
+  await page.getByRole('button', { name: 'Close Top Line' }).click();
+  await expect(page.getByRole('button', { name: 'Next number' })).toBeEnabled();
+});

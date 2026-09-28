@@ -14,6 +14,7 @@ The shared steps live in `helpers.ts`.
 | Setup | `Paper tickets`, `Phone tickets…` (may be disabled until Phase 2), `Next`, `No money`, one-tap name suggestions named after the name, `Confirm prizes` |
 | Game | `Next number`, `Repeat`, `Another rhyme`, `Undo last call` (only within 5 s), `Show the room`, `Check a claim`, `Board` (only if the board isn't always shown), `Settings`, `End game`, `Discard game` |
 | Check a claim | one button per player name, one per pattern in play (`Early Five`, `Top Line`, `Middle Line`, `Bottom Line`, `Four Corners`, `Full House`, `Second Full House`), `Check`, `Cancel` or `Back`, then `Undo…` on the result |
+| After an accepted claim (TAM-145) | `Add another winner` (goes straight to picking the player; the pattern is kept), `Close Top Line` ("Close <Pattern>"); `Next number` is disabled until the tier is closed. After the last Full House is closed: `End game and show payouts` |
 | Dialogs (`role="dialog"`) | End: text "End the game and show payouts?", `End game`, `Keep playing`. Discard: `Discard…`, and "N prize(s) was/were already won" when true. Undo claim: `Undo…` |
 | After the game | `Play again` |
 | Resume | `Tap to resume`, or after 12 hours `Resume`, `End it…`, `Discard it…` |
@@ -34,7 +35,7 @@ The shared steps live in `helpers.ts`.
 | `board` | The 1–90 board; each cell has `data-number`, called ones `data-called="true"` |
 | `room-view` | "Show the room"; contains its own `current-number`, `current-rhyme`, `last-calls`; a tap anywhere returns |
 | `tier-amount` | Each tier's amount on the prizes step |
-| `claim-result` | The verdict: "✓ Accepted" or "✗ Bogey", "Accepted: ₹60 to Riya", "Top Line was complete at 45"; each read-out number shown as "23 ✓" or "91 ✗" with `data-called="true"/"false"` |
+| `claim-result` | The verdict: "✓ Accepted" or "✗ Bogey", "Accepted: ₹60 to Riya", "Top Line was complete at 45", "Shared" for a tie; each read-out number shown as "23 ✓" or "91 ✗" with `data-called="true"/"false"` |
 | `payout-summary` | The end-of-game summary |
 | `unfinished-games` | Home list of unfinished games: "Tambola, 8:40 pm, 23 numbers called" ("1 number called") |
 | `history-game` | One row per past game |

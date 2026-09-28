@@ -37,12 +37,16 @@ When the host ends the game (TAM-066)
 Then nobody is paid a prize, and the summary shows each player's contribution to hand back, as with Discard (TAM-140)
 (Otherwise "total paid out equals the pot" (TAM-089) cannot hold. The tests assume this until the owner decides.)
 
-## TAM-145: Two players complete Full House on the same number
-Status: draft (found while writing Phase 1a tests; needs the owner's decision)
+## TAM-145: Closing a prize tier is a manual step, and so is ending the game
+Status: approved, owner, 2026-09-28 (owner: the win and the end of the game are manual; the host can add another winner, for every tier)
 Phase: Phase 1a
-Given ties on the same number share the prize (TAM-041)
-And the game ends when the last Full House tier is accepted (TAM-075)
-Then a second Full House on that same number cannot be entered, because the game has already ended
-Options:
-- A. Keep it simple: the first Full House entered ends the game (the tests assume this today)
-- B. After a Full House is accepted, the host sees "Any more Full Houses on this number?" and can check more before the game ends (matches the tie rule)
+Given Top Line has just been accepted for Riya
+Then Top Line stays open, and the host sees "Add another winner" and "Close Top Line"
+And "Next number" waits until the host closes Top Line
+When the host checks Asha's Top Line claim before closing, and it completed on the same number
+Then it is accepted and the prize is shared (TAM-041, TAM-087)
+When the host taps "Close Top Line"
+Then Top Line is closed: a later Top Line claim is refused with "Top Line already won" (TAM-030), and "Next number" works again
+And the same holds for every tier, Full House included: the last Full House is closed by hand, then the host ends the game (TAM-075)
+(A claim that completed on an earlier number is still late, TAM-043. Closing a tier nobody won does nothing,
+so undoing a wrong claim still reopens its tier, TAM-070.)

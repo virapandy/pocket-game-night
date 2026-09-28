@@ -89,7 +89,8 @@ The app suggests tiers from the number of tickets in play, so small groups get f
 | Late claim | Checks a claim made after the next number | "Bogey: too late. Top Line was complete at 45" (paper tickets: judged from the numbers read out, since the last of them must be the latest call) |
 | Tie | Two players claim the same pattern on the same number | "Shared: ₹30 each" (split to the rupee, adding up exactly) |
 | Mistake | Taps **Undo** on a wrongly accepted claim | The claim and its payout removed; the pattern open again |
-| End | Full House accepted, or taps **End game** | **Payout summary** (below) |
+| Close a tier | After an accepted claim: **Add another winner** (a tie on the same number) or **Close Top Line**; the next number waits until the tier is closed | "Top Line: Riya ₹60 · closed" |
+| End | After closing the last Full House, taps **End game and show payouts**; or taps **End game** early | **Payout summary** (below) |
 | Again | Taps **Play again** | Same players, contribution and split; new tickets and a new draw; the anchor confirms again |
 
 ### Payout summary at the end

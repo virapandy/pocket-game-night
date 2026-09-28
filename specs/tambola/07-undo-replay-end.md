@@ -34,11 +34,14 @@ Phase: Phase 1a
 Whenever any test or simulation finds a problem
 Then that game's seeds and moves are saved as a permanent test
 
-## TAM-075: The game ends at Full House
-Status: approved, owner, 2026-09-28
+## TAM-075: The host ends the game after the last Full House
+Status: approved, owner, 2026-09-28 (changed by the owner the same day: ending is a manual step, TAM-145)
 Phase: Phase 1a
-When the last allowed Full House is accepted
+Given the last Full House tier in play has been won and the host has closed it
+Then no more numbers can be called, and the host sees "End game and show payouts"
+When the host taps it
 Then the game ends and the summary shows every pattern and who won it
+(Accepting a Full House never ends the game by itself.)
 
 ## TAM-076: When all 90 are called, every ticket is complete
 Status: approved, owner, 2026-09-28

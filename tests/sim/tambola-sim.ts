@@ -84,6 +84,13 @@ export function simulate(seed: string): SimResult {
   const host = () => rules.view(m.state, { kind: 'host' });
 
   for (let guard = 0; guard < 1000 && !rules.isOver(m.state); guard++) {
+    // TAM-145: after everyone who shouted has been checked, the host closes the won tiers by hand.
+    for (const p of host().awaitingClose as Pattern[]) move({ type: 'close-tier', pattern: p });
+    // TAM-075: once the last Full House is closed, the host ends the game.
+    if (host().readyToEnd) {
+      move({ type: 'end' });
+      break;
+    }
     if (host().allCalled) {
       // Everything is out: prompt players still claim Full House if it completed on the last call.
       move({ type: 'end' });

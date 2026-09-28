@@ -36,6 +36,7 @@
 | 2026-09-28 | Phone tickets are assigned to named players at hand-out; the host phone keeps who holds which ticket; claims credit the owner automatically (TAM-172 to TAM-176). | Owner direction, Claude design |
 | 2026-09-28 | Games two to four, in order: Impostor, Dumb Charades, Scoreboard / Rummy scorekeeper. | Claude, on owner's instruction |
 | 2026-09-28 | Hosting: GitHub Pages instead of Cloudflare Pages (no extra account). One live link, https://virapandy.github.io/pocket-game-night/, updated on every push to main, and only when every check and test is green. | Owner |
+| 2026-09-28 | Winning is manual: after an accepted claim the host can add more winners, then closes the tier by hand; the next number waits until it is closed. The game ends only when the host ends it, including after the last Full House (TAM-145, TAM-075). | Owner |
 
 "Convention" means the established Tambola rule in `docs/games/tambola/guide.md`, chosen because the owner asked
 Claude to follow game conventions. Every Tambola rule above is also a host setting with this default.

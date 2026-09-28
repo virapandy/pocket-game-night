@@ -37,6 +37,8 @@ Options:
 - A. Both completed their pattern on the same called number, and both claimed before the next number (**norm**)
 - B. Only if the host entered them within a few seconds of each other
 Scenario once chosen: the rule in TAM-041 applies only to claims that match this definition.
+Because the next number waits until the host closes a won tier (TAM-145), "before the next number"
+means "before the host closes the tier".
 
 ## TAM-043: Late claims
 Status: approved, owner, 2026-09-28 (decided by convention, as the owner asked: B, a late claim is a bogey)
@@ -74,7 +76,7 @@ When the host hands out tickets
 Then no player gets more than the allowed number
 
 ## TAM-046: Second and third Full House
-Status: approved, owner, 2026-09-28 (decided: the game ends when the last Full House tier in play is won (one Full House, or two with Second Full House from TAM-081))
+Status: approved, owner, 2026-09-28 (decided: one Full House, or two with Second Full House from TAM-081; the host closes the last one and then ends the game, TAM-075 and TAM-145)
 Phase: Phase 1a
 Options:
 - A. The game ends at the first Full House (**norm**)

@@ -79,7 +79,7 @@ Then the claim is rejected as a bogey
 ## TAM-030: A pattern already won cannot be won again
 Status: approved, owner, 2026-09-28
 Phase: Phase 1a
-Given Top Line was won by ticket 7 on an earlier number
+Given Top Line was won by ticket 7 and the host closed Top Line (TAM-145)
 When the host checks ticket 9 for Top Line, and ticket 9's top line is complete
 Then the claim is refused with "Top Line already won"
 And it is not counted as a bogey

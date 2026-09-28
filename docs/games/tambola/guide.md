@@ -117,10 +117,10 @@ How Tambola answers the seven contract questions in `src/engine/CLAUDE.md`. Chec
 | Question | Tambola's answer |
 |---|---|
 | Setup | Ticket mode, players (names optional), tickets per player, contribution, prize tiers confirmed by the anchor, house-rule settings, a host-only draw seed; with phone tickets, a host-only sheet seed for the sheets of 6 |
-| Legal moves | Host: call next number, undo last call (within 5 s), check a claim (player or ticket, pattern, and with paper tickets the numbers read out), undo a claim, add a late joiner (until 10 calls), end the game. Setup moves: edit, remove or add back a tier; confirm prizes. |
+| Legal moves | Host: call next number, undo last call (within 5 s), check a claim (player or ticket, pattern, and with paper tickets the numbers read out), close a won tier (TAM-145), undo a claim, add a late joiner (until 10 calls), end the game. Setup moves: edit, remove or add back a tier; confirm prizes. |
 | Apply | A call adds the next number from the draw; a claim is accepted, shared, refused as already won, or a bogey (late claims too); prizes are credited; a bogeyed ticket is out |
 | View | Host: everything. Room: the called number, the last 3 calls, verdicts. Player (phone tickets): own ticket and called numbers only |
-| Game over | The last Full House tier in play is won, or the host ends the game |
+| Game over | Only when the host ends it: after closing the last Full House tier, or early. Each tier is closed by hand (TAM-145), so tied winners can be added first |
 | Invariants | No number twice; at most 90 calls; valid tickets; claims judged only on numbers called at the time; tiers and payouts always add up to the pot; no view leaks another ticket or an upcoming number |
 | Undo | Claims: any time. Calls: only within 5 seconds. Game end: never (it has a confirmation instead) |
 

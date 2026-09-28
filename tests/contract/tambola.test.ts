@@ -18,6 +18,17 @@ contractSuite('Tambola', {
   chooseMove(match, rng: Rng) {
     const host = rules.view(match.state, { kind: 'host' });
     const called: number[] = host.called;
+    const legal = rules.legalMoves(match.state, 'host');
+    // TAM-145: a won tier waits to be closed; sometimes try another winner first. TAM-075: then the host ends.
+    const closes = legal.filter((m: any) => m.type === 'close-tier');
+    if (closes.length) {
+      const pattern = closes[0].pattern as Pattern;
+      if (rng.int(4) === 0 && called.length >= NEEDS[pattern]) {
+        return { type: 'claim', playerId: `p${1 + rng.int(6)}`, pattern, numbers: called.slice(-NEEDS[pattern]) };
+      }
+      return closes[rng.int(closes.length)];
+    }
+    if (host.readyToEnd) return { type: 'end' };
     if (called.length === 90) {
       // TAM-076: everything is out. Check one more claim sometimes, then end.
       return rng.int(2) === 0 && host.openPatterns.includes('full-house')
@@ -53,6 +64,7 @@ contractSuite('Tambola', {
     { type: 'claim', playerId: 'p1', pattern: 'early-five', numbers: [0, 91, 3, 4, 5] },
     { type: 'rename', playerId: 'p1', name: 'Asha' },
     { type: 'edit-tier', pattern: 'top-line', amount: 1 },
+    { type: 'close-tier', pattern: 'lucky-seven' },
   ],
   maxMoves: 400,
 });

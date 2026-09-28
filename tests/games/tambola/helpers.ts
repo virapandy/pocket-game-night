@@ -133,6 +133,19 @@ export class Game {
     while (!this.called.includes(n)) this.call();
     return this;
   }
+  /** Closes a won tier (TAM-145). */
+  close(pattern: Pattern): this {
+    return this.do({ type: 'close-tier', pattern });
+  }
+  /** Closes every tier waiting to be closed. */
+  closeAll(): this {
+    for (const p of this.host.awaitingClose as Pattern[]) this.close(p);
+    return this;
+  }
+  /** Closes what is open, then ends the game (TAM-075). */
+  finish(): this {
+    return this.closeAll().do({ type: 'end' });
+  }
   claim(playerId: string, pattern: Pattern, numbers: number[]) {
     return this.try({ type: 'claim', playerId, pattern, numbers });
   }

@@ -15,7 +15,7 @@ tests once the owner approves it. All are **draft** until approved.
 | [06-room-and-host.md](06-room-and-host.md) | Fun-friction defaults, host controls, late joiners, play again | TAM-060 – TAM-069, TAM-130, TAM-137, TAM-180 |
 | [07-undo-replay-end.md](07-undo-replay-end.md) | Undo, replay, and how the game ends | TAM-070 – TAM-078 |
 | [08-prizes.md](08-prizes.md) | Contribution, pot, suggested split, payouts; no money moved | TAM-080 – TAM-091 |
-| [10-lifecycle.md](10-lifecycle.md) | Ending vs discarding with money, game-level winnings, what a game keeps; two open questions | TAM-140 – TAM-145 |
+| [10-lifecycle.md](10-lifecycle.md) | Ending vs discarding with money, game-level winnings, what a game keeps; no prize won; closing tiers and ending by hand | TAM-140 – TAM-145 |
 | [11-rhymes.md](11-rhymes.md) | Rhymes: several per number, picked at random, language and family-friendly settings | TAM-150 – TAM-158 |
 | [12-connected.md](12-connected.md) | Connected mode: calls, claims and verdicts over the network; faults; fallback | TAM-200 – TAM-210 |
 | [09-usability.md](09-usability.md) | Mis-touches, legibility, offline, interruptions (from docs/ux-guidelines.md) | TAM-100 – TAM-122, TAM-134 – TAM-136 |

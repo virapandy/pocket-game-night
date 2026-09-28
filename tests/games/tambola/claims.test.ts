@@ -1,7 +1,8 @@
 // Checking paper-ticket claims: specs/tambola/03-claims.md, 04-house-rules.md, 08-prizes.md (TAM-086, TAM-087).
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
-import { Game, NEEDS, uncalled, type Pattern } from './helpers';
+import { HOST } from '../../../src/engine';
+import { Game, NEEDS, rules, uncalled, type Pattern } from './helpers';
 
 const THREE = [
   { id: 'a', name: 'Asha' },
@@ -113,10 +114,10 @@ describe('TAM-038 and TAM-043: a late claim is a bogey that shows when the patte
 });
 
 describe('TAM-030: a pattern already won cannot be won again', () => {
-  it('after the next number, a second Top Line is refused with "already won" and is not a bogey', () => {
+  it('once Top Line is closed, a second Top Line is refused with "already won" and is not a bogey', () => {
     const g = new Game().call(10);
     g.claim('p1', 'top-line', g.onTimeNumbers('top-line'));
-    g.call();
+    g.close('top-line').call();
     const r = g.claim('p2', 'top-line', g.onTimeNumbers('top-line'));
     expect(r.ok).toBe(false);
     expect(r.reason?.toLowerCase()).toContain('already won');
@@ -191,12 +192,14 @@ describe('TAM-041 and TAM-042: ties on the same number share the prize', () => {
     expect(byPlayer).toEqual({ a: 17, b: 17, c: 16 });
   });
 
-  it('a second claim after the next number is not a tie: refused as already won', () => {
+  it('a second claim after the host closed the tier is not a tie: refused as already won', () => {
     const g = new Game({ players: THREE, tiers }).call(10);
     g.claim('a', 'top-line', g.onTimeNumbers('top-line'));
     const nums = g.onTimeNumbers('top-line');
-    g.call();
+    g.close('top-line');
     expect(g.claim('b', 'top-line', nums).ok).toBe(false);
+    g.call();
+    expect(g.claim('b', 'top-line', g.onTimeNumbers('top-line')).ok).toBe(false);
   });
 });
 
@@ -268,5 +271,79 @@ describe('TAM-034: for every call history and every read-out, the check is right
       ),
       { numRuns: 2_000 },
     );
+  });
+});
+
+describe('TAM-145: closing a tier is a manual step', () => {
+  const tiers = [
+    { pattern: 'early-five' as Pattern, amount: 20 },
+    { pattern: 'top-line' as Pattern, amount: 50 },
+    { pattern: 'full-house' as Pattern, amount: 80 },
+  ];
+
+  it('an accepted claim leaves the tier open and waiting; the next number waits until it is closed', () => {
+    const g = new Game({ players: THREE, tiers }).call(10);
+    g.claim('a', 'top-line', g.onTimeNumbers('top-line'));
+    expect(g.host.openPatterns).toContain('top-line');
+    expect(g.host.awaitingClose).toEqual(['top-line']);
+    expect(g.try({ type: 'call' }).ok).toBe(false);
+    const legal = rules.legalMoves(g.match.state, HOST);
+    expect(legal).toContainEqual({ type: 'close-tier', pattern: 'top-line' });
+    expect(legal).not.toContainEqual({ type: 'call' });
+    g.close('top-line');
+    expect(g.host.awaitingClose).toEqual([]);
+    expect(g.host.openPatterns).not.toContain('top-line');
+    expect(g.try({ type: 'call' }).ok).toBe(true);
+  });
+
+  it('the host can add another winner before closing; the prize is shared', () => {
+    const g = new Game({ players: THREE, tiers }).call(10);
+    g.claim('a', 'top-line', g.onTimeNumbers('top-line'));
+    expect(g.claim('b', 'top-line', g.onTimeNumbers('top-line')).ok).toBe(true);
+    expect(g.host.claims.map((c: any) => c.prize)).toEqual([25, 25]);
+    g.close('top-line');
+    expect(g.claim('c', 'top-line', g.onTimeNumbers('top-line')).ok).toBe(false);
+  });
+
+  it('a late claim is still a bogey while the tier is open', () => {
+    const g = new Game({ players: THREE, tiers }).call(10);
+    const early = g.called.slice(4, 9); // completed on an earlier number
+    g.claim('a', 'top-line', g.onTimeNumbers('top-line'));
+    g.claim('b', 'top-line', early);
+    expect(g.lastClaim).toMatchObject({ verdict: 'bogey', reason: 'late' });
+  });
+
+  it('works the same for Full House: accepting it never ends the game; the host adds winners, closes, then ends', () => {
+    const g = new Game({ players: THREE, tiers }).call(30);
+    g.claim('a', 'full-house', g.onTimeNumbers('full-house'));
+    expect(g.over).toBe(false);
+    expect(g.claim('c', 'full-house', g.onTimeNumbers('full-house')).ok).toBe(true);
+    g.close('full-house');
+    expect(g.over).toBe(false);
+    expect(g.host.readyToEnd).toBe(true);
+    expect(g.try({ type: 'call' }).ok).toBe(false);
+    expect(rules.legalMoves(g.match.state, HOST).map((m: any) => m.type).sort()).toEqual(['discard', 'end']);
+    g.do({ type: 'end' });
+    expect(g.over).toBe(true);
+    const fh = g.summary.tiers.find((t: any) => t.pattern === 'full-house');
+    expect(fh.winners.map((w: any) => w.playerId).sort()).toEqual(['a', 'c']);
+  });
+
+  it('closing a tier nobody won changes nothing', () => {
+    const g = new Game({ players: THREE, tiers }).call(5);
+    const before = g.host;
+    expect(g.try({ type: 'close-tier', pattern: 'top-line' }).ok).toBe(true);
+    expect(g.host).toEqual(before);
+  });
+
+  it('TAM-070: undoing a wrong claim after its tier was closed reopens the tier; later calls stay', () => {
+    const g = new Game({ players: THREE, tiers }).call(10);
+    g.claim('a', 'top-line', g.onTimeNumbers('top-line'));
+    const rec = g.lastRecordOf('claim');
+    g.close('top-line').call(3);
+    const called = g.called;
+    expect(g.undo(rec.seq, g.clock + 1).ok).toBe(true);
+    expect(g.host.openPatterns).toContain('top-line');
+    expect(g.called).toEqual(called);
   });
 });

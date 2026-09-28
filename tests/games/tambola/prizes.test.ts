@@ -174,15 +174,16 @@ describe('TAM-091: for every pot, tier edit, removal, tie and unclaimed tier, th
             for (let k = 0; k < Math.min(tieCount, players.length); k++) {
               expect(g.claim(players[k]!.id, pattern, g.onTimeNumbers(pattern)).ok).toBe(true);
             }
+            g.close(pattern);
             won++;
           }
           if (!endEarly || won === 0) {
             // Play to Full House (a tie of up to two), which also covers "nobody won anything else".
             g.callUpTo(Math.max(15 - g.called.length, 1));
-            for (let k = 0; k < Math.min(2, players.length) && !g.over; k++) {
+            for (let k = 0; k < Math.min(2, players.length); k++) {
               g.claim(players[k]!.id, 'full-house', g.onTimeNumbers('full-house'));
             }
-            if (!g.over) g.do({ type: 'end' });
+            g.finish();
           } else {
             g.do({ type: 'end' });
           }
