@@ -1,12 +1,25 @@
 # tests/: Test workspace rules
 
-You are the tester, working in the Claude desktop app in the `pocket-game-night-testing` clone.
-You never edit app code (`src/`, `content/`, configs). You write scenarios, tests and reports.
+You are the Test role, working in the `pocket-game-night-testing` clone. You never edit app code
+(`src/`, `content/`, configs). You write scenarios, tests and reports.
+
+## Who plays the Test role
+The usual setup is three agents in one chat, opened in the workspace folder:
+- the **orchestrator** (the main session in the workspace folder) plans, hands work over and talks
+  to the owner; it never writes or runs tests;
+- the **coder** subagent works only in the Build clone, `pocket-game-night/`;
+- the **tester** subagent works only in this clone and follows this file.
+
+The Claude desktop app opened in this clone can still act as the Test role on its own, but **never
+at the same time as the tester subagent**: they share this clone and would overwrite each other.
+Either way, the Test role cannot read the Build clone, so it only ever tests pushed code.
 
 ## Order of work
 1. `git pull --rebase`
-2. Scenarios first: draft or update them in `specs/<game>/`. Only scenarios marked
-   `Status: approved` by the owner become tests.
+2. Scenarios first: draft or update them in `specs/<game>/`. Only scenarios the owner has marked
+   `Status: approved` or `Status: decided` become tests. `decided` counts as approved: it means
+   the owner chose between options, and the chosen wording is what gets tested. `draft` scenarios
+   get no tests; list them in the report instead.
 3. Write the tests before the code exists. Each test names its scenario ID, such as `TAM-004`.
 4. Run the tests for the changed module plus the shared contract suite. Automation runs everything.
 5. Write `reports/latest.md` (format below), commit, and push.

@@ -1,63 +1,52 @@
 # Test report
-Commit tested: fb66361   Date: 2026-09-28
-Result: RED (expected: the Phase 1a tests are written, and the Tambola code they test does not exist yet)
+Commit tested: 0ed2251 (app code unchanged since fb66361)   Date: 2026-09-28
+Result: RED (expected: baseline before the Phase 1a build; Tambola's rules and screens do not exist yet)
 
-| Layer | Command | Passing now | Waiting for Phase 1a code |
-|---|---|---|---|
-| Rules, contract, property, simulation, replays | `npm test` | 112 (engine, rhyme pack) | 131 |
-| Browser, Android (Chromium) | `npm run build && npm run test:browser` | 5 (home, installable, opens offline, fast first load, no iPhone tip) | 52 (1 skipped: iPhone only) |
-| Browser, iPhone (WebKit) | same | not run here (runs in automation) | |
+| Layer | Command | Passing | Failing | Skipped |
+|---|---|---|---|---|
+| Rules, contract, property, simulation, replays | `npm test` | 112 | 131 | 0 |
+| Browser, Android (Chromium) | `npm run build && npm run test:browser` | 5 | 52 | 1 (iPhone only) |
+| Browser, iPhone (WebKit) | same | 2 | 53 | 3 (Android or Chromium only) |
+
+Build (`npm run build`): succeeds.
 
 ## Failing (real bugs only)
-None. Every failure is a Phase 1a feature not built yet.
+None. Every failure is Phase 1a not built yet:
+- `npm test`: all 131 failures are in the Tambola files (`tests/games/tambola/*`, `tests/contract/tambola.test.ts`,
+  `tests/sim/tambola.test.ts`) and fail because `src/games/tambola/rules/` is empty: `tambolaRules`,
+  `pickRhyme`, `suggestTiers`, `planPrizes`, `tambolaDefaults` and `rules` on the `tambola` registration
+  are missing. The 3 fast-check property failures (TAM-034, TAM-082, TAM-091) fail on the very first
+  input for the same reason. Engine and rhyme-pack tests all pass.
+- Browser, Android: all 52 failures time out looking for Phase 1a buttons (setup, calling, claims).
+- Browser, iPhone: 49 of the same, plus TAM-118 (the iPhone install tip is not built yet).
 
 ## Flaky or setup problems (not for the Build workspace)
-- WebKit is not installed on the Test Mac, so the iPhone browser tests run only in automation for now.
-- Before pushing, every rule test was checked against a throwaway Tambola written only for this purpose
-  (never committed): all 243 pass against it, including 2,000 simulated games in under 10 seconds.
-  So a failure means the app differs from the tests, not that the tests contradict each other.
+- **WebKit is now installed on the Test Mac** (`npx playwright install webkit`), so the iPhone layer runs locally.
+- **iPhone offline reload, needs checking in automation:** 3 iPhone tests that reload the page with no
+  internet (`tests/browser/app-shell.spec.ts`: "after one visit, the app opens with no internet",
+  TAM-064/TAM-114, TAM-069) fail every time (4 of 4 runs) with "WebKit encountered an internal error"
+  on `page.reload`. The same tests get past the reload on Android. The first one is Phase 0 behaviour
+  that already works on Android. This looks like a limit of Playwright's WebKit on macOS with offline
+  mode and service workers, not an app bug, but I have not proved that. If automation (Linux WebKit)
+  shows the same error, I will check offline opening by hand on the iPhone Simulator before calling it a bug.
+- **Tests passing now only because nothing is built yet** (they will mean something once screens exist):
+  "TAM-118: Android hosts do not see the iPhone tip" passes because no tip exists anywhere. TAM-116
+  "usable within 5 seconds on a slow connection" passes against the Phase 0 home screen only.
+- No flaky tests seen: the Vitest results matched the previous report exactly (112 / 131).
 
 ## Requests for the Build workspace (dependencies, scripts, test hooks in the app)
-- **Build Phase 1a against the tests.** What the tests import, and the shapes they expect:
-  `tests/games/tambola/README.md`. What the browser tests look for on screen (button names, field
-  labels, `data-testid`s): `tests/browser/README.md`. Both are written for you; ask in
-  `docs/test-questions.md` if anything doesn't fit.
-- Suggested order (each step turns a block of tests green): rules module (`tambolaRules`, `pickRhyme`,
-  `suggestTiers`, `planPrizes`, `tambolaDefaults`, and `rules` on the `tambola` registration) → setup
-  screens → calling screen → claim check → end, discard, play again → saving, resume, history → usability.
-- Test configs are in: `tests/vitest.config.ts` and `tests/playwright.config.ts`. Automation now runs both.
-  The browser config serves the built app with `npm run preview` on port 4173, as the handover said.
-- The rhyme pack in `content/tambola/rhymes.json` passes every pack test (TAM-150, 156, 157, 158).
-- The engine passes its tests: seeded randomness, referee, undo, replay, saved-game formats, money records.
-- **New owner decision, TAM-145: winning and ending are manual.** After an accepted claim, the tier stays
-  open: the host can "Add another winner" (a tie on the same number) or "Close Top Line". Next number waits
-  until the tier is closed. This is true for every tier, Full House included. Accepting or closing a Full
-  House never ends the game; after the last Full House is closed the host taps "End game and show payouts".
-  New move `close-tier`, view fields `awaitingClose` and `readyToEnd`: `tests/games/tambola/README.md`.
-  Please update the "End of game" row in `src/games/tambola/CLAUDE.md` (TAM-075 has changed).
-- **New owner decision, TAM-144:** a game with money that ends with **no prize won** hands everyone's
-  contribution back (each person: won = paid), as with Discard.
-- Automation stops at the first failing layer, so the browser tests will run there once the rule tests pass.
-- A paper-ticket claim is judged only from the numbers read out; a player who made a bogey is recorded
-  but not blocked by the app (the room keeps that ticket out; they may hold another ticket).
+- Unchanged from the last report: build Phase 1a against the tests. What the tests import and the shapes
+  they expect: `tests/games/tambola/README.md`. What the browser tests look for on screen:
+  `tests/browser/README.md`. Suggested order: rules module, setup screens, calling screen, claim check,
+  end/discard/play again, saving/resume/history, usability.
+- TAM-145 (prizes closed by hand; host ends the game) and TAM-144 (no prize won: contributions handed back)
+  are covered by the tests; see the last report's notes, now in `tests/games/tambola/README.md`.
+- Please update the "End of game" row in `src/games/tambola/CLAUDE.md` to match TAM-075 and TAM-145.
 
 ## Notes for the owner (plain English)
-- **All Phase 1a scenarios are now approved**, including the 16 that were "decided" rather than
-  "approved" (house rules, prize rules, resume, names). Their decisions are kept in the wording.
-- **Tests are written for all of Phase 1a**: 243 rule and simulation checks, and 58 browser checks
-  that each run on an Android-sized and an iPhone-sized phone. Each names the scenario it proves.
-- The Build side builds next; the tests tell it exactly what "done" means.
-- **The live link will not update until Phase 1a passes.** Automation publishes only when every test is
-  green, so https://virapandy.github.io/pocket-game-night/ keeps showing the Phase 0 screen until then.
-  If you would like to play half-finished versions along the way, that is a change to the automation
-  (Build side); say so and I'll pass it on.
-- **Your decision is in (TAM-145):** every prize is closed by hand. After a win the host can add another
-  winner or close the prize; the next number waits until it's closed; after the last Full House is
-  closed, the host ends the game. TAM-030, TAM-042, TAM-046 and TAM-075 now say the same.
-- **TAM-144 approved:** if a game with money ends and nobody won anything, everyone gets their contribution back.
-- **Ready for handover:** `docs/handover.md` now ends with "Phase 1a tests ready", including what to paste
-  into Claude Code in VS Code to start the build.
-- A few things can't be proved by automated tests and need a real phone: the app update never
-  interrupting a game (TAM-113; the test only checks no update message shows mid-game), how the app
-  feels in the hand, and reading the number from across a room. I'll do these as walkthroughs on the
-  iPhone Simulator once the screens exist.
+- The Test role is now run by the tester helper inside the orchestrator chat. The desktop app can still
+  do this job, but not at the same time. `tests/CLAUDE.md` says so, and says "decided" scenarios count as approved.
+- Baseline check done: everything that should work today works, and everything failing is Tambola that
+  has not been built yet. The Build side can start.
+- One thing to watch: on the iPhone test browser, reopening the app with no internet fails in a way that
+  looks like a test-tool problem. I'll confirm it in automation or on the iPhone Simulator.
