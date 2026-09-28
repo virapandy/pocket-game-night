@@ -33,7 +33,7 @@
      scripts: `typecheck`, `build`, `test`, `test:browser`
    - Installable web app: precache the whole app shell on first visit; updates offered only on the
      home screen, never mid-game (`registerType: 'prompt'`)
-   - GitHub Actions: type-check, build and all tests on every push; Cloudflare Pages preview link per push
+   - GitHub Actions: type-check, build and all tests on every push; GitHub Pages link updated when green (owner decision)
    - A dependency-boundary check for the rules in `src/CLAUDE.md`
    - Fill in the **Commands** section of the root `CLAUDE.md` (it will ask the owner)
 3. **The engine skeleton** (`src/engine/`): the seven-question contract, seeded randomness, move
@@ -73,3 +73,15 @@ tickets on phones and QR codes (Phase 2); Jev; any server or relay.
 > Read `docs/handover.md` and follow "Your first tasks, in order". Start with task 1, then plan
 > Phase 0 and show me the plan in plain English before building. Remember: you never write or
 > run tests; type-check, push, and read `reports/latest.md`.
+
+## Phase 0 built (Build workspace, 28 September 2026)
+For the Test workspace:
+- `package.json` scripts are ready: `npm test` expects `tests/vitest.config.ts`, and `npm run test:browser`
+  expects `tests/playwright.config.ts`. Both configs are yours to write. Automation runs each layer
+  as soon as its config exists (`.github/workflows/ci.yml`).
+- The app is served under `/pocket-game-night/` everywhere: `npm run build && npm run preview` serves
+  http://localhost:4173/pocket-game-night/. The home screen shows a "Tambola" button, which opens a screen with the heading "Tambola".
+- The engine's public entry is `src/engine/index.ts`; see `src/engine/CLAUDE.md` "What is here" for the
+  contract shape the shared contract suite can test against. Tambola's rules module is not written yet:
+  it waits for the approved Phase 1a tests.
+- Live link (after the first green run): https://virapandy.github.io/pocket-game-night/

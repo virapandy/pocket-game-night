@@ -13,7 +13,7 @@ You are writing app code. You never write, edit or run tests; testing happens in
   `docs/test-questions.md` and tell the owner.
 - Keep changes inside one module where possible (one game folder, or the engine).
 
-## Dependency rules (checked automatically once the boundary check exists)
+## Dependency rules (checked by `npm run check:boundaries`, locally and in automation)
 1. Games may use building blocks and the engine, never another game.
 2. Building blocks may use the engine, never a game.
 3. The engine depends on nothing else in the project; it only defines the interfaces adapters must meet.

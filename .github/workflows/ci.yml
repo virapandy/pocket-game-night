@@ -1,0 +1,58 @@
+# On every push to main: type-check, boundary check, build, every test layer that exists,
+# then publish to GitHub Pages only if all of it is green, so the live link never shows a broken build.
+name: Check and publish
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Type-check
+        run: npm run typecheck
+      - name: Boundary check
+        run: npm run check:boundaries
+      - name: Build
+        run: npm run build
+      # Test configs are written by the Test workspace; each layer runs once its config exists.
+      - name: Rule, contract and property tests
+        if: hashFiles('tests/vitest.config.ts') != ''
+        run: npm test
+      - name: Install browsers
+        if: hashFiles('tests/playwright.config.ts') != ''
+        run: npx playwright install --with-deps chromium webkit
+      - name: Browser tests
+        if: hashFiles('tests/playwright.config.ts') != ''
+        run: npm run test:browser
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  publish:
+    needs: check
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

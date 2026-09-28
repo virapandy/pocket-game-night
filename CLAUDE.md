@@ -92,7 +92,7 @@ Later phases add features without changing how earlier games are played or store
 ## Stack (Phase 0 defaults)
 
 TypeScript · React + Vite as an installable web app · Vitest + fast-check · Playwright · Stryker ·
-Cloudflare Pages · GitHub Actions.
+GitHub Pages · GitHub Actions.
 
 - Test configs live in `tests/` (for example `tests/vitest.config.ts`); `package.json` scripts point there.
 - Dependencies are added by the Build workspace; the Test workspace requests test tooling in
@@ -100,9 +100,13 @@ Cloudflare Pages · GitHub Actions.
 
 ## Commands
 
-Not set up yet (Phase 0). When `package.json` exists, list them here:
-- Build: `npm run typecheck`, `npm run build`
-- Test: `npm test`, plus simulation and browser commands
+- Build workspace: `npm run typecheck`, `npm run check:boundaries` (dependency rules), `npm run build`,
+  `npm run dev` (local app)
+- Test workspace: `npm test` (Vitest, config `tests/vitest.config.ts`), `npm run test:browser`
+  (Playwright, config `tests/playwright.config.ts`, against `npm run build` + `npm run preview`)
+- Automation (`.github/workflows/ci.yml`) runs all of these on every push to `main`, then publishes
+  https://virapandy.github.io/pocket-game-night/ only if everything is green. The app is served under
+  `/pocket-game-night/`, locally too.
 
 ## Habits
 

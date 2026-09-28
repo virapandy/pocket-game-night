@@ -22,3 +22,14 @@ The engine runs any game written to the contract. It must stay pure and tiny.
   because saved failing games become permanent tests.
 - The host phone holds the one true state. Other phones only send moves and show their own view.
 - The engine announces events (game started, first action, game ended) through one hook; nothing listens yet.
+
+## What is here (Phase 0)
+| File | Holds |
+|---|---|
+| `contract.ts` | `GameRules`: the seven questions; `Viewer` (host, room, player); `SetupInput` with named seeds; `PlayerLocal` for phone-only state such as marks |
+| `moves.ts` | `MoveRecord` (format `v: 1`, `seq`, `at`, `by`, `move`) and `HOST` |
+| `random.ts` | `createRng(seed)`, `shuffle`, `pick`, `deriveSeed`. Fresh secret seeds are made in the app with `crypto`, never here |
+| `referee.ts` | `startMatch`, `play` (checks invariants after every move; refuses moves after game over), `undo` (replays without the move; refused if a later move would break), `replay`, `viewFor` |
+| `events.ts` | The one announce hook: game started, first action, game ended |
+| `money.ts` | `MoneyRecord`: what each person paid and won (PLT-021); `moneyProblems` checks it balances |
+| `saved-game.ts` | `SavedGame` (format 1): setup plus move records, status (PLT-001), money; `readSavedGame` reads every known format |
