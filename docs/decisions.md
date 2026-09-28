@@ -51,6 +51,15 @@
 
 | 2026-09-28 | "Report a problem" (Phase 7) sends reports to a stub for now: nothing leaves the phone. **Must be replaced with a real free, no-account destination before any wider public release** (PLT-208). | Owner |
 | 2026-09-28 | Jev approved for simulations and extended testing. The key lives only in a gitignored `.env.local` on the testing machine (and later a GitHub secret); every ordinary test still passes without it (PLT-114, PLT-115). | Owner |
+| 2026-09-28 | Scenario review (cc447aa) answered: outcome and every verdict in `docs/scenario-review-outcome-2026-09-28.md`. Owner signed off Phase 1a.1 and 1b; Phase 2, 7 and extended testing wait for sign-off when they come up; Phase 6 on hold. | Owner + product owner |
+| 2026-09-28 | A ticket out after a bogey still gets its per-ticket share of unwon money (TAM-093). | Product owner, by convention |
+| 2026-09-28 | "Next number" full width at the very bottom; "Record a win" in its own row above it, never side by side (TAM-100, TAM-124). | Product owner |
+| 2026-09-28 | "Check numbers" helper kept in the menu for disputes; records nothing (TAM-139). | Product owner |
+| 2026-09-28 | Offline phone tickets show no called numbers; last calls on the player's phone moves to connected mode (TAM-050, TAM-133 → Phase 6). | Product owner |
+| 2026-09-28 | A claim QR that doesn't match the host's copy is refused, never a bogey; the host can check by ticket number (TAM-179). | Product owner |
+| 2026-09-28 | Auto-call timer 5 to 30 seconds in 5-second steps, default 10 (TAM-186). | Product owner |
+| 2026-09-28 | Tally shows net amounts; an explicit "Settle up" lists who pays whom in the fewest hand-overs, then "Mark as settled"; settling can be undone for 5 seconds (PLT-027, PLT-028). | Owner + product owner |
+| 2026-09-28 | Weekly long runs report failures only; they never hold back the preview link. Mutation target: at least 80% for rules and money code (PLT-118, PLT-119). | Owner + product owner |
 
 "Convention" means the established Tambola rule in `docs/games/tambola/guide.md`, chosen because the owner asked
 Claude to follow game conventions. Every Tambola rule above is also a host setting with this default.
