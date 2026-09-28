@@ -36,15 +36,31 @@ optional: a group can play for chocolates instead, using text prize labels.
 | 2. Players | Enters the number of players, and optionally names | "8 players" |
 | 3. Tickets | Sets tickets per player (default 1, maximum 3); a player can take extra tickets | "10 tickets in play" |
 | 4. Contribution | Enters the contribution per ticket, e.g. ₹50, or chooses **No money** | "Pot: 10 tickets × ₹50 = **₹500**" |
-| 5. Patterns | Keeps the six default patterns, or unticks some | The tier list |
-| 6. Suggested split | Reviews the app's suggestion (below) | Each tier with its % and ₹ amount; the total always equals the pot |
+| 5. Tiers | Reviews the tiers the app suggests for this many tickets (below); removes or adds back tiers | Each tier with its % and ₹ amount; the total always equals the pot |
+| 6. Anchor edits | The anchor changes any amount the room wants | The other tiers adjust to keep the total |
 | 7. Anchor confirms | The anchor reads the tiers aloud to the room, adjusts any amount if the room wants, and taps **Confirm prizes** | "Prizes locked. Tap to call the first number" |
 
 **Target:** under 60 seconds from opening the app to the first number, with the defaults.
 
-### Suggested split (app default, editable)
-| Tier | Share | ₹500 pot |
+### Suggested tiers (app default, editable)
+The app suggests tiers from the number of tickets in play, so small groups get fewer, bigger prizes:
+
+| Tickets in play | Suggested tiers | Split |
 |---|---|---|
+| 2–5 | Early Five, Top Line, Full House | 10 / 20 / 70 % |
+| 6–11 | Early Five, three Lines, Full House | 10 / 15 / 15 / 15 / 45 % |
+| 12–24 | Early Five, Four Corners, three Lines, Full House | 10 / 10 / 12 / 12 / 12 / 44 % |
+| 25 or more | The six above plus Second Full House | 8 / 8 / 10 / 10 / 10 / 32 / 22 % |
+
+- The 2–5 split is the common published example; the larger ones are Claude's suggestion in the
+  same spirit (small first prizes, Full House always largest).
+- The host can remove any tier except Full House, and add it back; the other tiers rebalance.
+- The anchor can change any amount; the other tiers adjust so the total still equals the pot.
+- **Amounts always add up to the pot exactly.** Tiers are rounded to ₹10 and individual tiers are
+  nudged up or down as needed (a ₹530 pot at 10 / 20 / 70 % gives ₹50 / ₹110 / ₹370).
+- An unclaimed tier is spread across the won tiers at the end, and ties split to the rupee.
+
+---|---|---|
 | Early Five | 10% | ₹50 |
 | Four Corners | 10% | ₹50 |
 | Top Line | 12% | ₹60 |
@@ -71,7 +87,7 @@ optional: a group can play for chocolates instead, using text prize labels.
 | Repeat | Taps **Repeat** when asked | The same number and rhyme again |
 | Claim | A player shouts; the host taps **Check a claim** and picks the pattern. **Paper:** types the numbers the player reads out. **Phone:** enters the ticket number. | Numbers in green (called) or red (not called), then **Accepted: ₹60 to Riya** or **Bogey** |
 | Late claim | Checks a claim made after the next number | "Bogey: too late. Top Line was complete at 45" (paper tickets: judged from the numbers read out, since the last of them must be the latest call) |
-| Tie | Two players claim the same pattern on the same number | "Shared: ₹30 each" (rounding remainder rule applies) |
+| Tie | Two players claim the same pattern on the same number | "Shared: ₹30 each" (split to the rupee, adding up exactly) |
 | Mistake | Taps **Undo** on a wrongly accepted claim | The claim and its payout removed; the pattern open again |
 | End | Full House accepted, or taps **End game** | **Payout summary** (below) |
 | Again | Taps **Play again** | Same players, contribution and split; new tickets and a new draw; the anchor confirms again |
@@ -81,9 +97,9 @@ optional: a group can play for chocolates instead, using text prize labels.
 |---|---|
 | Pot | ₹500 from 10 tickets |
 | Each tier and its winner(s) | Early Five: Asha ₹50 · Top Line: Riya ₹60 · Full House: Dad ₹220 … |
-| Unclaimed tiers | Four Corners: not won, ₹50 (handled by the owner's rule, see decisions) |
+| Unclaimed tiers | Four Corners: not won; its ₹50 spread across the won tiers |
 | Per person | Riya: paid ₹50, won ₹60 · Asha: paid ₹100, won ₹50 … |
-| Check | Total paid out + unclaimed = pot |
+| Check | Total paid out = pot |
 
 The host settles in cash or UPI, outside the app.
 
@@ -137,4 +153,4 @@ numbers (TAM-050 to TAM-055).
 | TAM-067 | New: late joiners, by the owner's rule |
 | TAM-068 | New: **Play again** keeps players, contribution and split, with new tickets and a new draw |
 | TAM-069 | New: **How to play** works offline from the start screen |
-| TAM-080 – TAM-089 | New: setup, pot, suggested split, anchor confirmation, ties, unclaimed tiers, payouts, no money moved |
+| TAM-080 – TAM-091 | New: setup, pot, tiers suggested by ticket count, remove and add back, anchor confirmation, exact totals, ties, unclaimed tiers, payouts, no money moved |

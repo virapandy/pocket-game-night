@@ -46,11 +46,14 @@ When the host taps "End game" and confirms
 Then the game ends and a summary shows the winners so far
 
 ## TAM-067: A late joiner can get a ticket mid-game
-Status: draft (depends on the late-joiner decision)
-Given 20 numbers have been called
-When a new player arrives and the host adds them
-Then they get a ticket (paper or phone) and their claims are checked by the owner's late-joiner rule
-And any change to the pot follows the owner's rule for prizes already locked
+Status: waiting for owner decision (recommended rule below)
+Given 6 numbers have been called, and late joining is allowed until 10 numbers (host setting; 0 turns it off)
+When a new player arrives and the host adds them with a ticket (paper or phone)
+Then the numbers already called count on their ticket, as in paper Tambola
+And a pattern already complete at the moment they join cannot be claimed; it must be completed by a later number
+And their contribution is added to the pot and spread across the tiers not yet won, keeping the total exact
+When 10 numbers have been called
+Then the host can no longer add players until the next game
 
 ## TAM-068: Play again keeps the setup
 Status: draft

@@ -69,6 +69,7 @@ Status: waiting for owner decision
 Options:
 - A. The game ends at the first Full House (**norm**)
 - B. The host can allow a second (and third) Full House before the game ends (a common extra)
+For 25 or more tickets the app suggests a Second Full House tier (TAM-081); the host can remove it.
 Scenario once chosen: see TAM-075.
 
 ## TAM-047: Prizes

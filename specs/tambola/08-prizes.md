@@ -1,7 +1,10 @@
 # Prize pool
 
-The app calculates the pot, suggests a split, and shows payouts. It **never collects, holds or sends
-money**; people settle in cash or UPI outside the app. Examples use ₹; the currency follows the phone.
+The app calculates the pot, suggests the prize tiers and split, and shows payouts. It **never collects,
+holds or sends money**; people settle in cash or UPI outside the app. Examples use ₹; the currency
+follows the phone. **Rule for every amount: the tiers always add up to the pot exactly.** The app
+rounds each tier to a convenient unit (₹10 by default) and nudges individual tiers up or down as
+needed to hit the total.
 
 ## TAM-080: The pot is calculated from tickets and contribution
 Status: draft
@@ -10,67 +13,82 @@ And the contribution is ₹50 per ticket
 Then the pot shows ₹500 (10 tickets × ₹50)
 And it updates immediately if the host changes players, tickets or the contribution before prizes are locked
 
-## TAM-081: The app suggests a split across the patterns in play
+## TAM-081: The app suggests tiers based on the number of tickets in play
 Status: draft
-Given a ₹500 pot and the six default patterns
-Then the app suggests Early Five 10% (₹50), Four Corners 10% (₹50), each Line 12% (₹60) and Full House 44% (₹220)
-And with fewer patterns, the suggestion rescales over the remaining ones, with Full House always the largest
+Then the suggested tiers and split are:
+| Tickets in play | Suggested tiers | Split |
+|---|---|---|
+| 2–5 | Early Five, Top Line, Full House | 10 / 20 / 70 % |
+| 6–11 | Early Five, Top Line, Middle Line, Bottom Line, Full House | 10 / 15 / 15 / 15 / 45 % |
+| 12–24 | Early Five, Four Corners, Top, Middle and Bottom Line, Full House | 10 / 10 / 12 / 12 / 12 / 44 % |
+| 25 or more | The six above plus Second Full House | 8 / 8 / 10 / 10 / 10 / 32 / 22 % |
+And the suggestion updates as players or tickets change, until the prizes are locked
+(Fewer tickets means fewer tiers, so a prize still feels like a win. Full House is always the largest.)
 
-## TAM-082: Suggested amounts are rounded, and always add up to the pot
+## TAM-082: Rounded tiers always add up to the pot exactly
 Status: draft
-For every pot size and set of patterns
-Then each tier except Full House is rounded down to the rounding unit (₹10 by default)
-And the remainder goes to Full House
-And the tiers add up to the pot exactly
+For every pot size and every set of tiers
+Then each tier is a multiple of the rounding unit where possible (₹10 by default)
+And individual tiers are nudged up or down so the tiers add up to the pot exactly
+And no tier is ever negative, and Full House stays the largest
+Example: a ₹530 pot across 10 / 20 / 70 % gives ₹50 / ₹110 / ₹370
 
-## TAM-083: The anchor confirms the prizes before the first number
+## TAM-083: The host can remove a tier, and add it back
 Status: draft
-Given the suggested split is shown
+Given the suggested tiers for 10 tickets
+When the host removes Middle Line
+Then its share is spread across the remaining tiers in proportion, and the total still equals the pot
+When the host adds Middle Line back
+Then it returns at its suggested share and the others shrink in proportion
+And the host can also add any standard pattern that was not suggested (such as Four Corners)
+And Full House cannot be removed, because it ends the game
+
+## TAM-084: The anchor confirms the prizes before the first number
+Status: draft
+Given the suggested tiers are shown
 When the anchor changes Top Line to ₹80
-Then the app shows "₹20 over the pot" (or under) and cannot lock the prizes until it balances
-And the anchor can choose "adjust Full House" to balance it in one tap
+Then the other tiers adjust so the total still equals the pot, and the anchor sees each change
+And the anchor can fix any tier's amount; the unfixed tiers absorb the difference
 When the anchor taps "Confirm prizes"
 Then the prizes are locked and the first number can be called
 
-## TAM-084: Prizes cannot change after the first number
+## TAM-085: Prizes cannot change after the first number
 Status: draft
 Given prizes are locked and a number has been called
-Then the tier amounts cannot be edited
-Except by ending the game, or by the owner's late-joiner rule (TAM-067)
+Then tier amounts cannot be edited
+Except through the late-joiner rule (TAM-067) or the unclaimed-tier rule (TAM-087)
 
-## TAM-085: An accepted claim shows the prize
+## TAM-086: An accepted claim shows the prize
 Status: draft
 When Riya's Top Line claim is accepted
 Then the host phone shows "Accepted: ₹60 to Riya" (or to "Ticket 4" if no names were entered)
 
-## TAM-086: A shared prize is split equally
+## TAM-087: A shared prize is split as evenly as possible
 Status: draft
-Given Top Line is worth ₹60 and two tickets win it on the same number
-Then each gets ₹30
-And if the amount does not divide evenly (e.g. ₹50 among 3), each gets the amount rounded down
-to the rounding unit, and the remainder follows the owner's rule (TAM-087)
+Given Top Line is worth ₹50 and three tickets win it on the same number
+Then they get ₹17, ₹17 and ₹16 (split to the rupee, adding up to ₹50 exactly)
+And the extra rupee goes in ticket-number order
 
-## TAM-087: Unclaimed tiers and remainders follow the owner's rule
-Status: waiting for owner decision
-A tier can be left unclaimed (for example, nobody claimed Four Corners before Full House ended the game).
-Options:
-- A. Added to the Full House prize
-- B. Shared equally among all the game's winners
-- C. Returned to the players (shown as a refund per ticket)
-- D. Carried over to the next game's pot (with Play again)
-Scenario once chosen:
-When the game ends with an unclaimed tier or remainder
-Then the payout summary applies the chosen rule, and the total still equals the pot
+## TAM-088: An unclaimed tier is spread across the won tiers
+Status: draft (owner direction 2026-09-28, to confirm)
+Given the game ends with Four Corners (₹50) unclaimed
+Then the ₹50 is spread across the tiers that were won, in proportion to their amounts
+And the payouts still add up to the pot exactly
 
-## TAM-088: The payout summary balances
+## TAM-089: The payout summary balances
 Status: draft
 When a game ends
 Then the summary lists, for each tier, the winner(s) and amount
 And, for each person, what they paid and what they won
-And total paid out plus any carried or refunded amount equals the pot, to the rupee
+And total paid out equals the pot, to the rupee
 
-## TAM-089: The app never moves money
+## TAM-090: The app never moves money
 Status: draft
 Then there is no payment button, payment link, UPI request or wallet anywhere in the game
-And a game can be played with "No money": prizes are optional text labels (such as "chocolate")
-and every scenario above works without amounts
+And a game can be played with "No money": prizes are optional text labels (such as "chocolate"),
+the tiers are still suggested by ticket count, and every scenario above works without amounts
+
+## TAM-091: For every pot and every combination of tiers, removals, edits and ties, the total balances
+Status: draft
+For thousands of random pots, ticket counts, tier edits, removals, ties and unclaimed tiers
+Then every tier amount is zero or more, and the payouts always add up to the pot exactly
