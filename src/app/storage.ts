@@ -13,14 +13,18 @@ function storage(): Storage | null {
   }
 }
 
-let askedToKeepData = false;
+let keepDataAsks = 0;
 
-/** PLT-013: ask the browser to keep the app's data, when the first game starts. */
+/**
+ * PLT-013: ask the browser to keep the app's data when the first game starts. Asked when the game is
+ * created and again at its first call, so one lost or refused request does not leave the data unprotected.
+ */
 function keepData() {
-  if (askedToKeepData) return;
-  askedToKeepData = true;
+  if (keepDataAsks >= 2) return;
+  keepDataAsks++;
   try {
-    void navigator.storage?.persist?.().catch(() => {});
+    const manager = typeof navigator === 'undefined' ? undefined : navigator.storage;
+    if (manager && typeof manager.persist === 'function') void manager.persist().catch(() => {});
   } catch {
     // Not supported: nothing to do.
   }
@@ -52,7 +56,7 @@ export const gameStore: SavedGameStore = {
     }
   },
   put(game) {
-    if (game.records.length === 0) keepData();
+    if (game.records.length <= 1) keepData();
     try {
       storage()?.setItem(GAME_PREFIX + game.id, JSON.stringify(game));
     } catch (e) {

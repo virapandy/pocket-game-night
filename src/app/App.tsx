@@ -206,7 +206,7 @@ function History({ onBack, onOpen }: { onBack: () => void; onOpen: (id: string) 
       <p className="note">Past games are kept only on this phone, and are lost if the app's data is cleared.</p>
       {nearlyFull && (
         <div className="banner" role="status">
-          <p>This phone's storage for the app is nearly full. Nothing is deleted unless you choose.</p>
+          <p>Storage is nearly full on this phone. Nothing is deleted unless you choose.</p>
           <button
             type="button"
             className="button"

@@ -19,7 +19,15 @@ import { loadSettings, saveSettings, SettingsPanel } from './Settings';
 import { Summary } from './Summary';
 
 const CALL_UNDO_MS = 5_000;
-const NEXT_COOLDOWN_MS = 300;
+/** TAM-101: two taps within half a second call one number. */
+const NEXT_COOLDOWN_MS = 500;
+
+/** Milliseconds since the last call, from a clock that never jumps; a clock change counts as "long ago". */
+function sinceLastCall(at: number | null): number {
+  if (at === null) return Infinity;
+  const d = performance.now() - at;
+  return d < 0 ? Infinity : d;
+}
 
 type ClaimPanel =
   | { kind: 'claim'; step: 'player' | 'pattern' | 'numbers'; playerId?: string; pattern?: Pattern; text: string; error?: string }
@@ -58,7 +66,7 @@ export function Play({
   const [showResumed, setShowResumed] = useState(resumed);
   const [flash, setFlash] = useState(0);
   const [, setNow] = useState(0);
-  const cooling = useRef(false);
+  const lastCallAt = useRef<number | null>(null);
 
   const view = tambolaRules.view(match.state, { kind: 'host' });
   const over = view.over;
@@ -99,6 +107,29 @@ export function Play({
     return () => clearTimeout(t);
   }, [lastRecord, undoCallLeft]);
 
+  // TAM-101: the button comes back once the new number is on screen and the double-tap window has passed.
+  // Both a timer and the next animation frames check, so a slow or throttled timer cannot keep it disabled.
+  useEffect(() => {
+    if (!cooldown) return;
+    let frame = 0;
+    const release = () => {
+      if (sinceLastCall(lastCallAt.current) >= NEXT_COOLDOWN_MS) {
+        setCooldown(false);
+        return true;
+      }
+      return false;
+    };
+    const onFrame = () => {
+      if (!release()) frame = requestAnimationFrame(onFrame);
+    };
+    frame = requestAnimationFrame(onFrame);
+    const timer = setTimeout(release, NEXT_COOLDOWN_MS + 20);
+    return () => {
+      cancelAnimationFrame(frame);
+      clearTimeout(timer);
+    };
+  }, [cooldown]);
+
   if (over) {
     return (
       <main className="screen">
@@ -118,16 +149,13 @@ export function Play({
   const nameOf = (id: string) => view.players.find((p) => p.id === id)?.name ?? id;
   const canCall = tambolaRules.legalMoves(match.state, HOST).some((m) => m.type === 'call');
   const onNext = () => {
-    if (cooling.current || !canCall) return;
+    // TAM-101: a second tap within half a second draws nothing. This compares times rather than
+    // trusting a flag, so a late timer can never leave the button stuck.
+    if (sinceLastCall(lastCallAt.current) < NEXT_COOLDOWN_MS || !canCall) return;
     const r = move({ type: 'call' });
     if (!r.ok) return;
-    // TAM-101: stays disabled until the new number is on screen, so a double tap calls one number.
-    cooling.current = true;
+    lastCallAt.current = performance.now();
     setCooldown(true);
-    setTimeout(() => {
-      cooling.current = false;
-      setCooldown(false);
-    }, NEXT_COOLDOWN_MS);
     setPanel(null);
     setShowResumed(false);
     feel();
@@ -351,7 +379,7 @@ export function Play({
       <Board called={view.called} />
 
       <div className="next-spacer" aria-hidden="true" />
-      <button type="button" className="button next-number" disabled={cooldown || !canCall} onClick={onNext}>
+      <button type="button" className="button next-number" disabled={(cooldown && sinceLastCall(lastCallAt.current) < NEXT_COOLDOWN_MS) || !canCall} onClick={onNext}>
         Next number
       </button>
 
