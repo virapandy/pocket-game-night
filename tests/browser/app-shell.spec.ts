@@ -17,6 +17,13 @@ async function visitOnceThenGoOffline(page: Page) {
   await page.context().setOffline(true);
 }
 
+// Owner decision 2026-09-28 (docs/decisions.md): these offline-reload tests run in Chromium only.
+// Playwright's WebKit fails any navigation a service worker answers once setOffline(true) is on
+// ("WebKit encountered an internal error"), even with no app code: microsoft/playwright#42775.
+// Offline opening on iPhone is checked by hand instead and recorded in reports/latest.md.
+const WEBKIT_OFFLINE_REASON =
+  'Playwright WebKit cannot reload offline under a service worker (microsoft/playwright#42775); owner decision 2026-09-28 in docs/decisions.md, iPhone checked by hand';
+
 test('the home screen opens and lists Tambola', async ({ page }) => {
   await page.goto(HOME);
   await expect(page.getByRole('heading', { name: 'Pocket Game Night' })).toBeVisible();
@@ -33,7 +40,8 @@ test('the app is installable: it has a manifest with icons', async ({ page }) =>
   expect(manifest.icons.length).toBeGreaterThan(0);
 });
 
-test('after one visit, the app opens with no internet', async ({ page }) => {
+test('after one visit, the app opens with no internet', async ({ page, browserName }) => {
+  test.skip(browserName === 'webkit', WEBKIT_OFFLINE_REASON);
   await visitOnceThenGoOffline(page);
   await page.reload();
   await expect(page.getByRole('heading', { name: 'Pocket Game Night' })).toBeVisible();
@@ -41,7 +49,8 @@ test('after one visit, the app opens with no internet', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Tambola' })).toBeVisible();
 });
 
-test('TAM-064 and TAM-114: a full game works offline, with no offline error anywhere', async ({ page }) => {
+test('TAM-064 and TAM-114: a full game works offline, with no offline error anywhere', async ({ page, browserName }) => {
+  test.skip(browserName === 'webkit', WEBKIT_OFFLINE_REASON);
   await visitOnceThenGoOffline(page);
   await page.reload();
   await setUpPaperGame(page);
@@ -50,7 +59,8 @@ test('TAM-064 and TAM-114: a full game works offline, with no offline error anyw
   await expect(page.getByText(/offline|no internet|no connection|network error/i)).toHaveCount(0);
 });
 
-test('TAM-069: How to play opens offline from the start screen, with a sample ticket', async ({ page }) => {
+test('TAM-069: How to play opens offline from the start screen, with a sample ticket', async ({ page, browserName }) => {
+  test.skip(browserName === 'webkit', WEBKIT_OFFLINE_REASON);
   await visitOnceThenGoOffline(page);
   await page.reload();
   await openTambola(page);
