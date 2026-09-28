@@ -23,4 +23,5 @@ None.
   with test scripts pointing at configs in tests/.
 
 ## Notes for the owner (plain English)
+Phase 1a scenarios are approved. Test code starts as soon as the Build workspace pushes Phase 0 (project setup and the engine's contract), because the tests need its function names.
 126 Tambola scenarios and 21 platform scenarios are drafted (Phase 1a: 97, Phase 1b: 15, Phase 2: 34), cross-checked against the guide, journeys and UX guidelines, and waiting for the owner's approval. No test code yet: it gets written once the owner approves and Phase 0 has set up the test runner and the game contract.

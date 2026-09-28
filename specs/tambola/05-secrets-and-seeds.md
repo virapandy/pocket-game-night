@@ -17,7 +17,7 @@ For every point in every game
 Then no player's view contains any number that has not been called yet
 
 ## TAM-052: The draw seed never leaves the host phone
-Status: draft
+Status: approved, owner, 2026-09-28
 Phase: Phase 1a
 For every QR code, share link, printed ticket and player view
 Then none of them contains the draw seed, or anything the draw order can be worked out from

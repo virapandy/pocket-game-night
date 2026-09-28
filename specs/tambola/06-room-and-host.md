@@ -3,7 +3,7 @@
 The phone replaces paper, not the fun. Shortcuts that remove the shouting and checking are off by default.
 
 ## TAM-060: A new game starts with the room-ritual defaults
-Status: draft
+Status: approved, owner, 2026-09-28
 Phase: Phase 1a
 When the host starts a new game without changing settings
 Then the phone does not speak the calls (the anchor reads them)
@@ -27,28 +27,28 @@ they are turned on
 And later, in connected mode only (Phase 6), so do "Auto-mark", "Claim button" and "Verdict on every phone"
 
 ## TAM-063: A game starts fast
-Status: draft
+Status: approved, owner, 2026-09-28
 Phase: Phase 1a
 Given the app is open on the host phone
 When the host sets up a game for 6 players with default settings, including a contribution and the suggested split
 Then the first number can be drawn within 60 seconds, with no sign-in and no account
 
 ## TAM-064: The game works with no internet
-Status: draft
+Status: approved, owner, 2026-09-28
 Phase: Phase 1a
 Given the app was opened once before and the phone is now in airplane mode
 When the host starts and plays a full game on one phone
 Then everything works: drawing, rhymes, the board, claim checks and the result
 
 ## TAM-065: Pausing does not lose the game
-Status: draft
+Status: approved, owner, 2026-09-28
 Phase: Phase 1a
 Given a game is in progress
 When the host phone locks, or the app is closed and reopened
 Then the game continues from exactly where it was
 
 ## TAM-066: The host can end the game early
-Status: draft
+Status: approved, owner, 2026-09-28
 Phase: Phase 1a
 When the host taps "End game" and confirms
 Then the game ends and the payout summary shows the winners so far
@@ -66,7 +66,7 @@ When 10 numbers have been called
 Then the host can no longer add players until the next game
 
 ## TAM-068: Play again keeps the setup
-Status: draft
+Status: approved, owner, 2026-09-28
 Phase: Phase 1a
 When a game ends and the host taps "Play again"
 Then the players, contribution, patterns and split are kept
@@ -74,14 +74,14 @@ And the tickets and the draw seed are new
 And the anchor confirms the prizes again before the first number
 
 ## TAM-069: How to play works offline
-Status: draft
+Status: approved, owner, 2026-09-28
 Phase: Phase 1a
 Given the phone has no internet
 When a first-timer opens "How to play" from the start screen
 Then the one-page guide with a sample ticket is shown
 
 ## TAM-130: House rules are settings with the conventions as defaults
-Status: draft
+Status: approved, owner, 2026-09-28
 Phase: Phase 1a
 When the host opens the game settings
 Then each house rule (ties, late claims, bogey penalty, tickets per player, late joining, auto-call)
@@ -89,7 +89,7 @@ is listed with its convention as the default, in plain words
 And changing one applies only to this game and later games, never to a game in progress
 
 ## TAM-137: Setup asks for the ticket mode and, optionally, names
-Status: draft
+Status: approved, owner, 2026-09-28
 Phase: Phase 1a
 When the host starts a new game
 Then the first choice is "Paper tickets" or "Phone tickets" (Phase 2)

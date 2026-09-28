@@ -77,7 +77,7 @@ When the host checks ticket 5 for Full House
 Then the claim is rejected as a bogey
 
 ## TAM-030: A pattern already won cannot be won again
-Status: draft
+Status: approved, owner, 2026-09-28
 Phase: Phase 1a
 Given Top Line was won by ticket 7 on an earlier number
 When the host checks ticket 9 for Top Line, and ticket 9's top line is complete
@@ -85,7 +85,7 @@ Then the claim is refused with "Top Line already won"
 And it is not counted as a bogey
 
 ## TAM-031: A claim for a pattern not in this game is refused
-Status: draft
+Status: approved, owner, 2026-09-28
 Phase: Phase 1a
 Given the host set up the game without Four Corners
 When the host tries to check a ticket for Four Corners
@@ -99,7 +99,7 @@ When the host enters ticket 14
 Then the host sees "No ticket 14 in this game", and nothing changes
 
 ## TAM-033: The result is announced to the room
-Status: draft
+Status: approved, owner, 2026-09-28
 Phase: Phase 1a
 When a claim is checked
 Then the host phone shows the result in large text: the ticket number or player name, the pattern,
@@ -107,27 +107,27 @@ and "Accepted" or "Bogey"
 And the ticket is shown with the called numbers highlighted, so the room can check it together
 
 ## TAM-034: For every possible ticket and call history, the check is right
-Status: draft
+Status: approved, owner, 2026-09-28
 Phase: Phase 1a
 For thousands of random tickets and random sets of called numbers
 Then a claim is accepted if, and only if, the pattern is complete on called numbers
 
 ## TAM-035: A number the player forgot to mark still counts
-Status: draft
+Status: approved, owner, 2026-09-28
 Phase: Phase 1a
 Given 56 was called and is on ticket 4, but the player never marked it
 When the host checks ticket 4 for a pattern that needs 56
 Then 56 counts, because only called numbers matter
 
 ## TAM-036: A claim is judged on the numbers called at the moment it is made
-Status: draft
+Status: approved, owner, 2026-09-28
 Phase: Phase 1a
 Given ticket 6's Top Line needs 72, which has not been called
 When the host checks ticket 6 for Top Line
 Then it is a bogey, even if 72 is called straight afterwards
 
 ## TAM-037: Paper tickets: the host checks a claim from the numbers read out
-Status: draft
+Status: approved, owner, 2026-09-28
 Phase: Phase 1a
 Given the game uses paper tickets
 And a player claims Top Line and reads out 4, 23, 41, 62 and 85
@@ -137,7 +137,7 @@ And the claim is accepted only if all five were called
 (For Early Five any 5 numbers; for Four Corners 4; for Full House all 15.)
 
 ## TAM-038: A late claim shows which number completed the pattern
-Status: draft
+Status: approved, owner, 2026-09-28
 Phase: Phase 1a
 Given Top Line on a ticket was complete when 45 was called, and 12 has been called since
 When the host checks the claim
@@ -145,7 +145,7 @@ Then it is treated as late, and the host sees "Top Line was complete at 45"
 And with paper tickets this is judged from the numbers read out: the latest of them must be the most recent call
 
 ## TAM-039: Paper tickets: the host picks who is claiming
-Status: draft
+Status: approved, owner, 2026-09-28
 Phase: Phase 1a
 Given the game uses paper tickets and the host entered names at setup (or left them as Player 1, Player 2 …)
 When the host checks a claim

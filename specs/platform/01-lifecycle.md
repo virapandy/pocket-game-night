@@ -16,7 +16,7 @@ Everything is stored **only on the host phone**: no account, no cloud.
 ```
 
 ## PLT-001: A game moves through clear states
-Status: draft
+Status: approved, owner, 2026-09-28
 Phase: Phase 1a
 Then every game is in exactly one state: Setup, In progress, Paused, Ended or Abandoned
 And only In progress and Paused games can change; Ended and Abandoned games are read-only
@@ -30,7 +30,7 @@ Then the new game starts without asking anything about the other one
 And the home screen lists every unfinished game ("Tambola, 8:40 pm, 23 numbers called") to continue
 
 ## PLT-003: Every change is saved at once
-Status: draft
+Status: approved, owner, 2026-09-28
 Phase: Phase 1a
 When anything changes in a game (a call, a claim, a setting)
 Then it is saved on the phone immediately, so closing the app never loses it (TAM-065, TAM-111, TAM-112)
@@ -46,7 +46,7 @@ Then the app asks: "Resume", "End it (with payouts so far)" or "Discard it"
 And the app never ends or discards a game on its own
 
 ## PLT-005: Discarding a game
-Status: draft (recommended)
+Status: approved, owner, 2026-09-28
 Phase: Phase 1a
 When the host taps "Discard game" and confirms ("Discard this game? Nobody wins and it can't be resumed.")
 Then the game is marked Abandoned in history, with everything that happened up to then
@@ -60,7 +60,7 @@ When they come back to set up a game
 Then the last setup is filled in, ready to change or confirm
 
 ## PLT-007: History lists past games, newest first
-Status: draft
+Status: approved, owner, 2026-09-28
 Phase: Phase 1a
 When the host opens History
 Then each game shows the game name, date and time, number of players, and result
@@ -68,7 +68,7 @@ Then each game shows the game name, date and time, number of players, and result
 And games are grouped by session (PLT-016)
 
 ## PLT-008: A past game can be looked at, but not changed
-Status: draft
+Status: approved, owner, 2026-09-28
 Phase: Phase 1a
 When the host opens a past game
 Then the summary is shown, plus every call and claim in order
@@ -106,7 +106,7 @@ And if the phone's storage for the app is nearly full, the app says so and offer
 it never deletes them silently
 
 ## PLT-013: The app is honest that history lives only on this phone
-Status: draft
+Status: approved, owner, 2026-09-28
 Phase: Phase 1a
 When the host opens History for the first time
 Then a one-line note says history is kept only on this phone, and is lost if the app's data is cleared
@@ -114,7 +114,7 @@ And the app asks the browser to keep its data (persistent storage) when the firs
 And on iPhone, the install tip (TAM-118) explains that the home-screen app keeps data more reliably
 
 ## PLT-014: Old games still open after an app update
-Status: draft
+Status: approved, owner, 2026-09-28
 Phase: Phase 1a
 Given games were saved by an older version of the app
 When the app is updated

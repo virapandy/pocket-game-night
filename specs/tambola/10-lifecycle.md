@@ -23,7 +23,7 @@ And totals across games live in the session tally (PLT-017 to PLT-019, Phase 1b)
 Status: retired 2026-09-28 (roll-over dropped; unclaimed tiers stay within their own game, TAM-088)
 
 ## TAM-143: What a finished Tambola game keeps
-Status: draft
+Status: approved, owner, 2026-09-28
 Phase: Phase 1a
 Then each finished or abandoned game keeps: date and time, ticket mode, players and tickets,
 contribution and pot, tiers, every call in order, every claim and verdict, bogeys, and payouts

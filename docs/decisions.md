@@ -27,6 +27,7 @@
 | 2026-09-28 | Phase 1 splits into 1a (one great game) and 1b (sessions, tally, history management, late joiners, voice and auto-call). | Owner |
 | 2026-09-28 | The tally is a shared feature for any game with money; each game records what each person paid and won. | Owner |
 | 2026-09-28 | Rhymes: several per number, picked at random on each call from the game's seed; host picks English, Hindi or both; family-friendly filter on by default; anchor can ask for another rhyme. | Owner + Claude |
+| 2026-09-28 | Phase 1a scenarios approved (97: 83 approved drafts plus 14 already decided). | Owner |
 | 2026-09-28 | Games two to four, in order: Impostor, Dumb Charades, Scoreboard / Rummy scorekeeper. | Claude, on owner's instruction |
 
 "Convention" means the established Tambola rule in `docs/games/tambola/guide.md`, chosen because the owner asked
@@ -34,4 +35,4 @@ Claude to follow game conventions. Every Tambola rule above is also a host setti
 
 ## Open
 - A person reviews the rhyme catalog (`docs/games/tambola/rhymes.md`, review checklist) before it ships
-- Approval of the Tambola scenarios in `specs/tambola/`
+- Approval of Phase 1b and Phase 2 scenarios (when those phases come up)
