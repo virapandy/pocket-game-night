@@ -13,8 +13,8 @@ export type Viewer =
 export interface SetupInput<Config> {
   readonly gameId: string;
   /**
-   * Named seeds. Each secret has its own (Tambola: a host-only draw seed, one seed per phone ticket),
-   * so handing out one seed reveals nothing else.
+   * Named seeds, one per secret (Tambola: the draw seed and the sheet seed). Seeds never leave the
+   * host phone; other phones receive only what their view allows.
    */
   readonly seeds: Readonly<Record<string, Seed>>;
   /** Players, settings and anything else the game asks for at setup. */

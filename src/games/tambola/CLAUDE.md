@@ -11,8 +11,10 @@
 - The same seeds and moves always replay to the same result.
 
 ## Seeds
-- **Draw seed:** host phone only. It never appears in a QR code, a link or a player's view.
-- **Ticket seeds:** one per ticket. A QR code carries only that player's ticket seed and number.
+- **Draw seed:** host phone only. It never appears in a QR code, a link or a player's view (TAM-052).
+- **Sheet seed (Phase 2):** host phone only. Tickets are made in sheets of 6 from it (TAM-008).
+- **No seed ever leaves the host.** A player's QR carries only that ticket's 15 numbers and layout, its
+  ticket number and the game code (TAM-053), because a seed would let a phone rebuild the rest of its sheet.
 
 ## Fun friction: defaults protect the room
 | Moment | Default | Optional shortcut (off, with a one-time warning) |
@@ -41,7 +43,7 @@ in progress. Source: `specs/tambola/04-house-rules.md` and `docs/decisions.md`.
 - **Phase 1a is paper tickets only.** Players bring their own ticket book; the app makes no tickets.
   A claim is checked from the numbers the player reads out, typed by the host (TAM-037), against
   the numbers called at that moment (TAM-035, TAM-036). The host picks the claiming player (TAM-039).
-- **Phase 2** adds tickets made by the app from ticket seeds, handed out from sheets of 6 (TAM-048).
+- **Phase 2** adds tickets made by the app from the sheet seed, handed out from sheets of 6 (TAM-048).
 
 ## Prizes
 From `specs/tambola/08-prizes.md` (TAM-080 to TAM-091). Money is calculated, never moved.

@@ -17,7 +17,8 @@ The engine runs any game written to the contract. It must stay pure and tiny.
 - No imports from `src/games`, `src/blocks`, `src/adapters` or `src/app`.
 - No DOM, no `fetch`, no storage, no timers inside rules.
 - No `Math.random()` and no `Date.now()`: all randomness comes from a seeded generator, time from moves.
-- A secret gets its own seed (for example, a host-only draw seed and one seed per ticket).
+- A secret gets its own seed, and seeds never leave the host phone (for example, Tambola's draw seed and
+  sheet seed). Other phones receive only the result they may see, such as their own ticket's numbers.
 - Every move is a small serialisable record. The move-record format carries a version number from day one,
   because saved failing games become permanent tests.
 - The host phone holds the one true state. Other phones only send moves and show their own view.
