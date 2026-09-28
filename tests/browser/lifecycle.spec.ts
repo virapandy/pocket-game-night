@@ -130,21 +130,34 @@ test('PLT-007, PLT-008, PLT-013: History lists past games newest first, read-onl
 });
 
 test('PLT-013: the app asks the browser to keep its data when the first game starts', async ({ page }) => {
+  // The stand-in goes on StorageManager.prototype, not on the navigator.storage object: WebKit can
+  // replace that object's wrapper during page load, which silently drops a stand-in set on it
+  // (see docs/test-questions.md, PLT-013).
   await page.addInitScript(() => {
     (window as any).__persist = 0;
-    if (navigator.storage) navigator.storage.persist = async () => { (window as any).__persist++; return true; };
+    const standIn = async function persist() { (window as any).__persist++; return true; };
+    (standIn as any).__standIn = true;
+    if (typeof StorageManager !== 'undefined') StorageManager.prototype.persist = standIn;
   });
   await setUpPaperGame(page);
+  // The stand-in must still be what the app would call, or this test proves nothing.
+  expect(await page.evaluate(() => !!(navigator.storage?.persist as any)?.__standIn)).toBe(true);
   await call(page);
+  expect(await page.evaluate(() => !!(navigator.storage?.persist as any)?.__standIn)).toBe(true);
   expect(await page.evaluate(() => (window as any).__persist)).toBeGreaterThan(0);
 });
 
 test('PLT-012: when storage is nearly full, the app says so and offers to delete the oldest games', async ({ page }) => {
+  // Stand-in on StorageManager.prototype for the same reason as PLT-013 above.
   await page.addInitScript(() => {
-    if (navigator.storage) navigator.storage.estimate = async () => ({ usage: 97, quota: 100 });
+    const standIn = async function estimate() { return { usage: 97, quota: 100 }; };
+    (standIn as any).__standIn = true;
+    if (typeof StorageManager !== 'undefined') StorageManager.prototype.estimate = standIn;
   });
   await page.goto(HOME);
   await page.getByRole('button', { name: 'History' }).click();
+  // The stand-in must still be what the app would call, or this test proves nothing.
+  expect(await page.evaluate(() => !!(navigator.storage?.estimate as any)?.__standIn)).toBe(true);
   await expect(page.getByText(/storage is (nearly|almost) full/i)).toBeVisible();
   await expect(page.getByRole('button', { name: /Delete (the )?oldest/i })).toBeVisible();
 });

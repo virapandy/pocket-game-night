@@ -1,55 +1,47 @@
 # Test report
-Commit tested: 120da09 (Phase 1a Tambola, round 1)   Date: 2026-09-28
-Result: RED
+Commit tested: 1d1e626 (Phase 1a Tambola, round 2)   Date: 2026-09-28
+Result: GREEN, apart from the known WebKit offline-reload issue (3 iPhone tests, not counted against the build)
 
 | Layer | Command | Passing | Failing | Skipped |
 |---|---|---|---|---|
 | Rules, contract, property, simulation, replays | `npm test` | 243 | 0 | 0 |
-| Browser, Android (Chromium) | `npm run build && npm run test:browser` | 51 | 6 | 1 (iPhone only) |
-| Browser, iPhone (WebKit) | same | 46 | 9 (3 are the known WebKit offline-reload issue) | 3 (Android or Chromium only) |
+| Browser, Android (Chromium) | `npm run build && npm run test:browser` | 57 | 0 | 1 (iPhone only) |
+| Browser, iPhone (WebKit) | same | 52 | 3 (all the known WebKit offline-reload issue) | 3 (Android or Chromium only) |
 
-Build (`npm run build`): succeeds. Counts are from the full run with the default number of workers.
-Browser failures were then re-run (3 times, and again one test at a time) to separate real bugs from flaky ones.
+Build (`npm run build`): succeeds. Browser counts are from the final full run of both phones with the
+default number of workers, after the two test fixes below. The iPhone failures were re-run one at a time.
 
 ## Failing (real bugs only)
-- **"Next number" sometimes stays disabled for good after a call (TAM-101, and so TAM-012, TAM-016, TAM-017,
-  TAM-064/TAM-114 on Android, TAM-070, TAM-145, TAM-156, PLT-002).** Expected: the button stays disabled only
-  until the new number is on screen (TAM-101). Got: the new number and rhyme are on screen, but the button stays
-  `disabled` for the next 10 seconds and more, so the game cannot go on. It happens at random: after 3, 12 or 69
-  calls; on both Android and iPhone; also when tests run one at a time. TAM-012 (90 calls) hit it in 5 of 7 runs on Android and 4 of 4 on iPhone.
-  Every other test that calls numbers can hit it; which ones fail changes from run to run.
-- **PLT-012** `lifecycle.spec.ts` "when storage is nearly full…" (Android and iPhone, every run): expected History to
-  say storage is nearly full and offer to delete the oldest games when the browser reports 97 of 100 used; got
-  History with only the "kept only on this phone" note.
-- **PLT-013** `lifecycle.spec.ts` "the app asks the browser to keep its data when the first game starts" (iPhone only,
-  the one run where setup finished; the other stalled in setup): expected the app to ask for persistent storage by the first call; got no request.
-  Passes on Android. I checked that the test's stand-in for the request works on this WebKit, so the app is not asking.
+None.
+
+Fixed since round 1 and now passing: TAM-101 ("Next number" no longer sticks disabled) and its knock-ons
+TAM-012, TAM-016, TAM-017, TAM-064/TAM-114 (Android), TAM-070, TAM-145, TAM-156, PLT-002; PLT-012 on Android.
+PLT-012 and PLT-013 on iPhone were test faults (see below), and pass now.
 
 ## Flaky or setup problems (not for the Build workspace)
-- **Known: WebKit offline reload.** Still happens, every run (4 of 4): `app-shell.spec.ts` "after one visit, the app
-  opens with no internet", TAM-064/TAM-114 and TAM-069 on iPhone fail at `page.reload` with "WebKit encountered an
-  internal error". Not counted against the build. Still to confirm in automation or by hand on the iPhone Simulator.
-- **Stalled taps when many tests run at once.** With the default number of parallel workers, some taps and typing
-  hang for 10 seconds on an element that is visible and enabled (setup "Next", a player name box, a player button in
-  Check a claim). Seen in PLT-004 (x2), PLT-007, PLT-013, TAM-101, TAM-102, TAM-107/TAM-108, TAM-119 and TAM-037
-  in one run or another; each passed on a re-run with one test at a time. Treated as load on the test Mac, not a
-  bug, for now. If automation shows the same, it may mean the app is slow on a busy phone (TAM-116).
-- **Test fixes this round (stricter, not looser; see `docs/test-questions.md`):**
-  - `fillPlayers` in `tests/browser/helpers.ts` matched "Name of player 1" to "Name of player 10" too; now exact.
-    TAM-084 (10 players) passes.
-  - TAM-037 in `claims.spec.ts`: the "3 ✓" and "3 ✗" checks could match "23 ✓"; now exact. Passed in every run that got past setup.
-  - TAM-038 in `claims.spec.ts`: "complete at 4" could accept "complete at 45"; now it cannot.
+- **Known: WebKit offline reload.** Every run, and again one test at a time: `app-shell.spec.ts` "after one visit,
+  the app opens with no internet", TAM-064/TAM-114 and TAM-069 on iPhone fail at `page.reload` with "WebKit
+  encountered an internal error". The same tests pass on Android. Not counted against the build. Still to confirm
+  in automation or by hand on the iPhone Simulator.
+- **Stalled taps under load (round 1):** not seen this round.
+- **Test fix this round (stricter, not looser; see `docs/test-questions.md`):** PLT-013 and PLT-012 put their
+  stand-ins for the browser's "keep my data" and "how full is storage" functions on the `navigator.storage` object.
+  WebKit drops extra properties on that object during setup, so the app reached the real function and the test
+  wrongly failed. Both stand-ins now go on `StorageManager.prototype` before the page loads, and both tests now
+  also check that the stand-in is still in place when the app would use it. The round 1 finding "on iPhone the
+  app does not ask to keep data" was wrong. PLT-012 and PLT-013 passed 3 of 3 repeats on each phone.
 
 ## Requests for the Build workspace (dependencies, scripts, test hooks in the app)
-- Fix the three bugs above. For "Next number", the check is TAM-101's second line: disabled only until the
-  new number is on screen.
 - Unchanged: please update the "End of game" row in `src/games/tambola/CLAUDE.md` to match TAM-075 and TAM-145.
 
+## Draft scenarios (no tests written)
+- None in Phase 1a. Drafts found are for later phases only (for example TAM-020, TAM-032, TAM-050, TAM-053,
+  TAM-117 for Phase 2; PLT-100 for Phase 2.5; TAM-200 for Phase 6).
+
 ## Notes for the owner (plain English)
-- Big step: all 243 rules and money checks pass, and most screens work on both phones.
-- One serious bug: now and then the "Next number" button stops working after a call, and the game gets stuck.
-  It is random, so a real game night would probably hit it. The Build side needs to fix this first.
-- Two smaller ones: the "storage nearly full" warning in History doesn't appear, and on iPhone the app doesn't
-  ask the phone to keep its saved games safe.
-- The Build side spotted two test mistakes that could have failed good code. They were right, and I fixed both
-  tests plus one more of the same kind. None of this changed what the game should do.
+- The serious bug from last round is fixed: "Next number" no longer gets stuck, so long games run to the end.
+- The "storage nearly full" warning in History now shows.
+- On iPhone, the app does ask the phone to keep saved games safe. Last round I said it did not; that was my
+  test's mistake, not the app's. I fixed the test and noted it in `docs/test-questions.md`.
+- The only failures left are the known iPhone test-browser problem with reloading while offline. It needs a check
+  on a real iPhone or the iPhone Simulator before we can say offline works there.
