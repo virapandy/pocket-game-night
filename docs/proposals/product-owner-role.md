@@ -1,8 +1,7 @@
 # Proposal: add a product owner role to the workspace rules
 
-Status: **approved by the owner (option b, 28 September 2026); to be applied when the orchestrator is idle.**
-Until then, the product owner works in its own clone with a local docs-only commit check
-(`.git/hooks/pre-commit` in `pocket-game-night-product/`), and changes nothing shared.
+Status: **applied 28 September 2026**, after Phase 1a turned green and the orchestrator was idle.
+The guard was tested for all four roles (edits, reads, test commands, commits, shell side effects).
 
 ## Why
 The workspace has three roles (orchestrator, coder, tester). Product work (game designs, guides,

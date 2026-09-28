@@ -5,8 +5,8 @@ card games from one host phone. The phone replaces paper and bookkeeping, not th
 First game: **Tambola**. Games two to four (Impostor, Dumb Charades, Scoreboard / Rummy scorekeeper)
 follow quickly on the same game contract.
 
-**Current stage:** Phase 0 (foundation), then Phase 1a (Tambola with paper tickets on one host phone).
-Start with `docs/handover.md`.
+**Current stage:** Phase 1a (Tambola with paper tickets on one host phone) is built, green and live.
+What comes next, and in what order: `docs/roadmap.md`. Build handover: `docs/handover.md`.
 
 The owner is not a developer. The owner approves **behaviour** (scenarios in `specs/`, preview
 links), never code. Explain every change in plain English.
@@ -21,6 +21,7 @@ always run on pushed code, never on half-finished edits:
 <workspace>/                   open Claude Code here to orchestrate (set up by .claude/workspace/setup.sh)
   pocket-game-night/           Build clone
   pocket-game-night-testing/   Test clone
+  pocket-game-night-product/   Product clone (product owner's docs; works in parallel)
 ```
 
 | Role | Who | Folder | May edit | May run |
@@ -28,6 +29,7 @@ always run on pushed code, never on half-finished edits:
 | **Orchestrator** | Claude Code opened in the workspace folder | both, read only | `docs/` in the Build clone | git, type-check, build; never tests |
 | **Build** | `coder` subagent, or Claude Code opened in `pocket-game-night/` | `pocket-game-night/` | `src/`, `content/`, root config files, `.github/`, `docs/` | type-check, build, lint |
 | **Test** | `tester` subagent, or the Claude desktop app opened in `pocket-game-night-testing/` | `pocket-game-night-testing/` | `tests/`, `specs/`, `reports/`, `docs/` | every test, simulations, iPhone Simulator, browser checks |
+| **Product owner** | the Claude desktop app opened in `pocket-game-night-product/` (or the workspace folder) | all, read only; writes only its own clone | `docs/` in `pocket-game-night-product/` | nothing that builds or tests |
 
 - **Usual way: three agents in one chat.** Open the workspace folder. The main session is the
   **orchestrator**; it runs the loop below by handing work to the **coder** and the **tester**
@@ -75,7 +77,7 @@ CLAUDE.md               this index
   workspace/            the orchestrator's CLAUDE.md, settings.json, agents/ (coder, tester)
                         and setup.sh, linked into the workspace folder
 .githooks/pre-commit    blocks commits that cross the build/test line
-docs/                   handover.md (start here), decisions.md, new-game-process.md,
+docs/                   roadmap.md, handover.md, decisions.md, new-game-process.md,
                         ux-guidelines.md, test-questions.md
   games/<game>/         guide.md (rules and contract check), journeys.md, rhymes or other source content
 src/                    BUILD: app code

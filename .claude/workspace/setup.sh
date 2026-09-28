@@ -12,9 +12,11 @@ BUILD=$(cd "$(dirname "$0")/../.." && pwd)
 NAME=$(basename "$BUILD")
 WS=$(dirname "$BUILD")
 TEST="$WS/$NAME-testing"
+PRODUCT="$WS/$NAME-product"
 
 [ -d "$TEST/.git" ] || git clone "$REPO" "$TEST"
-for dir in "$BUILD" "$TEST"; do git -C "$dir" config core.hooksPath .githooks; done
+[ -d "$PRODUCT/.git" ] || git clone "$REPO" "$PRODUCT"
+for dir in "$BUILD" "$TEST" "$PRODUCT"; do git -C "$dir" config core.hooksPath .githooks; done
 
 # Links, not copies, so a git pull in the Build clone updates the workspace rules too.
 link() { # link <target, relative to the link's folder> <link path>
@@ -26,3 +28,4 @@ link "$NAME/.claude/workspace/CLAUDE.md" "$WS/CLAUDE.md"
 link "../$NAME/.claude/workspace/settings.json" "$WS/.claude/settings.json"
 link "../$NAME/.claude/workspace/agents" "$WS/.claude/agents"
 echo "Done. Open $WS in VS Code and start Claude Code there to orchestrate."
+echo "Product owner: open $PRODUCT (or $WS) in the Claude desktop app."

@@ -5,8 +5,11 @@
 //                      opened in that folder)
 //         test         writes and runs tests in pocket-game-night-testing/ (the tester subagent,
 //                      or the Claude desktop app opened in that folder)
-//         orchestrator the main session opened in the workspace folder that holds both clones;
-//                      hands work to the coder and tester, edits only docs/ itself
+//         orchestrator the main session opened in the workspace folder that holds the clones;
+//                      hands work to the coder and tester, edits only docs/ in the Build clone
+//         product      the product owner: the Claude desktop app opened in pocket-game-night-product/
+//                      (or in the workspace folder); edits only docs/ in its own clone, runs no tests,
+//                      and may work in parallel with the others because it never writes to their clones
 //
 // Modes:  pre     PreToolUse   - block edits and reads outside the role, and test runs outside Test
 //         post    PostToolUse  - catch shell commands that changed files the role must not touch
@@ -27,17 +30,22 @@ const WEAKENING = /\.(skip|only|todo)\s*\(|\bx(it|describe|test)\s*\(/;
 const READ_TOOLS = ['Read', 'Grep', 'Glob'];
 const AGENT_ROLE = { coder: 'build', tester: 'test' };
 
-// This file lives in both clones; the two clones sit side by side in the workspace folder.
+// This file lives in every clone; the clones sit side by side in the workspace folder.
 const real = (p) => { try { return realpathSync(p); } catch { return path.resolve(p); } };
 const SELF = real(path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..'));
-const FOLDER = { build: SELF.replace(/-testing$/, ''), test: `${SELF.replace(/-testing$/, '')}-testing` };
+const BASE = SELF.replace(/-(testing|product)$/, '');
+const FOLDER = { build: BASE, test: `${BASE}-testing`, product: `${BASE}-product` };
 const WORKSPACE = path.dirname(FOLDER.build);
 
 const entry = process.env.CLAUDE_CODE_ENTRYPOINT;
 const projectDir = real(process.env.CLAUDE_PROJECT_DIR || process.cwd());
-let role = entry === 'claude-desktop' ? 'test' : projectDir === WORKSPACE ? 'orchestrator' : 'build';
+const inside = (dir, root) => dir === root || dir.startsWith(root + path.sep);
+// The desktop app is the Test role in the Test clone, and the product owner anywhere else.
+let role = entry === 'claude-desktop'
+  ? (inside(projectDir, FOLDER.test) ? 'test' : 'product')
+  : projectDir === WORKSPACE ? 'orchestrator' : 'build';
 let agent = null; // 'coder' or 'tester' when a subagent is acting
-const NAME = { build: 'Build role', test: 'Test role', orchestrator: 'orchestrator' };
+const NAME = { build: 'Build role', test: 'Test role', orchestrator: 'orchestrator', product: 'product owner' };
 const who = () => (agent ? `${agent} subagent` : NAME[role]);
 
 const git = (args, cwd) => execSync(`git ${args}`, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
@@ -67,11 +75,13 @@ function ownerOf(rel) {
 function allowed(clone, owner) {
   if (owner === 'governance') return true;
   if (role === 'orchestrator') return owner === 'shared' && clone === 'build';
+  if (role === 'product') return owner === 'shared' && clone === 'product';
   return clone === role && (owner === 'shared' || owner === role);
 }
 
 function wrongFolderMessage(clone) {
   if (agent) return `The ${agent} works only in ${base(role)}/, not ${base(clone)}/.`;
+  if (role === 'product') return `The product owner edits only docs/ in ${base('product')}/, not ${base(clone)}/.`;
   return role === 'test'
     ? `This is the Build folder (${FOLDER.build}). The desktop app tests from the ${base('test')} clone. Open that folder instead.`
     : `This is the Test folder (${FOLDER.test}). Write code from the ${base('build')} folder, or open the workspace folder to orchestrate.`;
@@ -120,13 +130,19 @@ function pre(input) {
   const file = ti.file_path || ti.notebook_path;
   if (!file) process.exit(0);
   const loc = locate(path.resolve(cwd, file));
-  if (!loc) process.exit(0); // outside both clones
+  if (!loc) process.exit(0); // outside the clones
   const { clone, rel } = loc;
 
   const owner = ownerOf(rel);
   if (owner === 'governance') {
     if (agent) decide('deny', `${rel} is a project rule file. Subagents never change it; tell the orchestrator.`);
     decide('ask', `${rel} is a project rule file. Changing it needs the owner's approval.`);
+  }
+  if (role === 'product') {
+    if (allowed(clone, owner)) process.exit(0);
+    decide('deny', clone === 'product'
+      ? `The product owner edits only docs/. ${rel} belongs to the ${owner === 'test' ? 'tester' : 'coder'}; describe the change for the orchestrator instead.`
+      : wrongFolderMessage(clone));
   }
   if (role === 'orchestrator') {
     if (allowed(clone, owner)) process.exit(0);
@@ -150,9 +166,12 @@ function post(input) {
   if (input.tool_name !== 'Bash') process.exit(0);
   let before = null;
   try { before = JSON.parse(readFileSync(snapshotFile(input), 'utf8')); unlinkSync(snapshotFile(input)); } catch { /* none */ }
-  const own = role === 'test' ? 'test' : 'build';
+  const own = role === 'test' ? 'test' : role === 'product' ? 'product' : 'build';
   const stray = [];
   for (const [clone, root] of Object.entries(FOLDER)) {
+    // The product owner works in parallel with the others, so each side checks only its own world:
+    // the product owner its own clone, everyone else the Build and Test clones.
+    if ((role === 'product') !== (clone === 'product')) continue;
     const now = changedFiles(root);
     // Without a snapshot, check the role's own clone fully and skip the other one.
     const was = new Set(before ? before[clone] : clone === own ? [] : now);
@@ -177,7 +196,10 @@ function session() {
     try { git('config core.hooksPath .githooks', root); } catch { /* clone missing or not a repo yet */ }
   }
   const lines = [];
-  if (role === 'orchestrator') {
+  if (role === 'product') {
+    lines.push('You are the product owner. Work in pocket-game-night-product/ and edit only its docs/.');
+    lines.push('Read anything in any clone; never edit the Build or Test clones, never run tests. Send build and test work through the orchestrator.');
+  } else if (role === 'orchestrator') {
     lines.push('You are the orchestrator, in the workspace folder. Follow CLAUDE.md here, then pocket-game-night/CLAUDE.md.');
     lines.push('Hand app code to the coder subagent and testing to the tester subagent. You edit only docs/ in pocket-game-night/.');
     const missing = Object.values(FOLDER).filter((root) => !existsSync(path.join(root, '.git')));
@@ -197,9 +219,10 @@ function session() {
 function commit() {
   if (!entry) process.exit(0); // the owner committing by hand is always allowed
   const root = git('rev-parse --show-toplevel', process.cwd()).trim();
-  // Outside the desktop app, the folder decides: the coder commits in Build, the tester in Test.
+  // The folder decides who is committing: the coder in Build, the tester in Test, the product owner
+  // in Product. The desktop app may commit only in the Test clone (as Test) or Product (as product owner).
   const clone = locate(root)?.clone ?? 'build';
-  if (entry !== 'claude-desktop') role = clone;
+  if (entry !== 'claude-desktop' || clone !== 'build') role = clone;
   const staged = git('diff --cached --name-only', root).split('\n').filter(Boolean);
   const bad = staged.filter((rel) => !allowed(clone, ownerOf(rel)));
   if (bad.length) {

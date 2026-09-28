@@ -107,7 +107,7 @@ Map the game onto the seven contract questions in `src/engine/CLAUDE.md`:
 If any answer doesn't fit, flag it to the owner before scenarios are written: it means an engine change.
 Also note which secrets need their own seeds.
 
-## Step 8: Test cases → `specs/<game>/`
+## Step 8: Test cases → `docs/games/<game>/scenarios.md` (drafts), then `specs/<game>/`
 - Use the scenario template in `specs/README.md` and the game's ID prefix (below).
 - Suggested files, following Tambola:
   `01-setup` · `02-core-play` · `03-winning-and-scoring` · `04-house-rules` · `05-secrets` ·
