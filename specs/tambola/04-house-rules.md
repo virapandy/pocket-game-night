@@ -3,11 +3,14 @@
 Each scenario below has a question. Pick one option (or write your own), and the scenario is finished.
 Every choice becomes a **setting** with a default the host can change. These are the defaults.
 
+**Norm** marks the option that matches the established rules in `docs/tambola-guide.md`.
+**Recommended** is Claude's suggestion for family play, where it differs from the norm.
+
 ## TAM-040: Which patterns are in a game by default?
 Status: waiting for owner decision
 Options:
 - A. Early Five, Top Line, Middle Line, Bottom Line, Full House
-- B. A plus Four Corners
+- B. A plus Four Corners (**norm**: the standard six dividends)
 - C. B plus extras (Early Seven, Star, Pyramid …) as optional patterns the host can switch on
 Scenario once chosen:
 When the host starts a new game without changing settings
@@ -16,7 +19,7 @@ Then exactly the chosen default patterns are available to claim
 ## TAM-041: Two players claim the same pattern at the same moment
 Status: waiting for owner decision
 Options:
-- A. Both win and share the prize
+- A. Both win and share the prize (**norm**)
 - B. The first claim entered by the host wins
 - C. The host decides each time
 Scenario once chosen:
@@ -27,7 +30,7 @@ Then the chosen rule is applied, every time
 ## TAM-042: What counts as "the same moment"?
 Status: waiting for owner decision
 Options:
-- A. Both completed their pattern on the same called number, and both claimed before the next number
+- A. Both completed their pattern on the same called number, and both claimed before the next number (**norm**)
 - B. Only if the host entered them within a few seconds of each other
 Scenario once chosen: the rule in TAM-041 applies only to claims that match this definition.
 
@@ -35,17 +38,18 @@ Scenario once chosen: the rule in TAM-041 applies only to claims that match this
 Status: waiting for owner decision
 A player's pattern was complete after number 45 was called, but they only claimed after 12 was called next.
 Options:
-- A. Still valid (most family games)
-- B. Invalid: a claim must come before the next number is called
+- A. Still valid (gentler)
+- B. Invalid: a claim must come before the next number is called, and a late claim counts as a bogey (**norm**)
 Scenario once chosen:
 When the host checks the late claim
-Then it is accepted (A) or refused as "too late" (B)
+Then it is accepted (A) or treated as a bogey with the reason "too late" (B)
+(For B, the app records which number completed each ticket's pattern, so "late" is exact.)
 
 ## TAM-044: What happens after a bogey?
 Status: waiting for owner decision
 Options:
-- A. Nothing; the room laughs and play continues
-- B. That ticket is out of the game
+- A. Nothing; the room laughs and play continues (**recommended** for family play)
+- B. That ticket is out of the game (**norm**: the ticket is "cancelled")
 - C. That ticket cannot claim the same pattern again
 Scenario once chosen:
 Given ticket 3 made a bogey on Top Line
@@ -55,7 +59,7 @@ Then the chosen consequence applies, and the host sees it clearly
 Status: waiting for owner decision
 Options:
 - A. One
-- B. Up to a limit the host sets (for example 3)
+- B. Up to a limit the host sets, default 3 (**norm**: 1 to 3 tickets per player)
 Scenario once chosen:
 When the host hands out tickets
 Then no player gets more than the allowed number
@@ -63,8 +67,8 @@ Then no player gets more than the allowed number
 ## TAM-046: Second and third Full House
 Status: waiting for owner decision
 Options:
-- A. The game ends at the first Full House
-- B. The host can allow a second (and third) Full House before the game ends
+- A. The game ends at the first Full House (**norm**)
+- B. The host can allow a second (and third) Full House before the game ends (a common extra)
 Scenario once chosen: see TAM-075.
 
 ## TAM-047: Prize amounts
@@ -72,7 +76,7 @@ Status: waiting for owner decision
 The brief rules out real money in the app.
 Options:
 - A. No prizes shown at all
-- B. The host may type a prize label per pattern (such as "₹50" or "chocolate"), shown on the result screen only; no money is handled
+- B. The host may type a prize label per pattern (such as "chocolate" or "movie pick"), shown on the result screen only; no money is handled (**norm**: non-cash prizes per dividend)
 Scenario once chosen:
 When a claim is accepted
 Then the result shows the prize label (B), or no prize (A)
@@ -80,7 +84,7 @@ Then the result shows the prize label (B), or no prize (A)
 ## TAM-048: Tickets per game
 Status: waiting for owner decision
 Options:
-- A. Hand out tickets one by one, from full sheets of 6 (so numbers spread evenly)
+- A. Hand out tickets one by one, from full sheets of 6 (so numbers spread evenly) (**norm**: tickets come in strips of 6)
 - B. Every ticket made independently
 Scenario once chosen: TAM-006 applies to every group of 6 tickets handed out (A), or only when printing full sheets (B).
 

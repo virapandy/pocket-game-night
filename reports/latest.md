@@ -13,4 +13,4 @@ None.
   with test scripts pointing at configs in tests/.
 
 ## Notes for the owner (plain English)
-65 Tambola scenarios are drafted in specs/tambola/ and waiting for approval. 10 of them (04-house-rules.md) need the owner to pick an option. No test code yet: it gets written from approved scenarios once Phase 0 has set up the test runner and the game contract.
+67 Tambola scenarios are drafted, checked against docs/tambola-guide.md, in specs/tambola/ and waiting for approval. 10 of them (04-house-rules.md) need the owner to pick an option. No test code yet: it gets written from approved scenarios once Phase 0 has set up the test runner and the game contract.

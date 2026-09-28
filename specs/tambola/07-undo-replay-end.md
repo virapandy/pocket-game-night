@@ -34,11 +34,12 @@ Status: draft (depends on TAM-046)
 When the last allowed Full House is accepted
 Then the game ends and the summary shows every pattern and who won it
 
-## TAM-076: The game ends when all 90 are called
+## TAM-076: When all 90 are called, every ticket is complete
 Status: draft
 Given nobody has claimed Full House
 When the 90th number is called
-Then the host is told all numbers are out, and can check any remaining claims before ending
+Then the host is told all numbers are out and every ticket is now a Full House
+And the host can check the remaining claims, then end the game
 
 ## TAM-077: Every game ends
 Status: draft

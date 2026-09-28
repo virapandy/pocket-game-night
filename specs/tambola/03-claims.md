@@ -68,7 +68,7 @@ Then the claim is rejected as a bogey
 
 ## TAM-030: A pattern already won cannot be won again
 Status: draft
-Given Top Line has already been won by ticket 7
+Given Top Line was won by ticket 7 on an earlier number
 When the host checks ticket 9 for Top Line, and ticket 9's top line is complete
 Then the claim is refused with "Top Line already won"
 And it is not counted as a bogey
@@ -96,3 +96,15 @@ And the ticket is shown with the called numbers highlighted, so the room can che
 Status: draft
 For thousands of random tickets and random sets of called numbers
 Then a claim is accepted if, and only if, the pattern is complete on called numbers
+
+## TAM-035: A number the player forgot to mark still counts
+Status: draft
+Given 56 was called and is on ticket 4, but the player never marked it
+When the host checks ticket 4 for a pattern that needs 56
+Then 56 counts, because only called numbers matter
+
+## TAM-036: A claim is judged on the numbers called at the moment it is made
+Status: draft
+Given ticket 6's Top Line needs 72, which has not been called
+When the host checks ticket 6 for Top Line
+Then it is a bogey, even if 72 is called straight afterwards
