@@ -23,6 +23,7 @@
 | 2026-09-28 | Several unfinished games allowed; no one-game limit unless absolutely necessary (PLT-002). | Owner |
 | 2026-09-28 | Resume straight away within 12 hours, otherwise ask; never ended automatically (PLT-004). (Changed below.) | Owner |
 | 2026-09-28 | Within 12 hours an unfinished game is not opened automatically: the home screen shows it with "Tap to resume" and one tap goes back in, paused. Chosen because opening it automatically clashes with PLT-002 (several unfinished games; the host picks from the home screen). After 12 hours and "never ended automatically" are unchanged (PLT-004). | Owner |
+| 2026-09-28 | The three "opens with no internet" browser tests (app shell, TAM-064/TAM-114, TAM-069) run in Chromium only, because Playwright's WebKit fails offline reloads with an internal error, locally and in automation. The Test role confirms this is a WebKit limitation first, then checks offline opening by hand in the iPhone Simulator and records the result in `reports/latest.md`. Every other iPhone test still runs. | Owner |
 | 2026-09-28 | No limit on history; ask before removing anything; no hand-entered games (PLT-012, PLT-015). | Owner |
 | 2026-09-28 | Discard means the game is void and contributions are handed back (TAM-140). | Owner |
 | 2026-09-28 | Games are grouped in named sessions; a tally covers ended, unsettled games in one session; Settle marks them done; sessions are never tallied together (PLT-016 to PLT-020). | Owner |
