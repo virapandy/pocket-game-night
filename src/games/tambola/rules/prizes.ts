@@ -63,9 +63,7 @@ export function apportion(total: number, weights: readonly number[]): number[] {
   const sum = w.reduce((a, b) => a + b, 0);
   const out = w.map((x) => Math.floor((total * x) / sum));
   let left = total - out.reduce((a, b) => a + b, 0);
-  const order = w
-    .map((x, i) => ({ i, rem: (total * x) % sum, x }))
-    .sort((a, b) => b.rem - a.rem || b.x - a.x || a.i - b.i);
+  const order = w.map((x, i) => ({ i, rem: (total * x) % sum, x })).sort((a, b) => b.rem - a.rem || b.x - a.x || a.i - b.i);
   for (let k = 0; left > 0; k = (k + 1) % order.length, left--) out[order[k]!.i]! += 1;
   return out;
 }
@@ -116,22 +114,90 @@ export function planPrizes(input: PlanInput): PrizePlan {
 
   const free = patterns.filter((p) => !fixed.has(p));
   const pool = pot - fixedSum;
-  const units = Math.floor(pool / unit);
-  const shares = apportion(units, free.map((p) => weights.get(p)!));
   const amounts = new Map<Pattern, number>(fixed);
-  free.forEach((p, i) => amounts.set(p, shares[i]! * unit));
-  // What cannot be rounded to the unit goes to Full House, so it stays the largest.
-  const rest = pool - units * unit;
-  if (rest > 0) {
-    const target = free.includes('full-house')
-      ? 'full-house'
-      : free.reduce((a, b) => (weights.get(b)! > weights.get(a)! ? b : a));
-    amounts.set(target, amounts.get(target)! + rest);
+  if (free.length > 0) {
+    const sink = sinkOf(free, weights);
+    for (const [p, a] of splitEqually(pool, unit, free, weights, sink, 'amounts')) amounts.set(p, a);
   }
 
-  const percents = apportion(100, patterns.map((p) => weights.get(p)!));
+  // Percentages: equal shares show equal percentages, different shares different ones; the rest goes to the sink.
+  const percents = splitEqually(100, 1, patterns, weights, sinkOf(patterns, weights), 'floor');
   return {
     pot,
-    tiers: patterns.map((pattern, i) => ({ pattern, percent: percents[i]!, amount: amounts.get(pattern)! })),
+    tiers: patterns.map((pattern) => ({
+      pattern,
+      percent: percents.get(pattern)!,
+      amount: amounts.get(pattern)!,
+    })),
   };
+}
+
+/**
+ * The tier that takes the rounding difference (TAM-082, TAM-092): Full House when it is free, otherwise the
+ * free tier with the largest share that no other free tier shares, so equal shares stay equal.
+ */
+function sinkOf(free: readonly Pattern[], weights: ReadonlyMap<Pattern, number>): Pattern {
+  if (free.includes('full-house')) return 'full-house';
+  const w = (p: Pattern) => weights.get(p)!;
+  const unique = free.filter((p) => free.filter((q) => w(q) === w(p)).length === 1);
+  const pick = (list: readonly Pattern[]) => list.reduce((a, b) => (w(b) > w(a) ? b : a));
+  return pick(unique.length > 0 ? unique : free);
+}
+
+/**
+ * Splits `pool` across `items` in proportion to their weights, in whole `unit`s (TAM-082, TAM-092):
+ * items with the same weight always get the same amount, and every item but `sink` is a whole number of
+ * units. For amounts, leftover units go, a whole group at a time, to the groups with the largest
+ * remainders, unless that would make a group larger than the sink; whatever is still left, including
+ * anything smaller than a unit, goes to `sink`. In 'floor' mode every leftover goes to the sink.
+ */
+function splitEqually(
+  pool: number,
+  unit: number,
+  items: readonly Pattern[],
+  weights: ReadonlyMap<Pattern, number>,
+  sink: Pattern,
+  mode: 'amounts' | 'floor',
+): Map<Pattern, number> {
+  const raw = items.map((p) => weights.get(p)!);
+  const w = raw.every((x) => x === 0) ? raw.map(() => 1) : raw;
+  const total = w.reduce((a, b) => a + b, 0);
+  const units = Math.floor(pool / unit);
+  const got = new Map<Pattern, number>(items.map((p, i) => [p, Math.floor((units * w[i]!) / total)]));
+  let left = units - [...got.values()].reduce((a, b) => a + b, 0);
+
+  const groups = new Map<number, { weight: number; first: number; members: Pattern[] }>();
+  items.forEach((p, i) => {
+    if (p === sink) return;
+    const g = groups.get(w[i]!) ?? { weight: w[i]!, first: i, members: [] };
+    g.members.push(p);
+    groups.set(w[i]!, g);
+  });
+  const ordered = [...groups.values()].sort(
+    (a, b) => ((units * b.weight) % total) - ((units * a.weight) % total) || b.weight - a.weight || a.first - b.first,
+  );
+  const gifted: Pattern[][] = [];
+  for (const g of mode === 'amounts' ? ordered : []) {
+    if (left <= 0) break;
+    if (g.members.length > left) continue;
+    for (const p of g.members) got.set(p, got.get(p)! + 1);
+    left -= g.members.length;
+    gifted.push(g.members);
+  }
+  got.set(sink, got.get(sink)! + left);
+
+  const out = new Map<Pattern, number>();
+  for (const [p, u] of got) out.set(p, u * unit);
+  out.set(sink, out.get(sink)! + (pool - units * unit));
+
+  if (mode === 'amounts') {
+    const tooBig = () => items.some((p) => p !== sink && out.get(p)! > out.get(sink)!);
+    while (tooBig() && gifted.length > 0) {
+      for (const p of gifted.pop()!) {
+        out.set(p, out.get(p)! - unit);
+        out.set(sink, out.get(sink)! + unit);
+      }
+    }
+  }
+  return out;
 }

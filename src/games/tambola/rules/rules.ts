@@ -21,6 +21,7 @@ import {
   type ClaimRecord,
   type ClaimView,
   type Pattern,
+  type Payout,
   type SummaryTier,
   type TambolaConfig,
   type TambolaMove,
@@ -52,8 +53,14 @@ const ALL_NUMBERS = Array.from({ length: 90 }, (_, i) => i + 1);
 const MAX_TICKETS = 3;
 const CALL_UNDO_MS = 5_000;
 
-const refuse = (reason: string): Verdict<TambolaState> => ({ ok: false, reason });
-const accept = (value: TambolaState): Verdict<TambolaState> => ({ ok: true, value });
+const refuse = (reason: string): Verdict<TambolaState> => ({
+  ok: false,
+  reason,
+});
+const accept = (value: TambolaState): Verdict<TambolaState> => ({
+  ok: true,
+  value,
+});
 const sameName = (a: string, b: string) => a.trim().toLowerCase() === b.trim().toLowerCase();
 
 // ----- Derived facts -----
@@ -99,7 +106,10 @@ function shares(state: TambolaState, pattern: Pattern, amount: number): Map<numb
     .map((c, i) => ({ c, i }))
     .filter(({ c }) => c.pattern === pattern && c.verdict === 'accepted')
     .sort((a, b) => order.get(a.c.playerId)! - order.get(b.c.playerId)! || a.i - b.i);
-  const split = apportion(amount, winners.map(() => 1));
+  const split = apportion(
+    amount,
+    winners.map(() => 1),
+  );
   return new Map(winners.map(({ i }, k) => [i, split[k]!]));
 }
 
@@ -108,62 +118,143 @@ function pot(config: TambolaConfig): number | null {
   return config.players.reduce((s, p) => s + p.tickets, 0) * config.money.contribution;
 }
 
-function moneyRecord(state: TambolaState, won: Map<string, number>): MoneyRecord | null {
-  const money = state.config.money;
-  if (!money) return null;
-  return {
-    currency: money.currency,
-    people: state.players.map((p) => ({
-      personId: p.id,
-      name: p.name,
-      paid: p.tickets * money.contribution,
-      won: won.get(p.id) ?? 0,
-    })),
-  };
+/**
+ * The money of tiers nobody won, handed back equally per ticket, to the rupee (TAM-088, TAM-093).
+ * Extra rupees go to tickets in the order the players were listed at setup, a player's tickets together.
+ */
+function handBack(state: TambolaState, total: number): Map<string, number> {
+  const tickets = state.players.reduce((s, p) => s + p.tickets, 0);
+  const each = Math.floor(total / tickets);
+  let extra = total - each * tickets;
+  const out = new Map<string, number>();
+  for (const p of state.players) {
+    const bonus = Math.min(extra, p.tickets);
+    extra -= bonus;
+    out.set(p.id, each * p.tickets + bonus);
+  }
+  return out;
 }
 
 function summary(state: TambolaState): TambolaSummary | null {
   if (!state.result) return null;
-  const tiers = state.config.tiers;
-  const withLabel = (t: (typeof tiers)[number]) => (t.label !== undefined ? { label: t.label } : {});
+  const withLabel = (t: (typeof state.config.tiers)[number]) => (t.label !== undefined ? { label: t.label } : {});
   const bogeys = state.claims.filter((c) => c.verdict === 'bogey').map((c) => ({ playerId: c.playerId, pattern: c.pattern }));
-  const base = { callsMade: state.calledCount, pot: pot(state.config), bogeys };
-  const won = wonPatterns(state);
-  const refund = (): TambolaSummary => {
-    const out = new Map<string, number>();
-    if (state.config.money) for (const p of state.players) out.set(p.id, p.tickets * state.config.money.contribution);
-    return {
-      ...base,
-      result: state.result!,
-      tiers: tiers.map((t) => ({ pattern: t.pattern, amount: 0, ...withLabel(t), winners: [] })),
-      money: moneyRecord(state, out),
-    };
-  };
-  // Discarded (TAM-140), or ended with no prize won (TAM-144): everyone gets their contribution back.
-  if (state.result === 'discarded' || won.size === 0) return refund();
+  // A discarded game is void: nobody wins, and every contribution goes back (TAM-140).
+  const void_ = state.result === 'discarded';
 
-  // TAM-088: unclaimed tiers are spread across the won tiers, in proportion to their amounts.
-  const wonTiers = tiers.filter((t) => won.has(t.pattern));
-  const unclaimed = tiers.filter((t) => !won.has(t.pattern)).reduce((s, t) => s + t.amount, 0);
-  const extra = apportion(unclaimed, wonTiers.map((t) => t.amount));
-  const finalAmount = new Map(wonTiers.map((t, i) => [t.pattern, t.amount + extra[i]!]));
-
-  const paidOut = new Map<string, number>();
-  const summaryTiers: SummaryTier[] = tiers.map((t) => {
-    const amount = finalAmount.get(t.pattern) ?? 0;
-    const split = shares(state, t.pattern, amount);
-    const winners = [...split.entries()]
-      .sort(([a], [b]) => a - b)
-      .map(([i, share]) => ({ playerId: state.claims[i]!.playerId, amount: share }));
-    for (const w of winners) paidOut.set(w.playerId, (paidOut.get(w.playerId) ?? 0) + w.amount);
-    return { pattern: t.pattern, amount, ...withLabel(t), winners };
+  const won = new Map<string, number>();
+  const tiers: SummaryTier[] = state.config.tiers.map((t) => {
+    const split = void_ ? new Map<number, number>() : shares(state, t.pattern, t.amount);
+    const winners = [...split.entries()].sort(([a], [b]) => a - b).map(([i, amount]) => ({ playerId: state.claims[i]!.playerId, amount }));
+    for (const w of winners) won.set(w.playerId, (won.get(w.playerId) ?? 0) + w.amount);
+    return { pattern: t.pattern, amount: t.amount, ...withLabel(t), winners };
   });
-  return { ...base, result: 'ended', tiers: summaryTiers, money: moneyRecord(state, paidOut) };
+
+  const money = state.config.money;
+  if (!money) {
+    return {
+      result: state.result,
+      callsMade: state.calledCount,
+      pot: null,
+      tiers,
+      bogeys,
+      payouts: null,
+      money: null,
+    };
+  }
+  // TAM-088, TAM-144: every tier nobody won hands its money back; with nothing won, that is the whole pot.
+  const unclaimed = tiers.filter((t) => t.winners.length === 0).reduce((s, t) => s + t.amount, 0);
+  const back = handBack(state, unclaimed);
+  const payouts: Payout[] = state.players.map((p) => {
+    const paid = p.tickets * money.contribution;
+    const w = won.get(p.id) ?? 0;
+    const handedBack = back.get(p.id) ?? 0;
+    return {
+      playerId: p.id,
+      name: p.name,
+      paid,
+      won: w,
+      handedBack,
+      net: w + handedBack - paid,
+    };
+  });
+  const record: MoneyRecord = {
+    currency: money.currency,
+    people: payouts.map((p) => ({
+      personId: p.playerId,
+      name: p.name,
+      paid: p.paid,
+      won: p.won + p.handedBack,
+    })),
+  };
+  return {
+    result: state.result,
+    callsMade: state.calledCount,
+    pot: pot(state.config),
+    tiers,
+    bogeys,
+    payouts,
+    money: record,
+  };
 }
 
 // ----- Moves -----
 
-function judgeClaim(state: TambolaState, move: Extract<TambolaMove, { type: 'claim' }>): Verdict<TambolaState> {
+/** Why a win or bogey for this pattern cannot be recorded now, or null if it can. */
+function patternProblem(state: TambolaState, pattern: Pattern, forWin: boolean): string | null {
+  if (state.calledCount === 0) return 'Call the first number before recording a claim.';
+  if (!isPattern(pattern) || !tierPatterns(state).includes(pattern)) return 'That pattern is not a prize in this game.';
+  if (!forWin) return null;
+  const name = PATTERN_NAMES[pattern];
+  if (state.closed.includes(pattern)) return `${name} already won.`;
+  if (pattern === 'second-full-house' && !state.closed.includes('full-house')) {
+    return 'Second Full House can be won once Full House is closed.';
+  }
+  return null;
+}
+
+/**
+ * TAM-037: with paper tickets the anchor checks the ticket in the room and the host records the win.
+ * The app does not check numbers or lateness; a win for an open tier is always accepted.
+ */
+function recordWin(state: TambolaState, move: Extract<TambolaMove, { type: 'record-win' }>): Verdict<TambolaState> {
+  const problem = patternProblem(state, move.pattern, true);
+  if (problem) return refuse(problem);
+  const ids = move.playerIds;
+  if (!Array.isArray(ids) || ids.length === 0) return refuse('Pick the player who won.');
+  if (new Set(ids).size !== ids.length) return refuse('A player was picked twice.');
+  for (const id of ids) {
+    const player = state.players.find((p) => p.id === id);
+    if (!player) return refuse('That player is not in this game.');
+    if (state.claims.some((c) => c.playerId === id && c.pattern === move.pattern && c.verdict === 'accepted')) {
+      return refuse(`${player.name} has already won ${PATTERN_NAMES[move.pattern]}.`);
+    }
+  }
+  const added: ClaimRecord[] = ids.map((playerId) => ({
+    playerId,
+    pattern: move.pattern,
+    verdict: 'accepted',
+    callsBefore: state.calledCount,
+  }));
+  return accept({ ...state, claims: [...state.claims, ...added] });
+}
+
+/** TAM-037, TAM-044: the anchor ruled a bogey; it is recorded against the player and listed in the summary. */
+function recordBogey(state: TambolaState, move: Extract<TambolaMove, { type: 'record-bogey' }>): Verdict<TambolaState> {
+  const problem = patternProblem(state, move.pattern, false);
+  if (problem) return refuse(problem);
+  if (!state.players.some((p) => p.id === move.playerId)) return refuse('That player is not in this game.');
+  const claim: ClaimRecord = {
+    playerId: move.playerId,
+    pattern: move.pattern,
+    verdict: 'bogey',
+    callsBefore: state.calledCount,
+  };
+  return accept({ ...state, claims: [...state.claims, claim] });
+}
+
+/** Games saved before 28 September 2026 judged claims from typed numbers; they replay exactly as they were played. */
+function judgeLegacyClaim(state: TambolaState, move: Extract<TambolaMove, { type: 'claim' }>): Verdict<TambolaState> {
   const { playerId, pattern, numbers } = move;
   if (!state.players.some((p) => p.id === playerId)) return refuse('That player is not in this game.');
   if (!isPattern(pattern) || !tierPatterns(state).includes(pattern)) return refuse('That pattern is not a prize in this game.');
@@ -181,16 +272,34 @@ function judgeClaim(state: TambolaState, move: Extract<TambolaMove, { type: 'cla
   // TAM-037, TAM-035: only called numbers count; marks never matter.
   const calledNow = called(state);
   const position = new Map(calledNow.map((n, i) => [n, i]));
-  const checks: ClaimCheck[] = numbers.map((n) => ({ number: n, called: position.has(n) }));
+  const checks: ClaimCheck[] = numbers.map((n) => ({
+    number: n,
+    called: position.has(n),
+  }));
   let claim: ClaimRecord;
   if (checks.some((c) => !c.called)) {
-    claim = { playerId, pattern, numbers: [...numbers], checks, verdict: 'bogey', reason: 'not-called', callsBefore: state.calledCount };
+    claim = {
+      playerId,
+      pattern,
+      numbers: [...numbers],
+      checks,
+      verdict: 'bogey',
+      reason: 'not-called',
+      callsBefore: state.calledCount,
+    };
   } else {
     // TAM-038, TAM-043: the latest of the numbers must be the latest call, or the claim is late.
     const last = Math.max(...numbers.map((n) => position.get(n)!));
     claim =
       last === calledNow.length - 1
-        ? { playerId, pattern, numbers: [...numbers], checks, verdict: 'accepted', callsBefore: state.calledCount }
+        ? {
+            playerId,
+            pattern,
+            numbers: [...numbers],
+            checks,
+            verdict: 'accepted',
+            callsBefore: state.calledCount,
+          }
         : {
             playerId,
             pattern,
@@ -230,10 +339,15 @@ function apply(state: TambolaState, move: TambolaMove, ctx: MoveContext): Verdic
       const rhyme = pickRhyme(rhymePack, n, state.config.settings.rhymes, rng, state.rhyme?.text);
       return accept({ ...state, rhyme, rhymeDraws: state.rhymeDraws + 1 });
     }
+    case 'record-win':
+      return recordWin(state, move);
+    case 'record-bogey':
+      return recordBogey(state, move);
     case 'claim':
-      return judgeClaim(state, move);
+      return judgeLegacyClaim(state, move);
     case 'close-tier': {
-      if (!isPattern(move.pattern) || !tierPatterns(state).includes(move.pattern)) return refuse('That pattern is not a prize in this game.');
+      if (!isPattern(move.pattern) || !tierPatterns(state).includes(move.pattern))
+        return refuse('That pattern is not a prize in this game.');
       // Closing a tier nobody won changes nothing, so undoing a wrong claim reopens its tier (TAM-145, TAM-070).
       if (!wonPatterns(state).has(move.pattern) || state.closed.includes(move.pattern)) return accept(state);
       return accept({ ...state, closed: [...state.closed, move.pattern] });
@@ -245,7 +359,10 @@ function apply(state: TambolaState, move: TambolaMove, ctx: MoveContext): Verdic
       if (state.players.some((p) => p.id !== move.playerId && sameName(p.name, name))) {
         return refuse(`Another player is already called ${name}. Add an initial.`);
       }
-      return accept({ ...state, players: state.players.map((p) => (p.id === move.playerId ? { ...p, name } : p)) });
+      return accept({
+        ...state,
+        players: state.players.map((p) => (p.id === move.playerId ? { ...p, name } : p)),
+      });
     }
     case 'end':
       return accept({ ...state, result: 'ended' });
@@ -279,7 +396,8 @@ function invariants(state: TambolaState): string[] {
   if (new Set(patterns).size !== patterns.length) problems.push('A pattern is listed twice.');
   if (!patterns.includes('full-house')) problems.push('Full House must be a prize.');
   for (const t of config.tiers) {
-    if (!Number.isSafeInteger(t.amount) || t.amount < 0) problems.push(`${t.pattern} has an amount that is not a whole number of zero or more.`);
+    if (!Number.isSafeInteger(t.amount) || t.amount < 0)
+      problems.push(`${t.pattern} has an amount that is not a whole number of zero or more.`);
   }
   if (config.money) {
     const c = config.money.contribution;
@@ -308,22 +426,23 @@ function view(state: TambolaState, viewer: Viewer): TambolaView {
   for (const p of new Set(state.claims.map((c) => c.pattern))) {
     for (const [i, amount] of shares(state, p, tierAmount.get(p) ?? 0)) prizeByClaim.set(i, amount);
   }
+  const money = state.config.money !== null;
   const claims: ClaimView[] = state.claims.map((c, i) => {
-    const prize = prizeByClaim.get(i);
+    const prize = money ? prizeByClaim.get(i) : undefined;
     return {
       playerId: c.playerId,
       pattern: c.pattern,
-      numbers: [...c.numbers],
-      checks: c.checks.map((x) => ({ ...x })),
       verdict: c.verdict,
-      ...(c.reason !== undefined ? { reason: c.reason } : {}),
-      ...(c.completedAt !== undefined ? { completedAt: c.completedAt } : {}),
       ...(prize !== undefined ? { prize } : {}),
     };
   });
   return {
     players: state.players.map((p) => ({ id: p.id, name: p.name })),
-    tiers: state.config.tiers.map((t) => ({ pattern: t.pattern, amount: t.amount, ...(t.label !== undefined ? { label: t.label } : {}) })),
+    tiers: state.config.tiers.map((t) => ({
+      pattern: t.pattern,
+      amount: t.amount,
+      ...(t.label !== undefined ? { label: t.label } : {}),
+    })),
     called: calledNow,
     current: last === undefined ? null : { number: last, rhyme: state.rhyme },
     lastCalls: calledNow.slice(-(host ? 5 : 3)).reverse(),
@@ -347,7 +466,11 @@ export const tambolaRules: GameRules<TambolaConfig, TambolaState, TambolaMove, T
     if (typeof draw !== 'string' || draw === '') throw new Error('Tambola needs a draw seed.');
     return {
       config,
-      players: config.players.map((p) => ({ id: p.id, name: p.name.trim(), tickets: p.tickets })),
+      players: config.players.map((p) => ({
+        id: p.id,
+        name: p.name.trim(),
+        tickets: p.tickets,
+      })),
       order: shuffle(ALL_NUMBERS, createRng(deriveSeed(draw, 'tambola-draw'))),
       calledCount: 0,
       callTimes: [],
@@ -368,7 +491,7 @@ export const tambolaRules: GameRules<TambolaConfig, TambolaState, TambolaMove, T
     if (readyToEnd(state)) return endings;
     return state.calledCount < 90 ? [{ type: 'call' }, ...endings] : endings;
   },
-  detailMoves: ['claim', 'rename'],
+  detailMoves: ['record-win', 'record-bogey', 'rename'],
 
   apply,
   view,
@@ -378,6 +501,8 @@ export const tambolaRules: GameRules<TambolaConfig, TambolaState, TambolaMove, T
   canUndo(state, { record, by, now }) {
     if (by !== HOST || state.result) return false;
     switch (record.move.type) {
+      case 'record-win':
+      case 'record-bogey':
       case 'claim':
         return true; // TAM-070: any time; later calls stay (TAM-072)
       case 'call': {

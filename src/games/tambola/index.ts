@@ -11,6 +11,7 @@ export {
   planPrizes,
   pickRhyme,
   rhymePack,
+  checkNumbers,
   PATTERNS,
   PATTERN_NAMES,
   NEEDS,
@@ -24,6 +25,8 @@ export type {
   TambolaSummary,
   TambolaView,
   ClaimView,
+  CheckResult,
+  Payout,
   Rhyme,
   RhymePack,
 } from './rules';

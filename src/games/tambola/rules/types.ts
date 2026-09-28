@@ -13,7 +13,7 @@ export const PATTERNS = [
 ] as const;
 export type Pattern = (typeof PATTERNS)[number];
 
-/** How many numbers a paper-ticket claim must read out for each pattern. */
+/** How many numbers each pattern has on a ticket (the "Check numbers" helper, TAM-139). */
 export const NEEDS: Readonly<Record<Pattern, number>> = {
   'early-five': 5,
   'four-corners': 4,
@@ -77,7 +77,10 @@ export interface TambolaConfig {
   readonly ticketMode: 'paper';
   readonly players: readonly TambolaPlayer[];
   /** null means "No money": prizes are text labels only (TAM-090). */
-  readonly money: { readonly currency: 'INR'; readonly contribution: number } | null;
+  readonly money: {
+    readonly currency: 'INR';
+    readonly contribution: number;
+  } | null;
   /** The prizes as confirmed by the anchor. Locked for the whole game (TAM-085). */
   readonly tiers: readonly Tier[];
   readonly settings: TambolaSettings;
@@ -86,9 +89,34 @@ export interface TambolaConfig {
 export type TambolaMove =
   | { readonly type: 'call' }
   | { readonly type: 'another-rhyme' }
-  | { readonly type: 'claim'; readonly playerId: string; readonly pattern: Pattern; readonly numbers: readonly number[] }
+  /** Paper tickets (TAM-037): the anchor checked the ticket; record a win for one or more players (a tie). */
+  | {
+      readonly type: 'record-win';
+      readonly pattern: Pattern;
+      readonly playerIds: readonly string[];
+    }
+  /** Paper tickets (TAM-037): the anchor ruled a bogey; record it against the player. */
+  | {
+      readonly type: 'record-bogey';
+      readonly playerId: string;
+      readonly pattern: Pattern;
+    }
+  /**
+   * Games saved before 28 September 2026 checked typed numbers. Kept only so those games still replay
+   * exactly (saved games always open); the app no longer makes this move.
+   */
+  | {
+      readonly type: 'claim';
+      readonly playerId: string;
+      readonly pattern: Pattern;
+      readonly numbers: readonly number[];
+    }
   | { readonly type: 'close-tier'; readonly pattern: Pattern }
-  | { readonly type: 'rename'; readonly playerId: string; readonly name: string }
+  | {
+      readonly type: 'rename';
+      readonly playerId: string;
+      readonly name: string;
+    }
   | { readonly type: 'end' }
   | { readonly type: 'discard' };
 
@@ -115,9 +143,10 @@ export interface ClaimCheck {
 export interface ClaimRecord {
   readonly playerId: string;
   readonly pattern: Pattern;
-  readonly numbers: readonly number[];
-  readonly checks: readonly ClaimCheck[];
   readonly verdict: 'accepted' | 'bogey';
+  /** Only on claims from games saved before 28 September 2026, which checked typed numbers. */
+  readonly numbers?: readonly number[];
+  readonly checks?: readonly ClaimCheck[];
   readonly reason?: 'not-called' | 'late';
   readonly completedAt?: number;
   /** How many numbers had been called when the claim was made. */
@@ -142,14 +171,12 @@ export interface TambolaState {
   readonly result: 'ended' | 'discarded' | null;
 }
 
+/** One recorded winner or bogey, in order. */
 export interface ClaimView {
   readonly playerId: string;
   readonly pattern: Pattern;
-  readonly numbers: readonly number[];
-  readonly checks: readonly ClaimCheck[];
   readonly verdict: 'accepted' | 'bogey';
-  readonly reason?: 'not-called' | 'late';
-  readonly completedAt?: number;
+  /** This winner's share after ties (TAM-086, TAM-087); none with "No money". */
   readonly prize?: number;
 }
 
@@ -157,7 +184,10 @@ export interface SummaryTier {
   readonly pattern: Pattern;
   readonly amount: number;
   readonly label?: string;
-  readonly winners: readonly { readonly playerId: string; readonly amount: number }[];
+  readonly winners: readonly {
+    readonly playerId: string;
+    readonly amount: number;
+  }[];
 }
 
 export interface TambolaSummary {
@@ -165,15 +195,37 @@ export interface TambolaSummary {
   readonly callsMade: number;
   readonly pot: number | null;
   readonly tiers: readonly SummaryTier[];
-  readonly bogeys: readonly { readonly playerId: string; readonly pattern: Pattern }[];
+  readonly bogeys: readonly {
+    readonly playerId: string;
+    readonly pattern: Pattern;
+  }[];
+  /** One per player, in setup order; null with "No money" (TAM-088, TAM-089). */
+  readonly payouts: readonly Payout[] | null;
+  /** The engine's record (PLT-021): paid, and "won" = prizes plus money handed back (PLT-017). */
   readonly money: MoneyRecord | null;
+}
+
+export interface Payout {
+  readonly playerId: string;
+  readonly name: string;
+  /** Contribution × tickets. */
+  readonly paid: number;
+  /** Prizes only. */
+  readonly won: number;
+  /** This player's share of the money of tiers nobody won, equal per ticket (TAM-088). */
+  readonly handedBack: number;
+  /** won + handedBack − paid. */
+  readonly net: number;
 }
 
 export interface TambolaView {
   readonly players: readonly { readonly id: string; readonly name: string }[];
   readonly tiers: readonly Tier[];
   readonly called: readonly number[];
-  readonly current: { readonly number: number; readonly rhyme: Rhyme | null } | null;
+  readonly current: {
+    readonly number: number;
+    readonly rhyme: Rhyme | null;
+  } | null;
   readonly lastCalls: readonly number[];
   readonly allCalled: boolean;
   readonly openPatterns: readonly Pattern[];
