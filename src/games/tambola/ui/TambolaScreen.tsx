@@ -120,7 +120,7 @@ export function TambolaScreen({
           </header>
           <section className="centre">
             <h1 className="game-title">Tambola</h1>
-            <p className="lead">Housie with paper tickets. This phone draws the numbers with rhymes, keeps the board and checks every claim.</p>
+            <p className="lead">Housie with paper tickets. This phone draws the numbers with rhymes, keeps the board, records every win and works out the payouts.</p>
             <button type="button" className="button button-big" onClick={() => setRoute({ name: 'setup' })}>
               New game
             </button>
@@ -169,11 +169,11 @@ export function TambolaPastGame({ saved, onBack }: { saved: SavedGame; onBack: (
           </section>
           {view.claims.length > 0 && (
             <section aria-label="Every claim">
-              <h2 className="section-title">Every claim, in order</h2>
+              <h2 className="section-title">Every win and bogey, in order</h2>
               <ol className="rules-list">
                 {view.claims.map((c, i) => (
                   <li key={i}>
-                    {name(c.playerId)}, {PATTERN_NAMES[c.pattern]}: {c.verdict === 'accepted' ? '✓ Accepted' : '✗ Bogey'} ({c.numbers.join(' ')})
+                    {name(c.playerId)}, {PATTERN_NAMES[c.pattern]}: {c.verdict === 'accepted' ? '✓ Won' : '✗ Bogey'}
                   </li>
                 ))}
               </ol>
