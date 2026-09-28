@@ -1,10 +1,12 @@
 // A code-only simulation of a paper-ticket Tambola evening: real-looking tickets, and players who claim
-// on time, late, falsely, or never. The host calls, checks every shouted claim, and ends the game
-// once all 90 are out. Jev is not needed: every choice here comes from a seeded generator.
+// on time, late, falsely, or never. The anchor checks each shouted claim against the paper ticket (here: the
+// simulation, which knows the tickets) and the host records the result (TAM-037): a win, or a bogey for a
+// late or false claim. The host ends the game once all 90 are out. Jev is not needed: every choice here
+// comes from a seeded generator.
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { createRng, HOST, play, startMatch, type Rng } from '../../src/engine';
-import { rules, setupInput, NEEDS, type AnyMatch, type Pattern } from '../games/tambola/helpers';
+import { rules, setupInput, type AnyMatch, type Pattern } from '../games/tambola/helpers';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export type Persona = 'prompt' | 'late' | 'false' | 'never';
@@ -74,7 +76,7 @@ export function simulate(seed: string): SimResult {
   let m = startMatch(rules, setup, 0);
   let at = 0;
   const problems: string[] = [];
-  const pending: { playerId: string; pattern: Pattern; numbers: number[] }[] = [];
+  const pending: { playerId: string; pattern: Pattern }[] = [];
 
   const move = (mv: any) => {
     const r = play(rules, m, mv, { by: HOST, at: (at += 1000) });
@@ -84,7 +86,7 @@ export function simulate(seed: string): SimResult {
   const host = () => rules.view(m.state, { kind: 'host' });
 
   for (let guard = 0; guard < 1000 && !rules.isOver(m.state); guard++) {
-    // TAM-145: after everyone who shouted has been checked, the host closes the won tiers by hand.
+    // TAM-145: after everyone who shouted has been recorded, the host closes the won tiers by hand.
     for (const p of host().awaitingClose as Pattern[]) move({ type: 'close-tier', pattern: p });
     // TAM-075: once the last Full House is closed, the host ends the game.
     if (host().readyToEnd) {
@@ -92,7 +94,6 @@ export function simulate(seed: string): SimResult {
       break;
     }
     if (host().allCalled) {
-      // Everything is out: prompt players still claim Full House if it completed on the last call.
       move({ type: 'end' });
       break;
     }
@@ -101,41 +102,33 @@ export function simulate(seed: string): SimResult {
     const called: number[] = host().called;
     const latest = called[called.length - 1]!;
 
-    // Late claims from the previous number come in now.
+    // Late claims from the previous number come in now: the anchor rules them bogeys (TAM-043).
     for (const c of pending.splice(0)) {
       const before = host().claims.length;
-      move({ type: 'claim', ...c });
+      const rb = move({ type: 'record-bogey', ...c });
       const claim = host().claims[before];
-      if (claim && !(claim.verdict === 'bogey' && claim.reason === 'late')) {
-        problems.push(`late ${c.pattern} by ${c.playerId} was ${claim.verdict} (${claim.reason ?? 'no reason'})`);
-      }
+      if (!rb.ok || !claim || claim.verdict !== 'bogey') problems.push(`late ${c.pattern} by ${c.playerId}: bogey not recorded (${rb.ok ? 'no claim' : rb.reason})`);
     }
 
     for (const p of players) {
       for (const pattern of host().openPatterns as Pattern[]) {
         if (rules.isOver(m.state)) break;
+        if (pattern === 'second-full-house' && host().openPatterns.includes('full-house')) continue; // only after Full House is closed
         for (const t of p.tickets) {
           const nums = patternNumbers(t, pattern, called);
           const justNow = nums && completedAtIndex(nums, called) === called.length - 1;
           if (justNow && p.persona === 'prompt') {
-            const before = host().claims.length;
-            move({ type: 'claim', playerId: p.id, pattern, numbers: nums });
-            const claim = host().claims[before];
-            if (claim && claim.verdict !== 'accepted' && host().openPatterns.includes(pattern)) {
-              problems.push(`on-time ${pattern} by ${p.id} at ${latest} was ${claim.verdict}`);
+            const already = host().claims.some((c: any) => c.pattern === pattern && c.playerId === p.id && c.verdict === 'accepted');
+            if (already) continue;
+            const rw = move({ type: 'record-win', pattern, playerIds: [p.id] });
+            if (!rw.ok && host().openPatterns.includes(pattern)) {
+              problems.push(`on-time ${pattern} by ${p.id} at ${latest} could not be recorded: ${rw.reason}`);
             }
           } else if (justNow && p.persona === 'late') {
-            pending.push({ playerId: p.id, pattern, numbers: nums });
+            pending.push({ playerId: p.id, pattern });
           } else if (!nums && p.persona === 'false' && rng.int(40) === 0) {
-            // A false claim always includes at least one number that was never called.
-            const all = t.flat();
-            const wrong = [...all.filter((n) => !called.includes(n)), ...all.filter((n) => called.includes(n))].slice(0, NEEDS[pattern]);
-            if (wrong.length === NEEDS[pattern]) {
-              const before = host().claims.length;
-              move({ type: 'claim', playerId: p.id, pattern, numbers: wrong });
-              const claim = host().claims[before];
-              if (claim && claim.verdict === 'accepted') problems.push(`false ${pattern} by ${p.id} was accepted`);
-            }
+            const rb = move({ type: 'record-bogey', playerId: p.id, pattern });
+            if (!rb.ok) problems.push(`false ${pattern} by ${p.id}: bogey not recorded (${rb.reason})`);
           }
         }
       }

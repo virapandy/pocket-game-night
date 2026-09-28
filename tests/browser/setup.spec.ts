@@ -19,7 +19,8 @@ test('TAM-063: 6 players with a contribution and the suggested split, ready to c
 
 test('PLT-024: blank names become Player 1, Player 2 …', async ({ page }) => {
   await setUpPaperGame(page, { players: ['Riya', '', 'Dad', ''] });
-  await page.getByRole('button', { name: 'Check a claim' }).click();
+  await page.getByRole('button', { name: 'Record a win' }).click();
+  await page.getByRole('button', { name: 'Early Five', exact: true }).click();
   for (const name of ['Riya', 'Player 2', 'Dad', 'Player 4']) {
     await expect(page.getByRole('button', { name, exact: true })).toBeVisible();
   }

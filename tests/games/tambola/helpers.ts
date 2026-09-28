@@ -17,6 +17,8 @@ export const suggestTiers: (tickets: number) => { pattern: Pattern; percent: num
 export const planPrizes: (input: any) => { pot: number; tiers: { pattern: Pattern; percent: number; amount: number }[] } = (i) =>
   mod.planPrizes(i);
 export const pickRhyme: (...args: any[]) => any = (...args) => mod.pickRhyme(...args);
+/** The optional "Check numbers" helper (TAM-139): pure, records nothing. */
+export const checkNumbers: (called: number[], pattern: Pattern, numbers: number[]) => any = (c, p, n) => mod.checkNumbers(c, p, n);
 
 export const NEEDS: Record<Pattern, number> = {
   'early-five': 5, 'top-line': 5, 'middle-line': 5, 'bottom-line': 5, 'four-corners': 4, 'full-house': 15, 'second-full-house': 15,
@@ -146,15 +148,13 @@ export class Game {
   finish(): this {
     return this.closeAll().do({ type: 'end' });
   }
-  claim(playerId: string, pattern: Pattern, numbers: number[]) {
-    return this.try({ type: 'claim', playerId, pattern, numbers });
+  /** Paper tickets (TAM-037): the anchor checked the ticket; the host records the win for one or more players. */
+  win(pattern: Pattern, ...playerIds: string[]) {
+    return this.try({ type: 'record-win', pattern, playerIds });
   }
-  /** Numbers that make an on-time claim for `pattern`: the latest call plus earlier called numbers. */
-  onTimeNumbers(pattern: Pattern): number[] {
-    const need = NEEDS[pattern];
-    const called = this.called;
-    if (called.length < need) throw new Error(`Only ${called.length} numbers called; ${pattern} needs ${need}`);
-    return called.slice(called.length - need);
+  /** Paper tickets (TAM-037): the anchor ruled a bogey; the host records it against the player. */
+  bogey(playerId: string, pattern: Pattern) {
+    return this.try({ type: 'record-bogey', playerId, pattern });
   }
   undo(seq: number, now: number) {
     const r = undo(rules, this.match, seq, { by: HOST, now });

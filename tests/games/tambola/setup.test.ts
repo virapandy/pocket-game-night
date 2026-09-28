@@ -106,7 +106,7 @@ describe('Legal moves (contract): the host has a short, finite list', () => {
     const g = new Game();
     const types = rules.legalMoves(g.match.state, 'host').map((m: any) => m.type).sort();
     expect(types).toEqual(expect.arrayContaining(['call', 'discard', 'end']));
-    expect(rules.detailMoves).toEqual(expect.arrayContaining(['claim', 'rename']));
+    expect(rules.detailMoves).toEqual(expect.arrayContaining(['record-win', 'record-bogey', 'rename'])); // TAM-037
     g.do({ type: 'end' });
     expect(rules.legalMoves(g.match.state, 'host')).toEqual([]);
   });

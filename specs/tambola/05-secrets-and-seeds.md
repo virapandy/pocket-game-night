@@ -3,17 +3,15 @@
 Nobody should be able to see another player's ticket or the upcoming numbers, even with a curious phone.
 
 ## TAM-050: A player sees only their own ticket
-Status: draft
+Status: draft (product owner verdict 2026-09-28: approve with the change applied; awaiting owner sign-off when Phase 2 comes up)
 Phase: Phase 2 (phone tickets)
 Given Riya holds ticket 3
 When Riya's view of the game is shown
-Then it contains ticket 3 and the numbers called so far
-And it contains no other ticket's numbers
-(Open question, tester, 2026-09-28: with no connection (TAM-057), a player's phone cannot know which numbers
-were called; it knows only its own marks. "The numbers called so far" may belong to connected mode, Phase 6.)
+Then it contains ticket 3 and Riya's own marks
+And it contains no other ticket's numbers and no called numbers (offline, the phone cannot know them; see TAM-133)
 
 ## TAM-051: A player never sees upcoming numbers
-Status: draft
+Status: draft (product owner verdict 2026-09-28: approve; awaiting owner sign-off when Phase 2 comes up)
 Phase: Phase 2 (phone tickets)
 For every point in every game
 Then no player's view contains any number that has not been called yet
@@ -25,7 +23,7 @@ For every QR code, share link, printed ticket and player view
 Then none of them contains the draw seed, or anything the draw order can be worked out from
 
 ## TAM-053: A player's QR code carries only their own ticket
-Status: draft
+Status: draft (product owner verdict 2026-09-28: approve; awaiting owner sign-off when Phase 2 comes up)
 Phase: Phase 2 (phone tickets)
 When the host shows the join QR for ticket 3
 Then the QR holds ticket 3's 15 numbers and layout, its ticket number and the game code, and nothing else
@@ -33,28 +31,28 @@ And no seed of any kind
 (A seed would let a curious phone rebuild the other tickets on the same sheet of 6.)
 
 ## TAM-054: One ticket reveals nothing useful about other tickets or the draw
-Status: draft
+Status: draft (product owner verdict 2026-09-28: approve; awaiting owner sign-off when Phase 2 comes up)
 Phase: Phase 2 (phone tickets)
 Given a player has ticket 3's QR or code
 Then they cannot work out any other ticket's numbers or the draw order from it
 (They can only tell that the other 5 tickets on their sheet don't contain their own numbers, which gives no advantage.)
 
 ## TAM-055: A ticket on a player's phone matches the host's copy
-Status: draft
+Status: draft (product owner verdict 2026-09-28: approve; awaiting owner sign-off when Phase 2 comes up)
 Phase: Phase 2 (phone tickets)
 Given a player scanned the QR for ticket 3, with no internet
 When their phone shows the ticket
 Then it is identical to ticket 3 on the host phone
 
 ## TAM-056: The host can see all tickets
-Status: draft
+Status: draft (product owner verdict 2026-09-28: approve; awaiting owner sign-off when Phase 2 comes up)
 Phase: Phase 2 (phone tickets)
 When the host checks a claim
 Then the host phone can show any ticket in the game
 (Only the host has this view.)
 
 ## TAM-057: A phone ticket works with no internet
-Status: draft
+Status: draft (product owner verdict 2026-09-28: approve; awaiting owner sign-off when Phase 2 comes up)
 Phase: Phase 2 (phone tickets)
 Given a player opened the app link once before, and now has no internet
 When they scan their ticket QR
@@ -62,7 +60,7 @@ Then their ticket appears and they can mark it
 And nothing is fetched from a server: everything the ticket needs is inside the QR link
 
 ## TAM-058: Paper and phone tickets can be mixed in one game
-Status: draft
+Status: draft (product owner verdict 2026-09-28: approve; awaiting owner sign-off when Phase 2 comes up)
 Phase: Phase 2 (phone tickets)
 Given 6 players use phone tickets and 2 use paper tickets from a book
 When claims are made
@@ -72,14 +70,14 @@ And a player can switch from phone to paper mid-game
 (Changed by the tester on 2026-09-28 to fit the change request: paper claims were checked by the numbers read out.)
 
 ## TAM-131: Players mark their own phone ticket, and can unmark
-Status: draft
+Status: draft (product owner verdict 2026-09-28: approve; awaiting owner sign-off when Phase 2 comes up)
 Phase: Phase 2 (phone tickets)
 When a player taps a number on their phone ticket
 Then it shows as marked (fill and mark); tapping again unmarks it; nothing asks for confirmation
 And marks stay on the player's phone and never affect claim checks (TAM-035)
 
 ## TAM-132: The host sees which tickets have been handed out
-Status: draft
+Status: draft (product owner verdict 2026-09-28: approve; awaiting owner sign-off when Phase 2 comes up)
 Phase: Phase 2 (phone tickets)
 While handing out phone tickets
 When a player has scanned and the host taps "Next ticket"
@@ -87,23 +85,23 @@ Then the host screen shows "7 of 10 handed out" and which tickets are still wait
 (With no internet, the host phone cannot know that a scan worked, so the host confirms each hand-out.)
 
 ## TAM-133: A player's phone can show the last calls
-Status: draft
-Phase: Phase 2 (phone tickets)
+Status: draft (moved to Phase 6 by the product owner, 2026-09-28: offline, a player's phone cannot know the calls; not reviewed for approval)
+Phase: Phase 6 (connected mode)
 Given a player cannot see the host screen
 When they open "Last calls" on their phone ticket
 Then the last 3 calls are shown, and nothing that has not been called
-(Open question, tester, 2026-09-28: with no connection, the player's phone has no way to learn the calls.
-This may need connected mode (Phase 6), or be dropped from Phase 2.)
+(Moved from Phase 2 on 2026-09-28: with no connection, the player's phone has no way to learn the calls.
+Players who cannot see the host screen rely on the anchor's voice, as with paper.)
 
 ## TAM-170: A phone ticket shows its game
-Status: draft
+Status: draft (product owner verdict 2026-09-28: approve; awaiting owner sign-off when Phase 2 comes up)
 Phase: Phase 2 (phone tickets)
 When a player's ticket is shown on their phone
 Then it shows the ticket number, the game code and start time, and the prize tiers for that game
 And the host screen shows the same game code, so a ticket from an earlier game is easy to spot
 
 ## TAM-171: A phone ticket survives locks and reloads
-Status: draft
+Status: draft (product owner verdict 2026-09-28: approve; awaiting owner sign-off when Phase 2 comes up)
 Phase: Phase 2 (phone tickets)
 Given a player's phone shows ticket 3 with 9 numbers marked
 When the phone locks, the browser reloads, or the player switches apps and comes back
@@ -162,7 +160,7 @@ And the host phone checks the ticket against its own copy (TAM-055), so an edite
 (TAM-060 still holds: the player shouts first; the QR only replaces typing, not the shout.)
 
 ## TAM-178: When scanning fails, typing the ticket number takes over
-Status: draft (new, tester, 2026-09-28, Phase 2 review; follows from TAM-174 and TAM-177)
+Status: draft (product owner verdict 2026-09-28: approve; awaiting owner sign-off when Phase 2 comes up)
 Phase: Phase 2 (phone tickets)
 Given the host taps "Scan a claim"
 When the phone has no camera, the camera permission is refused, or no claim QR is read within 10 seconds
@@ -172,7 +170,7 @@ And the claim is judged on the numbers called when the host scans or enters it (
 camera never makes a claim late by itself; "Next number" is not needed to try again
 
 ## TAM-179: A claim QR that does not belong to this game is refused, calmly
-Status: draft (new, tester, 2026-09-28, Phase 2 review; follows from TAM-177, TAM-032, TAM-044, TAM-170 and TAM-176)
+Status: draft (product owner verdict 2026-09-28: approve with the change applied; awaiting owner sign-off when Phase 2 comes up)
 Phase: Phase 2 (phone tickets)
 When the host scans a claim QR
 Then it is refused with a plain reason, and nothing in the game changes, when:
@@ -182,10 +180,10 @@ Then it is refused with a plain reason, and nothing in the game changes, when:
 - the prize is closed or already won (TAM-030): "Top Line already won"
 - it does not match the host's copy of the ticket (edited or damaged): "This claim doesn't match ticket 3"
 And none of these counts as a bogey
-Question for the owner: should a claim QR that doesn't match the host's copy (possibly edited on purpose) count as a bogey?
+And when a claim QR doesn't match the host's copy, the host is offered "Check ticket 3 by number", which gives the verdict from the host's own copy (TAM-174).
 
 ## TAM-190: A player with several tickets picks the ticket to claim with
-Status: draft (new, tester, 2026-09-28, Phase 2 review; follows from TAM-173 and TAM-177)
+Status: draft (product owner verdict 2026-09-28: approve; awaiting owner sign-off when Phase 2 comes up)
 Phase: Phase 2 (phone tickets)
 Given Riya has tickets 3 and 8 on her phone (TAM-173)
 When she taps "Show claim"

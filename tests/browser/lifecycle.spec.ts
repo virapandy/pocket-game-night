@@ -1,7 +1,10 @@
 // A game over time: TAM-065, TAM-066, TAM-068, TAM-103, TAM-111, TAM-112, TAM-115, TAM-140,
-// PLT-002, PLT-003, PLT-004, PLT-005, PLT-007, PLT-008, PLT-012, PLT-013.
+// PLT-002, PLT-003, PLT-004, PLT-005, PLT-007, PLT-008, PLT-012, PLT-013. End game and Discard are in the menu (TAM-124).
 import { expect, test } from '@playwright/test';
-import { call, callMany, calledNumbers, checkClaim, currentNumber, endGame, HOME, nextNumber, openTambola, setUpPaperGame } from './helpers';
+import {
+  call, callMany, calledNumbers, currentNumber, endGame, fromMenu, HOME, menuButton, menuItem, nextNumber, openTambola, recordWin,
+  setUpPaperGame,
+} from './helpers';
 
 test('TAM-065, TAM-111, PLT-003: a refresh or reopen resumes the game exactly where it was', async ({ page }) => {
   await setUpPaperGame(page);
@@ -35,16 +38,19 @@ test('TAM-111: pulling down does not refresh the page during a game', async ({ p
 
 test('TAM-103 and TAM-066: ending needs a specific confirmation, then shows the payouts', async ({ page }) => {
   await setUpPaperGame(page);
-  const calls = await callMany(page, 6);
-  await checkClaim(page, 'Riya', 'Early Five', calls.slice(-5));
-  await page.getByRole('button', { name: 'End game' }).click();
+  await callMany(page, 6);
+  await recordWin(page, 'Early Five', ['Riya']);
+  await page.getByRole('button', { name: 'Close Early Five', exact: true }).click();
+  // End game is in the menu (TAM-124).
+  await fromMenu(page, 'End game');
   const dialog = page.getByRole('dialog');
   await expect(dialog.getByText('End the game and show payouts?')).toBeVisible();
   await dialog.getByRole('button', { name: 'Keep playing' }).click();
   await expect(nextNumber(page)).toBeVisible();
   // "End game" sits away from "Next number".
-  const end = (await page.getByRole('button', { name: 'End game' }).boundingBox())!;
   const next = (await nextNumber(page).boundingBox())!;
+  await menuButton(page).click();
+  const end = (await menuItem(page, 'End game').first().boundingBox())!;
   expect(end.y + end.height).toBeLessThan(next.y - 100);
   await endGame(page);
   const summary = page.getByTestId('payout-summary');
@@ -62,15 +68,16 @@ test('TAM-068: Play again keeps the players and prizes, and the anchor confirms 
   await page.getByRole('button', { name: 'Confirm prizes' }).click();
   const second = await callMany(page, 3);
   expect(second).not.toEqual(first); // a new draw
-  await page.getByRole('button', { name: 'Check a claim' }).click();
+  await page.getByRole('button', { name: 'Record a win' }).click();
+  await page.getByRole('button', { name: 'Early Five', exact: true }).click();
   for (const name of ['Riya', 'Asha', 'Dad']) await expect(page.getByRole('button', { name, exact: true })).toBeVisible();
 });
 
 test('PLT-005 and TAM-140: discarding asks first, voids the game, and shows contributions to hand back', async ({ page }) => {
   await setUpPaperGame(page, { players: ['Riya', 'Asha', 'Dad'] });
-  const calls = await callMany(page, 6);
-  await checkClaim(page, 'Asha', 'Early Five', calls.slice(-5));
-  await page.getByRole('button', { name: 'Discard game' }).click();
+  await callMany(page, 6);
+  await recordWin(page, 'Early Five', ['Asha']);
+  await fromMenu(page, 'Discard game');
   const dialog = page.getByRole('dialog');
   await expect(dialog.getByText(/1 prize was already won|prizes? (was|were) already won/)).toBeVisible();
   await dialog.getByRole('button', { name: /Discard/ }).click();
@@ -141,7 +148,7 @@ test('PLT-007, PLT-008, PLT-013: History lists past games newest first, read-onl
   await row.click();
   await expect(page.getByTestId('call-list').locator('[data-number]')).toHaveCount(4);
   await expect(nextNumber(page)).toHaveCount(0);
-  await expect(page.getByRole('button', { name: 'Check a claim' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Record a win' })).toHaveCount(0);
   await expect(page.locator('input:not([disabled]), textarea:not([disabled])')).toHaveCount(0);
 });
 

@@ -62,30 +62,93 @@ export async function callMany(page: Page, times: number): Promise<number[]> {
   return out;
 }
 
-/** The 1–90 board (TAM-016): shown on the host screen, or behind a "Board" button. */
-export async function openBoard(page: Page) {
-  if (!(await board(page).isVisible())) await page.getByRole('button', { name: 'Board' }).click();
+/** The menu (⋯) in the top bar, named "Menu" (TAM-109: every icon has a word). */
+export const menuButton = (page: Page) => page.getByRole('button', { name: /Menu/ });
+
+/** An item of the menu: Settings, Show the room, Board, Check numbers, End game, Discard game (TAM-124). */
+export const menuItem = (page: Page, name: string) =>
+  page.getByRole('menuitem', { name, exact: true }).or(page.getByRole('button', { name, exact: true }));
+
+/** Opens the menu (if needed) and taps one of its items. */
+export async function fromMenu(page: Page, name: string) {
+  if (!(await menuItem(page, name).first().isVisible())) await menuButton(page).click();
+  await menuItem(page, name).first().click();
+}
+
+/** The sheet the board opens in (TAM-127), and the one tap that closes it. */
+const boardSheet = (page: Page) => page.getByRole('dialog').filter({ has: board(page) });
+export async function closeBoard(page: Page) {
+  await boardSheet(page).getByRole('button', { name: /^(Close|Done|Back)/ }).first().click();
+  await expect(board(page)).toBeHidden();
+}
+
+/** The 1–90 board (TAM-016): opened from the menu as a sheet (TAM-127). Returns true if it had to be opened. */
+export async function openBoard(page: Page): Promise<boolean> {
+  if (await board(page).isVisible()) return false;
+  await fromMenu(page, 'Board');
   await expect(board(page)).toBeVisible();
+  return true;
 }
 
-/** The numbers marked on the host board (cells with data-called="true"), in board order. */
+/** The numbers marked on the host board (cells with data-called="true"), in board order. Leaves the screen as it was. */
 export async function calledNumbers(page: Page): Promise<number[]> {
-  await openBoard(page);
+  const opened = await openBoard(page);
   const cells = board(page).locator('[data-called="true"]');
-  return (await cells.allTextContents()).map((t) => Number(t.trim()));
+  const out = (await cells.allTextContents()).map((t) => Number(t.trim()));
+  if (opened) await closeBoard(page);
+  return out;
 }
 
-/** Check a claim: Check a claim → player → pattern → numbers read out → Check. */
-export async function checkClaim(page: Page, player: string, pattern: string, numbers: number[]) {
-  await page.getByRole('button', { name: 'Check a claim' }).click();
+/** Paper tickets (TAM-037): Record a win → prize → player(s) → Confirm. No numbers are typed. */
+export async function recordWin(page: Page, pattern: string, players: string[]) {
+  await page.getByRole('button', { name: 'Record a win' }).click();
+  await page.getByRole('button', { name: pattern, exact: true }).click();
+  for (const p of players) await page.getByRole('button', { name: p, exact: true }).click();
+  await page.getByRole('button', { name: 'Confirm', exact: true }).click();
+}
+
+/** Paper tickets (TAM-037): the anchor ruled a bogey. Record a win → prize → player → Bogey. */
+export async function recordBogey(page: Page, pattern: string, player: string) {
+  await page.getByRole('button', { name: 'Record a win' }).click();
+  await page.getByRole('button', { name: pattern, exact: true }).click();
   await page.getByRole('button', { name: player, exact: true }).click();
+  await page.getByRole('button', { name: 'Bogey', exact: true }).click();
+}
+
+/** The optional helper (TAM-139): menu → Check numbers → pattern → numbers read out → Check. */
+export async function checkNumbers(page: Page, pattern: string, numbers: number[]) {
+  await fromMenu(page, 'Check numbers');
   await page.getByRole('button', { name: pattern, exact: true }).click();
   await page.getByLabel('Numbers read out').fill(numbers.join(' '));
   await page.getByRole('button', { name: 'Check', exact: true }).click();
 }
 
+/** Closes whatever sheet or dialog is open (Close, Done, Back or Cancel), never the top bar's Back. */
+export async function dismiss(page: Page) {
+  const dialogs = page.getByRole('dialog');
+  const n = await dialogs.count();
+  const scope = n > 0 && (await dialogs.nth(n - 1).isVisible()) ? dialogs.nth(n - 1) : page.locator('body');
+  await scope
+    .locator('button:not([data-testid="top-bar"] *)')
+    .filter({ hasText: /^\s*(Close|Done|Back|Cancel)\b/ })
+    .first()
+    .click();
+}
+
+/** The undo toast (TAM-125): "Called 21 · Undo (5s)". */
+export const undoToast = (page: Page) => page.getByTestId('undo-toast');
+/** The undo for the last call (TAM-119): on the toast (TAM-125 checks the toast itself). */
+export const undoLastCall = (page: Page) =>
+  undoToast(page).getByRole('button', { name: /Undo/ }).or(page.getByRole('button', { name: 'Undo last call' })).first();
+
+/** True when "Next number" can't be tapped: hidden, disabled, or showing "Close Top Line first" (TAM-126, TAM-145). */
+export async function nextNumberWaits(page: Page): Promise<boolean> {
+  const b = page.getByRole('button', { name: 'Next number', exact: true });
+  return (await b.count()) === 0 || !(await b.isVisible()) || (await b.isDisabled());
+}
+
 export async function endGame(page: Page) {
-  await page.getByRole('button', { name: 'End game' }).click();
+  await fromMenu(page, 'End game');
   await page.getByRole('dialog').getByRole('button', { name: 'End game' }).click();
 }
 

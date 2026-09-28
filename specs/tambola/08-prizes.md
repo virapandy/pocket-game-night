@@ -68,7 +68,7 @@ Then tier amounts cannot be edited
 Except through the late-joiner rule (TAM-067) or the unclaimed-tier rule (TAM-087)
 
 ## TAM-086: A win shows the prize
-Status: draft (reworded by the tester on 2026-09-28 to match the wording in TAM-037 and TAM-177; was approved, owner, 2026-09-28)
+Status: approved, owner, 2026-09-28 (scenario review outcome: product owner verdict, owner sign-off for Phase 1a.1); was draft (reworded by the tester on 2026-09-28 to match the wording in TAM-037 and TAM-177; was approved, owner, 2026-09-28)
 Phase: Phase 1a
 When a Top Line win is recorded for Riya (paper tickets, TAM-037)
 Then the host phone shows "Top Line: ✓ Riya, ₹60" (or "Player 4" if no name was entered)
@@ -92,8 +92,7 @@ And the winners of claimed tiers get exactly their tier amounts, nothing more
 And payouts plus money handed back add up to the pot exactly
 And the payout summary shows, per person: paid, won, handed back, and the net amount
 And nothing carries over to another game
-(To confirm with the owner: "equally" is read as equal per ticket. If the owner means equal per person,
-regardless of tickets, only the second line changes.)
+(Per ticket confirmed by the owner on 2026-09-28.)
 
 ## TAM-089: The payout summary balances
 Status: approved, owner, 2026-09-28 (wording aligned with the new TAM-088, as the change request asked)
@@ -118,7 +117,7 @@ Then every tier amount is zero or more, and prizes paid out plus money handed ba
 And tiers with the same share always have the same amount (TAM-082)
 
 ## TAM-092: Tiers with the same share stay equal after the anchor's edits and removals
-Status: draft (new, tester, 2026-09-28; follows from TAM-082)
+Status: approved, owner, 2026-09-28 (scenario review outcome: product owner verdict, owner sign-off for Phase 1a.1); was draft (new, tester, 2026-09-28; follows from TAM-082)
 Phase: Phase 1a
 Given 10 tickets with Top, Middle and Bottom Line at the same share
 When the host removes Early Five (TAM-083), or the anchor fixes Full House at a new amount (TAM-084)
@@ -129,12 +128,11 @@ Edge: if the pot cannot be split so that equal shares are equal (for example a �
 the difference and no tier goes below ₹0
 
 ## TAM-093: Money handed back is split to the rupee, fairly and in a fixed order
-Status: draft (new, tester, 2026-09-28; follows from TAM-088)
+Status: approved, owner, 2026-09-28 (scenario review outcome: product owner verdict, owner sign-off for Phase 1a.1); was draft (new, tester, 2026-09-28; follows from TAM-088)
 Phase: Phase 1a
 Given ₹50 of unclaimed prizes is handed back across 3 tickets held by Riya, Asha and Dad
 Then they get ₹17, ₹17 and ₹16, adding up to ₹50 exactly
 And the extra rupees go in the order the players were listed at setup (like a shared prize, TAM-087)
 And a late joiner's ticket (TAM-067) counts like every other ticket
 And with a game played for "No money" (TAM-090), unclaimed prizes are simply listed as "not won", with nothing handed back
-Question for the owner: does a ticket that is out after a bogey (TAM-044) still get its share back?
-Its contribution stays in the pot, so this draft says yes.
+And a ticket that is out after a bogey (TAM-044) still gets its share, because its contribution stayed in the pot.

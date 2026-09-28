@@ -1,8 +1,9 @@
 // Calling on the host phone: TAM-010, TAM-012, TAM-016, TAM-017, TAM-100, TAM-101, TAM-102, TAM-107, TAM-108,
-// TAM-119, TAM-155, TAM-156.
+// TAM-119, TAM-155, TAM-156. End game, Show the room and the Board are in the menu (TAM-124, TAM-127).
 import { expect, test } from '@playwright/test';
 import {
-  call, callMany, calledNumbers, currentNumber, currentRhyme, lastCalls, nextNumber, openBoard, setUpPaperGame,
+  call, callMany, calledNumbers, closeBoard, currentNumber, currentRhyme, dismiss, fromMenu, lastCalls, nextNumber, openBoard,
+  setUpPaperGame, undoLastCall,
 } from './helpers';
 
 test.beforeEach(async ({ page }) => {
@@ -19,7 +20,9 @@ test('TAM-010: "Next number" shows one new number, large, with its rhyme', async
 test('TAM-016: the board marks every called number, and the last 5 calls show most recent first', async ({ page }) => {
   const calls = await callMany(page, 7);
   expect((await calledNumbers(page)).sort((a, b) => a - b)).toEqual([...calls].sort((a, b) => a - b));
+  const opened = await openBoard(page);
   await expect(board90(page)).toHaveCount(90);
+  if (opened) await closeBoard(page);
   const shown = (await lastCalls(page).locator('[data-number]').allTextContents()).map((t) => Number(t.trim()));
   expect(shown).toEqual(calls.slice(-5).reverse());
 });
@@ -78,18 +81,20 @@ test('TAM-100: "Next number" is big, bottom centre, and never moves', async ({ p
   expect(vp.height - (first.y + first.height)).toBeLessThanOrEqual(vp.height * 0.2);
   await callMany(page, 3);
   expect(await where()).toEqual(first);
-  await page.getByRole('button', { name: 'Check a claim' }).click();
-  await page.getByRole('button', { name: /Cancel|Back/ }).first().click();
+  await page.getByRole('button', { name: 'Record a win' }).click();
+  await dismiss(page);
   expect(await where()).toEqual(first);
-  await openBoard(page);
+  const opened = await openBoard(page);
   if (await nextNumber(page).isVisible()) expect(await where()).toEqual(first);
+  if (opened) await closeBoard(page);
+  expect(await where()).toEqual(first);
 });
 
 test('TAM-107 and TAM-108: Show the room shows only the number (digits at least 160 px) and the last 3 calls', async ({ page }) => {
   const calls = await callMany(page, 4);
-  await page.getByRole('button', { name: 'Show the room' }).click();
+  await fromMenu(page, 'Show the room');
   await expect(nextNumber(page)).toBeHidden();
-  await expect(page.getByRole('button', { name: 'Check a claim' })).toBeHidden();
+  await expect(page.getByRole('button', { name: 'Record a win' })).toBeHidden();
   const room = page.getByTestId('room-view');
   await expect(room.getByTestId('current-number')).toHaveText(String(calls[3]));
   const shown = (await room.getByTestId('last-calls').locator('[data-number]').allTextContents()).map((t) => Number(t.trim()));
@@ -110,19 +115,21 @@ test('TAM-107 and TAM-108: Show the room shows only the number (digits at least 
 
 test('TAM-156: the longest rhymes show in full under the number on the room view', async ({ page }) => {
   await callMany(page, 15);
-  await page.getByRole('button', { name: 'Show the room' }).click();
+  await fromMenu(page, 'Show the room');
   const rhyme = page.getByTestId('room-view').getByTestId('current-rhyme');
   const clipped = await rhyme.evaluate((el) => el.scrollWidth > el.clientWidth + 1 || el.scrollHeight > el.clientHeight + 1 || getComputedStyle(el).textOverflow === 'ellipsis');
   expect(clipped).toBe(false);
 });
 
-test('TAM-119: "Undo last call" within 5 seconds puts the number back; after 5 seconds it disappears', async ({ page }) => {
+test('TAM-119: Undo last call within 5 seconds puts the number back; after 5 seconds it disappears', async ({ page }) => {
   const first = await call(page);
   await call(page);
-  await page.getByRole('button', { name: 'Undo last call' }).click();
+  await undoLastCall(page).click();
   await expect(currentNumber(page)).toHaveText(String(first));
   expect(await calledNumbers(page)).toEqual([first]);
   await call(page);
+  await expect(undoLastCall(page)).toBeVisible();
   await page.waitForTimeout(5_500);
-  await expect(page.getByRole('button', { name: 'Undo last call' })).toHaveCount(0);
+  await expect(undoLastCall(page)).toHaveCount(0);
+  await expect(page.getByRole('button', { name: /^Undo/ })).toHaveCount(0);
 });

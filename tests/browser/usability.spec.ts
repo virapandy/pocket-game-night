@@ -1,8 +1,8 @@
 // Usability on the host phone: TAM-104, TAM-106, TAM-109, TAM-110, TAM-113, TAM-116, TAM-118, TAM-135.
 import { expect, test, type Page } from '@playwright/test';
-import { call, callMany, checkClaim, HOME, nextNumber, openTambola, setUpPaperGame } from './helpers';
+import { call, callMany, dismiss, fromMenu, HOME, menuButton, nextNumber, openTambola, recordWin, setUpPaperGame } from './helpers';
 
-/** Screens worth checking: home, Tambola, setup, a game with a claim result, the room view. */
+/** Screens worth checking: home, Tambola, setup, a game, its menu, a recorded win, the room view. */
 async function eachScreen(page: Page, check: (name: string) => Promise<void>) {
   await page.goto(HOME);
   await check('home');
@@ -10,10 +10,13 @@ async function eachScreen(page: Page, check: (name: string) => Promise<void>) {
   await check('tambola');
   await setUpPaperGame(page);
   await check('game');
-  const calls = await callMany(page, 6);
-  await checkClaim(page, 'Riya', 'Early Five', calls.slice(-5));
-  await check('claim result');
-  await page.getByRole('button', { name: 'Show the room' }).click();
+  await callMany(page, 6);
+  await menuButton(page).click();
+  await check('menu');
+  await dismiss(page);
+  await recordWin(page, 'Early Five', ['Riya']);
+  await check('win recorded');
+  await fromMenu(page, 'Show the room');
   await check('room view');
 }
 
@@ -130,9 +133,9 @@ test('TAM-135: "Next number" gives a short vibration, which can be turned off in
   await setUpPaperGame(page);
   await call(page);
   await expect.poll(() => page.evaluate(() => (window as any).__buzz)).toBeGreaterThan(0);
-  await page.getByRole('button', { name: 'Settings' }).click();
+  await fromMenu(page, 'Settings');
   await page.getByRole('checkbox', { name: 'Vibration' }).or(page.getByRole('switch', { name: 'Vibration' })).uncheck();
-  await page.getByRole('button', { name: /Done|Close|Back/ }).first().click();
+  await dismiss(page);
   const n = await page.evaluate(() => (window as any).__buzz);
   await call(page);
   await page.waitForTimeout(300);

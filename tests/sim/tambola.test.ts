@@ -1,5 +1,5 @@
 // TAM-077: every game ends. Thousands of simulated paper-ticket games with players who claim on time,
-// late, falsely or never. TAM-074: a failing game is saved to tests/replays/ as a permanent test.
+// late, falsely or never; the anchor rules and the host records (TAM-037). TAM-074: a failing game is saved to tests/replays/ as a permanent test.
 import { describe, expect, it } from 'vitest';
 import { moneyProblems, replay } from '../../src/engine';
 import { rules } from '../games/tambola/helpers';
@@ -24,6 +24,11 @@ describe('The simulation harness itself', () => {
 
 describe('TAM-077: every game ends', () => {
   it(`${GAMES} simulated games all end, keep every rule, and balance the money`, () => {
+    // Recording wins on the anchor's word (TAM-037) must exist first; otherwise every game would fail the same
+    // way and be saved as a replay that shows nothing about the rules.
+    expect(rules.detailMoves, 'recording wins and bogeys (TAM-037) is not built yet').toEqual(
+      expect.arrayContaining(['record-win', 'record-bogey']),
+    );
     const failures: string[] = [];
     for (let i = 0; i < GAMES; i++) {
       const seed = `sim-${i}`;
@@ -33,6 +38,11 @@ describe('TAM-077: every game ends', () => {
         const summary = rules.view(result.match.state, { kind: 'host' }).summary;
         if (!summary) problems.push('no summary at the end');
         else if (summary.money && moneyProblems(summary.money).length) problems.push(...moneyProblems(summary.money));
+        else if (summary.money) {
+          // TAM-091: prizes paid out plus money handed back equal the pot.
+          const out = (summary.payouts ?? []).reduce((a: number, p: any) => a + p.won + p.handedBack, 0);
+          if (out !== summary.pot) problems.push(`paid out plus handed back ${out}, pot ${summary.pot} (TAM-091)`);
+        }
         const again = replay(rules, result.match.setup, result.match.records);
         if (!again.ok) problems.push(`replay failed: ${again.reason}`);
         else if (JSON.stringify(again.value.state) !== JSON.stringify(result.match.state)) problems.push('replay differs (TAM-073)');

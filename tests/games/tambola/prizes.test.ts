@@ -1,4 +1,5 @@
-// The prize pool: specs/tambola/08-prizes.md (TAM-080 to TAM-091). Money is calculated, never moved.
+// The prize pool: specs/tambola/08-prizes.md (TAM-080 to TAM-092). Money is calculated, never moved.
+// Money handed back when prizes are not won (TAM-088, TAM-093) is in handback.test.ts.
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import { moneyProblems } from '../../../src/engine';
@@ -62,6 +63,115 @@ describe('TAM-082: rounded tiers always add up to the pot exactly', () => {
         },
       ),
       { numRuns: 3_000 },
+    );
+  });
+});
+
+describe('TAM-082: tiers with the same share get the same amount; rounding differences go to Full House first', () => {
+  it('6 tickets at ₹50 (a ₹300 pot) across 10 / 15 / 15 / 15 / 45 %: the three Lines are equal, Full House takes the difference', () => {
+    const plan = planPrizes({ tickets: 6, contribution: 50 });
+    const a = byPattern(plan.tiers, 'amount');
+    expect(a['top-line']).toBe(a['middle-line']);
+    expect(a['middle-line']).toBe(a['bottom-line']);
+    expect(a['early-five']! % 10).toBe(0);
+    expect(a['top-line']! % 10).toBe(0);
+    expect(sum(plan.tiers.map((t) => t.amount))).toBe(300);
+    expect(a['full-house']).toBe(300 - a['early-five']! - 3 * a['top-line']!);
+    for (const v of Object.values(a)) expect(a['full-house']).toBeGreaterThanOrEqual(v!);
+  });
+
+  it('for every pot and tier set: equal shares, equal amounts; every tier but Full House is a whole number of units', () => {
+    fc.assert(
+      fc.property(
+        fc.integer({ min: 2, max: 200 }),
+        fc.integer({ min: 1, max: 1000 }),
+        fc.constantFrom(1, 5, 10, 20, 50, 100),
+        (tickets, contribution, unit) => {
+          const plan = planPrizes({ tickets, contribution, unit });
+          for (const x of plan.tiers) {
+            for (const y of plan.tiers) if (x.percent === y.percent) expect(x.amount).toBe(y.amount);
+            if (x.pattern !== 'full-house') expect(x.amount % unit).toBe(0);
+            expect(x.amount).toBeGreaterThanOrEqual(0);
+          }
+          expect(sum(plan.tiers.map((t) => t.amount))).toBe(plan.pot);
+        },
+      ),
+      { numRuns: 3_000 },
+    );
+  });
+});
+
+describe('TAM-092: tiers with the same share stay equal after the anchor\'s edits and removals', () => {
+  const base = { tickets: 10, contribution: 50 };
+  const lines = (plan: ReturnType<typeof planPrizes>) => {
+    const a = byPattern(plan.tiers, 'amount');
+    return [a['top-line'], a['middle-line'], a['bottom-line']];
+  };
+
+  it('removing Early Five keeps the three Lines equal, and the total equals the pot', () => {
+    const plan = planPrizes({ ...base, removed: ['early-five'] });
+    const [t, m, b] = lines(plan);
+    expect(t).toBe(m);
+    expect(m).toBe(b);
+    expect(sum(plan.tiers.map((x) => x.amount))).toBe(500);
+  });
+
+  it('fixing Full House at a new amount keeps the three Lines equal', () => {
+    for (const fh of [200, 250, 310]) {
+      const plan = planPrizes({ ...base, fixed: { 'full-house': fh } });
+      const [t, m, b] = lines(plan);
+      expect(byPattern(plan.tiers, 'amount')['full-house']).toBe(fh);
+      expect(t).toBe(m);
+      expect(m).toBe(b);
+      expect(sum(plan.tiers.map((x) => x.amount))).toBe(500);
+      for (const x of plan.tiers) expect(x.amount).toBeGreaterThanOrEqual(0);
+    }
+  });
+
+  it('fixing Top Line itself at ₹80: only Top Line differs; Middle and Bottom Line stay equal', () => {
+    const plan = planPrizes({ ...base, fixed: { 'top-line': 80 } });
+    const [t, m, b] = lines(plan);
+    expect(t).toBe(80);
+    expect(m).toBe(b);
+    expect(sum(plan.tiers.map((x) => x.amount))).toBe(500);
+  });
+
+  it('edge: a ₹20 pot that cannot be split so equal shares are equal: Full House takes the difference, none below ₹0', () => {
+    const plan = planPrizes({ tickets: 10, contribution: 2 });
+    const [t, m, b] = lines(plan);
+    expect(t).toBe(m);
+    expect(m).toBe(b);
+    expect(sum(plan.tiers.map((x) => x.amount))).toBe(20);
+    for (const x of plan.tiers) expect(x.amount).toBeGreaterThanOrEqual(0);
+    const a = byPattern(plan.tiers, 'amount');
+    for (const v of Object.values(a)) expect(a['full-house']).toBeGreaterThanOrEqual(v!);
+  });
+
+  it('for every removal and fixed amount: unfixed tiers with the same share always have the same amount', () => {
+    const optional: Pattern[] = ['early-five', 'four-corners', 'top-line', 'middle-line', 'bottom-line', 'second-full-house'];
+    fc.assert(
+      fc.property(
+        fc.integer({ min: 2, max: 120 }),
+        fc.integer({ min: 1, max: 500 }),
+        fc.subarray(optional),
+        // Full House stays free here, so it can take the difference (TAM-092 edge).
+        fc.option(fc.tuple(fc.constantFrom<Pattern>(...optional), fc.integer({ min: 0, max: 100 }))),
+        (tickets, contribution, removedAll, fix) => {
+          const suggested = suggestTiers(tickets).map((t) => t.pattern);
+          const removed = removedAll.filter((p) => suggested.includes(p));
+          const pot = tickets * contribution;
+          const fixed: Partial<Record<Pattern, number>> = {};
+          if (fix && suggested.includes(fix[0]) && !removed.includes(fix[0])) fixed[fix[0]] = Math.floor((pot * fix[1]) / 200);
+          const plan = planPrizes({ tickets, contribution, removed, fixed });
+          expect(sum(plan.tiers.map((t) => t.amount))).toBe(pot);
+          const free = plan.tiers.filter((t) => !(t.pattern in fixed));
+          for (const x of free) {
+            expect(x.amount).toBeGreaterThanOrEqual(0);
+            for (const y of free) if (x.percent === y.percent) expect(x.amount).toBe(y.amount);
+          }
+        },
+      ),
+      { numRuns: 1_500 },
     );
   });
 });
@@ -139,6 +249,7 @@ describe('TAM-085: prizes cannot change after the first number', () => {
 });
 
 describe('TAM-091: for every pot, tier edit, removal, tie and unclaimed tier, the payouts balance', () => {
+  // Wins are recorded on the anchor's word (TAM-037); unclaimed tiers are handed back (TAM-088).
   const optional: Pattern[] = ['early-five', 'four-corners', 'top-line', 'middle-line', 'bottom-line', 'second-full-house'];
 
   it('every amount is zero or more and the payouts add up to the pot exactly', () => {
@@ -171,18 +282,15 @@ describe('TAM-091: for every pot, tier edit, removal, tie and unclaimed tier, th
             const pattern = order[tierIdx % Math.max(order.length, 1)];
             if (!pattern || !g.host.openPatterns.includes(pattern)) continue;
             g.callUpTo(Math.max(gap, 5 - g.called.length));
-            for (let k = 0; k < Math.min(tieCount, players.length); k++) {
-              expect(g.claim(players[k]!.id, pattern, g.onTimeNumbers(pattern)).ok).toBe(true);
-            }
+            const ids = players.slice(0, Math.min(tieCount, players.length)).map((p) => p.id);
+            expect(g.win(pattern, ...ids).ok).toBe(true);
             g.close(pattern);
             won++;
           }
           if (!endEarly || won === 0) {
             // Play to Full House (a tie of up to two), which also covers "nobody won anything else".
             g.callUpTo(Math.max(15 - g.called.length, 1));
-            for (let k = 0; k < Math.min(2, players.length); k++) {
-              g.claim(players[k]!.id, 'full-house', g.onTimeNumbers('full-house'));
-            }
+            g.win('full-house', ...players.slice(0, Math.min(2, players.length)).map((p) => p.id));
             g.finish();
           } else {
             g.do({ type: 'end' });
@@ -194,7 +302,15 @@ describe('TAM-091: for every pot, tier edit, removal, tie and unclaimed tier, th
           for (const t of s.tiers) {
             expect(t.amount).toBeGreaterThanOrEqual(0);
             expect(sum(t.winners.map((w: any) => w.amount))).toBe(t.winners.length ? t.amount : 0);
+            // TAM-088: a won tier pays exactly its locked amount; nothing is spread onto it.
+            expect(t.amount).toBe(plan.tiers.find((x) => x.pattern === t.pattern)!.amount);
           }
+          expect(sum(s.payouts.map((p: any) => p.won + p.handedBack))).toBe(pot);
+          const unclaimed = sum(s.tiers.filter((t: any) => t.winners.length === 0).map((t: any) => t.amount));
+          expect(sum(s.payouts.map((p: any) => p.handedBack))).toBe(unclaimed);
+          // TAM-082: tiers with the same share always have the same amount (fixed tiers aside).
+          const free = plan.tiers.filter((t) => !(t.pattern in fixed));
+          for (const x of free) for (const y of free) if (x.percent === y.percent) expect(x.amount).toBe(y.amount);
         },
       ),
       { numRuns: 500 },

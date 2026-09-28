@@ -120,7 +120,7 @@ Then every tap shows a visible response within 100 ms
 And the app is usable within 5 seconds of opening over a slow connection the first time
 
 ## TAM-117: Joining a phone ticket works with the phone's camera, or a typed code
-Status: draft
+Status: draft (product owner verdict 2026-09-28: approve; awaiting owner sign-off when Phase 2 comes up)
 Phase: Phase 2 (phone tickets)
 When a player points their phone's own camera at the ticket QR
 Then their ticket opens, with no separate scanner app
@@ -156,13 +156,13 @@ And if the app goes to the background, auto-call pauses and shows "Paused: tap t
 And pausing or changing the timer never skips or repeats a number
 
 ## TAM-121: Players can make text larger
-Status: draft
+Status: draft (product owner verdict 2026-09-28: approve; awaiting owner sign-off when Phase 2 comes up)
 Phase: Phase 2 (phone tickets)
 When a player turns on "Larger text" on their phone ticket
 Then the ticket and all text grow, and nothing is cut off or overlaps
 
 ## TAM-122: Tickets on phones default to landscape
-Status: draft
+Status: draft (product owner verdict 2026-09-28: approve; awaiting owner sign-off when Phase 2 comes up)
 Phase: Phase 2 (phone tickets)
 When a player opens their phone ticket
 Then it is shown in landscape with cells at least 44 CSS px, and turning the phone to portrait still works
@@ -198,7 +198,7 @@ Then the calling screen needs no scrolling
 And the called number stays fully visible after calls, claims, undo and closing a tier
 
 ## TAM-123: The number dominates the calling screen
-Status: draft (new, tester, 2026-09-28, from the redesign)
+Status: approved, owner, 2026-09-28 (scenario review outcome: product owner verdict, owner sign-off for Phase 1a.1); was draft (new, tester, 2026-09-28, from the redesign)
 Phase: Phase 1a
 Given a game in progress on a 390 × 844 screen
 Then nothing sits above the called number except a top bar with Back, the progress ("23 of 90 called") and a menu (⋯)
@@ -209,18 +209,19 @@ And after all 90 numbers are called, the number, the rhyme and the buttons are a
 Edge: a long rhyme (40 characters, TAM-156) still shows in full without pushing anything off the screen
 
 ## TAM-124: One main button; End game and Discard live in the menu
-Status: draft (new, tester, 2026-09-28, from the redesign)
+Status: approved, owner, 2026-09-28 (scenario review outcome: product owner verdict, owner sign-off for Phase 1a.1); was draft (new, tester, 2026-09-28, from the redesign)
 Phase: Phase 1a
 Given a game in progress
 Then "Next number" is the only filled main button on the calling screen, in a fixed zone at the bottom (TAM-100)
-And "Record a win" (TAM-037) sits beside it as a secondary button, not filled
+And "Record a win" (TAM-037) sits in its own row just above "Next number", full width but not filled, so the two are never side by side
+And "Next number" is full width at the very bottom, centred (TAM-100)
 And the menu (⋯) holds Settings, Show the room, Board, Check numbers (TAM-139), End game and Discard game
 And End game and Discard game appear nowhere on the calling screen outside the menu, and still ask for their
 confirmations (TAM-103, PLT-005)
 And "Show the room" can also be opened by a long press on the number (the menu stays the tap-only way, TAM-136)
 
 ## TAM-125: The undo toast never moves anything
-Status: draft (new, tester, 2026-09-28, from the redesign)
+Status: approved, owner, 2026-09-28 (scenario review outcome: product owner verdict, owner sign-off for Phase 1a.1); was draft (new, tester, 2026-09-28, from the redesign)
 Phase: Phase 1a
 When the host calls 21
 Then a toast "Called 21 · Undo (5s)" floats just above the bottom buttons for 5 seconds (TAM-119)
@@ -231,7 +232,7 @@ Then TAM-119 applies, and again nothing else moves
 Edge: calling again while a toast is showing replaces it with the new number's toast; only the latest call can be undone
 
 ## TAM-126: Prize chips show at a glance what is open, won and closed
-Status: draft (new, tester, 2026-09-28, from the redesign)
+Status: approved, owner, 2026-09-28 (scenario review outcome: product owner verdict, owner sign-off for Phase 1a.1); was draft (new, tester, 2026-09-28, from the redesign)
 Phase: Phase 1a
 Given a game with five tiers
 Then each tier shows as a chip on the calling screen: open ("Top ●"), won ("Early 5 ✓ Riya"), or closed (greyed)
@@ -241,7 +242,7 @@ Then its chip reads "Top Line ✓ Riya · Close", and "Next number" reads "Close
 And if the chips do not fit on one line, they scroll sideways inside their own row; the page itself never scrolls (TAM-138)
 
 ## TAM-127: The board opens as a sheet over the calling screen
-Status: draft (new, tester, 2026-09-28, from the redesign)
+Status: approved, owner, 2026-09-28 (scenario review outcome: product owner verdict, owner sign-off for Phase 1a.1); was draft (new, tester, 2026-09-28, from the redesign)
 Phase: Phase 1a
 When the host taps "Board" in the menu (or swipes up from the prize chips)
 Then the 1–90 board opens as a sheet over the calling screen, with the called numbers marked (TAM-016)
@@ -249,7 +250,7 @@ And one tap closes it, and the calling screen is exactly as it was, number fully
 And the board never pushes the number off the screen
 
 ## TAM-128: The screen-sleep hint is a one-time tip, not a permanent line
-Status: draft (new, tester, 2026-09-28, from the redesign; refines the hint in TAM-110)
+Status: approved, owner, 2026-09-28 (scenario review outcome: product owner verdict, owner sign-off for Phase 1a.1); was draft (new, tester, 2026-09-28, from the redesign; refines the hint in TAM-110)
 Phase: Phase 1a
 Given the phone refuses to keep the screen awake (TAM-110)
 Then a one-time tip explains it, and can be dismissed
@@ -258,7 +259,7 @@ And no permanent line of text takes space on the calling screen
 And when the phone does keep the screen awake, neither the tip nor the icon appears
 
 ## TAM-129: Landscape: the phone on a stand, facing the room
-Status: draft (new, tester, 2026-09-28, from the redesign)
+Status: approved, owner, 2026-09-28 (scenario review outcome: product owner verdict, owner sign-off for Phase 1a.1); was draft (new, tester, 2026-09-28, from the redesign)
 Phase: Phase 1a
 Given the host turns the phone to landscape during a game (844 × 390)
 Then the number fills the left half, the rhyme and the last calls sit on the right, and the buttons run along the bottom
@@ -266,7 +267,7 @@ And nothing needs scrolling, and the number is at least as readable as in portra
 And turning back to portrait keeps the game exactly where it was
 
 ## TAM-188: Dark mode keeps the readability rules
-Status: draft (new, tester, 2026-09-28, 1b review; follows from TAM-134 and TAM-106)
+Status: approved, owner, 2026-09-28 (scenario review outcome: product owner verdict, owner sign-off for Phase 1b); was draft (new, tester, 2026-09-28, 1b review; follows from TAM-134 and TAM-106)
 Phase: Phase 1b
 Given the host switched to dark mode (TAM-134)
 Then every contrast rule still holds (TAM-106: 4.5:1 for text, 7:1 for the number on the room view)
