@@ -108,3 +108,19 @@ Status: draft
 Given ticket 6's Top Line needs 72, which has not been called
 When the host checks ticket 6 for Top Line
 Then it is a bogey, even if 72 is called straight afterwards
+
+## TAM-037: Paper tickets: the host checks a claim from the numbers read out
+Status: draft
+Given the game uses paper tickets
+And a player claims Top Line and reads out 4, 23, 41, 62 and 85
+When the host types those five numbers
+Then each shows as called (green) or not called (red)
+And the claim is accepted only if all five were called
+(For Early Five any 5 numbers; for Four Corners 4; for Full House all 15.)
+
+## TAM-038: A late claim shows which number completed the pattern
+Status: draft (depends on TAM-043)
+Given Top Line on a ticket was complete when 45 was called, and 12 has been called since
+When the host checks the claim
+Then it is treated as late, and the host sees "Top Line was complete at 45"
+And with paper tickets this is judged from the numbers read out: the latest of them must be the most recent call

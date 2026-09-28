@@ -25,8 +25,8 @@ their own warning the first time they are turned on
 ## TAM-063: A game starts fast
 Status: draft
 Given the app is open on the host phone
-When the host sets up a game with default settings for 6 players
-Then the first number can be drawn within 30 seconds, with no sign-in and no account
+When the host sets up a game for 6 players with default settings, including a contribution and the suggested split
+Then the first number can be drawn within 60 seconds, with no sign-in and no account
 
 ## TAM-064: The game works with no internet
 Status: draft
@@ -44,3 +44,23 @@ Then the game continues from exactly where it was
 Status: draft
 When the host taps "End game" and confirms
 Then the game ends and a summary shows the winners so far
+
+## TAM-067: A late joiner can get a ticket mid-game
+Status: draft (depends on the late-joiner decision)
+Given 20 numbers have been called
+When a new player arrives and the host adds them
+Then they get a ticket (paper or phone) and their claims are checked by the owner's late-joiner rule
+And any change to the pot follows the owner's rule for prizes already locked
+
+## TAM-068: Play again keeps the setup
+Status: draft
+When a game ends and the host taps "Play again"
+Then the players, contribution, patterns and split are kept
+And the tickets and the draw seed are new
+And the anchor confirms the prizes again before the first number
+
+## TAM-069: How to play works offline
+Status: draft
+Given the phone has no internet
+When a first-timer opens "How to play" from the start screen
+Then the one-page guide with a sample ticket is shown

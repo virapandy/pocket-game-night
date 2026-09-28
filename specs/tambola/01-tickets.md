@@ -48,8 +48,5 @@ Given a ticket seed
 When the ticket is made from it today, and again later on another phone
 Then both tickets are identical, number for number
 
-## TAM-009: A printed or shared ticket shows only that ticket
-Status: draft
-When the host shares or prints ticket number 4
-Then the image shows ticket 4, its number and the game name
-And it shows no other ticket and no called numbers
+## TAM-009: Retired
+Status: retired 2026-09-28 (the app no longer prints or shares ticket images; tickets are paper or on phones)

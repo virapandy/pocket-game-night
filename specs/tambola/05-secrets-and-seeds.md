@@ -40,3 +40,16 @@ Status: draft
 When the host checks a claim
 Then the host phone can show any ticket in the game
 (Only the host has this view.)
+
+## TAM-057: A phone ticket works with no internet
+Status: draft (Phase 2)
+Given a player opened the app link once before, and now has no internet
+When they scan their ticket QR
+Then their ticket appears and they can mark it
+
+## TAM-058: Paper and phone tickets can be mixed in one game
+Status: draft (Phase 2)
+Given 6 players use phone tickets and 2 use paper tickets from a book
+When claims are made
+Then phone-ticket claims are checked by ticket number, paper-ticket claims by the numbers read out (TAM-037)
+And a player can switch from phone to paper mid-game

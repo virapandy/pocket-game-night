@@ -14,9 +14,10 @@ makes the tickets, and checks claims. The calling, the shouting and the checking
 
 ## What you need
 - One phone (the host phone). No internet needed once the app has been opened.
-- A ticket for each player: printed, shared as an image, or (later) on each player's phone.
-- Something to mark tickets with, if they're on paper.
-- Optional: small prizes for each pattern (chocolates, gifts, tokens). The app never handles money.
+- A ticket for each player: from your own Tambola ticket book, or (later) on each player's phone.
+- A pen, for paper tickets.
+- Optional: a small contribution per ticket that makes up the prize pot, or small prizes such as
+  chocolates. The app works out the pot and each prize, but never collects or sends money.
 
 ## The ticket
 A ticket is a grid of **3 rows × 9 columns** holding **15 numbers**.
@@ -40,6 +41,8 @@ A ticket is a grid of **3 rows × 9 columns** holding **15 numbers**.
 ## How to play
 1. **Hand out tickets.** Usually one to three per player.
 2. **Agree the prizes** (called *dividends*): which patterns are in play and what each one wins.
+   Often everyone pays a small amount per ticket, and the pot is split across the patterns, with
+   the smallest share for Early Five and the largest for Full House.
 3. **The caller calls numbers**, one at a time, reading each number and its rhyme from the host phone.
    A number is never called twice.
 4. **Players mark** any called number that's on their ticket.
@@ -90,8 +93,11 @@ Many groups add a **Second (and Third) Full House**, and hosts sometimes invent 
 
 ## How Pocket Game Night plays it
 - The anchor still calls aloud; the phone only draws the number and shows the rhyme.
-- Players still shout claims; the host types the ticket number and pattern, and the phone checks it
-  instantly and shows the ticket to the room.
+- The host enters players, tickets and the contribution; the app suggests how to split the pot,
+  and the anchor confirms the prizes out loud before the first number.
+- Players still shout claims. With paper tickets, the host types the numbers the player reads out;
+  with phone tickets, just the ticket number. The phone checks the claim instantly and shows the room.
+- At the end, the app shows who won what. Money changes hands between people, never through the app.
 - Shortcuts (phone speaks the calls, auto-marking, Claim buttons) exist but are off by default,
   because the shouting and checking are the fun.
 - Mistakes are forgiving: the host can undo a wrongly entered claim. A number already called

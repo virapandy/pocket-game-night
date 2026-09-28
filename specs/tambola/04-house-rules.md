@@ -71,17 +71,10 @@ Options:
 - B. The host can allow a second (and third) Full House before the game ends (a common extra)
 Scenario once chosen: see TAM-075.
 
-## TAM-047: Prize amounts
-Status: waiting for owner decision
-The brief rules out real money in the app.
-Options:
-- A. No prizes shown at all
-- B. The host may type a prize label per pattern (such as "chocolate" or "movie pick"), shown on the result screen only; no money is handled (**norm**: non-cash prizes per dividend)
-Scenario once chosen:
-When a claim is accepted
-Then the result shows the prize label (B), or no prize (A)
+## TAM-047: Prizes
+Status: replaced 2026-09-28 by the prize-pool scenarios in 08-prizes.md (TAM-080 to TAM-089)
 
-## TAM-048: Tickets per game
+## TAM-048: Phone tickets per game
 Status: waiting for owner decision
 Options:
 - A. Hand out tickets one by one, from full sheets of 6 (so numbers spread evenly) (**norm**: tickets come in strips of 6)
