@@ -52,8 +52,9 @@ A ticket is a grid of **3 rows × 9 columns** holding **15 numbers**.
    **before the next number is called**.
 6. **The claim is checked** in front of everyone against the numbers called so far.
    If it's right, you win that prize. If it's wrong, it's a **bogey**.
-7. **Each prize is won once.** Play carries on until **Full House** is won (or the agreed number
-   of Full Houses), which ends the game.
+7. **Each prize is won once**, or shared by tickets that completed it on the same number. Once the
+   winners are confirmed, the host **closes** that prize and calls the next number. After the last
+   Full House is closed, the host **ends the game** and the prizes are paid.
 
 ## Winning patterns
 
@@ -78,15 +79,16 @@ Many groups add a **Second (and Third) Full House**, and hosts sometimes invent 
    Pocket Game Night's default; for gentle family games the host can switch to "carry on".
 4. **Ties:** if two or more tickets complete the same pattern on the same number and claim in time,
    they **share** the prize.
-5. **One winner per pattern.** Once a pattern is won, later claims for it don't count.
-6. **The game ends** when the last Full House is won. If all 90 numbers are called, every ticket
-   is complete.
+5. **One winner per pattern.** Once a pattern is won, later claims for it don't count. In Pocket
+   Game Night the host closes each prize by hand, after adding any tied winners.
+6. **The game ends** when the host ends it: normally after closing the last Full House, or early.
+   If all 90 numbers are called, every ticket is complete.
 7. **Late joiners** may join a game in progress and cross off the numbers already called. Because
    claims must come before the next number, a pattern that was already complete when they joined
    can't be claimed. Pocket Game Night allows joining until 10 numbers have been called.
 8. **Unclaimed prizes:** some groups roll them over to the next round ("Progressive Tambola").
    Pocket Game Night keeps each game self-contained: an unclaimed prize is spread across the
-   prizes won in that game.
+   prizes won in that game. If nobody won anything, everyone gets their contribution back.
 9. **House rules are fine.** Patterns, prizes, bogey penalties and the number of tickets vary
    between groups. Agree them before the first number.
 

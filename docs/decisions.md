@@ -39,9 +39,10 @@
 | 2026-09-28 | Hosting: GitHub Pages instead of Cloudflare Pages (no extra account). One live link, https://virapandy.github.io/pocket-game-night/, updated on every push to main, and only when every check and test is green. | Owner |
 | 2026-09-28 | Winning is manual: after an accepted claim the host can add more winners, then closes the tier by hand; the next number waits until it is closed. The game ends only when the host ends it, including after the last Full House (TAM-145, TAM-075). | Owner |
 | 2026-09-28 | A game with money that ends with no prize won hands every contribution back, as with Discard (TAM-144). | Owner |
+| 2026-09-28 | A product owner role: Claude in the desktop app, in its own clone `pocket-game-night-product/`, owns `docs/` (guides, journeys, UX guidelines, decisions, new-game designs and scenario drafts). Rules to be baselined when the orchestrator is idle. | Owner |
 
 "Convention" means the established Tambola rule in `docs/games/tambola/guide.md`, chosen because the owner asked
 Claude to follow game conventions. Every Tambola rule above is also a host setting with this default.
 
 ## Open
-- Approval of Phase 1b and Phase 2 scenarios (when those phases come up)
+- Approval of Phase 2, 2.5, 6 and 7 scenarios (when those phases come up)
