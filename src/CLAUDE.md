@@ -1,6 +1,6 @@
 # src/: Build workspace rules
 
-You are writing app code. You never write, edit or run tests; testing happens in the Claude desktop app.
+You are writing app code. You never write, edit or run tests. Usually an orchestrator in the workspace folder hands work to a coder subagent here and a tester subagent in the Test clone (or the desktop app there).
 
 ## Before you start
 1. `git pull --rebase`
