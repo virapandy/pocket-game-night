@@ -26,19 +26,22 @@ Then none of them contains the draw seed, or anything the draw order can be work
 Status: draft
 Phase: Phase 2 (phone tickets)
 When the host shows the join QR for ticket 3
-Then the QR holds ticket 3's seed and number and the game ID, and nothing else
+Then the QR holds ticket 3's 15 numbers and layout, its ticket number and the game code, and nothing else
+And no seed of any kind
+(A seed would let a curious phone rebuild the other tickets on the same sheet of 6.)
 
-## TAM-054: One ticket's seed reveals nothing about other tickets
+## TAM-054: One ticket reveals nothing useful about other tickets or the draw
 Status: draft
 Phase: Phase 2 (phone tickets)
-Given a player knows ticket 3's seed
-Then they cannot rebuild any other ticket or the draw order from it
+Given a player has ticket 3's QR or code
+Then they cannot work out any other ticket's numbers or the draw order from it
+(They can only tell that the other 5 tickets on their sheet don't contain their own numbers, which gives no advantage.)
 
-## TAM-055: A ticket rebuilt on a player's phone matches the host's copy
+## TAM-055: A ticket on a player's phone matches the host's copy
 Status: draft
 Phase: Phase 2 (phone tickets)
 Given a player scanned the QR for ticket 3, with no internet
-When their phone builds the ticket
+When their phone shows the ticket
 Then it is identical to ticket 3 on the host phone
 
 ## TAM-056: The host can see all tickets
@@ -54,6 +57,7 @@ Phase: Phase 2 (phone tickets)
 Given a player opened the app link once before, and now has no internet
 When they scan their ticket QR
 Then their ticket appears and they can mark it
+And nothing is fetched from a server: everything the ticket needs is inside the QR link
 
 ## TAM-058: Paper and phone tickets can be mixed in one game
 Status: draft
@@ -70,11 +74,13 @@ When a player taps a number on their phone ticket
 Then it shows as marked (fill and mark); tapping again unmarks it; nothing asks for confirmation
 And marks stay on the player's phone and never affect claim checks (TAM-035)
 
-## TAM-132: The host sees who has joined
+## TAM-132: The host sees which tickets have been handed out
 Status: draft
 Phase: Phase 2 (phone tickets)
 While handing out phone tickets
-Then the host screen shows "7 of 10 joined" and which tickets are still waiting
+When a player has scanned and the host taps "Next ticket"
+Then the host screen shows "7 of 10 handed out" and which tickets are still waiting
+(With no internet, the host phone cannot know that a scan worked, so the host confirms each hand-out.)
 
 ## TAM-133: A player's phone can show the last calls
 Status: draft
@@ -82,3 +88,18 @@ Phase: Phase 2 (phone tickets)
 Given a player cannot see the host screen
 When they open "Last calls" on their phone ticket
 Then the last 3 calls are shown, and nothing that has not been called
+
+## TAM-170: A phone ticket shows its game
+Status: draft
+Phase: Phase 2 (phone tickets)
+When a player's ticket is shown on their phone
+Then it shows the ticket number, the game code and start time, and the prize tiers for that game
+And the host screen shows the same game code, so a ticket from an earlier game is easy to spot
+
+## TAM-171: A phone ticket survives locks and reloads
+Status: draft
+Phase: Phase 2 (phone tickets)
+Given a player's phone shows ticket 3 with 9 numbers marked
+When the phone locks, the browser reloads, or the player switches apps and comes back
+Then ticket 3 is still there with the same 9 marks
+And it stays until the player scans a ticket for a new game

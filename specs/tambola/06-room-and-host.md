@@ -62,6 +62,7 @@ When a new player arrives and the host adds them with a ticket (paper or phone)
 Then the numbers already called count on their ticket, as in paper Tambola
 And a pattern already complete at the moment they join cannot be claimed; it must be completed by a later number
 And their contribution is added to the pot and split across the tiers not yet won, rounded, keeping the total exact (owner, 2026-09-28)
+And the new prize amounts are shown on the host screen for the anchor to announce
 When 10 numbers have been called
 Then the host can no longer add players until the next game
 
@@ -94,3 +95,12 @@ Phase: Phase 1a
 When the host starts a new game
 Then the first choice is "Paper tickets" or "Phone tickets" (Phase 2)
 And names are optional; without them players are "Player 1", "Player 2" …
+
+## TAM-180: The phone's voice calls the number
+Status: draft
+Phase: Phase 1b
+When "Phone speaks the call" or auto-call is on and a number is called
+Then the phone says the number, the rhyme, and the number again ("Five. Man alive. Five.")
+And it uses an Indian English voice if the phone has one, otherwise any English voice
+And a Hindi rhyme is spoken only if the phone has a Hindi voice; otherwise only the number is spoken
+And if the phone has no voice at all, the option is greyed out with a one-line reason

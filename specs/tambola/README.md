@@ -11,12 +11,13 @@ tests once the owner approves it. All are **draft** until approved.
 | [02-calling.md](02-calling.md) | Drawing and calling numbers | TAM-010 – TAM-017 |
 | [03-claims.md](03-claims.md) | Checking claims: accepted, bogey, already won, paper tickets | TAM-020 – TAM-039 |
 | [04-house-rules.md](04-house-rules.md) | Scenarios that depend on owner decisions | TAM-040 – TAM-049 |
-| [05-secrets-and-seeds.md](05-secrets-and-seeds.md) | Nobody sees what they shouldn't; phone tickets | TAM-050 – TAM-058, TAM-131 – TAM-133 |
-| [06-room-and-host.md](06-room-and-host.md) | Fun-friction defaults, host controls, late joiners, play again | TAM-060 – TAM-069, TAM-130, TAM-137 |
+| [05-secrets-and-seeds.md](05-secrets-and-seeds.md) | Nobody sees what they shouldn't; phone tickets | TAM-050 – TAM-058, TAM-131 – TAM-133, TAM-170 – TAM-171 |
+| [06-room-and-host.md](06-room-and-host.md) | Fun-friction defaults, host controls, late joiners, play again | TAM-060 – TAM-069, TAM-130, TAM-137, TAM-180 |
 | [07-undo-replay-end.md](07-undo-replay-end.md) | Undo, replay, and how the game ends | TAM-070 – TAM-078 |
 | [08-prizes.md](08-prizes.md) | Contribution, pot, suggested split, payouts; no money moved | TAM-080 – TAM-091 |
 | [10-lifecycle.md](10-lifecycle.md) | Ending vs discarding with money, game-level winnings, what a game keeps | TAM-140 – TAM-143 |
 | [11-rhymes.md](11-rhymes.md) | Rhymes: several per number, picked at random, language and family-friendly settings | TAM-150 – TAM-158 |
+| [12-connected.md](12-connected.md) | Connected mode: calls, claims and verdicts over the network; faults; fallback | TAM-200 – TAM-210 |
 | [09-usability.md](09-usability.md) | Mis-touches, legibility, offline, interruptions (from docs/ux-guidelines.md) | TAM-100 – TAM-122, TAM-134 – TAM-136 |
 
 ## How to approve
@@ -38,8 +39,11 @@ Every scenario has a **Phase** line.
 | Phase | Scope | Tambola | Platform |
 |---|---|---|---|
 | **1a: one great game** | Paper tickets on one host phone: calling, rhymes, board, claim checks, undo, the prize pool for a single game, resume, history view, key UX rules | 88 | 10 |
-| **1b: the evening** | Sessions, tally and settle, reusing a setup, deleting history, late joiners, phone voice and auto-call, dark mode | 5 | 10 |
-| **2: phone tickets** | Tickets made by the app and scanned onto players' phones | 34 | |
+| **1b: the evening** | Sessions, tally and settle, reusing a setup, deleting history, late joiners, phone voice and auto-call, dark mode | 6 | 12 |
+| **2: phone tickets** | Tickets made by the app and scanned onto players' phones | 36 | |
+| **2.5: new-game kit** | The contract suite every game must pass; the generic simulated player | | 14 |
+| **6: connected mode** | Calls, claims and verdicts over the network, only if play-tests justify it | 11 | |
+| **7: feedback** | Problem reports, crash reports, sorting | | 6 |
 
 Why this split: 1b adds features on top of 1a without changing how a game is played or stored,
 so 1a can go to family play-tests first, and play-tests decide how much of 1b is needed.

@@ -49,12 +49,14 @@ Given a game with 10 players
 When tickets are handed out
 Then no two players hold identical tickets
 
-## TAM-008: The same ticket seed always gives the same ticket
+## TAM-008: The same sheet seed always gives the same tickets
 Status: draft
 Phase: Phase 2 (phone tickets)
-Given a ticket seed
-When the ticket is made from it today, and again later on another phone
-Then both tickets are identical, number for number
+Given the host's sheet seed (host-only, like the draw seed)
+When the tickets are made from it today, and again later when the game is replayed
+Then every ticket is identical, number for number
+(Tickets are made in sheets of 6 on the host phone. Each player's phone receives only its own
+ticket's numbers, never a seed: see TAM-053.)
 
 ## TAM-009: Retired
 Status: retired 2026-09-28 (the app no longer prints or shares ticket images; tickets are paper or on phones)

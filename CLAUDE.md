@@ -74,8 +74,8 @@ Later phases add features without changing how earlier games are played or store
 - **One phone always works**, with no internet.
 - **Every game follows one contract:** setup, legal moves, apply, view, game over, invariants, undo.
   Rules are pure: all randomness from seeds, no screen or network code. The host phone is the referee.
-- **Secrets get their own seeds.** The Tambola draw seed never leaves the host phone; each ticket has
-  its own seed, so a player's phone can rebuild only its own ticket.
+- **Secrets get their own seeds, and seeds never leave the host phone.** Tambola's draw seed and
+  sheet seed stay on the host; a player's phone receives only its own ticket's numbers (TAM-053).
 - **Generalise only when two real games need it.**
 - **Complexity budget.** Before adding a framework, service, dependency or abstraction, state: the
   problem it solves now, why something simpler cannot, what it costs to maintain, and how we will

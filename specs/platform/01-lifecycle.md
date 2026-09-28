@@ -155,7 +155,7 @@ And there is no way to add a game from another session
 ## PLT-019: Settling marks the games done
 Status: decided 2026-09-28 (owner)
 Phase: Phase 1b
-When the host taps "Settle" on a tally and confirms
+When the host taps "Settle" on a tally and confirms ("Mark 3 games as settled? Do this after the money has changed hands.")
 Then every game in that tally is marked Settled, and the tally is empty again
 And later games in the same session start a new tally
 And settled games show "Settled" in history and can no longer be tallied
@@ -173,3 +173,16 @@ Given any game that uses money (Tambola now; Scoreboard, Rummy and poker nights 
 When the game ends
 Then it records, for each person, what they paid and what they won in that game
 And the tally uses only that record, so a new game with money needs no change to the tally
+
+## PLT-022: Sessions can be seen and renamed
+Status: draft
+Phase: Phase 1b
+When the host opens Sessions
+Then every session is listed, newest first, with its games and whether its tally is settled
+And the host can rename a session at any time
+
+## PLT-023: Games without money stay out of the tally
+Status: draft
+Phase: Phase 1b
+Given a game was played with "No money"
+Then it appears in the session's history but never in its tally

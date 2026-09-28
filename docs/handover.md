@@ -8,7 +8,7 @@
 | Architecture, principles, two-workspace split | Decided (`CLAUDE.md`) |
 | Tambola rules, journeys, UX guidelines, lifecycle | Written and cross-checked (`docs/games/tambola/`, `docs/ux-guidelines.md`) |
 | Owner decisions | All made (`docs/decisions.md`) |
-| Scenarios | 126 Tambola + 21 platform, drafted and cross-checked; **Phase 1a approved** (97 scenarios); 1b and 2 still drafts |
+| Scenarios | Every phase has scenarios: 1a 98 (**approved**), 1b 18, 2 36, 2.5 14, 6 11, 7 6 (drafts until each phase comes up) |
 | Rhyme catalog | `docs/games/tambola/rhymes.md` and `rhymes.csv` (409 rhymes, English and Hindi, 4–6 per number); **approved by the owner** |
 | Tests | None yet. The Test workspace writes them after approval and after Phase 0 exists |
 | Code | None yet. **Phase 0 can start now**; it doesn't depend on approval |

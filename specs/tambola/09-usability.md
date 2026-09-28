@@ -124,8 +124,10 @@ Status: draft
 Phase: Phase 2 (phone tickets)
 When a player points their phone's own camera at the ticket QR
 Then their ticket opens, with no separate scanner app
-And the host screen also shows a 6-character code with no look-alike characters (no 0, O, 1, I or L)
-And typing that code opens the same ticket
+And the host screen also shows a typed code of at most 12 characters, in groups of 4, with no
+look-alike characters (no 0, O, 1, I or L)
+And typing that code opens the same ticket, with no internet
+(The code carries the ticket's numbers, so it needs more than 6 characters.)
 
 ## TAM-118: iPhone hosts get a one-time install tip
 Status: approved, owner, 2026-09-28

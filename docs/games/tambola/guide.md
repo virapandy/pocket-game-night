@@ -114,7 +114,7 @@ How Tambola answers the seven contract questions in `src/engine/CLAUDE.md`. Chec
 
 | Question | Tambola's answer |
 |---|---|
-| Setup | Ticket mode, players (names optional), tickets per player, contribution, prize tiers confirmed by the anchor, house-rule settings, a host-only draw seed; with phone tickets, one seed per ticket |
+| Setup | Ticket mode, players (names optional), tickets per player, contribution, prize tiers confirmed by the anchor, house-rule settings, a host-only draw seed; with phone tickets, a host-only sheet seed for the sheets of 6 |
 | Legal moves | Host: call next number, undo last call (within 5 s), check a claim (player or ticket, pattern, and with paper tickets the numbers read out), undo a claim, add a late joiner (until 10 calls), end the game. Setup moves: edit, remove or add back a tier; confirm prizes. |
 | Apply | A call adds the next number from the draw; a claim is accepted, shared, refused as already won, or a bogey (late claims too); prizes are credited; a bogeyed ticket is out |
 | View | Host: everything. Room: the called number, the last 3 calls, verdicts. Player (phone tickets): own ticket and called numbers only |
@@ -132,7 +132,8 @@ How Tambola answers the seven contract questions in `src/engine/CLAUDE.md`. Chec
    they sit outside the host's game.
 
 Auto-call timers, the screen wake lock and sounds are app features, not rules.
-Secrets with their own seeds: the draw (host only) and each phone ticket.
+Secrets with their own seeds, both host-only: the draw and the ticket sheets. A player's phone gets
+only its own ticket's numbers, never a seed (TAM-053).
 
 ---
 *Sources (checked 28 September 2026):* rules and patterns from
