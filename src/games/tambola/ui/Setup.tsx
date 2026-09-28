@@ -1,6 +1,6 @@
 // Setting up a paper-ticket game: ticket mode (TAM-137), players (PLT-024), contribution and pot
 // (TAM-080, TAM-090), then the prizes the anchor confirms (TAM-081 to TAM-084).
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import type { Preferences } from '../../../engine';
 import {
   PATTERN_NAMES,
@@ -33,7 +33,8 @@ export const emptyDraft: SetupDraft = {
   count: '6',
   names: [],
   tickets: [],
-  contribution: '',
+  // TAM-182: a real default value, not a grey hint.
+  contribution: '50',
   noMoney: false,
   patterns: null,
   fixed: {},
@@ -79,9 +80,21 @@ function plan(d: SetupDraft): { plan: PrizePlan | null; error: string | null } {
   if (c === null) return { plan: null, error: null };
   const { tickets, removed, added } = prizeInput(d);
   try {
-    return { plan: planPrizes({ tickets, contribution: c, removed, added, fixed: d.fixed }), error: null };
+    return {
+      plan: planPrizes({
+        tickets,
+        contribution: c,
+        removed,
+        added,
+        fixed: d.fixed,
+      }),
+      error: null,
+    };
   } catch (e) {
-    return { plan: null, error: e instanceof Error ? e.message : 'These prizes do not add up.' };
+    return {
+      plan: null,
+      error: e instanceof Error ? e.message : 'These prizes do not add up.',
+    };
   }
 }
 
@@ -92,7 +105,7 @@ export function draftFromConfig(config: TambolaConfig): SetupDraft {
     count: String(config.players.length),
     names: config.players.map((p) => p.name),
     tickets: config.players.map((p) => p.tickets),
-    contribution: config.money ? String(config.money.contribution) : '',
+    contribution: config.money ? String(config.money.contribution) : '50',
     noMoney: config.money === null,
     patterns,
     fixed: {},
@@ -133,7 +146,12 @@ export function Setup({
     setError(null);
     setStep(next);
   };
-  const back = { mode: null, players: 'mode', money: 'players', prizes: 'money' } as const;
+  const back = {
+    mode: null,
+    players: 'mode',
+    money: 'players',
+    prizes: 'money',
+  } as const;
 
   const confirm = () => {
     const players = resolvedPlayers(draft);
@@ -150,7 +168,10 @@ export function Setup({
       });
     }
     // PLT-024: remember typed names as one-tap suggestions for next time.
-    const typed = draft.names.slice(0, players.length).map((n) => n.trim()).filter(Boolean);
+    const typed = draft.names
+      .slice(0, players.length)
+      .map((n) => n.trim())
+      .filter(Boolean);
     const names = [...typed, ...recent.filter((r) => !typed.some((t) => t.toLowerCase() === r.toLowerCase()))].slice(0, 24);
     prefs.set(NAMES_KEY, names);
     onStart({
@@ -164,24 +185,28 @@ export function Setup({
 
   const prev = back[step];
   return (
-    <main className="screen">
+    <main className="screen setup-screen">
       <header className="top-bar">
         <button type="button" className="button button-quiet" onClick={() => (prev ? go(prev) : onCancel())}>
           ← {prev ? 'Back' : 'Cancel'}
         </button>
       </header>
       {step === 'mode' && (
-        <section className="stack">
-          <h1 className="step-title">New game</h1>
-          <p className="lead">How are tickets handed out?</p>
-          <button type="button" className="button button-big" onClick={() => go('players')}>
-            Paper tickets
-          </button>
-          <p className="note">Everyone brings a ticket from a Tambola ticket book.</p>
-          <button type="button" className="button button-big" disabled>
-            Phone tickets (coming later)
-          </button>
-        </section>
+        <>
+          <section className="stack setup-body">
+            <h1 className="step-title">New game</h1>
+            <p className="lead">How are tickets handed out?</p>
+            <p className="note">Paper tickets: everyone brings a ticket from a Tambola ticket book.</p>
+            <button type="button" className="button button-quiet button-big" disabled>
+              Phone tickets (coming later)
+            </button>
+          </section>
+          <BottomAction>
+            <button type="button" className="button button-big" onClick={() => go('players')}>
+              Paper tickets
+            </button>
+          </BottomAction>
+        </>
       )}
       {step === 'players' && (
         <PlayersStep
@@ -250,76 +275,80 @@ function PlayersStep({
     update({ names, count: String(n + 1) });
   };
   return (
-    <section className="stack">
-      <h1 className="step-title">Players</h1>
-      <label className="field">
-        <span>Number of players</span>
-        <input
-          type="number"
-          inputMode="numeric"
-          min={2}
-          max={MAX_PLAYERS}
-          value={draft.count}
-          onChange={(e) => update({ count: e.target.value })}
-        />
-      </label>
-      {suggestions.length > 0 && (
-        <div className="stack-tight">
-          <p className="note">Names used before: tap to add</p>
-          <div className="chips">
-            {suggestions.map((s) => (
-              <button key={s} type="button" className="button button-quiet" onClick={() => pickSuggestion(s)}>
-                {s}
-              </button>
-            ))}
+    <>
+      <section className="stack setup-body">
+        <h1 className="step-title">Players</h1>
+        <label className="field">
+          <span>Number of players</span>
+          <input
+            type="number"
+            inputMode="numeric"
+            min={2}
+            max={MAX_PLAYERS}
+            value={draft.count}
+            onChange={(e) => update({ count: e.target.value })}
+          />
+        </label>
+        {suggestions.length > 0 && (
+          <div className="stack-tight">
+            <p className="note">Names used before: tap to add</p>
+            <div className="chips">
+              {suggestions.map((s) => (
+                <button key={s} type="button" className="button button-quiet" onClick={() => pickSuggestion(s)}>
+                  {s}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
-      <p className="note">Leave a name blank and it becomes "Player 1", "Player 2" … You can rename players during the game.</p>
-      <ol className="player-list">
-        {Array.from({ length: n }, (_, i) => (
-          <li key={i} className="player-row">
-            <label className="field grow">
-              <span>Name of player {i + 1}</span>
-              <input
-                type="text"
-                autoComplete="off"
-                maxLength={30}
-                placeholder={`Player ${i + 1}`}
-                value={draft.names[i] ?? ''}
-                onChange={(e) => setName(i, e.target.value)}
-              />
-            </label>
-            <label className="field">
-              <span>Tickets</span>
-              <select
-                aria-label={`Tickets for player ${i + 1}`}
-                value={draft.tickets[i] ?? 1}
-                onChange={(e) => {
-                  const tickets = [...draft.tickets];
-                  tickets[i] = Number(e.target.value);
-                  update({ tickets });
-                }}
-              >
-                {Array.from({ length: maxTickets }, (_, k) => (
-                  <option key={k} value={k + 1}>
-                    {k + 1}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </li>
-        ))}
-      </ol>
-      {error && (
-        <p className="error" role="alert">
-          {error}
-        </p>
-      )}
-      <button type="button" className="button button-big" onClick={onNext}>
-        Next
-      </button>
-    </section>
+        )}
+        <p className="note">Leave a name blank and it becomes "Player 1", "Player 2" … You can rename players during the game.</p>
+        <ol className="player-list">
+          {Array.from({ length: n }, (_, i) => (
+            <li key={i} className="player-row">
+              <label className="field grow">
+                <span>Name of player {i + 1}</span>
+                <input
+                  type="text"
+                  autoComplete="off"
+                  maxLength={30}
+                  placeholder={`Player ${i + 1}`}
+                  value={draft.names[i] ?? ''}
+                  onChange={(e) => setName(i, e.target.value)}
+                />
+              </label>
+              <label className="field">
+                <span>Tickets</span>
+                <select
+                  aria-label={`Tickets for player ${i + 1}`}
+                  value={draft.tickets[i] ?? 1}
+                  onChange={(e) => {
+                    const tickets = [...draft.tickets];
+                    tickets[i] = Number(e.target.value);
+                    update({ tickets });
+                  }}
+                >
+                  {Array.from({ length: maxTickets }, (_, k) => (
+                    <option key={k} value={k + 1}>
+                      {k + 1}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </li>
+          ))}
+        </ol>
+        {error && (
+          <p className="error" role="alert">
+            {error}
+          </p>
+        )}
+      </section>
+      <BottomAction>
+        <button type="button" className="button button-big" onClick={onNext}>
+          Next
+        </button>
+      </BottomAction>
+    </>
   );
 }
 
@@ -337,46 +366,51 @@ function MoneyStep({
   const tickets = resolvedPlayers(draft).reduce((s, p) => s + p.tickets, 0);
   const c = contributionOf(draft);
   return (
-    <section className="stack">
-      <h1 className="step-title">Contribution</h1>
-      {draft.noMoney ? (
-        <>
-          <p className="lead">No money: play for fun. Prizes can be small treats, such as chocolate.</p>
-          <button type="button" className="button button-quiet" onClick={() => update({ noMoney: false })}>
-            Play for money instead
-          </button>
-        </>
-      ) : (
-        <>
-          <label className="field">
-            <span>Contribution per ticket</span>
-            <input
-              type="number"
-              inputMode="numeric"
-              min={1}
-              placeholder="50"
-              value={draft.contribution}
-              onChange={(e) => update({ contribution: e.target.value })}
-            />
-          </label>
-          <p className="pot" aria-live="polite">
-            {c === null ? `${plural(tickets, 'ticket')} in play` : `Pot: ${rupees(tickets * c)} (${plural(tickets, 'ticket')} × ${rupees(c)})`}
+    <>
+      <section className="stack setup-body">
+        <h1 className="step-title">Contribution</h1>
+        {draft.noMoney ? (
+          <>
+            <p className="lead">No money: play for fun. Prizes can be small treats, such as chocolate.</p>
+            <button type="button" className="button button-quiet" onClick={() => update({ noMoney: false })}>
+              Play for money instead
+            </button>
+          </>
+        ) : (
+          <>
+            <label className="field">
+              <span>Contribution per ticket</span>
+              <input
+                type="number"
+                inputMode="numeric"
+                min={1}
+                value={draft.contribution}
+                onChange={(e) => update({ contribution: e.target.value })}
+              />
+            </label>
+            <p className="pot" aria-live="polite">
+              {c === null
+                ? `${plural(tickets, 'ticket')} in play`
+                : `Pot: ${rupees(tickets * c)} (${plural(tickets, 'ticket')} × ${rupees(c)})`}
+            </p>
+            <p className="note">The app only works out the prizes. Money is collected and paid by hand, never through the app.</p>
+            <button type="button" className="button button-quiet" onClick={() => update({ noMoney: true, fixed: {} })}>
+              No money
+            </button>
+          </>
+        )}
+        {error && (
+          <p className="error" role="alert">
+            {error}
           </p>
-          <p className="note">The app only works out the prizes. Money is collected and paid by hand, never through the app.</p>
-          <button type="button" className="button button-quiet" onClick={() => update({ noMoney: true, fixed: {} })}>
-            No money
-          </button>
-        </>
-      )}
-      {error && (
-        <p className="error" role="alert">
-          {error}
-        </p>
-      )}
-      <button type="button" className="button button-big" onClick={onNext}>
-        Next
-      </button>
-    </section>
+        )}
+      </section>
+      <BottomAction>
+        <button type="button" className="button button-big" onClick={onNext}>
+          Next
+        </button>
+      </BottomAction>
+    </>
   );
 }
 
@@ -391,7 +425,10 @@ function PrizesStep({
   error: string | null;
   onConfirm: () => void;
 }) {
-  const [editing, setEditing] = useState<{ pattern: Pattern; text: string } | null>(null);
+  const [editing, setEditing] = useState<{
+    pattern: Pattern;
+    text: string;
+  } | null>(null);
   const [editError, setEditError] = useState<string | null>(null);
   const { patterns, tickets } = prizeInput(draft);
   const money = !draft.noMoney;
@@ -421,86 +458,98 @@ function PrizesStep({
   };
 
   return (
-    <section className="stack">
-      <h1 className="step-title">Prizes</h1>
-      <p className="lead">
-        {money && result.plan
-          ? `Pot ${rupees(result.plan.pot)} from ${plural(tickets, 'ticket')}. The prizes always add up to the pot.`
-          : `${plural(tickets, 'ticket')} in play. Prizes are optional: type a treat for each, or leave them blank.`}
-      </p>
-      <ul className="tier-list">
-        {patterns.map((p) => (
-          <li key={p} className="tier-row">
-            <div className="tier-head">
-              <span className="tier-name">{PATTERN_NAMES[p]}</span>
-              {money && (
-                <span className="tier-amount" data-testid="tier-amount">
-                  {rupees(amountOf(p))}
-                </span>
-              )}
-            </div>
-            <div className="tier-edit">
-              {money ? (
-                <label className="field grow">
-                  <span>{PATTERN_NAMES[p]} amount</span>
-                  <input
-                    type="number"
-                    inputMode="numeric"
-                    min={0}
-                    value={editing?.pattern === p ? editing.text : String(amountOf(p))}
-                    onChange={(e) => setEditing({ pattern: p, text: e.target.value })}
-                    onBlur={(e) => {
-                      if (editing?.pattern === p) commit(p, e.target.value);
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') commit(p, (e.target as HTMLInputElement).value);
-                    }}
-                  />
-                </label>
-              ) : (
-                <label className="field grow">
-                  <span>{PATTERN_NAMES[p]} prize</span>
-                  <input
-                    type="text"
-                    maxLength={30}
-                    placeholder="Optional, such as chocolate"
-                    value={draft.labels[p] ?? ''}
-                    onChange={(e) => update({ labels: { ...draft.labels, [p]: e.target.value } })}
-                  />
-                </label>
-              )}
-              {p !== 'full-house' && (
-                <button type="button" className="button button-quiet" onClick={() => setPatterns(patterns.filter((x) => x !== p))}>
-                  Remove
-                </button>
-              )}
-            </div>
-          </li>
-        ))}
-      </ul>
-      {PATTERNS.some((p) => !patterns.includes(p)) && (
-        <div className="chips">
-          {PATTERNS.filter((p) => !patterns.includes(p)).map((p) => (
-            <button key={p} type="button" className="button button-quiet" onClick={() => setPatterns([...patterns, p])}>
-              Add {PATTERN_NAMES[p]}
-            </button>
-          ))}
-        </div>
-      )}
-      {money && Object.keys(draft.fixed).length > 0 && (
-        <button type="button" className="button button-quiet" onClick={() => update({ fixed: {} })}>
-          Use the suggested amounts
-        </button>
-      )}
-      {(editError || result.error || error) && (
-        <p className="error" role="alert">
-          {editError ?? result.error ?? error}
+    <>
+      <section className="stack setup-body">
+        <h1 className="step-title">Prizes</h1>
+        <p className="lead">
+          {money && result.plan
+            ? `Pot ${rupees(result.plan.pot)} from ${plural(tickets, 'ticket')}. The prizes always add up to the pot.`
+            : `${plural(tickets, 'ticket')} in play. Prizes are optional: type a treat for each, or leave them blank.`}
         </p>
-      )}
-      <p className="note">Once you confirm, the prizes are locked for this game.</p>
-      <button type="button" className="button button-big" onClick={onConfirm} disabled={money && !result.plan}>
-        Confirm prizes
-      </button>
-    </section>
+        <ul className="tier-list">
+          {patterns.map((p) => (
+            <li key={p} className="tier-row">
+              <span className="tier-name">{PATTERN_NAMES[p]}</span>
+              {money ? (
+                <>
+                  <span className="visually-hidden" data-testid="tier-amount">
+                    {rupees(amountOf(p))}
+                  </span>
+                  <span className="tier-input">
+                    <span aria-hidden="true">₹</span>
+                    <input
+                      type="number"
+                      inputMode="numeric"
+                      min={0}
+                      aria-label={`${PATTERN_NAMES[p]} amount`}
+                      value={editing?.pattern === p ? editing.text : String(amountOf(p))}
+                      onChange={(e) => setEditing({ pattern: p, text: e.target.value })}
+                      onBlur={(e) => {
+                        if (editing?.pattern === p) commit(p, e.target.value);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') commit(p, (e.target as HTMLInputElement).value);
+                      }}
+                    />
+                  </span>
+                </>
+              ) : (
+                <input
+                  type="text"
+                  className="tier-label"
+                  maxLength={30}
+                  aria-label={`${PATTERN_NAMES[p]} prize`}
+                  placeholder="Optional treat"
+                  value={draft.labels[p] ?? ''}
+                  onChange={(e) => update({ labels: { ...draft.labels, [p]: e.target.value } })}
+                />
+              )}
+              {p !== 'full-house' ? (
+                <button
+                  type="button"
+                  className="button button-quiet tier-remove"
+                  aria-label={`Remove ${PATTERN_NAMES[p]}`}
+                  onClick={() => setPatterns(patterns.filter((x) => x !== p))}
+                >
+                  ✕ Remove
+                </button>
+              ) : (
+                <span className="tier-remove-space" aria-hidden="true" />
+              )}
+            </li>
+          ))}
+        </ul>
+        {PATTERNS.some((p) => !patterns.includes(p)) && (
+          <div className="chips">
+            {PATTERNS.filter((p) => !patterns.includes(p)).map((p) => (
+              <button key={p} type="button" className="button button-quiet tier-add" onClick={() => setPatterns([...patterns, p])}>
+                + {PATTERN_NAMES[p]}
+              </button>
+            ))}
+          </div>
+        )}
+        {money && Object.keys(draft.fixed).length > 0 && (
+          <button type="button" className="button button-quiet" onClick={() => update({ fixed: {} })}>
+            Use the suggested amounts
+          </button>
+        )}
+        {(editError || result.error || error) && (
+          <p className="error" role="alert">
+            {editError ?? result.error ?? error}
+          </p>
+        )}
+        <p className="note">Once you confirm, the prizes are locked for this game.</p>
+      </section>
+      <BottomAction>
+        <button type="button" className="button button-big" onClick={onConfirm} disabled={money && !result.plan}>
+          Confirm prizes
+        </button>
+      </BottomAction>
+    </>
   );
+}
+
+/** TAM-181: the step's main button stays fixed at the bottom of the screen. */
+function BottomAction({ children }: { children: ReactNode }) {
+  return <div className="bottom-action">{children}</div>;
 }
