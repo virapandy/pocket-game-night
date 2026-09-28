@@ -30,6 +30,7 @@
 | 2026-09-28 | Phase 1a scenarios approved (97: 83 approved drafts plus 14 already decided). | Owner |
 | 2026-09-28 | Rhyme catalog approved; Indian references preferred: twice as likely to be picked (TAM-158). | Owner |
 | 2026-09-28 | The anchor calls aloud by default; the phone's voice is optional, off in every new game (TAM-180). | Owner |
+| 2026-09-28 | Owner approved the decisions log, the Tambola guide and the Tambola journeys. | Owner |
 | 2026-09-28 | Games two to four, in order: Impostor, Dumb Charades, Scoreboard / Rummy scorekeeper. | Claude, on owner's instruction |
 
 "Convention" means the established Tambola rule in `docs/games/tambola/guide.md`, chosen because the owner asked

@@ -1,5 +1,7 @@
 # Tambola: a short guide
 
+*Approved by the owner, 28 September 2026.*
+
 **Tambola** (also called **Housie**, and a close cousin of British 90-ball bingo) is a number-calling
 game for any group, from 4 people to 100. One person, the **caller** (or anchor), draws numbers from
 1 to 90 and calls them out, often with a traditional rhyme ("Two fat ladies, 88!"). Everyone else
