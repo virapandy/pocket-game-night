@@ -2,7 +2,11 @@
 
 An installable, offline-capable web app that helps friends and families run in-person party and
 card games from one host phone. The phone replaces paper and bookkeeping, not the social ritual.
-First game: **Tambola**. Games two to four follow quickly on the same game contract.
+First game: **Tambola**. Games two to four (Impostor, Dumb Charades, Scoreboard / Rummy scorekeeper)
+follow quickly on the same game contract.
+
+**Current stage:** Phase 0 (foundation), then Phase 1a (Tambola with paper tickets on one host phone).
+Start with `docs/handover.md`.
 
 The owner is not a developer. The owner approves **behaviour** (scenarios in `specs/`, preview
 links), never code. Explain every change in plain English.
@@ -40,19 +44,28 @@ Git: one branch, `main`. `git pull --rebase` before starting and before every pu
 CLAUDE.md               this index
 .claude/                settings.json (hooks), hooks/role-guard.mjs
 .githooks/pre-commit    blocks commits that cross the build/test line
-docs/                   decisions.md (owner decisions), test-questions.md
+docs/                   handover.md (start here), decisions.md, new-game-process.md,
+                        ux-guidelines.md, test-questions.md
+  games/<game>/         guide.md (rules and contract check), journeys.md, rhymes or other source content
 src/                    BUILD: app code
   app/                  host app shell; assembles everything; nothing imports it
   engine/               game contract, referee, seeds, move records, undo, interfaces
   games/tambola/        one self-contained game slice (rules/, ui/, index.ts)
 content/tambola/        BUILD: rhymes and calls per language (data, not code)
 specs/                  TEST: plain-English scenarios the owner approves
+  platform/             PLT-: lifecycle, history, sessions, tally (all games)
+  <game>/               TAM-, IMP-, CHA-, SCO-: one folder per game
 tests/                  TEST: contract/, games/<game>/, replays/, browser/, sim/
 reports/latest.md       TEST: the test report the Build workspace reads
 ```
 
 `src/blocks/` (shared building blocks) and `src/adapters/` are created only when a real need
 appears (Phase 2.5 and later).
+
+## Phases
+Every scenario has a `Phase:` line. Build only the current phase: **1a** (one great game) →
+**1b** (sessions, tally, history management, late joiners, voice) → **2** (tickets on phones).
+Later phases add features without changing how earlier games are played or stored.
 
 ## Principles
 
@@ -69,6 +82,8 @@ appears (Phase 2.5 and later).
   know it was worth it. No paid service without the owner's explicit approval.
 - **$0 per month.** Free hosting, standard GitHub runners only.
 - **The repo is public.** Never commit secrets, API keys, player data, or the private research brief.
+- **Money is calculated, never moved.** Pots, prizes and tallies always add up exactly; no payments.
+- **Saved games carry a format version** from the first release, and old games always still open.
 - **Jev is optional everywhere.** Jev (TypeSafe AI) returns typed decisions with probabilities; it
   cannot write text and is unreliable at counting. Code computes facts, Jev judges behaviour, and
   the rules engine is always the referee.

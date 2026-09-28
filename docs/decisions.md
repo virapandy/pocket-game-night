@@ -26,10 +26,12 @@
 | 2026-09-28 | Games are grouped in named sessions; a tally covers ended, unsettled games in one session; Settle marks them done; sessions are never tallied together (PLT-016 to PLT-020). | Owner |
 | 2026-09-28 | Phase 1 splits into 1a (one great game) and 1b (sessions, tally, history management, late joiners, voice and auto-call). | Owner |
 | 2026-09-28 | The tally is a shared feature for any game with money; each game records what each person paid and won. | Owner |
+| 2026-09-28 | Rhymes: several per number, picked at random on each call from the game's seed; host picks English, Hindi or both; family-friendly filter on by default; anchor can ask for another rhyme. | Owner + Claude |
 | 2026-09-28 | Games two to four, in order: Impostor, Dumb Charades, Scoreboard / Rummy scorekeeper. | Claude, on owner's instruction |
 
 "Convention" means the established Tambola rule in `docs/games/tambola/guide.md`, chosen because the owner asked
 Claude to follow game conventions. Every Tambola rule above is also a host setting with this default.
 
 ## Open
+- A person reviews the rhyme catalog (`docs/games/tambola/rhymes.md`, review checklist) before it ships
 - Approval of the Tambola scenarios in `specs/tambola/`

@@ -16,6 +16,7 @@ tests once the owner approves it. All are **draft** until approved.
 | [07-undo-replay-end.md](07-undo-replay-end.md) | Undo, replay, and how the game ends | TAM-070 – TAM-078 |
 | [08-prizes.md](08-prizes.md) | Contribution, pot, suggested split, payouts; no money moved | TAM-080 – TAM-091 |
 | [10-lifecycle.md](10-lifecycle.md) | Ending vs discarding with money, game-level winnings, what a game keeps | TAM-140 – TAM-143 |
+| [11-rhymes.md](11-rhymes.md) | Rhymes: several per number, picked at random, language and family-friendly settings | TAM-150 – TAM-157 |
 | [09-usability.md](09-usability.md) | Mis-touches, legibility, offline, interruptions (from docs/ux-guidelines.md) | TAM-100 – TAM-122, TAM-134 – TAM-136 |
 
 ## How to approve
@@ -36,7 +37,7 @@ Scenarios in `04-house-rules.md` show the choices. Pick one per question, and th
 Every scenario has a **Phase** line.
 | Phase | Scope | Tambola | Platform |
 |---|---|---|---|
-| **1a: one great game** | Paper tickets on one host phone: calling, rhymes, board, claim checks, undo, the prize pool for a single game, resume, history view, key UX rules | 79 | 10 |
+| **1a: one great game** | Paper tickets on one host phone: calling, rhymes, board, claim checks, undo, the prize pool for a single game, resume, history view, key UX rules | 87 | 10 |
 | **1b: the evening** | Sessions, tally and settle, reusing a setup, deleting history, late joiners, phone voice and auto-call, dark mode | 5 | 10 |
 | **2: phone tickets** | Tickets made by the app and scanned onto players' phones | 34 | |
 
