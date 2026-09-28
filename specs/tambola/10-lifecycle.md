@@ -30,12 +30,13 @@ contribution and pot, tiers, every call in order, every claim and verdict, bogey
 And that record is enough to replay the game exactly (TAM-073) and to settle a dispute ("show every call")
 
 ## TAM-144: A game that ends with no prize won hands every contribution back
-Status: approved, owner, 2026-09-28
+Status: approved, owner, 2026-09-28 (change request: now the special case of TAM-088)
 Phase: Phase 1a
 Given a game with money where nobody has won any prize
 When the host ends the game (TAM-066)
-Then nobody is paid a prize, and the summary shows each player's contribution to hand back, as with Discard (TAM-140)
-(Otherwise "total paid out equals the pot" (TAM-089) cannot hold.)
+Then this is the special case of TAM-088: nobody won, so all the money goes back
+And nobody is paid a prize, and the summary shows each player's contribution to hand back, as with Discard (TAM-140)
+(Equally per ticket means each player gets back exactly what they paid.)
 
 ## TAM-145: Closing a prize tier is a manual step, and so is ending the game
 Status: approved, owner, 2026-09-28 (owner: the win and the end of the game are manual; the host can add another winner, for every tier)

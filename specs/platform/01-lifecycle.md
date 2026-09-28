@@ -139,12 +139,13 @@ When the host starts a game more than 3 hours after the last game in that sessio
 Then the app asks: "Continue 'Diwali at Nani's' or start a new session?"
 
 ## PLT-017: The tally covers finished, unsettled games in one session
-Status: decided 2026-09-28 (owner)
+Status: decided 2026-09-28 (owner); wording aligned with TAM-088 on 2026-09-28, as the change request asked
 Phase: Phase 1b
 When the host opens the tally for a session
 Then it adds up only games that are Ended and not yet settled
 And it leaves out games in progress, paused or abandoned
-And for each person it shows what they paid, what they won, and one net amount
+And for each person it shows what they paid, what they got back (prizes won, plus any money handed back
+from prizes nobody won, TAM-088), and one net amount
 And its totals balance: everything paid in equals everything paid out
 
 ## PLT-018: Games in different sessions are never tallied together
@@ -197,3 +198,41 @@ And names can be typed quickly or picked from names used before on this phone, s
 And a name left blank becomes "Player 1", "Player 2" …, which the host can rename at any time during the game
 And Play again and "Use this setup" bring the same names back (PLT-009, TAM-068)
 And two players cannot have the same name in one game (the app asks to add an initial: "Riya S")
+
+## Phase 1b: gaps found in the review of 28 September 2026 (new drafts)
+
+## PLT-025: Deleting a game that is still in an unsettled tally
+Status: draft (new, tester, 2026-09-28, 1b review; follows from PLT-010, PLT-011 and PLT-017)
+Phase: Phase 1b
+Given an ended game is in the "Diwali at Nani's" tally and not yet settled
+When the host deletes it (PLT-010)
+Then the confirmation says so: "This game is in the unsettled tally for 'Diwali at Nani's'. Delete it and take it out of the tally?"
+And after deleting, the tally no longer includes it, and still balances
+When the host taps "Clear all history" (PLT-011) and some tallies are unsettled
+Then the confirmation also says how many games are in unsettled tallies
+And "Deleted. Undo" (PLT-010) brings the game back into the same tally
+
+## PLT-026: A game stays in the session it was started in
+Status: draft (new, tester, 2026-09-28, 1b review; follows from PLT-016)
+Phase: Phase 1b
+Given a game was started in "Diwali at Nani's" and left paused overnight
+When the host resumes and ends it the next day (PLT-004)
+Then it stays in "Diwali at Nani's" and is tallied there, not in a new session
+And starting a new game the next day still asks "Continue 'Diwali at Nani's' or start a new session?" (PLT-016)
+
+## PLT-027: A settled tally can be looked at later
+Status: draft (new, tester, 2026-09-28, 1b review; follows from PLT-019)
+Phase: Phase 1b
+When the host opens a session whose games were settled
+Then each settle is listed with its date and time, and one tap shows what it said: per person paid, got back and net
+And nothing in it can be edited
+Question for the owner: should a settle be undoable for a short time (like "Deleted. Undo"), in case it was tapped too early?
+
+## PLT-028: The tally suggests who pays whom
+Status: draft (new, tester, 2026-09-28, 1b review; proposal for the owner)
+Phase: Phase 1b
+Given a tally where Riya is +₹120, Asha −₹70 and Dad −₹50
+Then the tally suggests the fewest hand-overs that settle it: "Asha pays Riya ₹70 · Dad pays Riya ₹50"
+And the suggestions add up exactly to each person's net amount
+And no payment is made or requested: it is text only (TAM-090, "money is calculated, never moved")
+Question for the owner: is this wanted, or is one net amount per person enough?

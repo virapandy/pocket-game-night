@@ -106,3 +106,73 @@ Then the phone says the number, the rhyme, and the number again ("Five. Man aliv
 And it uses an Indian English voice if the phone has one, otherwise any English voice
 And a Hindi rhyme is spoken only if the phone has a Hindi voice; otherwise only the number is spoken
 And if the phone has no voice at all, the option is greyed out with a one-line reason
+
+## Setup redesign (change request, 28 September 2026)
+From `docs/games/tambola/ux-calling-screen.md`, setup problems 9 to 11 (problem 12 is TAM-082). New drafts.
+
+## TAM-181: The main button stays at the bottom on every setup step
+Status: draft (new, tester, 2026-09-28, from the redesign)
+Phase: Phase 1a
+Given a 390 × 844 screen
+On every setup step (ticket mode, players, contribution, prizes, confirm)
+Then the step's main button ("Next", or "Confirm prizes" on the last step) is fixed at the bottom of the screen
+And it stays visible without scrolling, however many players or tiers there are (for example 6, 12 or 20 players)
+And nothing on the step is hidden behind it: the last player's name box can still be scrolled into view above it
+
+## TAM-182: The contribution has a real default value, not a grey hint
+Status: draft (new, tester, 2026-09-28, from the redesign)
+Phase: Phase 1a
+When the host reaches the contribution step
+Then the field already holds a real value (₹50 today), and the pot is shown from it straight away (TAM-080)
+And the host can change it or choose "No money" (TAM-090)
+Wrong input: an empty field, 0, a negative number or letters are refused with a one-line reason, and "Next" waits
+
+## TAM-183: The prizes step fits on one screen
+Status: draft (new, tester, 2026-09-28, from the redesign)
+Phase: Phase 1a
+Given the suggested five tiers for 6 to 11 tickets (TAM-081)
+Then each tier shows its name and its amount once, with a small remove control (still at least 44 × 44 CSS px, TAM-104)
+And all five tiers, the pot and "Confirm prizes" fit on one 390 × 844 screen without scrolling
+And with six or seven tiers (12 or more tickets) the list may scroll, but "Confirm prizes" stays fixed at the bottom (TAM-181)
+
+## Phase 1b: gaps found in the review of 28 September 2026 (new drafts)
+
+## TAM-184: A late joiner added by mistake can be taken out again
+Status: draft (new, tester, 2026-09-28, 1b review; follows from TAM-067)
+Phase: Phase 1b
+Given the host added Kabir as a late joiner by mistake, and no number has been called since
+When the host removes Kabir
+Then his contribution comes out of the pot, the prizes go back to what they were before he joined, and the
+host screen shows the amounts for the anchor to announce
+And once a number has been called after he joined, he can no longer be removed (he may already be winning)
+Edge: with late joining set to 0 (TAM-067), "Add a late player" does not appear at all
+
+## TAM-185: The phone's voice repeats when asked
+Status: draft (new, tester, 2026-09-28, 1b review; follows from TAM-180)
+Phase: Phase 1b
+Given "Phone speaks the call" is on
+When the anchor taps "Repeat" (TAM-017)
+Then the phone says the same number and rhyme again
+When the anchor taps "Another rhyme" (TAM-155)
+Then the phone says the number with the new rhyme
+And the host can mute the voice with one tap during the game, without the warning again (TAM-061)
+
+## TAM-186: Auto-call waits for wins
+Status: draft (new, tester, 2026-09-28, 1b review; follows from TAM-120 and TAM-145)
+Phase: Phase 1b
+Given auto-call is on
+When the host taps "Record a win" or "Check numbers", or a won tier is waiting to be closed
+Then auto-call pauses, and no number is called until the tier is closed and the host resumes
+And the timer starts again from zero after resuming, so the room never gets two calls close together
+And undo of the last call (TAM-119) works the same with auto-call on, and pauses auto-call
+Question for the owner: what range and default should the time between calls have (for example 5 to 30 seconds, default 10)?
+
+## TAM-187: A voice that fails never stops the game
+Status: draft (new, tester, 2026-09-28, 1b review; follows from TAM-180)
+Phase: Phase 1b
+Given "Phone speaks the call" is on and the phone has no internet
+When a number is called
+Then it is spoken if the phone's voice works offline
+And if the phone cannot speak it, the number is still shown as usual, and the host sees one short note, once:
+"The phone's voice isn't working; the anchor calls"
+And auto-call keeps its timer, so the game carries on (the anchor reads the screen)

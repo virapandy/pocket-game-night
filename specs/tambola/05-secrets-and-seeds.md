@@ -9,6 +9,8 @@ Given Riya holds ticket 3
 When Riya's view of the game is shown
 Then it contains ticket 3 and the numbers called so far
 And it contains no other ticket's numbers
+(Open question, tester, 2026-09-28: with no connection (TAM-057), a player's phone cannot know which numbers
+were called; it knows only its own marks. "The numbers called so far" may belong to connected mode, Phase 6.)
 
 ## TAM-051: A player never sees upcoming numbers
 Status: draft
@@ -64,8 +66,10 @@ Status: draft
 Phase: Phase 2 (phone tickets)
 Given 6 players use phone tickets and 2 use paper tickets from a book
 When claims are made
-Then phone-ticket claims are checked by ticket number, paper-ticket claims by the numbers read out (TAM-037)
+Then phone-ticket claims are checked by the host phone, by scanning the claim QR (TAM-177) or entering the ticket number (TAM-174)
+And paper-ticket wins are checked by the anchor and recorded by the host (TAM-037)
 And a player can switch from phone to paper mid-game
+(Changed by the tester on 2026-09-28 to fit the change request: paper claims were checked by the numbers read out.)
 
 ## TAM-131: Players mark their own phone ticket, and can unmark
 Status: draft
@@ -88,6 +92,8 @@ Phase: Phase 2 (phone tickets)
 Given a player cannot see the host screen
 When they open "Last calls" on their phone ticket
 Then the last 3 calls are shown, and nothing that has not been called
+(Open question, tester, 2026-09-28: with no connection, the player's phone has no way to learn the calls.
+This may need connected mode (Phase 6), or be dropped from Phase 2.)
 
 ## TAM-170: A phone ticket shows its game
 Status: draft
@@ -122,9 +128,9 @@ When she scans both QR codes on her phone
 Then both tickets are on her phone, one above the other (or one tap apart), each with its own marks
 
 ## TAM-174: A phone-ticket claim credits the ticket's owner automatically
-Status: approved, owner, 2026-09-28
+Status: approved, owner, 2026-09-28 (changed by the change request: entering the number is the fallback to scanning)
 Phase: Phase 2 (phone tickets)
-When the host checks a claim by entering ticket 3
+When the host checks a claim by scanning the claim QR (TAM-177), or, when scanning fails, by entering ticket 3 by hand
 Then the verdict shows the owner ("Top Line: ✓ Accepted, ₹60 to Riya")
 And the prize is credited to Riya, with no need to pick the player (unlike paper tickets, TAM-039)
 
@@ -142,3 +148,46 @@ Status: approved, owner, 2026-09-28
 Phase: Phase 2 (phone tickets)
 Given the host made a sheet of 6 but handed out only 4 tickets
 Then the other 2 tickets are not in play, count for nothing in the pot, and any claim on them is refused (TAM-032)
+
+## TAM-177: A phone-ticket claim is verified by scanning the player's claim QR
+Status: approved, owner, 2026-09-28 (change request)
+Phase: Phase 2 (phone tickets)
+Given Riya holds ticket 3 on her phone
+When she shouts "Top Line!" and taps "Show claim" on her phone, picking Top Line
+Then her phone shows a claim QR carrying her ticket number, the game code and the prize claimed
+When the host taps "Scan a claim" and points the host phone at it
+Then the verdict appears within 2 seconds, with no internet: "Top Line: ✓ Accepted, ₹50 to Riya"
+or "✗ Bogey: 72 not called"
+And the host phone checks the ticket against its own copy (TAM-055), so an edited QR is refused
+(TAM-060 still holds: the player shouts first; the QR only replaces typing, not the shout.)
+
+## TAM-178: When scanning fails, typing the ticket number takes over
+Status: draft (new, tester, 2026-09-28, Phase 2 review; follows from TAM-174 and TAM-177)
+Phase: Phase 2 (phone tickets)
+Given the host taps "Scan a claim"
+When the phone has no camera, the camera permission is refused, or no claim QR is read within 10 seconds
+Then the host sees "Enter the ticket number instead" one tap away, with the prize already picked
+And the verdict is exactly the same as a scan would give (TAM-174)
+And the claim is judged on the numbers called when the host scans or enters it (TAM-036), so waiting for the
+camera never makes a claim late by itself; "Next number" is not needed to try again
+
+## TAM-179: A claim QR that does not belong to this game is refused, calmly
+Status: draft (new, tester, 2026-09-28, Phase 2 review; follows from TAM-177, TAM-032, TAM-044, TAM-170 and TAM-176)
+Phase: Phase 2 (phone tickets)
+When the host scans a claim QR
+Then it is refused with a plain reason, and nothing in the game changes, when:
+- it is from another game (a different game code): "This claim is for another game (code 7K3P)"
+- its ticket was never handed out in this game (TAM-176): "Ticket 5 is not in this game"
+- its ticket is out after a bogey (TAM-044): "Ticket 3 is out"
+- the prize is closed or already won (TAM-030): "Top Line already won"
+- it does not match the host's copy of the ticket (edited or damaged): "This claim doesn't match ticket 3"
+And none of these counts as a bogey
+Question for the owner: should a claim QR that doesn't match the host's copy (possibly edited on purpose) count as a bogey?
+
+## TAM-190: A player with several tickets picks the ticket to claim with
+Status: draft (new, tester, 2026-09-28, Phase 2 review; follows from TAM-173 and TAM-177)
+Phase: Phase 2 (phone tickets)
+Given Riya has tickets 3 and 8 on her phone (TAM-173)
+When she taps "Show claim"
+Then she picks the ticket as well as the prize, and the claim QR carries only that ticket
+And a tie on her own two tickets is two claims, scanned one after the other (TAM-041, TAM-145 "Add another winner")
