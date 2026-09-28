@@ -96,7 +96,7 @@ export function Play({
   const [resultSeq, setResultSeq] = useState<number | null>(null);
   /** The call the undo toast is for (TAM-125). */
   const [toastSeq, setToastSeq] = useState<number | null>(null);
-  const [room, setRoom] = useState(false);
+  const [room, setRoom] = useState<false | 'menu' | 'press'>(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [device, setDevice] = useState<TambolaSettings>(() => loadSettings(prefs));
   const [cooldown, setCooldown] = useState(false);
@@ -218,7 +218,7 @@ export function Play({
   };
 
   if (room) {
-    return <RoomView view={tambolaRules.view(match.state, { kind: 'room' })} money={money} names={nameOf} onBack={() => setRoom(false)} />;
+    return <RoomView view={tambolaRules.view(match.state, { kind: 'room' })} money={money} names={nameOf} fromPress={room === 'press'} onBack={() => setRoom(false)} />;
   }
 
   if (settingsOpen) {
@@ -272,7 +272,7 @@ export function Play({
     if (pressTimer.current) clearTimeout(pressTimer.current);
     pressTimer.current = setTimeout(() => {
       pressTimer.current = null;
-      setRoom(true);
+      setRoom('press');
     }, LONG_PRESS_MS);
   };
   const endPress = () => {
@@ -429,7 +429,7 @@ export function Play({
           onClose={() => setSheet(null)}
           items={[
             ['Settings', () => setSettingsOpen(true)],
-            ['Show the room', () => setRoom(true)],
+            ['Show the room', () => setRoom('menu')],
             ['Board', () => setSheet({ kind: 'board' })],
             ['Check numbers', () => setSheet({ kind: 'check', text: '' })],
             ['End game', () => setDialog({ kind: 'end' })],
@@ -928,15 +928,18 @@ function RoomView({
   view,
   money,
   names,
+  fromPress,
   onBack,
 }: {
   view: TambolaView;
   money: boolean;
   names: (id: string) => string;
+  fromPress: boolean;
   onBack: () => void;
 }) {
-  // A long press opens this view; the lifting finger must not close it again straight away.
-  const [openedAt] = useState(() => performance.now());
+  // Opened by a long press (TAM-126), the finger is still down: its release must not close the view.
+  // So a tap only counts once it started on this view. Opened from the menu, any tap counts (TAM-108).
+  const pressed = useRef(!fromPress);
   const latest = view.claims[view.claims.length - 1];
   const tier = latest && view.tiers.find((t) => t.pattern === latest.pattern);
   const prize = latest?.verdict === 'accepted' ? (money ? rupees(latest.prize ?? 0) : tier?.label) : undefined;
@@ -944,8 +947,11 @@ function RoomView({
     <main
       className="room"
       data-testid="room-view"
+      onPointerDown={() => {
+        pressed.current = true;
+      }}
       onClick={() => {
-        if (performance.now() - openedAt > 500) onBack();
+        if (pressed.current) onBack();
       }}
     >
       <div className="room-number" data-testid="current-number">

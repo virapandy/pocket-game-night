@@ -472,9 +472,6 @@ function PrizesStep({
               <span className="tier-name">{PATTERN_NAMES[p]}</span>
               {money ? (
                 <>
-                  <span className="visually-hidden" data-testid="tier-amount">
-                    {rupees(amountOf(p))}
-                  </span>
                   <span className="tier-input">
                     <span aria-hidden="true">₹</span>
                     <input
