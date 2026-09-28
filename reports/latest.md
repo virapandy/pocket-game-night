@@ -31,6 +31,14 @@ PLT-012 and PLT-013 on iPhone were test faults (see below), and pass now.
   also check that the stand-in is still in place when the app would use it. The round 1 finding "on iPhone the
   app does not ask to keep data" was wrong. PLT-012 and PLT-013 passed 3 of 3 repeats on each phone.
 
+## Update 2026-09-28: PLT-004 changed by the owner (re-run on 060349e, same app code as 1d1e626)
+- `specs/platform/01-lifecycle.md` PLT-004 now says: within 12 hours the game is not opened automatically; the
+  home screen shows it with "Tap to resume", and one tap goes back into it, paused, where it was left.
+- The browser test for it now also checks that the game is not opened on its own, that it is listed with
+  "Tap to resume", and that one tap returns to the same number and calls with nothing called on its own.
+- PLT-002 and PLT-004 browser tests: 6 of 6 pass (3 per phone). `npm test`: 243 of 243 pass (no unit tests for
+  PLT-002 or PLT-004).
+
 ## Requests for the Build workspace (dependencies, scripts, test hooks in the app)
 - Unchanged: please update the "End of game" row in `src/games/tambola/CLAUDE.md` to match TAM-075 and TAM-145.
 

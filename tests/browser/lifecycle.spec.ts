@@ -102,14 +102,30 @@ test('PLT-004: after more than 12 hours the app asks Resume, End it or Discard i
   for (const name of [/^Resume/, /^End it/, /^Discard it/]) await expect(page.getByRole('button', { name })).toBeVisible();
 });
 
-test('PLT-004: within 12 hours the game resumes straight away, paused, with "Tap to resume"', async ({ page }) => {
+test('PLT-004: within 12 hours the home screen shows the game with "Tap to resume", and one tap goes back in, paused', async ({ page }) => {
   const t0 = new Date('2026-10-02T20:00:00+05:30');
   await page.clock.install({ time: t0 });
   await setUpPaperGame(page);
-  await callMany(page, 2);
+  const calls = await callMany(page, 2);
   await page.clock.setSystemTime(new Date(t0.getTime() + 2 * 3600_000));
   await page.goto(HOME);
-  await expect(page.getByText('Tap to resume')).toBeVisible();
+  // Not opened automatically: the host stays on the home screen, with the game listed.
+  const list = page.getByTestId('unfinished-games');
+  await expect(list.getByText(/2 numbers called/)).toBeVisible();
+  const tap = list.getByText('Tap to resume');
+  await expect(tap).toBeVisible();
+  await expect(nextNumber(page)).toHaveCount(0);
+  // The after-12-hours question is not asked yet.
+  for (const name of [/^End it/, /^Discard it/]) await expect(page.getByRole('button', { name })).toHaveCount(0);
+  // One tap goes straight back into the game, exactly where it was left.
+  await tap.click();
+  await expect(nextNumber(page)).toBeVisible();
+  await expect(currentNumber(page)).toHaveText(String(calls[1]));
+  expect((await calledNumbers(page)).sort((a, b) => a - b)).toEqual([...calls].sort((a, b) => a - b));
+  // Paused: nothing is called on its own while the host waits.
+  await page.clock.runFor(60_000);
+  await expect(currentNumber(page)).toHaveText(String(calls[1]));
+  expect(await calledNumbers(page)).toHaveLength(2);
 });
 
 test('PLT-007, PLT-008, PLT-013: History lists past games newest first, read-only, with a note that it lives on this phone', async ({ page }) => {

@@ -36,11 +36,12 @@ When anything changes in a game (a call, a claim, a setting)
 Then it is saved on the phone immediately, so closing the app never loses it (TAM-065, TAM-111, TAM-112)
 
 ## PLT-004: Coming back to an unfinished game
-Status: approved, owner, 2026-09-28 (decided: owner)
+Status: approved, owner, 2026-09-28 (decided: owner; changed by the owner on 2026-09-28, see docs/decisions.md)
 Phase: Phase 1a
 Given a game was left in progress
 When the host opens the app within 12 hours
-Then the game resumes straight away, paused, with "Tap to resume"
+Then the game is not opened automatically: the home screen shows it with "Tap to resume"
+And one tap on it goes straight back into that game, paused, exactly where it was left
 When the host opens the app after more than 12 hours
 Then the app asks: "Resume", "End it (with payouts so far)" or "Discard it"
 And the app never ends or discards a game on its own
