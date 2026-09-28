@@ -85,3 +85,6 @@ For the Test workspace:
   contract shape the shared contract suite can test against. Tambola's rules module is not written yet:
   it waits for the approved Phase 1a tests.
 - Live link (after the first green run): https://virapandy.github.io/pocket-game-night/
+- Rhyme pack built: `content/tambola/rhymes.json` (format 1, 409 rhymes, fields `n`, `lang`, `style`,
+  `familyFriendly`, `text`, plus `styleWeights`). Rebuilt from the catalog with `npm run build:rhymes`.
+  TAM-150, TAM-156 and TAM-157 can be tested against this file.

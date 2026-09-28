@@ -60,7 +60,12 @@ From `specs/tambola/08-prizes.md` (TAM-080 to TAM-091). Money is calculated, nev
 - Game end: never.
 
 ## Rhymes
-- Several per number, English and Hindi, with style tags and a family-friendly flag (`content/tambola/`).
+- Several per number, English and Hindi, with style tags and a family-friendly flag.
+- The pack is `content/tambola/rhymes.json` (format 1), made from the approved catalog
+  `docs/games/tambola/rhymes.csv` by `npm run build:rhymes`, which refuses to write a pack that breaks
+  TAM-150, TAM-156 or TAM-157. Never edit the JSON by hand; change the catalog and rebuild.
+- `styleWeights` in the pack: Indian styles (indian, cricket, bollywood, festival, hindi) weigh 2,
+  classic and playful 1 (owner, 2026-09-28).
 - On each call one allowed rhyme is picked **from the game's seeded generator** (TAM-151, TAM-152),
   filtered by the host's language setting and the family-friendly filter, on by default (TAM-153, TAM-154).
 - "Another rhyme" shows a different allowed rhyme without changing the number (TAM-155).

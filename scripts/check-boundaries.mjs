@@ -6,6 +6,7 @@
 //   4. Adapters implement engine interfaces and never contain game rules (so they never import a game).
 //   5. Only src/app/ assembles everything, and nothing imports it.
 //   6. Other code imports a game only through its index.ts registration file.
+//   Content: a game may read only its own content folder (content/<game>/).
 //   Purity: no Math.random() or Date.now() in the engine or in any game's rules/.
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import path from 'node:path';
@@ -54,7 +55,11 @@ for (const file of walk(src)) {
     const to = areaOf(target);
     const say = (why) => problems.push(`${where}: imports ${spec} (${why})`);
 
-    if (to.area === 'outside') { say('outside src/'); continue; }
+    if (to.area === 'outside') {
+      const own = from.area === 'games' && rel(target).startsWith(`content/${from.game}/`);
+      if (!own) say(from.area === 'games' ? `a game may read only content/${from.game}/` : 'outside src/');
+      continue;
+    }
     if (to.area === 'app' && from.area !== 'app') say('nothing may import src/app');
     if (from.area === 'engine' && to.area !== 'engine') say('the engine depends on nothing else in the project');
     if (from.area === 'blocks' && !['engine', 'blocks'].includes(to.area)) say('building blocks may use only the engine');
