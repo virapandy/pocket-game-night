@@ -10,7 +10,7 @@ Then the claim is removed, Top Line is available again, and the rest of the game
 Status: draft
 Given 45 has been called
 Then there is no way to take 45 back
-(The room has already heard it.)
+(The room has already heard it. See TAM-119 for a proposed 5-second undo after a mis-tap.)
 
 ## TAM-072: Undo after later moves keeps those later moves
 Status: draft

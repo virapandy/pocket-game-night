@@ -23,4 +23,5 @@
 Claude to follow game conventions. Every Tambola rule above is also a host setting with this default.
 
 ## Open
+- Auto-call mode, and undo last call within 5 seconds (docs/ux-guidelines.md, TAM-119 and TAM-120)
 - Approval of the Tambola scenarios in `specs/tambola/`

@@ -114,7 +114,7 @@ Status: draft
 Given the game uses paper tickets
 And a player claims Top Line and reads out 4, 23, 41, 62 and 85
 When the host types those five numbers
-Then each shows as called (green) or not called (red)
+Then each shows as called (green, ✓) or not called (red, ✗)
 And the claim is accepted only if all five were called
 (For Early Five any 5 numbers; for Four Corners 4; for Full House all 15.)
 
