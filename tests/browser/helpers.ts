@@ -36,7 +36,7 @@ export async function setUpPaperGame(page: Page, opts: SetupOptions = {}) {
 export async function fillPlayers(page: Page, names: string[]) {
   await page.getByLabel('Number of players').fill(String(names.length));
   for (const [i, name] of names.entries()) {
-    await page.getByLabel(`Name of player ${i + 1}`).fill(name);
+    await page.getByLabel(`Name of player ${i + 1}`, { exact: true }).fill(name);
   }
 }
 

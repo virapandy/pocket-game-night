@@ -13,7 +13,7 @@ test('TAM-037, TAM-033, TAM-086, TAM-105: an accepted claim shows ✓ for each n
   await expect(result.getByText('✓ Accepted')).toBeVisible();
   await expect(result.getByText(/Accepted: ₹\d+ to Riya/)).toBeVisible();
   await expect(result.locator('[data-called="true"]')).toHaveCount(5);
-  for (const n of calls.slice(-5)) await expect(result.getByText(`${n} ✓`)).toBeVisible();
+  for (const n of calls.slice(-5)) await expect(result.getByText(`${n} ✓`, { exact: true })).toBeVisible();
 });
 
 test('TAM-037 and TAM-105: a bogey shows ✗ next to the number that was not called, and "✗ Bogey"', async ({ page }) => {
@@ -22,7 +22,7 @@ test('TAM-037 and TAM-105: a bogey shows ✗ next to the number that was not cal
   await checkClaim(page, 'Asha', 'Top Line', [...calls.slice(-4), notCalled]);
   const result = page.getByTestId('claim-result');
   await expect(result.getByText('✗ Bogey')).toBeVisible();
-  await expect(result.getByText(`${notCalled} ✗`)).toBeVisible();
+  await expect(result.getByText(`${notCalled} ✗`, { exact: true })).toBeVisible();
   await expect(result.locator('[data-called="false"]')).toHaveCount(1);
 });
 
@@ -30,7 +30,7 @@ test('TAM-038: a late claim says which number completed the pattern', async ({ p
   const calls = await callMany(page, 6);
   await callMany(page, 1);
   await checkClaim(page, 'Dad', 'Top Line', calls.slice(-5));
-  await expect(page.getByTestId('claim-result').getByText(`Top Line was complete at ${calls[5]}`)).toBeVisible();
+  await expect(page.getByTestId('claim-result').getByText(new RegExp(`Top Line was complete at ${calls[5]}(?!\\d)`))).toBeVisible();
 });
 
 test('TAM-039: the host picks the claiming player from the names in one tap', async ({ page }) => {
