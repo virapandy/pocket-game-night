@@ -17,11 +17,12 @@
 | 2026-09-28 | Unclaimed tier rolls over to the next game on Play again; at the end of a session it is spread across the won tiers. | Convention + owner |
 | 2026-09-28 | The game ends when the last Full House tier in play is won. | Convention |
 | 2026-09-28 | Rhymes in English and Hindi first; phone voice in Indian English first. | Claude, on owner's instruction |
+| 2026-09-28 | Auto-call: off by default; host sets and can change the timer at any time; one-tap pause (TAM-120). | Owner |
+| 2026-09-28 | Undo last call within 5 seconds of a mis-tap (TAM-119). | Owner |
 | 2026-09-28 | Games two to four, in order: Impostor, Dumb Charades, Scoreboard / Rummy scorekeeper. | Claude, on owner's instruction |
 
-"Convention" means the established Tambola rule in `docs/tambola-guide.md`, chosen because the owner asked
+"Convention" means the established Tambola rule in `docs/games/tambola/guide.md`, chosen because the owner asked
 Claude to follow game conventions. Every Tambola rule above is also a host setting with this default.
 
 ## Open
-- Auto-call mode, and undo last call within 5 seconds (docs/ux-guidelines.md, TAM-119 and TAM-120)
 - Approval of the Tambola scenarios in `specs/tambola/`

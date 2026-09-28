@@ -1,11 +1,11 @@
 # House rules
 
-All decided on 2026-09-28. The owner asked Claude to follow Tambola conventions (see `docs/tambola-guide.md` and `docs/decisions.md`). Each is still a host setting with this default.
+All decided on 2026-09-28. The owner asked Claude to follow Tambola conventions (see `docs/games/tambola/guide.md` and `docs/decisions.md`). Each is still a host setting with this default.
 
 Each scenario below has a question. Pick one option (or write your own), and the scenario is finished.
 Every choice becomes a **setting** with a default the host can change. These are the defaults.
 
-**Norm** marks the option that matches the established rules in `docs/tambola-guide.md`.
+**Norm** marks the option that matches the established rules in `docs/games/tambola/guide.md`.
 **Recommended** is Claude's suggestion for family play, where it differs from the norm.
 
 ## TAM-040: Which patterns are in a game by default?

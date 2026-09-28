@@ -1,8 +1,8 @@
 # Tambola scenarios
 
 These are the test cases for Tambola in plain English. The game itself is explained in
-[docs/tambola-guide.md](../../docs/tambola-guide.md), which these scenarios were checked against,
-and the host and player journeys are in [docs/tambola-journeys.md](../../docs/tambola-journeys.md). Each scenario becomes one or more automated
+[docs/games/tambola/guide.md](../../docs/games/tambola/guide.md), which these scenarios were checked against,
+and the host and player journeys are in [docs/games/tambola/journeys.md](../../docs/games/tambola/journeys.md). Each scenario becomes one or more automated
 tests once the owner approves it. All are **draft** until approved.
 
 | File | Covers | Scenarios |

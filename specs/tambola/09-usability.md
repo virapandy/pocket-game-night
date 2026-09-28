@@ -116,18 +116,21 @@ Then a one-time tip shows how to add it ("Share → Add to Home Screen")
 And explains that games saved in Safari and in the home-screen app are separate
 
 ## TAM-119: Undo last call within 5 seconds
-Status: waiting for owner decision (docs/ux-guidelines.md, "Decisions for the owner")
+Status: decided 2026-09-28 (owner)
 Given the host tapped "Next number" by mistake
 When they tap "Undo last call" within 5 seconds
 Then that number goes back into the draw and the previous number is shown again
 And after 5 seconds the option disappears and TAM-071 applies
 
 ## TAM-120: Auto-call mode
-Status: waiting for owner decision (docs/ux-guidelines.md, "Decisions for the owner")
-When the host turns on auto-call (off by default, with a one-time warning)
-Then the phone speaks each number on a 5, 10 or 20 second timer
-And the host can pause at any time with one tap
+Status: decided 2026-09-28 (owner)
+Given auto-call is off by default
+When the host turns it on (with a one-time warning)
+Then the host chooses the time between calls, and the phone speaks each number on that timer
+And the host can change the timer at any time during the game, taking effect from the next call
+And the host can pause and resume with one tap, always in the same place
 And if the app goes to the background, auto-call pauses and shows "Paused: tap to resume" on return
+And pausing or changing the timer never skips or repeats a number
 
 ## TAM-121: Players can make text larger
 Status: draft

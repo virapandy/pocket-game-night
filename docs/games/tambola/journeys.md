@@ -1,6 +1,6 @@
 # Tambola user journeys
 
-Draft v2, 28 September 2026. House rules use the **norms** from `docs/tambola-guide.md` until the
+Draft v2, 28 September 2026. House rules use the **norms** from `docs/games/tambola/guide.md` until the
 owner decides: six patterns, ties shared, claims before the next number, 1–3 tickets per player.
 
 ## Who is involved

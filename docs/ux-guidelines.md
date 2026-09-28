@@ -108,11 +108,11 @@ speed [8]. Our users:
 43. **Taps respond within 100 ms;** no constant animations on the host screen, which also saves battery [22].
 44. **Test with a throttled CPU and a real budget Android phone** [22].
 
-## Decisions for the owner
-| Question | Options | Recommendation |
-|---|---|---|
-| **Auto-call mode** (the phone speaks each call on a timer) | A. Keep only "Phone speaks the call" as an optional shortcut. B. Also offer a full auto-call mode with a 5/10/20 s timer for tired hosts or big groups, off by default, with the usual warning. | B: existing caller apps offer it [44], and it keeps the anchor ritual as the default |
-| **Undo last call** | A. A called number can never be taken back (TAM-071). B. "Undo last call" for 5 seconds after a mis-tap, before the anchor reads it; after that TAM-071 holds. | B: the realistic mistake is a mis-tap on "Next", and debouncing only catches double taps |
+## Decisions (owner, 2026-09-28)
+- **Auto-call mode:** off by default. When the host turns it on, they set the time between calls,
+  can change it at any time, and can pause and resume with one tap (TAM-120).
+- **Undo last call:** allowed for 5 seconds after a call, for mis-taps; after that a called number
+  stands (TAM-119, TAM-071).
 
 ## Sources
 [1] Amazon Fire TV design guidelines, https://developer.amazon.com/docs/fire-tv/design-and-user-experience-guidelines.html ·
