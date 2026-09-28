@@ -6,3 +6,4 @@ export * from './referee';
 export * from './events';
 export * from './money';
 export * from './saved-game';
+export * from './storage';

@@ -1,6 +1,32 @@
 // Tambola's registration: the only file other code may import from this game.
 import type { GameInfo } from '../../engine';
-import { TambolaScreen } from './ui/TambolaScreen';
+import { tambolaRules } from './rules';
+import { describeGame } from './ui/saved';
+import { TambolaPastGame, TambolaScreen } from './ui/TambolaScreen';
+
+export {
+  tambolaRules,
+  tambolaDefaults,
+  suggestTiers,
+  planPrizes,
+  pickRhyme,
+  rhymePack,
+  PATTERNS,
+  PATTERN_NAMES,
+  NEEDS,
+} from './rules';
+export type {
+  Pattern,
+  TambolaConfig,
+  TambolaMove,
+  TambolaSettings,
+  TambolaState,
+  TambolaSummary,
+  TambolaView,
+  ClaimView,
+  Rhyme,
+  RhymePack,
+} from './rules';
 
 export const tambolaInfo: GameInfo = {
   id: 'tambola',
@@ -8,4 +34,10 @@ export const tambolaInfo: GameInfo = {
   tagline: 'Housie for the whole room. The anchor calls, everyone shouts.',
 };
 
-export const tambola = { info: tambolaInfo, Screen: TambolaScreen };
+export const tambola = {
+  info: tambolaInfo,
+  Screen: TambolaScreen,
+  PastGame: TambolaPastGame,
+  describe: describeGame,
+  rules: tambolaRules,
+};

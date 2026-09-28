@@ -33,4 +33,5 @@ The engine runs any game written to the contract. It must stay pure and tiny.
 | `referee.ts` | `startMatch`, `play` (checks invariants after every move; refuses moves after game over), `undo` (replays without the move; refused if a later move would break), `replay`, `viewFor` |
 | `events.ts` | The one announce hook: game started, first action, game ended |
 | `money.ts` | `MoneyRecord`: what each person paid and won (PLT-021); `moneyProblems` checks it balances |
+| `storage.ts` | `SavedGameStore` and `Preferences`: the shapes the app's browser storage meets, so games never touch storage directly |
 | `saved-game.ts` | `SavedGame` (format 1): setup plus move records, status (PLT-001), money; `readSavedGame` reads every known format |

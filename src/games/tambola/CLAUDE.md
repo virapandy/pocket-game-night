@@ -34,7 +34,7 @@ in progress. Source: `specs/tambola/04-house-rules.md` and `docs/decisions.md`.
 | Claim after the next number was called | Late, so a bogey; the host sees which number completed it (TAM-043, TAM-038) | |
 | Bogey | The ticket is out; its contribution stays in the pot (TAM-044) | "Carry on" |
 | Tickets per player | 1, up to 3 (TAM-045) | Limit |
-| End of game | The last Full House tier in play is won (TAM-046, TAM-075) | Via tiers |
+| End of game | Manual: after an accepted claim the host adds winners or closes the tier; once the last Full House tier is closed, only "End game and show payouts" or Discard remain; accepting or closing a Full House never ends the game by itself (TAM-046, TAM-075, TAM-145) | Via tiers |
 | Rhyme language | English and Hindi first (TAM-049) | English, Hindi, Both |
 | Late joiners (Phase 1b) | Until 10 calls; 0 turns it off (TAM-067) | Limit |
 | Auto-call (Phase 1b) | Off (TAM-120) | Timer |
@@ -74,7 +74,10 @@ From `specs/tambola/08-prizes.md` (TAM-080 to TAM-091). Money is calculated, nev
 - No rhyme for a language: show the number alone (TAM-015).
 
 ## Structure
-- `rules/`: the pure rules module (the contract answers)
-- `ui/`: screens
-- `index.ts`: registration, the only file other code may import
+- `rules/`: the pure rules module: `rules.ts` (the contract answers, `tambolaDefaults`), `prizes.ts`
+  (`suggestTiers`, `planPrizes`, `apportion`), `rhymes.ts` (`pickRhyme`), `types.ts`
+- `ui/`: screens: `TambolaScreen` (start, setup, game, past game), `Setup`, `Play`, `Summary`, `Settings`,
+  `HowToPlay`; `saved.ts` turns saved games into matches; `device.ts` holds wake lock, vibration, sound, seeds
+- `index.ts`: registration (`tambola = { info, Screen, PastGame, describe, rules }`), the only file other code may import
+- Storage is not here: the app passes a `SavedGameStore` and `Preferences` (engine interfaces) to the screens.
 - Rhymes live in `content/tambola/`, not in code.
