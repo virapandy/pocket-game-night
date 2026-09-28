@@ -130,6 +130,20 @@ numbers (TAM-050 to TAM-055).
 
 ---
 
+## Lifecycle: the game over time
+| Situation | What happens |
+|---|---|
+| Host leaves a game unfinished | Saved at every step. Back within 12 hours: resumes, paused. Later: "Resume", "End it" or "Discard it". Never ended automatically. |
+| Host starts a new game while one is unfinished | Asked to resume, end or discard the current one first (one game at a time) |
+| **End game** | Prizes won so far are paid; unclaimed tiers roll over or spread (TAM-088) |
+| **Discard game** | Void: nobody is paid; the summary lists each player's contribution to hand back |
+| Several games in one night (Play again) | Grouped as one night; each person gets one net amount to settle at the end |
+| Looking back | History, newest first; each game opens read-only with every call and claim, for disputes |
+| Same group next week | "Use this setup" on a past game: same players, contribution and tiers |
+| Deleting | One game (with 5-second Undo), or all history (with a specific confirmation) |
+| History size | No limit: a game takes a few kilobytes. If storage runs low, the app asks before removing the oldest. |
+| Phone lost or app data cleared | History is gone: it lives only on this phone, and the app says so |
+
 ## Moments every game must handle
 | Moment | Expected behaviour |
 |---|---|

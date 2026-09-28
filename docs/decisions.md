@@ -25,4 +25,5 @@
 Claude to follow game conventions. Every Tambola rule above is also a host setting with this default.
 
 ## Open
+- Lifecycle recommendations to confirm: one game in progress at a time (PLT-002); resume straight away within 12 hours, otherwise ask (PLT-004); no limit on history, ask before removing anything (PLT-012); no hand-entered past games (PLT-015); Discard means void with contributions returned (TAM-140); one net amount per person per night (TAM-141)
 - Approval of the Tambola scenarios in `specs/tambola/`

@@ -16,4 +16,4 @@ Then the host phone accepts the claim
 And the room sees "Early Five: accepted"
 ```
 
-IDs: `TAM-` for Tambola. Each new game gets its own prefix.
+IDs: `TAM-` for Tambola, `PLT-` for behaviour shared by all games (`specs/platform/`). Each new game gets its own prefix.

@@ -13,6 +13,7 @@ after step 9.
 | 2 | Game setup, anchor/host role and controls | "Setup" and "Host" sections of `journeys.md` | |
 | 3 | Player roles and controls | "Players" section of `journeys.md` | |
 | 4 | User journeys | `docs/games/<game>/journeys.md` | Owner reviews the journeys |
+| 4b | Lifecycle and long-term behaviour | "Lifecycle" section of `journeys.md`; game-specific scenarios in `specs/<game>/10-lifecycle.md` | Owner reviews with the journeys |
 | 5 | UX considerations | "UX notes" section of `journeys.md`, plus new rules in `docs/ux-guidelines.md` if any | |
 | 6 | Decisions | Rows in `docs/decisions.md` | Owner decides, or says "follow conventions" |
 | 7 | Contract check | "Contract" section of `guide.md` | Owner told if the engine must change |
@@ -69,6 +70,17 @@ For each role (e.g. Impostor: crew and impostor):
   ending early, play again, a phone dying.
 - **Gaps:** list behaviour the journeys need that no rule covers yet. These feed step 6 and step 8.
 
+## Step 4b: Lifecycle and long-term behaviour
+The shared rules are in `specs/platform/01-lifecycle.md` (states, one game at a time, resume, discard,
+history, delete, storage, updates). For each new game, answer only what is special to it:
+- **Ending early vs discarding:** what happens to scores, prizes or roles in each case?
+- **Resuming:** can the game sensibly resume hours later, or does it lose its point (e.g. a timed round)?
+- **Chaining games:** does "Play again" carry anything over (scores, roll-overs, teams)? Is there a
+  night-level total?
+- **What a finished game keeps** for history, disputes and exact replay, and what it must not keep
+  (e.g. secret words or roles after the game, if they would spoil a replay of the same pack).
+- **Anything that must never be lost** (money, roll-overs) when a game is discarded.
+
 ## Step 5: UX considerations
 1. Walk the journeys against every section of `docs/ux-guidelines.md` and note where the game needs
    something specific (e.g. a timer that everyone can see, a secret reveal that neighbours can't glimpse).
@@ -99,7 +111,7 @@ Also note which secrets need their own seeds.
 - Use the scenario template in `specs/README.md` and the game's ID prefix (below).
 - Suggested files, following Tambola:
   `01-setup` · `02-core-play` · `03-winning-and-scoring` · `04-house-rules` · `05-secrets` ·
-  `06-room-and-host` · `07-undo-replay-end` · `08-prizes` (if any) · `09-usability`.
+  `06-room-and-host` · `07-undo-replay-end` · `08-prizes` (if any) · `09-usability` · `10-lifecycle`.
 - Include **property scenarios** ("for thousands of random games, X is always true") for every invariant.
 - House-rule scenarios state the decided option.
 
@@ -117,6 +129,7 @@ ask the owner to approve. Approved scenarios become tests; then the Build worksp
 ## ID prefixes
 | Game | Prefix | Folder |
 |---|---|---|
+| All games (platform) | PLT | `platform` |
 | Tambola | TAM | `tambola` |
 | Impostor | IMP | `impostor` |
 | Dumb Charades | CHA | `charades` |
@@ -126,6 +139,7 @@ ask the owner to approve. Approved scenarios become tests; then the Build worksp
 - [ ] Fit check passed
 - [ ] Guide with at least three opened sources
 - [ ] Journeys for every role and mode, with the shared moments
+- [ ] Lifecycle questions answered, with game-specific scenarios in `10-lifecycle.md`
 - [ ] UX notes, and new guidelines added where lasting
 - [ ] Every decision recorded, with its basis
 - [ ] Contract check with no unflagged engine changes
