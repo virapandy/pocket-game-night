@@ -19,7 +19,7 @@ When the host starts a new game without changing settings
 Then exactly the chosen default patterns are available to claim
 
 ## TAM-041: Two players claim the same pattern at the same moment
-Status: decided 2026-09-28 by convention (owner asked Claude to follow Tambola norms): A, the prize is shared
+Status: approved, owner, 2026-09-28 (decided by convention, as the owner asked: A, the prize is shared)
 Phase: Phase 1a
 Options:
 - A. Both win and share the prize (**norm**)
@@ -31,7 +31,7 @@ When both players claim before the next number is called
 Then the chosen rule is applied, every time
 
 ## TAM-042: What counts as "the same moment"?
-Status: decided 2026-09-28 by convention (owner asked Claude to follow Tambola norms): A, the same called number, both claimed before the next number
+Status: approved, owner, 2026-09-28 (decided by convention, as the owner asked: A, the same called number, both claimed before the next number)
 Phase: Phase 1a
 Options:
 - A. Both completed their pattern on the same called number, and both claimed before the next number (**norm**)
@@ -39,7 +39,7 @@ Options:
 Scenario once chosen: the rule in TAM-041 applies only to claims that match this definition.
 
 ## TAM-043: Late claims
-Status: decided 2026-09-28 by convention (owner asked Claude to follow Tambola norms): B, a late claim is a bogey
+Status: approved, owner, 2026-09-28 (decided by convention, as the owner asked: B, a late claim is a bogey)
 Phase: Phase 1a
 A player's pattern was complete after number 45 was called, but they only claimed after 12 was called next.
 Options:
@@ -51,7 +51,7 @@ Then it is accepted (A) or treated as a bogey with the reason "too late" (B)
 (For B, the app records which number completed each ticket's pattern, so "late" is exact.)
 
 ## TAM-044: What happens after a bogey?
-Status: decided 2026-09-28 by convention (owner asked Claude to follow Tambola norms): B, the ticket is out of the game. The host can switch to "carry on" in settings for gentle family games. The ticket's contribution stays in the pot.
+Status: approved, owner, 2026-09-28 (decided by convention, as the owner asked: B, the ticket is out of the game. The host can switch to "carry on" in settings for gentle family games. The ticket's contribution stays in the pot.)
 Phase: Phase 1a
 Options:
 - A. Nothing; the room laughs and play continues (**recommended** for family play)
@@ -64,7 +64,7 @@ And, with paper tickets, the bogey is recorded against the player and shown in t
 And with the "carry on" setting, nothing changes except the room's laughter
 
 ## TAM-045: How many tickets may one player hold?
-Status: decided 2026-09-28 by convention (owner asked Claude to follow Tambola norms): B, 1 to 3 tickets per player, default 1
+Status: approved, owner, 2026-09-28 (decided by convention, as the owner asked: B, 1 to 3 tickets per player, default 1)
 Phase: Phase 1a
 Options:
 - A. One
@@ -74,7 +74,7 @@ When the host hands out tickets
 Then no player gets more than the allowed number
 
 ## TAM-046: Second and third Full House
-Status: decided 2026-09-28: the game ends when the last Full House tier in play is won (one Full House, or two with Second Full House from TAM-081)
+Status: approved, owner, 2026-09-28 (decided: the game ends when the last Full House tier in play is won (one Full House, or two with Second Full House from TAM-081))
 Phase: Phase 1a
 Options:
 - A. The game ends at the first Full House (**norm**)
@@ -94,7 +94,7 @@ Options:
 Scenario once chosen: TAM-006 applies to every group of 6 tickets handed out (A), or only when printing full sheets (B).
 
 ## TAM-049: First languages for rhymes and the voice caller
-Status: decided 2026-09-28 by Claude on the owner's instruction: English and Hindi rhymes first; the phone voice in Indian English first. The traditional calls are English ("Kelly's eye"), and Hindi reaches the most Indian families. Other languages come later as content packs.
+Status: approved, owner, 2026-09-28 (decided: by Claude on the owner's instruction: English and Hindi rhymes first; the phone voice in Indian English first. The traditional calls are English ("Kelly's eye"), and Hindi reaches the most Indian families. Other languages come later as content packs.)
 Phase: Phase 1a
 Options: English, Hindi, Tamil, others (choose one or two to start)
 Scenario once chosen:

@@ -4,7 +4,7 @@ The shared lifecycle rules are in `specs/platform/01-lifecycle.md` (PLT-001 to P
 These scenarios cover what is special to Tambola: the prize pool.
 
 ## TAM-140: Ending versus discarding a game with money
-Status: decided 2026-09-28 (owner)
+Status: approved, owner, 2026-09-28 (decided: owner)
 Phase: Phase 1a
 When the host taps "End game" (TAM-066)
 Then prizes already won are paid, and unclaimed tiers follow TAM-088
@@ -13,7 +13,7 @@ Then the game is void: nobody is paid, and the summary shows each player's contr
 And if prizes had already been accepted, the confirmation says so: "2 prizes were already won. Discard anyway?"
 
 ## TAM-141: A game shows only its own winnings; the tally is separate
-Status: decided 2026-09-28 (owner)
+Status: approved, owner, 2026-09-28 (decided: owner)
 Phase: Phase 1a
 When a Tambola game ends
 Then its summary shows only that game: what each person paid and won
@@ -28,3 +28,21 @@ Phase: Phase 1a
 Then each finished or abandoned game keeps: date and time, ticket mode, players and tickets,
 contribution and pot, tiers, every call in order, every claim and verdict, bogeys, and payouts
 And that record is enough to replay the game exactly (TAM-073) and to settle a dispute ("show every call")
+
+## TAM-144: A game that ends with no prize won hands every contribution back
+Status: draft (found while writing Phase 1a tests; needs the owner's decision)
+Phase: Phase 1a
+Given a game with money where nobody has won any prize
+When the host ends the game (TAM-066)
+Then nobody is paid a prize, and the summary shows each player's contribution to hand back, as with Discard (TAM-140)
+(Otherwise "total paid out equals the pot" (TAM-089) cannot hold. The tests assume this until the owner decides.)
+
+## TAM-145: Two players complete Full House on the same number
+Status: draft (found while writing Phase 1a tests; needs the owner's decision)
+Phase: Phase 1a
+Given ties on the same number share the prize (TAM-041)
+And the game ends when the last Full House tier is accepted (TAM-075)
+Then a second Full House on that same number cannot be entered, because the game has already ended
+Options:
+- A. Keep it simple: the first Full House entered ends the game (the tests assume this today)
+- B. After a Full House is accepted, the host sees "Any more Full Houses on this number?" and can check more before the game ends (matches the tie rule)

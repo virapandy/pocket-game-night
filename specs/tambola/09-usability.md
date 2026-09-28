@@ -137,7 +137,7 @@ Then a one-time tip shows how to add it ("Share → Add to Home Screen")
 And explains that games saved in Safari and in the home-screen app are separate
 
 ## TAM-119: Undo last call within 5 seconds
-Status: decided 2026-09-28 (owner)
+Status: approved, owner, 2026-09-28 (decided: owner)
 Phase: Phase 1a
 Given the host tapped "Next number" by mistake
 When they tap "Undo last call" within 5 seconds

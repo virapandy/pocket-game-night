@@ -60,7 +60,7 @@ And no number has the same rhyme twice
 And the pack carries a format version, so later packs (more languages, community packs) load the same way
 
 ## TAM-158: Indian references come first
-Status: decided 2026-09-28 (owner)
+Status: approved, owner, 2026-09-28 (decided: owner)
 Phase: Phase 1a
 Given a number has allowed rhymes with Indian references (styles indian, cricket, bollywood, festival, hindi)
 and allowed rhymes without (classic, playful)

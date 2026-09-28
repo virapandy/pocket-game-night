@@ -22,7 +22,7 @@ Then every game is in exactly one state: Setup, In progress, Paused, Ended or Ab
 And only In progress and Paused games can change; Ended and Abandoned games are read-only
 
 ## PLT-002: Several unfinished games are allowed
-Status: decided 2026-09-28 (owner: no one-game limit unless absolutely necessary)
+Status: approved, owner, 2026-09-28 (decided: owner: no one-game limit unless absolutely necessary)
 Phase: Phase 1a
 Given a game is in progress or paused
 When the host starts a new game
@@ -36,7 +36,7 @@ When anything changes in a game (a call, a claim, a setting)
 Then it is saved on the phone immediately, so closing the app never loses it (TAM-065, TAM-111, TAM-112)
 
 ## PLT-004: Coming back to an unfinished game
-Status: decided 2026-09-28 (owner)
+Status: approved, owner, 2026-09-28 (decided: owner)
 Phase: Phase 1a
 Given a game was left in progress
 When the host opens the app within 12 hours
@@ -98,7 +98,7 @@ with buttons "Delete all" and "Keep"
 And a game in progress is not affected
 
 ## PLT-012: No limit on history, but no surprises either
-Status: decided 2026-09-28 (owner)
+Status: approved, owner, 2026-09-28 (decided: owner)
 Phase: Phase 1a
 Given a finished game takes a few kilobytes
 Then the app keeps every past game until the host deletes it
@@ -188,7 +188,7 @@ Given a game was played with "No money"
 Then it appears in the session's history but never in its tally
 
 ## PLT-024: Every game's setup captures players' names
-Status: decided 2026-09-28 (owner: names are captured at setup, in every game)
+Status: approved, owner, 2026-09-28 (decided: owner: names are captured at setup, in every game)
 Phase: Phase 1a
 When the host sets up any game
 Then there is one players step, the same in every game: the number of players and their names

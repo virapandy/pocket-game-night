@@ -78,7 +78,7 @@ Then they get ₹17, ₹17 and ₹16 (split to the rupee, adding up to ₹50 exa
 And the extra rupee goes in ticket-number order
 
 ## TAM-088: An unclaimed tier is spread across the won tiers
-Status: decided 2026-09-28 (owner: no roll-over; totals always match the pot)
+Status: approved, owner, 2026-09-28 (decided: owner: no roll-over; totals always match the pot)
 Phase: Phase 1a
 Given the game ends with Four Corners (₹50) unclaimed
 Then the ₹50 is spread across the tiers that were won in this game, in proportion to their amounts, rounded
