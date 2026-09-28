@@ -13,8 +13,8 @@
 | 2026-09-28 | Claims must come before the next number; a late claim is a bogey. | Convention |
 | 2026-09-28 | Bogey: the ticket is out (default); host setting "carry on" for gentle games. | Convention |
 | 2026-09-28 | 1 to 3 tickets per player, default 1; phone tickets handed out from sheets of 6. | Convention |
-| 2026-09-28 | Late joiners until 10 numbers called; called numbers count; a pattern already complete on joining can't be claimed; their contribution spreads over tiers not yet won. | Convention + Claude |
-| 2026-09-28 | Unclaimed tier rolls over to the next game on Play again; at the end of a session it is spread across the won tiers. | Convention + owner |
+| 2026-09-28 | Late joiners until 10 numbers called; called numbers count; a pattern already complete on joining can't be claimed; their contribution is split across the tiers not yet won, rounded. | Convention + owner |
+| 2026-09-28 | No roll-over: an unclaimed tier is spread across the tiers won in the same game. | Owner |
 | 2026-09-28 | The game ends when the last Full House tier in play is won. | Convention |
 | 2026-09-28 | Rhymes in English and Hindi first; phone voice in Indian English first. | Claude, on owner's instruction |
 | 2026-09-28 | Auto-call: off by default; host sets and can change the timer at any time; one-tap pause (TAM-120). | Owner |
@@ -24,6 +24,8 @@
 | 2026-09-28 | No limit on history; ask before removing anything; no hand-entered games (PLT-012, PLT-015). | Owner |
 | 2026-09-28 | Discard means the game is void and contributions are handed back (TAM-140). | Owner |
 | 2026-09-28 | Games are grouped in named sessions; a tally covers ended, unsettled games in one session; Settle marks them done; sessions are never tallied together (PLT-016 to PLT-020). | Owner |
+| 2026-09-28 | Phase 1 splits into 1a (one great game) and 1b (sessions, tally, history management, late joiners, voice and auto-call). | Owner |
+| 2026-09-28 | The tally is a shared feature for any game with money; each game records what each person paid and won. | Owner |
 | 2026-09-28 | Games two to four, in order: Impostor, Dumb Charades, Scoreboard / Rummy scorekeeper. | Claude, on owner's instruction |
 
 "Convention" means the established Tambola rule in `docs/games/tambola/guide.md`, chosen because the owner asked

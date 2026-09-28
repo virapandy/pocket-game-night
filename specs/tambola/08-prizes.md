@@ -8,7 +8,7 @@ needed to hit the total.
 
 ## TAM-080: The pot is calculated from tickets and contribution
 Status: draft
-Phase: Phase 1
+Phase: Phase 1a
 Given 8 players, 2 of whom take 2 tickets, so 10 tickets in play
 And the contribution is ₹50 per ticket
 Then the pot shows ₹500 (10 tickets × ₹50)
@@ -16,7 +16,7 @@ And it updates immediately if the host changes players, tickets or the contribut
 
 ## TAM-081: The app suggests tiers based on the number of tickets in play
 Status: draft
-Phase: Phase 1
+Phase: Phase 1a
 Then the suggested tiers and split are:
 | Tickets in play | Suggested tiers | Split |
 |---|---|---|
@@ -29,7 +29,7 @@ And the suggestion updates as players or tickets change, until the prizes are lo
 
 ## TAM-082: Rounded tiers always add up to the pot exactly
 Status: draft
-Phase: Phase 1
+Phase: Phase 1a
 For every pot size and every set of tiers
 Then each tier is a multiple of the rounding unit where possible (₹10 by default)
 And individual tiers are nudged up or down so the tiers add up to the pot exactly
@@ -38,7 +38,7 @@ Example: a ₹530 pot across 10 / 20 / 70 % gives ₹50 / ₹110 / ₹370
 
 ## TAM-083: The host can remove a tier, and add it back
 Status: draft
-Phase: Phase 1
+Phase: Phase 1a
 Given the suggested tiers for 10 tickets
 When the host removes Middle Line
 Then its share is spread across the remaining tiers in proportion, and the total still equals the pot
@@ -49,7 +49,7 @@ And Full House cannot be removed, because it ends the game
 
 ## TAM-084: The anchor confirms the prizes before the first number
 Status: draft
-Phase: Phase 1
+Phase: Phase 1a
 Given the suggested tiers are shown
 When the anchor changes Top Line to ₹80
 Then the other tiers adjust so the total still equals the pot, and the anchor sees each change
@@ -59,37 +59,35 @@ Then the prizes are locked and the first number can be called
 
 ## TAM-085: Prizes cannot change after the first number
 Status: draft
-Phase: Phase 1
+Phase: Phase 1a
 Given prizes are locked and a number has been called
 Then tier amounts cannot be edited
 Except through the late-joiner rule (TAM-067) or the unclaimed-tier rule (TAM-087)
 
 ## TAM-086: An accepted claim shows the prize
 Status: draft
-Phase: Phase 1
+Phase: Phase 1a
 When Riya's Top Line claim is accepted
 Then the host phone shows "Accepted: ₹60 to Riya" (or to "Ticket 4" if no names were entered)
 
 ## TAM-087: A shared prize is split as evenly as possible
 Status: draft
-Phase: Phase 1
+Phase: Phase 1a
 Given Top Line is worth ₹50 and three tickets win it on the same number
 Then they get ₹17, ₹17 and ₹16 (split to the rupee, adding up to ₹50 exactly)
 And the extra rupee goes in ticket-number order
 
-## TAM-088: An unclaimed tier rolls over to the next game, or is spread across the won tiers
-Status: decided 2026-09-28 (convention: unclaimed prizes roll over to the next round; owner: totals always match the pot)
-Phase: Phase 1
+## TAM-088: An unclaimed tier is spread across the won tiers
+Status: decided 2026-09-28 (owner: no roll-over; totals always match the pot)
+Phase: Phase 1a
 Given the game ends with Four Corners (₹50) unclaimed
-When the host taps "Play again"
-Then the ₹50 is added to the same tier in the next game's pot, and the anchor sees it when confirming prizes
-When the host ends the session instead
-Then the ₹50 is spread across the tiers that were won, in proportion to their amounts
-And in both cases the payouts add up to the pot exactly
+Then the ₹50 is spread across the tiers that were won in this game, in proportion to their amounts, rounded
+And the payouts add up to the pot exactly
+And nothing carries over to another game
 
 ## TAM-089: The payout summary balances
 Status: draft
-Phase: Phase 1
+Phase: Phase 1a
 When a game ends
 Then the summary lists, for each tier, the winner(s) and amount
 And, for each person, what they paid and what they won
@@ -97,13 +95,13 @@ And total paid out equals the pot, to the rupee
 
 ## TAM-090: The app never moves money
 Status: draft
-Phase: Phase 1
+Phase: Phase 1a
 Then there is no payment button, payment link, UPI request or wallet anywhere in the game
 And a game can be played with "No money": prizes are optional text labels (such as "chocolate"),
 the tiers are still suggested by ticket count, and every scenario above works without amounts
 
 ## TAM-091: For every pot and every combination of tiers, removals, edits and ties, the total balances
 Status: draft
-Phase: Phase 1
+Phase: Phase 1a
 For thousands of random pots, ticket counts, tier edits, removals, ties and unclaimed tiers
 Then every tier amount is zero or more, and the payouts always add up to the pot exactly

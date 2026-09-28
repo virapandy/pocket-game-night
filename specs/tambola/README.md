@@ -15,7 +15,7 @@ tests once the owner approves it. All are **draft** until approved.
 | [06-room-and-host.md](06-room-and-host.md) | Fun-friction defaults, host controls, late joiners, play again | TAM-060 – TAM-069, TAM-130, TAM-137 |
 | [07-undo-replay-end.md](07-undo-replay-end.md) | Undo, replay, and how the game ends | TAM-070 – TAM-078 |
 | [08-prizes.md](08-prizes.md) | Contribution, pot, suggested split, payouts; no money moved | TAM-080 – TAM-091 |
-| [10-lifecycle.md](10-lifecycle.md) | Ending vs discarding with money, night totals, roll-overs, what a game keeps | TAM-140 – TAM-143 |
+| [10-lifecycle.md](10-lifecycle.md) | Ending vs discarding with money, game-level winnings, what a game keeps | TAM-140 – TAM-143 |
 | [09-usability.md](09-usability.md) | Mis-touches, legibility, offline, interruptions (from docs/ux-guidelines.md) | TAM-100 – TAM-122, TAM-134 – TAM-136 |
 
 ## How to approve
@@ -33,9 +33,15 @@ Scenarios in `04-house-rules.md` show the choices. Pick one per question, and th
 - **Seed**: a secret starting number that decides the random draw or a ticket. The same seed always gives the same result.
 
 ## Phases
-Every scenario has a **Phase** line. **Phase 1** is Tambola with paper tickets on one host phone
-(80 scenarios). **Phase 2** adds tickets on phones (34). One scenario has a part that waits for
-connected mode (Phase 6).
+Every scenario has a **Phase** line.
+| Phase | Scope | Tambola | Platform |
+|---|---|---|---|
+| **1a: one great game** | Paper tickets on one host phone: calling, rhymes, board, claim checks, undo, the prize pool for a single game, resume, history view, key UX rules | 79 | 10 |
+| **1b: the evening** | Sessions, tally and settle, reusing a setup, deleting history, late joiners, phone voice and auto-call, dark mode | 5 | 10 |
+| **2: phone tickets** | Tickets made by the app and scanned onto players' phones | 34 | |
+
+Why this split: 1b adds features on top of 1a without changing how a game is played or stored,
+so 1a can go to family play-tests first, and play-tests decide how much of 1b is needed.
 
 ## Readiness check (28 September 2026)
 Checked three ways, following `docs/new-game-process.md` step 9.

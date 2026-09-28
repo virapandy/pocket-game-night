@@ -20,7 +20,7 @@ Then exactly the chosen default patterns are available to claim
 
 ## TAM-041: Two players claim the same pattern at the same moment
 Status: decided 2026-09-28 by convention (owner asked Claude to follow Tambola norms): A, the prize is shared
-Phase: Phase 1
+Phase: Phase 1a
 Options:
 - A. Both win and share the prize (**norm**)
 - B. The first claim entered by the host wins
@@ -32,7 +32,7 @@ Then the chosen rule is applied, every time
 
 ## TAM-042: What counts as "the same moment"?
 Status: decided 2026-09-28 by convention (owner asked Claude to follow Tambola norms): A, the same called number, both claimed before the next number
-Phase: Phase 1
+Phase: Phase 1a
 Options:
 - A. Both completed their pattern on the same called number, and both claimed before the next number (**norm**)
 - B. Only if the host entered them within a few seconds of each other
@@ -40,7 +40,7 @@ Scenario once chosen: the rule in TAM-041 applies only to claims that match this
 
 ## TAM-043: Late claims
 Status: decided 2026-09-28 by convention (owner asked Claude to follow Tambola norms): B, a late claim is a bogey
-Phase: Phase 1
+Phase: Phase 1a
 A player's pattern was complete after number 45 was called, but they only claimed after 12 was called next.
 Options:
 - A. Still valid (gentler)
@@ -52,7 +52,7 @@ Then it is accepted (A) or treated as a bogey with the reason "too late" (B)
 
 ## TAM-044: What happens after a bogey?
 Status: decided 2026-09-28 by convention (owner asked Claude to follow Tambola norms): B, the ticket is out of the game. The host can switch to "carry on" in settings for gentle family games. The ticket's contribution stays in the pot.
-Phase: Phase 1
+Phase: Phase 1a
 Options:
 - A. Nothing; the room laughs and play continues (**recommended** for family play)
 - B. That ticket is out of the game (**norm**: the ticket is "cancelled")
@@ -65,7 +65,7 @@ And with the "carry on" setting, nothing changes except the room's laughter
 
 ## TAM-045: How many tickets may one player hold?
 Status: decided 2026-09-28 by convention (owner asked Claude to follow Tambola norms): B, 1 to 3 tickets per player, default 1
-Phase: Phase 1
+Phase: Phase 1a
 Options:
 - A. One
 - B. Up to a limit the host sets, default 3 (**norm**: 1 to 3 tickets per player)
@@ -75,7 +75,7 @@ Then no player gets more than the allowed number
 
 ## TAM-046: Second and third Full House
 Status: decided 2026-09-28: the game ends when the last Full House tier in play is won (one Full House, or two with Second Full House from TAM-081)
-Phase: Phase 1
+Phase: Phase 1a
 Options:
 - A. The game ends at the first Full House (**norm**)
 - B. The host can allow a second (and third) Full House before the game ends (a common extra)
@@ -95,7 +95,7 @@ Scenario once chosen: TAM-006 applies to every group of 6 tickets handed out (A)
 
 ## TAM-049: First languages for rhymes and the voice caller
 Status: decided 2026-09-28 by Claude on the owner's instruction: English and Hindi rhymes first; the phone voice in Indian English first. The traditional calls are English ("Kelly's eye"), and Hindi reaches the most Indian families. Other languages come later as content packs.
-Phase: Phase 1
+Phase: Phase 1a
 Options: English, Hindi, Tamil, others (choose one or two to start)
 Scenario once chosen:
 Given the host picks a language

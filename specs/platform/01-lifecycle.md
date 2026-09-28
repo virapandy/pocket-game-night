@@ -17,13 +17,13 @@ Everything is stored **only on the host phone**: no account, no cloud.
 
 ## PLT-001: A game moves through clear states
 Status: draft
-Phase: Phase 1
+Phase: Phase 1a
 Then every game is in exactly one state: Setup, In progress, Paused, Ended or Abandoned
 And only In progress and Paused games can change; Ended and Abandoned games are read-only
 
 ## PLT-002: Several unfinished games are allowed
 Status: decided 2026-09-28 (owner: no one-game limit unless absolutely necessary)
-Phase: Phase 1
+Phase: Phase 1a
 Given a game is in progress or paused
 When the host starts a new game
 Then the new game starts without asking anything about the other one
@@ -31,13 +31,13 @@ And the home screen lists every unfinished game ("Tambola, 8:40 pm, 23 numbers c
 
 ## PLT-003: Every change is saved at once
 Status: draft
-Phase: Phase 1
+Phase: Phase 1a
 When anything changes in a game (a call, a claim, a setting)
 Then it is saved on the phone immediately, so closing the app never loses it (TAM-065, TAM-111, TAM-112)
 
 ## PLT-004: Coming back to an unfinished game
 Status: decided 2026-09-28 (owner)
-Phase: Phase 1
+Phase: Phase 1a
 Given a game was left in progress
 When the host opens the app within 12 hours
 Then the game resumes straight away, paused, with "Tap to resume"
@@ -47,21 +47,21 @@ And the app never ends or discards a game on its own
 
 ## PLT-005: Discarding a game
 Status: draft (recommended)
-Phase: Phase 1
+Phase: Phase 1a
 When the host taps "Discard game" and confirms ("Discard this game? Nobody wins and it can't be resumed.")
 Then the game is marked Abandoned in history, with everything that happened up to then
 And for games with money, the game's own rule applies (Tambola: TAM-140)
 
 ## PLT-006: An unfinished setup is remembered
 Status: draft
-Phase: Phase 1
+Phase: Phase 1b
 Given the host started setting up a game but did not confirm it
 When they come back to set up a game
 Then the last setup is filled in, ready to change or confirm
 
 ## PLT-007: History lists past games, newest first
 Status: draft
-Phase: Phase 1
+Phase: Phase 1a
 When the host opens History
 Then each game shows the game name, date and time, number of players, and result
 (for example "Full House: Dad", or "Abandoned")
@@ -69,21 +69,21 @@ And games are grouped by session (PLT-016)
 
 ## PLT-008: A past game can be looked at, but not changed
 Status: draft
-Phase: Phase 1
+Phase: Phase 1a
 When the host opens a past game
 Then the summary is shown, plus every call and claim in order
 And nothing in it can be edited
 
 ## PLT-009: Play again from a past game's setup
 Status: draft
-Phase: Phase 1
+Phase: Phase 1b
 When the host opens a past game and taps "Use this setup"
 Then a new game starts in Setup with the same players, contribution, tiers and house rules
 And new tickets and a new draw seed
 
 ## PLT-010: Deleting a past game
 Status: draft
-Phase: Phase 1
+Phase: Phase 1b
 When the host deletes a past game
 Then it disappears at once, with "Deleted. Undo" for 5 seconds
 And after that it is gone for good
@@ -91,7 +91,7 @@ And a game in progress or paused cannot be deleted: it must be ended or discarde
 
 ## PLT-011: Clearing all history
 Status: draft
-Phase: Phase 1
+Phase: Phase 1b
 When the host taps "Clear all history"
 Then a confirmation asks "Delete all 23 past games from this phone? This can't be undone."
 with buttons "Delete all" and "Keep"
@@ -99,7 +99,7 @@ And a game in progress is not affected
 
 ## PLT-012: No limit on history, but no surprises either
 Status: decided 2026-09-28 (owner)
-Phase: Phase 1
+Phase: Phase 1a
 Given a finished game takes a few kilobytes
 Then the app keeps every past game until the host deletes it
 And if the phone's storage for the app is nearly full, the app says so and offers to delete the oldest games;
@@ -107,7 +107,7 @@ it never deletes them silently
 
 ## PLT-013: The app is honest that history lives only on this phone
 Status: draft
-Phase: Phase 1
+Phase: Phase 1a
 When the host opens History for the first time
 Then a one-line note says history is kept only on this phone, and is lost if the app's data is cleared
 And the app asks the browser to keep its data (persistent storage) when the first game starts
@@ -115,7 +115,7 @@ And on iPhone, the install tip (TAM-118) explains that the home-screen app keeps
 
 ## PLT-014: Old games still open after an app update
 Status: draft
-Phase: Phase 1
+Phase: Phase 1a
 Given games were saved by an older version of the app
 When the app is updated
 Then every past game and any game in progress still opens, with nothing lost
@@ -165,3 +165,11 @@ Status: draft
 Phase: Phase 1b
 Then the tally matches people across games in a session by the name used in each game
 And Play again and "Use this setup" keep the same names, so the match is automatic
+
+## PLT-021: The tally works for any game with money
+Status: decided 2026-09-28 (owner)
+Phase: Phase 1b
+Given any game that uses money (Tambola now; Scoreboard, Rummy and poker nights later)
+When the game ends
+Then it records, for each person, what they paid and what they won in that game
+And the tally uses only that record, so a new game with money needs no change to the tally

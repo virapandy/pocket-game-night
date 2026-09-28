@@ -82,8 +82,9 @@ Many groups add a **Second (and Third) Full House**, and hosts sometimes invent 
 7. **Late joiners** may join a game in progress and cross off the numbers already called. Because
    claims must come before the next number, a pattern that was already complete when they joined
    can't be claimed. Pocket Game Night allows joining until 10 numbers have been called.
-8. **Unclaimed prizes** roll over to the next round. If there is no next round, Pocket Game Night
-   spreads them across the prizes that were won.
+8. **Unclaimed prizes:** some groups roll them over to the next round ("Progressive Tambola").
+   Pocket Game Night keeps each game self-contained: an unclaimed prize is spread across the
+   prizes won in that game.
 9. **House rules are fine.** Patterns, prizes, bogey penalties and the number of tickets vary
    between groups. Agree them before the first number.
 
