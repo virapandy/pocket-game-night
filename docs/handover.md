@@ -74,6 +74,9 @@ tickets on phones and QR codes (Phase 2); Jev; any server or relay.
 > Phase 0 and show me the plan in plain English before building. Remember: you never write or
 > run tests; type-check, push, and read `reports/latest.md`.
 
+(Phase 0 is done. From now on, open Claude Code in the workspace folder and ask the orchestrator
+for the next task. See "How we work" in `CLAUDE.md`.)
+
 ## Phase 0 built (Build workspace, 28 September 2026)
 For the Test workspace:
 - `package.json` scripts are ready: `npm test` expects `tests/vitest.config.ts`, and `npm run test:browser`

@@ -3,7 +3,8 @@
 | Date | Decision | Basis |
 |---|---|---|
 | 2026-09-28 | First game: Tambola. | Owner |
-| 2026-09-28 | Code only in Claude Code inside VS Code; testing only in the Claude desktop app. | Owner |
+| 2026-09-28 | Code only in Claude Code inside VS Code; testing only in the Claude desktop app. (Widened below.) | Owner |
+| 2026-09-28 | One chat can run the whole loop: Claude Code opened in the workspace folder is the orchestrator and hands work to a `coder` subagent (Build clone only) and a `tester` subagent (Test clone only); the role guard enforces it. The desktop app stays a valid Test workspace. Rejected: a test-writer that writes tests after the code, and a hook that runs tests whenever Claude stops, because tests must come from approved scenarios before code. | Owner |
 | 2026-09-28 | Repository public at github.com/virapandy/pocket-game-night; commits as virapandy@gmail.com. | Owner |
 | 2026-09-28 | Ticket modes: paper tickets (own ticket book) or tickets on phones; no printed or shared ticket images. | Owner |
 | 2026-09-28 | Money: contributions form a pot; the app suggests tiers and split, the anchor confirms, the app shows payouts but never moves money. | Owner |

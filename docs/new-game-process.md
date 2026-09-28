@@ -2,8 +2,8 @@
 
 How a game goes from an idea to approved test cases, before any code is written. Tambola is the
 worked example; every file named here exists for Tambola under `docs/games/tambola/` and `specs/tambola/`.
-All steps happen in the **Test workspace** (Claude desktop app). The Build workspace starts only
-after step 9.
+All steps happen in the **Test role**: the `tester` subagent (run by the orchestrator in the
+workspace folder) or the Claude desktop app. The Build role starts only after step 9.
 
 ## At a glance
 | # | Step | Output | Owner checkpoint |
@@ -122,7 +122,7 @@ Before asking for approval, check three ways and fix every gap:
 3. **UX guidelines ↔ scenarios:** every guideline that applies has a scenario in `09-usability`.
 
 Record the result in `specs/<game>/README.md` ("Checked against …"), update `reports/latest.md`, and
-ask the owner to approve. Approved scenarios become tests; then the Build workspace starts.
+ask the owner to approve. Approved scenarios become tests; then the Build role starts.
 
 ---
 

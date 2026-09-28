@@ -1,0 +1,28 @@
+#!/bin/sh
+# Sets up the workspace folder that holds both clones, so Claude Code opened there works as the
+# orchestrator with the coder and tester subagents. See CLAUDE.md in this folder. Safe to re-run.
+#
+# New machine:
+#   mkdir Game_On && cd Game_On
+#   git clone https://github.com/virapandy/pocket-game-night.git
+#   sh pocket-game-night/.claude/workspace/setup.sh
+set -e
+REPO=https://github.com/virapandy/pocket-game-night.git
+BUILD=$(cd "$(dirname "$0")/../.." && pwd)
+NAME=$(basename "$BUILD")
+WS=$(dirname "$BUILD")
+TEST="$WS/$NAME-testing"
+
+[ -d "$TEST/.git" ] || git clone "$REPO" "$TEST"
+for dir in "$BUILD" "$TEST"; do git -C "$dir" config core.hooksPath .githooks; done
+
+# Links, not copies, so a git pull in the Build clone updates the workspace rules too.
+link() { # link <target, relative to the link's folder> <link path>
+  if [ -e "$2" ] && [ ! -L "$2" ]; then echo "Skipped $2: a real file is there. Move it away and run again."; return; fi
+  ln -sfn "$1" "$2" && echo "Linked $2"
+}
+mkdir -p "$WS/.claude"
+link "$NAME/.claude/workspace/CLAUDE.md" "$WS/CLAUDE.md"
+link "../$NAME/.claude/workspace/settings.json" "$WS/.claude/settings.json"
+link "../$NAME/.claude/workspace/agents" "$WS/.claude/agents"
+echo "Done. Open $WS in VS Code and start Claude Code there to orchestrate."
