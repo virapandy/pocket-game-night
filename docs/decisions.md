@@ -94,6 +94,12 @@
 | 2026-09-30 | Compact session tally: one row per person (name, balance); tapping a row shows paid, won and got back (PLT-017). | Owner |
 | 2026-09-30 | Session line (PLT-029): a first game, or one more than 3 hours after the last, shows "Session: <suggested name> (new) · Change"; Change lists up to 3 unsettled sessions from the last 7 days. | Owner |
 
+| 2026-09-30 | Typed ticket code (fallback when scanning fails, TAM-117): 20 characters in 5 groups of 4, carrying the whole ticket so it opens offline. | Owner |
+| 2026-09-30 | QR libraries approved: a small free QR drawing library and a QR reading library for iPhone hosts (Android uses the built-in reader); no accounts, $0. | Owner |
+| 2026-09-30 | Late joiners in a phone-ticket game get phone tickets from the next sheet (TAM-067). | Owner |
+| 2026-09-30 | Phone tickets are handed out strictly in order from sheets of 6; a player's tickets may span two sheets (TAM-194). | Owner |
+| 2026-09-30 | The host's button is "Scan a claim"; the claim QR carries the ticket, ticket number, game code, player name, start time and prize list, never a seed (TAM-053, TAM-170, TAM-172); the iPhone offline-scan test is skipped under the 28 September WebKit decision (TAM-057). | Claude, on owner's standing instruction |
+
 "Convention" means the established Tambola rule in `docs/games/tambola/guide.md`, chosen because the owner asked
 Claude to follow game conventions. Every Tambola rule above is also a host setting with this default.
 
