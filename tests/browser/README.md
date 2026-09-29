@@ -131,7 +131,8 @@ or buttons anywhere (TAM-090).
 - The late joiner can be picked in Record a win, and appears in `payout-summary` (with "Pot ₹200" for the new pot).
 - Tambola start screen: a `Settings` button with the field `Late joining` (a select or number: numbers until
   which late joining is allowed, 10 by default, 0 = off). The same screen keeps its `Rhyme language` select
-  (values `en`, `hi`, `both`), which the voice tests set to `hi`. Closed with `Close`, `Done` or `Back`.
+  (values `en`, `hi`, `both`), which the voice tests and `rhymes.spec.ts` set to `hi`. With `hi`, a number with
+  no Hindi rhyme shows one of its family-friendly English rhymes with an Indian reference in `current-rhyme` (TAM-153). Closed with `Close`, `Done` or `Back`.
 
 ### Voice and auto-call (TAM-061, TAM-062, TAM-120, TAM-180, TAM-185 to TAM-187)
 - Game Settings (menu → `Settings`): switches (checkbox or `role="switch"`) `Phone speaks the call` and

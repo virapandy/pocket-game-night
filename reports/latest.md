@@ -1,61 +1,61 @@
 # Test report
-Commit tested: f75a9bf (app code; test and docs commits on top: see git log)   Date: 2026-09-29
-Result: RED, on TAM-082 tiny pots only. The owner answered the tiny-pot question (docs/decisions.md, e4bfa25):
-when rounding to the unit would leave Full House smaller than another prize, the smaller prizes round to the
-nearest ₹1 instead (halves down). TAM-082 is reworded and its checks now expect exactly that. The app still gives
-those prizes ₹0 and Full House the whole pot, so three TAM-082 checks fail. This is a real bug for the Build role.
+Commit tested: 6aced77 (app code; test and docs commits on top: see git log)   Date: 2026-09-29
+Result: RED, on the TAM-150 / TAM-153 rhyme change only. TAM-082 tiny pots is now fixed: all TAM-082 checks pass
+(the prize tests passed on 6 runs in a row). The owner-approved rhyme change (docs/decisions.md, 2026-09-29;
+docs/games/tambola/changes-2026-09-29-rhymes.md) is applied to the scenarios and tests. The app has not yet
+rebuilt the rhyme pack or added the Hindi fallback, so the new checks fail, as expected.
 
 | Layer | Command | Passing | Failing | Skipped |
 |---|---|---|---|---|
-| Rules, contract, property, simulation, replays (Phase 1a and 1b) | `npm test` | 310 | 3 (TAM-082 tiny pots) | 0 |
-| Browser, Android (Chromium) | not re-run this time (no app or browser-test change since the last run on f75a9bf) | 156 | 0 | 1 (iPhone only) |
-| Browser, iPhone (WebKit) | same | 151 | 0 | 6 (unchanged: offline and Chromium-only checks) |
+| Rules, contract, property, simulation, replays (Phase 1a and 1b) | `npm test` | 315 | 3 (TAM-150, TAM-153) | 0 |
+| Browser, Android (Chromium) | `npm run build && npm run test:browser` | 156 | 1 (TAM-153) | 1 (iPhone only) |
+| Browser, iPhone (WebKit) | same | 151 | 1 (TAM-153) | 6 (unchanged: offline and Chromium-only checks) |
 
-No dependency changes, so no `npm ci` was needed.
+`npm ci` run; build succeeded.
 
 ## Failing (real bugs only)
-- TAM-082, `tests/games/tambola/prizes.test.ts` "6 tickets at ₹6 (a ₹36 pot)": expected ₹4 / ₹5 / ₹5 / ₹5 / ₹17,
-  got ₹0 / ₹0 / ₹0 / ₹0 / ₹36.
-- TAM-082, same file, "7 tickets at ₹5 (a ₹35 pot)": expected ₹3 / ₹5 / ₹5 / ₹5 / ₹17 (₹3.50 is a half, rounds
-  down), got ₹0 for every tier but Full House.
-- TAM-082, same file, property "each tier but Full House is exactly its share rounded … in tiny pots, to the
-  nearest ₹1": fails on every run on a tiny pot, e.g. Early Five at 8% of ₹628 with a ₹100 unit is ₹50.24:
-  expected ₹50, got ₹0.
+- TAM-150, `tests/games/tambola/rhymes.test.ts` "Hindi rhymes exist for most numbers … the pack has them for the
+  same numbers as the catalog (55 of 90 today)": expected Hindi rhymes for the 55 numbers the catalog
+  (`docs/games/tambola/rhymes.csv`) has them for; the pack `content/tambola/rhymes.json` still has them for all 90.
+  Cause: the pack has not been rebuilt from the catalog (361 rhymes) yet.
+- TAM-153, same file, "Hindi: the numbers the catalog gives no Hindi rhyme fall back to English in a game": expected a
+  family-friendly English rhyme with an Indian reference for each of those numbers; got the cut Hindi lines for all
+  35 of them. Cause: the pack has not been rebuilt.
+- TAM-153, same file, `pickRhyme` "with Hindi, a number without Hindi rhymes gets a family-friendly English rhyme with
+  an Indian reference": on a pack where numbers 7 and 67 have no Hindi lines, `pickRhyme(..., { language: 'hi' })`
+  returns `null` (the number alone); expected one of their family-friendly Indian-reference English rhymes. Cause:
+  the app has no Hindi fallback yet. This one does not depend on the pack, so rebuilding the pack alone will not
+  turn it green.
+- TAM-153, `tests/browser/rhymes.spec.ts` (Android and iPhone), a Hindi game called to 90: every number that has a
+  Hindi rhyme in the catalog showed one of them; each of the 35 numbers with no Hindi rhyme in the catalog showed a
+  cut Hindi line instead (e.g. 27 "Sattaais, sab khush", 88 "Kya thaat baat"). Expected a family-friendly English
+  rhyme with an Indian reference from the catalog. Cause: the pack has not been rebuilt (and, once it is, the
+  fallback above is needed so these numbers do not show the number alone).
 
-## TAM-082 tiny pots (owner decision 2026-09-29)
-- The rule the checks now expect, in order: every tier but Full House is its share rounded to the nearest unit,
-  half down; if that would leave Full House smaller than another tier or below ₹0, the share rounded to the
-  nearest ₹1, half down; Full House always takes the rest. Only if ₹1 rounding also fails are the tiers lowered
-  ₹1 at a time, equal shares together; a one-off check of all 1,194,000 inputs the properties draw from found no
-  such case with the suggested tiers (1,292 inputs need the ₹1 rounding, none need more), so that step is only
-  checked for its limits.
-- The "whole units" properties now expect whole rupees, not whole units, exactly where the rule switches to ₹1.
-- The prizes file was run 4 times with fresh seeds: the same 3 checks failed each time, everything else passed.
-
-## Rhymes (TAM-150 to TAM-158)
-- All rhyme tests pass against the rebuilt pack. The pack in the app is exactly catalog revision 4
-  (`docs/games/tambola/rhymes.csv`, 397 rhymes, as recorded in `docs/decisions.md`): same 397 lines, none missing,
-  none extra, no repeats. The catalog also meets every rule the tests check (at least 3 English, 2 of them
-  family-friendly, and 1 Hindi per number; at most 40 characters; 7 English lines marked not family-friendly).
+## What changed in the tests (rhymes, owner-approved 2026-09-29)
+- `specs/tambola/11-rhymes.md`: TAM-150 and TAM-153 reworded exactly as approved (Status: approved, owner, 2026-09-29).
+- `tests/games/tambola/rhymes.test.ts`: TAM-150 no longer requires a Hindi rhyme for every number; it requires 3
+  English (2 family-friendly) and 1 family-friendly English rhyme with an Indian reference per number, and that the
+  pack's Hindi numbers match the catalog's. TAM-153 "only Hindi" now covers numbers that have a Hindi rhyme; new
+  fallback checks (filter on and off; on the pack, against the catalog, and via `pickRhyme`); with Hindi, a number
+  with no rhyme at all still gives `null` (TAM-015). The general `pickRhyme` check expects the fallback for Hindi.
+- `tests/rhyme-catalog.ts` (new): reads the reviewed catalog CSV for the rule and browser tests.
+- `tests/browser/rhymes.spec.ts` (new): the Hindi-game check above, on both phones.
+- `tests/browser/voice.spec.ts`: the two Hindi-voice checks (TAM-180) now wait for a call whose rhyme is a Hindi one
+  in the pack, instead of any rhyme, because an English fallback rhyme is not a Hindi rhyme. Same assertions.
+- `tests/browser/README.md`: notes the fallback under the `Rhyme language` select.
+- `docs/test-questions.md`: the Build role's rhyme question is answered.
 
 ## Flaky or setup problems (not for the Build workspace)
-- None.
+- None this run.
 
-## Requests for the Build workspace
-- None.
-
-## Spec questions (for the orchestrator and the owner)
-- TAM-082 tiny pots: answered by the owner (see above and `docs/test-questions.md`).
-- Still open from earlier: PLT-026 vs PLT-016 (a game paused overnight), TAM-067 paper-ticket late claims,
-  TAM-067 rounding, PLT-014 session of old games.
-
-## Scenarios without tests (not approved, or not this phase)
-Phase 1b: none left. Draft, awaiting owner sign-off: Phase 2 (TAM-001 to TAM-008, TAM-020 to TAM-029, TAM-032,
-TAM-050, TAM-051, TAM-053 to TAM-058, TAM-117, TAM-121, TAM-122, TAM-131, TAM-132, TAM-170, TAM-171, TAM-178,
-TAM-179, TAM-190); Phase 2.5 (PLT-100 to PLT-113); extended testing (PLT-114 to PLT-123); Phase 6 on hold
-(TAM-133, TAM-200 to TAM-210).
+## Requests for the Build workspace (dependencies, scripts, test hooks in the app)
+- Relax the `build:rhymes` rule to the new TAM-150, rebuild `content/tambola/rhymes.json` from
+  `docs/games/tambola/rhymes.csv` (361 rhymes), and add the Hindi fallback to `pickRhyme` (TAM-153).
 
 ## Notes for the owner (plain English)
-Your answer on tiny pots is now written into the scenario and the automatic checks: with a ₹36 pot the prizes
-should be ₹4 / ₹5 / ₹5 / ₹5 / ₹17. The app still gives ₹0 / ₹0 / ₹0 / ₹0 / ₹36 there, so three checks are red
-until the Build side changes it. Everything else still passes.
+- The tiny-pot prize fix works: small pots now round the smaller prizes to the rupee as you decided.
+- Your rhyme change is now in the scenarios and the tests. The app still shows the 36 Hindi lines you cut, and it
+  does not yet know to use an English rhyme with an Indian touch when a number has no Hindi rhyme. The Build side
+  needs to rebuild the rhyme list and add that fallback; the tests will then check it on both phones.
+- Scenarios still in draft: none touched by this task.

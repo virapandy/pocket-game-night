@@ -8,6 +8,16 @@ import {
   call, confirmPrizes, currentNumber, currentRhyme, dismiss, endGame, fakeVoices, fromMenu, openTambola, setUpPaperGame, spoken, toggle,
   turnOnInGame,
 } from './helpers';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+
+/** Hindi rhyme texts per number in the app's pack. Since TAM-153 changed (2026-09-29), a Hindi game shows an
+ *  English rhyme for numbers with no Hindi one, so the Hindi-voice checks wait for a call with a Hindi rhyme. */
+const HINDI: Set<string> = new Set(
+  (JSON.parse(readFileSync(fileURLToPath(new URL('../../content/tambola/rhymes.json', import.meta.url)), 'utf8')).rhymes as
+    { n: number; lang: string; text: string }[]).filter((r) => r.lang === 'hi').map((r) => `${r.n}|${r.text.trim()}`),
+);
+const isHindi = (h: { n: number; rhyme: string }) => HINDI.has(`${h.n}|${h.rhyme}`);
 
 const EN_IN = { name: 'Veena', lang: 'en-IN' };
 const EN_US = { name: 'Samantha', lang: 'en-US' };
@@ -119,8 +129,8 @@ test.describe('TAM-180: the phone\'s voice calls the number, only if the host wa
     await turnOnInGame(page, VOICE);
     await dismiss(page);
     let heard = await callAndHear(page);
-    for (let i = 0; i < 10 && !heard.rhyme; i++) heard = await callAndHear(page);
-    expect(heard.rhyme.length, 'a number with a Hindi rhyme').toBeGreaterThan(0);
+    for (let i = 0; i < 30 && !isHindi(heard); i++) heard = await callAndHear(page);
+    expect(isHindi(heard), 'a number with a Hindi rhyme').toBe(true);
     expect(heard.text).not.toContain(heard.rhyme);
     expect(heard.text).toMatch(new RegExp(`\\b${said(heard.n)}\\b`, 'i'));
   });
@@ -135,7 +145,8 @@ test.describe('TAM-180: the phone\'s voice calls the number, only if the host wa
     await turnOnInGame(page, VOICE);
     await dismiss(page);
     let heard = await callAndHear(page);
-    for (let i = 0; i < 10 && !heard.rhyme; i++) heard = await callAndHear(page);
+    for (let i = 0; i < 30 && !isHindi(heard); i++) heard = await callAndHear(page);
+    expect(isHindi(heard), 'a number with a Hindi rhyme').toBe(true);
     const hindi = heard.lines.filter((l) => l.text.includes(heard.rhyme));
     expect(hindi.length).toBeGreaterThan(0);
     for (const l of hindi) expect(l.voiceLang ?? l.lang).toMatch(/^hi/);

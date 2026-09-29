@@ -4,10 +4,11 @@ The rhymes make the game fun. The catalog is `docs/games/tambola/rhymes.csv`; th
 is made from it once a person has reviewed it.
 
 ## TAM-150: Every number has several rhymes
-Status: approved, owner, 2026-09-28
+Status: approved, owner, 2026-09-29
 Phase: Phase 1a
-Then every number from 1 to 90 has at least 3 rhymes in English and at least 1 in Hindi
-And at least 2 English rhymes per number are marked family-friendly
+Then every number from 1 to 90 has at least 3 rhymes in English, at least 2 of them family-friendly
+And every number has at least 1 family-friendly English rhyme with an Indian reference (TAM-158)
+And Hindi rhymes exist for most numbers, but not necessarily all (55 of 90 today)
 
 ## TAM-151: A rhyme is picked at random on each call
 Status: approved, owner, 2026-09-28
@@ -25,11 +26,13 @@ Then every call shows the same rhyme as the first time
 (Rhymes are picked by the game's seeded random generator, never by an unseeded one.)
 
 ## TAM-153: The host chooses the rhyme language
-Status: approved, owner, 2026-09-28
+Status: approved, owner, 2026-09-29
 Phase: Phase 1a
 When the host sets rhymes to English, Hindi, or Both
 Then only rhymes in the chosen language(s) are picked
 And with Both, either language can come up on any call
+And with Hindi, a number that has no Hindi rhyme shows one of its family-friendly English rhymes with an
+Indian reference instead (never the number alone, unless it has no rhyme at all, TAM-015)
 
 ## TAM-154: Family-friendly rhymes by default
 Status: approved, owner, 2026-09-28

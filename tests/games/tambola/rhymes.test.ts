@@ -1,6 +1,7 @@
 // Rhymes: specs/tambola/11-rhymes.md (TAM-150 to TAM-158) and TAM-015. The pack is content/tambola/rhymes.json.
 import { describe, expect, it } from 'vitest';
 import { createRng } from '../../../src/engine';
+import { readCatalog } from '../../rhyme-catalog';
 import { Game, pack, pickRhyme } from './helpers';
 
 const NUMBERS = Array.from({ length: 90 }, (_, i) => i + 1);
@@ -10,6 +11,12 @@ type Entry = (typeof pack.rhymes)[number];
 const of = (n: number) => pack.rhymes.filter((r) => r.n === n);
 const allowed = (n: number, language: 'en' | 'hi' | 'both', familyFriendly: boolean) =>
   of(n).filter((r) => (language === 'both' || r.lang === language) && (!familyFriendly || r.familyFriendly));
+/** TAM-153: the family-friendly English rhymes with an Indian reference a Hindi game falls back to. */
+const fallback = (n: number, rhymes: Entry[] = pack.rhymes) =>
+  rhymes.filter((r) => r.n === n && r.lang === 'en' && r.familyFriendly && INDIAN.has(r.style));
+/** What a game may show for `n` (TAM-153): with Hindi and no Hindi rhyme for `n`, the English fallback. */
+const mayShow = (n: number, language: 'en' | 'hi' | 'both', familyFriendly: boolean) =>
+  language === 'hi' && of(n).every((r) => r.lang !== 'hi') ? fallback(n) : allowed(n, language, familyFriendly);
 
 /** Every rhyme shown in a full game (90 calls), with its number. */
 function rhymesOfGame(seed: string, rhymes = { language: 'en', familyFriendly: true }) {
@@ -47,11 +54,18 @@ describe('TAM-157: the rhyme pack is valid', () => {
 });
 
 describe('TAM-150: every number has several rhymes', () => {
-  it.each(NUMBERS)('%i: at least 3 English (2 family-friendly) and 1 Hindi', (n) => {
+  it.each(NUMBERS)('%i: at least 3 English, 2 of them family-friendly, and 1 family-friendly English with an Indian reference', (n) => {
     const en = of(n).filter((r) => r.lang === 'en');
     expect(en.length).toBeGreaterThanOrEqual(3);
     expect(en.filter((r) => r.familyFriendly).length).toBeGreaterThanOrEqual(2);
-    expect(of(n).filter((r) => r.lang === 'hi').length).toBeGreaterThanOrEqual(1);
+    expect(fallback(n).length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('Hindi rhymes exist for most numbers, but not necessarily all: the pack has them for the same numbers as the catalog (55 of 90 today)', () => {
+    const hindiIn = (rhymes: { n: number; lang: string }[]) => [...new Set(rhymes.filter((r) => r.lang === 'hi').map((r) => r.n))].sort((a, b) => a - b);
+    const inCatalog = hindiIn(readCatalog());
+    expect(inCatalog.length, 'most numbers').toBeGreaterThan(45);
+    expect(hindiIn(pack.rhymes), 'numbers with a Hindi rhyme, pack against docs/games/tambola/rhymes.csv').toEqual(inCatalog);
   });
 });
 
@@ -132,8 +146,35 @@ describe('TAM-152: the same game always shows the same rhymes', () => {
 });
 
 describe('TAM-153: the host chooses the rhyme language', () => {
-  it('Hindi: only Hindi rhymes', () => {
-    for (const { rhyme } of rhymesOfGame('hindi', { language: 'hi', familyFriendly: true })) expect(rhyme?.lang).toBe('hi');
+  it('Hindi: a number with a Hindi rhyme shows only Hindi rhymes', () => {
+    for (const { n, rhyme } of rhymesOfGame('hindi', { language: 'hi', familyFriendly: true })) {
+      if (of(n).some((r) => r.lang === 'hi')) expect(rhyme?.lang, `number ${n}`).toBe('hi');
+    }
+  });
+
+  it('Hindi: a number with no Hindi rhyme shows a family-friendly English rhyme with an Indian reference, never the number alone', () => {
+    for (const familyFriendly of [true, false]) {
+      for (let s = 0; s < 5; s++) {
+        for (const { n, rhyme } of rhymesOfGame(`hindi-fallback-${s}`, { language: 'hi', familyFriendly })) {
+          if (of(n).some((r) => r.lang === 'hi')) continue;
+          expect(rhyme, `number ${n}`).not.toBeNull();
+          expect(fallback(n), `number ${n} (family-friendly filter ${familyFriendly ? 'on' : 'off'})`).toContainEqual(rhyme);
+        }
+      }
+    }
+  });
+
+  it('Hindi: the numbers the catalog gives no Hindi rhyme fall back to English in a game (checked against the catalog)', () => {
+    const catalog = readCatalog();
+    const withoutHindi = new Set(NUMBERS.filter((n) => !catalog.some((r) => r.n === n && r.lang === 'hi')));
+    expect(withoutHindi.size).toBeGreaterThan(0);
+    const wrong: string[] = [];
+    for (const { n, rhyme } of rhymesOfGame('hindi-catalog', { language: 'hi', familyFriendly: true })) {
+      if (!withoutHindi.has(n)) continue;
+      const ok = fallback(n, catalog).some((r) => r.text === rhyme?.text);
+      if (!ok) wrong.push(`${n}: ${rhyme ? `"${rhyme.text}" (${rhyme.lang}, ${rhyme.style})` : 'no rhyme'}`);
+    }
+    expect(wrong, 'numbers with no Hindi rhyme in docs/games/tambola/rhymes.csv').toEqual([]);
   });
 
   it('English: only English rhymes', () => {
@@ -189,12 +230,32 @@ describe('pickRhyme (TAM-015, TAM-151, TAM-153, TAM-154)', () => {
     expect(pickRhyme(without67, 67, ff, createRng('x'))).toBeNull();
   });
 
+  it('TAM-153: with Hindi, a number without Hindi rhymes gets a family-friendly English rhyme with an Indian reference', () => {
+    const noHindi = new Set([7, 67]);
+    const cut = { ...pack, rhymes: pack.rhymes.filter((r) => !(noHindi.has(r.n) && r.lang === 'hi')) };
+    const rng = createRng('fallback');
+    for (const n of noHindi) {
+      const ok = fallback(n, cut.rhymes);
+      expect(ok.length, `number ${n} has a fallback in the pack`).toBeGreaterThan(0);
+      for (const familyFriendly of [true, false]) {
+        for (let i = 0; i < 20; i++) expect(ok, `number ${n}`).toContainEqual(pickRhyme(cut, n, { language: 'hi', familyFriendly }, rng));
+      }
+    }
+    // A number that keeps its Hindi rhymes still gets a Hindi one.
+    expect(pickRhyme(cut, 8, { language: 'hi', familyFriendly: true }, rng)?.lang).toBe('hi');
+  });
+
+  it('TAM-153 and TAM-015: with Hindi, a number with no rhyme at all still gives null', () => {
+    const without67 = { ...pack, rhymes: pack.rhymes.filter((r) => r.n !== 67) };
+    expect(pickRhyme(without67, 67, { language: 'hi', familyFriendly: true }, createRng('x'))).toBeNull();
+  });
+
   it('only returns rhymes allowed by the settings, for the right number', () => {
     const rng = createRng('pick');
     for (const n of NUMBERS) {
       for (const settings of [ff, { language: 'hi', familyFriendly: true }, { language: 'both', familyFriendly: false }]) {
         const r = pickRhyme(pack, n, settings, rng);
-        expect(allowed(n, settings.language as any, settings.familyFriendly)).toContainEqual(r);
+        expect(mayShow(n, settings.language as any, settings.familyFriendly)).toContainEqual(r);
       }
     }
   });
