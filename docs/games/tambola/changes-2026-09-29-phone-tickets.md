@@ -34,6 +34,7 @@ writing the Phase 2 tests. Design: `docs/games/tambola/ux-phone-tickets.md`, sec
 > Then nothing is marked, and she sees "37: not on your tickets"
 > When she taps 36 again
 > Then it is unmarked
+> And the player's tickets, with their marks, are shown under the pad, so each tap is seen landing on its ticket
 > And quick mark never shows which numbers were called; the player still listens to the anchor (TAM-050)
 
 **New TAM-193** (Phase 2):
@@ -50,5 +51,25 @@ writing the Phase 2 tests. Design: `docs/games/tambola/ux-phone-tickets.md`, sec
 > So a called number is on at most one of that player's tickets (TAM-006)
 > When a player's tickets must span two sheets
 > Then quick mark (TAM-192) marks every one of their tickets that has the number
+
+**New TAM-195** (Phase 2; owner, 29 September: yes):
+> ## TAM-195: The phone points out when the player's own marks fill a pattern
+> Given the game's prizes include Top Line
+> When Riya's marks cover every number in ticket 3's top row
+> Then that row is outlined on her tickets (on the ticket screen and under the quick-mark pad), and she sees
+> "Your marks fill the top row of ticket 3. Shout if it's right!"
+> And the same for any prize in this game: 5 marks on a ticket (Early Five), a full row (a Line), the four
+> corners (Four Corners), every number (Full House)
+> And the cue is based only on her own marks: it never says the claim is right, never claims for her, and
+> goes away if she unmarks a number
+> And it never mentions a prize this game doesn't have
+
+**New TAM-196** (Phase 2; owner, 29 September: keep it simple):
+> ## TAM-196: Every prize stays selectable when claiming
+> When Riya taps "Show claim"
+> Then every prize in this game can be picked, including prizes already won or closed, because her phone
+> cannot know (it has no connection to the host)
+> And if she claims a prize that is gone, the host's scan refuses it calmly: "Top Line already won", not a bogey (TAM-179)
+> (Disabling won prizes automatically would need connected mode, Phase 6, on hold.)
 
 **Carry-over:** TAM-190 ("picks the ticket to claim with") is unchanged; with layout D the chosen ticket is shown.

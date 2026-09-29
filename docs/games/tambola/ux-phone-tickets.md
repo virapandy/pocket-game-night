@@ -62,13 +62,18 @@ Sketches: the mockups shown to the owner on 29 September (A to D).
 | **A** | **All tickets at once, portrait** | Default with 2 or 3 tickets | Tickets stacked, no scrolling on a 390 × 844 screen; cells about 40 CSS px (above the 24 px minimum) |
 | **B** | **Landscape: two side by side, the third below** | Phone turned sideways | Bigger cells; no scrolling; turning back keeps marks |
 | — | **One ticket large** | Player taps "One at a time" (and back to "All tickets") | Ticket tabs ("Ticket 3 · 4 · 8"); cells at least 44 CSS px |
-| **C** | **Quick mark** (optional tool) | Player taps "Quick mark" | A 1–90 pad: tapping the number just heard marks it on whichever ticket has it ("✓ 36 marked on ticket 3") or says "37: not on your tickets"; tapping a marked number again unmarks it; the player still listens to the anchor |
+| **C** | **Quick mark** (optional tool) | Player taps "Quick mark" | A 1–90 pad with the player's tickets shown underneath: tapping the number just heard marks it on whichever ticket has it ("✓ 36 marked on ticket 3") or says "37: not on your tickets"; tapping a marked number again unmarks it; the player still listens to the anchor |
 | **D** | **Claim with the ticket visible** | "Show claim" | The claim QR above the claimed ticket; the claimed pattern outlined (top row for Top Line, the corners for Four Corners, all for Full House) as a visual aid only, never a check |
 
 - **One tap per number:** a player's tickets are handed out one after another from the same sheet of 6,
   so a called number is on at most one of their tickets. When a player's tickets must span two sheets,
   quick mark marks every ticket that has the number.
 - The player's choice of layout is remembered on their phone for the next game.
+- **"Your marks fill a pattern" cue** (TAM-195): when the player's own marks cover a prize pattern, the
+  pattern is outlined and a line says "Your marks fill the top row of ticket 3. Shout if it's right!".
+  Based only on their marks; never a verdict.
+- **Claiming a won prize** (TAM-196): every prize stays selectable, because the phone can't know what's
+  been won; the host's scan refuses a won or closed prize calmly.
 
 ## 3. Player: showing a claim
 The player **shouts first**, then taps **Show claim** (TAM-060, TAM-177).
