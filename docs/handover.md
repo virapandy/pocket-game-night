@@ -16,6 +16,10 @@ current; instructions live here, not in chat. History from Phase 0 and 1a is fur
 
 ### Next, in order (for the orchestrator)
 1. **Finish Phase 1b** as now running; report green to the owner.
+1a. **Rhyme catalog revision 2** (owner-approved, 29 September): the coder rebuilds `content/tambola/rhymes.json`
+   from `docs/games/tambola/rhymes.csv` (now 405 rhymes; cricket and playful sets rewritten; see
+   `docs/games/tambola/rhymes.md`, "Revision 2"). The existing rhyme pack tests (TAM-150 to TAM-158) must stay
+   green; no scenario changes. Can go in any round.
 2. **Fix the 1a.1 review findings** in `docs/games/tambola/review-2026-09-29.md`. The tester first adds or
    changes checks from the scenarios named there: TAM-082 (Full House takes every rounding difference;
    finding 1), TAM-138 and TAM-123 (the number stays visible while a win is shown; finding 2), TAM-125

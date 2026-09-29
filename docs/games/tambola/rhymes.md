@@ -1,18 +1,18 @@
 # Tambola rhyme catalog
 
-The rhymes are what make calling fun. The catalog is [rhymes.csv](rhymes.csv): **409 rhymes** for
+The rhymes are what make calling fun. The catalog is [rhymes.csv](rhymes.csv): **405 rhymes** for
 numbers 1 to 90. **Approved by the owner, 28 September 2026.**
 
 ## What's in it
 | Style | Language | Rhymes | What it is |
 |---|---|---|---|
 | classic | English | 110 | Traditional calls from British bingo and Indian Housie ("Kelly's eye", "Legs eleven") |
-| indian | English | 63 | Indian-flavoured English calls ("Pack of cards", "Dil maange more", "Voting age") |
-| playful | English | 69 | New rhymes written for this app ("Sixty, still nifty", "Two snowmen") |
-| cricket | English | 41 | India players' shirt numbers and cricket moments ("Thala Dhoni's seven", "1983, Kapil's Devils") |
-| bollywood | English | 10 | Film titles with the number in them ("3 Idiots", "Special 26") |
-| festival | English | 8 | Dates and history ("Independence Day, 15 August", "Republic Day, 26 January") |
-| hindi | Hindi (Roman script) | 108 | Hindi and Hinglish calls ("Teen tigaada, kaam bigaada", "Chhappan bhog", "Shagun ka lifaafa") |
+| indian | English | 86 | Indian-flavoured English calls ("Pack of cards", "Dil maange more", "Voting age") |
+| playful | English | 48 | New rhymes written for this app ("Sixty, still nifty", "Two snowmen") |
+| cricket | English | 35 | India players' shirt numbers and cricket moments ("Thala Dhoni's seven", "1983, Kapil's Devils") |
+| bollywood | English | 8 | Film titles with the number in them ("3 Idiots", "Special 26") |
+| festival | English | 9 | Dates and history ("Independence Day, 15 August", "Republic Day, 26 January") |
+| hindi | Hindi (Roman script) | 109 | Hindi and Hinglish calls ("Teen tigaada, kaam bigaada", "Chhappan bhog", "Shagun ka lifaafa") |
 
 Every number has at least 3 English rhymes (at least 2 of them family-friendly), at least 1 Hindi rhyme,
 and at least 1 family-friendly English rhyme with an Indian reference.
@@ -26,6 +26,25 @@ Every rhyme is 40 characters or fewer, so it fits under the number and reads alo
   are twice as likely to be picked as classic or playful ones (owner, 28 September 2026).
 - The anchor can tap **Another rhyme** for a different one for the same number.
 - Scenarios: `specs/tambola/11-rhymes.md` (TAM-150 to TAM-157).
+
+## Revision 2, 29 September 2026 (owner: "the cricket ones are substandard; make them punchy and wacky")
+Product owner's critical review, and what changed:
+- **Cricket, rewritten.** 30 of 41 were "[player]'s jersey": facts, not calls, with obscure players and
+  numbers that change. Now 35 punchy calls built on moments, nicknames and slang that don't go out of date:
+  "Thala for a reason!", "Yuvi's six sixes: thirty-six!", "Twenty-two yards of drama!", "83! Kapil lifts the
+  Cup!", "Twelfth man, bring the drinks!", "Nervous nineties! Ninety!". Shirt numbers are kept only for
+  well-known players, each with a short joke ("Sir Jadeja, sword out!", "Siraj says Siuuu! Seventy-three").
+- **Playful filler replaced.** Most followed one template ("Sixty-one, having fun") and endings repeated
+  across numbers ("…heaven" 6 times, "don't be late" 3, "still alive" 3). Now no English ending repeats,
+  and most replacements are desi and wacky: "Twenty-eight, Bangalore traffic, wait!", "Thirty-seven, cooker
+  whistle blown!", "Aunty's age: always twenty-nine", "Sixty-five, senior citizen discount!".
+- **Flat ones fixed:** "Nine, feeling fine" is now "Navratri, nine nights of garba"; "Dus, the film" is now
+  "Dus bahane, dus!"; "83, the film" and the obscure "36 Chowringhee Lane" are gone. New for 2: "Two! Run like
+  Dhoni" and, in Hindi, "Kitne aadmi the? Do, Sardar!" (Sholay).
+- **Avoided on purpose:** "Chinaman" (a term cricket itself dropped in 2017), "56-inch chest" (political),
+  match-fixing jokes.
+- Every rule still holds: at least 3 English rhymes per number (2 family-friendly), at least 1 Hindi, at
+  least 1 family-friendly English rhyme with an Indian reference, at most 40 characters, no repeats.
 
 ## Choices made
 - **Left out entirely:** calls that shame bodies or women ("Women get flirty", "Oversize",
