@@ -25,7 +25,9 @@ import {
   type SummaryTier,
   type TambolaConfig,
   type TambolaMove,
+  type TambolaPlayer,
   type TambolaSettings,
+  type Tier,
   type TambolaState,
   type TambolaSummary,
   type TambolaView,
@@ -70,7 +72,7 @@ function called(state: TambolaState): number[] {
 }
 
 function tierPatterns(state: TambolaState): Pattern[] {
-  return state.config.tiers.map((t) => t.pattern);
+  return state.tiers.map((t) => t.pattern);
 }
 
 function wonPatterns(state: TambolaState): Set<Pattern> {
@@ -113,9 +115,11 @@ function shares(state: TambolaState, pattern: Pattern, amount: number): Map<numb
   return new Map(winners.map(({ i }, k) => [i, split[k]!]));
 }
 
-function pot(config: TambolaConfig): number | null {
-  if (!config.money) return null;
-  return config.players.reduce((s, p) => s + p.tickets, 0) * config.money.contribution;
+/** Pot = tickets in play × contribution (TAM-080), late joiners included (TAM-067). */
+function pot(state: TambolaState): number | null {
+  const money = state.config.money;
+  if (!money) return null;
+  return state.players.reduce((s, p) => s + p.tickets, 0) * money.contribution;
 }
 
 /**
@@ -137,13 +141,13 @@ function handBack(state: TambolaState, total: number): Map<string, number> {
 
 function summary(state: TambolaState): TambolaSummary | null {
   if (!state.result) return null;
-  const withLabel = (t: (typeof state.config.tiers)[number]) => (t.label !== undefined ? { label: t.label } : {});
+  const withLabel = (t: (typeof state.tiers)[number]) => (t.label !== undefined ? { label: t.label } : {});
   const bogeys = state.claims.filter((c) => c.verdict === 'bogey').map((c) => ({ playerId: c.playerId, pattern: c.pattern }));
   // A discarded game is void: nobody wins, and every contribution goes back (TAM-140).
   const void_ = state.result === 'discarded';
 
   const won = new Map<string, number>();
-  const tiers: SummaryTier[] = state.config.tiers.map((t) => {
+  const tiers: SummaryTier[] = state.tiers.map((t) => {
     const split = void_ ? new Map<number, number>() : shares(state, t.pattern, t.amount);
     const winners = [...split.entries()].sort(([a], [b]) => a - b).map(([i, amount]) => ({ playerId: state.claims[i]!.playerId, amount }));
     for (const w of winners) won.set(w.playerId, (won.get(w.playerId) ?? 0) + w.amount);
@@ -190,7 +194,7 @@ function summary(state: TambolaState): TambolaSummary | null {
   return {
     result: state.result,
     callsMade: state.calledCount,
-    pot: pot(state.config),
+    pot: pot(state),
     tiers,
     bogeys,
     payouts,
@@ -314,6 +318,114 @@ function judgeLegacyClaim(state: TambolaState, move: Extract<TambolaMove, { type
   return accept({ ...state, claims: [...state.claims, claim] });
 }
 
+// ----- Late joiners (TAM-067, TAM-184, TAM-093) -----
+
+/** Money is added to prizes in whole units of this many rupees where possible (TAM-092). */
+const LATE_UNIT = 10;
+
+/** Why a late player cannot be added now, or null if one can. */
+function lateJoinProblem(state: TambolaState): string | null {
+  if (state.result) return 'The game is over.';
+  const limit = state.config.settings.lateJoinUntil;
+  if (!(limit > 0)) return 'Late joining is turned off for this game.';
+  if (state.calledCount >= limit) return `Late joining closed once ${limit} numbers were called.`;
+  return null;
+}
+
+/**
+ * Adds a late joiner's money to the prizes nobody has won yet (a tier with a recorded winner keeps its amount).
+ * Split in proportion to the current amounts, in whole ₹10 units; the tier that takes the rest (Full House
+ * when it is still open) takes anything smaller than a unit and stays the largest. Null if every prize is won.
+ */
+function growTiers(tiers: readonly Tier[], won: ReadonlySet<Pattern>, added: number): Tier[] | null {
+  const open = tiers.filter((t) => !won.has(t.pattern));
+  if (open.length === 0) return null;
+  const sink =
+    open.find((t) => t.pattern === 'full-house') ??
+    open.find((t) => t.pattern === 'second-full-house') ??
+    open.reduce((a, b) => (b.amount > a.amount ? b : a));
+  const units = Math.floor(added / LATE_UNIT);
+  const split = apportion(
+    units,
+    open.map((t) => t.amount),
+  );
+  const extra = new Map<Pattern, number>(open.map((t, i) => [t.pattern, split[i]! * LATE_UNIT]));
+  extra.set(sink.pattern, extra.get(sink.pattern)! + added - units * LATE_UNIT);
+  const after = (t: Tier) => t.amount + (extra.get(t.pattern) ?? 0);
+  // Keep the sink the largest open prize: hand units back to it from any tier that grew past it.
+  for (;;) {
+    const over = open.find((t) => t !== sink && after(t) > after(sink) && extra.get(t.pattern)! >= LATE_UNIT);
+    if (!over) break;
+    extra.set(over.pattern, extra.get(over.pattern)! - LATE_UNIT);
+    extra.set(sink.pattern, extra.get(sink.pattern)! + LATE_UNIT);
+  }
+  return tiers.map((t) => (extra.has(t.pattern) ? { ...t, amount: after(t) } : t));
+}
+
+function addPlayer(state: TambolaState, player: TambolaPlayer): Verdict<TambolaState> {
+  const problem = lateJoinProblem(state);
+  if (problem) return refuse(problem);
+  if (!player || typeof player.id !== 'string' || player.id === '') return refuse('The late player needs an id.');
+  if (state.players.some((p) => p.id === player.id)) return refuse('That id is already used in this game.');
+  const name = typeof player.name === 'string' ? player.name.trim() : '';
+  if (name === '') return refuse('Type the late player\'s name.');
+  if (state.players.some((p) => sameName(p.name, name))) return refuse(`Another player is already called ${name}. Add an initial.`);
+  if (!Number.isInteger(player.tickets) || player.tickets < 1 || player.tickets > MAX_TICKETS) {
+    return refuse(`Each player has 1 to ${MAX_TICKETS} tickets.`);
+  }
+  const joiner: TambolaPlayer = { id: player.id, name, tickets: player.tickets };
+  return join(state, joiner, state.tiers);
+}
+
+/** Adds a joiner to a state whose prizes are `tiers`, growing the prizes by their money. */
+function join(state: TambolaState, joiner: TambolaPlayer, tiers: readonly Tier[]): Verdict<TambolaState> {
+  const money = state.config.money;
+  let next = tiers;
+  if (money) {
+    const grown = growTiers(tiers, wonPatterns(state), joiner.tickets * money.contribution);
+    if (!grown) return refuse('Every prize has been won, so there is nothing left to share.');
+    next = grown;
+  }
+  return accept({
+    ...state,
+    players: [...state.players, joiner],
+    tiers: next,
+    lateJoins: [...state.lateJoins, { playerId: joiner.id, calledAt: state.calledCount, before: tiers }],
+  });
+}
+
+/** Why this player cannot be taken out, or null if they can (TAM-184). */
+function removeProblem(state: TambolaState, playerId: string): string | null {
+  if (state.result) return 'The game is over.';
+  const j = state.lateJoins.find((x) => x.playerId === playerId);
+  if (!j) return 'Only a late joiner can be taken out.';
+  if (state.calledCount !== j.calledAt) return 'A number has been called since they joined, so they stay in the game.';
+  if (state.claims.some((c) => c.playerId === playerId)) return 'A win or bogey is recorded for them; undo it first.';
+  return null;
+}
+
+/** Takes out a late joiner: their money comes out, and the prizes go back to what they were (TAM-184). */
+function removePlayer(state: TambolaState, playerId: string): Verdict<TambolaState> {
+  const problem = removeProblem(state, playerId);
+  if (problem) return refuse(problem);
+  const k = state.lateJoins.findIndex((x) => x.playerId === playerId);
+  const later = state.lateJoins.slice(k + 1);
+  let next: TambolaState = {
+    ...state,
+    players: state.players.filter((p) => p.id !== playerId && !later.some((j) => j.playerId === p.id)),
+    tiers: state.lateJoins[k]!.before,
+    lateJoins: state.lateJoins.slice(0, k),
+  };
+  // Anyone who joined after them joins again, in the same order.
+  for (const j of later) {
+    const p = state.players.find((x) => x.id === j.playerId)!;
+    const r = join(next, p, next.tiers);
+    if (!r.ok) return r;
+    next = { ...r.value, lateJoins: r.value.lateJoins.map((x) => (x.playerId === p.id ? { ...x, calledAt: j.calledAt } : x)) };
+  }
+  return accept(next);
+}
+
 function apply(state: TambolaState, move: TambolaMove, ctx: MoveContext): Verdict<TambolaState> {
   if (ctx.by !== HOST) return refuse('Only the host phone makes moves in a paper-ticket game.');
   if (state.result) return refuse('The game is over.');
@@ -364,6 +476,10 @@ function apply(state: TambolaState, move: TambolaMove, ctx: MoveContext): Verdic
         players: state.players.map((p) => (p.id === move.playerId ? { ...p, name } : p)),
       });
     }
+    case 'add-player':
+      return addPlayer(state, move.player);
+    case 'remove-player':
+      return removePlayer(state, move.playerId);
     case 'end':
       return accept({ ...state, result: 'ended' });
     case 'discard':
@@ -391,19 +507,19 @@ function invariants(state: TambolaState): string[] {
     }
   });
 
-  const patterns = config.tiers.map((t) => t.pattern);
+  const patterns = state.tiers.map((t) => t.pattern);
   if (!patterns.every(isPattern)) problems.push('A prize tier has an unknown pattern.');
   if (new Set(patterns).size !== patterns.length) problems.push('A pattern is listed twice.');
   if (!patterns.includes('full-house')) problems.push('Full House must be a prize.');
-  for (const t of config.tiers) {
+  for (const t of state.tiers) {
     if (!Number.isSafeInteger(t.amount) || t.amount < 0)
       problems.push(`${t.pattern} has an amount that is not a whole number of zero or more.`);
   }
   if (config.money) {
     const c = config.money.contribution;
     if (!Number.isSafeInteger(c) || c < 1) problems.push('The contribution must be a whole amount of 1 or more.');
-    const total = config.tiers.reduce((s, t) => s + t.amount, 0);
-    const p = pot(config);
+    const total = state.tiers.reduce((s, t) => s + t.amount, 0);
+    const p = pot(state);
     if (total !== p) problems.push(`The prizes add up to ${total}, not the pot of ${p}.`);
   }
 
@@ -421,7 +537,7 @@ function view(state: TambolaState, viewer: Viewer): TambolaView {
   const calledNow = called(state);
   const host = viewer.kind === 'host';
   const last = calledNow[calledNow.length - 1];
-  const tierAmount = new Map(state.config.tiers.map((t) => [t.pattern, t.amount]));
+  const tierAmount = new Map(state.tiers.map((t) => [t.pattern, t.amount]));
   const prizeByClaim = new Map<number, number>();
   for (const p of new Set(state.claims.map((c) => c.pattern))) {
     for (const [i, amount] of shares(state, p, tierAmount.get(p) ?? 0)) prizeByClaim.set(i, amount);
@@ -438,7 +554,7 @@ function view(state: TambolaState, viewer: Viewer): TambolaView {
   });
   return {
     players: state.players.map((p) => ({ id: p.id, name: p.name })),
-    tiers: state.config.tiers.map((t) => ({
+    tiers: state.tiers.map((t) => ({
       pattern: t.pattern,
       amount: t.amount,
       ...(t.label !== undefined ? { label: t.label } : {}),
@@ -453,6 +569,11 @@ function view(state: TambolaState, viewer: Viewer): TambolaView {
     claims: host ? claims : claims.slice(-1),
     over: state.result !== null,
     summary: summary(state),
+    canAddPlayer: lateJoinProblem(state) === null,
+    lateJoiners: state.lateJoins.map((j) => {
+      const p = state.players.find((x) => x.id === j.playerId)!;
+      return { id: p.id, name: p.name, tickets: p.tickets, removable: removeProblem(state, p.id) === null };
+    }),
   };
 }
 
@@ -471,6 +592,8 @@ export const tambolaRules: GameRules<TambolaConfig, TambolaState, TambolaMove, T
         name: p.name.trim(),
         tickets: p.tickets,
       })),
+      tiers: config.tiers,
+      lateJoins: [],
       order: shuffle(ALL_NUMBERS, createRng(deriveSeed(draw, 'tambola-draw'))),
       calledCount: 0,
       callTimes: [],
@@ -491,7 +614,7 @@ export const tambolaRules: GameRules<TambolaConfig, TambolaState, TambolaMove, T
     if (readyToEnd(state)) return endings;
     return state.calledCount < 90 ? [{ type: 'call' }, ...endings] : endings;
   },
-  detailMoves: ['record-win', 'record-bogey', 'rename'],
+  detailMoves: ['record-win', 'record-bogey', 'rename', 'add-player', 'remove-player'],
 
   apply,
   view,

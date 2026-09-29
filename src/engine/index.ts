@@ -7,3 +7,5 @@ export * from './events';
 export * from './money';
 export * from './saved-game';
 export * from './storage';
+export * from './tally';
+export * from './session';

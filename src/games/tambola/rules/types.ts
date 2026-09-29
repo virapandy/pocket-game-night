@@ -118,7 +118,11 @@ export type TambolaMove =
       readonly name: string;
     }
   | { readonly type: 'end' }
-  | { readonly type: 'discard' };
+  | { readonly type: 'discard' }
+  /** Phase 1b, TAM-067: a late joiner with 1 to 3 tickets, while fewer than `lateJoinUntil` numbers are called. */
+  | { readonly type: 'add-player'; readonly player: TambolaPlayer }
+  /** Phase 1b, TAM-184: take out a late joiner added by mistake, before the next number. */
+  | { readonly type: 'remove-player'; readonly playerId: string };
 
 export interface Rhyme {
   readonly n: number;
@@ -153,10 +157,21 @@ export interface ClaimRecord {
   readonly callsBefore: number;
 }
 
+/** A late joiner (TAM-067): when they joined, and the prizes just before, so they can be taken out again (TAM-184). */
+export interface LateJoin {
+  readonly playerId: string;
+  readonly calledAt: number;
+  readonly before: readonly Tier[];
+}
+
 /** The host phone's one true game. Holds the draw order, so it never leaves the host. */
 export interface TambolaState {
   readonly config: TambolaConfig;
+  /** The players listed at setup, then late joiners in the order they joined. */
   readonly players: readonly TambolaPlayer[];
+  /** The prizes: as confirmed at setup, grown by late joiners' money (TAM-067). Locked otherwise (TAM-085). */
+  readonly tiers: readonly Tier[];
+  readonly lateJoins: readonly LateJoin[];
   /** The whole draw order, made from the draw seed at setup. Secret: views show only what is called. */
   readonly order: readonly number[];
   readonly calledCount: number;
@@ -234,4 +249,8 @@ export interface TambolaView {
   readonly claims: readonly ClaimView[];
   readonly over: boolean;
   readonly summary: TambolaSummary | null;
+  /** TAM-067: a late player can be added now. */
+  readonly canAddPlayer: boolean;
+  /** TAM-184: the late joiners, and whether each can still be taken out (no number called since they joined). */
+  readonly lateJoiners: readonly { readonly id: string; readonly name: string; readonly tickets: number; readonly removable: boolean }[];
 }

@@ -25,7 +25,11 @@ export function isReadOnly(status: GameStatus): boolean {
   return status === 'ended' || status === 'abandoned';
 }
 
-export const SAVED_GAME_FORMAT = 1;
+/**
+ * Format 2 (Phase 1b) adds the session a game belongs to and whether it is settled (PLT-016, PLT-019).
+ * Format 1 games open as games from before sessions: in no session, never tallied.
+ */
+export const SAVED_GAME_FORMAT = 2;
 
 export interface SavedGame<Config = unknown, M extends Move = Move> {
   readonly format: typeof SAVED_GAME_FORMAT;
@@ -38,6 +42,10 @@ export interface SavedGame<Config = unknown, M extends Move = Move> {
   readonly records: readonly MoveRecord<M>[];
   /** Present once a game with money has ended or been discarded (PLT-021, TAM-140). */
   readonly money?: MoneyRecord;
+  /** The session the game was started in (PLT-016). It never changes, even if resumed the next day (PLT-026). */
+  readonly sessionId?: string;
+  /** Set once the game's tally is marked as settled (PLT-019): the settle's id. */
+  readonly settlementId?: string;
 }
 
 /**
@@ -48,13 +56,20 @@ export function readSavedGame(raw: unknown): { ok: true; game: SavedGame } | { o
   if (typeof raw !== 'object' || raw === null) return { ok: false, reason: 'Not a saved game.' };
   const format = (raw as { format?: unknown }).format;
   switch (format) {
-    case 1: {
-      const g = raw as SavedGame;
+    case 1:
+    case 2: {
+      const g = raw as Omit<SavedGame, 'format'> & { format: number };
       if (typeof g.id !== 'string' || typeof g.gameType !== 'string' || !Array.isArray(g.records) || !g.setup) {
         return { ok: false, reason: 'The saved game is missing parts.' };
       }
       if (!(g.status in NEXT_STATUS)) return { ok: false, reason: `Unknown game state "${String(g.status)}".` };
-      return { ok: true, game: g };
+      if (format === 1) {
+        // Saved before sessions: no session, not settled.
+        const { sessionId: _s, settlementId: _t, ...rest } = g;
+        return { ok: true, game: { ...rest, format: SAVED_GAME_FORMAT } };
+      }
+      if (g.sessionId !== undefined && typeof g.sessionId !== 'string') return { ok: false, reason: 'The saved game has a damaged session.' };
+      return { ok: true, game: { ...g, format: SAVED_GAME_FORMAT } };
     }
     default:
       return { ok: false, reason: `Saved with a newer or unknown format (${String(format)}). Update the app to open it.` };
