@@ -73,8 +73,11 @@ export interface Tier {
   readonly label?: string;
 }
 
+/** Paper tickets from a ticket book (Phase 1a), or tickets the app makes and hands out to phones (Phase 2). */
+export type TicketMode = 'paper' | 'phone';
+
 export interface TambolaConfig {
-  readonly ticketMode: 'paper';
+  readonly ticketMode: TicketMode;
   readonly players: readonly TambolaPlayer[];
   /** null means "No money": prizes are text labels only (TAM-090). */
   readonly money: {
@@ -122,7 +125,36 @@ export type TambolaMove =
   /** Phase 1b, TAM-067: a late joiner with 1 to 3 tickets, while fewer than `lateJoinUntil` numbers are called. */
   | { readonly type: 'add-player'; readonly player: TambolaPlayer }
   /** Phase 1b, TAM-184: take out a late joiner added by mistake, before the next number. */
-  | { readonly type: 'remove-player'; readonly playerId: string };
+  | { readonly type: 'remove-player'; readonly playerId: string }
+  /** Phase 2: the host checked a phone ticket's claim, by scanning its claim QR or typing its number (TAM-174, TAM-178). */
+  | { readonly type: 'check-claim'; readonly ticket: number; readonly pattern: Pattern }
+  /** Phase 2: give a ticket to another player (TAM-172, TAM-175). */
+  | { readonly type: 'assign'; readonly ticket: number; readonly playerId: string }
+  /** Phase 2: this player plays on paper from now on ("Can't scan? Give a paper ticket", TAM-058). */
+  | { readonly type: 'to-paper'; readonly playerId: string };
+
+/** Where a phone ticket stands: in play, out after a bogey (TAM-044), or replaced by paper (TAM-058). */
+export type TicketStatus = 'in-play' | 'out' | 'paper';
+
+/** A phone ticket on the host phone: the only copy of who holds what (TAM-056). */
+export interface PhoneTicket {
+  readonly number: number;
+  readonly sheet: number;
+  readonly rows: readonly (readonly (number | null)[])[];
+  readonly playerId: string;
+  readonly status: TicketStatus;
+  /** How many numbers had been called when it came into the game: 0, or more for a late joiner (TAM-212). */
+  readonly joinedAt: number;
+}
+
+/** A ticket as the host sees it (TAM-056), or as its owner's phone sees it (only number and rows, TAM-050). */
+export interface TicketView {
+  readonly number: number;
+  readonly rows: readonly (readonly (number | null)[])[];
+  readonly sheet?: number;
+  readonly playerId?: string;
+  readonly status?: TicketStatus;
+}
 
 export interface Rhyme {
   readonly n: number;
@@ -155,6 +187,12 @@ export interface ClaimRecord {
   readonly completedAt?: number;
   /** How many numbers had been called when the claim was made. */
   readonly callsBefore: number;
+  /** Phase 2: the phone ticket claimed with. Its prize goes to whoever holds the ticket (TAM-175). */
+  readonly ticket?: number;
+  /** Phase 2, a bogey: the pattern's numbers not called yet (lines, Four Corners, Full House). */
+  readonly missing?: readonly number[];
+  /** Phase 2, an Early Five bogey: how many more of the ticket's numbers are needed. */
+  readonly needed?: number;
 }
 
 /** A late joiner (TAM-067): when they joined, and the prizes just before, so they can be taken out again (TAM-184). */
@@ -184,6 +222,12 @@ export interface TambolaState {
   readonly claims: readonly ClaimRecord[];
   readonly closed: readonly Pattern[];
   readonly result: 'ended' | 'discarded' | null;
+  /** Phase 2: every phone ticket in the game, in number order. Empty with paper tickets. */
+  readonly tickets: readonly PhoneTicket[];
+  /** Phase 2: the sheet seed, for late joiners' tickets (TAM-212). Host-only, like the draw order. Null with paper. */
+  readonly sheetSeed: string | null;
+  /** Phase 2: the 4-character game code, worked out from the game's id, never from a seed (TAM-170). */
+  readonly code: string | null;
 }
 
 /** One recorded winner or bogey, in order. */
@@ -193,6 +237,12 @@ export interface ClaimView {
   readonly verdict: 'accepted' | 'bogey';
   /** This winner's share after ties (TAM-086, TAM-087); none with "No money". */
   readonly prize?: number;
+  /** Phase 2: the phone ticket, and for a bogey why (TAM-038): not called (with the numbers missing), or late. */
+  readonly ticket?: number;
+  readonly reason?: 'not-called' | 'late';
+  readonly missing?: readonly number[];
+  readonly needed?: number;
+  readonly completedAt?: number;
 }
 
 export interface SummaryTier {
@@ -255,4 +305,8 @@ export interface TambolaView {
   readonly canAddPlayer: boolean;
   /** TAM-184: the late joiners, and whether each can still be taken out (no number called since they joined). */
   readonly lateJoiners: readonly { readonly id: string; readonly name: string; readonly tickets: number; readonly removable: boolean }[];
+  /** Phase 2: the game code (TAM-170); null with paper tickets. */
+  readonly code: string | null;
+  /** Phase 2: the host sees every ticket (TAM-056); a player only their own (TAM-050); the room none. */
+  readonly tickets: readonly TicketView[];
 }

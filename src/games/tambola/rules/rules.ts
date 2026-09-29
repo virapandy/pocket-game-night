@@ -1,5 +1,5 @@
-// Tambola's rules: the seven contract answers for paper tickets on one host phone (Phase 1a).
-// Pure: no screen, storage, clock or Math.random(). Randomness comes from the draw seed.
+// Tambola's rules: the seven contract answers, for paper tickets (Phase 1a) and phone tickets (Phase 2).
+// Pure: no screen, storage, clock or Math.random(). Randomness comes from the draw seed and the sheet seed.
 import {
   createRng,
   deriveSeed,
@@ -11,8 +11,10 @@ import {
   type Verdict,
   type Viewer,
 } from '../../../engine';
+import { gameCode } from './codes';
 import { apportion } from './prizes';
 import { pickRhyme, rhymePack } from './rhymes';
+import { cornerNumbers, makeTickets, numbersOn, rowNumbers, type Rows } from './tickets';
 import {
   isPattern,
   NEEDS,
@@ -22,6 +24,7 @@ import {
   type ClaimView,
   type Pattern,
   type Payout,
+  type PhoneTicket,
   type SummaryTier,
   type TambolaConfig,
   type TambolaMove,
@@ -31,6 +34,7 @@ import {
   type TambolaState,
   type TambolaSummary,
   type TambolaView,
+  type TicketView,
 } from './types';
 
 /** TAM-060, TAM-130, TAM-135, TAM-154: a new game starts with the room-ritual defaults and the conventions. */
@@ -107,12 +111,18 @@ function shares(state: TambolaState, pattern: Pattern, amount: number): Map<numb
   const winners = state.claims
     .map((c, i) => ({ c, i }))
     .filter(({ c }) => c.pattern === pattern && c.verdict === 'accepted')
-    .sort((a, b) => order.get(a.c.playerId)! - order.get(b.c.playerId)! || a.i - b.i);
+    .sort((a, b) => order.get(creditedTo(state, a.c))! - order.get(creditedTo(state, b.c))! || a.i - b.i);
   const split = apportion(
     amount,
     winners.map(() => 1),
   );
   return new Map(winners.map(({ i }, k) => [i, split[k]!]));
+}
+
+/** Who a claim's prize goes to: with a phone ticket, whoever holds the ticket now (TAM-175). */
+function creditedTo(state: TambolaState, claim: ClaimRecord): string {
+  if (claim.ticket === undefined) return claim.playerId;
+  return state.tickets.find((t) => t.number === claim.ticket)?.playerId ?? claim.playerId;
 }
 
 /** Pot = tickets in play × contribution (TAM-080), late joiners included (TAM-067). */
@@ -149,7 +159,7 @@ function summary(state: TambolaState): TambolaSummary | null {
   const won = new Map<string, number>();
   const tiers: SummaryTier[] = state.tiers.map((t) => {
     const split = void_ ? new Map<number, number>() : shares(state, t.pattern, t.amount);
-    const winners = [...split.entries()].sort(([a], [b]) => a - b).map(([i, amount]) => ({ playerId: state.claims[i]!.playerId, amount }));
+    const winners = [...split.entries()].sort(([a], [b]) => a - b).map(([i, amount]) => ({ playerId: creditedTo(state, state.claims[i]!), amount }));
     for (const w of winners) won.set(w.playerId, (won.get(w.playerId) ?? 0) + w.amount);
     return { pattern: t.pattern, amount: t.amount, ...withLabel(t), winners };
   });
@@ -232,7 +242,7 @@ function recordWin(state: TambolaState, move: Extract<TambolaMove, { type: 'reco
   for (const id of ids) {
     const player = state.players.find((p) => p.id === id);
     if (!player) return refuse('That player is not in this game.');
-    if (state.claims.some((c) => c.playerId === id && c.pattern === move.pattern && c.verdict === 'accepted')) {
+    if (state.claims.some((c) => creditedTo(state, c) === id && c.pattern === move.pattern && c.verdict === 'accepted')) {
       return refuse(`${player.name} has already won ${PATTERN_NAMES[move.pattern]}.`);
     }
   }
@@ -380,7 +390,7 @@ function addPlayer(state: TambolaState, player: TambolaPlayer): Verdict<TambolaS
 }
 
 /** Adds a joiner to a state whose prizes are `tiers`, growing the prizes by their money. */
-function join(state: TambolaState, joiner: TambolaPlayer, tiers: readonly Tier[]): Verdict<TambolaState> {
+function join(state: TambolaState, joiner: TambolaPlayer, tiers: readonly Tier[], kept?: readonly PhoneTicket[]): Verdict<TambolaState> {
   const money = state.config.money;
   let next = tiers;
   if (money) {
@@ -393,7 +403,20 @@ function join(state: TambolaState, joiner: TambolaPlayer, tiers: readonly Tier[]
     players: [...state.players, joiner],
     tiers: next,
     lateJoins: [...state.lateJoins, { playerId: joiner.id, calledAt: state.calledCount, before: tiers }],
+    tickets: [...state.tickets, ...(kept ?? lateTickets(state, joiner))],
   });
+}
+
+/**
+ * TAM-212: a late joiner in a phone-ticket game gets the next tickets in order, numbered after every ticket
+ * already in the game, made by the same sheet rules from the sheet seed.
+ */
+function lateTickets(state: TambolaState, joiner: TambolaPlayer): PhoneTicket[] {
+  if (state.config.ticketMode !== 'phone' || state.sheetSeed === null) return [];
+  const last = state.tickets.reduce((m, t) => Math.max(m, t.number), 0);
+  return makeTickets(state.sheetSeed, last + joiner.tickets)
+    .slice(last)
+    .map((t) => ({ number: t.number, sheet: t.sheet, rows: t.rows, playerId: joiner.id, status: 'in-play' as const, joinedAt: state.calledCount }));
 }
 
 /** Why this player cannot be taken out, or null if they can (TAM-184). */
@@ -412,24 +435,127 @@ function removePlayer(state: TambolaState, playerId: string): Verdict<TambolaSta
   if (problem) return refuse(problem);
   const k = state.lateJoins.findIndex((x) => x.playerId === playerId);
   const later = state.lateJoins.slice(k + 1);
+  const leaving = new Set([playerId, ...later.map((j) => j.playerId)]);
   let next: TambolaState = {
     ...state,
-    players: state.players.filter((p) => p.id !== playerId && !later.some((j) => j.playerId === p.id)),
+    players: state.players.filter((p) => !leaving.has(p.id)),
     tiers: state.lateJoins[k]!.before,
     lateJoins: state.lateJoins.slice(0, k),
+    tickets: state.tickets.filter((t) => !leaving.has(t.playerId)),
   };
-  // Anyone who joined after them joins again, in the same order.
+  // Anyone who joined after them joins again, in the same order, keeping the tickets already handed to them.
   for (const j of later) {
     const p = state.players.find((x) => x.id === j.playerId)!;
-    const r = join(next, p, next.tiers);
+    const r = join(next, p, next.tiers, state.tickets.filter((t) => t.playerId === p.id));
     if (!r.ok) return r;
     next = { ...r.value, lateJoins: r.value.lateJoins.map((x) => (x.playerId === p.id ? { ...x, calledAt: j.calledAt } : x)) };
   }
   return accept(next);
 }
 
+// ----- Phone tickets (Phase 2) -----
+
+/** The ticket with this number, if it is in the game (TAM-032, TAM-176). */
+function ticketOf(state: TambolaState, ticket: unknown): PhoneTicket | undefined {
+  if (!Number.isInteger(ticket)) return undefined;
+  return state.tickets.find((t) => t.number === ticket);
+}
+
+/** The numbers a pattern needs on a ticket, or null for Early Five (any 5). */
+function patternNumbers(rows: Rows, pattern: Pattern): number[] | null {
+  switch (pattern) {
+    case 'early-five':
+      return null;
+    case 'top-line':
+      return rowNumbers(rows, 0);
+    case 'middle-line':
+      return rowNumbers(rows, 1);
+    case 'bottom-line':
+      return rowNumbers(rows, 2);
+    case 'four-corners':
+      return cornerNumbers(rows);
+    default:
+      return numbersOn(rows);
+  }
+}
+
+/**
+ * The host checked a phone ticket (TAM-020 to TAM-029, TAM-034 to TAM-038, TAM-174). Judged only on the numbers
+ * called so far, never on marks: complete, and completed by the latest call → accepted; complete earlier → a late
+ * bogey, with the number that completed it; otherwise a bogey with what is missing. A pattern already complete
+ * when a late joiner's ticket came into the game cannot be claimed (TAM-067). The prize goes to the ticket's owner.
+ */
+function checkClaim(state: TambolaState, move: { readonly ticket: unknown; readonly pattern: unknown }): Verdict<TambolaState> {
+  if (state.calledCount === 0) return refuse('Call the first number before checking a claim.');
+  const ticket = ticketOf(state, move.ticket);
+  if (!ticket) return refuse(`No ticket ${String(move.ticket)} in this game.`);
+  const pattern = move.pattern;
+  if (!isPattern(pattern) || !tierPatterns(state).includes(pattern)) return refuse('That pattern is not a prize in this game.');
+  const name = PATTERN_NAMES[pattern];
+  if (state.closed.includes(pattern)) return refuse(`${name} already won.`);
+  if (pattern === 'second-full-house' && !state.closed.includes('full-house')) {
+    return refuse('Second Full House can be won once Full House is closed.');
+  }
+  if (ticket.status === 'out') return refuse(`Ticket ${ticket.number} is out.`);
+  if (ticket.status === 'paper') {
+    return refuse(`Ticket ${ticket.number} plays on paper now: record the anchor's decision with Record a win.`);
+  }
+  if (state.claims.some((c) => c.ticket === ticket.number && c.pattern === pattern && c.verdict === 'accepted')) {
+    return refuse(`Ticket ${ticket.number} has already won ${name}.`);
+  }
+
+  const calledNow = called(state);
+  const position = new Map(calledNow.map((n, i) => [n, i]));
+  const needs = patternNumbers(ticket.rows, pattern);
+  const base = { playerId: ticket.playerId, pattern, ticket: ticket.number, callsBefore: state.calledCount };
+  let completedIdx: number | null = null;
+  let claim: ClaimRecord;
+  if (needs === null) {
+    const hits = numbersOn(ticket.rows)
+      .filter((n) => position.has(n))
+      .map((n) => position.get(n)!)
+      .sort((a, b) => a - b);
+    if (hits.length >= NEEDS['early-five']) completedIdx = hits[NEEDS['early-five'] - 1]!;
+    claim = { ...base, verdict: 'bogey', reason: 'not-called', needed: NEEDS['early-five'] - hits.length };
+  } else {
+    const missing = needs.filter((n) => !position.has(n));
+    if (missing.length === 0) completedIdx = Math.max(...needs.map((n) => position.get(n)!));
+    claim = { ...base, verdict: 'bogey', reason: 'not-called', missing };
+  }
+  if (completedIdx !== null) {
+    const onTime = completedIdx === calledNow.length - 1 && completedIdx >= ticket.joinedAt;
+    claim = onTime ? { ...base, verdict: 'accepted' } : { ...base, verdict: 'bogey', reason: 'late', completedAt: calledNow[completedIdx]! };
+  }
+  // TAM-044: with "out", a bogey takes the ticket out of the game.
+  const out = claim.verdict === 'bogey' && state.config.settings.bogey === 'out';
+  return accept({
+    ...state,
+    claims: [...state.claims, claim],
+    tickets: out ? state.tickets.map((t) => (t.number === ticket.number ? { ...t, status: 'out' as const } : t)) : state.tickets,
+  });
+}
+
+/** TAM-172, TAM-175: the host gives a ticket to another player; its prizes, before and after, go with it. */
+function assign(state: TambolaState, move: { readonly ticket: unknown; readonly playerId: unknown }): Verdict<TambolaState> {
+  const ticket = ticketOf(state, move.ticket);
+  if (!ticket) return refuse(`No ticket ${String(move.ticket)} in this game.`);
+  const player = state.players.find((p) => p.id === move.playerId);
+  if (!player) return refuse('That player is not in this game.');
+  if (ticket.playerId === player.id) return refuse(`Ticket ${ticket.number} is already ${player.name}'s.`);
+  return accept({ ...state, tickets: state.tickets.map((t) => (t.number === ticket.number ? { ...t, playerId: player.id } : t)) });
+}
+
+/** TAM-058: the player plays on paper from now on; their wins are recorded on the anchor's word. */
+function toPaper(state: TambolaState, playerId: unknown): Verdict<TambolaState> {
+  const player = state.players.find((p) => p.id === playerId);
+  if (!player) return refuse('That player is not in this game.');
+  const theirs = state.tickets.filter((t) => t.playerId === player.id && t.status !== 'paper');
+  if (theirs.length === 0) return refuse(`${player.name} already plays on paper.`);
+  return accept({ ...state, tickets: state.tickets.map((t) => (t.playerId === player.id ? { ...t, status: 'paper' as const } : t)) });
+}
+
 function apply(state: TambolaState, move: TambolaMove, ctx: MoveContext): Verdict<TambolaState> {
-  if (ctx.by !== HOST) return refuse('Only the host phone makes moves in a paper-ticket game.');
+  if (ctx.by !== HOST) return refuse('Only the host phone makes moves.');
   if (state.result) return refuse('The game is over.');
   switch (move?.type) {
     case 'call': {
@@ -482,6 +608,12 @@ function apply(state: TambolaState, move: TambolaMove, ctx: MoveContext): Verdic
       return addPlayer(state, move.player);
     case 'remove-player':
       return removePlayer(state, move.playerId);
+    case 'check-claim':
+      return checkClaim(state, move);
+    case 'assign':
+      return assign(state, move);
+    case 'to-paper':
+      return toPaper(state, move.playerId);
     case 'end':
       return accept({ ...state, result: 'ended' });
     case 'discard':
@@ -496,7 +628,7 @@ function apply(state: TambolaState, move: TambolaMove, ctx: MoveContext): Verdic
 function invariants(state: TambolaState): string[] {
   const problems: string[] = [];
   const { config } = state;
-  if (config.ticketMode !== 'paper') problems.push('Phase 1a plays with paper tickets only.');
+  if (config.ticketMode !== 'paper' && config.ticketMode !== 'phone') problems.push('Tickets are paper or phone.');
   if (!Array.isArray(config.players) || config.players.length === 0) problems.push('A game needs at least one player.');
   const ids = new Set<string>();
   state.players.forEach((p, i) => {
@@ -530,6 +662,14 @@ function invariants(state: TambolaState): string[] {
   }
   if (state.calledCount < 0 || state.calledCount > 90) problems.push('At most 90 numbers are called.');
   if (state.callTimes.length !== state.calledCount) problems.push('Every call has a time.');
+  if (config.ticketMode === 'phone') {
+    const numbers = state.tickets.map((t) => t.number);
+    if (new Set(numbers).size !== numbers.length) problems.push('Two phone tickets share a number.');
+    if (state.tickets.length !== state.players.reduce((s, p) => s + p.tickets, 0)) problems.push('Every ticket paid for is in the game.');
+    if (state.tickets.some((t) => !ids.has(t.playerId))) problems.push('Every phone ticket belongs to a player in the game.');
+  } else if (state.tickets.length > 0) {
+    problems.push('A paper-ticket game has no phone tickets.');
+  }
   return problems;
 }
 
@@ -552,8 +692,23 @@ function view(state: TambolaState, viewer: Viewer): TambolaView {
       pattern: c.pattern,
       verdict: c.verdict,
       ...(prize !== undefined ? { prize } : {}),
+      // Phase 2 claims say which ticket, and why a bogey is one (TAM-038). Paper claims stay as they were.
+      ...(c.ticket !== undefined
+        ? {
+            ticket: c.ticket,
+            ...(c.reason !== undefined ? { reason: c.reason } : {}),
+            ...(c.missing !== undefined ? { missing: [...c.missing] } : {}),
+            ...(c.needed !== undefined ? { needed: c.needed } : {}),
+            ...(c.completedAt !== undefined ? { completedAt: c.completedAt } : {}),
+          }
+        : {}),
     };
   });
+  const phone = state.config.ticketMode === 'phone';
+  if (phone && viewer.kind === 'player') return playerView(state, viewer.playerId);
+  const tickets: TicketView[] = host
+    ? state.tickets.map((t) => ({ number: t.number, sheet: t.sheet, rows: t.rows, playerId: t.playerId, status: t.status }))
+    : [];
   return {
     players: state.players.map((p) => ({ id: p.id, name: p.name })),
     tiers: state.tiers.map((t) => ({
@@ -576,6 +731,33 @@ function view(state: TambolaState, viewer: Viewer): TambolaView {
       const p = state.players.find((x) => x.id === j.playerId)!;
       return { id: p.id, name: p.name, tickets: p.tickets, removable: removeProblem(state, p.id) === null };
     }),
+    code: state.code,
+    tickets,
+  };
+}
+
+/**
+ * TAM-050, TAM-051: a player's phone sees their own tickets, the players and the prizes, and nothing that was
+ * called or will be: no calls, no board, no claims, no other ticket.
+ */
+function playerView(state: TambolaState, playerId: string): TambolaView {
+  return {
+    players: state.players.map((p) => ({ id: p.id, name: p.name })),
+    tiers: state.tiers.map((t) => ({ pattern: t.pattern, amount: t.amount, ...(t.label !== undefined ? { label: t.label } : {}) })),
+    called: [],
+    current: null,
+    lastCalls: [],
+    allCalled: false,
+    openPatterns: tierPatterns(state),
+    awaitingClose: [],
+    readyToEnd: false,
+    claims: [],
+    over: state.result !== null,
+    summary: null,
+    canAddPlayer: false,
+    lateJoiners: [],
+    code: state.code,
+    tickets: state.tickets.filter((t) => t.playerId === playerId).map((t) => ({ number: t.number, rows: t.rows })),
   };
 }
 
@@ -584,9 +766,17 @@ function view(state: TambolaState, viewer: Viewer): TambolaView {
 export const tambolaRules: GameRules<TambolaConfig, TambolaState, TambolaMove, TambolaView> = {
   id: 'tambola',
 
-  setup({ seeds, config }) {
+  setup({ gameId, seeds, config }) {
     const draw = seeds.draw;
     if (typeof draw !== 'string' || draw === '') throw new Error('Tambola needs a draw seed.');
+    const phone = config.ticketMode === 'phone';
+    const sheet = seeds.sheet;
+    if (phone && (typeof sheet !== 'string' || sheet === '')) throw new Error('Phone tickets need a sheet seed.');
+    // TAM-172, TAM-194: tickets are handed out strictly in order, each player's tickets together.
+    const owners = phone ? config.players.flatMap((p) => Array.from({ length: Math.max(0, p.tickets) }, () => p.id)) : [];
+    const tickets: PhoneTicket[] = phone
+      ? makeTickets(sheet!, owners.length).map((t, i) => ({ number: t.number, sheet: t.sheet, rows: t.rows, playerId: owners[i]!, status: 'in-play', joinedAt: 0 }))
+      : [];
     return {
       config,
       players: config.players.map((p) => ({
@@ -605,6 +795,9 @@ export const tambolaRules: GameRules<TambolaConfig, TambolaState, TambolaMove, T
       claims: [],
       closed: [],
       result: null,
+      tickets,
+      sheetSeed: phone ? sheet! : null,
+      code: phone ? gameCode(gameId) : null,
     };
   },
 
@@ -616,7 +809,7 @@ export const tambolaRules: GameRules<TambolaConfig, TambolaState, TambolaMove, T
     if (readyToEnd(state)) return endings;
     return state.calledCount < 90 ? [{ type: 'call' }, ...endings] : endings;
   },
-  detailMoves: ['record-win', 'record-bogey', 'rename', 'add-player', 'remove-player'],
+  detailMoves: ['record-win', 'record-bogey', 'rename', 'add-player', 'remove-player', 'check-claim', 'assign', 'to-paper'],
 
   apply,
   view,
@@ -629,6 +822,7 @@ export const tambolaRules: GameRules<TambolaConfig, TambolaState, TambolaMove, T
       case 'record-win':
       case 'record-bogey':
       case 'claim':
+      case 'check-claim':
         return true; // TAM-070: any time; later calls stay (TAM-072)
       case 'call': {
         // TAM-119, TAM-071: only the latest call, and only within 5 seconds of it.

@@ -15,6 +15,15 @@ export {
   PATTERNS,
   PATTERN_NAMES,
   NEEDS,
+  makeTickets,
+  ticketInfo,
+  encodeTicket,
+  decodeTicket,
+  typedCode,
+  decodeTypedCode,
+  encodeClaim,
+  decodeClaim,
+  readClaim,
 } from './rules';
 export type {
   Pattern,
@@ -29,6 +38,10 @@ export type {
   Payout,
   Rhyme,
   RhymePack,
+  Ticket,
+  TicketInfo,
+  ClaimInfo,
+  TicketView,
 } from './rules';
 
 export const tambolaInfo: GameInfo = {
