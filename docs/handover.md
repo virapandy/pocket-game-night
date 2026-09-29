@@ -12,7 +12,7 @@ current; instructions live here, not in chat. History from Phase 0 and 1a is fur
 | Rhyme catalog revision 4 (361 rhymes, Hindi fallback) | Tests updated; the coder's fix (5c26598) was **in automation** when the run ended; the tester has not yet reported on it |
 | Test clone | **Uncommitted work left behind:** a new `tests/browser/fixtures.ts` and import changes in 16 browser test files plus the test config |
 | Product owner review of the live 1b build | **Done:** money model decided (host is the bank per game; Settle up player to player) and 5 findings, in `docs/games/tambola/changes-2026-09-29-money-and-1b.md` |
-| Family play-test on Android | **Not done yet** (owner's task; `docs/playtest-checklist.md`) |
+| Family play-test on Android | **Done** (30 September). Finding: closing a prize wasn't obvious; change request `docs/games/tambola/changes-2026-09-30-playtest.md` |
 | Phase 2, Phase 7, extended testing | **All signed off by the owner** (packs in `docs/signoff.md`) |
 | Phase 6 (connected mode), new games | On hold |
 
@@ -25,8 +25,10 @@ current; instructions live here, not in chat. History from Phase 0 and 1a is fur
    the host is the bank for each game (TAM-089 reworded; the optional Settle up stays player to player, PLT-017
    and PLT-028 unchanged) and the five 1b review findings (buttons fixed at the bottom, payouts to tally, compact tally,
    labelled sessions; new TAM-197). Tester first, then coder.
-4. **Owner play-test.** Tell the owner 1b is live and the play-test can start (checklist above). The product
-   owner turns what the owner reports into changes here.
+4. **Play-test fixes** (owner-approved): apply `docs/games/tambola/changes-2026-09-30-playtest.md` section 1:
+   after a win, the main button becomes "Close Top Line", the rest of the screen dims, and a tap elsewhere
+   pulses the button once (new TAM-198, TAM-145 reworded). Section 2 (PLT-029, showing and changing the
+   session) waits for the owner's confirmation. Steps 3 and 4 can share one round.
 5. **Phase 2 (phone tickets): signed off by the owner (29 September).** The tester applies the product owner's
    verdicts (including TAM-050 reworded, TAM-133 moved to Phase 6, TAM-179 changed) **and** the additions in
    `docs/games/tambola/changes-2026-09-29-phone-tickets.md` (all tickets visible together, switch to one at a

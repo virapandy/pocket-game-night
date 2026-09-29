@@ -86,6 +86,7 @@
 
 | 2026-09-29 | Tiny pots: when rounding the smaller prizes to the ₹10 unit would leave Full House smaller than another prize, they round to the nearest ₹1 instead (e.g. ₹36 → ₹4 / ₹5 / ₹5 / ₹5 / ₹17); only if even that fails are the smaller prizes lowered ₹1 at a time until Full House is the largest (TAM-082). | Owner |
 | 2026-09-29 | The host is the bank for each game: everyone pays the host up front; the host pays winners and hands back unwon money after the game (TAM-089). The session tally and Settle up are an optional, separate step, and settling is player to player (PLT-017, PLT-028 unchanged). | Owner (corrected the same day) |
+| 2026-09-30 | Family play-test done. After a win, closing the prize becomes the main action: the big bottom button turns into "Close Top Line", the rest of the screen dims, and a stray tap pulses the button once; no blinking (TAM-198, TAM-145). | Owner |
 
 "Convention" means the established Tambola rule in `docs/games/tambola/guide.md`, chosen because the owner asked
 Claude to follow game conventions. Every Tambola rule above is also a host setting with this default.

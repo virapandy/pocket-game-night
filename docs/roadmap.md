@@ -19,7 +19,7 @@ row). The owner has Android only, so iPhone is covered by automated checks, not 
 | Step | Phase | What it gives families | Gate to start | Product owner meanwhile |
 |---|---|---|---|---|
 | 1 | **1a.1 Feedback fixes** | Money of unwon prizes back to players; paper claims recorded on the anchor's word; calling screen and setup redesign | the change request is applied (`docs/games/tambola/changes-2026-09-28.md`) | play-test kit; review the redesign on the preview |
-| 2 | **1.5 Family play-test** (Android) | 3 real games; findings become decisions and tests | 1a.1 green | turns findings into changes |
+| 2 | **1.5 Family play-test** (Android): **done 30 September** | 3 real games; findings become decisions and tests | 1a.1 green | turns findings into changes |
 | 3 | **1b The evening** | Sessions, tally and settle, late joiners, optional phone voice and auto-call, dark mode, history tools | play-test done, no blockers | Phase 2 scenario review, including the claim QR |
 | 4 | **2 Phone tickets** | Tickets on players' phones; claims verified by scanning the player's claim QR | owner approves the Phase 2 drafts | Phase 7 review |
 | 5 | **7 Feedback reports** | "Report a problem" with replays; ready to share beyond family | Phase 2 green | decide on connected mode |
