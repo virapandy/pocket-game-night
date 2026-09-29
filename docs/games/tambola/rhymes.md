@@ -1,16 +1,23 @@
 # Tambola rhyme catalog
 
-The rhymes are what make calling fun. The catalog is [rhymes.csv](rhymes.csv): **404 rhymes** for
+The rhymes are what make calling fun. The catalog is [rhymes.csv](rhymes.csv): **397 rhymes** for
 numbers 1 to 90. **Approved by the owner, 28 September 2026.**
+
+## The rule (owner, 29 September 2026)
+**Every call either rhymes with its number, or links directly to it through popular culture or common
+knowledge that everyone in the room knows. Nothing niche.** Examples that pass: "Thirty-eight, Maggi at
+midnight, mate" (rhyme), "Special 26" (popular film), "Pack of cards" (52, common knowledge), "Blind twenty"
+(a call every Indian housie uses). Examples that fail: "Torquay in Devon" (niche), "Required rate eight"
+(no real link).
 
 ## What's in it
 | Style | Language | Rhymes | What it is |
 |---|---|---|---|
-| classic | English | 110 | Traditional calls from British bingo and Indian Housie ("Kelly's eye", "Legs eleven") |
-| indian | English | 86 | Indian-flavoured English calls ("Pack of cards", "Dil maange more", "Voting age") |
-| playful | English | 48 | New rhymes written for this app ("Sixty, still nifty", "Two snowmen") |
-| cricket | English | 26 | India players' shirt numbers and cricket moments ("Thala Dhoni's seven", "1983, Kapil's Devils") |
-| bollywood | English | 8 | Film titles with the number in them ("3 Idiots", "Special 26") |
+| classic | English | 94 | Traditional calls from British bingo and Indian Housie ("Kelly's eye", "Legs eleven") |
+| indian | English | 97 | Indian-flavoured English calls ("Pack of cards", "Dil maange more", "Voting age") |
+| playful | English | 54 | New rhymes written for this app ("Sixty, still nifty", "Two snowmen") |
+| cricket | English | 25 | India players' shirt numbers and cricket moments ("Thala Dhoni's seven", "1983, Kapil's Devils") |
+| bollywood | English | 9 | Film titles with the number in them ("3 Idiots", "Special 26") |
 | festival | English | 9 | Dates and history ("Independence Day, 15 August", "Republic Day, 26 January") |
 | hindi | Hindi (Roman script) | 109 | Hindi and Hinglish calls ("Teen tigaada, kaam bigaada", "Chhappan bhog", "Shagun ka lifaafa") |
 
@@ -60,6 +67,16 @@ rate eight", "Nineteenth over"); all 14 of those are gone. Cricket is now 26 cal
 - a famous moment: 36 "Yuvi's six sixes"; shirt numbers only for 7 Dhoni, 10 Sachin, 18 Kohli
 Numbers that lost a forced cricket call got a plainly linked line instead, for example 17 "Seventeen, board
 exam scene!", 19 "Nineteen, college canteen!", 35 "Thirty-five and single? Aunties arrive!".
+
+## Revision 4, 29 September 2026: the rule applied to every English line
+Cut 25 English lines that were niche or had no link: British-only calls ("Doctor's orders", "Burlington
+Bertie", "Those 39 steps", "Heinz varieties", "Brighton line", "Torquay in Devon", "Sunset strip",
+"Tickety-boo", "Bullseye", "Wobbly wobbly", "Three score and ten", "39 more steps", "Key of the door",
+"More than eleven", "Trombones") and weak ones of ours ("cooker whistle blown", "February's fine print",
+"cricket's unlucky number", "par for you", "Lucky bachelor", "Lucky six", "Charity begins at fifty-one",
+"Saving grace", "golgappa time", "Forget Heinz, desi achaar"). Replaced where needed with plain rhymes, for
+example "Thirty-seven, chai at eleven", "Fifty-one, shagun for everyone!", "Seventy-two, chai for two".
+**Hindi lines not yet checked against the rule** (see the review checklist).
 
 ## Choices made
 - **Left out entirely:** calls that shame bodies or women ("Women get flirty", "Oversize",
