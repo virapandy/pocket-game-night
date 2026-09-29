@@ -16,6 +16,8 @@ async function eachScreen(page: Page, check: (name: string) => Promise<void>) {
   await dismiss(page);
   await recordWin(page, 'Early Five', ['Riya']);
   await check('win recorded');
+  // TAM-198: the rest of the screen waits until the prize is closed, so close it before using the menu.
+  await page.getByRole('button', { name: 'Close Early Five', exact: true }).click();
   await fromMenu(page, 'Show the room');
   await check('room view');
 }

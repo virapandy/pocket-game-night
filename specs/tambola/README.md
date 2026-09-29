@@ -14,8 +14,8 @@ tests once the owner approves it. All are **draft** until approved.
 | [05-secrets-and-seeds.md](05-secrets-and-seeds.md) | Nobody sees what they shouldn't; phone tickets; the claim QR | TAM-050 – TAM-058, TAM-131 – TAM-133 (TAM-133 is now Phase 6), TAM-170 – TAM-179, TAM-190 |
 | [06-room-and-host.md](06-room-and-host.md) | Fun-friction defaults, host controls, late joiners, play again, voice and auto-call, setup redesign | TAM-060 – TAM-069, TAM-130, TAM-137, TAM-180 – TAM-187 |
 | [07-undo-replay-end.md](07-undo-replay-end.md) | Undo, replay, and how the game ends | TAM-070 – TAM-078 |
-| [08-prizes.md](08-prizes.md) | Contribution, pot, suggested split, payouts, money of unwon prizes handed back; no money moved | TAM-080 – TAM-093 |
-| [10-lifecycle.md](10-lifecycle.md) | Ending vs discarding with money, game-level winnings, what a game keeps; no prize won; closing tiers and ending by hand | TAM-140 – TAM-145 |
+| [08-prizes.md](08-prizes.md) | Contribution, pot, suggested split, payouts, money of unwon prizes handed back; no money moved; from the payouts to the session tally | TAM-080 – TAM-093, TAM-197 |
+| [10-lifecycle.md](10-lifecycle.md) | Ending vs discarding with money, game-level winnings, what a game keeps; no prize won; closing tiers and ending by hand; closing a prize as the main action | TAM-140 – TAM-145, TAM-198 |
 | [11-rhymes.md](11-rhymes.md) | Rhymes: several per number, picked at random, language and family-friendly settings | TAM-150 – TAM-158 |
 | [12-connected.md](12-connected.md) | Connected mode: calls, claims and verdicts over the network; faults; fallback | TAM-200 – TAM-210 |
 | [09-usability.md](09-usability.md) | Mis-touches, legibility, offline, interruptions (from docs/ux-guidelines.md); the calling screen redesign; dark mode | TAM-100 – TAM-129, TAM-134 – TAM-136, TAM-138, TAM-188 |
@@ -40,8 +40,8 @@ Scenarios in `04-house-rules.md` show the choices. Pick one per question, and th
 Every scenario has a **Phase** line.
 | Phase | Scope | Tambola | Platform |
 |---|---|---|---|
-| **1a: one great game** | Paper tickets on one host phone: calling, rhymes, board, recording wins, undo, the prize pool for a single game, resume, history view, key UX rules; 1a.1 feedback fixes (calling screen and setup redesign) | 100 | 11 |
-| **1b: the evening** | Sessions, tally and settle, reusing a setup, deleting history, late joiners, phone voice and auto-call, dark mode | 11 | 16 |
+| **1a: one great game** | Paper tickets on one host phone: calling, rhymes, board, recording wins, undo, the prize pool for a single game, resume, history view, key UX rules; 1a.1 feedback fixes (calling screen and setup redesign); play-test fix: closing a prize is the main action (TAM-198) | 101 | 11 |
+| **1b: the evening** | Sessions, tally and settle, reusing a setup, deleting history, late joiners, phone voice and auto-call, dark mode; payouts to the session tally (TAM-197), the session shown before the game (PLT-029) | 12 | 17 |
 | **2: phone tickets** | Tickets made by the app and scanned onto players' phones; claims checked by the host phone, by claim QR | 48 | |
 | **2.5: new-game kit** | The contract suite every game must pass; the generic simulated player | | 14 |
 | **6: connected mode** | Calls, claims and verdicts over the network, only if play-tests justify it | 12 | |

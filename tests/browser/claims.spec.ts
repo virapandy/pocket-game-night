@@ -2,7 +2,8 @@
 // TAM-031, TAM-033, TAM-037, TAM-039, TAM-070, TAM-086, TAM-088, TAM-089, TAM-105, TAM-139, TAM-145.
 import { expect, test, type Page } from './fixtures';
 import {
-  callMany, checkNumbers, dismiss, endGame, fromMenu, menuItem, nextNumber, nextNumberWaits, recordBogey, recordWin, setUpPaperGame,
+  callMany, checkNumbers, dismiss, endGame, fromMenu, mainButton, menuItem, nextNumber, nextNumberWaits, recordBogey, recordWin,
+  setUpPaperGame,
 } from './helpers';
 
 const result = (page: Page) => page.getByTestId('claim-result');
@@ -80,16 +81,19 @@ test.describe('with six named players', () => {
     await expect(page.getByRole('button', { name: 'Early Five', exact: true })).toBeVisible();
   });
 
-  test('TAM-145: after a win the host can add another winner or close the tier; the next number waits', async ({ page }) => {
+  // TAM-145 as reworded by the owner on 2026-09-30 (TAM-198): the main button becomes "Close Top Line" until closed.
+  test('TAM-145: after a win the host can add another winner or close the tier; the main button is "Close Top Line" until then', async ({ page }) => {
     await callMany(page, 3);
     await recordWin(page, 'Top Line', ['Riya']);
     await expect(page.getByRole('button', { name: 'Add another winner' })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Close Top Line', exact: true })).toBeVisible();
+    await expect(mainButton(page)).toHaveAccessibleName('Close Top Line');
     expect(await nextNumberWaits(page)).toBe(true);
     await page.getByRole('button', { name: 'Add another winner' }).click();
     await page.getByRole('button', { name: 'Asha', exact: true }).click();
     await page.getByRole('button', { name: 'Confirm', exact: true }).click();
     await expect(result(page).getByText(/Shared/)).toBeVisible();
+    await expect(mainButton(page)).toHaveAccessibleName('Close Top Line');
     await page.getByRole('button', { name: 'Close Top Line', exact: true }).click();
     await expect(nextNumber(page)).toBeEnabled();
   });
@@ -194,6 +198,8 @@ test('TAM-086 and TAM-090: with "No money" the win shows no amount', async ({ pa
   await recordWin(page, 'Top Line', ['Riya']);
   await expect(result(page).getByText(/Top Line: ✓ Riya/)).toBeVisible();
   await expect(result(page).getByText(/₹/)).toHaveCount(0);
+  // TAM-198: the rest of the screen waits until the prize is closed, so close it before using the menu.
+  await page.getByRole('button', { name: 'Close Top Line', exact: true }).click();
   await fromMenu(page, 'End game');
   await page.getByRole('dialog').getByRole('button', { name: 'End game' }).click();
   await expect(page.getByText(/handed back/i)).toHaveCount(0);

@@ -147,6 +147,8 @@ And it leaves out games in progress, paused or abandoned
 And for each person it shows what they paid, what they got back (prizes won, plus any money handed back
 from prizes nobody won, TAM-088), and one net amount
 And its totals balance: everything paid in equals everything paid out
+And each person is one compact row: their name and their balance (1b review finding 4, approved, owner, 2026-09-29,
+docs/games/tambola/changes-2026-09-29-money-and-1b.md: seven people must not fill the screen)
 
 ## PLT-018: Games in different sessions are never tallied together
 Status: decided 2026-09-28 (owner)
@@ -238,3 +240,11 @@ Then it lists the fewest hand-overs that settle it: "Asha pays Riya ₹70 · Dad
 And no payment is made or requested: text only (TAM-090)
 When the host taps "Mark as settled" and confirms (PLT-019)
 Then the games are settled (PLT-019, PLT-027)
+
+## PLT-029: The session is shown, and can be changed, before the game starts
+Status: approved, owner, 2026-09-30 (docs/games/tambola/changes-2026-09-30-playtest.md section 2; docs/decisions.md)
+Phase: Phase 1b
+On the last setup step, above "Confirm prizes", one line shows "Session: Tuesday 29 Sep · Change"
+When the host taps "Change"
+Then they can start a new session (with a suggested name) or pick one of the recent unsettled sessions
+And with no change, the game joins the session shown, as today (PLT-016)

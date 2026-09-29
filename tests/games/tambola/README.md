@@ -136,6 +136,7 @@ TambolaSummary = {
     won: number;                    // prizes only
     handedBack: number;             // this player's share of the money of tiers nobody won
     net: number;                    // won + handedBack − paid
+    hostGives: number;              // TAM-089: what the host hands this person = won + handedBack; they add up to the pot
   }[] | null,
   money: MoneyRecord | null,        // engine's MoneyRecord, one person per player (PLT-021, TAM-089):
                                     // paid = payouts.paid, won = payouts.won + payouts.handedBack (what they get back, PLT-017)

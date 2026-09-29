@@ -120,6 +120,10 @@ On every other setup step (players, contribution, prizes, confirm)
 Then the step's main button ("Next", or "Confirm prizes" on the last step) is fixed at the bottom of the screen
 And it stays visible without scrolling, however many players or tiers there are (for example 6, 12 or 20 players)
 And nothing on the step is hidden behind it: the last player's name box can still be scrolled into view above it
+The same holds after the game (1b review findings 1 and 2, approved, owner, 2026-09-29, docs/games/tambola/changes-2026-09-29-money-and-1b.md):
+On the payout screen, "Play again" (and "Session tally", TAM-197) is fixed at the bottom, however many players there are
+On a session's screen, "Settle up" and "Mark as settled" are fixed at the bottom, however many people are in the tally
+And nothing is hidden behind them: the last person can still be scrolled into view above them
 
 ## TAM-182: The contribution has a real default value, not a grey hint
 Status: approved, owner, 2026-09-28 (scenario review outcome: product owner verdict, owner sign-off for Phase 1a.1); was draft (new, tester, 2026-09-28, from the redesign)

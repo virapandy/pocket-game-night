@@ -106,13 +106,14 @@ And the payout summary shows, per person: paid, won, handed back, and the net am
 And nothing carries over to another game
 (Per ticket confirmed by the owner on 2026-09-28.)
 
-## TAM-089: The payout summary balances
-Status: approved, owner, 2026-09-28 (wording aligned with the new TAM-088, as the change request asked)
+## TAM-089: The payout summary says what the host hands each person
+Status: approved, owner, 2026-09-29 (docs/games/tambola/changes-2026-09-29-money-and-1b.md: the host is the bank for each game; was "The payout summary balances", approved, owner, 2026-09-28)
 Phase: Phase 1a
 When a game ends
-Then the summary lists, for each tier, the winner(s) and amount, or "not won" (TAM-088)
-And, for each person, what they paid, what they won, what was handed back, and the net amount
-And prizes paid out plus money handed back equal the pot, to the rupee
+Then the summary lists each tier with its winner(s) and amount (or "not won") (TAM-088)
+And, for each person: paid, prize won, money handed back, and "Host gives Riya ₹77" (prize plus money back)
+And the total the host gives out equals the pot, to the rupee
+(Player-to-player hand-overs appear only in the session's optional Settle up, PLT-028.)
 
 ## TAM-090: The app never moves money
 Status: approved, owner, 2026-09-28
@@ -148,3 +149,10 @@ And the extra rupees go in the order the players were listed at setup (like a sh
 And a late joiner's ticket (TAM-067) counts like every other ticket
 And with a game played for "No money" (TAM-090), unclaimed prizes are simply listed as "not won", with nothing handed back
 And a ticket that is out after a bogey (TAM-044) still gets its share, because its contribution stayed in the pot.
+
+## TAM-197: From the payouts to the session tally in one tap
+Status: approved, owner, 2026-09-29 (docs/games/tambola/changes-2026-09-29-money-and-1b.md, 1b review finding 3)
+Phase: Phase 1b
+When a game ends and the payout summary shows
+Then "Play again" and "Session tally" are fixed at the bottom of the screen (TAM-181)
+And "Session tally" opens this game's session tally (PLT-017)

@@ -68,6 +68,9 @@ And one tap returns to the host controls
 Status: approved, owner, 2026-09-28
 Phase: Phase 1a
 Then every icon button on host and player screens has a visible text label
+And every row that is a button has a readable name: each session in the Sessions list is labelled with the
+session's name, its games and whether it is settled (1b review finding 5, approved, owner, 2026-09-29,
+docs/games/tambola/changes-2026-09-29-money-and-1b.md)
 
 ## TAM-110: The screen stays on during a game
 Status: approved, owner, 2026-09-28
@@ -239,7 +242,9 @@ Given a game with five tiers
 Then each tier shows as a chip on the calling screen: open ("Top ●"), won ("Early 5 ✓ Riya"), or closed (greyed)
 And each state has a word or symbol as well as colour (TAM-105)
 When a win is recorded for Top Line (TAM-037, TAM-145)
-Then its chip reads "Top Line ✓ Riya · Close", and "Next number" reads "Close Top Line first" until the host closes it
+Then its chip reads "Top Line ✓ Riya", and the main button reads "Close Top Line" until the host closes it (TAM-198;
+changed by the owner on 2026-09-30, docs/games/tambola/changes-2026-09-30-playtest.md: was "'Next number' reads
+'Close Top Line first'"); a Close on the chip may stay as a second way
 And if the chips do not fit on one line, they scroll sideways inside their own row; the page itself never scrolls (TAM-138)
 
 ## TAM-127: The board opens as a sheet over the calling screen

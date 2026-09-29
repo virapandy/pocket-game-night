@@ -1,6 +1,6 @@
 // Browser helpers: how the tests find things on screen. The names below are what the app must show;
 // they come from the scenarios and journeys (buttons named as in the specs). Listed in tests/browser/README.md.
-import { expect, type Page } from '@playwright/test';
+import { expect, type Locator, type Page } from '@playwright/test';
 
 export const HOME = './';
 
@@ -176,7 +176,7 @@ export const undoToast = (page: Page) => page.getByTestId('undo-toast');
 export const undoLastCall = (page: Page) =>
   undoToast(page).getByRole('button', { name: /Undo/ }).or(page.getByRole('button', { name: 'Undo last call' })).first();
 
-/** True when "Next number" can't be tapped: hidden, disabled, or showing "Close Top Line first" (TAM-126, TAM-145). */
+/** True when "Next number" can't be tapped: hidden, disabled, or turned into "Close Top Line" (TAM-145, TAM-198). */
 export async function nextNumberWaits(page: Page): Promise<boolean> {
   const b = page.getByRole('button', { name: 'Next number', exact: true });
   return (await b.count()) === 0 || !(await b.isVisible()) || (await b.isDisabled());
@@ -327,4 +327,62 @@ export async function backgroundAndReturn(page: Page) {
     document.dispatchEvent(new Event('visibilitychange'));
     window.dispatchEvent(new Event('pageshow'));
   });
+}
+
+// ---- Money and 1b review fixes (29 September 2026), play-test fixes (30 September 2026) ----
+
+/**
+ * The big button at the bottom of the calling screen (TAM-100, TAM-198): "Next number", or "Close Top Line"
+ * ("Close <Pattern>") while a recorded win waits to be closed.
+ */
+export const mainButton = (page: Page) => page.getByTestId('main-button');
+
+/** One person on the payout screen (TAM-089): name, paid, prize won, handed back, and what the host gives them. */
+export async function payoutPeople(page: Page) {
+  const rows = page.getByTestId('payout-summary').getByTestId('payout-person');
+  const n = await rows.count();
+  const out: { name: string; paid: number; won: number; handedBack: number; hostGives: number }[] = [];
+  for (let i = 0; i < n; i++) {
+    const r = rows.nth(i);
+    out.push({
+      name: (await r.getAttribute('data-name')) ?? '',
+      paid: Number(await r.getAttribute('data-paid')),
+      won: Number(await r.getAttribute('data-won')),
+      handedBack: Number(await r.getAttribute('data-handed-back')),
+      hostGives: Number(await r.getAttribute('data-host-gives')),
+    });
+  }
+  return out;
+}
+
+/** Fixed at the bottom of the screen: fully on screen without scrolling, its bottom edge within 40 px of the screen's (TAM-181). */
+export async function expectAtBottom(page: Page, l: Locator, what: string) {
+  const vp = page.viewportSize()!;
+  const b = await l.boundingBox();
+  expect(b, `${what} is on the screen`).not.toBeNull();
+  expect(b!.y, `${what} starts on the screen`).toBeGreaterThanOrEqual(-0.5);
+  expect(b!.y + b!.height, `${what} ends on the screen`).toBeLessThanOrEqual(vp.height + 0.5);
+  expect(vp.height - (b!.y + b!.height), `${what} is within 40 px of the bottom`).toBeLessThanOrEqual(40);
+  return b!;
+}
+
+/** The element's centre is not covered by anything else (it is the topmost thing there, or holds it). */
+export const onTopAtCentre = (l: Locator) =>
+  l.evaluate((el) => {
+    const r = el.getBoundingClientRect();
+    const hit = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2);
+    return !!hit && (hit === el || el.contains(hit));
+  });
+
+/**
+ * TAM-181: scrolls `last` into view and checks it sits wholly above every one of `buttons` and is not covered.
+ */
+export async function expectNotHiddenBehind(page: Page, last: Locator, buttons: Locator[], what: string) {
+  await last.scrollIntoViewIfNeeded();
+  const lb = (await last.boundingBox())!;
+  for (const b of buttons) {
+    const bb = (await b.boundingBox())!;
+    expect(lb.y + lb.height, `${what} sits above the fixed buttons`).toBeLessThanOrEqual(bb.y + 0.5);
+  }
+  expect(await onTopAtCentre(last), `${what} is not covered`).toBe(true);
 }

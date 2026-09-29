@@ -70,7 +70,7 @@ describe('TAM-066 and TAM-088: ending early pays the winners exactly their tiers
   });
 });
 
-describe('TAM-089: the payout summary balances', () => {
+describe('TAM-089: the payout summary says what the host hands each person', () => {
   it('lists each tier with its winners, or none ("not won"), and per person paid, won, handed back and net', () => {
     const g = new Game({ tiers: FOUR_TIERS }).call(8);
     g.win('early-five', 'p3');
@@ -90,6 +90,55 @@ describe('TAM-089: the payout summary balances', () => {
     expect(sum(s.payouts.map((p: any) => p.won + p.handedBack))).toBe(300);
     // ₹110 not won, over 6 tickets: ₹19, ₹19, ₹18, ₹18, ₹18, ₹18 in player order.
     expect(s.payouts.map((p: any) => p.handedBack)).toEqual([19, 19, 18, 18, 18, 18]);
+  });
+
+  it('per person, "Host gives": the prize plus the money handed back; the host gives out exactly the pot', () => {
+    const g = new Game({ tiers: FOUR_TIERS }).call(8);
+    g.win('early-five', 'p3');
+    g.closeAll().call(20);
+    g.win('full-house', 'p4', 'p5');
+    g.finish();
+    const s = g.summary;
+    for (const p of s.payouts) {
+      expect(Number.isInteger(p.hostGives), `${p.playerId}: hostGives is a whole number of rupees`).toBe(true);
+      expect(p.hostGives).toBe(p.won + p.handedBack);
+    }
+    // ₹30 Early Five to p3; ₹160 Full House shared by p4 and p5 (₹80 each); ₹110 handed back as above.
+    expect(s.payouts.map((p: any) => p.hostGives)).toEqual([19, 19, 30 + 18, 80 + 18, 80 + 18, 18]);
+    expect(sum(s.payouts.map((p: any) => p.hostGives))).toBe(s.pot);
+    expect(s.pot).toBe(300);
+  });
+
+  it('edge: nobody won anything, so the host gives each person back exactly what they paid (TAM-144)', () => {
+    const g = new Game({ tiers: FOUR_TIERS }).call(8);
+    g.do({ type: 'end' });
+    const s = g.summary;
+    for (const p of s.payouts) expect(p.hostGives).toBe(p.paid);
+    expect(sum(s.payouts.map((p: any) => p.hostGives))).toBe(300);
+  });
+
+  it('for any game with money, the host gives out the pot to the rupee, and each person gets won plus handed back', () => {
+    const patterns = FOUR_TIERS.map((t) => t.pattern);
+    fc.assert(
+      fc.property(
+        fc.array(fc.tuple(fc.constantFrom(...patterns), fc.subarray(['p1', 'p2', 'p3', 'p4', 'p5', 'p6'], { minLength: 1, maxLength: 3 })), { maxLength: 4 }),
+        (wins) => {
+          const g = new Game({ tiers: FOUR_TIERS }).call(15);
+          const done = new Set<string>();
+          for (const [pattern, who] of wins) {
+            if (done.has(pattern) || pattern === 'full-house') continue;
+            done.add(pattern);
+            g.win(pattern, ...who);
+            g.closeAll().call(1);
+          }
+          g.do({ type: 'end' });
+          const s = g.summary;
+          for (const p of s.payouts) expect(p.hostGives).toBe(p.won + p.handedBack);
+          expect(sum(s.payouts.map((p: any) => p.hostGives))).toBe(s.pot);
+        },
+      ),
+      { numRuns: 60 },
+    );
   });
 });
 

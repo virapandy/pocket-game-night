@@ -2,7 +2,7 @@
 // TAM-123 to TAM-129 and TAM-138, all on a 390 × 844 screen unless a test says otherwise.
 import { expect, test, type Locator, type Page } from './fixtures';
 import {
-  call, callMany, calledNumbers, closeBoard, currentNumber, currentRhyme, dismiss, fromMenu, lastCalls, menuItem, nextNumber,
+  call, callMany, calledNumbers, closeBoard, currentNumber, currentRhyme, dismiss, fromMenu, lastCalls, mainButton, menuItem, nextNumber,
   nextNumberWaits, openBoard, recordBogey, recordWin, setUpPaperGame, undoToast,
 } from './helpers';
 
@@ -356,7 +356,9 @@ test.describe('TAM-125: the undo toast never moves anything', () => {
 });
 
 test.describe('TAM-126: prize chips show at a glance what is open, won and closed', () => {
-  test('five tiers show as five chips; a win turns its chip into "Top Line ✓ Riya · Close", and Next number asks to close it first', async ({ page }) => {
+  // TAM-126 as changed by the owner on 2026-09-30 (TAM-198): the main button reads "Close Top Line" (was "Close Top Line
+  // first" on a greyed Next number); a Close on the chip may stay as a second way.
+  test('five tiers show as five chips; a win turns its chip into "Top Line ✓ Riya", and the main button reads "Close Top Line"', async ({ page }) => {
     await setUpPaperGame(page);
     await callMany(page, 3);
     await expect(chips(page)).toHaveCount(5);
@@ -364,10 +366,9 @@ test.describe('TAM-126: prize chips show at a glance what is open, won and close
     await recordWin(page, 'Top Line', ['Riya']);
     const top = chips(page).filter({ hasText: /Top Line ✓ Riya/ });
     await expect(top).toHaveCount(1);
-    await expect(top.getByRole('button', { name: /Close/ })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Close Top Line first' }).or(page.getByText('Close Top Line first')).first()).toBeVisible();
+    await expect(mainButton(page)).toHaveAccessibleName('Close Top Line');
     expect(await nextNumberWaits(page)).toBe(true);
-    await top.getByRole('button', { name: /Close/ }).click();
+    await mainButton(page).click();
     await expect(nextNumber(page)).toBeEnabled();
     // Closed: still "✓ Riya", no longer open (●) and no Close.
     const closed = chips(page).filter({ hasText: /✓ Riya/ });

@@ -17,12 +17,12 @@ The shared steps live in `helpers.ts`.
 | Game: menu | `Settings`, `Show the room`, `Board`, `Check numbers`, `End game`, `Discard game`, as `menuitem`s or buttons, visible only once `Menu` is tapped. A long press on the number also opens Show the room |
 | Record a win (TAM-037) | one button per pattern in play (`Early Five`, `Top Line`, `Middle Line`, `Bottom Line`, `Four Corners`, `Full House`, `Second Full House`), then one button per player name (tap several for a tie), then `Confirm`, or `Bogey` to record a bogey for the picked player. `Cancel` or `Back` to leave. No number field |
 | Check numbers (TAM-139) | one button per pattern in play, the field `Numbers read out`, `Check`, and `Close`, `Done`, `Back` or `Cancel` |
-| After a recorded win (TAM-145, TAM-126) | `Add another winner` (goes straight to picking the player; the pattern is kept; then `Confirm`), `Close Top Line` ("Close <Pattern>", also the chip's Close); the main button reads "Close Top Line first" and no number can be drawn until the tier is closed. After the last Full House is closed: `End game and show payouts`. The result has `Undo…` |
+| After a recorded win (TAM-145, TAM-126, TAM-198) | The main button (`main-button`, where `Next number` was) **becomes** `Close Top Line` ("Close <Pattern>"): filled, enabled, same size and place; no button is named `Next number` until the tier is closed. `Add another winner` sits just above it (secondary, not filled; goes straight to picking the player; the pattern is kept; then `Confirm`). Only the main button is named exactly "Close <Pattern>": a Close kept on the chip is named just `Close`. The rest of the calling screen is dimmed and taps there do nothing (see "After a win, closing the prize is the main action" below). After the last Full House is closed: `End game and show payouts`. The win card has `Undo…` |
 | Undo toast (TAM-125) | inside `undo-toast`: a button named `Undo…` |
 | Board sheet (TAM-127) | a `role="dialog"` holding `board`, with `Close`, `Done` or `Back` |
 | Screen-sleep tip (TAM-128) | text "keep your screen on", `Got it`, `OK` or `Close`; afterwards "Screen may sleep" in the top bar |
 | Dialogs (`role="dialog"`) | End: text "End the game and show payouts?", `End game`, `Keep playing`. Discard: `Discard…`, and "N prize(s) was/were already won" when true. Undo claim: `Undo…` |
-| After the game | `Play again` |
+| After the game | `Play again` and `Session tally` (TAM-197), both fixed at the bottom of the screen (TAM-181); `Session tally` opens the session screen of the session this game is in |
 | Resume | `Tap to resume`, or after 12 hours `Resume`, `End it…`, `Discard it…` |
 | Settings (from the menu) | a checkbox or switch named `Vibration`; `Done`, `Close` or `Back` |
 | iPhone tip | inside `install-tip`: `Got it`, `Close` or `OK` |
@@ -46,9 +46,11 @@ reason in an element with `role="alert"`.
 | `check-result` | The Check numbers helper: each typed number as "23 ✓" or "91 ✗" with `data-called="true"/"false"`, and whether they complete the pattern ("complete" / "not complete"); a one-line reason for wrong input, such as "Top Line needs 5 numbers" |
 | `top-bar` | The calling screen's top bar |
 | `prize-chips` | The row of prize chips; scrolls sideways inside itself if needed, all chips on one line |
-| `prize-chip` | One tier: open "Top ●", won "Early 5 ✓ Riya" (with a `Close…` button until closed), closed (greyed, no ●, no Close) |
+| `prize-chip` | One tier: open "Top ●", won "Early 5 ✓ Riya" (a `Close` button on it until closed is optional since TAM-198), closed (greyed, no ●, no Close) |
 | `undo-toast` | "Called 21 · Undo (5s)", floating just above `Record a win`; moves nothing |
-| `payout-summary` | The end-of-game summary: each tier's winners or "not won"; per person paid, won, handed back and net (TAM-088, TAM-089); "Bogey: Riya" for recorded bogeys; no "handed back" with No money |
+| `payout-summary` | The end-of-game summary: each tier's winners or "not won"; per person paid, won, handed back and net (TAM-088), and "Host gives Riya ₹77" (TAM-089, one `payout-person` per person); "Bogey: Riya" for recorded bogeys; no "handed back" and no "Host gives" with No money |
+| `payout-person` | One per person in `payout-summary` (TAM-089), with `data-name`, `data-paid`, `data-won` (prizes only), `data-handed-back`, `data-host-gives` (= won + handed back), whole rupees; its text has the words "paid" and "handed back" and "Host gives <name> ₹<host-gives>". No player-to-player line ("X pays Y") and no `hand-over` on this screen |
+| `main-button` | The big button at the bottom of the calling screen: `Next number`, or `Close Top Line` while a win waits to be closed (TAM-100, TAM-198) |
 | `unfinished-games` | Home list of unfinished games: "Tambola, 8:40 pm, 23 numbers called" ("1 number called") |
 | `history-game` | One row per past game |
 | `call-list` | Every call of a past game, each with `data-number` |
@@ -164,3 +166,52 @@ or buttons anywhere (TAM-090).
 - The page paints an opaque background on `html` or `body` (the tests read it). In dark mode every text meets
   4.5:1 (3:1 for 24 px or 18.66 px bold), 7:1 for `current-number`; sizes of the number, rhyme and buttons are
   exactly as in light mode; chips and results keep ✓ and ●.
+
+## Money and 1b review fixes (29 September 2026) and play-test fixes (30 September 2026)
+
+Tests: `payouts-and-tally.spec.ts`, `close-prize.spec.ts`, `session-line.spec.ts`, and changes in `claims.spec.ts`,
+`layout.spec.ts`, `lifecycle.spec.ts`, `usability.spec.ts`. Shared steps in `helpers.ts` (`mainButton`,
+`payoutPeople`, `expectAtBottom`, `expectNotHiddenBehind`).
+
+### The payout screen (TAM-089, TAM-197, TAM-181)
+- `payout-person` rows as in the test-id table above. The host gives out exactly the pot, to the rupee.
+- `Play again` and `Session tally` fixed at the bottom (bottom edge within 40 px of the screen's, fully on screen
+  without scrolling, same place after scrolling), also with 20 players; the last `payout-person` can be scrolled
+  into view above them and is not covered.
+- `Session tally` opens that game's session: `tally` visible and the session's name on the screen.
+
+### The session screen (TAM-181, PLT-017, TAM-109)
+- `Settle up` and `Mark as settled` (when shown) fixed at the bottom the same way, with 20 people in the tally;
+  after `Settle up`, `Mark as settled` too; the last `tally-person` and the last `hand-over` scroll into view above them.
+- Each `tally-person` is one compact row (at most 60 CSS px tall at 390 × 844) with the name and the balance ("₹…"
+  or "Even"); seven rows fit on the screen at once. `data-paid`, `data-got-back`, `data-net` stay as they are.
+- Sessions list: each session is (or holds) a button whose **accessible name** holds the session's name, "1 game" /
+  "2 games" and "Not settled" (or "Unsettled") / "Settled"; tapping it opens the session.
+
+### After a win, closing the prize is the main action (TAM-198, TAM-145, TAM-126)
+- `main-button` reads `Close Top Line` (accessible name exactly that), filled (a solid background, not the page's),
+  enabled, at the same place and size as `Next number` (within 1 px), not covered and not faded.
+- `Add another winner`: at most 24 px above `main-button`, overlapping it sideways, with a different background.
+- Dimmed: `Record a win`, `Menu`, `prize-chips` and the top bar's "of 90 called" are dimmed: either a translucent
+  layer lies over them (the topmost element at their centre, or its parent, has a background with alpha between
+  0.05 and 0.98, or a backdrop blur/brightness), or they are faded (opacity ≤ 0.7 up the tree, or a brightness,
+  grayscale or opacity filter). Not dimmed: `claim-result` (with its `Undo…`), `current-number`, `main-button` and
+  `Add another winner`: each topmost at its centre, opacity ≥ 0.95, no filter.
+- A tap in the dimmed area (where `Record a win` or `Menu` is) opens nothing and changes nothing, and starts an
+  animation on `main-button` (or inside it) that plays once (`getAnimations()` iterations 1; a CSS animation,
+  transition, or `element.animate`), then stops within 2 s. Before any stray tap, nothing on the button animates,
+  and nothing ever repeats (no infinite iterations).
+- Tapping `Close Top Line` closes the prize: the dimming goes, the win card goes by itself, `main-button` reads
+  `Next number` again, in the same place. Undoing the win (TAM-070) also ends the dimming. A bogey never dims.
+
+### The session line before the game (PLT-029)
+- On the last setup step (`Confirm prizes`), for Play again and for a New game within the session's 3 hours:
+  `session-line`, one line (at most 56 CSS px tall) above `Confirm prizes`, with the text "Session: <name>" and a
+  button whose name starts `Change`. With no change, `Confirm prizes` starts the game in that session with **no**
+  session question.
+- `Change` shows `New session` and one button per recent **unsettled** session, named starting with the session's
+  name (a settled session is not offered). `New session` shows `Session name`, filled in with the day
+  ("Sunday 4 Oct"), and `Save`; then the line reads "Session: <new name>" and `Confirm prizes` starts the game in the
+  new session without asking again. Picking a session makes the line read "Session: <that name>".
+- The first game of all, and a game more than 3 hours after the session's last one, still ask as in PLT-016
+  (not changed by these tests).
