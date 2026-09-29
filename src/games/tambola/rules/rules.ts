@@ -180,6 +180,7 @@ function summary(state: TambolaState): TambolaSummary | null {
       won: w,
       handedBack,
       net: w + handedBack - paid,
+      hostGives: w + handedBack,
     };
   });
   const record: MoneyRecord = {
@@ -189,6 +190,7 @@ function summary(state: TambolaState): TambolaSummary | null {
       name: p.name,
       paid: p.paid,
       won: p.won + p.handedBack,
+      prizes: p.won,
     })),
   };
   return {

@@ -231,6 +231,8 @@ export interface Payout {
   readonly handedBack: number;
   /** won + handedBack − paid. */
   readonly net: number;
+  /** What the host, as the bank, hands this person: won + handedBack. They add up to the pot (TAM-089). */
+  readonly hostGives: number;
 }
 
 export interface TambolaView {
