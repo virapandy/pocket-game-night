@@ -62,7 +62,7 @@ Sketches: the mockups shown to the owner on 29 September (A to D).
 | **A** | **All tickets at once, portrait** | Default with 2 or 3 tickets | Tickets stacked, no scrolling on a 390 × 844 screen; cells about 40 CSS px (above the 24 px minimum) |
 | **B** | **Landscape: two side by side, the third below** | Phone turned sideways | Bigger cells; no scrolling; turning back keeps marks |
 | — | **One ticket large** | Player taps "One at a time" (and back to "All tickets") | Ticket tabs ("Ticket 3 · 4 · 8"); cells at least 44 CSS px |
-| **C** | **Quick mark** (optional tool) | Player taps "Quick mark" | A 1–90 pad with the player's tickets shown underneath: tapping the number just heard marks it on whichever ticket has it ("✓ 36 marked on ticket 3") or says "37: not on your tickets"; tapping a marked number again unmarks it; the player still listens to the anchor |
+| **C** | **Quick mark** (optional tool) | Player taps "Quick mark" | A 1–90 pad with **all** the player's tickets underneath as small thumbnails (marked cells clearly filled; numbers may be too small to read; tap one to open it full size): tapping the number just heard marks it on whichever ticket has it ("✓ 36 marked on ticket 3") or says "37: not on your tickets"; tapping a marked number again unmarks it; the player still listens to the anchor |
 | **D** | **Claim with the ticket visible** | "Show claim" | The claim QR above the claimed ticket; the claimed pattern outlined (top row for Top Line, the corners for Four Corners, all for Full House) as a visual aid only, never a check |
 
 - **One tap per number:** a player's tickets are handed out one after another from the same sheet of 6,
@@ -72,8 +72,16 @@ Sketches: the mockups shown to the owner on 29 September (A to D).
 - **"Your marks fill a pattern" cue** (TAM-195): when the player's own marks cover a prize pattern, the
   pattern is outlined and a line says "Your marks fill the top row of ticket 3. Shout if it's right!".
   Based only on their marks; never a verdict.
-- **Claiming a won prize** (TAM-196): every prize stays selectable, because the phone can't know what's
-  been won; the host's scan refuses a won or closed prize calmly.
+- **Won prizes** (TAM-196): the player can cross out a prize when the anchor announces it's won (tap to
+  undo); crossed-out prizes can't be picked when claiming. Anything not crossed out stays selectable, and the
+  host's scan refuses a won or closed prize calmly.
+
+## 6. Built to grow into connected mode
+Connected mode (Phase 6) may be added later without redesigning these screens. The player's phone keeps its
+game knowledge in one place, each fact tagged with its source: **the player** now (marks, crossed-out
+prizes), **the host** later (called numbers, won prizes, TAM-211). Quick mark, the pattern cue and the claim
+picker read from that one place. The ticket QR and claim QR carry a format version, so later versions can
+add to them and still read old ones.
 
 ## 3. Player: showing a claim
 The player **shouts first**, then taps **Show claim** (TAM-060, TAM-177).

@@ -27,7 +27,9 @@ current; instructions live here, not in chat. History from Phase 0 and 1a is fur
    verdicts (including TAM-050 reworded, TAM-133 moved to Phase 6, TAM-179 changed) **and** the additions in
    `docs/games/tambola/changes-2026-09-29-phone-tickets.md` (all tickets visible together, switch to one at a
    time, quick mark with the tickets underneath, claim screen showing the ticket, tickets from one sheet, the
-   "your marks fill a pattern" cue, every prize selectable when claiming: TAM-122, TAM-173, TAM-191 to TAM-196), then writes tests; the coder builds to `docs/games/tambola/ux-phone-tickets.md`.
+   "your marks fill a pattern" cue, players crossing out won prizes: TAM-122, TAM-173, TAM-191 to TAM-196), and the
+   **extensibility note** in that file: build the player's game knowledge so connected mode can be added later
+   without redesigning the screens, then writes tests; the coder builds to `docs/games/tambola/ux-phone-tickets.md`.
 5. **Phase 7 ("Report a problem", stub destination)**: **signed off** (29 September). The tester marks PLT-200 to
    PLT-209 approved (PLT-208 with the stub wording) and writes tests when this step comes up.
 6. **Extended testing (simulations, mutation testing, Android emulator, Jev)**: **signed off** (29 September),

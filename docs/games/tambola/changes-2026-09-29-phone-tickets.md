@@ -34,7 +34,10 @@ writing the Phase 2 tests. Design: `docs/games/tambola/ux-phone-tickets.md`, sec
 > Then nothing is marked, and she sees "37: not on your tickets"
 > When she taps 36 again
 > Then it is unmarked
-> And the player's tickets, with their marks, are shown under the pad, so each tap is seen landing on its ticket
+> And **all** the player's tickets are shown under the pad as small thumbnails: numbers may be too small to
+> read, but every marked cell is clearly filled, so each tap is seen landing on its ticket
+> When she taps a thumbnail
+> Then that ticket opens full size ("One at a time", TAM-191), and "Back" returns to quick mark
 > And quick mark never shows which numbers were called; the player still listens to the anchor (TAM-050)
 
 **New TAM-193** (Phase 2):
@@ -64,12 +67,27 @@ writing the Phase 2 tests. Design: `docs/games/tambola/ux-phone-tickets.md`, sec
 > goes away if she unmarks a number
 > And it never mentions a prize this game doesn't have
 
-**New TAM-196** (Phase 2; owner, 29 September: keep it simple):
-> ## TAM-196: Every prize stays selectable when claiming
-> When Riya taps "Show claim"
-> Then every prize in this game can be picked, including prizes already won or closed, because her phone
-> cannot know (it has no connection to the host)
+**New TAM-196** (Phase 2; owner, 29 September):
+> ## TAM-196: Players can cross out prizes that are gone; the host's scan catches the rest
+> When the anchor announces that Top Line has been won
+> Then Riya can tap Top Line in her phone's prize list to cross it out (tap again to undo)
+> And a crossed-out prize is shown greyed with "won" and cannot be picked in "Show claim"
+> And every prize she has not crossed out stays selectable, because her phone cannot know what has been won
 > And if she claims a prize that is gone, the host's scan refuses it calmly: "Top Line already won", not a bogey (TAM-179)
-> (Disabling won prizes automatically would need connected mode, Phase 6, on hold.)
+> (In connected mode, later, won prizes will be crossed out automatically: see the extensibility note below.)
+
+**Extensibility note (for the coder; no test of its own):** connected mode (Phase 6) may come later, so the
+player's phone keeps its game knowledge (called numbers, won and closed prizes) in one place, each fact
+marked with where it came from: "the player" today, "the host" later. Phase 2 fills only the player's own
+facts (marks, crossed-out prizes). Connected mode will add host facts through the same place, and the screens
+(quick mark, the pattern cue, the claim picker) read from it without being rewritten. The claim QR format
+carries a version number for the same reason.
+
+**New TAM-211** (Phase 6, on hold; draft for later):
+> ## TAM-211: In connected mode, won prizes are crossed out automatically
+> Given connected mode is on (TAM-200)
+> When the host closes Top Line
+> Then every connected player's phone crosses out Top Line within 2 seconds, marked as "from the host"
+> And a player's own cross-outs still work, and never undo the host's
 
 **Carry-over:** TAM-190 ("picks the ticket to claim with") is unchanged; with layout D the chosen ticket is shown.
