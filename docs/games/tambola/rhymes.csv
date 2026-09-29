@@ -37,12 +37,12 @@ number,language,style,family_friendly,rhyme,review_note
 7,en,classic,yes,Lucky seven,
 7,en,classic,yes,God's in heaven,
 7,en,indian,yes,One hockey stick,
-7,en,cricket,yes,Thala for a reason!,Dhoni wears 7
+7,en,cricket,yes,Thala for a reason!,shirt number: Dhoni 7 (one of the top three)
 7,hi,hindi,yes,Saat samundar paar,
 7,hi,hindi,yes,Indradhanush ke saat rang,
 8,en,classic,yes,Garden gate,
 8,en,indian,yes,"Two laddoos stacked, eight!",
-8,en,cricket,yes,"Sir Jadeja, sword out!",verify: jersey number
+8,en,cricket,yes,"Required rate eight, pressure's great!",
 8,en,classic,no,One fat lady,traditional; body-shaming
 8,hi,hindi,yes,Aath ka thaath,
 9,en,classic,yes,Doctor's orders,
@@ -51,7 +51,7 @@ number,language,style,family_friendly,rhyme,review_note
 9,en,cricket,yes,"Nine down, last man in!",
 9,hi,hindi,yes,Nau nau choodiyan,"film song, Chandni"
 10,en,classic,yes,Big fat hen,
-10,en,cricket,yes,Sachin! Saa-chin! Ten!,Sachin wore 10
+10,en,cricket,yes,Sachin! Saa-chin! Ten!,shirt number: Sachin 10 (one of the top three)
 10,en,indian,yes,"Ten on ten, full marks!",
 10,en,bollywood,yes,"Dus bahane, dus!",song from the film Dus
 10,hi,hindi,yes,"Baap numbri, beta dus numbri",
@@ -77,7 +77,7 @@ number,language,style,family_friendly,rhyme,review_note
 14,hi,hindi,yes,Chaudhvin ka chaand,film title
 15,en,classic,yes,Young and keen,
 15,en,festival,yes,"Independence Day, 15 August",
-15,en,cricket,yes,"Swing it like Bhuvi, fifteen!",verify: jersey number
+15,en,cricket,yes,"Fifteen overs, slog time starts!",
 15,hi,hindi,yes,"Pandrah August, azaadi",
 16,en,classic,yes,Sweet sixteen,
 16,en,playful,yes,"Sixteen, pimples on the screen",
@@ -86,15 +86,15 @@ number,language,style,family_friendly,rhyme,review_note
 16,hi,hindi,yes,Solah baras ki bali umar,film song
 17,en,classic,yes,Dancing queen,
 17,en,playful,yes,Selfie queen,
-17,en,cricket,yes,"Pant falls over, still a six!",verify: jersey number
+17,en,cricket,yes,"Seventeen off the over, what a slog!",
 17,hi,hindi,yes,"Satrah, dil se pyaara",
 18,en,classic,yes,Coming of age,
 18,en,indian,yes,Voting age,
-18,en,cricket,yes,"King Kohli, the chase is on!",verify: jersey number
+18,en,cricket,yes,"King Kohli, the chase is on!",shirt number: Kohli 18 (one of the top three)
 18,hi,hindi,yes,Vote ki umar,
 18,hi,hindi,yes,"Athaarah, ab hum bade",
 19,en,classic,yes,Goodbye teens,
-19,en,cricket,yes,"The Wall: nineteen, blocked!",verify: only one source
+19,en,cricket,yes,"Nineteenth over, bowl it tight!",
 19,en,playful,yes,"Nineteen, last of the teens",
 19,hi,hindi,yes,Unees-bees ka farak,
 20,en,classic,yes,One score,
@@ -113,7 +113,7 @@ number,language,style,family_friendly,rhyme,review_note
 22,hi,hindi,yes,Hans ki jodi,
 23,en,classic,yes,Thee and me,
 23,en,indian,yes,"Twenty-three, jalebi for me",
-23,en,cricket,yes,"Kuldeep's googly, twenty-three!",verify: jersey number
+23,en,cricket,yes,"Twenty-three, third umpire, replay!",
 23,hi,hindi,yes,"Teis, sabse haseen",
 24,en,classic,yes,Two dozen,
 24,en,indian,yes,Hours in a day,
@@ -156,7 +156,7 @@ number,language,style,family_friendly,rhyme,review_note
 32,hi,hindi,yes,Battisi dikhao,show all 32 teeth
 33,en,classic,yes,All the threes,
 33,en,classic,yes,Dirty knee,
-33,en,cricket,yes,"Kung-fu Pandya, thirty-three!",verify: jersey number
+33,en,cricket,yes,"Thirty-three for no loss, openers roar!",
 33,en,indian,yes,"Thirty-three, baraat dance spree",
 33,hi,hindi,yes,"Teen teen, full scene",
 34,en,classic,yes,Ask for more,
@@ -165,7 +165,7 @@ number,language,style,family_friendly,rhyme,review_note
 34,hi,hindi,yes,"Chauntees, aur chahiye",
 35,en,classic,yes,Jump and jive,
 35,en,indian,yes,"Thirty-five, Pune-Mumbai drive",
-35,en,cricket,yes,"Rinku! Five sixes, last over!","verify: jersey 35; five sixes in the last over, IPL 2023"
+35,en,cricket,yes,"Thirty-five, caught at the rope, dive!",
 35,hi,hindi,yes,"Paintees, sab theek",
 36,en,classic,yes,Three dozen,
 36,en,cricket,yes,Yuvi's six sixes: thirty-six!,"six sixes in an over, T20 World Cup 2007"
@@ -195,7 +195,7 @@ number,language,style,family_friendly,rhyme,review_note
 41,hi,hindi,yes,"Iktaalis, aage badho",
 42,en,classic,yes,Winnie the Pooh,
 42,en,festival,yes,"Quit India, 1942",
-42,en,cricket,yes,"Gabbar's thigh-five, forty-two!",verify: jersey number
+42,en,cricket,yes,"Forty-two, rain stops play, boo!",
 42,en,bollywood,yes,1942: A Love Story,
 42,hi,hindi,yes,"Bharat chhodo, bayaalis",
 43,en,classic,yes,Down on your knees,
@@ -203,11 +203,11 @@ number,language,style,family_friendly,rhyme,review_note
 43,en,indian,yes,"Forty-three, cutting chai for me",
 43,hi,hindi,yes,"Taintaalis, pedh pe chadho",
 44,en,classic,yes,All the fours,
-44,en,cricket,yes,"Viru: see ball, hit ball!",verify: only one source
+44,en,cricket,yes,"Forty-four, four fours, crowd roars!",
 44,en,playful,yes,"Forty-four, open the door",
 44,hi,hindi,yes,"Chaar chaar, chor chor",
 45,en,classic,yes,Halfway there,
-45,en,cricket,yes,"Hitman! Pull shot, forty-five!",verify: jersey number
+45,en,cricket,yes,"Forty-five, DRS review, stay alive!",
 45,en,indian,yes,"Forty-five, half-time, chai arrives!",
 45,hi,hindi,yes,Aadha raasta paar,
 46,en,classic,yes,Up to tricks,
@@ -284,7 +284,7 @@ number,language,style,family_friendly,rhyme,review_note
 62,en,indian,yes,"Sixty-two, masala chai for you",
 62,hi,hindi,yes,"Baasath, sab badhiya",
 63,en,classic,yes,Tickle me,
-63,en,cricket,yes,"SKY's the limit, sixty-three!",verify: jersey number
+63,en,cricket,yes,"Sixty-three, super over, jeez!",
 63,en,playful,yes,"Sixty-three, jump with glee",
 63,hi,hindi,yes,"Tirsath, gudgudi",
 64,en,classic,yes,Red raw,
@@ -327,7 +327,7 @@ number,language,style,family_friendly,rhyme,review_note
 72,hi,hindi,yes,"Bahattar, chhe darjan",
 73,en,classic,yes,Queen bee,
 73,en,classic,yes,Under the tree,
-73,en,cricket,yes,Siraj says Siuuu! Seventy-three,verify: jersey number
+73,en,cricket,yes,"Seventy-three, dropped catch! Oh dear!",
 73,hi,hindi,yes,"Tihattar, madhu makkhi",
 74,en,classic,yes,Hit the floor,
 74,en,classic,yes,Candy store,
@@ -345,7 +345,7 @@ number,language,style,family_friendly,rhyme,review_note
 77,en,classic,yes,Sunset strip,
 77,en,classic,yes,All the sevens,
 77,en,indian,yes,Two hockey sticks,
-77,en,cricket,yes,"Prince Gill, double seven!",verify: jersey number
+77,en,cricket,yes,"Seventy-seven, no-ball! Free hit!",
 77,hi,hindi,yes,Hum saat saat hain,
 78,en,classic,yes,Heaven's gate,
 78,en,classic,yes,39 more steps,
