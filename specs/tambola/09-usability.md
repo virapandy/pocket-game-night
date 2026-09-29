@@ -123,7 +123,7 @@ Then every tap shows a visible response within 100 ms
 And the app is usable within 5 seconds of opening over a slow connection the first time
 
 ## TAM-117: Joining a phone ticket works with the phone's camera, or a typed code
-Status: draft (product owner verdict 2026-09-28: approve; awaiting owner sign-off when Phase 2 comes up)
+Status: approved, owner, 2026-09-29 (Phase 2 sign-off, with the product owner's verdict of 2026-09-28)
 Phase: Phase 2 (phone tickets)
 When a player points their phone's own camera at the ticket QR
 Then their ticket opens, with no separate scanner app
@@ -159,16 +159,17 @@ And if the app goes to the background, auto-call pauses and shows "Paused: tap t
 And pausing or changing the timer never skips or repeats a number
 
 ## TAM-121: Players can make text larger
-Status: draft (product owner verdict 2026-09-28: approve; awaiting owner sign-off when Phase 2 comes up)
+Status: approved, owner, 2026-09-29 (Phase 2 sign-off, with the product owner's verdict of 2026-09-28)
 Phase: Phase 2 (phone tickets)
 When a player turns on "Larger text" on their phone ticket
 Then the ticket and all text grow, and nothing is cut off or overlaps
 
-## TAM-122: Tickets on phones default to landscape
-Status: draft (product owner verdict 2026-09-28: approve; awaiting owner sign-off when Phase 2 comes up)
+## TAM-122: Tickets work in both orientations
+Status: approved, owner, 2026-09-29 (Phase 2 sign-off; replaced by docs/games/tambola/changes-2026-09-29-phone-tickets.md: was "Tickets on phones default to landscape")
 Phase: Phase 2 (phone tickets)
-When a player opens their phone ticket
-Then it is shown in landscape with cells at least 44 CSS px, and turning the phone to portrait still works
+When a player opens their phone tickets
+Then they follow the phone's orientation (TAM-173); nothing forces landscape
+And ticket cells are at least 40 CSS px with all tickets shown, and at least 44 CSS px in "One at a time"
 
 ## TAM-134: Dark mode is an option, not the default
 Status: approved, owner, 2026-09-28

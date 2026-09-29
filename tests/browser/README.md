@@ -1,4 +1,4 @@
-# What the browser tests look for (Phase 1a with the 1a.1 fixes, and Phase 1b)
+# What the browser tests look for (Phase 1a with the 1a.1 fixes, Phase 1b, and Phase 2)
 
 For the Build workspace. The browser tests find things the way a person would: by the button's words,
 a field's label, or (where there are no words to use) a `data-testid`. Names come from the scenarios and
@@ -11,7 +11,7 @@ The shared steps live in `helpers.ts`.
 |---|---|
 | Home | `Tambola…` (the game card), `History` |
 | Tambola start | `New game`, `How to play` |
-| Setup | `Paper tickets`, `Phone tickets…` (may be disabled until Phase 2), `Next`, `No money`, one-tap name suggestions named after the name, `Confirm prizes`, a `Remove…` control per removable tier (TAM-183) |
+| Setup | `Paper tickets`, `Phone tickets…` (enabled from Phase 2; see "Phase 2: phone tickets" below), `Next`, `No money`, one-tap name suggestions named after the name, `Confirm prizes`, a `Remove…` control per removable tier (TAM-183) |
 | Game: top bar (`top-bar`) | `Back`, the progress text "23 of 90 called", `Menu` (the ⋯ with its word, TAM-109) |
 | Game: calling screen | `Repeat`, `Another rhyme` (quiet text buttons), `Record a win` (its own row, not filled), `Next number` (full width at the very bottom, the only filled button). Nothing else: End game and Discard game are only in the menu (TAM-124) |
 | Game: menu | `Settings`, `Show the room`, `Board`, `Check numbers`, `End game`, `Discard game`, as `menuitem`s or buttons, visible only once `Menu` is tapped. A long press on the number also opens Show the room |
@@ -230,3 +230,100 @@ Tests: `payouts-and-tally.spec.ts`, `close-prize.spec.ts`, `session-line.spec.ts
   new session. `Change` lists `New session` and up to 3 unsettled sessions whose games were in the last 7 days.
   Whether the PLT-016 question still follows `Confirm prizes` in these two cases is not decided; the tests accept both
   (the helper `confirmPrizes` names a session through `Change` when the line says "(new)").
+
+## Phase 2: phone tickets (owner sign-off 29 September 2026)
+
+Tests: `phone-tickets.spec.ts` and `phone-claims.spec.ts`; shared steps in `phone.ts`. Each phone is its own browser
+context (its own storage), made by `newPhone` with the same device settings as the test's project, so every test
+runs on the Android and the iPhone sizes. Players' phones are 390 × 844 portrait (`PORTRAIT`) unless a test turns
+them to 844 × 390 (`LANDSCAPE`). Scenarios: TAM-020, TAM-022, TAM-023, TAM-030, TAM-032, TAM-033, TAM-036, TAM-038,
+TAM-044, TAM-050, TAM-051, TAM-055 to TAM-058, TAM-117, TAM-121, TAM-122, TAM-131, TAM-132, TAM-170 to TAM-179,
+TAM-190 to TAM-196.
+
+### The camera test hook (host phone)
+The host's camera is replaced in tests, before the page loads, by `window.__pgnCamera`. When it exists, "Scan a
+claim" must call `window.__pgnCamera.start(onRead, onFail)` instead of opening the real camera, and call the function
+`start` returns when the scanner closes. `onRead(text)` hands the app the text of a QR the camera read;
+`onFail(why)` says the camera cannot be used (`'denied'`: permission refused; `'no-camera'`: none). Without the hook
+the app uses the real camera. The app's own 10-second "no read" timer uses `setTimeout` or `Date` (the tests use
+Playwright's fake clock). A QR's text is always also in a `data-payload` attribute on the element that shows it, so
+tests never need to decode an image.
+
+### Setup and handing out (host)
+- Setup: `Phone tickets` (accessible name starting "Phone tickets"), then the shared players step with, per player,
+  a select or number field labelled `Tickets for player 1`, `Tickets for player 2` … (1 by default, 1 to 3), then
+  `Next`, the contribution, `Next`, `Confirm prizes` (and the session question or line, as for paper).
+- Then the hand-out screen, `hand-out`:
+  - `hand-out-ticket`: "Ticket 3 → Riya (1 of 2)" (arrow `→`; "(k of n)" is this player's k-th of n tickets). The name
+    is a button (the first button inside `hand-out-ticket`); tapping it lists the players as buttons named by name;
+    picking one gives this ticket to that player before the QR is shown (TAM-172).
+  - `ticket-qr`: the QR, at least 200 × 200 CSS px, drawn as `svg`, `canvas` or `img`, with `data-payload` holding
+    the whole link it encodes: the app's own address (`…/pocket-game-night/…`) with the ticket in it, so a phone's
+    camera opens the app (TAM-117). The text "Scan with your phone's camera".
+  - `ticket-code`: the typed code, "7K3P-M4X9-2TRD" (see the note on its length in `tests/games/tambola/README.md`).
+  - `hand-out-progress`: "0 of 4 handed out", counting each `Next ticket` (TAM-132).
+  - `hand-out-waiting`: "Waiting: Asha 2, Dad 1": every player still waiting for a ticket; a player leaves the list once
+    all their tickets are handed out.
+  - `game-code`: the 4-character game code (TAM-170). Also shown on the calling screen (top bar or its own line).
+  - Buttons: `Next ticket`, which becomes `Start calling` after the last ticket (then the calling screen);
+    `Can't scan? Give a paper ticket`: that player plays on paper, and the rest of their tickets are skipped (TAM-058).
+- Calling screen with phone tickets: `Scan a claim` or `Check a claim` (either name) instead of, or next to,
+  `Record a win`. With paper players in the game (TAM-058), `Record a win` stays, as in 1a.1, for them.
+- Menu → `Tickets` (TAM-056, host only): one `host-ticket` per ticket in the game, with `data-ticket`, the owner's
+  name in its text, 27 `[data-cell]` cells as below, a button starting `Change owner` (then player buttons by
+  name, TAM-175) and a button starting `Switch to paper` (the player moves to paper; the ticket's text then says
+  "paper"). Closed with `Close`, `Done` or `Back`.
+
+### The player's phone
+- Scanning a ticket = opening the `data-payload` link. The ticket appears with no network requests to any other
+  server; it opens with no internet once the phone has opened the app (TAM-057). Scanning further tickets of the
+  same game adds them; a ticket of a new game replaces the old game's tickets, marks and all (TAM-171).
+- Typing a code: the home screen has `Enter ticket code`, then the field `Ticket code` and `Open ticket`. A code that
+  is not a ticket shows a one-line reason in `role="alert"`.
+- `phone-ticket`: one per ticket shown, with `data-ticket`. Inside, 27 elements with `data-cell`, in row order (row 1
+  left to right, then rows 2 and 3); numbered cells also have `data-number`, blanks have none (or empty). A marked cell
+  has `data-marked="true"`, a different background and a "✓" in its text (TAM-131). Cells that the "your marks fill a
+  pattern" cue outlines have `data-cue="true"`; cells outlined on the claim screen have `data-outlined="true"`.
+- `phone-ticket-header`: "Riya · Ticket 3 · Game 7K3P · 8:40 pm": the name, "Ticket 3", the game code and the start
+  time (h:mm) (TAM-170). "Listen to the anchor" somewhere on the screen.
+- No `current-number`, `last-calls`, `board`, `room-view` and no `[data-called]` on a player's phone; the only
+  `[data-number]` elements are the player's own tickets' numbers (TAM-050, TAM-051).
+- `Prizes` (button starting "Prizes") opens `prize-list`: one `prize-item` per prize in this game, named by the prize
+  ("Top Line"). Tapping one crosses it out: `data-crossed="true"`, greyed, with "won"; tapping again undoes it (TAM-196).
+- `Menu` (named "Menu") holds `Larger text` (a switch, checkbox, button or menu item): all text grows; no cell's text
+  is cut off, no cells overlap, nothing runs off the side (TAM-121).
+- Layouts (TAM-173, TAM-191, TAM-122): with several tickets, all are shown by default: portrait 390 × 844 stacked in
+  ticket order, no page scrolling, every cell at least 40 × 40 CSS px, rows running left to right; landscape 844 × 390:
+  the first two side by side, the third below, no scrolling, cells at least 40 px. Turning the phone keeps every mark.
+  `One at a time` shows one ticket (cells at least 44 px) with tabs, `role="tab"`, named `Ticket 3`, `Ticket 4` …
+  (the visible text may be shorter); `All tickets` goes back. The choice is remembered on the phone, for the next game too.
+- `Quick mark` (TAM-192): `quick-mark-pad` with buttons named `1` to `90`; `quick-mark-message`: "✓ 36 marked on ticket
+  3", "37: not on your tickets" (for a number on two tickets, both ticket numbers, TAM-194); tapping a marked number
+  again unmarks it. Under the pad, one `quick-mark-thumbnail` per ticket, with `data-ticket` and cells as in
+  `phone-ticket` (a marked cell's background differs from an unmarked one's). Tapping a thumbnail shows that ticket
+  alone (as `One at a time`, cells at least 44 px); `Back` returns to quick mark, and `Back` in quick mark returns to
+  the tickets.
+- `pattern-cue` (TAM-195): one element holding the cue lines, such as "Your marks fill the top row of ticket 3. Shout if
+  it's right!" (one line per filled prize; Early Five mentions the ticket, not a row or corners). It exists only
+  while the player's marks fill a prize in this game; never a verdict ("accepted", "correct", "winner"), never a claim.
+- `Show claim` (TAM-177, TAM-190, TAM-193): with several tickets, "Which ticket?" and buttons `Ticket 3` …; then one
+  button per prize in this game (`Early Five`, `Top Line` …; a crossed-out prize is disabled or not offered). Then
+  `claim-screen`: the text "Top Line · Ticket 3 · Riya" (any case), "Show this to the host", `claim-qr` with
+  `data-payload` (the claim QR's text), above one `phone-ticket` (the claimed one) with the pattern's cells
+  `data-outlined="true"` (Top Line: the top row; Four Corners: the corners; Full House: all 15; Early Five: none),
+  and `Done`. Never a verdict.
+
+### Checking a claim (host)
+- `Scan a claim` / `Check a claim` opens `claim-scanner` and starts the camera at once (the hook's `start` is called
+  on the tap). `Enter ticket number` is always visible there. If the camera fails, or no QR is read within 10
+  seconds, the text "Enter the ticket number instead" shows and the field `Ticket number` takes over (hidden before
+  10 seconds). The typed path: `Ticket number`, a prize button (if the prize is not already picked), `Check`.
+- The verdict appears in `claim-result` within 2 seconds of the read, with no internet: "Top Line: ✓ Accepted, ₹60
+  to Riya" (the ticket's owner, TAM-174), "Top Line: ✗ Bogey: 72 not called" (the pattern's numbers not called), or
+  for a late claim "✗ Bogey" with "Top Line was complete at 45" (TAM-038). It shows the ticket with called numbers
+  marked `data-called="true"` (TAM-033). After an accepted claim, closing works as with paper (`main-button` reads
+  `Close Top Line`).
+- Refusals go in `claim-refused`, never as a bogey, and change nothing: "This claim is for another game (code
+  7K3P)", "Top Line already won", "Ticket 3 is out", "This claim doesn't match ticket 3" (with `Check ticket 3 by
+  number`), a plain reason for anything that is not a claim QR, and for a typed number "No ticket 14 in this game".
+  Closed with `Close`, `OK`, `Done` or `Cancel`.

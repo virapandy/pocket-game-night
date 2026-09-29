@@ -6,13 +6,13 @@
 //  - Speech (the phone's real voice): each utterance is spoken at volume 0. Tests that stand in for the voice
 //    (`fakeVoices` in helpers.ts) replace speechSynthesis afterwards, so they see what they always saw.
 // On Android (Chromium), the browser is also started with --mute-audio (tests/playwright.config.ts).
-import { test as base } from '@playwright/test';
+import { test as base, type BrowserContext } from '@playwright/test';
 
 export * from '@playwright/test';
 
-export const test = base.extend({
-  context: async ({ context }, use) => {
-    await context.addInitScript(() => {
+/** Turns every page of this context silent (also used for the extra phones of the Phase 2 tests). */
+export async function silence(context: BrowserContext) {
+  await context.addInitScript(() => {
       const w = window as any;
       try {
         const Base = w.BaseAudioContext ?? w.AudioContext ?? w.webkitAudioContext;
@@ -54,7 +54,12 @@ export const test = base.extend({
       } catch {
         // No speech here: nothing to silence.
       }
-    });
+  });
+}
+
+export const test = base.extend({
+  context: async ({ context }, use) => {
+    await silence(context);
     await use(context);
   },
 });

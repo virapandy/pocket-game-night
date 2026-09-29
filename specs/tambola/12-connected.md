@@ -78,3 +78,11 @@ Status: draft
 Phase: Phase 6
 Then the relay runs on a free tier
 And it passes moves between phones in one game only; it stores no names, tickets or money after the game ends
+
+## TAM-211: In connected mode, won prizes are crossed out automatically
+Status: draft (drafted by the product owner with the Phase 2 sign-off, 2026-09-29; Phase 6 is on hold)
+Phase: Phase 6
+Given connected mode is on (TAM-200)
+When the host closes Top Line
+Then every connected player's phone crosses out Top Line within 2 seconds, marked as "from the host"
+And a player's own cross-outs still work, and never undo the host's

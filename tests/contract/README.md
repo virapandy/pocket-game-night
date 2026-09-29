@@ -6,6 +6,9 @@ import. If something here is wrong or impossible, write it in `docs/test-questio
 - `engine.test.ts`, `suite.ts`, `tambola.test.ts`: the shared game contract (Phase 0 and 1a). They import from
   `src/engine` and the game registrations.
 - `tally.test.ts`: the session tally and "Settle up" (Phase 1b), below.
+- `tambola-phone.test.ts`: Tambola with **phone tickets** (Phase 2) through the same suite: both seeds (`draw` and
+  `sheet`) stay out of the room and every player view, and the moves `check-claim`, `assign` and `to-paper` follow
+  the same rules as every other move. Setup and moves: `tests/games/tambola/README.md`, "Phase 2: phone tickets".
 
 ## The session tally (Phase 1b: PLT-017 to PLT-021, PLT-023, PLT-025, PLT-028)
 
