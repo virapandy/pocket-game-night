@@ -64,6 +64,8 @@
 | 2026-09-29 | Setup, first step: tapping "Paper tickets" moves on at once; no separate "Next" on a one-choice step (TAM-181). | Claude, on owner's instruction (most user-friendly) |
 | 2026-09-29 | With paper tickets the anchor judges late claims; the app's record of which number completed a pattern applies to phone tickets only (TAM-043). | Owner |
 | 2026-09-29 | Landscape calling screen: the number's digits are at least 160 px tall and never smaller than in portrait (TAM-129). | Claude, on owner's instruction (most user-friendly) |
+| 2026-09-29 | The undo toast never covers the prize chips either (TAM-125 change, from the product owner's review of the live 1a.1 build). | Product owner (UX) |
+| 2026-09-29 | Product owner instructions for the orchestrator live in `docs/handover.md` ("Now: status and what's next"), not in chat. | Owner |
 
 "Convention" means the established Tambola rule in `docs/games/tambola/guide.md`, chosen because the owner asked
 Claude to follow game conventions. Every Tambola rule above is also a host setting with this default.

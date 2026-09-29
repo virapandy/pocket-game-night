@@ -1,6 +1,38 @@
-# Handover: start here (Build workspace, VS Code)
+# Handover: start here
 
-28 September 2026. Everything designed so far, and what to build first.
+## Now: status and what's next (product owner, updated 29 September 2026)
+The orchestrator works through **"Next, in order"** from the top. The product owner keeps this section
+current; instructions live here, not in chat. History from Phase 0 and 1a is further down.
+
+### Status at the start of Phase 1a
+| Item | State |
+|---|---|
+| Phase 1a and 1a.1 (Tambola, paper tickets, redesign, money back per ticket) | **Green and live** at https://virapandy.github.io/pocket-game-night/ |
+| Phase 1b (sessions, tally and settle up, late joiners, voice, auto-call, dark mode, history tools) | Tests written (006cfea); **the coder is building** |
+| Product owner review of the live 1a.1 build | Done: 4 findings in `docs/games/tambola/review-2026-09-29.md` |
+| Family play-test on Android | **Not done yet**: owner's task; 1a.1 is live, so it can happen now (`docs/playtest-checklist.md`) |
+| Phase 2, Phase 7, extended testing | Scenarios reviewed by the product owner (`docs/scenario-review-outcome-2026-09-28.md`); **each needs the owner's sign-off** when it comes up |
+| Phase 6 (connected mode), new games | On hold |
+
+### Next, in order (for the orchestrator)
+1. **Finish Phase 1b** as now running; report green to the owner.
+2. **Fix the 1a.1 review findings** in `docs/games/tambola/review-2026-09-29.md`. The tester first adds or
+   changes checks from the scenarios named there: TAM-082 (Full House takes every rounding difference;
+   finding 1), TAM-138 and TAM-123 (the number stays visible while a win is shown; finding 2), TAM-125
+   (the undo toast also never covers the prize chips: owner-approved change; finding 3). Then the coder fixes.
+   Finding 4 is minor and may go in the same round.
+3. **Owner play-test.** Tell the owner the play-test can start (checklist above). The product owner turns
+   what the owner reports into changes here.
+4. **Phase 2 (phone tickets).** Before starting, ask the owner to sign off Phase 2 using the product owner's
+   verdicts. Then the tester applies them (including TAM-050 reworded, TAM-133 moved to Phase 6, TAM-179
+   changed) and writes tests.
+5. **Phase 7 ("Report a problem", stub destination)**, after the owner's sign-off.
+6. **Extended testing (simulations, mutation testing, Android emulator, Jev)**, after the owner's sign-off.
+   Jev is approved; the weekly cap on Jev calls is to be set by the owner at sign-off.
+
+---
+
+# History: Phase 0 and 1a (28 September 2026)
 
 ## Status
 | Item | State |
@@ -69,7 +101,7 @@ checking claims from numbers read out · ties, bogeys, late claims · undo of cl
 **Not yet:** sessions and tally, late joiners, phone voice and auto-call, dark mode (Phase 1b);
 tickets on phones and QR codes (Phase 2); Jev; any server or relay.
 
-## Paste this into Claude Code in VS Code to begin
+## How Phase 1a was started (history)
 > Read `docs/handover.md` and follow "Your first tasks, in order". Start with task 1, then plan
 > Phase 0 and show me the plan in plain English before building. Remember: you never write or
 > run tests; type-check, push, and read `reports/latest.md`.
