@@ -167,7 +167,7 @@ describe('PLT-028: settle up, net amounts first, then who pays whom', () => {
   it('for any balanced nets: whole rupees, debtors pay creditors, it adds up exactly to each net, in the fewest hand-overs', () => {
     fc.assert(
       fc.property(fc.array(fc.integer({ min: -500, max: 500 }), { minLength: 1, maxLength: 7 }), (some) => {
-        const nets = [...some, -sum(some)].map((net, i) => ({ name: `Person ${i + 1}`, net }));
+        const nets = [...some, 0 - sum(some)].map((net, i) => ({ name: `Person ${i + 1}`, net }));
         const plan = settleUp(nets);
         const left = Object.fromEntries(nets.map((p) => [p.name, p.net]));
         for (const h of plan) {

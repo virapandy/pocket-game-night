@@ -1,11 +1,11 @@
 # Test report
 Commit tested: 76bd5b8 (keep the big number out of the top bar; no pop after Settings)   Date: 2026-09-29
-Result: GREEN for the app. No real bugs. One test fault of mine (a rare false failure in a money property test,
-PLT-028) needs the owner's OK to fix; see "Test faults".
+Result: Phase 1b GREEN on 76bd5b8. No real bugs. The PLT-028 test fault (a rare false failure in a money
+property test) is fixed with the owner's approval; `npm test` then passed 6 runs out of 6.
 
 | Layer | Command | Passing | Failing | Skipped |
 |---|---|---|---|---|
-| Rules, contract, property, simulation, replays | `npm test` | 304 | 0 (3 of 4 runs; 1 run: 1 test fault, see below) | 0 |
+| Rules, contract, property, simulation, replays | `npm test` | 304 | 0 (6 of 6 runs after the approved PLT-028 fix) | 0 |
 | Browser, Android (Chromium) | `npm run build && npm run test:browser` | 150 | 0 | 1 (iPhone only) |
 | Browser, iPhone (WebKit) | same | 145 | 0 | 6 (unchanged: 3 Android or Chromium only; 3 offline reload, owner decision) |
 
@@ -20,6 +20,9 @@ Build (`npm run build`): succeeds. Full browser suite run twice: green both time
   after dark mode on both phones, in all 6 repeats.
 
 ## Approved test fixes (owner, 2026-09-29), recorded in `docs/test-questions.md`
+- `tests/contract/tally.test.ts` (PLT-028), "for any balanced nets: … in the fewest hand-overs": the last person's
+  net is now built as `0 - sum(some)` instead of `-sum(some)`, so it can never be JavaScript's "negative zero".
+  Exactly as strict as before. `npm test` passed 6 runs out of 6 afterwards (app code unchanged since 76bd5b8).
 - `tests/browser/auto-call.spec.ts` (TAM-186, TAM-120): timer found by role and exact name "Time between calls".
   All 12 auto-call tests pass on both phones.
 - `tests/browser/sessions.spec.ts` (PLT-016, PLT-026): the "2 games" / "3 games" / "1 game" checks no longer rely
@@ -29,16 +32,11 @@ Both are exactly as strict as before.
 ## Failing (real bugs only)
 None.
 
-## Test faults (my tests are wrong; not changed, owner's OK needed to fix)
-1. **Money property test can build a "negative zero"** (PLT-028), `tests/contract/tally.test.ts`, "for any
-   balanced nets: … in the fewest hand-overs". Failed in 1 of 4 runs of `npm test` (fast-check seed -1019514016,
-   input `[0]`). The test makes the last person's net `-sum(some)`; when that sum is 0, JavaScript gives -0, no one
-   pays, and the check `toBe(0)` treats -0 as different from 0 ("expected -0 to be +0"). The app's settle up is not
-   involved. Proposed fix, equally strict: build that net as `0 - sum(some)`. Until then, automation can go red on
-   this test now and then, by chance.
+## Test faults
+None open. The PLT-028 fault from the first run is fixed (see above).
 
 ## Flaky or setup problems (not for the Build workspace)
-- Only the PLT-028 test fault above. No flaky browser test in 2 full runs plus 480 repeated focus runs.
+- None. No flaky browser test in 2 full runs plus 480 repeated focus runs.
 
 ## Requests for the Build workspace
 - None needed. Still optional, for screen readers: the session row reads as "Nani's2 gamesNot settled" run
