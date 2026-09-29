@@ -80,6 +80,7 @@ export function App() {
           store={gameStore}
           prefs={preferences}
           sessions={sessionPicker}
+          onSession={(id) => setRoute({ name: 'session', id })}
           {...(route.open ? { open: route.open } : {})}
         />
       );

@@ -70,7 +70,8 @@ export function SessionList({ onBack, onOpen }: { onBack: () => void; onOpen: (i
   );
 }
 
-function PersonRow({ p }: { p: TallyPerson }) {
+/** PLT-017: one compact row per person, with the name and the balance; a tap shows the details. */
+function PersonRow({ p, onOpen }: { p: TallyPerson; onOpen: (p: TallyPerson) => void }) {
   return (
     <li
       className="tally-person"
@@ -80,23 +81,43 @@ function PersonRow({ p }: { p: TallyPerson }) {
       data-got-back={String(p.gotBack)}
       data-net={String(p.net)}
     >
-      <span className="tally-name">
-        {p.name} {signed(p.net)}
-      </span>
-      <span className="note">
-        Paid {rupees(p.paid)} · got back {rupees(p.gotBack)}
-      </span>
+      <button type="button" className="tally-row" onClick={() => onOpen(p)}>
+        <span className="tally-name">{p.name}</span>
+        <span className="tally-balance">{p.net === 0 ? 'Even' : signed(p.net)}</span>
+      </button>
     </li>
   );
 }
 
 function People({ people, testId }: { people: readonly TallyPerson[]; testId: string }) {
+  const [open, setOpen] = useState<TallyPerson | null>(null);
   return (
-    <ul className="tally-list" data-testid={testId}>
-      {people.map((p) => (
-        <PersonRow key={p.name} p={p} />
-      ))}
-    </ul>
+    <>
+      <ul className="tally-list tally-compact" data-testid={testId}>
+        {people.map((p) => (
+          <PersonRow key={p.name} p={p} onOpen={setOpen} />
+        ))}
+      </ul>
+      {open && (
+        <Dialog>
+          <div className="stack-tight" data-testid="tally-person-detail">
+            <h2 className="section-title">{open.name}</h2>
+            <ul className="detail-list">
+              <li>Paid {rupees(open.paid)}</li>
+              {open.prizes !== undefined && <li>Won {rupees(open.prizes)}</li>}
+              <li>Got back {rupees(open.gotBack)}</li>
+              <li>
+                <strong>{open.net === 0 ? 'Even' : open.net > 0 ? `Up ${rupees(open.net)}` : `Down ${rupees(-open.net)}`}</strong>
+              </li>
+            </ul>
+            <p className="note">Got back is prizes won plus money handed back from prizes nobody won.</p>
+          </div>
+          <button type="button" className="button" onClick={() => setOpen(null)}>
+            Close
+          </button>
+        </Dialog>
+      )}
+    </>
   );
 }
 
@@ -159,13 +180,16 @@ export function SessionScreen({ id, onBack }: { id: string; onBack: () => void }
   };
   const opened = session.settlements.find((s) => s.id === open);
 
+  const canSettle = tally.people.length > 0;
   return (
-    <main className="screen">
+    // TAM-181: the session scrolls; "Settle up" and "Mark as settled" stay fixed at the bottom.
+    <main className="screen setup-screen">
       <header className="top-bar">
         <button type="button" className="button button-quiet" onClick={onBack}>
           ← Sessions
         </button>
       </header>
+      <div className="setup-body stack">
       {renaming === null ? (
         <div className="row">
           <h1 className="step-title grow">{session.name}</h1>
@@ -235,12 +259,7 @@ export function SessionScreen({ id, onBack }: { id: string; onBack: () => void }
             </button>
           </div>
         )}
-        {tally.people.length > 0 && !showSettle && (
-          <button type="button" className="button" onClick={() => setShowSettle(true)}>
-            Settle up
-          </button>
-        )}
-        {tally.people.length > 0 && showSettle && (
+        {canSettle && showSettle && (
           <>
             <div className="stack-tight" data-testid="settle-up">
               <h3 className="section-title">Who pays whom</h3>
@@ -257,9 +276,6 @@ export function SessionScreen({ id, onBack }: { id: string; onBack: () => void }
               )}
               <p className="note">Hand the money over in person. The app only works it out.</p>
             </div>
-            <button type="button" className="button" onClick={() => setConfirm(true)}>
-              Mark as settled
-            </button>
           </>
         )}
       </section>
@@ -298,6 +314,21 @@ export function SessionScreen({ id, onBack }: { id: string; onBack: () => void }
             </div>
           )}
         </section>
+      )}
+
+      </div>
+      {canSettle && (
+        <div className="bottom-action">
+          {showSettle ? (
+            <button type="button" className="button button-big" onClick={() => setConfirm(true)}>
+              Mark as settled
+            </button>
+          ) : (
+            <button type="button" className="button button-big" onClick={() => setShowSettle(true)}>
+              Settle up
+            </button>
+          )}
+        </div>
       )}
 
       {confirm && (

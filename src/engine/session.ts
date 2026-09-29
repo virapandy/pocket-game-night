@@ -60,3 +60,27 @@ export function readSession(raw: unknown): Session | null {
   if (s.format !== SESSION_FORMAT || typeof s.id !== 'string' || typeof s.name !== 'string' || !Array.isArray(s.settlements)) return null;
   return s;
 }
+
+/** "Change" on the session line offers sessions whose last game was at most this long ago (PLT-029). */
+export const RECENT_SESSION_MS = 7 * 24 * 3600_000;
+
+/**
+ * PLT-029: the unsettled sessions a new game may join instead of the one shown, most recent first: at most
+ * `limit`, each with a game in the last 7 days. A session is settled once it has been marked as settled and
+ * nothing new is left in its tally.
+ */
+export function recentUnsettledSessions(
+  sessions: readonly Session[],
+  games: readonly SavedGame[],
+  now: number,
+  limit = 3,
+): Session[] {
+  const unsettled = (s: Session) =>
+    s.settlements.length === 0 || games.some((g) => g.sessionId === s.id && g.status === 'ended' && !g.settlementId && !!g.money);
+  return sessions
+    .map((s) => ({ s, at: lastActivity(s, games) }))
+    .filter(({ s, at }) => now - at <= RECENT_SESSION_MS && unsettled(s))
+    .sort((a, b) => b.at - a.at)
+    .slice(0, limit)
+    .map(({ s }) => s);
+}

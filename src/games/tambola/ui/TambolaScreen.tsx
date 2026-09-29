@@ -15,7 +15,7 @@ import { Play } from './Play';
 import { loadMatch, newSaved, type TambolaMatch, type TambolaSaved } from './saved';
 import { loadSettings, saveSettings, SettingsPanel } from './Settings';
 import { clearDraft, draftFromConfig, loadDraft, saveDraft, Setup, type SetupDraft, type SetupStep } from './Setup';
-import { SessionQuestionScreen } from './SessionQuestion';
+import { SessionLine, SessionQuestionScreen, suggestedSessionName, type SessionChoice } from './SessionQuestion';
 import { Summary } from './Summary';
 import { isDark, setDark } from './theme';
 
@@ -62,8 +62,11 @@ export function TambolaScreen({
   prefs,
   sessions,
   open,
+  onSession,
 }: {
   onExit: () => void;
+  /** Opens a session's screen (TAM-197). */
+  onSession?: (sessionId: string) => void;
   store: SavedGameStore;
   prefs: Preferences;
   sessions: SessionPicker;
@@ -72,6 +75,16 @@ export function TambolaScreen({
   const [route, setRoute] = useState<Route>(() => openRoute(store, open));
   const [settings, setSettings] = useState(() => loadSettings(prefs));
   const [dark, setDarkState] = useState(() => isDark(prefs));
+  /** PLT-029: the session the host picked with "Change"; null means the one suggested. */
+  const [choice, setChoice] = useState<SessionChoice | null>(null);
+  const suggested = (now: number): SessionChoice => {
+    const q = sessions.question(now);
+    return q.kind === 'join' ? { kind: 'existing', session: q.session } : { kind: 'new', name: suggestedSessionName(now), chosen: false };
+  };
+  const toSetup = (r: Extract<Route, { name: 'setup' }>) => {
+    setChoice(null);
+    setRoute(r);
+  };
 
   const begin = (config: TambolaConfig, session: Session) => {
     const now = Date.now();
@@ -85,7 +98,11 @@ export function TambolaScreen({
   /** Prizes confirmed: the setup is no longer "unfinished" (PLT-006); then the session question (PLT-016). */
   const start = (config: TambolaConfig) => {
     clearDraft(prefs);
-    const q = sessions.question(Date.now());
+    const now = Date.now();
+    // PLT-029: the session shown on the line, as picked or named with "Change".
+    if (choice?.kind === 'existing') return begin(config, choice.session);
+    if (choice?.kind === 'new' && choice.chosen) return begin(config, sessions.create(choice.name, now));
+    const q = sessions.question(now);
     if (q.kind === 'join') begin(config, q.session);
     else setRoute({ name: 'session', config, ask: q.kind === 'name' ? 'name' : { continue: q.session } });
   };
@@ -121,6 +138,7 @@ export function TambolaScreen({
           onDraft={(draft) => saveDraft(prefs, draft)}
           onStart={start}
           onCancel={() => setRoute({ name: 'start' })}
+          sessionLine={<SessionLine choice={choice ?? suggested(Date.now())} recent={() => sessions.recent(Date.now(), 3)} onChange={setChoice} />}
         />
       );
     case 'session':
@@ -147,9 +165,10 @@ export function TambolaScreen({
             if (s && s.status === 'in-progress') store.put({ ...s, status: 'paused', updatedAt: Date.now() });
             onExit();
           }}
+          {...(onSession ? { onSessionTally: onSession } : {})}
           onPlayAgain={(finished) => {
             const config = configToReuse(finished, loadMatch(finished));
-            setRoute({ name: 'setup', initial: { draft: draftFromConfig(config), step: 'prizes' } });
+            toSetup({ name: 'setup', initial: { draft: draftFromConfig(config), step: 'prizes' } });
           }}
         />
       );
@@ -170,7 +189,7 @@ export function TambolaScreen({
               onClick={() => {
                 // PLT-006: a setup left unconfirmed comes back, ready to change or confirm.
                 const draft = loadDraft(prefs);
-                setRoute(draft ? { name: 'setup', initial: { draft, step: 'mode' } } : { name: 'setup' });
+                toSetup(draft ? { name: 'setup', initial: { draft, step: 'mode' } } : { name: 'setup' });
               }}
             >
               New game

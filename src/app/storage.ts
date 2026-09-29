@@ -3,6 +3,7 @@
 import {
   readSavedGame,
   readSession,
+  recentUnsettledSessions,
   sessionQuestion,
   SESSION_FORMAT,
   type Preferences,
@@ -150,5 +151,8 @@ export const sessionPicker: SessionPicker = {
     const session: Session = { format: SESSION_FORMAT, id: freshId(), name: name.trim(), createdAt: now, settlements: [] };
     sessionStore.put(session);
     return session;
+  },
+  recent(now, limit) {
+    return recentUnsettledSessions(sessionStore.list(), gameStore.list(), now, limit);
   },
 };

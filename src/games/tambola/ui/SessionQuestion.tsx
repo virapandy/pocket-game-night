@@ -72,3 +72,109 @@ export function SessionQuestionScreen({
     </main>
   );
 }
+
+/** Which session the next game joins (PLT-029): an existing one, or a new one with a name. */
+export type SessionChoice =
+  | { readonly kind: 'existing'; readonly session: Session }
+  /** `chosen`: the host named it through "Change", so no question follows "Confirm prizes". */
+  | { readonly kind: 'new'; readonly name: string; readonly chosen: boolean };
+
+/**
+ * PLT-029: one line above "Confirm prizes", "Session: Diwali at Nani's · Change". "Change" starts a new session
+ * (the day as its suggested name) or picks one of up to 3 recent unsettled sessions.
+ */
+export function SessionLine({
+  choice,
+  recent,
+  onChange,
+}: {
+  choice: SessionChoice;
+  /** Sessions the host may pick instead: unsettled, recent, most recent first. */
+  recent: () => readonly Session[];
+  onChange: (next: SessionChoice) => void;
+}) {
+  const [panel, setPanel] = useState<null | 'list' | 'name'>(null);
+  const [name, setName] = useState('');
+  const shown = choice.kind === 'existing' ? choice.session.name : choice.name;
+  const current = choice.kind === 'existing' ? choice.session.id : null;
+  const options = panel === 'list' ? recent().filter((s) => s.id !== current).slice(0, 3) : [];
+  const save = () => {
+    onChange({ kind: 'new', name: name.trim() || suggestedSessionName(Date.now()), chosen: true });
+    setPanel(null);
+  };
+  return (
+    <>
+      <p className="session-line" data-testid="session-line">
+        <span className="session-line-text">
+          Session: {shown}
+          {choice.kind === 'new' ? ' (new)' : ''}
+        </span>
+        <span aria-hidden="true"> · </span>
+        <button type="button" className="text-button session-change" onClick={() => setPanel('list')}>
+          Change
+        </button>
+      </p>
+      {panel && (
+        <div className="backdrop">
+          <div className="dialog" role="dialog" aria-modal="true" aria-label="Session">
+            {panel === 'list' ? (
+              <>
+                <h2 className="section-title">Which session?</h2>
+                <button
+                  type="button"
+                  className="button button-quiet"
+                  onClick={() => {
+                    setName(suggestedSessionName(Date.now()));
+                    setPanel('name');
+                  }}
+                >
+                  New session
+                </button>
+                {options.map((s) => (
+                  <button
+                    key={s.id}
+                    type="button"
+                    className="button button-quiet"
+                    onClick={() => {
+                      onChange({ kind: 'existing', session: s });
+                      setPanel(null);
+                    }}
+                  >
+                    {s.name}
+                  </button>
+                ))}
+                <button type="button" className="text-button" onClick={() => setPanel(null)}>
+                  Cancel
+                </button>
+              </>
+            ) : (
+              <>
+                <h2 className="section-title">New session</h2>
+                <label className="field">
+                  <span>Session name</span>
+                  <input
+                    type="text"
+                    maxLength={40}
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') save();
+                    }}
+                  />
+                </label>
+                <div className="row">
+                  <button type="button" className="button" onClick={save}>
+                    Save
+                  </button>
+                  <button type="button" className="button button-quiet" onClick={() => setPanel('list')}>
+                    Back
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+    </>
+  );
+}

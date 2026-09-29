@@ -7,6 +7,11 @@ export interface PersonMoney {
   /** Whole amounts in the unit the group settles in (for example rupees). */
   readonly paid: number;
   readonly won: number;
+  /**
+   * The part of `won` that is prizes, without money handed back (PLT-017: the tally's "won"). Missing in games
+   * saved before 30 September 2026; then only `won` is known.
+   */
+  readonly prizes?: number;
 }
 
 export interface MoneyRecord {

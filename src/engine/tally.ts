@@ -21,6 +21,8 @@ export interface TallyPerson {
   readonly gotBack: number;
   /** gotBack − paid. */
   readonly net: number;
+  /** Prizes only (PLT-017), when every game in the tally recorded them. */
+  readonly prizes?: number;
 }
 
 export interface Tally {
@@ -50,18 +52,23 @@ export function inTally(game: Omit<TallyGame, 'sessionId'> & { readonly sessionI
  */
 export function tallySession(sessionId: string, games: readonly TallyGame[]): Tally {
   const gameIds: string[] = [];
-  const people = new Map<string, { name: string; paid: number; gotBack: number }>();
+  const people = new Map<string, { name: string; paid: number; gotBack: number; prizes: number | null }>();
   for (const g of games) {
     if (g.sessionId !== sessionId || !inTally(g)) continue;
     gameIds.push(g.id);
     for (const p of g.money!.people) {
-      const row = people.get(p.name) ?? { name: p.name, paid: 0, gotBack: 0 };
+      const row = people.get(p.name) ?? { name: p.name, paid: 0, gotBack: 0, prizes: 0 };
       row.paid += p.paid;
       row.gotBack += p.won;
+      row.prizes = row.prizes === null || typeof p.prizes !== 'number' ? null : row.prizes + p.prizes;
       people.set(p.name, row);
     }
   }
-  const list = [...people.values()].map((p) => ({ ...p, net: p.gotBack - p.paid }));
+  const list: TallyPerson[] = [...people.values()].map(({ prizes, ...p }) => ({
+    ...p,
+    net: p.gotBack - p.paid,
+    ...(prizes === null ? {} : { prizes }),
+  }));
   return {
     sessionId,
     gameIds,

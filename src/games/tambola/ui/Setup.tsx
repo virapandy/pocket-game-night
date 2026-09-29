@@ -156,6 +156,7 @@ export function Setup({
   onDraft,
   onStart,
   onCancel,
+  sessionLine,
 }: {
   prefs: Preferences;
   settings: TambolaSettings;
@@ -164,6 +165,8 @@ export function Setup({
   onDraft?: (draft: SetupDraft) => void;
   onStart: (config: TambolaConfig) => void;
   onCancel: () => void;
+  /** PLT-029: the session line shown above "Confirm prizes". */
+  sessionLine?: ReactNode;
 }) {
   const [step, setStep] = useState<SetupStep>(initial?.step ?? 'mode');
   const [draft, setDraft] = useState<SetupDraft>(initial?.draft ?? emptyDraft);
@@ -273,7 +276,7 @@ export function Setup({
           }}
         />
       )}
-      {step === 'prizes' && <PrizesStep draft={draft} update={update} error={error} onConfirm={confirm} />}
+      {step === 'prizes' && <PrizesStep draft={draft} update={update} error={error} onConfirm={confirm} sessionLine={sessionLine} />}
     </main>
   );
 }
@@ -454,11 +457,13 @@ function PrizesStep({
   update,
   error,
   onConfirm,
+  sessionLine,
 }: {
   draft: SetupDraft;
   update: (patch: Partial<SetupDraft>) => void;
   error: string | null;
   onConfirm: () => void;
+  sessionLine?: ReactNode;
 }) {
   const [editing, setEditing] = useState<{
     pattern: Pattern;
@@ -573,6 +578,7 @@ function PrizesStep({
         <p className="note">Once you confirm, the prizes are locked for this game.</p>
       </section>
       <BottomAction>
+        {sessionLine}
         <button type="button" className="button button-big" onClick={onConfirm} disabled={money && !result.plan}>
           Confirm prizes
         </button>

@@ -1,7 +1,9 @@
 // The end-of-game summary (TAM-078, TAM-088, TAM-089): each prize and who won it, or "not won"; per person
 // what they paid, won, got handed back and their net; bogeys; and how many numbers were called. After a
 // discard, or with no prize won, every contribution is handed back (TAM-140, TAM-144).
-import { PATTERN_NAMES, type TambolaView } from '../rules';
+import { useState } from 'react';
+import { settleUp } from '../../../engine';
+import { PATTERN_NAMES, type Payout, type TambolaView } from '../rules';
 import { plural, rupees } from './format';
 
 const signed = (n: number) => (n > 0 ? `+${rupees(n)}` : n < 0 ? `−${rupees(-n)}` : rupees(0));
@@ -53,34 +55,30 @@ export function Summary({ view }: { view: TambolaView }) {
 
       {payouts && (
         <>
-          <table className="money-table">
-            <thead>
-              <tr>
-                <th scope="col">Player</th>
-                <th scope="col">Paid</th>
-                {!discarded && anyWinner && <th scope="col">Won</th>}
-                <th scope="col">{discarded || !anyWinner ? 'Hand back' : 'Handed back'}</th>
-                {!discarded && anyWinner && <th scope="col">Net</th>}
-              </tr>
-            </thead>
-            <tbody>
-              {payouts.map((p) => (
-                <tr key={p.playerId}>
-                  <td>{p.name}</td>
-                  <td>{rupees(p.paid)}</td>
-                  {!discarded && anyWinner && <td>{rupees(p.won)}</td>}
-                  <td>{rupees(p.handedBack)}</td>
-                  {!discarded && anyWinner && <td>{signed(p.net)}</td>}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          {!discarded && anyWinner && (
-            <p className="lead">
-              Pot <strong>{rupees(s.pot ?? 0)}</strong>: {rupees(prizes)} in prizes
-              {back > 0 ? ` and ${rupees(back)} handed back, equally per ticket` : ''}.
-            </p>
-          )}
+          <ul className="payout-people">
+            {payouts.map((p) => (
+              <li
+                key={p.playerId}
+                className="payout-person"
+                data-testid="payout-person"
+                data-name={p.name}
+                data-paid={String(p.paid)}
+                data-won={String(p.won)}
+                data-net={String(p.net)}
+              >
+                <span className="payout-name">{p.name}</span>
+                <span className="payout-figures">
+                  paid {rupees(p.paid)} · won {rupees(p.won)}
+                  {p.handedBack > 0 ? ` · handed back ${rupees(p.handedBack)}` : ''} · net <strong>{signed(p.net)}</strong>
+                </span>
+              </li>
+            ))}
+          </ul>
+          <p className="lead">
+            Pot <strong>{rupees(s.pot ?? 0)}</strong>
+            {!discarded && anyWinner ? `: ${rupees(prizes)} in prizes${back > 0 ? ` and ${rupees(back)} handed back, equally per ticket` : ''}.` : '.'}
+          </p>
+          <Settle payouts={payouts} />
         </>
       )}
 
@@ -94,5 +92,67 @@ export function Summary({ view }: { view: TambolaView }) {
         </ul>
       )}
     </section>
+  );
+}
+
+/**
+ * TAM-089, TAM-199 (owner, 2026-09-30): two ways to settle this game. "Settle with host": the host, as the bank,
+ * hands each person their prize plus money handed back (adding up to the pot). "Settle with players": who pays
+ * whom for this game only, in the fewest hand-overs. Money is calculated, never moved (TAM-090).
+ */
+function Settle({ payouts }: { payouts: readonly Payout[] }) {
+  const [shown, setShown] = useState<'host' | 'players' | null>(null);
+  const handOvers = shown === 'players' ? settleUp(payouts.map((p) => ({ name: p.name, net: p.net }))) : [];
+  return (
+    <div className="stack-tight">
+      <div className="row">
+        <button
+          type="button"
+          className={shown === 'host' ? 'button grow' : 'button button-quiet grow'}
+          aria-pressed={shown === 'host'}
+          onClick={() => setShown(shown === 'host' ? null : 'host')}
+        >
+          Settle with host
+        </button>
+        <button
+          type="button"
+          className={shown === 'players' ? 'button grow' : 'button button-quiet grow'}
+          aria-pressed={shown === 'players'}
+          onClick={() => setShown(shown === 'players' ? null : 'players')}
+        >
+          Settle with players
+        </button>
+      </div>
+      {shown === 'host' && (
+        <div className="stack-tight" data-testid="settle-with-host">
+          <p className="note">Everyone paid the host. The host hands out:</p>
+          <ul className="tally-list">
+            {payouts.map((p) => (
+              <li key={p.playerId} className="hand-over" data-testid="host-gives" data-name={p.name} data-amount={String(p.hostGives)}>
+                Host gives {p.name} {rupees(p.hostGives)}
+              </li>
+            ))}
+          </ul>
+          <p className="note">Hand the money over in person. The app only works it out.</p>
+        </div>
+      )}
+      {shown === 'players' && (
+        <div className="stack-tight" data-testid="settle-with-players">
+          <p className="note">For this game only, in the fewest hand-overs:</p>
+          {handOvers.length === 0 ? (
+            <p className="lead">Everyone is even: nothing to hand over.</p>
+          ) : (
+            <ul className="tally-list">
+              {handOvers.map((h, i) => (
+                <li key={i} className="hand-over" data-testid="hand-over" data-from={h.from} data-to={h.to} data-amount={String(h.amount)}>
+                  {h.from} pays {h.to} {rupees(h.amount)}
+                </li>
+              ))}
+            </ul>
+          )}
+          <p className="note">Hand the money over in person. The app only works it out.</p>
+        </div>
+      )}
+    </div>
   );
 }

@@ -105,6 +105,7 @@ export function Play({
   startDialog,
   onHome,
   onPlayAgain,
+  onSessionTally,
 }: {
   initialSaved: TambolaSaved;
   initialMatch: TambolaMatch;
@@ -114,6 +115,8 @@ export function Play({
   startDialog?: 'end' | 'discard';
   onHome: () => void;
   onPlayAgain: (saved: TambolaSaved) => void;
+  /** TAM-197: from the payouts to the tally of the session this game is in. */
+  onSessionTally?: (sessionId: string) => void;
 }) {
   const [saved, setSaved] = useState(initialSaved);
   const [match, setMatch] = useState(initialMatch);
@@ -133,6 +136,7 @@ export function Play({
   const [flash, setFlash] = useState(0);
   const [, setNow] = useState(0);
   const lastCallAt = useRef<number | null>(null);
+  const mainRef = useRef<HTMLButtonElement | null>(null);
   const pressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   // Phase 1b, per game and off in every new one: the phone's voice and auto-call (TAM-060, TAM-120, TAM-180).
   const [voiceOn, setVoiceOn] = useState(false);
@@ -274,16 +278,26 @@ export function Play({
 
   if (over) {
     return (
-      <main className="screen">
+      // TAM-181, TAM-197: the payouts scroll; "Play again" and "Session tally" stay fixed at the bottom.
+      <main className="screen setup-screen">
         <header className="top-bar">
           <button type="button" className="button button-quiet" onClick={onHome}>
             ← Home
           </button>
         </header>
-        <Summary view={view} />
-        <button type="button" className="button button-big" onClick={() => onPlayAgain(saved)}>
-          Play again
-        </button>
+        <div className="setup-body">
+          <Summary view={view} />
+        </div>
+        <div className="bottom-action bottom-actions">
+          {saved.sessionId !== undefined && onSessionTally && (
+            <button type="button" className="button button-quiet button-big" onClick={() => onSessionTally(saved.sessionId!)}>
+              Session tally
+            </button>
+          )}
+          <button type="button" className="button button-big" onClick={() => onPlayAgain(saved)}>
+            Play again
+          </button>
+        </div>
       </main>
     );
   }
@@ -458,23 +472,38 @@ export function Play({
     pressTimer.current = null;
   };
 
+  // TAM-198: while a won prize waits to be closed, the rest of the screen is dimmed; a stray tap there does
+  // nothing but pulse the main button once (never a repeating blink).
+  const dimmed = !!waiting && !view.readyToEnd;
+  const pulse = () => {
+    const el = mainRef.current;
+    if (!el || typeof el.animate !== 'function') return;
+    for (const a of el.getAnimations()) a.cancel();
+    el.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.05)' }, { transform: 'scale(1)' }], { duration: 450, iterations: 1, easing: 'ease-in-out' });
+  };
+  const addAnother = (pattern: Pattern) =>
+    setSheet({ kind: 'record', sheet: { step: 'players', pattern, picked: [], adding: true } });
+
   let main: ReactNode;
   if (view.readyToEnd) {
     main = (
-      <button type="button" className="button next-number" onClick={() => move({ type: 'end' })}>
+      <button type="button" ref={mainRef} data-testid="main-button" className="button next-number" onClick={() => move({ type: 'end' })}>
         End game and show payouts
       </button>
     );
   } else if (waiting) {
+    // TAM-198: after a win, closing the prize is the main action, in the same place and size as Next number.
     main = (
-      <button type="button" className="button next-number" disabled>
-        Close {PATTERN_NAMES[waiting]} first
+      <button type="button" ref={mainRef} className="button next-number raise" data-testid="main-button" onClick={() => closeTier(waiting)}>
+        Close {PATTERN_NAMES[waiting]}
       </button>
     );
   } else {
     main = (
       <button
         type="button"
+        ref={mainRef}
+        data-testid="main-button"
         className="button next-number"
         disabled={(cooldown && sinceLastCall(lastCallAt.current) < NEXT_COOLDOWN_MS) || !canCall}
         onClick={onNext}
@@ -484,8 +513,23 @@ export function Play({
     );
   }
 
+  const recordButton = (
+    <button
+      type="button"
+      className="button button-quiet record-win"
+      onClick={() => {
+        pauseAuto();
+        setResultSeq(null);
+        setSheet({ kind: 'record', sheet: { step: 'pattern' } });
+      }}
+    >
+      Record a win
+    </button>
+  );
+
   return (
-    <main className="play">
+    <main className={dimmed ? 'play dimmed' : 'play'}>
+      {dimmed && <div className="dim-layer" aria-hidden="true" onClick={pulse} />}
       <header className="play-bar" data-testid="top-bar">
         <button type="button" className="bar-button" onClick={onHome}>
           ← Back
@@ -494,7 +538,7 @@ export function Play({
         {wakeRefused && !showTip && <span className="bar-sleep">☾ Screen may sleep</span>}
         <button
           type="button"
-          className="bar-button"
+          className="bar-button raise"
           aria-haspopup="menu"
           aria-expanded={sheet?.kind === 'menu'}
           onClick={() => setSheet(sheet?.kind === 'menu' ? null : { kind: 'menu' })}
@@ -505,7 +549,7 @@ export function Play({
 
       <section className="stage" aria-label="Current number">
         <div
-          className="current-number"
+          className="current-number raise"
           data-testid="current-number"
           onPointerDown={startPress}
           onPointerUp={endPress}
@@ -547,13 +591,6 @@ export function Play({
               money={money}
               nameOf={nameOf}
               onUndo={() => setDialog({ kind: 'undo-record', seq: result.seq })}
-              onAdd={(pattern) =>
-                setSheet({
-                  kind: 'record',
-                  sheet: { step: 'players', pattern, picked: [], adding: true },
-                })
-              }
-              onCloseTier={closeTier}
               onDone={() => setResultSeq(null)}
             />
           ) : (
@@ -642,17 +679,16 @@ export function Play({
             {autoPaused ? 'Paused: tap to resume' : 'Pause auto-call'}
           </button>
         )}
-        <button
-          type="button"
-          className="button button-quiet record-win"
-          onClick={() => {
-            pauseAuto();
-            setResultSeq(null);
-            setSheet({ kind: 'record', sheet: { step: 'pattern' } });
-          }}
-        >
-          Record a win
-        </button>
+        {dimmed && waiting ? (
+          <div className="record-row">
+            {recordButton}
+            <button type="button" className="button button-quiet add-winner raise" onClick={() => addAnother(waiting)}>
+              Add another winner
+            </button>
+          </div>
+        ) : (
+          recordButton
+        )}
         {main}
       </div>
 
@@ -1140,8 +1176,6 @@ function ResultCard({
   money,
   nameOf,
   onUndo,
-  onAdd,
-  onCloseTier,
   onDone,
 }: {
   record: TambolaRecord;
@@ -1149,8 +1183,6 @@ function ResultCard({
   money: boolean;
   nameOf: (id: string) => string;
   onUndo: () => void;
-  onAdd: (pattern: Pattern) => void;
-  onCloseTier: (pattern: Pattern) => void;
   onDone: () => void;
 }) {
   const m = record.move;
@@ -1177,20 +1209,11 @@ function ResultCard({
     }
   }
   return (
-    <section className="result-card" data-testid="claim-result" aria-live="polite">
+    <section className="result-card raise" data-testid="claim-result" aria-live="polite">
       <p className={m.type === 'record-win' ? 'verdict verdict-ok' : 'verdict verdict-bogey'}>{headline}</p>
       {detail && <p className="note">{detail}</p>}
+      {/* TAM-198: "Add another winner" and "Close <Pattern>" sit at the bottom, as the main actions. */}
       <div className="row">
-        {waiting && (
-          <>
-            <button type="button" className="button button-quiet" onClick={() => onAdd(pattern)}>
-              Add another winner
-            </button>
-            <button type="button" className="button button-quiet button-strong" onClick={() => onCloseTier(pattern)}>
-              Close {name}
-            </button>
-          </>
-        )}
         <button type="button" className="button button-quiet" onClick={onUndo}>
           {m.type === 'record-win' ? 'Undo win' : 'Undo bogey'}
         </button>
@@ -1258,7 +1281,7 @@ function PrizeChips({ view, names, onClose }: { view: TambolaView; names: (id: s
               {PATTERN_NAMES[t.pattern]} ✓ {winners.join(', ')}
             </span>
             {waiting && (
-              <button type="button" className="chip-close" onClick={() => onClose(t.pattern)}>
+              <button type="button" className="chip-close raise" onClick={() => onClose(t.pattern)}>
                 Close
               </button>
             )}

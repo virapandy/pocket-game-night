@@ -32,6 +32,8 @@ export interface SessionPicker {
   question(now: number): SessionQuestion;
   /** Makes a new session with this name; returns it. */
   create(name: string, now: number): Session;
+  /** Up to `limit` unsettled sessions with a game in the last 7 days, most recent first (PLT-029). */
+  recent(now: number, limit?: number): Session[];
 }
 
 /** Preference key for dark mode (TAM-134, TAM-188): remembered on this phone, for every game. */

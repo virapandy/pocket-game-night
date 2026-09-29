@@ -183,6 +183,13 @@ body { -webkit-tap-highlight-color: transparent; }
 .setup-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; margin: 0 -4px; padding: 0 4px 12px; }
 .bottom-action { flex: none; padding: 8px 0 max(16px, env(safe-area-inset-bottom)); background: var(--bg); }
 .bottom-action .button { display: block; width: 100%; }
+/* PLT-029: which session the game joins, one line above "Confirm prizes". */
+.session-line { display: flex; align-items: center; gap: 2px; margin: 0 0 6px; min-height: 44px; max-height: 56px; font-weight: 700; color: var(--muted); }
+.session-line-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.session-line .session-change { flex: none; padding: 0 8px; }
+/* Two buttons side by side, both at the bottom edge (TAM-181, TAM-197). */
+.bottom-actions { display: flex; gap: 8px; }
+.bottom-actions .button { flex: 1 1 0; min-width: 0; padding: 0 12px; }
 .player-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
 .player-row { display: flex; gap: 10px; align-items: flex-end; }
 .tier-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
@@ -437,6 +444,15 @@ body { -webkit-tap-highlight-color: transparent; }
   cursor: pointer;
 }
 
+/* TAM-198: while a won prize waits to be closed, a translucent layer dims the calling screen. The win card,
+   the number, "Close <Pattern>", "Add another winner", the chip's Close and the menu stay above it and work. */
+.dim-layer { position: fixed; inset: 0; z-index: 15; background: rgba(28, 27, 26, 0.5); }
+.dimmed .play-bar { z-index: auto; }
+.dimmed .raise { position: relative; z-index: 16; }
+.dimmed .raise.button-quiet, .dimmed .raise.bar-button, .dimmed .raise.chip-close { background: var(--surface); }
+.record-row { display: flex; gap: 8px; }
+.record-row > .button { flex: 1 1 0; min-width: 0; min-height: 52px; padding: 0 8px; }
+
 /* Landscape, the phone on a stand facing the room (TAM-129): number left, the rest right, buttons along the bottom. */
 @media (orientation: landscape) and (max-height: 600px) {
   .play { max-width: none; padding-bottom: max(8px, env(safe-area-inset-bottom)); }
@@ -449,6 +465,7 @@ body { -webkit-tap-highlight-color: transparent; }
   .play-bottom { flex-direction: row; }
   .record-win { flex: 1 1 0; min-height: 56px; }
   .next-number { flex: 1.4 1 0; height: 56px; }
+  .record-row { flex: 1 1 0; }
 }
 
 .checks { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
@@ -548,6 +565,11 @@ body { -webkit-tap-highlight-color: transparent; }
 .summary { display: flex; flex-direction: column; gap: 12px; }
 .summary-tiers { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; font-size: 1.1rem; }
 .money-table { width: 100%; border-collapse: collapse; font-size: 1.05rem; }
+.payout-people { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.payout-person { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 2px 12px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+.payout-name { font-weight: 800; font-size: 1.1rem; }
+.payout-figures { color: var(--muted); }
+.payout-figures strong { color: var(--text); }
 .money-table th, .money-table td { padding: 8px; text-align: left; border-bottom: 1px solid var(--border); }
 .call-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); gap: 6px; }
 .call-list li { padding: 6px; font-weight: 800; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
@@ -593,6 +615,28 @@ body { -webkit-tap-highlight-color: transparent; }
   border-radius: 12px;
 }
 .tally-name { font-weight: 800; font-size: 1.15rem; }
+/* PLT-017: compact rows, one line each (at most 60 px), tapped for the details. */
+.tally-compact { gap: 6px; }
+.tally-compact > .tally-person { padding: 0; }
+.tally-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  min-height: 44px;
+  padding: 4px 14px;
+  font: inherit;
+  color: var(--text);
+  text-align: left;
+  background: transparent;
+  border: 0;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.tally-row .tally-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tally-balance { flex: none; font-weight: 800; font-size: 1.1rem; }
+.detail-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; font-size: 1.1rem; }
 .hand-over { font-weight: 800; font-size: 1.15rem; }
 .session-game { list-style: none; }
 .settlement-detail { padding: 12px; border: 2px solid var(--border); border-radius: var(--radius); }
