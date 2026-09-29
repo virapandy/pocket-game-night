@@ -260,7 +260,8 @@ body { -webkit-tap-highlight-color: transparent; }
 .stage { position: relative; flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; gap: 8px; }
 .current-number {
   flex: 1 1 0;
-  min-height: 31vh;
+  /* It takes the room the rest leaves: at least about 40% of a phone screen, and nothing ever lies on top of it. */
+  min-height: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -359,30 +360,26 @@ body { -webkit-tap-highlight-color: transparent; }
 .prize-chip:has(.chip-close) { min-height: 48px; }
 .prize-chip .chip-close { min-height: 44px; }
 
+/* The one-time tip sits under the number, never on top of it (TAM-128, TAM-138). */
 .sleep-tip {
-  position: absolute;
-  top: 4px;
-  left: 0;
-  right: 0;
-  z-index: 5;
+  flex: none;
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px 12px;
+  padding: 6px 10px;
   background: var(--tip);
   color: var(--text);
   border-radius: 12px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
 }
-.sleep-tip p { margin: 0; font-weight: 700; font-size: 0.95rem; }
+.sleep-tip p { margin: 0; font-weight: 700; font-size: 0.9rem; line-height: 1.25; text-align: left; }
 .sleep-tip .button { flex: none; background: transparent; border-color: var(--accent); }
 
+/* The result of a claim shows in place of the rhyme and last calls, under the number, never over it (TAM-123, TAM-138). */
 .result-card {
-  position: absolute;
-  top: 4px;
-  left: 0;
-  right: 0;
-  z-index: 6;
+  flex: none;
+  width: 100%;
+  text-align: left;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -390,7 +387,6 @@ body { -webkit-tap-highlight-color: transparent; }
   background: var(--surface);
   border: 2px solid var(--border);
   border-radius: var(--radius);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
 }
 .result-card .row { gap: 8px; }
 .button-strong { border-color: var(--accent); }
@@ -402,11 +398,7 @@ body { -webkit-tap-highlight-color: transparent; }
 .record-win { width: 100%; min-height: 52px; }
 .auto-call { width: 100%; min-height: 48px; }
 .voice-note {
-  position: absolute;
-  top: 4px;
-  left: 0;
-  right: 0;
-  z-index: 7;
+  flex: none;
   margin: 0;
   padding: 10px 12px;
   font-weight: 700;
@@ -416,14 +408,12 @@ body { -webkit-tap-highlight-color: transparent; }
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
 }
 .next-number { width: 100%; height: 76px; font-size: 1.5rem; }
+/* The undo toast has its own place just above the bottom buttons and under the prize chips, so it moves
+   nothing and covers nothing when it comes and goes (TAM-125). */
+.toast-slot { flex: none; width: 100%; height: 48px; }
 .toast {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: calc(100% + 4px);
-  z-index: 4;
   margin: 0;
-  min-height: 48px;
+  height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -454,7 +444,8 @@ body { -webkit-tap-highlight-color: transparent; }
   .stage { flex-direction: row; gap: 16px; }
   .current-number { flex: 1 1 0; min-width: 0; min-height: 0; font-size: min(232px, calc(100dvh - 130px)); }
   .stage-side { flex: 1 1 0; justify-content: center; }
-  .result-card { right: calc(50% + 8px); }
+  /* In landscape the number has the left half to itself; notes float over the top of the right half. */
+  .sleep-tip, .voice-note { position: absolute; top: 0; left: calc(50% + 8px); right: 0; z-index: 5; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15); }
   .play-bottom { flex-direction: row; }
   .record-win { flex: 1 1 0; min-height: 56px; }
   .next-number { flex: 1.4 1 0; height: 56px; }

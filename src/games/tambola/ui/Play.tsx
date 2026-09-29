@@ -415,6 +415,13 @@ export function Play({
   const waiting = view.awaitingClose[0];
   const result = resultSeq === null ? undefined : (match.records.find((r) => r.seq === resultSeq) as TambolaRecord | undefined);
   const showTip = wakeRefused && !tipSeen;
+  // The result shows in place of the rhyme and last calls, so it never covers the number (TAM-123, TAM-138).
+  const showCard = !!result && isRecording(result);
+  // Closing a tier ends its result: it goes away by itself (TAM-145, owner decision 2026-09-29).
+  const closeTier = (pattern: Pattern) => {
+    const r = move({ type: 'close-tier', pattern });
+    if (r.ok) setResultSeq(null);
+  };
   const called = view.called.length;
 
   const confirmRecord = (kind: 'win' | 'bogey') => {
@@ -510,56 +517,6 @@ export function Play({
             {view.current ? view.current.number : ''}
           </span>
         </div>
-        <div className="stage-side">
-          {!view.current && <p className="note first-hint">Tap Next number to call the first number.</p>}
-          <p className="current-rhyme" data-testid="current-rhyme">
-            {view.current?.rhyme?.text ?? ''}
-          </p>
-          <div className="rhyme-actions">
-            <button
-              type="button"
-              className="text-button"
-              disabled={!view.current}
-              onClick={() => {
-                setFlash((f) => f + 1);
-                if (view.current) say(view.current.number, view.current.rhyme);
-              }}
-            >
-              Repeat
-            </button>
-            <span aria-hidden="true">·</span>
-            <button
-              type="button"
-              className="text-button"
-              disabled={!view.current}
-              onClick={() => {
-                const r = move({ type: 'another-rhyme' });
-                const current = r.ok ? tambolaRules.view(r.value.state, { kind: 'host' }).current : null;
-                if (current) say(current.number, current.rhyme);
-              }}
-            >
-              Another rhyme
-            </button>
-            {canSpeak && (voiceOn || autoOn) && (
-              <>
-                <span aria-hidden="true">·</span>
-                <button
-                  type="button"
-                  className="text-button"
-                  onClick={() => {
-                    if (!muted) hush();
-                    setMuted(!muted);
-                  }}
-                >
-                  {muted ? 'Unmute voice' : 'Mute voice'}
-                </button>
-              </>
-            )}
-          </div>
-          <LastCalls numbers={view.lastCalls} />
-          <PrizeChips view={view} names={nameOf} onClose={(p) => move({ type: 'close-tier', pattern: p })} />
-        </div>
-
         {showTip && (
           <div className="sleep-tip" role="status">
             <p>Keep your screen on: this phone may let the screen sleep during the game.</p>
@@ -582,48 +539,104 @@ export function Play({
           </p>
         )}
 
-        {result && isRecording(result) && (
-          <ResultCard
-            record={result}
-            view={view}
-            money={money}
-            nameOf={nameOf}
-            onUndo={() => setDialog({ kind: 'undo-record', seq: result.seq })}
-            onAdd={(pattern) =>
-              setSheet({
-                kind: 'record',
-                sheet: { step: 'players', pattern, picked: [], adding: true },
-              })
-            }
-            onCloseTier={(pattern) => move({ type: 'close-tier', pattern })}
-            onDone={() => setResultSeq(null)}
-          />
-        )}
+        <div className="stage-side">
+          {result && showCard ? (
+            <ResultCard
+              record={result}
+              view={view}
+              money={money}
+              nameOf={nameOf}
+              onUndo={() => setDialog({ kind: 'undo-record', seq: result.seq })}
+              onAdd={(pattern) =>
+                setSheet({
+                  kind: 'record',
+                  sheet: { step: 'players', pattern, picked: [], adding: true },
+                })
+              }
+              onCloseTier={closeTier}
+              onDone={() => setResultSeq(null)}
+            />
+          ) : (
+            <>
+              {!view.current && <p className="note first-hint">Tap Next number to call the first number.</p>}
+              <p className="current-rhyme" data-testid="current-rhyme">
+                {view.current?.rhyme?.text ?? ''}
+              </p>
+              <div className="rhyme-actions">
+                <button
+                  type="button"
+                  className="text-button"
+                  disabled={!view.current}
+                  onClick={() => {
+                    setFlash((f) => f + 1);
+                    if (view.current) say(view.current.number, view.current.rhyme);
+                  }}
+                >
+                  Repeat
+                </button>
+                <span aria-hidden="true">·</span>
+                <button
+                  type="button"
+                  className="text-button"
+                  disabled={!view.current}
+                  onClick={() => {
+                    const r = move({ type: 'another-rhyme' });
+                    const current = r.ok ? tambolaRules.view(r.value.state, { kind: 'host' }).current : null;
+                    if (current) say(current.number, current.rhyme);
+                  }}
+                >
+                  Another rhyme
+                </button>
+                {canSpeak && (voiceOn || autoOn) && (
+                  <>
+                    <span aria-hidden="true">·</span>
+                    <button
+                      type="button"
+                      className="text-button"
+                      onClick={() => {
+                        if (!muted) hush();
+                        setMuted(!muted);
+                      }}
+                    >
+                      {muted ? 'Unmute voice' : 'Mute voice'}
+                    </button>
+                  </>
+                )}
+              </div>
+              <LastCalls numbers={view.lastCalls} />
+            </>
+          )}
+          <PrizeChips view={view} names={nameOf} onClose={closeTier} />
+          {!showCard && (
+            <div className="toast-slot">
+              {toastLeft >= 0 && lastRecord && view.current && (
+                <div className="toast" data-testid="undo-toast">
+                  Called {view.current.number} ·{' '}
+                  <button
+                    type="button"
+                    className="toast-button"
+                    onClick={() => {
+                      if (undoRecord(lastRecord.seq)) {
+                        setToastSeq(null);
+                        pauseAuto();
+                      }
+                    }}
+                  >
+                    Undo ({Math.max(1, Math.ceil(toastLeft / 1000))}s)
+                  </button>
+                </div>
+              )}
+              {showResumed && toastLeft < 0 && (
+                <p className="toast" role="status">
+                  Game resumed
+                </p>
+              )}
+            </div>
+          )}
+        </div>
       </section>
 
       <div className="play-bottom">
-        {toastLeft >= 0 && lastRecord && view.current && (
-          <div className="toast" data-testid="undo-toast">
-            Called {view.current.number} ·{' '}
-            <button
-              type="button"
-              className="toast-button"
-              onClick={() => {
-                if (undoRecord(lastRecord.seq)) {
-                  setToastSeq(null);
-                  pauseAuto();
-                }
-              }}
-            >
-              Undo ({Math.max(1, Math.ceil(toastLeft / 1000))}s)
-            </button>
-          </div>
-        )}
-        {showResumed && toastLeft < 0 && (
-          <p className="toast" role="status">
-            Game resumed
-          </p>
-        )}
         {autoOn && (
           <button type="button" className="button button-quiet auto-call" onClick={() => setAutoPaused(!autoPaused)}>
             {autoPaused ? 'Paused: tap to resume' : 'Pause auto-call'}
