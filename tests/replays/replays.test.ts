@@ -1,5 +1,7 @@
 // TAM-074: every game that ever failed is kept here as seeds plus move records, and must now replay
 // cleanly: the moves are accepted and every rule holds; a simulated game also re-runs from its seed. Never delete a replay file.
+// PLT-204: a problem report that shows a confirmed bug is saved here as it arrived, `{ "note": "...", "report": <the
+// report's JSON> }`, and is replayed from the report's own seeds and moves (tests/contract/README.md, "Problem reports").
 import { readdirSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
@@ -17,7 +19,10 @@ describe('Saved replays (TAM-074)', () => {
 
   for (const file of files) {
     it(`${file} replays cleanly`, () => {
-      const saved = JSON.parse(readFileSync(dir + file, 'utf8'));
+      const raw = JSON.parse(readFileSync(dir + file, 'utf8'));
+      const saved = raw.report
+        ? { game: raw.report.game?.gameType, setup: raw.report.game?.setup, records: raw.report.game?.records, note: raw.note, expect: raw.expect }
+        : raw;
       expect(saved.game).toBe('tambola');
       const r = replay(rules, saved.setup, saved.records);
       if (!r.ok) expect.fail(`${file}: ${r.reason}. Saved because: ${saved.note}`);

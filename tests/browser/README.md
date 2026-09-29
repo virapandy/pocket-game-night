@@ -339,3 +339,53 @@ read it with jsQR (`readDrawnQr` in `phone.ts`): what is drawn must read back ex
   7K3P)", "Top Line already won", "Ticket 3 is out", "This claim doesn't match ticket 3" (with `Check ticket 3 by
   number`), a plain reason for anything that is not a claim QR, and for a typed number "No ticket 14 in this game".
   Closed with `Close`, `OK`, `Done` or `Cancel`.
+
+## Phase 7: Report a problem (owner sign-off 29 September 2026)
+
+Tests: `report-problem.spec.ts` (both phones, Android and iPhone sizes). Scenarios: PLT-200 to PLT-203, PLT-206 to
+PLT-209. What a report holds is defined in `tests/contract/README.md`, "Problem reports"; here, the screens.
+
+### Opening it (PLT-200)
+- `Report a problem` (a `menuitem` or button) on the **home** screen (directly, or inside a `Menu` button there), on the
+  **calling screen** (inside `Menu` only: not visible before `Menu` is tapped; its centre in the top two-thirds of
+  the screen, never in the thumb zone), on the **payout screen** after a game (directly or inside a `Menu`), and on a
+  **player's ticket screen** (inside its `Menu`).
+- The form: a field labelled `What happened?` (empty at first; optional), `report-preview`, `Send report` (enabled
+  even with nothing typed) and `Cancel` (closes the form, sends nothing).
+- `report-preview`: what will be sent, shown to the host before sending (PLT-201). Its `data-payload` attribute holds
+  **exactly** the text that will be sent (`reportText`, JSON), kept up to date as the host types; its visible text
+  includes the sentence (with names already replaced, "Player 1's prize looked wrong") and the app version.
+- The report holds the game on screen: on the calling screen the game in progress, on the payout screen the game just
+  ended (with its seeds), on home no game. `phone` names the phone: it contains "Android" on the Android test phone
+  (Pixel 7) and "iPhone" on the iPhone. No e-mail or password field anywhere in the flow (PLT-208).
+
+### Sending
+- **The sending hook** (tests only): when `window.__pgnSendReport` exists, the app sends a report by calling
+  `window.__pgnSendReport(text)` with exactly the preview's `data-payload` text (or, for a report that waited for its
+  game to end, that report with the seeds added) instead of the stub. Resolving means the report arrived: it leaves
+  the waiting list and is never sent again. Rejecting means it did not: it stays waiting and is tried again later (at
+  the latest on the next `online` event). The app never calls it while `navigator.onLine` is false, tries every waiting
+  report when the `online` event fires (and when the app opens), and never starts a second send of a report while one
+  is still going (PLT-209). Reports are kept in the phone's storage, so they survive a reload.
+- **The stub** (no hook, the real app for now, PLT-208): `Send report` keeps the report on the phone and shows a line
+  containing "kept on this phone". Nothing leaves the phone: every request the app makes is a GET to its own address,
+  and `navigator.sendBeacon` is never called — also on app start, during a game and after a crash.
+- A game in progress or paused (PLT-206): the form says "Your report will be sent when this game ends"; the report is
+  kept without seeds and is sent (hook) or kept (stub) only once that game is ended with `End game` or discarded.
+  Then the seeds are added; the id, the words and the moves stay as they were when reported.
+- No connection (PLT-202): the report waits; when the connection returns it goes by itself, without any dialog and
+  without changing the screen (a game on the calling screen carries on untouched).
+
+### After a crash (PLT-203)
+An uncaught error (`window` `error` event) or an unhandled promise rejection during a game: the game stays saved (a
+reload resumes it with every call), and the text "Something went wrong; your game is safe" shows with a button whose
+name starts `Report` and a `Not now` button. Nothing is sent unless the host goes on and taps `Send report`. The
+button opens the same form; its report has `error.message` with the error's message. `Not now` closes the message and
+the game carries on.
+
+### Reports waiting to send (PLT-209)
+Settings (the home screen's `Settings` if there is one, otherwise the Tambola start screen's `Settings`) has
+`Reports waiting to send` (a button or link). It lists one `waiting-report` per report not yet sent (also those
+waiting for their game to end), each with its date ("29 Sep") and the first line of its words, and a button starting
+`Delete` (a confirming `dialog` with a button starting `Delete` is allowed). A deleted report is never sent. The list
+updates by itself when reports are sent. The tests reach it by taps only (no page load), also offline.
