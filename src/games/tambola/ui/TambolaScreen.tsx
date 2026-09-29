@@ -89,7 +89,9 @@ export function TambolaScreen({
   const begin = (config: TambolaConfig, session: Session) => {
     const now = Date.now();
     const id = freshSeed(8);
-    const setup = { gameId: id, seeds: { draw: freshSeed(16) }, config };
+    // Phone tickets (Phase 2) get their own secret seed for the sheets of tickets (TAM-008, TAM-052).
+    const seeds: Record<string, string> = config.ticketMode === 'phone' ? { draw: freshSeed(16), sheet: freshSeed(16) } : { draw: freshSeed(16) };
+    const setup = { gameId: id, seeds, config };
     const match = startMatch(tambolaRules, setup, now);
     const saved: TambolaSaved = { ...newSaved(id, setup, now), sessionId: session.id };
     store.put(saved);

@@ -1,4 +1,4 @@
-// Setting up a paper-ticket game: ticket mode (TAM-137), players (PLT-024), contribution and pot
+// Setting up a game: ticket mode, paper or phone (TAM-137), players (PLT-024), contribution and pot
 // (TAM-080, TAM-090), then the prizes the anchor confirms (TAM-081 to TAM-084).
 import { useState, type ReactNode } from 'react';
 import type { Preferences } from '../../../engine';
@@ -11,11 +11,14 @@ import {
   type PrizePlan,
   type TambolaConfig,
   type TambolaSettings,
+  type TicketMode,
   type Tier,
 } from '../rules';
 import { plural, rupees } from './format';
 
 export interface SetupDraft {
+  /** Paper tickets (Phase 1a) or phone tickets (Phase 2). */
+  ticketMode: TicketMode;
   count: string;
   names: string[];
   tickets: number[];
@@ -30,6 +33,7 @@ export interface SetupDraft {
 export type SetupStep = 'mode' | 'players' | 'money' | 'prizes';
 
 export const emptyDraft: SetupDraft = {
+  ticketMode: 'paper',
   count: '6',
   names: [],
   tickets: [],
@@ -60,6 +64,7 @@ export function loadDraft(prefs: Preferences): SetupDraft | null {
   const strings = (x: unknown) => (Array.isArray(x) ? x.map((v) => (typeof v === 'string' ? v : '')) : []);
   const numbers = (x: unknown) => (Array.isArray(x) ? x.map((v) => (Number.isInteger(v) ? (v as number) : 1)) : []);
   return {
+    ticketMode: d.ticketMode === 'phone' ? 'phone' : 'paper',
     count: typeof d.count === 'string' ? d.count : emptyDraft.count,
     names: strings(d.names),
     tickets: numbers(d.tickets),
@@ -130,6 +135,7 @@ function plan(d: SetupDraft): { plan: PrizePlan | null; error: string | null } {
 export function draftFromConfig(config: TambolaConfig): SetupDraft {
   const patterns = config.tiers.map((t) => t.pattern);
   const draft: SetupDraft = {
+    ticketMode: config.ticketMode === 'phone' ? 'phone' : 'paper',
     count: String(config.players.length),
     names: config.players.map((p) => p.name),
     tickets: config.players.map((p) => p.tickets),
@@ -213,7 +219,7 @@ export function Setup({
     const names = [...typed, ...recent.filter((r) => !typed.some((t) => t.toLowerCase() === r.toLowerCase()))].slice(0, 24);
     prefs.set(NAMES_KEY, names);
     onStart({
-      ticketMode: 'paper',
+      ticketMode: draft.ticketMode,
       players,
       money: contribution === null ? null : { currency: 'INR', contribution },
       tiers,
@@ -235,12 +241,30 @@ export function Setup({
             <h1 className="step-title">New game</h1>
             <p className="lead">How are tickets handed out?</p>
             <p className="note">Paper tickets: everyone brings a ticket from a Tambola ticket book.</p>
-            <button type="button" className="button button-quiet button-big" disabled>
-              Phone tickets (coming later)
+            <p className="note">
+              Phone tickets: this phone makes a ticket for each player. They scan it with their phone's camera, then
+              mark it and show a claim QR for you to scan. Works with no internet once their phone has opened this app.
+            </p>
+            <button
+              type="button"
+              className="button button-quiet button-big"
+              onClick={() => {
+                update({ ticketMode: 'phone' });
+                go('players');
+              }}
+            >
+              Phone tickets
             </button>
           </section>
           <BottomAction>
-            <button type="button" className="button button-big" onClick={() => go('players')}>
+            <button
+              type="button"
+              className="button button-big"
+              onClick={() => {
+                update({ ticketMode: 'paper' });
+                go('players');
+              }}
+            >
               Paper tickets
             </button>
           </BottomAction>

@@ -18,9 +18,33 @@ type Route =
   | { name: 'past'; id: string }
   | { name: 'sessions' }
   | { name: 'session'; id: string }
-  | { name: 'game'; gameId: GameId; open?: { id: string; action: OpenAction } };
+  | { name: 'game'; gameId: GameId; open?: { id: string; action: OpenAction } }
+  /** A player's phone (Phase 2): tickets opened from a ticket QR's link, or typed in. */
+  | { name: 'phone'; gameId: GameId; link: string | null; enter: boolean; nonce: number };
 
 const gameOf = (type: string) => games.find((g) => g.info.id === type);
+
+/** A ticket QR opens the app with "#t=<ticket>" (TAM-117). Read raw: the ticket text is decoded by the game. */
+function phoneLink(): Extract<Route, { name: 'phone' }> | null {
+  if (typeof location === 'undefined') return null;
+  for (const g of games) {
+    const prefix = `#${g.phone.linkKey}=`;
+    if (location.hash.startsWith(prefix)) {
+      return { name: 'phone', gameId: g.info.id as GameId, link: location.hash.slice(prefix.length), enter: false, nonce: Date.now() };
+    }
+  }
+  return null;
+}
+
+/** Where the app opens: a scanned ticket, a place kept in the address, or a player's tickets (TAM-171). */
+function firstRoute(): Route {
+  const link = phoneLink();
+  if (link) return link;
+  const route = routeFromAddress();
+  if (route.name !== 'home') return route;
+  const holder = games.find((g) => g.phone.hasTickets(preferences));
+  return holder ? { name: 'phone', gameId: holder.info.id as GameId, link: null, enter: false, nonce: 0 } : route;
+}
 
 /** History, Sessions and past games keep their place in the address, so a reload stays there (PLT-010). */
 function routeFromAddress(): Route {
@@ -54,7 +78,16 @@ export function App() {
     needRefresh: [needRefresh],
     updateServiceWorker,
   } = useRegisterSW();
-  const [route, setRoute] = useState<Route>(routeFromAddress);
+  const [route, setRoute] = useState<Route>(firstRoute);
+  // Scanning another ticket while the app is open changes only the address's "#t=…" part.
+  useEffect(() => {
+    const onHash = () => {
+      const link = phoneLink();
+      if (link) setRoute(link);
+    };
+    window.addEventListener('hashchange', onHash);
+    return () => window.removeEventListener('hashchange', onHash);
+  }, []);
   const [deleted, setDeleted] = useState<Deleted | null>(null);
   useEffect(() => {
     const want = addressOf(route);
@@ -84,6 +117,12 @@ export function App() {
           {...(route.open ? { open: route.open } : {})}
         />
       );
+    }
+  }
+  if (route.name === 'phone') {
+    const game = gameOf(route.gameId);
+    if (game) {
+      return <game.phone.Screen prefs={preferences} link={route.link} enter={route.enter} nonce={route.nonce} onHome={home} />;
     }
   }
   if (route.name === 'history') {
@@ -132,6 +171,7 @@ export function App() {
       onGame={(gameId, open) => setRoute(open ? { name: 'game', gameId, open } : { name: 'game', gameId })}
       onHistory={() => setRoute({ name: 'history' })}
       onSessions={() => setRoute({ name: 'sessions' })}
+      onTickets={(enter) => setRoute({ name: 'phone', gameId: games[0].info.id as GameId, link: null, enter, nonce: Date.now() })}
     />
   );
 }
@@ -182,13 +222,17 @@ function Home({
   onGame,
   onHistory,
   onSessions,
+  onTickets,
 }: {
   needRefresh: boolean;
   onUpdate: () => void;
   onGame: (gameId: GameId, open?: { id: string; action: OpenAction }) => void;
   onHistory: () => void;
   onSessions: () => void;
+  /** Phase 2: a player's phone tickets, or typing a ticket code. */
+  onTickets: (enter: boolean) => void;
 }) {
+  const [holdsTickets] = useState(() => games.some((g) => g.phone.hasTickets(preferences, false)));
   const [unfinished] = useState<SavedGame[]>(() =>
     gameStore
       .list()
@@ -263,6 +307,16 @@ function Home({
           </li>
         ))}
       </ul>
+      <div className="row">
+        {holdsTickets && (
+          <button type="button" className="button button-quiet grow" onClick={() => onTickets(false)}>
+            Your tickets
+          </button>
+        )}
+        <button type="button" className="button button-quiet grow" onClick={() => onTickets(true)}>
+          Enter ticket code
+        </button>
+      </div>
       <div className="row">
         <button type="button" className="button button-quiet grow" onClick={onSessions}>
           Sessions

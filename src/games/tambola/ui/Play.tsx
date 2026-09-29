@@ -9,6 +9,7 @@ import {
   checkNumbers,
   NEEDS,
   PATTERN_NAMES,
+  readClaim,
   tambolaRules,
   type CheckResult,
   type Pattern,
@@ -20,6 +21,9 @@ import {
 } from '../rules';
 import { buzz, freshSeed, keepAwake, tick } from './device';
 import { plural, rupees } from './format';
+import { HandOut } from './HandOut';
+import { startScanner, type CameraFailure } from './scanner';
+import { TicketGrid } from './TicketGrid';
 import { toSaved, type TambolaMatch, type TambolaSaved } from './saved';
 import { loadSettings, saveSettings, SettingsPanel } from './Settings';
 import { Summary } from './Summary';
@@ -72,7 +76,18 @@ type Sheet =
   | { kind: 'record'; sheet: RecordSheet }
   | { kind: 'check'; pattern?: Pattern; text: string; result?: CheckResult }
   | { kind: 'board' }
-  | { kind: 'late'; name: string; tickets: string; error?: string };
+  | { kind: 'late'; name: string; tickets: string; error?: string }
+  /** Phase 2: "Scan a claim" (TAM-177, TAM-178). */
+  | { kind: 'scan' }
+  /** Phase 2: the host's list of every ticket (TAM-056, TAM-058, TAM-175). */
+  | { kind: 'tickets' };
+
+/** Phase 2: tickets being handed out (TAM-132, TAM-172, TAM-212). */
+interface HandOutState {
+  readonly queue: readonly number[];
+  readonly index: number;
+  readonly late: boolean;
+}
 
 type Dialog =
   | { kind: 'end' }
@@ -94,7 +109,13 @@ const WARNINGS: Readonly<Record<Shortcut, { title: string; text: string }>> = {
 };
 
 type TambolaRecord = MoveRecord<TambolaMove>;
-const isRecording = (r: TambolaRecord) => r.move.type === 'record-win' || r.move.type === 'record-bogey';
+const isRecording = (r: TambolaRecord) => r.move.type === 'record-win' || r.move.type === 'record-bogey' || r.move.type === 'check-claim';
+
+/** How many claims each move adds, so a record's claim can be found in the view. */
+function claimsAdded(m: TambolaMove): number {
+  if (m.type === 'record-win') return m.playerIds.length;
+  return m.type === 'record-bogey' || m.type === 'claim' || m.type === 'check-claim' ? 1 : 0;
+}
 
 export function Play({
   initialSaved,
@@ -154,6 +175,13 @@ export function Play({
   const [autoRetry, setAutoRetry] = useState(0);
   const [dark, setDarkState] = useState(() => isDark(prefs));
   const canSpeak = hasVoice();
+  const phone = initialMatch.setup.config.ticketMode === 'phone';
+  // Phase 2: before the first number, the host hands out every phone ticket (TAM-132, TAM-172).
+  const [handOut, setHandOut] = useState<HandOutState | null>(() => {
+    if (!phone || initialMatch.state.result || initialMatch.state.calledCount > 0) return null;
+    const queue = initialMatch.state.tickets.filter((t) => t.status === 'in-play').map((t) => t.number);
+    return queue.length > 0 ? { queue, index: 0, late: false } : null;
+  });
 
   const view = tambolaRules.view(match.state, { kind: 'host' });
   const over = view.over;
@@ -329,6 +357,36 @@ export function Play({
   const pauseAuto = () => {
     if (autoOn) setAutoPaused(true);
   };
+
+  if (handOut) {
+    const done = () => setHandOut(null);
+    return (
+      <HandOut
+        view={view}
+        queue={handOut.queue}
+        index={handOut.index}
+        startedAt={saved.createdAt}
+        late={handOut.late}
+        calls={view.called.length}
+        onAssign={(ticket, playerId) => {
+          const r = move({ type: 'assign', ticket, playerId });
+          return r.ok ? null : r.reason;
+        }}
+        onPaper={(playerId) => {
+          // TAM-058: this player plays on paper; the rest of their tickets are skipped.
+          const r = move({ type: 'to-paper', playerId });
+          if (!r.ok) return;
+          const owners = new Map(view.tickets.map((t) => [t.number, t.playerId]));
+          const queue = [...handOut.queue.slice(0, handOut.index), ...handOut.queue.slice(handOut.index).filter((n) => owners.get(n) !== playerId)];
+          if (handOut.index >= queue.length) done();
+          else setHandOut({ ...handOut, queue });
+        }}
+        onNext={() => setHandOut({ ...handOut, index: handOut.index + 1 })}
+        onDone={done}
+        onBack={handOut.late ? done : onHome}
+      />
+    );
+  }
 
   if (room) {
     return <RoomView view={tambolaRules.view(match.state, { kind: 'room' })} money={money} names={nameOf} fromPress={room === 'press'} onBack={() => setRoom(false)} />;
@@ -526,6 +584,40 @@ export function Play({
       Record a win
     </button>
   );
+  // Phase 2: phone claims are scanned; "Record a win" stays for anyone on paper (TAM-058).
+  const scanButton = (
+    <button
+      type="button"
+      className={dimmed ? 'button button-quiet record-win raise' : 'button button-quiet record-win'}
+      onClick={() => {
+        pauseAuto();
+        setResultSeq(null);
+        setSheet({ kind: 'scan' });
+      }}
+    >
+      Scan a claim
+    </button>
+  );
+  const anyPaper = view.tickets.some((t) => t.status === 'paper');
+  const claimRow = phone ? (
+    anyPaper ? (
+      <div className="record-row">
+        {scanButton}
+        {recordButton}
+      </div>
+    ) : (
+      scanButton
+    )
+  ) : dimmed && waiting ? (
+    <div className="record-row">
+      {recordButton}
+      <button type="button" className="button button-quiet add-winner raise" onClick={() => addAnother(waiting)}>
+        Add another winner
+      </button>
+    </div>
+  ) : (
+    recordButton
+  );
 
   return (
     <main className={dimmed ? 'play dimmed' : 'play'}>
@@ -534,7 +626,15 @@ export function Play({
         <button type="button" className="bar-button" onClick={onHome}>
           ← Back
         </button>
-        <span className="bar-progress">{view.allCalled ? 'All 90 numbers called' : `${called} of 90 called`}</span>
+        <span className="bar-progress">
+          {view.allCalled ? 'All 90 numbers called' : `${called} of 90 called`}
+          {phone && (
+            <span className="bar-code" data-testid="game-code">
+              {' '}
+              · Game {view.code}
+            </span>
+          )}
+        </span>
         {wakeRefused && !showTip && <span className="bar-sleep">☾ Screen may sleep</span>}
         <button
           type="button"
@@ -587,6 +687,7 @@ export function Play({
           {result && showCard ? (
             <ResultCard
               record={result}
+              claimIndex={match.records.filter((r) => r.seq <= result.seq).reduce((n, r) => n + claimsAdded(r.move), 0) - 1}
               view={view}
               money={money}
               nameOf={nameOf}
@@ -679,16 +780,7 @@ export function Play({
             {autoPaused ? 'Paused: tap to resume' : 'Pause auto-call'}
           </button>
         )}
-        {dimmed && waiting ? (
-          <div className="record-row">
-            {recordButton}
-            <button type="button" className="button button-quiet add-winner raise" onClick={() => addAnother(waiting)}>
-              Add another winner
-            </button>
-          </div>
-        ) : (
-          recordButton
-        )}
+        {claimRow}
         {main}
       </div>
 
@@ -699,6 +791,7 @@ export function Play({
             ['Settings', () => setSettingsOpen(true)],
             ['Show the room', () => setRoom('menu')],
             ['Board', () => setSheet({ kind: 'board' })],
+            ...(phone ? [['Tickets', () => setSheet({ kind: 'tickets' })] as MenuEntry] : []),
             [
               'Check numbers',
               () => {
@@ -785,19 +878,57 @@ export function Play({
             state={sheet}
             view={view}
             money={match.setup.config.money}
+            phone={phone}
             onChange={(next) => setSheet({ kind: 'late', ...next })}
             onAdd={() => {
               const tickets = Number(sheet.tickets.trim() || '1');
-              const r = move({ type: 'add-player', player: { id: `late-${freshSeed(4)}`, name: sheet.name, tickets } });
+              const id = `late-${freshSeed(4)}`;
+              const r = move({ type: 'add-player', player: { id, name: sheet.name, tickets } });
               if (!r.ok) return setSheet({ ...sheet, error: r.reason });
               setSheet(null);
               if (money) setDialog({ kind: 'prizes', tiers: tambolaRules.view(r.value.state, { kind: 'host' }).tiers });
+              // TAM-212: a late joiner's phone tickets are handed out on the same screen as at the start.
+              const theirs = r.value.state.tickets.filter((t) => t.playerId === id).map((t) => t.number);
+              if (theirs.length > 0) setHandOut({ queue: theirs, index: 0, late: true });
             }}
             onRemove={(playerId) => {
               const r = move({ type: 'remove-player', playerId });
               if (!r.ok) return setSheet({ ...sheet, error: r.reason });
               setSheet(null);
               if (money) setDialog({ kind: 'prizes', tiers: tambolaRules.view(r.value.state, { kind: 'host' }).tiers });
+            }}
+            onClose={() => setSheet(null)}
+          />
+        </SheetFrame>
+      )}
+
+      {sheet?.kind === 'scan' && (
+        <ClaimScanner
+          view={view}
+          onCheck={(ticket, pattern) => {
+            const r = move({ type: 'check-claim', ticket, pattern });
+            if (!r.ok) return r.reason;
+            const rec = r.value.records[r.value.records.length - 1];
+            setResultSeq(rec ? rec.seq : null);
+            setSheet(null);
+            feel();
+            return null;
+          }}
+          onClose={() => setSheet(null)}
+        />
+      )}
+
+      {sheet?.kind === 'tickets' && (
+        <SheetFrame label="Tickets" onClose={() => setSheet(null)}>
+          <HostTickets
+            view={view}
+            onAssign={(ticket, playerId) => {
+              const r = move({ type: 'assign', ticket, playerId });
+              return r.ok ? null : r.reason;
+            }}
+            onPaper={(playerId) => {
+              const r = move({ type: 'to-paper', playerId });
+              return r.ok ? null : r.reason;
             }}
             onClose={() => setSheet(null)}
           />
@@ -927,6 +1058,7 @@ function LatePlayer({
   state,
   view,
   money,
+  phone,
   onChange,
   onAdd,
   onRemove,
@@ -935,6 +1067,7 @@ function LatePlayer({
   state: Extract<Sheet, { kind: 'late' }>;
   view: TambolaView;
   money: { contribution: number } | null;
+  phone: boolean;
   onChange: (next: { name: string; tickets: string; error?: string }) => void;
   onAdd: () => void;
   onRemove: (playerId: string) => void;
@@ -949,7 +1082,9 @@ function LatePlayer({
           <p className="note">
             {money
               ? `They pay ${rupees(money.contribution)} per ticket, and the prizes not won yet grow.`
-              : 'They join with a paper ticket, like everyone else.'}
+              : phone
+                ? 'They get phone tickets from the next sheet.'
+                : 'They join with a paper ticket, like everyone else.'}
           </p>
           <label className="field">
             <span>Name of late player</span>
@@ -1172,6 +1307,7 @@ function CheckNumbers({
 
 function ResultCard({
   record,
+  claimIndex,
   view,
   money,
   nameOf,
@@ -1179,6 +1315,7 @@ function ResultCard({
   onDone,
 }: {
   record: TambolaRecord;
+  claimIndex: number;
   view: TambolaView;
   money: boolean;
   nameOf: (id: string) => string;
@@ -1186,6 +1323,9 @@ function ResultCard({
   onDone: () => void;
 }) {
   const m = record.move;
+  if (m.type === 'check-claim') {
+    return <PhoneResult claimIndex={claimIndex} view={view} money={money} nameOf={nameOf} onUndo={onUndo} onDone={onDone} />;
+  }
   if (m.type !== 'record-win' && m.type !== 'record-bogey') return null;
   const pattern = m.pattern;
   const name = PATTERN_NAMES[pattern];
@@ -1239,6 +1379,23 @@ function UndoRecordDialog({
   onKeep: () => void;
 }) {
   const m = record?.move;
+  if (m?.type === 'check-claim') {
+    return (
+      <Modal onClose={onKeep}>
+        <p className="lead">
+          Undo ticket {m.ticket}'s {PATTERN_NAMES[m.pattern]} claim? The numbers called stay called.
+        </p>
+        <div className="row">
+          <button type="button" className="button" onClick={onUndo}>
+            Undo claim
+          </button>
+          <button type="button" className="button button-quiet" onClick={onKeep}>
+            Keep it
+          </button>
+        </div>
+      </Modal>
+    );
+  }
   if (!m || (m.type !== 'record-win' && m.type !== 'record-bogey')) return null;
   const who = m.type === 'record-win' ? m.playerIds.map(nameOf).join(' and ') : nameOf(m.playerId);
   const what = m.type === 'record-win' ? `${PATTERN_NAMES[m.pattern]} win` : `${PATTERN_NAMES[m.pattern]} bogey`;
@@ -1436,5 +1593,309 @@ function Modal({ children, onClose }: { children: ReactNode; onClose: () => void
         {children}
       </div>
     </div>
+  );
+}
+
+// ---------- Phase 2: phone tickets ----------
+
+/** A phone-ticket claim's verdict, where a paper win shows (TAM-033, TAM-038, TAM-174): the ticket, with the calls. */
+function PhoneResult({
+  claimIndex,
+  view,
+  money,
+  nameOf,
+  onUndo,
+  onDone,
+}: {
+  claimIndex: number;
+  view: TambolaView;
+  money: boolean;
+  nameOf: (id: string) => string;
+  onUndo: () => void;
+  onDone: () => void;
+}) {
+  const c = view.claims[claimIndex];
+  if (!c || c.ticket === undefined) return null;
+  const name = PATTERN_NAMES[c.pattern];
+  const owner = nameOf(c.playerId);
+  const ticket = view.tickets.find((t) => t.number === c.ticket);
+  const tier = view.tiers.find((t) => t.pattern === c.pattern);
+  const waiting = view.awaitingClose.includes(c.pattern);
+  let headline: string;
+  let detail: string | null = null;
+  if (c.verdict === 'accepted') {
+    headline = money
+      ? `${name}: ✓ Accepted, ${rupees(c.prize ?? 0)} to ${owner}`
+      : `${name}: ✓ Accepted for ${owner}${tier?.label ? `: ${tier.label}` : ''}`;
+    const shared = view.claims.filter((x) => x.pattern === c.pattern && x.verdict === 'accepted').length;
+    if (shared > 1) detail = money ? `Shared by ${shared} (${rupees(tier?.amount ?? 0)} in all)` : `Shared by ${shared}`;
+  } else if (c.reason === 'late') {
+    headline = `${name}: ✗ Bogey: too late`;
+    detail = `${name} was complete at ${c.completedAt}.`;
+  } else if (c.missing && c.missing.length > 0) {
+    headline = `${name}: ✗ Bogey: ${c.missing.join(', ')} not called`;
+  } else {
+    headline = `${name}: ✗ Bogey: ${plural(c.needed ?? 0, 'more number')} needed`;
+  }
+  const out = c.verdict === 'bogey' && ticket?.status === 'out';
+  return (
+    <section className="result-card raise" data-testid="claim-result" aria-live="polite">
+      <p className={c.verdict === 'accepted' ? 'verdict verdict-ok' : 'verdict verdict-bogey'}>{headline}</p>
+      <p className="note">
+        Ticket {c.ticket} · {owner}
+        {detail ? ` · ${detail}` : ''}
+        {out ? ` · Ticket ${c.ticket} is out.` : ''}
+      </p>
+      {ticket && <TicketGrid rows={ticket.rows} cell={24} marks={{ called: new Set(view.called) }} className="ticket-small" />}
+      <div className="row">
+        <button type="button" className="button button-quiet" onClick={onUndo}>
+          Undo claim
+        </button>
+        {!waiting && (
+          <button type="button" className="button button-quiet" onClick={onDone}>
+            Done
+          </button>
+        )}
+      </div>
+    </section>
+  );
+}
+
+/** How long the camera looks for a claim QR before typing the ticket number takes over (TAM-178). */
+const NO_READ_MS = 10_000;
+
+/**
+ * "Scan a claim" (TAM-177, TAM-178, TAM-179): the camera opens at once and the prize comes from the QR.
+ * "Enter ticket number" is always one tap away, and takes over after 10 seconds without a read or when the
+ * camera can't be used. Refusals are calm and never a bogey.
+ */
+function ClaimScanner({
+  view,
+  onCheck,
+  onClose,
+}: {
+  view: TambolaView;
+  /** Checks the claim; returns why it was refused, or null once it is recorded. */
+  onCheck: (ticket: number, pattern: Pattern) => string | null;
+  onClose: () => void;
+}) {
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const [typed, setTyped] = useState(false);
+  const [failed, setFailed] = useState<CameraFailure | null>(null);
+  const [timedOut, setTimedOut] = useState(false);
+  const [refused, setRefused] = useState<{ reason: string; checkByNumber?: number } | null>(null);
+  const [number, setNumber] = useState('');
+  const [pattern, setPattern] = useState<Pattern | null>(null);
+  const [attempt, setAttempt] = useState(0);
+  const onRead = useRef<(text: string) => void>(() => {});
+  onRead.current = (text: string) => {
+    const r = readClaim(view, text);
+    if (!r.ok) {
+      setRefused(r.checkByNumber !== undefined ? { reason: r.reason, checkByNumber: r.checkByNumber } : { reason: r.reason });
+      return;
+    }
+    const why = onCheck(r.ticket, r.pattern);
+    if (why) setRefused({ reason: why });
+  };
+  useEscape(onClose);
+
+  useEffect(() => {
+    let done = false;
+    const stop = startScanner(
+      videoRef.current,
+      (text) => {
+        if (done) return;
+        done = true;
+        stop();
+        onRead.current(text);
+      },
+      (why) => setFailed(why),
+    );
+    const timer = setTimeout(() => setTimedOut(true), NO_READ_MS);
+    return () => {
+      done = true;
+      clearTimeout(timer);
+      stop();
+    };
+  }, [attempt]);
+
+  const claimable = view.openPatterns.filter((p) => p !== 'second-full-house' || !view.openPatterns.includes('full-house'));
+  const fallback = failed !== null || timedOut;
+  const showTyped = typed || fallback;
+  const check = () => {
+    const n = Number(number.trim());
+    if (number.trim() === '' || !Number.isFinite(n)) return setRefused({ reason: 'Type the ticket number.' });
+    if (!pattern) return setRefused({ reason: 'Pick the prize.' });
+    const why = onCheck(n, pattern);
+    if (why) setRefused({ reason: why });
+  };
+
+  return (
+    <div className="backdrop sheet-backdrop" onClick={(e) => e.target === e.currentTarget && onClose()}>
+      <div className="sheet" role="dialog" aria-modal="true" aria-label="Scan a claim" data-testid="claim-scanner">
+        <h2 className="section-title">Scan a claim</h2>
+        {refused ? (
+          <div className="claim-refused stack-tight" data-testid="claim-refused" role="status">
+            <p className="lead">{refused.reason}</p>
+            <div className="row">
+              <button type="button" className="button" onClick={onClose}>
+                Close
+              </button>
+              {refused.checkByNumber !== undefined && (
+                <button
+                  type="button"
+                  className="button button-quiet"
+                  onClick={() => {
+                    setNumber(String(refused.checkByNumber));
+                    setTyped(true);
+                    setRefused(null);
+                  }}
+                >
+                  Check ticket {refused.checkByNumber} by number
+                </button>
+              )}
+              <button
+                type="button"
+                className="button button-quiet"
+                onClick={() => {
+                  setRefused(null);
+                  setAttempt((a) => a + 1);
+                }}
+              >
+                Try again
+              </button>
+            </div>
+          </div>
+        ) : (
+          <>
+            {!showTyped && (
+              <div className="scanner-frame">
+                <video ref={videoRef} className="scanner-video" muted playsInline />
+                <p className="note">Point the camera at the player's claim QR.</p>
+              </div>
+            )}
+            {fallback && <p className="lead">Enter the ticket number instead</p>}
+            {showTyped && (
+              <>
+                <label className="field">
+                  <span>Ticket number</span>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    autoComplete="off"
+                    value={number}
+                    onChange={(e) => setNumber(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && check()}
+                  />
+                </label>
+                <div className="choice-grid">
+                  {claimable.map((p) => (
+                    <button
+                      key={p}
+                      type="button"
+                      className={p === pattern ? 'button pick picked' : 'button button-quiet pick'}
+                      aria-pressed={p === pattern}
+                      onClick={() => setPattern(p)}
+                    >
+                      {PATTERN_NAMES[p]}
+                    </button>
+                  ))}
+                </div>
+                <button type="button" className="button" onClick={check}>
+                  Check
+                </button>
+              </>
+            )}
+          </>
+        )}
+        {!refused && (
+          <div className="row">
+            {!typed && (
+              <button type="button" className="button button-quiet" onClick={() => setTyped(true)}>
+                Enter ticket number
+              </button>
+            )}
+            <button type="button" className="button button-quiet" onClick={onClose}>
+              Cancel
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/** Menu → Tickets (TAM-056, host only): every ticket, its owner, "Change owner" and "Switch to paper". */
+function HostTickets({
+  view,
+  onAssign,
+  onPaper,
+  onClose,
+}: {
+  view: TambolaView;
+  onAssign: (ticket: number, playerId: string) => string | null;
+  onPaper: (playerId: string) => string | null;
+  onClose: () => void;
+}) {
+  const [changing, setChanging] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const nameOf = (id: string | undefined) => view.players.find((p) => p.id === id)?.name ?? '';
+  const STATUS = { 'in-play': '', out: ' · out', paper: ' · on paper' } as const;
+  return (
+    <>
+      <div className="row sheet-head">
+        <h2 className="section-title grow">Tickets</h2>
+        <button type="button" className="button button-quiet" onClick={onClose}>
+          Close
+        </button>
+      </div>
+      <p className="note">Only this phone has this list. Game {view.code}.</p>
+      {error && (
+        <p className="error" role="alert">
+          {error}
+        </p>
+      )}
+      <ul className="host-tickets">
+        {view.tickets.map((t) => (
+          <li key={t.number} className="host-ticket" data-testid="host-ticket" data-ticket={t.number}>
+            <p className="host-ticket-line">
+              <strong>Ticket {t.number}</strong> · {nameOf(t.playerId)}
+              {STATUS[t.status ?? 'in-play']}
+            </p>
+            <TicketGrid rows={t.rows} cell={30} className="ticket-small" />
+            <div className="row">
+              <button type="button" className="button button-quiet" onClick={() => setChanging(changing === t.number ? null : t.number)}>
+                Change owner of ticket {t.number}
+              </button>
+              {t.status !== 'paper' && (
+                <button type="button" className="button button-quiet" onClick={() => setError(onPaper(t.playerId!))}>
+                  Switch to paper ({nameOf(t.playerId)})
+                </button>
+              )}
+            </div>
+            {changing === t.number && (
+              <div className="choice-grid">
+                {view.players
+                  .filter((p) => p.id !== t.playerId)
+                  .map((p) => (
+                    <button
+                      key={p.id}
+                      type="button"
+                      className="button button-quiet"
+                      onClick={() => {
+                        const why = onAssign(t.number, p.id);
+                        setError(why);
+                        if (!why) setChanging(null);
+                      }}
+                    >
+                      {p.name}
+                    </button>
+                  ))}
+              </div>
+            )}
+          </li>
+        ))}
+      </ul>
+    </>
   );
 }

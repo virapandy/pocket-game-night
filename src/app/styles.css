@@ -640,3 +640,121 @@ body { -webkit-tap-highlight-color: transparent; }
 .hand-over { font-weight: 800; font-size: 1.15rem; }
 .session-game { list-style: none; }
 .settlement-detail { padding: 12px; border: 2px solid var(--border); border-radius: var(--radius); }
+
+/* ----- Phase 2: phone tickets ----- */
+.qr { flex: none; padding: 0; background: #fff; border-radius: 8px; }
+.qr svg { display: block; width: 100%; height: 100%; }
+.bar-code { display: block; font-size: 0.8rem; line-height: 1.1; }
+
+/* The host hands out tickets (TAM-132, TAM-172). */
+.hand-out { gap: 12px; }
+.hand-out .top-bar { align-items: center; gap: 8px; }
+.hand-out .bar-progress { flex: 1; }
+.game-code { flex: none; font-weight: 800; letter-spacing: 0.05em; }
+.hand-out-ticket { margin: 0; font-size: 1.4rem; font-weight: 800; text-align: center; }
+.hand-out-name { font-size: 1.4rem; font-weight: 800; text-decoration: underline; }
+.hand-out-qr { display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; }
+.ticket-code { font-size: 1.15rem; letter-spacing: 0.04em; white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+/* A ticket: 3 rows of 9 square cells, --cell pixels each, no gaps (so cells never overlap, TAM-121). */
+.ticket-grid { display: grid; grid-template-columns: repeat(9, var(--cell)); grid-auto-rows: var(--cell); width: max-content; background: var(--surface); border: 2px solid var(--text); border-radius: 6px; }
+.tcell {
+  position: relative;
+  width: var(--cell);
+  height: var(--cell);
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font: inherit;
+  font-size: calc(var(--cell) * 0.42);
+  font-weight: 800;
+  line-height: 1;
+  color: var(--text);
+  background: var(--surface);
+  border: 0;
+  box-shadow: inset 0 0 0 0.5px var(--border);
+  border-radius: 0;
+  font-variant-numeric: tabular-nums;
+  touch-action: manipulation;
+}
+button.tcell { cursor: pointer; }
+.tcell-blank { background: var(--closed-bg); }
+.tcell-marked { color: var(--accent-text); background: var(--accent); }
+.tcell-tick { position: absolute; top: 1px; right: 2px; font-size: calc(var(--cell) * 0.24); line-height: 1; }
+.tcell-cue { box-shadow: inset 0 0 0 3px var(--ok); }
+.tcell-outlined { box-shadow: inset 0 0 0 3px var(--ok); }
+.tcell-called { color: var(--accent-text); background: var(--ok); }
+.ticket-small .tcell { font-size: calc(var(--cell) * 0.5); }
+.ticket-thumb .tcell { font-size: calc(var(--cell) * 0.55); font-weight: 600; }
+.ticket-thumb.ticket-grid { border-width: 1px; }
+
+/* A player's phone (TAM-122, TAM-173): never scrolls with all tickets shown; follows the phone's orientation. */
+.phone {
+  min-height: 100dvh;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+  overflow-x: hidden;
+}
+.phone-large { font-size: 1.2rem; }
+.phone-large .tcell { font-size: calc(var(--cell) * 0.52); }
+.phone-bar { flex: none; display: flex; align-items: center; gap: 4px; min-height: 44px; }
+.phone-ticket-header { flex: 1; min-width: 0; margin: 0; font-weight: 700; font-size: 0.9rem; line-height: 1.25; color: var(--muted); }
+.phone-bar-actions { flex: none; display: flex; }
+.tickets { display: flex; flex-direction: column; gap: 8px; align-items: center; }
+.tickets-two { display: grid; grid-template-columns: repeat(2, max-content); justify-content: center; gap: 8px 12px; }
+.tickets-one { overflow-x: auto; margin: 0 -8px; padding: 0; align-items: flex-start; }
+.phone-ticket { display: flex; flex-direction: column; gap: 2px; margin: 0; }
+.phone-ticket-caption { margin: 0; font-size: 0.85rem; font-weight: 700; line-height: 18px; height: 18px; color: var(--muted); }
+.phone-ticket-side { flex-direction: row; align-items: center; gap: 2px; }
+.phone-ticket-side > .phone-ticket-caption { width: 18px; height: auto; writing-mode: vertical-rl; transform: rotate(180deg); font-size: 0.75rem; }
+.phone-actions { flex: none; display: flex; flex-direction: column; gap: 6px; margin-top: auto; }
+.phone-buttons { display: flex; gap: 8px; }
+.phone-buttons > .button { flex: 1 1 0; min-width: 0; padding: 0 8px; }
+.listen { font-size: 0.9rem; text-align: center; }
+.pattern-cue { flex: none; padding: 6px 10px; font-weight: 700; color: var(--ok); background: var(--ok-bg); border-radius: 10px; }
+.pattern-cue p { margin: 0; font-size: 0.9rem; line-height: 1.3; }
+.pattern-cue-float { position: fixed; left: 8px; right: 8px; bottom: 56px; z-index: 5; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15); }
+.phone-landscape { gap: 6px; padding: 4px 8px; }
+.phone-landscape .phone-bar { min-height: 40px; }
+.phone-landscape .phone-actions { flex-direction: row; align-items: center; }
+.phone-landscape .phone-actions .listen { flex: 1; text-align: left; }
+.phone-landscape .phone-buttons > .button { min-height: 44px; }
+.ticket-tabs { flex: none; display: flex; gap: 6px; }
+.ticket-tab { min-height: 44px; min-width: 56px; padding: 0 12px; font: inherit; font-weight: 800; color: var(--accent); background: transparent; border: 2px solid var(--border); border-radius: 10px; cursor: pointer; }
+.ticket-tab-on { color: var(--accent-text); background: var(--accent); border-color: var(--accent); }
+.prize-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.prize-item { width: 100%; min-height: 48px; padding: 0 14px; text-align: left; font: inherit; font-weight: 800; color: var(--text); background: var(--surface); border: 2px solid var(--border); border-radius: 12px; cursor: pointer; }
+.prize-crossed { color: var(--disabled-text); background: var(--closed-bg); }
+.prize-crossed .prize-name { text-decoration: line-through; }
+.prize-won { font-weight: 700; }
+
+/* Quick mark (TAM-192): the 1–90 pad, then every ticket as a thumbnail. */
+.quick-message { flex: none; margin: 0; min-height: 1.5em; font-weight: 800; text-align: center; }
+.quick-pad { flex: none; display: grid; grid-template-columns: repeat(10, 1fr); gap: 3px; }
+.quick-key { min-height: 36px; padding: 0; font: inherit; font-weight: 700; color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; touch-action: manipulation; }
+.thumbs { flex: none; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.thumb { padding: 2px; background: transparent; border: 0; cursor: pointer; }
+
+/* The claim screen (TAM-177, TAM-193): the claim QR above the claimed ticket. */
+.claim-screen { align-items: center; text-align: center; }
+.claim-title { margin: 0; font-size: 1.3rem; font-weight: 800; text-transform: uppercase; }
+.claim-body { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.claim-screen .phone-actions { width: 100%; }
+
+/* The host's scanner and ticket list (TAM-056, TAM-177, TAM-178). */
+.scanner-frame { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.scanner-video { width: min(100%, 320px); aspect-ratio: 1; object-fit: cover; background: #000; border: 4px solid var(--accent); border-radius: 12px; }
+.claim-refused { padding: 12px; background: var(--tip); border-radius: 12px; }
+.claim-refused .lead { color: var(--text); font-weight: 700; }
+.sheet-head { flex-wrap: nowrap; }
+.host-tickets { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
+.host-ticket { display: flex; flex-direction: column; gap: 6px; }
+.host-ticket-line { margin: 0; }
+.result-card .ticket-grid { align-self: center; }
+.tickets-one .ticket-grid { border-width: 0; border-radius: 0; }
