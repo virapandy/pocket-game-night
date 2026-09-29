@@ -101,6 +101,41 @@ describe('TAM-082: tiers with the same share get the same amount; rounding diffe
   });
 });
 
+describe('TAM-082: Full House takes every rounding difference (product owner review 2026-09-29, finding 1)', () => {
+  // The live 1a.1 build gave the ₹300 pot ₹40 / ₹40 / ₹40 / ₹40 / ₹140: a rounding difference went to Early Five,
+  // so Early Five equalled a Line. Only Full House takes differences; every other tier is its own share, rounded.
+  it('6 tickets at ₹50 (a ₹300 pot) across 10 / 15 / 15 / 15 / 45 %: ₹30 / ₹40 / ₹40 / ₹40 / ₹150', () => {
+    const plan = planPrizes({ tickets: 6, contribution: 50 });
+    expect(plan.pot).toBe(300);
+    expect(byPattern(plan.tiers, 'amount')).toEqual({
+      'early-five': 30, 'top-line': 40, 'middle-line': 40, 'bottom-line': 40, 'full-house': 150,
+    });
+  });
+
+  it('for every pot, ticket count and unit: a tier other than Full House is its own share rounded to the unit, never more than one unit away; a share that is already whole units is kept exactly; Full House takes the rest', () => {
+    fc.assert(
+      fc.property(
+        fc.integer({ min: 2, max: 200 }),
+        fc.integer({ min: 1, max: 1000 }),
+        fc.constantFrom(1, 5, 10, 20, 50, 100),
+        (tickets, contribution, unit) => {
+          const plan = planPrizes({ tickets, contribution, unit });
+          const others = plan.tiers.filter((t) => t.pattern !== 'full-house');
+          for (const t of others) {
+            const exact = (plan.pot * t.percent) / 100;
+            const why = `${t.pattern} at ${t.percent}% of ₹${plan.pot} (unit ₹${unit}) is ₹${exact}, got ₹${t.amount}`;
+            expect(Math.abs(t.amount - exact), why).toBeLessThan(unit);
+            if (Number.isInteger(exact / unit)) expect(t.amount, why).toBe(exact);
+          }
+          const fh = plan.tiers.find((t) => t.pattern === 'full-house')!.amount;
+          expect(fh).toBe(plan.pot - sum(others.map((t) => t.amount)));
+        },
+      ),
+      { numRuns: 5_000 },
+    );
+  });
+});
+
 describe('TAM-092: tiers with the same share stay equal after the anchor\'s edits and removals', () => {
   const base = { tickets: 10, contribution: 50 };
   const lines = (plan: ReturnType<typeof planPrizes>) => {

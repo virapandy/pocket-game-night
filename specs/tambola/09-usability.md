@@ -220,13 +220,13 @@ And End game and Discard game appear nowhere on the calling screen outside the m
 confirmations (TAM-103, PLT-005)
 And "Show the room" can also be opened by a long press on the number (the menu stays the tap-only way, TAM-136)
 
-## TAM-125: The undo toast never moves anything
-Status: approved, owner, 2026-09-28 (scenario review outcome: product owner verdict, owner sign-off for Phase 1a.1); was draft (new, tester, 2026-09-28, from the redesign)
+## TAM-125: The undo toast never moves anything, and never covers the main buttons or the prize chips
+Status: approved, owner, 2026-09-29 (change: the toast never covers the prize chips either; product owner review of the live 1a.1 build, finding 3, docs/decisions.md 2026-09-29); was approved, owner, 2026-09-28 (scenario review outcome: product owner verdict, owner sign-off for Phase 1a.1); was draft (new, tester, 2026-09-28, from the redesign)
 Phase: Phase 1a
 When the host calls 21
 Then a toast "Called 21 · Undo (5s)" floats just above the bottom buttons for 5 seconds (TAM-119)
 And no other element on the screen moves, grows or shrinks when the toast appears or disappears
-And the toast never covers "Next number" or "Record a win"
+And the toast never covers "Next number", "Record a win" or the prize chips (TAM-126), so with auto-call the chips stay readable
 When the host taps Undo on the toast within 5 seconds
 Then TAM-119 applies, and again nothing else moves
 Edge: calling again while a toast is showing replaces it with the new number's toast; only the latest call can be undone

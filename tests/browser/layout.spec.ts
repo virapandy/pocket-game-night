@@ -3,7 +3,7 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import {
   call, callMany, calledNumbers, closeBoard, currentNumber, currentRhyme, dismiss, fromMenu, lastCalls, menuItem, nextNumber,
-  nextNumberWaits, openBoard, recordWin, setUpPaperGame, undoToast,
+  nextNumberWaits, openBoard, recordBogey, recordWin, setUpPaperGame, undoToast,
 } from './helpers';
 
 test.use({ viewport: { width: 390, height: 844 } });
@@ -28,6 +28,60 @@ async function fullyVisible(page: Page, l: Locator): Promise<boolean> {
   const vp = page.viewportSize()!;
   return !!b && b.width > 0 && b.x >= -0.5 && b.y >= -0.5 && b.x + b.width <= vp.width + 0.5 && b.y + b.height <= vp.height + 0.5;
 }
+
+/**
+ * Nothing lies on top of it (TAM-138, TAM-123): at a grid of points across its box, the topmost element is
+ * the element itself or something inside it. Returns the points that are covered, and by what.
+ */
+async function coveredPoints(l: Locator): Promise<string[]> {
+  return l.evaluate((el) => {
+    const r = el.getBoundingClientRect();
+    const out: string[] = [];
+    for (const fx of [0.15, 0.3, 0.5, 0.7, 0.85]) {
+      for (const fy of [0.15, 0.3, 0.5, 0.7, 0.85]) {
+        const x = r.left + r.width * fx, y = r.top + r.height * fy;
+        const hit = document.elementFromPoint(x, y);
+        if (hit && !el.contains(hit)) {
+          const who = hit.closest<HTMLElement>('[data-testid], [role="dialog"]');
+          out.push(`(${Math.round(x)}, ${Math.round(y)}) under ${who?.dataset.testid ?? who?.getAttribute("role") ?? `${hit.tagName} "${(hit.textContent ?? "").trim().slice(0, 40)}"`}`);
+        }
+      }
+    }
+    return out;
+  });
+}
+
+/** Fully on the screen and not covered by anything. */
+async function numberInView(page: Page, when: string): Promise<string[]> {
+  const out: string[] = [];
+  if (!(await fullyVisible(page, currentNumber(page)))) out.push(`${when}: the number is not fully on the screen`);
+  const covered = await coveredPoints(currentNumber(page));
+  if (covered.length) out.push(`${when}: the number is covered at ${covered.length} of 25 points, e.g. ${covered[0]}`);
+  return out;
+}
+
+/** Text or controls that sit above the called number, other than the top bar (TAM-123). */
+async function thingsAboveTheNumber(page: Page): Promise<string[]> {
+  return page.evaluate(() => {
+    const num = document.querySelector('[data-testid="current-number"]')!;
+    const bar = document.querySelector('[data-testid="top-bar"]');
+    const top = num.getBoundingClientRect().top;
+    const out: string[] = [];
+    for (const el of Array.from(document.body.querySelectorAll<HTMLElement>('*'))) {
+      if (bar?.contains(el) || el.contains(num) || num.contains(el)) continue;
+      const r = el.getBoundingClientRect();
+      const s = getComputedStyle(el);
+      if (r.width === 0 || r.height === 0 || s.visibility === 'hidden' || Number(s.opacity) === 0) continue;
+      const ownText = Array.from(el.childNodes).some((n) => n.nodeType === 3 && n.textContent!.trim());
+      const control = el.matches('button, a[href], input, select, [role="button"]');
+      if ((ownText || control) && r.bottom <= top + 1) out.push(`"${(el.innerText || el.tagName).trim().slice(0, 30)}"`);
+    }
+    return out;
+  });
+}
+
+const overlaps = (a: Box, b: Box) =>
+  a.x < b.x + b.width - 0.5 && b.x < a.x + a.width - 0.5 && a.y < b.y + b.height - 0.5 && b.y < a.y + a.height - 0.5;
 
 /** The height of the digits themselves, measured from the font (as in TAM-107). */
 const digitHeight = (l: Locator) =>
@@ -64,22 +118,7 @@ test.describe('TAM-123: the number dominates the calling screen', () => {
     await expect(bar.getByRole('button', { name: /Back/ })).toBeVisible();
     await expect(bar.getByText('3 of 90 called')).toBeVisible();
     await expect(bar.getByRole('button', { name: /Menu/ })).toBeVisible();
-    const above = await page.evaluate(() => {
-      const num = document.querySelector('[data-testid="current-number"]')!;
-      const bar = document.querySelector('[data-testid="top-bar"]');
-      const top = num.getBoundingClientRect().top;
-      const out: string[] = [];
-      for (const el of Array.from(document.body.querySelectorAll<HTMLElement>('*'))) {
-        if (bar?.contains(el) || el.contains(num) || num.contains(el)) continue;
-        const r = el.getBoundingClientRect();
-        const s = getComputedStyle(el);
-        if (r.width === 0 || r.height === 0 || s.visibility === 'hidden' || Number(s.opacity) === 0) continue;
-        const ownText = Array.from(el.childNodes).some((n) => n.nodeType === 3 && n.textContent!.trim());
-        const control = el.matches('button, a[href], input, select, [role="button"]');
-        if ((ownText || control) && r.bottom <= top + 1) out.push(`"${(el.innerText || el.tagName).trim().slice(0, 30)}"`);
-      }
-      return out;
-    });
+    const above = await thingsAboveTheNumber(page);
     expect(above).toEqual([]);
   });
 
@@ -145,6 +184,57 @@ test.describe('TAM-138: the calling screen needs no scrolling, and the number ne
     await undoToast(page).getByRole('button', { name: /Undo/ }).click();
     expect(await pageScrolls(page)).toBe(false);
     expect(await fullyVisible(page, currentNumber(page))).toBe(true);
+  });
+});
+
+/**
+ * Review 2026-09-29, finding 2: the win card covered the called number. These tests keep the screen awake,
+ * so the one-time screen-sleep tip (TAM-128) is not on the screen; the win, the bogey and the undo are.
+ */
+test.describe('TAM-138 and TAM-123: the number stays fully in view while a win is shown', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.addInitScript(() => {
+      Object.defineProperty(navigator, 'wakeLock', {
+        configurable: true,
+        value: { request: async () => ({ released: false, release: async () => {}, addEventListener() {}, removeEventListener() {} }) },
+      });
+    });
+    await setUpPaperGame(page);
+  });
+
+  test('TAM-123: while a win is shown: still nothing but the top bar above the number, and nothing covers it', async ({ page }) => {
+    await callMany(page, 5);
+    await recordWin(page, 'Top Line', ['Riya']);
+    await expect(page.getByTestId('claim-result')).toBeVisible();
+    expect(await thingsAboveTheNumber(page)).toEqual([]);
+    expect(await numberInView(page, 'win shown')).toEqual([]);
+  });
+
+
+  test('TAM-138: nothing covers the number while a win or a bogey is shown, after closing the tier with no Done tapped (review 2026-09-29, finding 2)', async ({ page }) => {
+    const problems: string[] = [];
+    await callMany(page, 5);
+    problems.push(...(await numberInView(page, 'after calls')));
+    await recordWin(page, 'Top Line', ['Riya']);
+    await expect(page.getByTestId('claim-result')).toBeVisible();
+    problems.push(...(await numberInView(page, 'win shown')));
+    await page.getByRole('button', { name: 'Close Top Line', exact: true }).click();
+    await expect(nextNumber(page)).toBeEnabled();
+    problems.push(...(await numberInView(page, 'after closing Top Line')));
+    await call(page);
+    await recordBogey(page, 'Middle Line', 'Asha');
+    await expect(page.getByTestId('claim-result')).toBeVisible();
+    problems.push(...(await numberInView(page, 'bogey shown')));
+    expect(await pageScrolls(page)).toBe(false);
+    expect(problems).toEqual([]);
+  });
+
+  test('TAM-138: after an undo of a call, nothing covers the number', async ({ page }) => {
+    await callMany(page, 3);
+    await call(page);
+    await undoToast(page).getByRole('button', { name: /Undo/ }).click();
+    await expect(undoToast(page).getByRole('button', { name: /Undo/ })).toHaveCount(0);
+    expect(await numberInView(page, 'after undo')).toEqual([]);
   });
 });
 
@@ -229,6 +319,9 @@ test.describe('TAM-125: the undo toast never moves anything', () => {
     const t = await box(toast);
     const rec = await box(recordAWin(page));
     expect(t.y + t.height).toBeLessThanOrEqual(rec.y + 1);
+    // Review 2026-09-29, finding 3 (owner-approved TAM-125 change): the toast never covers the prize chips either.
+    expect(overlaps(t, await box(page.getByTestId('prize-chips'))), 'the toast covers the prize chips').toBe(false);
+    for (const c of await chips(page).all()) expect(overlaps(t, await box(c)), 'the toast covers a prize chip').toBe(false);
     const withToast = await boxes(page);
     const rhymeWith = await box(currentRhyme(page));
     await expect(toast).toHaveCount(0, { timeout: 7_000 });
