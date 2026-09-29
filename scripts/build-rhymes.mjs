@@ -14,6 +14,7 @@ const STYLES = ['classic', 'indian', 'playful', 'cricket', 'bollywood', 'festiva
 // Indian references come first: twice as likely to be picked (owner, 2026-09-28, docs/games/tambola/rhymes.md).
 const STYLE_WEIGHTS = { classic: 1, playful: 1, indian: 2, cricket: 2, bollywood: 2, festival: 2, hindi: 2 };
 const MAX_LENGTH = 40;
+const INDIAN_STYLES = ['indian', 'cricket', 'bollywood', 'festival', 'hindi'];
 
 function parseCsv(text) {
   const rows = [];
@@ -68,7 +69,10 @@ for (let n = 1; n <= 90; n++) {
   const en = mine.filter((r) => r.lang === 'en');
   if (en.length < 3) problems.push(`${n}: ${en.length} English rhymes, needs at least 3`);
   if (en.filter((r) => r.familyFriendly).length < 2) problems.push(`${n}: fewer than 2 family-friendly English rhymes`);
-  if (!mine.some((r) => r.lang === 'hi')) problems.push(`${n}: no Hindi rhyme`);
+  // Hindi is for most numbers, not all; a Hindi game falls back to these (TAM-153).
+  if (!en.some((r) => r.familyFriendly && INDIAN_STYLES.includes(r.style))) {
+    problems.push(`${n}: no family-friendly English rhyme with an Indian reference`);
+  }
   const seen = new Set();
   for (const r of mine) {
     const key = r.text.toLowerCase();
@@ -95,4 +99,5 @@ const pack = {
 const body = rhymes.map((r) => '    ' + JSON.stringify(r)).join(',\n');
 const head = JSON.stringify({ ...pack, rhymes: undefined }, null, 2).replace(/\n}$/, '');
 writeFileSync(target, `${head},\n  "rhymes": [\n${body}\n  ]\n}\n`);
-console.log(`Wrote ${path.relative(root, target)}: ${rhymes.length} rhymes for 90 numbers.`);
+const hindiNumbers = new Set(rhymes.filter((r) => r.lang === 'hi').map((r) => r.n)).size;
+console.log(`Wrote ${path.relative(root, target)}: ${rhymes.length} rhymes for 90 numbers (Hindi for ${hindiNumbers}).`);

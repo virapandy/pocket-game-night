@@ -45,7 +45,8 @@ function hindiVoice(): SpeechSynthesisVoice | null {
 
 /**
  * Says the call: the number, the rhyme exactly as shown, then the number again. A Hindi rhyme is said only
- * in a Hindi voice; without one, only the number is said. `onFail` is told if the phone cannot speak (TAM-187).
+ * in a Hindi voice; without one, only the number is said. An English rhyme (also the fallback in a Hindi
+ * game, TAM-153) is said in the English voice. `onFail` is told if the phone cannot speak (TAM-187).
  */
 export function speakCall(n: number, rhyme: Rhyme | null, onFail: () => void) {
   const s = synth();
