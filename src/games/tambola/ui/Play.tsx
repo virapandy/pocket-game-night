@@ -154,6 +154,13 @@ export function Play({
   const view = tambolaRules.view(match.state, { kind: 'host' });
   const over = view.over;
   const money = match.setup.config.money !== null;
+  // The number "pops" only when it is newly called or repeated, never when the host comes back from
+  // Settings or the room view (TAM-134): leaving this screen marks the current number as already shown.
+  const popKey = `${flash}:${view.called.length}`;
+  const quietKey = useRef(popKey);
+  useEffect(() => {
+    if (settingsOpen || room) quietKey.current = popKey;
+  }, [settingsOpen, room, popKey]);
 
   const commit = (next: TambolaMatch) => {
     const s = toSaved(saved, next, Date.now());
@@ -491,8 +498,7 @@ export function Play({
 
       <section className="stage" aria-label="Current number">
         <div
-          key={flash}
-          className="current-number flash"
+          className="current-number"
           data-testid="current-number"
           onPointerDown={startPress}
           onPointerUp={endPress}
@@ -500,7 +506,9 @@ export function Play({
           onPointerCancel={endPress}
           onContextMenu={(e) => e.preventDefault()}
         >
-          {view.current ? view.current.number : ''}
+          <span key={popKey} className={popKey === quietKey.current ? undefined : 'flash'}>
+            {view.current ? view.current.number : ''}
+          </span>
         </div>
         <div className="stage-side">
           {!view.current && <p className="note first-hint">Tap Next number to call the first number.</p>}
