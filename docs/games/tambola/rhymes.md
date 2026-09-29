@@ -1,6 +1,6 @@
 # Tambola rhyme catalog
 
-The rhymes are what make calling fun. The catalog is [rhymes.csv](rhymes.csv): **397 rhymes** for
+The rhymes are what make calling fun. The catalog is [rhymes.csv](rhymes.csv): **361 rhymes** for
 numbers 1 to 90. **Approved by the owner, 28 September 2026.**
 
 ## The rule (owner, 29 September 2026)
@@ -19,10 +19,11 @@ midnight, mate" (rhyme), "Special 26" (popular film), "Pack of cards" (52, commo
 | cricket | English | 25 | India players' shirt numbers and cricket moments ("Thala Dhoni's seven", "1983, Kapil's Devils") |
 | bollywood | English | 9 | Film titles with the number in them ("3 Idiots", "Special 26") |
 | festival | English | 9 | Dates and history ("Independence Day, 15 August", "Republic Day, 26 January") |
-| hindi | Hindi (Roman script) | 109 | Hindi and Hinglish calls ("Teen tigaada, kaam bigaada", "Chhappan bhog", "Shagun ka lifaafa") |
+| hindi | Hindi (Roman script) | 73 | Hindi and Hinglish calls ("Teen tigaada, kaam bigaada", "Chhappan bhog", "Shagun ka lifaafa") |
 
-Every number has at least 3 English rhymes (at least 2 of them family-friendly), at least 1 Hindi rhyme,
-and at least 1 family-friendly English rhyme with an Indian reference.
+Every number has at least 3 English rhymes (at least 2 of them family-friendly) and at least 1 family-friendly
+English rhyme with an Indian reference. 55 numbers have a Hindi rhyme; in a Hindi game, the others use one
+of their Indian-reference English rhymes (owner, 29 September 2026).
 Every rhyme is 40 characters or fewer, so it fits under the number and reads aloud in a breath.
 
 ## How the app uses it
@@ -76,7 +77,11 @@ Bertie", "Those 39 steps", "Heinz varieties", "Brighton line", "Torquay in Devon
 "cricket's unlucky number", "par for you", "Lucky bachelor", "Lucky six", "Charity begins at fifty-one",
 "Saving grace", "golgappa time", "Forget Heinz, desi achaar"). Replaced where needed with plain rhymes, for
 example "Thirty-seven, chai at eleven", "Fifty-one, shagun for everyone!", "Seventy-two, chai for two".
-**Hindi lines not yet checked against the rule** (see the review checklist).
+**Hindi (revision 4b):** 36 Hindi lines failed the rule (the number plus a generic phrase, or a literal
+translation) and were cut, on the owner's decision. The Hindi lines that remain all pass: "Aath ka thaath",
+"Chaar yaar, full pyaar", "Tees Maar Khan", "Chhattis ka aankda", "Chhappan bhog", "Nau do gyarah" and so on.
+Numbers with no Hindi rhyme left: 13, 17, 23, 27, 28, 29, 31, 34, 35, 37, 38, 41, 43, 54, 58, 61, 62, 63, 64, 67, 68, 70, 71, 73, 74, 76, 78, 79, 80, 81, 82, 84, 85, 87, 88. Better Hindi lines can be added later
+(each must pass the rule).
 
 ## Choices made
 - **Left out entirely:** calls that shame bodies or women ("Women get flirty", "Oversize",

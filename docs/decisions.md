@@ -82,6 +82,7 @@
 | 2026-09-29 | Prize rounding: every tier except Full House rounds to the nearest ₹10 (an exact half rounds down); Full House takes whatever is left (TAM-082). | Owner |
 | 2026-09-29 | After the host closes a tier, its win card goes away by itself; no Done tap (TAM-145). | Owner |
 | 2026-09-29 | The one-time screen-sleep tip never covers the called number (TAM-128, TAM-138). | Owner |
+| 2026-09-29 | 36 Hindi rhymes that fail the rule are cut; 35 numbers have no Hindi rhyme for now, and a Hindi game uses an Indian-reference English rhyme for them (TAM-150, TAM-153 changed). | Owner |
 
 "Convention" means the established Tambola rule in `docs/games/tambola/guide.md`, chosen because the owner asked
 Claude to follow game conventions. Every Tambola rule above is also a host setting with this default.

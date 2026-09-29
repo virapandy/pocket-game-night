@@ -16,10 +16,11 @@ current; instructions live here, not in chat. History from Phase 0 and 1a is fur
 
 ### Next, in order (for the orchestrator)
 1. **Finish Phase 1b** as now running; report green to the owner.
-1a. **Rhyme catalog revision 2** (owner-approved, 29 September): the coder rebuilds `content/tambola/rhymes.json`
-   from `docs/games/tambola/rhymes.csv` (now 397 rhymes, revision 4; the rule and the changes are in
-   `docs/games/tambola/rhymes.md`). The existing rhyme pack tests (TAM-150 to TAM-158) must stay
-   green; no scenario changes. Can go in any round.
+1a. **Rhyme catalog, revision 4** (owner-approved, 29 September): the tester applies the scenario changes in
+   `docs/games/tambola/changes-2026-09-29-rhymes.md` (TAM-150 and TAM-153: a Hindi game uses an English
+   rhyme for numbers without a Hindi one), then the coder rebuilds `content/tambola/rhymes.json` from
+   `docs/games/tambola/rhymes.csv` (361 rhymes; the rule and the changes are in
+   `docs/games/tambola/rhymes.md`). Can go in any round.
 2. **Fix the 1a.1 review findings** in `docs/games/tambola/review-2026-09-29.md`. The tester first adds or
    changes checks from the scenarios named there: TAM-082 (Full House takes every rounding difference;
    finding 1), TAM-138 and TAM-123 (the number stays visible while a win is shown; finding 2), TAM-125
