@@ -90,5 +90,6 @@
 Claude to follow game conventions. Every Tambola rule above is also a host setting with this default.
 
 ## Open
+- iPhone check by hand, later (owner has only Android for now): open the preview once, turn on Airplane Mode, reopen, and check Tambola opens. The automated iPhone offline tests are skipped until Playwright issue #42775 is fixed.
 - Before wider public release: replace the "Report a problem" stub with a real destination (PLT-208)
 - Approval of Phase 2, 2.5, 6 and 7 scenarios (when those phases come up)
