@@ -115,7 +115,8 @@ Many groups add a **Second (and Third) Full House**, and hosts sometimes invent 
   5 seconds. After that a called number stands, because the room has heard it.
 - The host is the bank: everyone pays the host for their tickets, and after each game the app shows what the
   host gives each person (prize plus unwon money back). Games are grouped in a named session; groups that
-  don't hand money over after every game can use the optional tally and "Settle up", always with the host.
+  don't hand money over after every game can use the optional tally and "Settle up", which nets everyone's
+  amounts and lists the fewest hand-overs between players.
 
 ## Contract check (for the builders)
 How Tambola answers the seven contract questions in `src/engine/CLAUDE.md`. Checked 28 September 2026.

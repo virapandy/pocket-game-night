@@ -1,13 +1,16 @@
-# Change request: the host is the bank; 1b review findings (29 September 2026)
+# Change request: the host is the bank for each game; 1b review findings (29 September 2026)
 
 Owner-approved. For the orchestrator: the tester applies these scenario changes and checks, then the coder
 builds. Source: the product owner's review of the live 1b build (below) and the owner's decision.
 
-## 1. The host is the bank; settling is a separate step (owner)
-The convention in Tambola: everyone pays the host for their tickets before the game; the host pays each
-winner and hands back unwon money at the end of the game. The game's payout screen says exactly that.
-The session tally is an **optional** extra, for groups that didn't hand money over after each game; even
-then, every hand-over is between the **host** and one person, never player to player.
+## 1. The host is the bank for each game; settling is separate and player to player (owner)
+- **Each game:** the convention in Tambola. Everyone pays the host for their tickets before the game; the
+  host pays each winner and hands back unwon money at the end of the game. The payout screen says exactly
+  that ("Host gives Riya ₹77").
+- **Settle up:** an optional, separate step for groups that didn't hand money over after each game. The
+  session tally nets each person's amounts across the session, and Settle up lists the fewest **player to
+  player** hand-overs ("Asha pays Riya ₹7"). This is how PLT-017 and PLT-028 already read and how the live
+  build already works: **no change to PLT-017 or PLT-028**.
 
 **Change TAM-089** to:
 > ## TAM-089: The payout summary says what the host hands each person
@@ -15,26 +18,7 @@ then, every hand-over is between the **host** and one person, never player to pl
 > Then the summary lists each tier with its winner(s) and amount (or "not won")
 > And, for each person: paid, prize won, money handed back, and **"Host gives Riya ₹77"** (prize plus money back)
 > And the total the host gives out equals the pot, to the rupee
-> And there is no player-to-player line on this screen
-
-**Change PLT-017** to:
-> ## PLT-017: The session tally shows each person's balance with the host
-> When the host opens the tally for a session
-> Then it adds up only games that are Ended and not yet settled (not in progress, paused or abandoned)
-> And for each person it shows what they paid the host and what the host owes them across those games, and
-> one balance: "Host owes Riya ₹27" or "Asha owes the host ₹7" (or "Even")
-> And the balances add up: everything paid in equals everything owed back
-
-**Change PLT-028** to:
-> ## PLT-028: Settle up is an optional, separate step with the host
-> Given a session tally with unsettled games
-> When the host taps "Settle up"
-> Then it lists one hand-over per person with a balance, always with the host: "Host gives Riya ₹27",
-> "Asha gives the host ₹7"; people who are even are not listed
-> And no payment is made or requested: text only (TAM-090)
-> When the host taps "Mark as settled" and confirms (PLT-019)
-> Then those games are settled (PLT-027 undo for 5 seconds still applies)
-> And a group that handed money over after every game can simply ignore the tally, or mark it settled
+> (Player-to-player hand-overs appear only in the session's optional Settle up, PLT-028.)
 
 ## 2. 1b review findings (product owner, live build, 390 × 844)
 Works well: update offered only on the home screen; the session name is suggested ("Tuesday 29 Sep");

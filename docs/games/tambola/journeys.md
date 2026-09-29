@@ -138,7 +138,7 @@ numbers (TAM-050 to TAM-055).
 | Host starts a new game while one is unfinished | It just starts; unfinished games stay listed on the home screen (PLT-002) |
 | **End game** | Prizes won are paid; money of unclaimed prizes goes back to the players, equally per ticket (TAM-088) |
 | **Discard game** | Void: nobody is paid; the summary lists each player's contribution to hand back |
-| Several games in one gathering (Phase 1b) | Grouped in a named session. The host is the bank: after each game the app shows what the host gives each person. Groups that don't hand money over after every game can open the optional **tally** (each person's balance with the host) and **Settle up** (one hand-over per person, always with the host), then **Mark as settled**, with 5 seconds to undo (PLT-016 to PLT-028) |
+| Several games in one gathering (Phase 1b) | Grouped in a named session. The host is the bank: after each game the app shows what the host gives each person. Groups that don't hand money over after every game can open the optional **tally** (each person's net amount across the session) and **Settle up** (the fewest hand-overs between players), then **Mark as settled**, with 5 seconds to undo (PLT-016 to PLT-028) |
 | Looking back | History, newest first; each game opens read-only with every call and claim, for disputes |
 | Same group next week | "Use this setup" on a past game: same players, contribution and tiers |
 | Deleting | One game (with 5-second Undo), or all history (with a specific confirmation) |

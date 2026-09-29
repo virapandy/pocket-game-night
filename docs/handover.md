@@ -11,7 +11,7 @@ current; instructions live here, not in chat. History from Phase 0 and 1a is fur
 | 1a.1 review findings (rounding, win card, undo toast, card after Close) | **Fixed** (5cf78c9, 257a5f5, 6aced77) |
 | Rhyme catalog revision 4 (361 rhymes, Hindi fallback) | Tests updated; the coder's fix (5c26598) was **in automation** when the run ended; the tester has not yet reported on it |
 | Test clone | **Uncommitted work left behind:** a new `tests/browser/fixtures.ts` and import changes in 16 browser test files plus the test config |
-| Product owner review of the live 1b build | **Done:** money model decided (host is the bank) and 5 findings, in `docs/games/tambola/changes-2026-09-29-money-and-1b.md` |
+| Product owner review of the live 1b build | **Done:** money model decided (host is the bank per game; Settle up player to player) and 5 findings, in `docs/games/tambola/changes-2026-09-29-money-and-1b.md` |
 | Family play-test on Android | **Not done yet** (owner's task; `docs/playtest-checklist.md`) |
 | Phase 2, Phase 7, extended testing | **All signed off by the owner** (packs in `docs/signoff.md`) |
 | Phase 6 (connected mode), new games | On hold |
@@ -22,8 +22,8 @@ current; instructions live here, not in chat. History from Phase 0 and 1a is fur
 2. **Close out the rhyme change.** The tester runs everything on 5c26598 (or later) and reports; fix until green
    (TAM-150, TAM-153).
 3. **Money and 1b review fixes** (owner-approved): apply `docs/games/tambola/changes-2026-09-29-money-and-1b.md`:
-   the host is the bank (TAM-089, PLT-017, PLT-028 reworded; settling is an optional step, always with the
-   host) and the five 1b review findings (buttons fixed at the bottom, payouts to tally, compact tally,
+   the host is the bank for each game (TAM-089 reworded; the optional Settle up stays player to player, PLT-017
+   and PLT-028 unchanged) and the five 1b review findings (buttons fixed at the bottom, payouts to tally, compact tally,
    labelled sessions; new TAM-197). Tester first, then coder.
 4. **Owner play-test.** Tell the owner 1b is live and the play-test can start (checklist above). The product
    owner turns what the owner reports into changes here.
