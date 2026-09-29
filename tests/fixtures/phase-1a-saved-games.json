@@ -1,0 +1,43 @@
+{
+  "note": "Real saved data from the Phase 1a app (commit 12e38a3), captured by playing it in a browser on 2026-09-29: one finished game with a recorded win and money, and a Play again game left in progress after 5 calls. PLT-014: these must always still open. Never edit or delete this file.",
+  "capturedFrom": "12e38a3",
+  "expect": {
+    "ended": {
+      "id": "7fa7689c27f9710e",
+      "players": [
+        "Riya",
+        "Asha",
+        "Dad"
+      ],
+      "called": [
+        74,
+        67,
+        43,
+        23,
+        16,
+        33,
+        54,
+        7
+      ],
+      "payout": [
+        "Early Five: Asha ₹20",
+        "Pot ₹150"
+      ]
+    },
+    "inProgress": {
+      "id": "7aeaf8eaa392cb31",
+      "called": [
+        46,
+        11,
+        48,
+        33,
+        69
+      ]
+    }
+  },
+  "localStorage": {
+    "pgn.pref.names.recent": "[\"Riya\",\"Asha\",\"Dad\"]",
+    "pgn.game.7aeaf8eaa392cb31": "{\"format\":1,\"gameType\":\"tambola\",\"id\":\"7aeaf8eaa392cb31\",\"createdAt\":1790648810042,\"updatedAt\":1790648813677,\"status\":\"in-progress\",\"setup\":{\"gameId\":\"7aeaf8eaa392cb31\",\"seeds\":{\"draw\":\"a0a31bd2f452505d090bde6c409b5e7c\"},\"config\":{\"ticketMode\":\"paper\",\"players\":[{\"id\":\"p1\",\"name\":\"Riya\",\"tickets\":1},{\"id\":\"p2\",\"name\":\"Asha\",\"tickets\":1},{\"id\":\"p3\",\"name\":\"Dad\",\"tickets\":1}],\"money\":{\"currency\":\"INR\",\"contribution\":50},\"tiers\":[{\"pattern\":\"early-five\",\"amount\":20},{\"pattern\":\"top-line\",\"amount\":30},{\"pattern\":\"full-house\",\"amount\":100}],\"settings\":{\"ties\":\"share\",\"lateClaims\":\"bogey\",\"bogey\":\"out\",\"ticketsPerPlayer\":1,\"maxTicketsPerPlayer\":3,\"lateJoinUntil\":10,\"autoCall\":\"off\",\"speakCalls\":false,\"autoMark\":false,\"claimButtons\":false,\"verdictsOnPhones\":false,\"vibrate\":true,\"sound\":true,\"rhymes\":{\"language\":\"en\",\"familyFriendly\":true}}}},\"records\":[{\"v\":1,\"seq\":1,\"at\":1790648810075,\"by\":\"host\",\"move\":{\"type\":\"call\"}},{\"v\":1,\"seq\":2,\"at\":1790648810975,\"by\":\"host\",\"move\":{\"type\":\"call\"}},{\"v\":1,\"seq\":3,\"at\":1790648811877,\"by\":\"host\",\"move\":{\"type\":\"call\"}},{\"v\":1,\"seq\":4,\"at\":1790648812776,\"by\":\"host\",\"move\":{\"type\":\"call\"}},{\"v\":1,\"seq\":5,\"at\":1790648813677,\"by\":\"host\",\"move\":{\"type\":\"call\"}}]}",
+    "pgn.game.7fa7689c27f9710e": "{\"format\":1,\"gameType\":\"tambola\",\"id\":\"7fa7689c27f9710e\",\"createdAt\":1790648803192,\"updatedAt\":1790648809976,\"status\":\"ended\",\"setup\":{\"gameId\":\"7fa7689c27f9710e\",\"seeds\":{\"draw\":\"59fa871f8828d796c7a1df7d5e33f034\"},\"config\":{\"ticketMode\":\"paper\",\"players\":[{\"id\":\"p1\",\"name\":\"Riya\",\"tickets\":1},{\"id\":\"p2\",\"name\":\"Asha\",\"tickets\":1},{\"id\":\"p3\",\"name\":\"Dad\",\"tickets\":1}],\"money\":{\"currency\":\"INR\",\"contribution\":50},\"tiers\":[{\"pattern\":\"early-five\",\"amount\":20},{\"pattern\":\"top-line\",\"amount\":30},{\"pattern\":\"full-house\",\"amount\":100}],\"settings\":{\"ties\":\"share\",\"lateClaims\":\"bogey\",\"bogey\":\"out\",\"ticketsPerPlayer\":1,\"maxTicketsPerPlayer\":3,\"lateJoinUntil\":10,\"autoCall\":\"off\",\"speakCalls\":false,\"autoMark\":false,\"claimButtons\":false,\"verdictsOnPhones\":false,\"vibrate\":true,\"sound\":true,\"rhymes\":{\"language\":\"en\",\"familyFriendly\":true}}}},\"records\":[{\"v\":1,\"seq\":1,\"at\":1790648803225,\"by\":\"host\",\"move\":{\"type\":\"call\"}},{\"v\":1,\"seq\":2,\"at\":1790648804244,\"by\":\"host\",\"move\":{\"type\":\"call\"}},{\"v\":1,\"seq\":3,\"at\":1790648805161,\"by\":\"host\",\"move\":{\"type\":\"call\"}},{\"v\":1,\"seq\":4,\"at\":1790648806077,\"by\":\"host\",\"move\":{\"type\":\"call\"}},{\"v\":1,\"seq\":5,\"at\":1790648806993,\"by\":\"host\",\"move\":{\"type\":\"call\"}},{\"v\":1,\"seq\":6,\"at\":1790648807894,\"by\":\"host\",\"move\":{\"type\":\"call\"}},{\"v\":1,\"seq\":7,\"at\":1790648808794,\"by\":\"host\",\"move\":{\"type\":\"call\"}},{\"v\":1,\"seq\":8,\"at\":1790648809710,\"by\":\"host\",\"move\":{\"type\":\"call\"}},{\"v\":1,\"seq\":9,\"at\":1790648809842,\"by\":\"host\",\"move\":{\"type\":\"record-win\",\"pattern\":\"early-five\",\"playerIds\":[\"p2\"]}},{\"v\":1,\"seq\":10,\"at\":1790648809875,\"by\":\"host\",\"move\":{\"type\":\"close-tier\",\"pattern\":\"early-five\"}},{\"v\":1,\"seq\":11,\"at\":1790648809976,\"by\":\"host\",\"move\":{\"type\":\"end\"}}],\"money\":{\"currency\":\"INR\",\"people\":[{\"personId\":\"p1\",\"name\":\"Riya\",\"paid\":50,\"won\":44},{\"personId\":\"p2\",\"name\":\"Asha\",\"paid\":50,\"won\":63},{\"personId\":\"p3\",\"name\":\"Dad\",\"paid\":50,\"won\":43}]}}"
+  }
+}
