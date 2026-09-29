@@ -68,7 +68,8 @@
 | 2026-09-29 | Product owner instructions for the orchestrator live in `docs/handover.md` ("Now: status and what's next"), not in chat. | Owner |
 | 2026-09-29 | Phase 7 ("Report a problem", stub destination) signed off. | Owner |
 | 2026-09-29 | Extended testing signed off with a weekly Jev cap of 20,000 decisions (at most about $1.70 a week); when reached, runs finish with scripted players (PLT-113). | Owner |
-| 2026-09-29 | Phase 2 (phone tickets): owner reading the pack in `docs/signoff.md` before signing off. | Owner |
+| 2026-09-29 | Phase 2 (phone tickets) signed off. A claim on the player's phone is fully manual: the phone checks nothing; only the host's scan decides. | Owner |
+| 2026-09-29 | Several tickets on one phone: all tickets visible together (portrait stacked, landscape 2 + 1), switch to one at a time, optional quick-mark pad, claim screen shows the ticket with the pattern outlined; tickets handed out from one sheet (TAM-122, TAM-173, TAM-191 to TAM-194). | Owner |
 
 "Convention" means the established Tambola rule in `docs/games/tambola/guide.md`, chosen because the owner asked
 Claude to follow game conventions. Every Tambola rule above is also a host setting with this default.

@@ -11,7 +11,7 @@ current; instructions live here, not in chat. History from Phase 0 and 1a is fur
 | Phase 1b (sessions, tally and settle up, late joiners, voice, auto-call, dark mode, history tools) | Tests written (006cfea); **the coder is building** |
 | Product owner review of the live 1a.1 build | Done: 4 findings in `docs/games/tambola/review-2026-09-29.md` |
 | Family play-test on Android | **Not done yet**: owner's task; 1a.1 is live, so it can happen now (`docs/playtest-checklist.md`) |
-| Phase 2, Phase 7, extended testing | Scenarios reviewed by the product owner; plain-English sign-off packs ready in `docs/signoff.md` (Phase 2 design: `docs/games/tambola/ux-phone-tickets.md`); **each needs the owner's sign-off** |
+| Phase 2, Phase 7, extended testing | **All three signed off by the owner** (29 September; packs in `docs/signoff.md`). Phase 2 design: `docs/games/tambola/ux-phone-tickets.md` |
 | Phase 6 (connected mode), new games | On hold |
 
 ### Next, in order (for the orchestrator)
@@ -23,10 +23,11 @@ current; instructions live here, not in chat. History from Phase 0 and 1a is fur
    Finding 4 is minor and may go in the same round.
 3. **Owner play-test.** Tell the owner the play-test can start (checklist above). The product owner turns
    what the owner reports into changes here.
-4. **Phase 2 (phone tickets).** *The owner is reading the pack.* Before starting, confirm the owner has signed off the Phase 2 pack in
-   `docs/signoff.md`. Then the tester applies the product owner's verdicts (including TAM-050 reworded,
-   TAM-133 moved to Phase 6, TAM-179 changed) and writes tests; the coder builds to
-   `docs/games/tambola/ux-phone-tickets.md`.
+4. **Phase 2 (phone tickets): signed off by the owner (29 September).** The tester applies the product owner's
+   verdicts (including TAM-050 reworded, TAM-133 moved to Phase 6, TAM-179 changed) **and** the additions in
+   `docs/games/tambola/changes-2026-09-29-phone-tickets.md` (all tickets visible together, switch to one at a
+   time, quick mark, claim screen showing the ticket, tickets from one sheet: TAM-122, TAM-173, TAM-191 to
+   TAM-194), then writes tests; the coder builds to `docs/games/tambola/ux-phone-tickets.md`.
 5. **Phase 7 ("Report a problem", stub destination)**: **signed off** (29 September). The tester marks PLT-200 to
    PLT-209 approved (PLT-208 with the stub wording) and writes tests when this step comes up.
 6. **Extended testing (simulations, mutation testing, Android emulator, Jev)**: **signed off** (29 September),

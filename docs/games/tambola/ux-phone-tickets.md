@@ -48,10 +48,27 @@ Landscape by default (cells about 80 px); portrait works too (TAM-122).
 └───────────────────────────────────────────────────────────────┘
 ```
 - The phone never shows called numbers or other tickets (TAM-050, TAM-051).
-- **Several tickets** (TAM-173): stacked one above the other in portrait, or one tap apart ("Ticket 3 | Ticket 8").
+- **Several tickets:** see section 2a.
 - **Prizes ▾** opens the prize list for this game (TAM-170). The menu holds Larger text (TAM-121) and
   "Report a problem" (Phase 7).
 - The ticket survives locks and reloads, marks included (TAM-171), until the player scans a new game.
+
+## 2a. Several tickets on one phone (owner, 29 September 2026: all four layouts, player can switch)
+A player has at most 3 tickets. The owner chose all four layouts below, with the player free to switch.
+Sketches: the mockups shown to the owner on 29 September (A to D).
+
+| | Layout | When | Rules |
+|---|---|---|---|
+| **A** | **All tickets at once, portrait** | Default with 2 or 3 tickets | Tickets stacked, no scrolling on a 390 × 844 screen; cells about 40 CSS px (above the 24 px minimum) |
+| **B** | **Landscape: two side by side, the third below** | Phone turned sideways | Bigger cells; no scrolling; turning back keeps marks |
+| — | **One ticket large** | Player taps "One at a time" (and back to "All tickets") | Ticket tabs ("Ticket 3 · 4 · 8"); cells at least 44 CSS px |
+| **C** | **Quick mark** (optional tool) | Player taps "Quick mark" | A 1–90 pad: tapping the number just heard marks it on whichever ticket has it ("✓ 36 marked on ticket 3") or says "37: not on your tickets"; tapping a marked number again unmarks it; the player still listens to the anchor |
+| **D** | **Claim with the ticket visible** | "Show claim" | The claim QR above the claimed ticket; the claimed pattern outlined (top row for Top Line, the corners for Four Corners, all for Full House) as a visual aid only, never a check |
+
+- **One tap per number:** a player's tickets are handed out one after another from the same sheet of 6,
+  so a called number is on at most one of their tickets. When a player's tickets must span two sheets,
+  quick mark marks every ticket that has the number.
+- The player's choice of layout is remembered on their phone for the next game.
 
 ## 3. Player: showing a claim
 The player **shouts first**, then taps **Show claim** (TAM-060, TAM-177).

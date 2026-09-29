@@ -28,7 +28,7 @@ Design: `docs/games/tambola/ux-phone-tickets.md`.
 - A claim QR that doesn't match the host's copy is refused, never counted as a bogey.
 
 **Size:** about 50 scenarios, including the pattern rules the app checks for phone tickets.
-**Sign-off:** approve Phase 2 as described? (Yes / changes). *Status 29 September: the owner is reading it.*
+**Signed off by the owner, 29 September 2026**, with the several-tickets layouts added (all four, player can switch: `docs/games/tambola/changes-2026-09-29-phone-tickets.md`).
 
 ---
 
