@@ -4,7 +4,7 @@
 The orchestrator works through **"Next, in order"** from the top. The product owner keeps this section
 current; instructions live here, not in chat. History from Phase 0 and 1a is further down.
 
-### Status at the start of Phase 1a
+### Status
 | Item | State |
 |---|---|
 | Phase 1a and 1a.1 (Tambola, paper tickets, redesign, money back per ticket) | **Green and live** at https://virapandy.github.io/pocket-game-night/ |
@@ -34,7 +34,7 @@ current; instructions live here, not in chat. History from Phase 0 and 1a is fur
 
 # History: Phase 0 and 1a (28 September 2026)
 
-## Status
+## Status at the start of Phase 1a
 | Item | State |
 |---|---|
 | Architecture, principles, two-workspace split | Decided (`CLAUDE.md`) |
