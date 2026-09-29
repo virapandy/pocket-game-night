@@ -1,10 +1,13 @@
 # On every push to main: type-check, boundary check, build, every test layer that exists,
 # then publish to GitHub Pages only if all of it is green, so the live link never shows a broken build.
+# Pushes that change only docs/ do not start a run at all, so they can never cancel a run for code.
 name: Check and publish
 
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - 'docs/**'
   workflow_dispatch:
 
 permissions:
