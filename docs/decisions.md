@@ -84,6 +84,8 @@
 | 2026-09-29 | The one-time screen-sleep tip never covers the called number (TAM-128, TAM-138). | Owner |
 | 2026-09-29 | 36 Hindi rhymes that fail the rule are cut; 35 numbers have no Hindi rhyme for now, and a Hindi game uses an Indian-reference English rhyme for them (TAM-150, TAM-153 changed). | Owner |
 
+| 2026-09-29 | Tiny pots: when rounding the smaller prizes to the ₹10 unit would leave Full House smaller than another prize, they round to the nearest ₹1 instead (e.g. ₹36 → ₹4 / ₹5 / ₹5 / ₹5 / ₹17); only if even that fails are the smaller prizes lowered ₹1 at a time until Full House is the largest (TAM-082). | Owner |
+
 "Convention" means the established Tambola rule in `docs/games/tambola/guide.md`, chosen because the owner asked
 Claude to follow game conventions. Every Tambola rule above is also a host setting with this default.
 
