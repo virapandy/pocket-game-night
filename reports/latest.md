@@ -1,61 +1,41 @@
 # Test report
-Commit tested: 76bd5b8 (app code; test commit on top: see git log)   Date: 2026-09-29
-Result: RED, as intended. The owner answered the three spec questions (docs/decisions.md, 325bc40). TAM-082,
-TAM-145, TAM-128 and TAM-138 are reworded and approved (owner, 2026-09-29), and their new checks fail on 76bd5b8
-for exactly the reasons the review found. Everything else is unchanged and still green.
+Commit tested: f75a9bf (app code; test and docs commit on top: see git log)   Date: 2026-09-29
+Result: RED, on one check only, and it is a spec question, not an app bug. Every failure from the last report is
+fixed: TAM-082's rounding examples, TAM-145, TAM-123, TAM-138, TAM-125 and TAM-128 now pass on both phones. The
+one remaining failure is the TAM-082 exact-rounding property on tiny pots, where the approved spec asks for two
+things that cannot both be true (see "Spec questions"). No test was changed.
 
 | Layer | Command | Passing | Failing | Skipped |
 |---|---|---|---|---|
-| Rules, contract, property, simulation, replays | `npm test` | 306 | 4 (TAM-082) | 0 |
-| Browser, Android (Chromium) | `npm run build && npm run test:browser` | 150 | 6 (TAM-145 ×2, TAM-123, TAM-138, TAM-125, TAM-128/TAM-138) | 1 (iPhone only) |
-| Browser, iPhone (WebKit) | same | 145 | 6 (same six) | 6 (unchanged) |
+| Rules, contract, property, simulation, replays (Phase 1a and 1b) | `npm test` | 309 | 1 (TAM-082 property) | 0 |
+| Browser, Android (Chromium) | `npm run build && npm run test:browser` | 156 | 0 | 1 (iPhone only) |
+| Browser, iPhone (WebKit) | same | 151 | 0 | 6 (unchanged: offline and Chromium-only checks) |
 
-Build (`npm run build`): succeeds.
-
-## What changed (all stricter, nothing loosened)
-- Specs: TAM-082 (`08-prizes.md`) now says every tier except Full House is its share rounded to the nearest unit
-  (₹10 by default), an exact half rounds down, and Full House takes the rest; the ₹300 example is spelled out.
-  TAM-145 (`10-lifecycle.md`) adds "after the host closes a tier, its result goes away by itself; no Done is needed".
-  TAM-138 and TAM-128 (`09-usability.md`) add that the one-time screen-sleep tip never covers the called number.
-- `tests/games/tambola/prizes.test.ts`: the rounding property that allowed "within one unit" is replaced by an exact
-  one: each tier other than Full House equals its share rounded to the nearest unit with halves down, and Full House
-  is the pot minus the rest (5,000 random pots, ticket counts and units). New examples: ₹530 → ₹50 / ₹110 / ₹370;
-  ₹450 with 10 tickets → ₹40 / ₹70 / ₹70 / ₹70 / ₹200; ₹450 with 3 tickets → ₹40 / ₹90 / ₹320; ₹2,800 with
-  16 tickets → Early Five and Four Corners ₹280 each.
-- `tests/browser/claims.spec.ts`: two TAM-145 checks: after "Close Top Line" (single and shared win), with nothing
-  else tapped, the result card (`claim-result`) goes away and no "Done" button is left.
-- `tests/browser/layout.spec.ts`: a TAM-128/TAM-138 check with the screen NOT kept awake: while the one-time tip is
-  shown, nothing covers the called number, and the page does not scroll.
+Build (`npm run build`): succeeds. No dependency changes, so no `npm ci` was needed.
 
 ## Failing (real bugs only)
-- TAM-082 `prizes.test.ts` "₹300 pot … ₹30 / ₹40 / ₹40 / ₹40 / ₹150": expected Early Five ₹30 and Full House ₹150,
-  got Early Five ₹40 and Full House ₹140 (review finding 1).
-- TAM-082 `prizes.test.ts` "an exact half rounds down in a smaller game: 3 tickets at ₹150 …": expected Early Five
-  ₹40 (₹45 is a half, rounds down), got ₹50.
-- TAM-082 `prizes.test.ts` "a ₹2,800 pot (16 tickets at ₹175) …": expected Early Five ₹280, got ₹290.
-- TAM-082 `prizes.test.ts` "for every pot … exactly its share rounded to the nearest unit (half down)": e.g. Top Line
-  at 20% of ₹510 (share ₹102) expected ₹100, got ₹110; a rounding difference goes to a tier other than Full House.
-- TAM-145 `claims.spec.ts` "after "Close Top Line" the win goes away by itself" (both phones): expected the
-  `claim-result` card hidden after closing, got it still visible (review finding 4).
-- TAM-145 `claims.spec.ts` "a shared win goes away by itself too" (both phones): same, after a shared win.
-- TAM-123 `layout.spec.ts` "while a win is shown …" (both phones): expected nothing on top of the number, got the
-  win card (`claim-result`) covering it (review finding 2).
-- TAM-138 `layout.spec.ts` "nothing covers the number while a win or a bogey is shown, after closing the tier …"
-  (both phones): the `claim-result` card covers the number while the win and the bogey are shown, and after Close.
-- TAM-125 `layout.spec.ts` "Called 21 · Undo (5s)" … (both phones): expected the toast not to overlap the prize
-  chips, got an overlap (review finding 3).
-- TAM-128/TAM-138 `layout.spec.ts` "while the one-time tip is shown, it never covers the called number" (both
-  phones): the tip ("Keep your screen on: this phone may let …") covers the number at 5 of 25 points (its top edge).
+- None. The one failing check is listed under "Spec questions" below, because the app follows the approved spec
+  as far as the spec can be followed.
 
-## Already passing
-- TAM-138 "after an undo of a call, nothing covers the number" (both phones).
-- TAM-082 "an exact half rounds down: 10 tickets at ₹45" and the ₹530 example (both already match the rule).
-- TAM-128 "refused: a one-time tip, then only a small icon" and "kept awake: neither appears" (both phones).
-- All rhyme pack tests (TAM-150 to TAM-158) against the current pack. They count no rhymes and name no rhyme text,
-  so revision 2 cannot break them by its size or wording. I also checked `docs/games/tambola/rhymes.csv`
-  (revision 2, 405 rhymes) against every rule they test: at least 3 English (2 family-friendly) and 1 Hindi per
-  number, a family-friendly English Indian-style rhyme per number, at most 40 characters, no repeats per number,
-  some English rhymes not family-friendly (7). All hold, so the rebuilt pack should stay green.
+## TAM-082 property runs (several seeds)
+- The TAM-082 prize tests (`prizes.test.ts`, `setup.test.ts`) were run 9 times with fresh random seeds. Every
+  property passed on every run except "each tier but Full House is exactly its share rounded … and Full House is
+  the pot minus the rest", which failed on all 9 runs, always on a tiny pot next to a large unit. Examples:
+  105 tickets at ₹3 (₹315 pot, ₹50 unit): exact rounding gives each small tier ₹50 and Full House ₹15, the app
+  gives the small tiers ₹0 and Full House ₹315; 6 tickets at ₹56 (₹336 pot, ₹100 unit): Lines ₹100 each would
+  leave Full House ₹36, the app gives ₹0 each; 32 tickets at ₹1 (₹32 pot, ₹5 unit).
+- To be sure nothing else hides behind these, every input the properties draw from was checked (1,194,000
+  combinations of tickets 2 to 200, ₹1 to ₹1,000, units ₹1 to ₹100; a one-off check, not kept as a test). The app
+  gives exactly the rounded amounts in all but 1,292 of them (about 1 in 1,000). All 1,292 are cases where exact
+  rounding would leave Full House below another tier or below ₹0. On all 1,194,000, the prizes add up to the pot,
+  none is negative, Full House is the largest, equal shares get equal amounts and every tier but Full House is a
+  whole number of units.
+
+## Rhymes (TAM-150 to TAM-158)
+- All rhyme tests pass against the rebuilt pack. The pack in the app is exactly catalog revision 4
+  (`docs/games/tambola/rhymes.csv`, 397 rhymes, as recorded in `docs/decisions.md`): same 397 lines, none missing,
+  none extra, no repeats. The catalog also meets every rule the tests check (at least 3 English, 2 of them
+  family-friendly, and 1 Hindi per number; at most 40 characters; 7 English lines marked not family-friendly).
 
 ## Flaky or setup problems (not for the Build workspace)
 - None.
@@ -64,8 +44,11 @@ Build (`npm run build`): succeeds.
 - None.
 
 ## Spec questions (for the orchestrator and the owner)
-- Answered 2026-09-29: TAM-082 rounding (nearest ₹10, halves down, Full House the rest), TAM-145 (result goes away
-  after closing), TAM-128/TAM-138 (the tip never covers the number). All now approved and tested.
+- New, TAM-082 on tiny pots (answered in `docs/test-questions.md`, left open for the owner): the spec says both
+  "every tier except Full House is its share rounded to the nearest unit" and "Full House stays the largest". For
+  about 1 in 1,000 pot sizes (for example 6 tickets at ₹6, a ₹36 pot, with the default ₹10 rounding) both cannot
+  hold, and the spec does not say which gives way or what the prizes should then be. The app puts the whole pot
+  (or most of it) on Full House in those cases. The exact-rounding check keeps failing until the owner decides.
 - Still open from earlier: PLT-026 vs PLT-016 (a game paused overnight), TAM-067 paper-ticket late claims,
   TAM-067 rounding, PLT-014 session of old games.
 
@@ -76,8 +59,12 @@ TAM-179, TAM-190); Phase 2.5 (PLT-100 to PLT-113); extended testing (PLT-114 to 
 (TAM-133, TAM-200 to TAM-210).
 
 ## Notes for the owner (plain English)
-Your three answers are now written into the scenarios and have checks. On today's build they fail, as expected:
-prize amounts other than Full House are not yet rounded to the nearest ₹10 with halves going down (Early Five gets
-₹40 instead of ₹30 in a ₹300 pot), the win card stays after the host closes the prize, the win card and the
-one-time "keep your screen on" tip sit on top of the called number, and the "Called 21 · Undo" message overlaps
-the prize chips. Nothing else broke.
+All the fixes from the review now work on both Android and iPhone: the smaller prizes are rounded to the nearest
+₹10 with halves going down (₹30 / ₹40 / ₹40 / ₹40 / ₹150 for a ₹300 pot), the win card goes away by itself after
+the host closes the prize, nothing covers the called number, and the "Called 21 · Undo" message no longer overlaps
+the prize chips. The new rhyme list (397 rhymes) is in the app exactly as approved.
+
+One question for you. With very small pots, rounding the smaller prizes to ₹10 can leave Full House smaller than a
+Line. Example: 6 tickets at ₹6 is a ₹36 pot; rounding gives each Line ₹10, leaving Full House only ₹6. Today the
+app then gives all ₹36 to Full House and ₹0 to the rest. Is that what you want, or should the small prizes round
+down (or to the rupee) in such games? Until you choose, one automatic check stays red.
