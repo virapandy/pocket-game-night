@@ -1,5 +1,5 @@
 // Usability on the host phone: TAM-104, TAM-106, TAM-109, TAM-110, TAM-113, TAM-116, TAM-118, TAM-135.
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page } from './fixtures';
 import { call, callMany, dismiss, fromMenu, HOME, menuButton, nextNumber, openTambola, recordWin, setUpPaperGame } from './helpers';
 
 /** Screens worth checking: home, Tambola, setup, a game, its menu, a recorded win, the room view. */

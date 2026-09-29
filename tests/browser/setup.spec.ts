@@ -1,5 +1,5 @@
 // Setting up a game: TAM-137, PLT-024, TAM-063, TAM-080, TAM-081, TAM-084, TAM-090, TAM-060.
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 import { confirmPrizes, expectNoPaymentUi, fillPlayers, nextNumber, openTambola, setUpPaperGame } from './helpers';
 
 test('TAM-137: the first choice is Paper tickets or Phone tickets', async ({ page }) => {

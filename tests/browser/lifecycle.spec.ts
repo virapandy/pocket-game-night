@@ -1,6 +1,6 @@
 // A game over time: TAM-065, TAM-066, TAM-068, TAM-103, TAM-111, TAM-112, TAM-115, TAM-140,
 // PLT-002, PLT-003, PLT-004, PLT-005, PLT-007, PLT-008, PLT-012, PLT-013. End game and Discard are in the menu (TAM-124).
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 import {
   call, callMany, calledNumbers, confirmPrizes, currentNumber, endGame, fromMenu, HOME, menuButton, menuItem, nextNumber, openTambola, recordWin,
   setUpPaperGame,

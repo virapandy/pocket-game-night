@@ -3,7 +3,7 @@
 // background, never skips or repeats), TAM-186 (waits for wins; timer from zero after resuming; undo pauses it;
 // 5 to 30 seconds in 5-second steps, 10 by default), TAM-187 (a failing voice never stops the timer),
 // TAM-062 (auto-call's own warning). The clock is Playwright's fake clock; the voice is fakeVoices().
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page } from './fixtures';
 import {
   backgroundAndReturn, calledCount, calledNumbers, checkNumbers, currentNumber, dismiss, fakeVoices, fromMenu, recordWin,
   setUpPaperGame, spoken, toggle, turnOnInGame, undoLastCall,

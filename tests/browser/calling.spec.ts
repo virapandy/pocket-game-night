@@ -1,6 +1,6 @@
 // Calling on the host phone: TAM-010, TAM-012, TAM-016, TAM-017, TAM-100, TAM-101, TAM-102, TAM-107, TAM-108,
 // TAM-119, TAM-155, TAM-156. End game, Show the room and the Board are in the menu (TAM-124, TAM-127).
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 import {
   call, callMany, calledNumbers, closeBoard, currentNumber, currentRhyme, dismiss, fromMenu, lastCalls, nextNumber, openBoard,
   setUpPaperGame, undoLastCall,

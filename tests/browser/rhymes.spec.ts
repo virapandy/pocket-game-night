@@ -1,7 +1,7 @@
 // Rhyme language in a real game: TAM-153 (changed 2026-09-29: with Hindi, a number with no Hindi rhyme shows a
 // family-friendly English rhyme with an Indian reference, never the number alone) and TAM-015.
 // Which numbers have no Hindi rhyme comes from the reviewed catalog, docs/games/tambola/rhymes.csv.
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 import { INDIAN_STYLES, numbersWithoutHindi, readCatalog } from '../rhyme-catalog';
 import { call, currentRhyme, dismiss, openTambola, setUpPaperGame } from './helpers';
 

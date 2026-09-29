@@ -21,7 +21,8 @@ export default defineConfig({
   },
   projects: [
     // A mid-range Android phone in portrait, the typical host phone.
-    { name: 'android', use: { ...devices['Pixel 7'] } },
+    // --mute-audio: the computer running the tests stays quiet (see browser/fixtures.ts for WebKit too).
+    { name: 'android', use: { ...devices['Pixel 7'], launchOptions: { args: ['--mute-audio'] } } },
     // iPhone Safari (WebKit): install tip, wake lock and storage differ there.
     { name: 'iphone', use: { ...devices['iPhone 15'] } },
   ],

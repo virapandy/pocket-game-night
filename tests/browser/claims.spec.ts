@@ -1,6 +1,6 @@
 // Recording paper-ticket wins on the host phone (change request of 28 September 2026: trust the anchor):
 // TAM-031, TAM-033, TAM-037, TAM-039, TAM-070, TAM-086, TAM-088, TAM-089, TAM-105, TAM-139, TAM-145.
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page } from './fixtures';
 import {
   callMany, checkNumbers, dismiss, endGame, fromMenu, menuItem, nextNumber, nextNumberWaits, recordBogey, recordWin, setUpPaperGame,
 } from './helpers';

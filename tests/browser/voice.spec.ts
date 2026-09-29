@@ -3,7 +3,7 @@
 // says number, rhyme, number; Indian English first; Hindi only with a Hindi voice; greyed out with no voice),
 // TAM-185 (Repeat and Another rhyme speak again; one-tap mute), TAM-187 (a voice that fails never stops the game).
 // The phone's voice is stood in for by fakeVoices() in helpers.ts. Names: tests/browser/README.md.
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page } from './fixtures';
 import {
   call, confirmPrizes, currentNumber, currentRhyme, dismiss, endGame, fakeVoices, fromMenu, openTambola, setUpPaperGame, spoken, toggle,
   turnOnInGame,

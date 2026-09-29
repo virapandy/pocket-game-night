@@ -2,7 +2,7 @@
 // Scenarios: PLT-006 (an unfinished setup is remembered), PLT-009 (play again from a past game's setup),
 // PLT-010 (deleting a past game, with undo for 5 seconds), PLT-011 (clearing all history), PLT-025 (deleting a
 // game that is still in an unsettled tally). Names and test ids: tests/browser/README.md.
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page } from './fixtures';
 import {
   callMany, confirmPrizes, endGame, fillPlayers, HOME, nextNumber, openHistory, openSession, openTambola, setUpPaperGame,
   tallyPeople, THREE_TIERS, winEverythingAndEnd,

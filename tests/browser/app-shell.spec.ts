@@ -1,5 +1,5 @@
 // The app shell: opens, installs, and works offline once opened (Phase 0 foundation; TAM-064, TAM-069, TAM-114).
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page } from './fixtures';
 import { call, currentRhyme, HOME, openTambola, setUpPaperGame } from './helpers';
 
 /** First visit with internet, then wait until the service worker has saved the app. */

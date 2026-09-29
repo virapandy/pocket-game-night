@@ -1,6 +1,6 @@
 // The calling screen redesign (change request of 28 September 2026, docs/games/tambola/ux-calling-screen.md):
 // TAM-123 to TAM-129 and TAM-138, all on a 390 × 844 screen unless a test says otherwise.
-import { expect, test, type Locator, type Page } from '@playwright/test';
+import { expect, test, type Locator, type Page } from './fixtures';
 import {
   call, callMany, calledNumbers, closeBoard, currentNumber, currentRhyme, dismiss, fromMenu, lastCalls, menuItem, nextNumber,
   nextNumberWaits, openBoard, recordBogey, recordWin, setUpPaperGame, undoToast,

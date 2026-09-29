@@ -4,7 +4,7 @@
 // can be seen and renamed), PLT-023 (games without money stay out), PLT-026 (a game stays in its session),
 // PLT-027 (a settled tally can be looked at later; undo for 5 seconds), PLT-028 (net amounts, "Settle up",
 // "Mark as settled"), TAM-090 (no money is moved). Names and test ids: tests/browser/README.md.
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page } from './fixtures';
 import {
   call, callMany, confirmPrizes, continueOrNew, currentNumber, endGame, expectNoPaymentUi, HOME, nextNumber, openHistory,
   openSession, openSessions, sessionNameField, setUpPaperGame, tallyPeople, THREE_TIERS, winEverythingAndEnd,

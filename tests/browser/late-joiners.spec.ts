@@ -2,7 +2,7 @@
 // Scenarios: TAM-067 (a late joiner gets a ticket mid-game; new prize amounts shown for the anchor; no more
 // after 10 numbers), TAM-184 (taken out again before the next number; not after; hidden when late joining is
 // 0), TAM-093 (a late joiner's ticket counts in money handed back). Names and test ids: tests/browser/README.md.
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page } from './fixtures';
 import { callMany, dismiss, endGame, fromMenu, menuButton, menuItem, openTambola, recordWin, setUpPaperGame } from './helpers';
 
 const FAMILY = ['Riya', 'Asha', 'Dad']; // ₹50 each: a ₹150 pot

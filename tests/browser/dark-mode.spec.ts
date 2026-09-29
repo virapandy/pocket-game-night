@@ -2,7 +2,7 @@
 // Scenarios: TAM-134 (starts light, even on a phone set to dark; the host can switch; text stays as large),
 // TAM-188 (dark mode keeps the contrast rules of TAM-106, the sizes, and TAM-105's words and symbols; the choice
 // is remembered on this phone; switching never changes the game in progress). Names: tests/browser/README.md.
-import { expect, test, type Locator, type Page } from '@playwright/test';
+import { expect, test, type Locator, type Page } from './fixtures';
 import {
   callMany, calledNumbers, confirmPrizes, currentNumber, currentRhyme, dismiss, endGame, fromMenu, HOME, lastCalls, menuButton,
   nextNumber, openTambola, recordWin, setUpPaperGame, toggle,
