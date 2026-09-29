@@ -38,7 +38,19 @@ export async function setUpPaperGame(page: Page, opts: SetupOptions = {}) {
  * "Continue '<name>' or start a new session?". By default the helper keeps the suggested name, or continues.
  */
 export async function confirmPrizes(page: Page, session?: SessionAnswer) {
-  await page.getByRole('button', { name: 'Confirm prizes' }).click();
+  const confirm = page.getByRole('button', { name: 'Confirm prizes' });
+  await expect(confirm).toBeVisible();
+  // PLT-029 (owner, 2026-09-30): a first game, or one after 3 hours, may show "Session: Sunday 4 Oct (new) · Change"
+  // instead of asking afterwards. A test that names its session then names it through "Change".
+  const line = page.getByTestId('session-line');
+  if (session?.name && (await line.isVisible()) && /\(new\)/.test((await line.textContent()) ?? '')) {
+    await line.getByRole('button', { name: /^Change/ }).click();
+    await page.getByRole('button', { name: 'New session', exact: true }).click();
+    await sessionNameField(page).fill(session.name);
+    await page.getByRole('button', { name: 'Save', exact: true }).click();
+    await expect(line).toContainText(`Session: ${session.name}`);
+  }
+  await confirm.click();
   await answerSession(page, session);
   await expect(nextNumber(page)).toBeVisible();
 }
@@ -337,19 +349,51 @@ export async function backgroundAndReturn(page: Page) {
  */
 export const mainButton = (page: Page) => page.getByTestId('main-button');
 
-/** One person on the payout screen (TAM-089): name, paid, prize won, handed back, and what the host gives them. */
+/** One person's row on the payout screen (TAM-088, TAM-089, owner 2026-09-30): name, paid, prize won, net. */
 export async function payoutPeople(page: Page) {
   const rows = page.getByTestId('payout-summary').getByTestId('payout-person');
   const n = await rows.count();
-  const out: { name: string; paid: number; won: number; handedBack: number; hostGives: number }[] = [];
+  const out: { name: string; paid: number; won: number; net: number }[] = [];
   for (let i = 0; i < n; i++) {
     const r = rows.nth(i);
     out.push({
       name: (await r.getAttribute('data-name')) ?? '',
       paid: Number(await r.getAttribute('data-paid')),
       won: Number(await r.getAttribute('data-won')),
-      handedBack: Number(await r.getAttribute('data-handed-back')),
-      hostGives: Number(await r.getAttribute('data-host-gives')),
+      net: Number(await r.getAttribute('data-net')),
+    });
+  }
+  return out;
+}
+
+/** After "Settle with host" (TAM-089): what the host gives each person, one `host-gives` per person listed. */
+export async function hostGivesList(page: Page) {
+  const rows = page.getByTestId('settle-with-host').getByTestId('host-gives');
+  const n = await rows.count();
+  const out: { name: string; amount: number; text: string }[] = [];
+  for (let i = 0; i < n; i++) {
+    const r = rows.nth(i);
+    out.push({
+      name: (await r.getAttribute('data-name')) ?? '',
+      amount: Number(await r.getAttribute('data-amount')),
+      text: ((await r.textContent()) ?? '').replace(/\s+/g, ' ').trim(),
+    });
+  }
+  return out;
+}
+
+/** The hand-overs inside a container (`settle-with-players` on the payout screen, `settle-up` in a session). */
+export async function handOvers(page: Page, scope: string) {
+  const rows = page.getByTestId(scope).getByTestId('hand-over');
+  const n = await rows.count();
+  const out: { from: string; to: string; amount: number; text: string }[] = [];
+  for (let i = 0; i < n; i++) {
+    const r = rows.nth(i);
+    out.push({
+      from: (await r.getAttribute('data-from')) ?? '',
+      to: (await r.getAttribute('data-to')) ?? '',
+      amount: Number(await r.getAttribute('data-amount')),
+      text: ((await r.textContent()) ?? '').replace(/\s+/g, ' ').trim(),
     });
   }
   return out;

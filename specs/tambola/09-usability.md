@@ -244,7 +244,8 @@ And each state has a word or symbol as well as colour (TAM-105)
 When a win is recorded for Top Line (TAM-037, TAM-145)
 Then its chip reads "Top Line ✓ Riya", and the main button reads "Close Top Line" until the host closes it (TAM-198;
 changed by the owner on 2026-09-30, docs/games/tambola/changes-2026-09-30-playtest.md: was "'Next number' reads
-'Close Top Line first'"); a Close on the chip may stay as a second way
+'Close Top Line first'"); the chip also keeps a Close, which closes the prize too and works while the screen is
+dimmed (owner, 2026-09-30, docs/decisions.md)
 And if the chips do not fit on one line, they scroll sideways inside their own row; the page itself never scrolls (TAM-138)
 
 ## TAM-127: The board opens as a sheet over the calling screen

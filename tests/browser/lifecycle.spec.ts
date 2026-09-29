@@ -77,8 +77,7 @@ test('PLT-005 and TAM-140: discarding asks first, voids the game, and shows cont
   await setUpPaperGame(page, { players: ['Riya', 'Asha', 'Dad'] });
   await callMany(page, 6);
   await recordWin(page, 'Early Five', ['Asha']);
-  // TAM-198: the rest of the screen waits until the prize is closed, so close it before using the menu.
-  await page.getByRole('button', { name: 'Close Early Five', exact: true }).click();
+  // TAM-198 (owner, 2026-09-30): the menu still works while the won prize waits to be closed.
   await fromMenu(page, 'Discard game');
   const dialog = page.getByRole('dialog');
   await expect(dialog.getByText(/1 prize was already won|prizes? (was|were) already won/)).toBeVisible();

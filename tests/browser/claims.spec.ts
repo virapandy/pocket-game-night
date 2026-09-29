@@ -173,14 +173,15 @@ test.describe('with six named players', () => {
     }
   });
 
-  test('TAM-088 and TAM-089: the summary shows prizes not won, and per person paid, won, handed back and net', async ({ page }) => {
+  // TAM-088 and TAM-089 as reworded by the owner on 2026-09-30: each person's row shows paid, won and net.
+  test('TAM-088 and TAM-089: the summary shows prizes not won, and per person paid, won and net', async ({ page }) => {
     await callMany(page, 3);
     await recordWin(page, 'Early Five', ['Riya']);
     await page.getByRole('button', { name: 'Close Early Five', exact: true }).click();
     await endGame(page);
     const summary = page.getByTestId('payout-summary');
     await expect(summary.getByText(/not won/i).first()).toBeVisible();
-    for (const word of [/paid/i, /handed back/i, /net/i]) await expect(summary.getByText(word).first()).toBeVisible();
+    for (const word of [/paid/i, /won/i, /net/i]) await expect(summary.getByText(word).first()).toBeVisible();
     await expect(summary.getByText('₹300').first()).toBeVisible(); // prizes plus money handed back equal the pot
   });
 });
@@ -198,8 +199,7 @@ test('TAM-086 and TAM-090: with "No money" the win shows no amount', async ({ pa
   await recordWin(page, 'Top Line', ['Riya']);
   await expect(result(page).getByText(/Top Line: ✓ Riya/)).toBeVisible();
   await expect(result(page).getByText(/₹/)).toHaveCount(0);
-  // TAM-198: the rest of the screen waits until the prize is closed, so close it before using the menu.
-  await page.getByRole('button', { name: 'Close Top Line', exact: true }).click();
+  // TAM-198 (owner, 2026-09-30): the menu still works while the won prize waits to be closed.
   await fromMenu(page, 'End game');
   await page.getByRole('dialog').getByRole('button', { name: 'End game' }).click();
   await expect(page.getByText(/handed back/i)).toHaveCount(0);

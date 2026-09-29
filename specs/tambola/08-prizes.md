@@ -95,25 +95,40 @@ Then they get ₹17, ₹17 and ₹16 (split to the rupee, adding up to ₹50 exa
 And the extra rupee goes in ticket-number order
 
 ## TAM-088: Money from prizes nobody won goes back to the players
-Status: approved, owner, 2026-09-28 (change request; replaces "an unclaimed tier is spread across the won tiers". No roll-over still holds)
+Status: approved, owner, 2026-09-30 (docs/decisions.md 2026-09-30: each person's row on the payout screen shows paid, won and net; what the host gives, including money handed back, is under "Settle with host", TAM-089); was approved, owner, 2026-09-28 (change request; replaces "an unclaimed tier is spread across the won tiers". No roll-over still holds)
 Phase: Phase 1a
 Given the game ends with some tiers unclaimed (for example only Early Five was won)
 Then the money of every unclaimed tier is handed back to the players, equally per ticket
 (a player with 2 tickets gets twice as much back as a player with 1), split to the rupee
 And the winners of claimed tiers get exactly their tier amounts, nothing more
 And payouts plus money handed back add up to the pot exactly
-And the payout summary shows, per person: paid, won, handed back, and the net amount
+And the payout summary shows one row per person: paid, won, and the net amount (money handed back counts in the net,
+and shows in "Settle with host", TAM-089)
 And nothing carries over to another game
 (Per ticket confirmed by the owner on 2026-09-28.)
 
-## TAM-089: The payout summary says what the host hands each person
-Status: approved, owner, 2026-09-29 (docs/games/tambola/changes-2026-09-29-money-and-1b.md: the host is the bank for each game; was "The payout summary balances", approved, owner, 2026-09-28)
+## TAM-089: The payout screen: each person's row, and "Settle with host"
+Status: approved, owner, 2026-09-30 (docs/decisions.md 2026-09-30: two settle buttons on the payout screen; was approved, owner, 2026-09-29, docs/games/tambola/changes-2026-09-29-money-and-1b.md: "Host gives Riya ₹77" on each person; was "The payout summary balances", approved, owner, 2026-09-28)
 Phase: Phase 1a
 When a game ends
 Then the summary lists each tier with its winner(s) and amount (or "not won") (TAM-088)
-And, for each person: paid, prize won, money handed back, and "Host gives Riya ₹77" (prize plus money back)
+And each person has one row: paid, won, and net (TAM-088)
+And below the rows are two buttons: "Settle with host" and "Settle with players" (TAM-199)
+When the host taps "Settle with host"
+Then it shows what the host, as the bank, gives each person: "Host gives Riya ₹77" (prize won plus money handed back)
 And the total the host gives out equals the pot, to the rupee
-(Player-to-player hand-overs appear only in the session's optional Settle up, PLT-028.)
+Edge: with "No money" (TAM-090) nothing is handed over: no "Host gives" and no ₹ anywhere on the screen
+(The session tally keeps its own "Settle up", PLT-028, unchanged.)
+
+## TAM-199: "Settle with players": who pays whom for this game
+Status: approved, owner, 2026-09-30 (docs/decisions.md 2026-09-30: two settle buttons on the payout screen)
+Phase: Phase 1a
+Given a game that ended with Riya net +₹100, Asha −₹50 and Dad −₹50
+When the host taps "Settle with players" on the payout screen
+Then it lists who pays whom for this game only, in the fewest hand-overs: "Asha pays Riya ₹50 · Dad pays Riya ₹50"
+And after those hand-overs everyone is at ₹0: each person's hand-overs add up exactly to their net amount
+And no payment is made or requested: text only (TAM-090)
+Edge: a tie or money handed back gives uneven nets; the hand-overs still add up to the rupee
 
 ## TAM-090: The app never moves money
 Status: approved, owner, 2026-09-28

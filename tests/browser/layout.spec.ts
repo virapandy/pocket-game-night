@@ -357,8 +357,8 @@ test.describe('TAM-125: the undo toast never moves anything', () => {
 
 test.describe('TAM-126: prize chips show at a glance what is open, won and closed', () => {
   // TAM-126 as changed by the owner on 2026-09-30 (TAM-198): the main button reads "Close Top Line" (was "Close Top Line
-  // first" on a greyed Next number); a Close on the chip may stay as a second way.
-  test('five tiers show as five chips; a win turns its chip into "Top Line ✓ Riya", and the main button reads "Close Top Line"', async ({ page }) => {
+  // first" on a greyed Next number), and the chip keeps its Close (docs/decisions.md, 2026-09-30).
+  test('five tiers show as five chips; a win turns its chip into "Top Line ✓ Riya · Close", and the main button reads "Close Top Line"', async ({ page }) => {
     await setUpPaperGame(page);
     await callMany(page, 3);
     await expect(chips(page)).toHaveCount(5);
@@ -366,6 +366,7 @@ test.describe('TAM-126: prize chips show at a glance what is open, won and close
     await recordWin(page, 'Top Line', ['Riya']);
     const top = chips(page).filter({ hasText: /Top Line ✓ Riya/ });
     await expect(top).toHaveCount(1);
+    await expect(top.getByRole('button', { name: /Close/ })).toBeVisible();
     await expect(mainButton(page)).toHaveAccessibleName('Close Top Line');
     expect(await nextNumberWaits(page)).toBe(true);
     await mainButton(page).click();

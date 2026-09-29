@@ -1,13 +1,13 @@
-// The host is the bank for each game, and the 1b review findings (29 September 2026,
-// docs/games/tambola/changes-2026-09-29-money-and-1b.md): TAM-089 (the payout screen says what the host gives each
-// person), TAM-197 (from the payouts to the session tally), TAM-181 on the payout and session screens (buttons
-// fixed at the bottom), PLT-017 (one compact row per person in the tally), TAM-109 (each session in the list has a
+// The payout screen (owner, 2026-09-30, docs/decisions.md): TAM-088 and TAM-089 (each person's row shows paid, won and
+// net; "Settle with host" shows what the host gives each person), TAM-199 ("Settle with players": who pays whom for
+// this game). The 1b review findings (29 September 2026, docs/games/tambola/changes-2026-09-29-money-and-1b.md): TAM-197 (from the payouts to the session tally), TAM-181 on the payout and session screens (buttons
+// fixed at the bottom), PLT-017 (one compact row per person in the tally; a tap shows the details), TAM-109 (each session in the list has a
 // readable label). Settle up stays player to player (PLT-028, unchanged: sessions.spec.ts). On a 390 × 844 screen.
 // Names and test ids: tests/browser/README.md.
 import { expect, test, type Page } from './fixtures';
 import {
-  callMany, confirmPrizes, endGame, expectAtBottom, expectNoPaymentUi, expectNotHiddenBehind, openSession, openSessions, payoutPeople, recordWin,
-  setUpPaperGame, tallyPeople, THREE_TIERS, winEverythingAndEnd,
+  callMany, confirmPrizes, endGame, expectAtBottom, expectNoPaymentUi, expectNotHiddenBehind, handOvers, hostGivesList, openSession, openSessions,
+  payoutPeople, recordWin, setUpPaperGame, tallyPeople, THREE_TIERS, winEverythingAndEnd,
 } from './helpers';
 
 test.use({ viewport: { width: 390, height: 844 }, timezoneId: 'Asia/Kolkata' });
@@ -23,6 +23,21 @@ const many = (n: number) => Array.from({ length: n }, (_, i) => `Guest ${i + 1}`
 const summary = (page: Page) => page.getByTestId('payout-summary');
 const playAgain = (page: Page) => page.getByRole('button', { name: 'Play again', exact: true });
 const sessionTally = (page: Page) => page.getByRole('button', { name: 'Session tally', exact: true });
+const settleWithHost = (page: Page) => page.getByRole('button', { name: 'Settle with host', exact: true });
+const settleWithPlayers = (page: Page) => page.getByRole('button', { name: 'Settle with players', exact: true });
+
+/** After the hand-overs, everyone is at ₹0: what each person pays minus what they receive equals minus their net. */
+function expectEveryoneAtZero(people: { name: string; net: number }[], hs: { from: string; to: string; amount: number; text: string }[]) {
+  for (const p of people) {
+    const received = sum(hs.filter((h) => h.to === p.name).map((h) => h.amount));
+    const paidOut = sum(hs.filter((h) => h.from === p.name).map((h) => h.amount));
+    expect(received - paidOut, `${p.name} ends at ₹0 (net ${p.net})`).toBe(p.net);
+  }
+  for (const h of hs) {
+    expect(Number.isInteger(h.amount) && h.amount > 0, `${h.text}: a whole, positive amount`).toBe(true);
+    expect(h.from).not.toBe(h.to);
+  }
+}
 
 /** Records Early Five for one player, closes it, and ends the game: the rest is handed back. */
 async function earlyFiveThenEnd(page: Page, player: string) {
@@ -33,8 +48,8 @@ async function earlyFiveThenEnd(page: Page, player: string) {
   await expect(summary(page)).toBeVisible();
 }
 
-test.describe('TAM-089: the payout summary says what the host hands each person', () => {
-  test('per person: paid, prize won, money handed back, and "Host gives Riya ₹…"; the host gives out exactly the pot', async ({ page }) => {
+test.describe('TAM-088 and TAM-089: each person\'s row shows paid, won and net; "Settle with host" shows what the host gives', () => {
+  test('one row per person with paid, won and net; the nets add up to ₹0', async ({ page }) => {
     await setUpPaperGame(page, { players: SIX });
     await earlyFiveThenEnd(page, 'Riya');
     // Each tier with its winner and amount, or "not won" (TAM-088).
@@ -45,30 +60,48 @@ test.describe('TAM-089: the payout summary says what the host hands each person'
     expect(people.map((p) => p.name)).toEqual(SIX);
     for (const p of people) {
       expect(p.paid, `${p.name} paid`).toBe(50);
-      expect(p.hostGives, `${p.name}: prize plus money back`).toBe(p.won + p.handedBack);
-      expect(Number.isInteger(p.hostGives)).toBe(true);
+      expect(Number.isInteger(p.net), `${p.name}: net is a whole number of rupees`).toBe(true);
     }
     const riya = people.find((p) => p.name === 'Riya')!;
     expect(riya.won).toBeGreaterThan(0);
+    expect(riya.net).toBeGreaterThan(0);
     for (const p of people.filter((x) => x.name !== 'Riya')) expect(p.won, `${p.name} won nothing`).toBe(0);
-    // The total the host gives out equals the pot, to the rupee.
-    expect(sum(people.map((p) => p.hostGives))).toBe(300);
+    // Money handed back counts in the net: others get some back, so they lose less than they paid.
+    for (const p of people.filter((x) => x.name !== 'Riya')) {
+      expect(p.net, `${p.name} got money back`).toBeGreaterThan(-50);
+      expect(p.net).toBeLessThan(0);
+    }
+    expect(sum(people.map((p) => p.net)), 'the nets balance').toBe(0);
 
-    // In words, per person: "Host gives Riya ₹…", matching the numbers.
+    // In words on each row: paid, won and net, with the amounts.
     for (const p of people) {
       const row = summary(page).locator(`[data-testid="payout-person"][data-name="${p.name}"]`);
-      await expect(row).toContainText(`Host gives ${p.name} ₹${p.hostGives}`);
+      await expect(row).toContainText(p.name);
       await expect(row).toContainText(/paid/i);
-      await expect(row).toContainText(/handed back/i);
+      await expect(row).toContainText(/won/i);
+      await expect(row).toContainText(/net/i);
+      await expect(row).toContainText(`₹${Math.abs(p.net)}`);
     }
+    // Below the rows, the two settle buttons.
+    await expect(settleWithHost(page)).toBeVisible();
+    await expect(settleWithPlayers(page)).toBeVisible();
   });
 
-  test('there is no player-to-player hand-over on the payout screen (those are only in Settle up, PLT-028)', async ({ page }) => {
+  test('"Settle with host": "Host gives Riya ₹…" per person (prize plus money back); the host gives out exactly the pot', async ({ page }) => {
     await setUpPaperGame(page, { players: SIX });
-    await earlyFiveThenEnd(page, 'Asha');
-    await expect(summary(page).getByText(/Host gives Asha ₹\d+/)).toBeVisible();
-    await expect(summary(page).getByTestId('hand-over')).toHaveCount(0);
-    await expect(summary(page).getByText(/\b\w+ pays \w+/)).toHaveCount(0);
+    await earlyFiveThenEnd(page, 'Riya');
+    const people = await payoutPeople(page);
+    await settleWithHost(page).click();
+    await expect(page.getByTestId('settle-with-host')).toBeVisible();
+    const gives = await hostGivesList(page);
+    const by = Object.fromEntries(gives.map((g) => [g.name, g]));
+    for (const p of people) {
+      // Everyone gets something back here: Riya her prize and her share, the others their share.
+      expect(by[p.name], `a "Host gives" line for ${p.name}`).toBeDefined();
+      expect(by[p.name]!.amount, `${p.name}: what the host gives is what they paid plus their net`).toBe(p.paid + p.net);
+      expect(by[p.name]!.text).toContain(`Host gives ${p.name} ₹${by[p.name]!.amount}`);
+    }
+    expect(sum(gives.map((g) => g.amount)), 'the host gives out the pot').toBe(300);
     await expectNoPaymentUi(page);
   });
 
@@ -79,13 +112,17 @@ test.describe('TAM-089: the payout summary says what the host hands each person'
     await page.getByRole('button', { name: 'Close Early Five', exact: true }).click();
     await endGame(page);
     const people = await payoutPeople(page);
+    expect(people.map((p) => p.name)).toEqual(SIX);
     const by = Object.fromEntries(people.map((p) => [p.name, p]));
     expect(by['Riya']!.won).toBeGreaterThan(0);
     expect(by['Asha']!.won).toBeGreaterThan(0);
     expect(Math.abs(by['Riya']!.won - by['Asha']!.won)).toBeLessThanOrEqual(1);
-    for (const p of people) expect(p.hostGives).toBe(p.won + p.handedBack);
-    expect(sum(people.map((p) => p.hostGives))).toBe(300);
-    await expect(summary(page)).toContainText(`Host gives Asha ₹${by['Asha']!.hostGives}`);
+    expect(sum(people.map((p) => p.net))).toBe(0);
+    await settleWithHost(page).click();
+    const gives = await hostGivesList(page);
+    for (const g of gives) expect(g.amount).toBe(by[g.name]!.paid + by[g.name]!.net);
+    expect(sum(gives.map((g) => g.amount))).toBe(300);
+    await expect(page.getByTestId('settle-with-host')).toContainText(`Host gives Asha ₹${by['Asha']!.paid + by['Asha']!.net}`);
   });
 
   test('edge: with "No money", nothing is handed over, so there is no "Host gives" and no ₹', async ({ page }) => {
@@ -95,8 +132,68 @@ test.describe('TAM-089: the payout summary says what the host hands each person'
     await page.getByRole('button', { name: 'Close Early Five', exact: true }).click();
     await endGame(page);
     await expect(summary(page)).toBeVisible();
-    await expect(summary(page).getByText(/Host gives/)).toHaveCount(0);
+    await expect(page.getByText(/Host gives/)).toHaveCount(0);
     await expect(summary(page).getByText(/₹/)).toHaveCount(0);
+  });
+});
+
+test.describe('TAM-199: "Settle with players" says who pays whom for this game', () => {
+  test('Riya +₹100, Asha −₹50, Dad −₹50: "Asha pays Riya ₹50" and "Dad pays Riya ₹50", two hand-overs', async ({ page }) => {
+    await setUpPaperGame(page, { players: FAMILY });
+    await winEverythingAndEnd(page, 'Riya', THREE_TIERS);
+    const people = await payoutPeople(page);
+    expect(Object.fromEntries(people.map((p) => [p.name, p.net]))).toEqual({ Riya: 100, Asha: -50, Dad: -50 });
+    // Nothing is listed until the host asks for it.
+    await expect(page.getByTestId('hand-over')).toHaveCount(0);
+    await settleWithPlayers(page).click();
+    await expect(page.getByTestId('settle-with-players')).toBeVisible();
+    const hs = await handOvers(page, 'settle-with-players');
+    expect(hs.length, 'the fewest hand-overs: two').toBe(2);
+    expect(hs.map((h) => h.text).sort()).toEqual(['Asha pays Riya ₹50', 'Dad pays Riya ₹50']);
+    expectEveryoneAtZero(people, hs);
+    await expectNoPaymentUi(page);
+  });
+
+  test('uneven nets with money handed back: every loser pays the winner, and everyone ends at ₹0 to the rupee', async ({ page }) => {
+    await setUpPaperGame(page, { players: SIX });
+    await earlyFiveThenEnd(page, 'Riya');
+    const people = await payoutPeople(page);
+    await settleWithPlayers(page).click();
+    const hs = await handOvers(page, 'settle-with-players');
+    expectEveryoneAtZero(people, hs);
+    // One winner, five who lost a little: the fewest hand-overs is one from each of the five, all to Riya.
+    expect(hs.length).toBe(5);
+    for (const h of hs) {
+      expect(h.to).toBe('Riya');
+      expect(h.text).toBe(`${h.from} pays Riya ₹${h.amount}`);
+    }
+  });
+
+  test('edge: a tie with nets in both directions; the hand-overs still add up exactly', async ({ page }) => {
+    await setUpPaperGame(page, { players: SIX });
+    await callMany(page, 3);
+    await recordWin(page, 'Early Five', ['Riya', 'Asha']);
+    await page.getByRole('button', { name: 'Close Early Five', exact: true }).click();
+    await endGame(page);
+    const people = await payoutPeople(page);
+    await settleWithPlayers(page).click();
+    const hs = await handOvers(page, 'settle-with-players');
+    expectEveryoneAtZero(people, hs);
+    const nonZero = people.filter((p) => p.net !== 0).length;
+    expect(hs.length, 'never more than one fewer than the people with money to move').toBeLessThanOrEqual(nonZero - 1);
+  });
+
+  test('this game only: an earlier game in the same session does not change the hand-overs', async ({ page }) => {
+    test.setTimeout(90_000);
+    await page.clock.install({ time: T0 });
+    await setUpPaperGame(page, { players: FAMILY, session: { name: DIWALI } });
+    await winEverythingAndEnd(page, 'Dad', THREE_TIERS);
+    await page.getByRole('button', { name: 'Play again' }).click();
+    await confirmPrizes(page);
+    await winEverythingAndEnd(page, 'Riya', THREE_TIERS);
+    await settleWithPlayers(page).click();
+    const hs = await handOvers(page, 'settle-with-players');
+    expect(hs.map((h) => h.text).sort()).toEqual(['Asha pays Riya ₹50', 'Dad pays Riya ₹50']);
   });
 });
 
@@ -196,6 +293,42 @@ test.describe('PLT-017: the tally is one compact row per person', () => {
     const first = (await rows.first().boundingBox())!;
     const lastBox = (await rows.last().boundingBox())!;
     expect(lastBox.y + lastBox.height - first.y).toBeLessThanOrEqual(vp.height);
+  });
+});
+
+test.describe('PLT-017: tapping a person\'s row shows what they paid, won and got back', () => {
+  test.setTimeout(90_000);
+  const amount = (word: string, n: number) =>
+    new RegExp(`${word}\\D{0,20}₹${n}(?!\\d)|₹${n}(?!\\d)\\D{0,3}${word}`, 'i');
+
+  test('the winner: paid ₹50, won ₹150, got back ₹150', async ({ page }) => {
+    await page.clock.install({ time: T0 });
+    await setUpPaperGame(page, { players: FAMILY, session: { name: DIWALI } });
+    await winEverythingAndEnd(page, 'Riya', THREE_TIERS);
+    await openSession(page, DIWALI);
+    const row = page.getByTestId('tally').locator('[data-testid="tally-person"][data-name="Riya"]');
+    await row.click();
+    const detail = page.getByTestId('tally-person-detail');
+    await expect(detail).toBeVisible();
+    await expect(detail).toContainText(amount('paid', 50));
+    await expect(detail).toContainText(amount('won', 150));
+    await expect(detail).toContainText(amount('got back', 150));
+  });
+
+  test('money handed back: Asha won nothing, but got back her share of the prizes nobody won', async ({ page }) => {
+    await page.clock.install({ time: T0 });
+    await setUpPaperGame(page, { players: FAMILY, session: { name: DIWALI } });
+    await earlyFiveThenEnd(page, 'Riya');
+    await openSession(page, DIWALI);
+    const asha = (await tallyPeople(page)).find((p) => p.name === 'Asha')!;
+    expect(asha.gotBack).toBeGreaterThan(0);
+    await page.getByTestId('tally').locator('[data-testid="tally-person"][data-name="Asha"]').click();
+    const detail = page.getByTestId('tally-person-detail');
+    await expect(detail).toBeVisible();
+    await expect(detail).toContainText('Asha');
+    await expect(detail).toContainText(amount('paid', 50));
+    await expect(detail).toContainText(amount('won', 0));
+    await expect(detail).toContainText(amount('got back', asha.gotBack));
   });
 });
 

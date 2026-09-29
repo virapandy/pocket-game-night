@@ -139,7 +139,7 @@ When the host starts a game more than 3 hours after the last game in that sessio
 Then the app asks: "Continue 'Diwali at Nani's' or start a new session?"
 
 ## PLT-017: The tally covers finished, unsettled games in one session
-Status: decided 2026-09-28 (owner); wording aligned with TAM-088 on 2026-09-28, as the change request asked
+Status: approved, owner, 2026-09-30 (docs/decisions.md 2026-09-30: compact rows, details on a tap); decided 2026-09-28 (owner); wording aligned with TAM-088 on 2026-09-28, as the change request asked
 Phase: Phase 1b
 When the host opens the tally for a session
 Then it adds up only games that are Ended and not yet settled
@@ -149,6 +149,8 @@ from prizes nobody won, TAM-088), and one net amount
 And its totals balance: everything paid in equals everything paid out
 And each person is one compact row: their name and their balance (1b review finding 4, approved, owner, 2026-09-29,
 docs/games/tambola/changes-2026-09-29-money-and-1b.md: seven people must not fill the screen)
+When the host taps a person's row
+Then it shows what they paid, what they won, and what they got back (owner, 2026-09-30)
 
 ## PLT-018: Games in different sessions are never tallied together
 Status: decided 2026-09-28 (owner)
@@ -242,9 +244,14 @@ When the host taps "Mark as settled" and confirms (PLT-019)
 Then the games are settled (PLT-019, PLT-027)
 
 ## PLT-029: The session is shown, and can be changed, before the game starts
-Status: approved, owner, 2026-09-30 (docs/games/tambola/changes-2026-09-30-playtest.md section 2; docs/decisions.md)
+Status: approved, owner, 2026-09-30 (docs/games/tambola/changes-2026-09-30-playtest.md section 2; docs/decisions.md 2026-09-30: the first game, a game after 3 hours, and which sessions "Change" lists)
 Phase: Phase 1b
 On the last setup step, above "Confirm prizes", one line shows "Session: Tuesday 29 Sep · Change"
 When the host taps "Change"
 Then they can start a new session (with a suggested name) or pick one of the recent unsettled sessions
 And with no change, the game joins the session shown, as today (PLT-016)
+When it is the first game of all, or the first game more than 3 hours after the last game ended (PLT-016)
+Then the line shows a new session with a suggested name: "Session: Monday 5 Oct (new) · Change"
+And "Change" lists up to 3 unsettled sessions from the last 7 days to pick instead, as well as a new session
+Edge: a settled session, or one whose last game was more than 7 days ago, is not listed
+Edge: with more than 3 such sessions, only 3 are listed

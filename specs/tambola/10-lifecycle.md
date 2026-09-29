@@ -39,11 +39,11 @@ And nobody is paid a prize, and the summary shows each player's contribution to 
 (Equally per ticket means each player gets back exactly what they paid.)
 
 ## TAM-145: Closing a prize tier is a manual step, and so is ending the game
-Status: approved, owner, 2026-09-30 (docs/games/tambola/changes-2026-09-30-playtest.md: "Next number waits" replaced by "the main button becomes 'Close Top Line'", TAM-198); was approved, owner, 2026-09-29 (added on the owner's decision of 2026-09-29, docs/decisions.md: the result goes away by itself after closing); was approved, owner, 2026-09-28 (owner: the win and the end of the game are manual; the host can add another winner, for every tier)
+Status: approved, owner, 2026-09-30 (docs/decisions.md 2026-09-30: the Close on the prize chip stays and still works while the screen is dimmed); approved, owner, 2026-09-30 (docs/games/tambola/changes-2026-09-30-playtest.md: "Next number waits" replaced by "the main button becomes 'Close Top Line'", TAM-198); was approved, owner, 2026-09-29 (added on the owner's decision of 2026-09-29, docs/decisions.md: the result goes away by itself after closing); was approved, owner, 2026-09-28 (owner: the win and the end of the game are manual; the host can add another winner, for every tier)
 Phase: Phase 1a
 Given Top Line has just been accepted for Riya
 Then Top Line stays open, and the host sees "Add another winner" and "Close Top Line"
-And the main button becomes "Close Top Line" until the host closes it (TAM-198); the Close on the prize chip may stay as a second way
+And the main button becomes "Close Top Line" until the host closes it (TAM-198); the Close on the prize chip is a second way, and works too
 When the host checks Asha's Top Line claim before closing, and it completed on the same number
 Then it is accepted and the prize is shared (TAM-041, TAM-087)
 When the host taps "Close Top Line"
@@ -54,15 +54,21 @@ And the same holds for every tier, Full House included: the last Full House is c
 so undoing a wrong claim still reopens its tier, TAM-070.)
 
 ## TAM-198: After a win, closing the prize is the main action
-Status: approved, owner, 2026-09-30 (docs/games/tambola/changes-2026-09-30-playtest.md section 1, from the family play-test)
+Status: approved, owner, 2026-09-30 (docs/decisions.md 2026-09-30: what still works while the screen is dimmed); approved, owner, 2026-09-30 (docs/games/tambola/changes-2026-09-30-playtest.md section 1, from the family play-test)
 Phase: Phase 1a
 Given a win for Top Line has just been recorded (TAM-037)
 Then the big button at the bottom, where "Next number" is, becomes "Close Top Line": filled, enabled,
 the same size and place (TAM-100)
 And "Add another winner" sits just above it, as a secondary button (TAM-145)
 And the rest of the calling screen is dimmed, except the win card, the number and these two buttons
-When the host taps anywhere in the dimmed area
+And while the screen is dimmed, these still work: "Add another winner", the Close on the prize's chip, and the menu
+(End game, Discard game, Show the room)
+When the host taps anywhere else in the dimmed area (for example "Record a win")
 Then nothing happens there, and the "Close Top Line" button pulses once (never a repeating blink or flash)
+When the host taps the Close on the Top Line chip instead
+Then the prize closes exactly as with "Close Top Line"
+When the host opens the menu and ends or discards the game, or shows the room
+Then that works as it does at any other time (TAM-066, TAM-140)
 When the host taps "Close Top Line"
 Then the prize closes, the screen is no longer dimmed, and the button is "Next number" again
 And "Undo win" stays available on the win card until the prize is closed (TAM-070)

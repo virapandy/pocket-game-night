@@ -1,9 +1,10 @@
 // After a win, closing the prize is the main action (family play-test, 30 September 2026,
 // docs/games/tambola/changes-2026-09-30-playtest.md section 1): TAM-198, with TAM-145, TAM-100 and TAM-070.
+// Owner, 2026-09-30 (docs/decisions.md): while dimmed, "Add another winner", the chip's Close and the menu still work.
 // On a 390 × 844 screen. Names and test ids: tests/browser/README.md ("After a recorded win").
 import { expect, test, type Locator, type Page } from './fixtures';
 import {
-  calledCount, callMany, currentNumber, mainButton, menuButton, menuItem, nextNumber, onTopAtCentre, recordBogey, recordWin,
+  calledCount, callMany, currentNumber, fromMenu, mainButton, menuButton, menuItem, nextNumber, onTopAtCentre, recordBogey, recordWin,
   setUpPaperGame,
 } from './helpers';
 
@@ -12,6 +13,9 @@ test.use({ viewport: { width: 390, height: 844 } });
 const winCard = (page: Page) => page.getByTestId('claim-result');
 const addAnotherWinner = (page: Page) => page.getByRole('button', { name: 'Add another winner' });
 const recordAWin = (page: Page) => page.getByRole('button', { name: 'Record a win' });
+/** The won prize's chip, and the Close on it (TAM-126: a Close kept on the chip is named just "Close"). */
+const topChip = (page: Page) => page.getByTestId('prize-chip').filter({ hasText: /Top Line ✓ Riya/ });
+const chipClose = (page: Page) => topChip(page).getByRole('button', { name: /Close/ });
 type Box = { x: number; y: number; width: number; height: number };
 const box = async (l: Locator): Promise<Box> => (await l.boundingBox())!;
 
@@ -113,7 +117,7 @@ test.describe('TAM-198: after a win, closing the prize is the main action', () =
     expect(l.onTop && !l.faded, '"Add another winner" is not dimmed').toBe(true);
   });
 
-  test('the rest of the calling screen is dimmed; the win card, the number and the two buttons are not', async ({ page }) => {
+  test('the rest of the calling screen is dimmed; the win card, the number and the two buttons are not; the menu and the chip\'s Close can still be tapped', async ({ page }) => {
     await recordWin(page, 'Top Line', ['Riya']);
     await expect(winCard(page)).toBeVisible();
     const problems: string[] = [];
@@ -126,12 +130,17 @@ test.describe('TAM-198: after a win, closing the prize is the main action', () =
       if (look.faded) problems.push(`${what} is faded`);
     }
     for (const [what, l] of [
-      ['"Record a win"', recordAWin(page)], ['the menu', menuButton(page)], ['the prize chips', page.getByTestId('prize-chips')],
-      ['the top bar', page.getByTestId('top-bar').getByText(/of 90 called/)],
+      ['"Record a win"', recordAWin(page)], ['the top bar', page.getByTestId('top-bar').getByText(/of 90 called/)],
     ] as const) {
       if (!(await l.isVisible())) continue; // not on screen at all is fine too
       const look = await lookAt(l);
       if (!look.dimmed) problems.push(`${what} is not dimmed`);
+    }
+    // Owner, 2026-09-30: these still work while dimmed, so nothing lies over them. (Whether they look dimmed is not
+    // decided, so it is not checked.)
+    for (const [what, l] of [['the menu', menuButton(page)], ["the chip's Close", chipClose(page)]] as const) {
+      await expect(l, `${what} is on the screen`).toBeVisible();
+      if (!(await onTopAtCentre(l))) problems.push(`${what} is covered`);
     }
     expect(problems).toEqual([]);
   });
@@ -155,10 +164,11 @@ test.describe('TAM-198: after a win, closing the prize is the main action', () =
     await page.waitForTimeout(2000);
     expect(await buttonAnimations(page), 'the pulse does not repeat').toEqual([]);
 
-    // A stray tap on the menu: the menu does not open.
-    await tapAt(page, menuButton(page));
-    await page.waitForTimeout(300);
-    await expect(menuItem(page, 'End game')).toHaveCount(0);
+    // A stray tap on the top bar's progress text: it pulses once more, and still nothing else happens.
+    await tapAt(page, page.getByTestId('top-bar').getByText(/of 90 called/));
+    await expect.poll(async () => (await buttonAnimations(page)).length, { timeout: 1000, intervals: [20, 20, 50] }).toBeGreaterThan(0);
+    for (const a of await buttonAnimations(page)) expect(a.iterations, 'the pulse plays once').toBe(1);
+    await page.waitForTimeout(2000);
 
     // The game is exactly as it was: same calls, the win still shown, the button still "Close Top Line".
     expect(await calledCount(page)).toBe(count);
@@ -207,6 +217,59 @@ test.describe('TAM-198: after a win, closing the prize is the main action', () =
     await expect(mainButton(page)).toHaveAccessibleName('Close Early Five');
     await mainButton(page).click();
     await expect(mainButton(page)).toHaveAccessibleName('Next number');
+  });
+
+  test('the Close on the prize chip works while dimmed, and closes the prize exactly as "Close Top Line" does', async ({ page }) => {
+    await recordWin(page, 'Top Line', ['Riya']);
+    await expect(mainButton(page)).toHaveAccessibleName('Close Top Line');
+    await expect(chipClose(page)).toBeVisible();
+    await tapAt(page, chipClose(page)); // as a finger would: it must not be under the dim layer
+    await expect(mainButton(page)).toHaveAccessibleName('Next number');
+    await expect(nextNumber(page)).toBeEnabled();
+    await expect(winCard(page)).toBeHidden();
+    const look = await lookAt(recordAWin(page));
+    expect(look.onTop && !look.dimmed, 'no longer dimmed').toBe(true);
+    // Closed: the chip has no Close any more (TAM-126).
+    await expect(page.getByTestId('prize-chip').filter({ hasText: /✓ Riya/ }).getByRole('button', { name: /Close/ })).toHaveCount(0);
+  });
+
+  test('"Add another winner" works while dimmed', async ({ page }) => {
+    await recordWin(page, 'Top Line', ['Riya']);
+    await tapAt(page, addAnotherWinner(page));
+    await page.getByRole('button', { name: 'Asha', exact: true }).click();
+    await page.getByRole('button', { name: 'Confirm', exact: true }).click();
+    await expect(winCard(page).getByText(/Shared/)).toBeVisible();
+    await expect(mainButton(page)).toHaveAccessibleName('Close Top Line');
+  });
+
+  test('the menu works while dimmed: it opens with End game, Discard game and Show the room', async ({ page }) => {
+    await recordWin(page, 'Top Line', ['Riya']);
+    await tapAt(page, menuButton(page)); // as a finger would: it must not be under the dim layer
+    for (const name of ['End game', 'Discard game', 'Show the room']) await expect(menuItem(page, name).first()).toBeVisible();
+  });
+
+  test('"End game" from the menu, while the prize waits to be closed, ends the game with Riya\'s prize paid', async ({ page }) => {
+    await recordWin(page, 'Top Line', ['Riya']);
+    await fromMenu(page, 'End game');
+    await page.getByRole('dialog').getByRole('button', { name: 'End game' }).click();
+    const summary = page.getByTestId('payout-summary');
+    await expect(summary).toBeVisible();
+    // Top Line is paid to Riya ("Top Line: Riya ₹40"), not listed as "not won".
+    await expect(summary).toContainText(/Top Line\W{0,3}(✓\s*)?Riya/);
+  });
+
+  test('"Discard game" from the menu, while the prize waits to be closed, asks first and says a prize was won', async ({ page }) => {
+    await recordWin(page, 'Top Line', ['Riya']);
+    await fromMenu(page, 'Discard game');
+    await expect(page.getByRole('dialog').getByText(/1 prize was already won|prizes? (was|were) already won/)).toBeVisible();
+  });
+
+  test('"Show the room" from the menu, while the prize waits to be closed, shows the room view', async ({ page }) => {
+    await recordWin(page, 'Top Line', ['Riya']);
+    const n = (await currentNumber(page).textContent())!.trim();
+    await fromMenu(page, 'Show the room');
+    await expect(page.getByTestId('room-view')).toBeVisible();
+    await expect(page.getByTestId('room-view')).toContainText(n);
   });
 
   test('edge: a bogey is not a win; nothing is dimmed and the button stays "Next number"', async ({ page }) => {
