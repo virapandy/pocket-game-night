@@ -10,7 +10,7 @@ current; instructions live here, not in chat. History from Phase 0 and 1a is fur
 |---|---|
 | Phase 1a, 1a.1 and **1b** (sessions, tally and settle up, late joiners, voice, auto-call, dark mode, history tools) | **Green and live** at https://virapandy.github.io/pocket-game-night/ (tests on 6aced77: 315 rule checks, 156 Android and 151 iPhone browser checks) |
 | 1a.1 review findings (rounding, win card, undo toast, card after Close) | **Fixed** (5cf78c9, 257a5f5, 6aced77) |
-| Rhyme catalog revision 4 (361 rhymes, Hindi fallback) | Tests updated; the coder's fix (5c26598) was **in automation** when the run ended; the tester has not yet reported on it |
+| Rhyme catalog revision 4 (361 rhymes, Hindi fallback) | The coder's fix (5c26598) is pushed, but **its automation run was cancelled** by later docs-only pushes, so the live app is still 6aced77; the tester has not reported on it |
 | Test clone | **Uncommitted work left behind:** a new `tests/browser/fixtures.ts` and import changes in 16 browser test files plus the test config |
 | Product owner review of the live 1b build | **Done:** money model decided (host is the bank per game; Settle up player to player) and 5 findings, in `docs/games/tambola/changes-2026-09-29-money-and-1b.md` |
 | Family play-test on Android | **Done** (30 September). Finding: closing a prize wasn't obvious; change request `docs/games/tambola/changes-2026-09-30-playtest.md` |
@@ -18,6 +18,10 @@ current; instructions live here, not in chat. History from Phase 0 and 1a is fur
 | Phase 6 (connected mode), new games | On hold |
 
 ### Next, in order (for the orchestrator)
+0. **Stop docs-only pushes from cancelling automation.** Each push starts "Check and publish" and cancels the
+   run before it, so the product owner's docs pushes have been cancelling runs for code commits. The coder
+   makes automation skip pushes that change only `docs/` (for example `paths-ignore: ['docs/**']` in
+   `.github/workflows/ci.yml`). Then confirm the latest code (5c26598 or later) runs green and publishes.
 1. **Tidy the Test clone.** Ask the tester about the uncommitted `tests/browser/fixtures.ts` change: finish it,
    run every layer and commit, or discard it. Nothing else starts in the Test clone until it is clean.
 2. **Close out the rhyme change.** The tester runs everything on 5c26598 (or later) and reports; fix until green
