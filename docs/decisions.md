@@ -100,6 +100,10 @@
 | 2026-09-30 | Phone tickets are handed out strictly in order from sheets of 6; a player's tickets may span two sheets (TAM-194). | Owner |
 | 2026-09-30 | The host's button is "Scan a claim"; the claim QR carries the ticket, ticket number, game code, player name, start time and prize list, never a seed (TAM-053, TAM-170, TAM-172); the iPhone offline-scan test is skipped under the 28 September WebKit decision (TAM-057). | Claude, on owner's standing instruction |
 
+| 2026-09-30 | Giving a player a ticket they already hold is refused politely: "Ticket 1 is already Riya's" (TAM-175). | Owner |
+| 2026-09-30 | One ticket at a time in portrait uses 42 px cells so the ticket fits a 390 px screen with no sideways sliding (TAM-122, TAM-191). | Owner |
+| 2026-09-30 | A ticket opened by typed code offers every usual prize under "Show claim"; the host's scan refuses any prize the game doesn't have (TAM-117, TAM-177). | Owner |
+
 "Convention" means the established Tambola rule in `docs/games/tambola/guide.md`, chosen because the owner asked
 Claude to follow game conventions. Every Tambola rule above is also a host setting with this default.
 
