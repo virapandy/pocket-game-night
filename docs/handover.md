@@ -1,10 +1,11 @@
 # Handover: start here
 
-## Now: status and what's next (product owner, updated 29 September 2026)
-The orchestrator works through **"Next, in order"** from the top. The product owner keeps this section
+## Now: status and what's next (product owner, updated 30 September 2026)
+A new orchestrator session starts here: read this section, then work through **"Next, in order"** from the
+top, one item at a time, reporting to the owner after each. The product owner keeps this section
 current; instructions live here, not in chat. History from Phase 0 and 1a is further down.
 
-### Status (29 September, after the orchestrator's run)
+### Status (30 September, ready for a new orchestrator session)
 | Item | State |
 |---|---|
 | Phase 1a, 1a.1 and **1b** (sessions, tally and settle up, late joiners, voice, auto-call, dark mode, history tools) | **Green and live** at https://virapandy.github.io/pocket-game-night/ (tests on 6aced77: 315 rule checks, 156 Android and 151 iPhone browser checks) |
@@ -27,8 +28,9 @@ current; instructions live here, not in chat. History from Phase 0 and 1a is fur
    labelled sessions; new TAM-197). Tester first, then coder.
 4. **Play-test fixes** (owner-approved): apply `docs/games/tambola/changes-2026-09-30-playtest.md` section 1:
    after a win, the main button becomes "Close Top Line", the rest of the screen dims, and a tap elsewhere
-   pulses the button once (new TAM-198, TAM-145 reworded). Section 2 (PLT-029, showing and changing the
-   session) waits for the owner's confirmation. Steps 3 and 4 can share one round.
+   pulses the button once (new TAM-198, TAM-145 reworded). Section 2 too (owner-approved): new PLT-029, the
+   last setup step shows "Session: Tuesday 29 Sep · Change" to start a new session or pick a recent one.
+   Steps 3 and 4 can share one round.
 5. **Phase 2 (phone tickets): signed off by the owner (29 September).** The tester applies the product owner's
    verdicts (including TAM-050 reworded, TAM-133 moved to Phase 6, TAM-179 changed) **and** the additions in
    `docs/games/tambola/changes-2026-09-29-phone-tickets.md` (all tickets visible together, switch to one at a
