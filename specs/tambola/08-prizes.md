@@ -28,7 +28,7 @@ And the suggestion updates as players or tickets change, until the prizes are lo
 (Fewer tickets means fewer tiers, so a prize still feels like a win. Full House is always the largest.)
 
 ## TAM-082: Rounded tiers always add up to the pot exactly, and equal shares get equal amounts
-Status: approved, owner, 2026-09-29 (reworded on the owner's decision of 2026-09-29, docs/decisions.md: every tier except Full House rounds to the nearest unit, an exact half rounds down; Full House takes the rest); was approved, owner, 2026-09-28 (change request: equal shares, rounding differences to Full House first)
+Status: approved, owner, 2026-09-29 (reworded on the owner's tiny-pot decision of 2026-09-29, docs/decisions.md: when rounding to the unit would leave Full House smaller than another prize, round to the nearest ₹1 instead; answers docs/test-questions.md 2026-09-29); was approved, owner, 2026-09-29 (every tier except Full House rounds to the nearest unit, an exact half rounds down; Full House takes the rest); was approved, owner, 2026-09-28 (change request: equal shares, rounding differences to Full House first)
 Phase: Phase 1a
 For every pot size and every set of tiers
 Then every tier except Full House is its exact share rounded to the nearest rounding unit (₹10 by default)
@@ -36,10 +36,20 @@ And an exact half rounds down (a ₹45 share becomes ₹40, never ₹50)
 And Full House takes whatever is left, so the tiers add up to the pot exactly
 And tiers with the same share always get the same amount
 And no tier is ever negative, and Full House stays the largest
+Except for tiny pots: when rounding to the unit would leave Full House smaller than another tier (or below ₹0),
+every tier except Full House is instead its exact share rounded to the nearest ₹1 (an exact half rounds down),
+and Full House takes whatever is left
+And only if even that would leave Full House smaller than another tier are the tiers other than Full House
+lowered ₹1 at a time (tiers with the same share lowered together, so they stay equal) until Full House is the largest
 Example: a ₹530 pot across 10 / 20 / 70 % gives ₹50 / ₹110 / ₹370 (₹53 → ₹50, ₹106 → ₹110, Full House the rest)
 Example: 6 tickets at ₹50 (a ₹300 pot) across 10 / 15 / 15 / 15 / 45 % gives the three Lines the same
 amount (never ₹50, ₹40, ₹40, as the first release did), and Full House takes the difference:
 ₹30 / ₹40 / ₹40 / ₹40 / ₹150 (₹30 stays ₹30; ₹45 is an exact half and rounds down to ₹40)
+Example: 6 tickets at ₹6 (a ₹36 pot) across 10 / 15 / 15 / 15 / 45 %: rounding to ₹10 would give
+₹0 / ₹10 / ₹10 / ₹10 and leave Full House only ₹6, so the tiers round to ₹1 instead: ₹4 / ₹5 / ₹5 / ₹5 / ₹17
+(₹3.60 → ₹4, ₹5.40 → ₹5), never ₹0 / ₹0 / ₹0 / ₹0 / ₹36
+Example: 7 tickets at ₹5 (a ₹35 pot), same split: ₹3 / ₹5 / ₹5 / ₹5 / ₹17 (₹3.50 is an exact half and rounds
+down to ₹3; ₹5.25 → ₹5)
 
 ## TAM-083: The host can remove a tier, and add it back
 Status: approved, owner, 2026-09-28

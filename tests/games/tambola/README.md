@@ -183,8 +183,10 @@ planPrizes({
 ```
 Tiers add up to the pot exactly; never negative; Full House the largest unless the anchor fixed amounts;
 removing `full-house` has no effect (or throws). TAM-082 and TAM-092: tiers with the same `percent` always get
-the same amount (unless the anchor fixed one of them); every tier except Full House is a multiple of `unit`,
-and rounding differences go to Full House, which takes the difference (with Full House fixed by the anchor,
+the same amount (unless the anchor fixed one of them); every tier except Full House is its share rounded to
+the nearest `unit` (an exact half rounds down), or, in tiny pots where that would leave Full House smaller than
+another tier, to the nearest ₹1 (TAM-082, owner decision 2026-09-29: ₹36 over 6 tickets gives 4 / 5 / 5 / 5 / 17);
+rounding differences go to Full House, which takes the difference (with Full House fixed by the anchor,
 the other unfixed tiers take it, still keeping equal shares equal).
 
 ## Rhymes
