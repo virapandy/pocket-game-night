@@ -32,8 +32,10 @@ Product owner's critical review, and what changed:
 - **Cricket, rewritten.** 30 of 41 were "[player]'s jersey": facts, not calls, with obscure players and
   numbers that change. Now 35 punchy calls built on moments, nicknames and slang that don't go out of date:
   "Thala for a reason!", "Yuvi's six sixes: thirty-six!", "Twenty-two yards of drama!", "83! Kapil lifts the
-  Cup!", "Twelfth man, bring the drinks!", "Nervous nineties! Ninety!". Shirt numbers are kept only for
-  well-known players, each with a short joke ("Sir Jadeja, sword out!", "Siraj says Siuuu! Seventy-three").
+  Cup!", "Twelfth man, bring the drinks!", "Nervous nineties! Ninety!". **Shirt numbers only for the top three
+  players** (owner): Dhoni 7, Sachin 10, Kohli 18. Every other cricket call is about the game itself or a
+  historic moment: "Forty-two, rain stops play, boo!", "Seventy-seven, no-ball! Free hit!", "Forty-five, DRS
+  review, stay alive!", "2011: Dhoni finishes with a six!", "Yuvi's six sixes: thirty-six!".
 - **Playful filler replaced.** Most followed one template ("Sixty-one, having fun") and endings repeated
   across numbers ("…heaven" 6 times, "don't be late" 3, "still alive" 3). Now no English ending repeats,
   and most replacements are desi and wacky: "Twenty-eight, Bangalore traffic, wait!", "Thirty-seven, cooker
@@ -59,7 +61,8 @@ Product owner's critical review, and what changed:
 - **1857** is called "the first freedom war", not "Mutiny year".
 
 ## Review checklist (done; keep for future updates)
-1. **34 cricket rhymes are marked "verify"**: shirt numbers come from two cricket sites checked on
+1. **Cricket shirt numbers** now appear only for Dhoni 7, Sachin 10 and Kohli 18 (all long-standing);
+   the old note about 34 rhymes marked "verify" no longer applies.: shirt numbers come from two cricket sites checked on
    28 September 2026 (myKhel, CricHeroes). Numbers change and players retire, so check before release.
 2. **Hindi spellings** are Roman script, as people type on phones. Check they read naturally aloud;
    a Devanagari version can follow when the phone voice supports Hindi.

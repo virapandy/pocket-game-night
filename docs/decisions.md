@@ -75,6 +75,7 @@
 | 2026-09-29 | Players can cross out prizes announced as won; crossed-out prizes can't be picked when claiming; anything else stays selectable and the host's scan refuses won ones (TAM-196, replaces "every prize stays selectable"). | Owner |
 | 2026-09-29 | Phase 2 is built so connected mode can be added later without redesigning screens: player-side facts tagged by source, versioned QR formats (TAM-211 drafted for Phase 6). | Owner |
 | 2026-09-29 | Rhyme catalog revision 2: cricket calls rewritten to be punchy and timeless (moments, nicknames, slang, not shirt numbers); playful filler and repeated endings replaced with desi, wacky lines; 405 rhymes. | Owner request, product owner |
+| 2026-09-29 | Cricket rhymes use shirt numbers only for the top three players (Dhoni 7, Sachin 10, Kohli 18); all others are about the game or historic moments. | Owner |
 
 "Convention" means the established Tambola rule in `docs/games/tambola/guide.md`, chosen because the owner asked
 Claude to follow game conventions. Every Tambola rule above is also a host setting with this default.
