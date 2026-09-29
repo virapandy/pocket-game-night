@@ -7,7 +7,7 @@ import { expect, test, type Page } from './fixtures';
 import { call, endGame, fromMenu, mainButton, nextNumber, payoutPeople } from './helpers';
 import {
   callUntil, cellsWith, claimRefused, claimResult, closePhones, cornersOf, countOn, enterTicketNumber, fakeCamera,
-  gameCodeOf, gridOf, handOutAll, newPhone, numbersOf, openHostTickets, phoneGame, playerWith, PORTRAIT,
+  gameCodeOf, gridOf, handOutAll, newPhone, numbersOf, openHostTickets, phoneGame, playerWith, PORTRAIT, readDrawnQr,
   rowOf, scanClaim, scanClaimButton, setUpPhoneGame, showClaim,
 } from './phone';
 
@@ -48,6 +48,14 @@ test.describe('The claim QR on the player\'s phone', () => {
     await expect(screen).toHaveCount(0);
   });
 
+  test('TAM-177: the claim QR as drawn on screen reads back, with jsQR (the host\'s scanner library), exactly as its text', async ({ page, browser }, testInfo) => {
+    const handOuts = await phoneGame(page, THREE);
+    const riya = await playerWith(browser, testInfo, handOuts, 'Riya', PORTRAIT);
+    const payload = await showClaim(riya.page, 'Top Line');
+    expect(payload).not.toBe('');
+    expect(await readDrawnQr(riya.page.getByTestId('claim-qr')), 'the claim QR does not read back as its text').toBe(payload);
+  });
+
   test('TAM-190 and TAM-193: with several tickets the player picks the ticket; Four Corners outlines the corners, Full House all, Early Five nothing', async ({ page, browser }, testInfo) => {
     const handOuts = await phoneGame(page, TWELVE);
     const riya = await playerWith(browser, testInfo, handOuts, 'Riya', PORTRAIT);
@@ -83,6 +91,7 @@ test.describe('The host scans the claim', () => {
   });
 
   test('TAM-177, TAM-174, TAM-020, TAM-033: a right claim is accepted within 2 seconds, with no internet: "Early Five: ✓ Accepted, ₹… to Riya", credited to Riya', async ({ page, browser }, testInfo) => {
+    test.setTimeout(90_000); // Calling until 5 of a ticket's numbers are out can take 60 or more calls at about 1 second each (TAM-101), as in calling.spec.ts.
     const handOuts = await phoneGame(page, THREE);
     const riya = await playerWith(browser, testInfo, handOuts, 'Riya', PORTRAIT);
     const mine = numbersOf(riya.grids.get(1)!);
@@ -127,6 +136,7 @@ test.describe('The host scans the claim', () => {
   });
 
   test('TAM-038: a late claim is a bogey that says which number completed it: "Early Five was complete at 45"', async ({ page, browser }, testInfo) => {
+    test.setTimeout(90_000); // Calling until 5 of a ticket's numbers are out can take 60 or more calls at about 1 second each (TAM-101), as in calling.spec.ts.
     const handOuts = await phoneGame(page, THREE);
     const riya = await playerWith(browser, testInfo, handOuts, 'Riya', PORTRAIT);
     const mine = numbersOf(riya.grids.get(1)!);
@@ -140,6 +150,7 @@ test.describe('The host scans the claim', () => {
   });
 
   test('TAM-179 and TAM-196: a prize already won is refused calmly, "Early Five already won", and is not a bogey', async ({ page, browser }, testInfo) => {
+    test.setTimeout(90_000); // Calling until 5 of a ticket's numbers are out can take 60 or more calls at about 1 second each (TAM-101), as in calling.spec.ts.
     const handOuts = await phoneGame(page, THREE);
     const riya = await playerWith(browser, testInfo, handOuts, 'Riya', PORTRAIT);
     const asha = await playerWith(browser, testInfo, handOuts, 'Asha', PORTRAIT);
@@ -202,6 +213,7 @@ test.describe('The host scans the claim', () => {
 test.describe('When scanning fails, typing the ticket number takes over', () => {
   for (const mode of ['denied', 'no-camera'] as const) {
     test(`TAM-178: camera ${mode === 'denied' ? 'permission refused' : 'missing'}: "Enter the ticket number instead" at once, and the verdict names the owner (TAM-174)`, async ({ page, browser }, testInfo) => {
+      test.setTimeout(90_000); // Calling until 5 of a ticket's numbers are out can take 60 or more calls at about 1 second each (TAM-101), as in calling.spec.ts.
       await fakeCamera(page, mode);
       const handOuts = await phoneGame(page, THREE);
       const riya = await playerWith(browser, testInfo, handOuts, 'Riya', PORTRAIT);
@@ -215,6 +227,7 @@ test.describe('When scanning fails, typing the ticket number takes over', () => 
   }
 
   test('TAM-178 and TAM-036: with no read for 10 seconds the ticket number takes over; waiting never makes the claim late', async ({ page, browser }, testInfo) => {
+    test.setTimeout(90_000); // Calling until 5 of a ticket's numbers are out can take 60 or more calls at about 1 second each (TAM-101), as in calling.spec.ts.
     await page.clock.install();
     await fakeCamera(page, 'ok');
     const handOuts = await phoneGame(page, THREE);
@@ -250,6 +263,7 @@ test.describe('The host\'s list of tickets', () => {
   });
 
   test('TAM-175: the host corrects who holds ticket 1; its prize then goes to Arjun', async ({ page }) => {
+    test.setTimeout(90_000); // Calling until 5 of a ticket's numbers are out can take 60 or more calls at about 1 second each (TAM-101), as in calling.spec.ts.
     await phoneGame(page, [{ name: 'Riya' }, { name: 'Arjun' }, { name: 'Dad' }]);
     await openHostTickets(page);
     const one = hostTicket(page, 1);

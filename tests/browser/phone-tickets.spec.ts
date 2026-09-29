@@ -9,7 +9,7 @@ import {
   allTickets, cellBoxes, cellsWith, closePhones, cornersOf, currentHandOut, confirmHandOut, gameCodeOf, gridOf,
   handOutAll, handOutScreen, LANDSCAPE, markedOn, newPhone, notOn, numbersOf, oneAtATime, openHostTickets, openPrizes,
   openQuickMark, padTap, pageFits, patternCue, phoneGame, phoneTicket, playerMenu, playerWith, PORTRAIT, prizeItem,
-  quickMarkMessage, quickMarkPad, rowOf, scanTicket, setUpPhoneGame, shownTickets, tapCell, thumbnail, ticketTab,
+  quickMarkMessage, quickMarkPad, readDrawnQr, rowOf, scanTicket, setUpPhoneGame, shownTickets, tapCell, thumbnail, ticketTab,
 } from './phone';
 
 test.afterEach(closePhones);
@@ -72,6 +72,16 @@ test.describe('Host: handing out tickets', () => {
     // Owner decision 2026-09-30: 20 characters in 5 groups of 4, such as K7QM-2XPA-9RTD-4HWC-B3NF.
     expect(h.code).toMatch(/^[2-9A-HJKMNP-Z]{4}(-[2-9A-HJKMNP-Z]{4}){4}$/);
     await expect(handOutScreen(page).getByText(/Scan with your phone's camera/i)).toBeVisible();
+  });
+
+  test('TAM-117 and TAM-053: each ticket QR as drawn on screen reads back, with jsQR, exactly as its link', async ({ page }) => {
+    await setUpPhoneGame(page, THREE);
+    for (let i = 0; i < 3; i++) {
+      const h = await currentHandOut(page);
+      expect(h.payload).not.toBe('');
+      expect(await readDrawnQr(page.getByTestId('ticket-qr')), `ticket ${h.ticket}'s QR does not read back as its link`).toBe(h.payload);
+      await confirmHandOut(page);
+    }
   });
 
   test('TAM-170: the host shows the game code while handing out and while calling', async ({ page }) => {
@@ -257,7 +267,9 @@ test.describe('Several tickets on one phone', () => {
     }
     await riya.page.setViewportSize(LANDSCAPE);
     await expect(shownTickets(riya.page)).toHaveCount(3);
-    expect(await pageFits(riya.page), 'the page scrolls in landscape').toBe(true);
+    // Turning the phone re-lays the page on the next frame; Android's emulated rotation returns before that frame
+    // (measured: under 20 ms). Wait at most 1 second for the turn to finish, then it must fit.
+    await expect.poll(() => pageFits(riya.page), { message: 'the page scrolls in landscape', timeout: 1_000 }).toBe(true);
     const [a, b, c] = await ticketBoxes(riya.page);
     expect(Math.abs(a!.y - b!.y), 'the first two sit side by side').toBeLessThanOrEqual(2);
     expect(b!.x).toBeGreaterThanOrEqual(a!.x + a!.w - 1);

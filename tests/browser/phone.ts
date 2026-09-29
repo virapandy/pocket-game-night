@@ -2,6 +2,7 @@
 // context (its own storage, like a separate phone). Names, test ids and the camera hook are listed in
 // tests/browser/README.md, "Phase 2: phone tickets".
 import { expect, type Browser, type BrowserContext, type Locator, type Page, type TestInfo } from '@playwright/test';
+import { fileURLToPath } from 'node:url';
 import { silence } from './fixtures';
 import { call, fillPlayers, fromMenu, HOME, nextNumber, openTambola, sessionNameField, continueOrNew } from './helpers';
 
@@ -316,3 +317,40 @@ export function notOn(grids: (number | null)[][][]): number {
 }
 
 export { HOME };
+
+// ---------- Reading a drawn QR (owner decision 2026-09-30: jsQR is the scanning library) ----------
+
+/**
+ * Photographs a QR as it is drawn on screen (with a margin of the page around it), and reads it with jsQR, as a
+ * camera would. Returns the text it holds, or null if it cannot be read. Decoding runs in a blank page of the same
+ * browser, so nothing is added to the app's own page.
+ */
+export async function readDrawnQr(qr: Locator): Promise<string | null> {
+  await qr.scrollIntoViewIfNeeded();
+  const page = qr.page();
+  const box = (await qr.boundingBox())!;
+  const view = page.viewportSize()!;
+  const pad = 16;
+  const x = Math.max(0, box.x - pad), y = Math.max(0, box.y - pad);
+  const clip = { x, y, width: Math.min(view.width, box.x + box.width + pad) - x, height: Math.min(view.height, box.y + box.height + pad) - y };
+  const png = (await page.screenshot({ clip, animations: 'disabled' })).toString('base64');
+  const reader = await page.context().newPage();
+  try {
+    await reader.addScriptTag({ path: fileURLToPath(new URL('../../node_modules/jsqr/dist/jsQR.js', import.meta.url)) });
+    return await reader.evaluate(async (src) => {
+      const img = new Image();
+      img.src = `data:image/png;base64,${src}`;
+      await img.decode();
+      const canvas = document.createElement('canvas');
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      const ctx = canvas.getContext('2d')!;
+      ctx.drawImage(img, 0, 0);
+      const data = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const found = (window as any).jsQR(data.data, data.width, data.height);
+      return found ? (found.data as string) : null;
+    }, png);
+  } finally {
+    await reader.close();
+  }
+}

@@ -252,7 +252,8 @@ claim" must call `window.__pgnCamera.start(onRead, onFail)` instead of opening t
 `onFail(why)` says the camera cannot be used (`'denied'`: permission refused; `'no-camera'`: none). Without the hook
 the app uses the real camera. The app's own 10-second "no read" timer uses `setTimeout` or `Date` (the tests use
 Playwright's fake clock). A QR's text is always also in a `data-payload` attribute on the element that shows it, so
-tests never need to decode an image.
+tests read the text from there. Two checks (TAM-117 ticket QR, TAM-177 claim QR) also photograph the QR as drawn and
+read it with jsQR (`readDrawnQr` in `phone.ts`): what is drawn must read back exactly as `data-payload`.
 
 ### Setup and handing out (host)
 - Setup: `Phone tickets` (accessible name starting "Phone tickets"), then the shared players step with, per player,

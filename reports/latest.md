@@ -1,92 +1,70 @@
 # Test report
-Commit tested: 5030bde (app code; unchanged at 1d748a2), with the Phase 2 test updates added in this commit   Date: 2026-09-29
-Result: RED, as expected: the Phase 2 (phone tickets) tests fail because phone tickets are not built yet.
-Everything that passed before still passes.
+Commit tested: 89a5e90 (app code from c647056 and 8cb71d9, phone tickets), with the test changes in this commit   Date: 2026-09-29
+Result: RED, by one test that I believe is wrong (below). No real bugs found. Every browser test passes on both phones.
 
-This commit applies the owner's answers of 30 September 2026 (`docs/decisions.md`, commit 1d748a2):
-- **TAM-117** reworded: the typed code is exactly 20 characters in 5 groups of 4 (such as K7QM-2XPA-9RTD-4HWC-B3NF),
-  carrying the whole ticket (numbers and layout, ticket number, game code) so it opens offline. Tests rewritten.
-- **TAM-053** reworded: the ticket QR holds exactly the ticket, its number, the game code, the player's name, the start
-  time and the prize list, never a seed. The tests already checked exactly these; only their titles changed.
-- **TAM-194** clarified: tickets are handed out strictly in order; a player's tickets span two sheets when the current
-  sheet has too few left, and no ticket is skipped. Two tests added.
-- **TAM-212** (new, extends TAM-067): in a phone-ticket game, a late joiner gets phone tickets from the next sheet,
-  on the same hand-out screen. Rule tests and browser tests added.
-- The host's button is **"Scan a claim"**: the browser tests now require exactly that name ("Check a claim" no longer passes).
-- TAM-178 (either form of picking the prize) is unchanged, as the owner asked. TAM-057's iPhone offline test stays
-  skipped under the 28 September WebKit decision, now confirmed by the 30 September decision.
-All changed scenarios are `approved, owner, 2026-09-30`.
+Phase 2 (phone tickets) ran against a working feature for the first time. `npm ci` installed qrcode-generator and jsqr.
 
 | Layer | Command | Passing | Failing | Skipped |
 |---|---|---|---|---|
-| Rules, contract, property, simulation, replays | `npm test` | 324 (unchanged) | 104 (89 before + 15 new, all Phase 2) | 0 |
-| Browser, Android (Chromium) | `npm run build && npm run test:browser` | 197 (unchanged) | 43 (41 before + 2 new, all Phase 2) | 1 (unchanged) |
-| Browser, iPhone (WebKit) | same | 192 (unchanged) | 42 (40 before + 2 new, all Phase 2) | 7 (unchanged) |
+| Rules, contract, property, simulation, replays | `npm test` | 427 | 1 (test fault, see below) | 0 |
+| Browser, Android (Chromium) | `npm run build && npm run test:browser` | 242 | 0 | 1 (unchanged) |
+| Browser, iPhone (WebKit) | same | 236 | 0 | 7 (unchanged, incl. TAM-057 offline under the WebKit decision) |
 
-Every failing test fails for the right reason:
-- Rule tests: `makeTickets`, `ticketInfo`, `typedCode` and the other QR functions are not exported, the host view has no
-  `tickets`, `check-claim`, `assign` and `to-paper` are not moves yet, and a phone-ticket game refuses to call
-  ("Phase 1a plays with paper tickets only"). The 12 new late-joiner rule tests all stop at that refusal.
-- Browser tests: all 85 stop at the disabled `Phone tickets (coming later)` button on setup.
-
-### Failing tests by file (all Phase 2 features still to build)
-- `tests/games/tambola/tickets.test.ts` (20): TAM-001 to TAM-008, TAM-048, TAM-172, TAM-194. No `makeTickets`, no host `tickets`.
-- `tests/games/tambola/phone-claims.test.ts` (43): TAM-020 to TAM-032, TAM-034 to TAM-036, TAM-038, TAM-041, TAM-043,
-  TAM-044, TAM-056, TAM-058, TAM-070, TAM-072, TAM-145, TAM-172, TAM-174 to TAM-176, TAM-178, TAM-190. No `check-claim` move.
-- `tests/games/tambola/phone-secrets.test.ts` (27): TAM-050 to TAM-055, TAM-057, TAM-117, TAM-170, TAM-172, TAM-176 to
-  TAM-179, TAM-196. QR and typed-code functions not exported.
-- `tests/games/tambola/phone-late-joiners.test.ts` (12, new): TAM-212 with TAM-032, TAM-050, TAM-067, TAM-117,
-  TAM-172, TAM-174. Phone-ticket game refuses to start calling.
-- `tests/contract/tambola-phone.test.ts` (2): the contract suite for a phone-ticket game (always ends, TAM-077): the game cannot call.
-- `tests/browser/phone-tickets.spec.ts` (49 across both phones): TAM-050, TAM-051, TAM-055 to TAM-058, TAM-117, TAM-121,
-  TAM-122, TAM-131, TAM-132, TAM-170 to TAM-173, TAM-191, TAM-192, TAM-194 to TAM-196. `Phone tickets` disabled.
-- `tests/browser/phone-claims.spec.ts` (32): TAM-020, TAM-022, TAM-023, TAM-032, TAM-033, TAM-036, TAM-038, TAM-044,
-  TAM-056, TAM-058, TAM-174, TAM-175, TAM-177 to TAM-179, TAM-190, TAM-193, TAM-196. `Phone tickets` disabled.
-- `tests/browser/phone-late-joiners.spec.ts` (4, new): TAM-212. `Phone tickets` disabled.
+Both browser layers were run in full twice, with the same result each time. `npm test` was run four times and gave the same result every time.
+All Phase 2 files now pass: `tickets.test.ts`, `phone-secrets.test.ts`, `phone-late-joiners.test.ts`,
+`contract/tambola-phone.test.ts`, `phone-tickets.spec.ts`, `phone-claims.spec.ts`, `phone-late-joiners.spec.ts`,
+and all of `phone-claims.test.ts` except the one test below.
 
 ## Failing (real bugs only)
-None. All failures are Phase 2 features still to build.
+None.
+
+## Test faults (for the owner; not for the Build workspace)
+- `tests/games/tambola/phone-claims.test.ts`, "TAM-041, TAM-190 and TAM-145 … both shares go to Riya when she holds
+  both". **Not changed; waiting for the owner.** To make Riya hold both tied tickets, the test gives both of them to
+  Riya. In this game one of the two (ticket 1) is already Riya's, and the app refuses to give her a ticket she already
+  holds: "Ticket 1 is already Riya's". The test stops there, before it checks anything about the tie. No scenario says
+  whether giving a ticket to the player who already holds it should be accepted or refused. The test README lists
+  only an unknown player or ticket as reasons to refuse, so the app's refusal is not in the documented interface, but
+  it is a reasonable choice. Proposed fix: only reassign a tied ticket that is not already Riya's. Every check on the
+  tie stays the same: both claims accepted, the prize is shared exactly, and both shares go to Riya. This removes
+  only the unstated assumption that giving Riya her own ticket again is accepted. **Question for the owner:** is
+  "Ticket 1 is already Riya's" the right answer when the host gives Riya a ticket she already holds? If yes, apply the
+  fix above and add that refusal to TAM-175 and the README. If no, this becomes a bug for the Build workspace.
+
+Test faults fixed in this commit (none of them loosens an assertion):
+- `phone-claims.spec.ts`, the 7 tests that call numbers until 5 of a ticket's numbers are out (TAM-177/174/020/033,
+  TAM-038, TAM-179/196, TAM-178 ×3, TAM-175): they ran out of Playwright's default 30 seconds. The app draws about
+  one number a second: "Next number" stays off until the new number is on screen (TAM-101, approved), and these
+  games need 25 to 60 or more calls. They now allow 90 seconds, as `calling.spec.ts` already does for its 90 calls.
+  The 2-second verdict limit and every other check are unchanged.
+- `phone-tickets.spec.ts`, TAM-173/TAM-122 landscape: on Android it checked for scrolling on the same frame the
+  emulated phone turned, before the page had re-laid itself out. Measured: the page fits within 20 ms, every time. The
+  check now waits at most 1 second for the turn to finish, then requires exactly the same thing: no scrolling, two side
+  by side, the third below, 40 px cells, every mark kept.
+
+## New checks (jsQR now available)
+- TAM-117 and TAM-053 (`phone-tickets.spec.ts`): each ticket QR, as drawn on the hand-out screen, is photographed and
+  read with jsQR. It must read back exactly as its `data-payload` link. Checked for all 3 tickets, on both phones.
+- TAM-177 (`phone-claims.spec.ts`): the claim QR on the player's phone, read the same way, must equal its `data-payload`.
+- Helper `readDrawnQr` in `tests/browser/phone.ts`. It decodes in a blank page, so the app's page is untouched.
+  Passing on both phones.
 
 ## Flaky or setup problems (not for the Build workspace)
-- None in this run.
+- In the first full run, iPhone "TAM-173/TAM-122 portrait" failed once. A scanned ticket link did not show the ticket
+  within 5 seconds, while the whole suite was running. It did not happen again in about 300 more runs of the phone-ticket
+  specs on iPhone (repeated 3 and 8 times) or in two more full runs. I am watching it. If it comes back, I will send a
+  trace to the Build workspace.
 
-## For the Build workspace: what to build against
-- Everything in the last report still holds (`tests/games/tambola/README.md` and `tests/browser/README.md`, "Phase 2:
-  phone tickets"). What changed:
-  - Typed code: exactly `XXXX-XXXX-XXXX-XXXX-XXXX` (20 characters, no 0, O, 1, I, L); `decodeTypedCode` gives
-    `{ rows, ticket, game }`; every ticket in a game has its own; codes of the wrong length are refused.
-  - The host's button is exactly `Scan a claim`.
-  - Late joiners with phone tickets: `add-player` adds the joiner's tickets to the host view's `tickets`, after every
-    ticket already in the game, from the next sheet (README "Late joiners with phone tickets"); in the browser, the
-    hand-out screen shows them, then `Back to calling` (or `Start calling`) (browser README "Late joiners").
-
-## Requests for the Build workspace (dependencies, scripts, test hooks in the app)
-1. **Camera test hook** and **`data-payload`** on every QR: still needed, as in the last report.
-2. **QR libraries (owner approved, 30 September 2026):** a small QR drawing library and a QR reading library for
-   iPhone hosts (Android uses the built-in reader). The Build side adds them.
-3. **Optional dev dependency `jsqr` (request, not installed):** it would let one browser test check that the QR drawn
-   on screen really decodes to its `data-payload`, which today is trusted. Problem it solves: a QR drawn wrongly (or
-   too small to decode) would pass every current test. Simpler option: none in the browser; the rule tests only
-   check the text. Cost: one dev dependency, about 45 KB, test-only, never shipped. Worth it if it ever catches a QR
-   that looks right but does not scan. Recommended once QR drawing is built.
-
-## Questions for the owner (tests follow the approved wording; answers may change them)
-1. **TAM-212, "from the next sheet" when a sheet is part used.** With 6 tickets (a full sheet) handed out, the late
-   joiner clearly gets 7 onwards; the tests check that exactly. With, say, 3 tickets handed out, "next sheet" could
-   mean tickets 4 onwards (carry on in order, as TAM-194) or 7 onwards (a fresh sheet). The tests accept either for
-   now: new, consecutive tickets after every ticket already in the game, never a number used twice. Please say which.
-2. **The claim QR.** The 30 September decision row says "the claim QR carries the ticket, ticket number, game code,
-   player name, start time and prize list". That list is what the *ticket* QR (TAM-053) holds, so TAM-053 was
-   reworded to it. The claim QR (TAM-177) must also carry the prize claimed, and its tests are unchanged: format
-   version, game code, ticket number, prize and the ticket's numbers, never a seed. Please confirm.
-3. Still open from before: PLT-029 vs PLT-016 (the question after "(new)"), and PLT-017 "got back".
+## Requests for the Build workspace
+- None.
 
 ## Notes for the owner (plain English)
-- Your answers are now in the tests. The typed code is 20 characters, so a player can type it with no internet and
-  still get their exact ticket. The host's button is "Scan a claim". Tickets are handed out strictly in order.
-- New: someone arriving late to a phone-ticket game gets phone tickets from the next sheet, handed out on the same
-  screen as at the start, and can win like anyone else. Something already complete on their ticket when they join
-  can't be claimed, as with paper.
-- The product docs still call the button "Check a claim" in `docs/games/tambola/ux-phone-tickets.md` and
-  `ux-calling-screen.md`; the product owner may want to update them.
-- Everything new fails for now because the coder hasn't built phone tickets yet; that is the next step.
+- Phone tickets work end to end in the automated checks on both an Android and an iPhone: handing out tickets with a
+  QR and a typed code, players seeing and marking their tickets, quick mark, "Scan a claim" with the typed-number
+  fallback, the host's ticket list, and late joiners getting phone tickets. The QR codes on screen really scan to the
+  right thing.
+- One question for you: if the host gives Riya a ticket she already holds, should the app say "Ticket 1 is already
+  Riya's" and do nothing (what it does now), or quietly accept it? Either is fine for players. The answer decides
+  whether one test changes or the app does.
+- Two questions from the Build workspace are still open in `docs/test-questions.md`: 44 px cells on a narrow phone,
+  and what a phone shows after only typing a ticket code.
