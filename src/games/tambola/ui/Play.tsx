@@ -4,7 +4,7 @@
 // recorded on the anchor's word (TAM-037); tiers are closed by hand (TAM-145). The board, Show the room,
 // Check numbers (TAM-139), Settings, End game and Discard game live in the menu (TAM-124, TAM-127).
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { HOST, play, undo, type MoveRecord, type Preferences, type SavedGameStore } from '../../../engine';
+import { HOST, play, undo, type MoveRecord, type Preferences, type ReportSubject, type SavedGameStore } from '../../../engine';
 import {
   checkNumbers,
   NEEDS,
@@ -127,6 +127,7 @@ export function Play({
   onHome,
   onPlayAgain,
   onSessionTally,
+  onReport,
 }: {
   initialSaved: TambolaSaved;
   initialMatch: TambolaMatch;
@@ -138,6 +139,8 @@ export function Play({
   onPlayAgain: (saved: TambolaSaved) => void;
   /** TAM-197: from the payouts to the tally of the session this game is in. */
   onSessionTally?: (sessionId: string) => void;
+  /** Phase 7: "Report a problem" about this game (PLT-200); in the menu, never in the thumb zone. */
+  onReport?: (subject: ReportSubject) => void;
 }) {
   const [saved, setSaved] = useState(initialSaved);
   const [match, setMatch] = useState(initialMatch);
@@ -312,6 +315,11 @@ export function Play({
           <button type="button" className="button button-quiet" onClick={onHome}>
             ← Home
           </button>
+          {onReport && (
+            <button type="button" className="button button-quiet push-right" onClick={() => onReport({ kind: 'game', gameId: saved.id })}>
+              Report a problem
+            </button>
+          )}
         </header>
         <div className="setup-body">
           <Summary view={view} />
@@ -789,6 +797,7 @@ export function Play({
           onClose={() => setSheet(null)}
           items={[
             ['Settings', () => setSettingsOpen(true)],
+            ...(onReport ? [['Report a problem', () => onReport({ kind: 'game', gameId: saved.id })] as MenuEntry] : []),
             ['Show the room', () => setRoom('menu')],
             ['Board', () => setSheet({ kind: 'board' })],
             ...(phone ? [['Tickets', () => setSheet({ kind: 'tickets' })] as MenuEntry] : []),

@@ -177,3 +177,17 @@ play again → saving, resume, history → usability. Build only Phase 1a.
 > `tests/games/tambola/README.md` and `tests/browser/README.md`. Build Phase 1a in the suggested order,
 > starting with Tambola's rules module. Type-check and push after each step. If a test looks wrong, write it
 > in `docs/test-questions.md` instead of working around it. Explain each change to me in plain English.
+
+## Phase 7: Report a problem (Build workspace, 29 September 2026)
+
+- **Stub destination, must be replaced (PLT-208).** "Send report" goes to a stub for now: the report is kept on the
+  phone (`pgn.reports.kept` in the phone's storage) and nothing leaves it. A real free, no-account destination is
+  required **before any wider public release** (owner, 2026-09-28). The one place to change is `stubSend` in
+  `src/app/reports.ts` (marked `TODO(PLT-208)`); the waiting list, retries and "one send at a time" already work
+  for a real destination.
+- What a report holds, and what it never holds, is worked out in `src/engine/reports.ts` (`makeReport`,
+  `makePlayerReport`, `addSeeds`, `reportText`, `readReport`, `sortReports`). Each game takes names and money out of
+  its own setup and moves with the optional `GameRules.forReport` (Tambola: `forReport` in `rules/rules.ts`).
+- Where it shows: home, the calling screen's Menu, the payout screen, the player's ticket Menu; after an
+  unexpected error, a calm message offers a report. Waiting reports: Tambola → Settings → "Reports waiting to send".
+- Tests use a stand-in, `window.__pgnSendReport(text)`, in place of the stub; the app never defines it.

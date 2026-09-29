@@ -3,7 +3,7 @@
 // can use quick mark, crosses out prizes announced as won, and shows a claim QR the host scans (TAM-177).
 // The phone checks nothing: only the host's scan decides (owner, 2026-09-29).
 import { useEffect, useState, type ReactNode } from 'react';
-import type { Preferences } from '../../../engine';
+import type { PlayerTicketInput, Preferences, ReportSubject } from '../../../engine';
 import { decodeTicket, decodeTypedCode, encodeClaim, PATTERN_NAMES, type Pattern } from '../rules';
 import { QrCode } from './qr';
 import {
@@ -74,12 +74,15 @@ export function PhoneTickets({
   enter,
   nonce,
   onHome,
+  onReport,
 }: {
   prefs: Preferences;
   link: string | null;
   enter: boolean;
   nonce: number;
   onHome: () => void;
+  /** Phase 7: "Report a problem" with only this phone's own tickets and marks (PLT-207). */
+  onReport?: (subject: ReportSubject) => void;
 }) {
   const [game, setGame] = useState<PhoneGameFacts | null>(() => loadPhoneGame(prefs));
   const [screen, setScreen] = useState<Screen>(() => (enter ? { name: 'enter', text: '', error: null } : { name: 'tickets' }));
@@ -284,6 +287,29 @@ export function PhoneTickets({
             <button type="button" role="menuitem" className="menu-item" onClick={() => (setPopup(null), setScreen({ name: 'enter', text: '', error: null }))}>
               Enter a ticket code
             </button>
+            {onReport && (
+              <button
+                type="button"
+                role="menuitem"
+                className="menu-item"
+                onClick={() => {
+                  setPopup(null);
+                  const tickets: PlayerTicketInput[] = game.tickets.map((t) => ({
+                    v: 1,
+                    game: game.game,
+                    ticket: t.number,
+                    name: game.name ?? '',
+                    rows: t.rows,
+                    startedAt: game.startedAt ?? 0,
+                    tiers: game.tiers ?? [],
+                    marks: [...marksOn(game, t.number)],
+                  }));
+                  onReport({ kind: 'tickets', tickets });
+                }}
+              >
+                Report a problem
+              </button>
+            )}
             <button type="button" role="menuitem" className="menu-item" onClick={leave}>
               Home
             </button>

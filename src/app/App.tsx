@@ -1,8 +1,10 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, type RefObject } from 'react';
 import { useRegisterSW } from 'virtual:pwa-register/react';
-import type { SavedGame } from '../engine';
+import { makePlayerReport, makeReport, type Report, type ReportSubject, type SavedGame } from '../engine';
 import { games, type GameId } from './games';
 import { History, isPast, unsettledSessionName, type Deleted } from './History';
+import { CrashNotice, ReportForm, ReportToast, WaitingReports } from './Report';
+import { APP_VERSION, hasRealDestination, phoneType, queueReport, startReportSender } from './reports';
 import { Dialog, SessionList, SessionScreen } from './Sessions';
 import { gameStore, preferences, sessionPicker } from './storage';
 
@@ -71,7 +73,104 @@ function addressOf(route: Route): string {
 }
 const time = (t: number) => new Date(t).toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit', hour12: true });
 
+type Crash = { message: string; stack?: string };
+const TOAST_MS = 6_000;
+
+/** Errors from the phone or browser around the app (not the app's own mistakes): never shown as a crash. */
+function ignorable(reason: unknown, message: string): boolean {
+  if (!message || /ResizeObserver loop|^Script error\.?$/i.test(message)) return true;
+  const name = reason instanceof Error || (reason && typeof reason === 'object') ? String((reason as { name?: unknown }).name ?? '') : '';
+  if (/^(AbortError|NotAllowedError|NotSupportedError|SecurityError|NetworkError|NotReadableError|InvalidStateError)$/.test(name)) return true;
+  return /service ?worker|Failed to fetch|Load failed|NetworkError|fetch.*failed/i.test(message);
+}
+
+/** The game a crash report is about: the one most recently changed on this phone, if a game is on screen. */
+function gameOnScreen(): SavedGame | null {
+  const list = gameStore.list().filter((g) => gameOf(g.gameType));
+  return list.sort((a, b) => b.updatedAt - a.updatedAt)[0] ?? null;
+}
+
+/** Makes the report for the form: the same id and time as the host types (PLT-200, PLT-201, PLT-207). */
+function reportMaker(subject: ReportSubject, error: Crash | null): (what: string) => Report {
+  const common = { appVersion: APP_VERSION, phone: phoneType(), at: Date.now() };
+  if (subject?.kind === 'tickets') {
+    const id = makePlayerReport({ ...common, what: '', tickets: subject.tickets }).id;
+    return (what) => makePlayerReport({ ...common, id, what, tickets: subject.tickets });
+  }
+  const saved = subject?.kind === 'game' ? gameStore.get(subject.gameId) : undefined;
+  const game = saved ? gameOf(saved.gameType) : undefined;
+  const input = { ...common, game: saved && game ? { saved, rules: game.rules } : null, error };
+  const id = makeReport({ ...input, what: '' }).id;
+  return (what) => makeReport({ ...input, id, what });
+}
+
+/**
+ * The app, with "Report a problem" around every screen (Phase 7): the form, the calm message after an
+ * unexpected error (PLT-203), and the quiet sender of waiting reports (PLT-202, PLT-208).
+ */
 export function App() {
+  const routeName = useRef<Route['name']>('home');
+  const [form, setForm] = useState<{ build: (what: string) => Report } | null>(null);
+  const [crash, setCrash] = useState<Crash | null>(null);
+  const [toast, setToast] = useState<string | null>(null);
+
+  useEffect(() => startReportSender(gameStore), []);
+  useEffect(() => {
+    const seen = (reason: unknown, fallback: string) => {
+      const message = reason instanceof Error ? reason.message : typeof reason === 'string' ? reason : fallback;
+      if (ignorable(reason, message)) return;
+      const stack = reason instanceof Error && reason.stack ? { stack: reason.stack } : {};
+      setCrash((c) => c ?? { message, ...stack });
+    };
+    const onError = (e: ErrorEvent) => seen(e.error, e.message);
+    const onRejection = (e: PromiseRejectionEvent) => seen(e.reason, String(e.reason ?? ''));
+    window.addEventListener('error', onError);
+    window.addEventListener('unhandledrejection', onRejection);
+    return () => {
+      window.removeEventListener('error', onError);
+      window.removeEventListener('unhandledrejection', onRejection);
+    };
+  }, []);
+  useEffect(() => {
+    if (toast === null) return;
+    const t = setTimeout(() => setToast(null), TOAST_MS);
+    return () => clearTimeout(t);
+  }, [toast]);
+
+  const onReport = useCallback((subject: ReportSubject) => setForm({ build: reportMaker(subject, null) }), []);
+  const cancel = useCallback(() => setForm(null), []);
+  const send = (report: Report) => {
+    queueReport(report);
+    setForm(null);
+    if (!hasRealDestination()) setToast('Thanks. Your report is kept on this phone.');
+    else if (report.waitingForGameEnd) setToast('Thanks. Your report will be sent when this game ends.');
+    else if (navigator.onLine === false) setToast('Thanks. Your report will be sent when this phone is back online.');
+    else setToast('Thanks. Your report is on its way.');
+  };
+
+  return (
+    <>
+      <Screens onReport={onReport} routeName={routeName} />
+      {crash && !form && (
+        <CrashNotice
+          onReport={() => {
+            const subject: ReportSubject = routeName.current === 'game' ? (() => {
+              const g = gameOnScreen();
+              return g ? { kind: 'game', gameId: g.id } : null;
+            })() : null;
+            setForm({ build: reportMaker(subject, crash) });
+            setCrash(null);
+          }}
+          onDismiss={() => setCrash(null)}
+        />
+      )}
+      {form && <ReportForm build={form.build} onSend={send} onCancel={cancel} />}
+      {toast && <ReportToast text={toast} />}
+    </>
+  );
+}
+
+function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) => void; routeName: RefObject<Route['name']> }) {
   // The service worker saves the whole app on the first visit, so it works offline afterwards.
   // A new version waits until the host chooses to update from the home screen, never mid-game (TAM-113).
   const {
@@ -79,6 +178,7 @@ export function App() {
     updateServiceWorker,
   } = useRegisterSW();
   const [route, setRoute] = useState<Route>(firstRoute);
+  routeName.current = route.name;
   // Scanning another ticket while the app is open changes only the address's "#t=…" part.
   useEffect(() => {
     const onHash = () => {
@@ -114,6 +214,8 @@ export function App() {
           prefs={preferences}
           sessions={sessionPicker}
           onSession={(id) => setRoute({ name: 'session', id })}
+          onReport={onReport}
+          settingsExtra={<WaitingReports />}
           {...(route.open ? { open: route.open } : {})}
         />
       );
@@ -122,7 +224,7 @@ export function App() {
   if (route.name === 'phone') {
     const game = gameOf(route.gameId);
     if (game) {
-      return <game.phone.Screen prefs={preferences} link={route.link} enter={route.enter} nonce={route.nonce} onHome={home} />;
+      return <game.phone.Screen prefs={preferences} link={route.link} enter={route.enter} nonce={route.nonce} onHome={home} onReport={onReport} />;
     }
   }
   if (route.name === 'history') {
@@ -172,6 +274,7 @@ export function App() {
       onHistory={() => setRoute({ name: 'history' })}
       onSessions={() => setRoute({ name: 'sessions' })}
       onTickets={(enter) => setRoute({ name: 'phone', gameId: games[0].info.id as GameId, link: null, enter, nonce: Date.now() })}
+      onReport={() => onReport(null)}
     />
   );
 }
@@ -223,8 +326,11 @@ function Home({
   onHistory,
   onSessions,
   onTickets,
+  onReport,
 }: {
   needRefresh: boolean;
+  /** Phase 7: "Report a problem" (PLT-200). */
+  onReport: () => void;
   onUpdate: () => void;
   onGame: (gameId: GameId, open?: { id: string; action: OpenAction }) => void;
   onHistory: () => void;
@@ -325,6 +431,9 @@ function Home({
           History
         </button>
       </div>
+      <button type="button" className="button button-quiet home-report" onClick={onReport}>
+        Report a problem
+      </button>
     </main>
   );
 }

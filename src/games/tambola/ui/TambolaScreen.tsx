@@ -3,6 +3,7 @@ import { useState, type ReactNode } from 'react';
 import {
   startMatch,
   type Preferences,
+  type ReportSubject,
   type SavedGame,
   type SavedGameStore,
   type Session,
@@ -63,8 +64,14 @@ export function TambolaScreen({
   sessions,
   open,
   onSession,
+  onReport,
+  settingsExtra,
 }: {
   onExit: () => void;
+  /** Phase 7: "Report a problem" on the calling screen and the payouts (PLT-200). */
+  onReport?: (subject: ReportSubject) => void;
+  /** Phase 7: the app's "Reports waiting to send", shown in Settings (PLT-209). */
+  settingsExtra?: ReactNode;
   /** Opens a session's screen (TAM-197). */
   onSession?: (sessionId: string) => void;
   store: SavedGameStore;
@@ -128,7 +135,9 @@ export function TambolaScreen({
               setDarkState(on);
             }}
             onDone={() => setRoute({ name: 'start' })}
-          />
+          >
+            {settingsExtra}
+          </SettingsPanel>
         </main>
       );
     case 'setup':
@@ -168,6 +177,7 @@ export function TambolaScreen({
             onExit();
           }}
           {...(onSession ? { onSessionTally: onSession } : {})}
+          {...(onReport ? { onReport } : {})}
           onPlayAgain={(finished) => {
             const config = configToReuse(finished, loadMatch(finished));
             toSetup({ name: 'setup', initial: { draft: draftFromConfig(config), step: 'prizes' } });
