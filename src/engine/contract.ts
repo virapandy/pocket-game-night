@@ -3,6 +3,7 @@
 
 import type { Seed } from './random';
 import type { ActorId, Move, MoveRecord } from './moves';
+import type { ReportSafeGame } from './reports';
 
 /** Who is looking. The room is what everyone may see on the host phone turned outwards. */
 export type Viewer =
@@ -71,6 +72,12 @@ export interface GameRules<Config, State, M extends Move, View = unknown> {
 
   /** State that lives only on one player's phone (Tambola: ticket marks). It never enters the game state. */
   readonly local?: PlayerLocal<View, unknown, unknown>;
+
+  /**
+   * Phase 7 (PLT-201): the setup and moves for a problem report, with every player name replaced by "Player N"
+   * and every money amount taken out, still replaying the same calls and claims. Seeds are left to the engine.
+   */
+  forReport?(setup: SetupInput<Config>, records: readonly MoveRecord<M>[]): ReportSafeGame<Config, M>;
 }
 
 export interface PlayerLocal<View, Local, Action> {

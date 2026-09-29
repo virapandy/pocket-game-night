@@ -8,6 +8,9 @@ import {
   type GameRules,
   type MoneyRecord,
   type MoveContext,
+  type MoveRecord,
+  type ReportSafeGame,
+  type SetupInput,
   type Verdict,
   type Viewer,
 } from '../../../engine';
@@ -761,6 +764,45 @@ function playerView(state: TambolaState, playerId: string): TambolaView {
   };
 }
 
+// ----- Problem reports (PLT-201) -----
+
+/**
+ * The setup and moves for a problem report: players become "Player 1", "Player 2" … in setup order, then late
+ * joiners in the order they joined; renames take that name too. No money: the game is reported as a "No money"
+ * game with prize amounts of 0 and no prize labels, so it replays with the same calls, claims, bogeys and ending.
+ */
+function forReport(setup: SetupInput<TambolaConfig>, records: readonly MoveRecord<TambolaMove>[]): ReportSafeGame<TambolaConfig, TambolaMove> {
+  const alias = new Map<string, string>();
+  const names: { name: string; as: string }[] = [];
+  const aliasOf = (id: string) => {
+    let a = alias.get(id);
+    if (a === undefined) {
+      a = `Player ${alias.size + 1}`;
+      alias.set(id, a);
+    }
+    return a;
+  };
+  const note = (id: string, name: unknown) => {
+    const as = aliasOf(id);
+    if (typeof name === 'string' && name.trim() !== '') names.push({ name: name.trim(), as });
+    return as;
+  };
+  const players = (setup.config.players ?? []).map((p) => ({ id: p.id, name: note(p.id, p.name), tickets: p.tickets }));
+  const safeRecords = records.map((r): MoveRecord<TambolaMove> => {
+    const m = r.move;
+    if (m.type === 'rename') return { ...r, move: { ...m, name: note(m.playerId, m.name) } };
+    if (m.type === 'add-player' && m.player) return { ...r, move: { ...m, player: { id: m.player.id, name: note(m.player.id, m.player.name), tickets: m.player.tickets } } };
+    return r;
+  });
+  const config: TambolaConfig = {
+    ...setup.config,
+    players,
+    money: null,
+    tiers: (setup.config.tiers ?? []).map((t) => ({ pattern: t.pattern, amount: 0 })),
+  };
+  return { setup: { gameId: setup.gameId, seeds: setup.seeds, config }, records: safeRecords, names };
+}
+
 // ----- The contract -----
 
 export const tambolaRules: GameRules<TambolaConfig, TambolaState, TambolaMove, TambolaView> = {
@@ -815,6 +857,7 @@ export const tambolaRules: GameRules<TambolaConfig, TambolaState, TambolaMove, T
   view,
   isOver: (state) => state.result !== null,
   invariants,
+  forReport,
 
   canUndo(state, { record, by, now }) {
     if (by !== HOST || state.result) return false;
