@@ -79,7 +79,7 @@ test.describe('PLT-016: every game belongs to a named session', () => {
     await openSessions(page);
     await expect(sessionRows(page)).toHaveCount(1);
     await expect(sessionRows(page).first()).toContainText(DIWALI);
-    await expect(sessionRows(page).first()).toContainText(/\b3 games\b/);
+    await expect(sessionRows(page).first()).toContainText(/(?<!\d)3 games(?![a-z])/);
   });
 
   test('more than 3 hours after the session\'s last game ended, the app asks "Continue … or start a new session?"', async ({ page }) => {
@@ -122,7 +122,7 @@ test.describe('PLT-016: every game belongs to a named session', () => {
     await expect(nextNumber(page)).toBeVisible();
     await openSessions(page);
     await expect(sessionRows(page)).toHaveCount(1);
-    await expect(sessionRows(page).first()).toContainText(/\b2 games\b/);
+    await expect(sessionRows(page).first()).toContainText(/(?<!\d)2 games(?![a-z])/);
   });
 });
 
@@ -282,7 +282,7 @@ test('PLT-026: a game left paused overnight stays in the session it was started 
 
   await openSessions(page);
   await expect(sessionRows(page)).toHaveCount(1);
-  await expect(sessionRows(page).first()).toContainText(/\b2 games\b/);
+  await expect(sessionRows(page).first()).toContainText(/(?<!\d)2 games(?![a-z])/);
   await openSession(page, DIWALI);
   const by = Object.fromEntries((await tallyPeople(page)).map((p) => [p.name, p]));
   expect(by['Riya']).toEqual({ name: 'Riya', paid: 100, gotBack: 150, net: 50 });
@@ -306,6 +306,6 @@ test('PLT-026 and PLT-016: with a game still paused from last night, a new game 
   // Last night's paused game is still in "Diwali at Nani's", not in the new session.
   await openSessions(page);
   await expect(sessionRows(page)).toHaveCount(2);
-  await expect(sessionRows(page).filter({ hasText: DIWALI })).toContainText(/\b2 games\b/);
-  await expect(sessionRows(page).filter({ hasText: 'Monday' })).toContainText(/\b1 game\b/);
+  await expect(sessionRows(page).filter({ hasText: DIWALI })).toContainText(/(?<!\d)2 games(?![a-z])/);
+  await expect(sessionRows(page).filter({ hasText: 'Monday' })).toContainText(/(?<!\d)1 game(?![a-z])/);
 });

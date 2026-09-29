@@ -11,7 +11,7 @@ import {
 
 const T0 = new Date('2026-10-04T19:00:00+05:30');
 const EN_IN = { name: 'Veena', lang: 'en-IN' };
-const timer = (page: Page) => page.getByLabel('Time between calls', { exact: true });
+const timer = (page: Page) => page.getByRole('combobox', { name: 'Time between calls', exact: true });
 const pause = (page: Page) => page.getByRole('button', { name: 'Pause auto-call', exact: true });
 const resume = (page: Page) => page.getByRole('button', { name: /^(Resume auto-call|Paused: tap to resume)$/ }).first();
 
