@@ -195,7 +195,7 @@ export function PhoneTickets({
   const marksFor = (ticket: number) => ({ marked: marksOn(game, ticket), cue: cue.cells.get(ticket) ?? new Set<number>() });
 
   // Cell sizes (TAM-122, TAM-173, TAM-191): all tickets at once without scrolling, cells at least 40 px;
-  // one at a time, cells at least 44 px. Landscape: two side by side, the third below.
+  // one at a time, cells at least 44 px in landscape and 42 px in portrait. Landscape: two side by side, the third below.
   const landscape = w > h;
   const cols = landscape && tickets.length > 1 ? 2 : 1;
   const ticketRows = Math.ceil(tickets.length / cols);
@@ -211,7 +211,11 @@ export function PhoneTickets({
       Math.floor((h - chrome - ticketRows * (caption + 8)) / (3 * ticketRows)),
     ),
   );
-  const oneCell = Math.max(44, Math.min(80, Math.floor((w - 16 - side) / 9), Math.floor((h - chrome - 60) / 3)));
+  // Portrait one at a time (owner decision 2026-09-30): the ticket spans the full screen width with no border,
+  // so cells are the width / 9, at least 42 px (42 px on a 390 px phone), and nothing slides sideways.
+  const oneCell = landscape
+    ? Math.max(44, Math.min(80, Math.floor((w - 16 - side) / 9), Math.floor((h - chrome - 60) / 3)))
+    : Math.max(42, Math.min(80, Math.floor(w / 9), Math.floor((h - chrome - 60) / 3)));
 
   const header = (
     <header className="phone-bar">
