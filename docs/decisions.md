@@ -89,6 +89,11 @@
 | 2026-09-30 | Family play-test done. After a win, closing the prize becomes the main action: the big bottom button turns into "Close Top Line", the rest of the screen dims, and a stray tap pulses the button once; no blinking (TAM-198, TAM-145). | Owner |
 | 2026-09-30 | The last setup step shows the session a game will join, with "Change" to start a new session or pick a recent one (PLT-029). | Owner |
 
+| 2026-09-30 | Payout screen: each person's row shows paid, won and net; two buttons below: "Settle with host" (host is the bank: "Host gives Riya ₹77") and "Settle with players" (who pays whom for this game, fewest hand-overs). The session tally keeps its own Settle up (TAM-089, TAM-088). | Owner |
+| 2026-09-30 | While a won prize waits to be closed (TAM-198) the screen dims, but "Add another winner", the prize chip's Close and the menu (End game, Discard, Show the room) still work. | Owner |
+| 2026-09-30 | Compact session tally: one row per person (name, balance); tapping a row shows paid, won and got back (PLT-017). | Owner |
+| 2026-09-30 | Session line (PLT-029): a first game, or one more than 3 hours after the last, shows "Session: <suggested name> (new) · Change"; Change lists up to 3 unsettled sessions from the last 7 days. | Owner |
+
 "Convention" means the established Tambola rule in `docs/games/tambola/guide.md`, chosen because the owner asked
 Claude to follow game conventions. Every Tambola rule above is also a host setting with this default.
 
