@@ -28,7 +28,7 @@ Design: `docs/games/tambola/ux-phone-tickets.md`.
 - A claim QR that doesn't match the host's copy is refused, never counted as a bogey.
 
 **Size:** about 50 scenarios, including the pattern rules the app checks for phone tickets.
-**Sign-off:** approve Phase 2 as described? (Yes / changes)
+**Sign-off:** approve Phase 2 as described? (Yes / changes). *Status 29 September: the owner is reading it.*
 
 ---
 
@@ -43,7 +43,7 @@ Design: `docs/games/tambola/ux-phone-tickets.md`.
   no-account destination is needed **before sharing the app beyond family and friends**.
 
 **Size:** 10 scenarios.
-**Sign-off:** approve Phase 7 as described? (Yes / changes)
+**Signed off by the owner, 29 September 2026.**
 
 ---
 
@@ -73,4 +73,4 @@ Worked out from Jev's published price ($0.042 per million input tokens, output f
 finish with scripted players instead, so nothing breaks.
 
 **Size:** 14 scenarios.
-**Sign-off:** approve extended testing, and pick a weekly Jev cap?
+**Signed off by the owner, 29 September 2026, with the 20,000-a-week cap.**

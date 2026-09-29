@@ -23,14 +23,15 @@ current; instructions live here, not in chat. History from Phase 0 and 1a is fur
    Finding 4 is minor and may go in the same round.
 3. **Owner play-test.** Tell the owner the play-test can start (checklist above). The product owner turns
    what the owner reports into changes here.
-4. **Phase 2 (phone tickets).** Before starting, ask the owner to sign off the Phase 2 pack in
+4. **Phase 2 (phone tickets).** *The owner is reading the pack.* Before starting, confirm the owner has signed off the Phase 2 pack in
    `docs/signoff.md`. Then the tester applies the product owner's verdicts (including TAM-050 reworded,
    TAM-133 moved to Phase 6, TAM-179 changed) and writes tests; the coder builds to
    `docs/games/tambola/ux-phone-tickets.md`.
-5. **Phase 7 ("Report a problem", stub destination)**, after the owner signs off its pack in `docs/signoff.md`.
-6. **Extended testing (simulations, mutation testing, Android emulator, Jev)**, after the owner signs off its
-   pack in `docs/signoff.md` and picks the weekly Jev cap (recommended: 20,000 decisions a week, at most
-   about $1.70).
+5. **Phase 7 ("Report a problem", stub destination)**: **signed off** (29 September). The tester marks PLT-200 to
+   PLT-209 approved (PLT-208 with the stub wording) and writes tests when this step comes up.
+6. **Extended testing (simulations, mutation testing, Android emulator, Jev)**: **signed off** (29 September),
+   weekly Jev cap **20,000 decisions**. The tester marks PLT-110 to PLT-123 approved (PLT-118 and PLT-119 with
+   the product owner's wording) and sets the cap in PLT-113.
 
 ---
 
