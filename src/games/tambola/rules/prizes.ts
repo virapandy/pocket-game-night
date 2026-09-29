@@ -148,8 +148,9 @@ function sinkOf(free: readonly Pattern[], weights: ReadonlyMap<Pattern, number>)
  * Splits `pool` across `items` in proportion to their weights (TAM-082, owner decision 2026-09-29): every item
  * but `sink` is its exact share rounded to the nearest `unit`, an exact half rounding down, and `sink` (Full House
  * when it is free) takes the rest, so the total is exact. Items with the same weight get the same amount (TAM-092).
- * Only when a pot is too small for that (the sink would be below zero or smaller than another tier) are whole
- * groups of equal tiers stepped down a unit at a time, largest first, until the sink is the largest again.
+ * Tiny pots (owner decision 2026-09-29): when rounding to the unit would leave the sink below zero or smaller than
+ * another tier, the items round to the nearest ₹1 instead. Only if even that fails are whole groups of equal tiers
+ * lowered ₹1 at a time, largest first, until the sink is the largest again.
  */
 function splitNearest(
   pool: number,
@@ -161,25 +162,30 @@ function splitNearest(
   const raw = items.map((p) => weights.get(p)!);
   const w = raw.every((x) => x === 0) ? raw.map(() => 1) : raw;
   const total = w.reduce((a, b) => a + b, 0);
-  const out = new Map<Pattern, number>();
-  items.forEach((p, i) => {
-    if (p === sink) return;
-    // share / unit = pool × w / (total × unit); nearest whole with an exact half going down = ceil(x − ½).
-    const num = 2 * pool * w[i]! - total * unit;
-    const den = 2 * total * unit;
-    out.set(p, Math.max(0, Math.ceil(num / den)) * unit);
-  });
-  const rest = () => pool - [...out.values()].reduce((a, b) => a + b, 0);
-  const tooBig = () => {
-    const s = rest();
+  const roundTo = (step: number) => {
+    const out = new Map<Pattern, number>();
+    items.forEach((p, i) => {
+      if (p === sink) return;
+      // share / step = pool × w / (total × step); nearest whole with an exact half going down = ceil(x − ½).
+      const num = 2 * pool * w[i]! - total * step;
+      const den = 2 * total * step;
+      out.set(p, Math.max(0, Math.ceil(num / den)) * step);
+    });
+    return out;
+  };
+  const rest = (out: ReadonlyMap<Pattern, number>) => pool - [...out.values()].reduce((a, b) => a + b, 0);
+  const tooBig = (out: ReadonlyMap<Pattern, number>) => {
+    const s = rest(out);
     return s < 0 || [...out.values()].some((a) => a > s);
   };
-  while (tooBig()) {
+  let out = roundTo(unit);
+  if (tooBig(out) && unit !== 1) out = roundTo(1);
+  while (tooBig(out)) {
     const top = Math.max(...out.values());
     if (top <= 0) break;
-    for (const [p, a] of out) if (a === top) out.set(p, a - unit);
+    for (const [p, a] of out) if (a === top) out.set(p, a - 1);
   }
-  out.set(sink, rest());
+  out.set(sink, rest(out));
   return out;
 }
 
