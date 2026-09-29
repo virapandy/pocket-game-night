@@ -79,6 +79,10 @@
 | 2026-09-29 | Rhymes revision 3: every call must link instantly to its number (rhyme, fact, shape or famous moment). Cricket cut to 26 calls with real links, including India's trophy years 2011, 2013, 2024, 2025 and 1983; 404 rhymes. | Owner request, product owner |
 | 2026-09-29 | Rhyme rule: every call rhymes with its number or links directly to it through popular culture or common knowledge; nothing niche. Applied to all English lines (revision 4, 397 rhymes). | Owner |
 
+| 2026-09-29 | Prize rounding: every tier except Full House rounds to the nearest ₹10 (an exact half rounds down); Full House takes whatever is left (TAM-082). | Owner |
+| 2026-09-29 | After the host closes a tier, its win card goes away by itself; no Done tap (TAM-145). | Owner |
+| 2026-09-29 | The one-time screen-sleep tip never covers the called number (TAM-128, TAM-138). | Owner |
+
 "Convention" means the established Tambola rule in `docs/games/tambola/guide.md`, chosen because the owner asked
 Claude to follow game conventions. Every Tambola rule above is also a host setting with this default.
 
