@@ -1,6 +1,6 @@
 # Tambola rhyme catalog
 
-The rhymes are what make calling fun. The catalog is [rhymes.csv](rhymes.csv): **405 rhymes** for
+The rhymes are what make calling fun. The catalog is [rhymes.csv](rhymes.csv): **404 rhymes** for
 numbers 1 to 90. **Approved by the owner, 28 September 2026.**
 
 ## What's in it
@@ -9,7 +9,7 @@ numbers 1 to 90. **Approved by the owner, 28 September 2026.**
 | classic | English | 110 | Traditional calls from British bingo and Indian Housie ("Kelly's eye", "Legs eleven") |
 | indian | English | 86 | Indian-flavoured English calls ("Pack of cards", "Dil maange more", "Voting age") |
 | playful | English | 48 | New rhymes written for this app ("Sixty, still nifty", "Two snowmen") |
-| cricket | English | 35 | India players' shirt numbers and cricket moments ("Thala Dhoni's seven", "1983, Kapil's Devils") |
+| cricket | English | 26 | India players' shirt numbers and cricket moments ("Thala Dhoni's seven", "1983, Kapil's Devils") |
 | bollywood | English | 8 | Film titles with the number in them ("3 Idiots", "Special 26") |
 | festival | English | 9 | Dates and history ("Independence Day, 15 August", "Republic Day, 26 January") |
 | hindi | Hindi (Roman script) | 109 | Hindi and Hinglish calls ("Teen tigaada, kaam bigaada", "Chhappan bhog", "Shagun ka lifaafa") |
@@ -47,6 +47,19 @@ Product owner's critical review, and what changed:
   match-fixing jokes.
 - Every rule still holds: at least 3 English rhymes per number (2 family-friendly), at least 1 Hindi, at
   least 1 family-friendly English rhyme with an Indian reference, at most 40 characters, no repeats.
+
+## Revision 3, 29 September 2026 (owner: "the new ones are also bad, they don't make sense")
+The rule for every call now: **the number and the phrase must link instantly**, by a rhyme, a fact, a
+shape or a famous moment. Revision 2 had forced cricket situations onto numbers with no link ("Required
+rate eight", "Nineteenth over"); all 14 of those are gone. Cricket is now 26 calls, each with a real link:
+- the number *is* the cricket thing: 4 "Chauka! Kissed the rope", 6 "Maximum!", 3 "Hat-trick!", 5 "Five-for!",
+  12 "Twelfth man, bring the drinks!", 20 "T20", 22 "Twenty-two yards of drama!", 44 "two chaukas",
+  50 "Fifty! Raise the bat", 66 "back-to-back sixes", 90 "Nervous nineties!", 87 "cricket's unlucky number"
+- the number is a year India won: 11 (2011 World Cup), 13 (2013 Champions Trophy), 24 (2024 T20 World Cup),
+  25 (2025 Champions Trophy), 83 (1983 World Cup)
+- a famous moment: 36 "Yuvi's six sixes"; shirt numbers only for 7 Dhoni, 10 Sachin, 18 Kohli
+Numbers that lost a forced cricket call got a plainly linked line instead, for example 17 "Seventeen, board
+exam scene!", 19 "Nineteen, college canteen!", 35 "Thirty-five and single? Aunties arrive!".
 
 ## Choices made
 - **Left out entirely:** calls that shame bodies or women ("Women get flirty", "Oversize",
