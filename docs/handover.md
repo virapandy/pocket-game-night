@@ -11,7 +11,7 @@ current; instructions live here, not in chat. History from Phase 0 and 1a is fur
 | 1a.1 review findings (rounding, win card, undo toast, card after Close) | **Fixed** (5cf78c9, 257a5f5, 6aced77) |
 | Rhyme catalog revision 4 (361 rhymes, Hindi fallback) | Tests updated; the coder's fix (5c26598) was **in automation** when the run ended; the tester has not yet reported on it |
 | Test clone | **Uncommitted work left behind:** a new `tests/browser/fixtures.ts` and import changes in 16 browser test files plus the test config |
-| Product owner review of the live 1b build | Next for the product owner |
+| Product owner review of the live 1b build | **Done:** money model decided (host is the bank) and 5 findings, in `docs/games/tambola/changes-2026-09-29-money-and-1b.md` |
 | Family play-test on Android | **Not done yet** (owner's task; `docs/playtest-checklist.md`) |
 | Phase 2, Phase 7, extended testing | **All signed off by the owner** (packs in `docs/signoff.md`) |
 | Phase 6 (connected mode), new games | On hold |
@@ -21,18 +21,22 @@ current; instructions live here, not in chat. History from Phase 0 and 1a is fur
    run every layer and commit, or discard it. Nothing else starts in the Test clone until it is clean.
 2. **Close out the rhyme change.** The tester runs everything on 5c26598 (or later) and reports; fix until green
    (TAM-150, TAM-153).
-3. **Owner play-test.** Tell the owner 1b is live and the play-test can start (checklist above). The product
+3. **Money and 1b review fixes** (owner-approved): apply `docs/games/tambola/changes-2026-09-29-money-and-1b.md`:
+   the host is the bank (TAM-089, PLT-017, PLT-028 reworded; settling is an optional step, always with the
+   host) and the five 1b review findings (buttons fixed at the bottom, payouts to tally, compact tally,
+   labelled sessions; new TAM-197). Tester first, then coder.
+4. **Owner play-test.** Tell the owner 1b is live and the play-test can start (checklist above). The product
    owner turns what the owner reports into changes here.
-4. **Phase 2 (phone tickets): signed off by the owner (29 September).** The tester applies the product owner's
+5. **Phase 2 (phone tickets): signed off by the owner (29 September).** The tester applies the product owner's
    verdicts (including TAM-050 reworded, TAM-133 moved to Phase 6, TAM-179 changed) **and** the additions in
    `docs/games/tambola/changes-2026-09-29-phone-tickets.md` (all tickets visible together, switch to one at a
    time, quick mark with the tickets underneath, claim screen showing the ticket, tickets from one sheet, the
    "your marks fill a pattern" cue, players crossing out won prizes: TAM-122, TAM-173, TAM-191 to TAM-196), and the
    **extensibility note** in that file: build the player's game knowledge so connected mode can be added later
    without redesigning the screens, then writes tests; the coder builds to `docs/games/tambola/ux-phone-tickets.md`.
-5. **Phase 7 ("Report a problem", stub destination)**: **signed off** (29 September). The tester marks PLT-200 to
+6. **Phase 7 ("Report a problem", stub destination)**: **signed off** (29 September). The tester marks PLT-200 to
    PLT-209 approved (PLT-208 with the stub wording) and writes tests when this step comes up.
-6. **Extended testing (simulations, mutation testing, Android emulator, Jev)**: **signed off** (29 September),
+7. **Extended testing (simulations, mutation testing, Android emulator, Jev)**: **signed off** (29 September),
    weekly Jev cap **20,000 decisions**. The tester marks PLT-110 to PLT-123 approved (PLT-118 and PLT-119 with
    the product owner's wording) and sets the cap in PLT-113.
 
