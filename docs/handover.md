@@ -4,30 +4,25 @@
 The orchestrator works through **"Next, in order"** from the top. The product owner keeps this section
 current; instructions live here, not in chat. History from Phase 0 and 1a is further down.
 
-### Status
+### Status (29 September, after the orchestrator's run)
 | Item | State |
 |---|---|
-| Phase 1a and 1a.1 (Tambola, paper tickets, redesign, money back per ticket) | **Green and live** at https://virapandy.github.io/pocket-game-night/ |
-| Phase 1b (sessions, tally and settle up, late joiners, voice, auto-call, dark mode, history tools) | Tests written (006cfea); **the coder is building** |
-| Product owner review of the live 1a.1 build | Done: 4 findings in `docs/games/tambola/review-2026-09-29.md` |
-| Family play-test on Android | **Not done yet**: owner's task; 1a.1 is live, so it can happen now (`docs/playtest-checklist.md`) |
-| Phase 2, Phase 7, extended testing | **All three signed off by the owner** (29 September; packs in `docs/signoff.md`). Phase 2 design: `docs/games/tambola/ux-phone-tickets.md` |
+| Phase 1a, 1a.1 and **1b** (sessions, tally and settle up, late joiners, voice, auto-call, dark mode, history tools) | **Green and live** at https://virapandy.github.io/pocket-game-night/ (tests on 6aced77: 315 rule checks, 156 Android and 151 iPhone browser checks) |
+| 1a.1 review findings (rounding, win card, undo toast, card after Close) | **Fixed** (5cf78c9, 257a5f5, 6aced77) |
+| Rhyme catalog revision 4 (361 rhymes, Hindi fallback) | Tests updated; the coder's fix (5c26598) was **in automation** when the run ended; the tester has not yet reported on it |
+| Test clone | **Uncommitted work left behind:** a new `tests/browser/fixtures.ts` and import changes in 16 browser test files plus the test config |
+| Product owner review of the live 1b build | Next for the product owner |
+| Family play-test on Android | **Not done yet** (owner's task; `docs/playtest-checklist.md`) |
+| Phase 2, Phase 7, extended testing | **All signed off by the owner** (packs in `docs/signoff.md`) |
 | Phase 6 (connected mode), new games | On hold |
 
 ### Next, in order (for the orchestrator)
-1. **Finish Phase 1b** as now running; report green to the owner.
-1a. **Rhyme catalog, revision 4** (owner-approved, 29 September): the tester applies the scenario changes in
-   `docs/games/tambola/changes-2026-09-29-rhymes.md` (TAM-150 and TAM-153: a Hindi game uses an English
-   rhyme for numbers without a Hindi one), then the coder rebuilds `content/tambola/rhymes.json` from
-   `docs/games/tambola/rhymes.csv` (361 rhymes; the rule and the changes are in
-   `docs/games/tambola/rhymes.md`). Can go in any round.
-2. **Fix the 1a.1 review findings** in `docs/games/tambola/review-2026-09-29.md`. The tester first adds or
-   changes checks from the scenarios named there: TAM-082 (Full House takes every rounding difference;
-   finding 1), TAM-138 and TAM-123 (the number stays visible while a win is shown; finding 2), TAM-125
-   (the undo toast also never covers the prize chips: owner-approved change; finding 3). Then the coder fixes.
-   Finding 4 is minor and may go in the same round.
-3. **Owner play-test.** Tell the owner the play-test can start (checklist above). The product owner turns
-   what the owner reports into changes here.
+1. **Tidy the Test clone.** Ask the tester about the uncommitted `tests/browser/fixtures.ts` change: finish it,
+   run every layer and commit, or discard it. Nothing else starts in the Test clone until it is clean.
+2. **Close out the rhyme change.** The tester runs everything on 5c26598 (or later) and reports; fix until green
+   (TAM-150, TAM-153).
+3. **Owner play-test.** Tell the owner 1b is live and the play-test can start (checklist above). The product
+   owner turns what the owner reports into changes here.
 4. **Phase 2 (phone tickets): signed off by the owner (29 September).** The tester applies the product owner's
    verdicts (including TAM-050 reworded, TAM-133 moved to Phase 6, TAM-179 changed) **and** the additions in
    `docs/games/tambola/changes-2026-09-29-phone-tickets.md` (all tickets visible together, switch to one at a
