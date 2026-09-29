@@ -1,5 +1,5 @@
 // The prize pool (specs/tambola/08-prizes.md). Money is calculated, never moved.
-// Every split here uses whole amounts and adds up exactly (largest remainder).
+// Every split here uses whole amounts and adds up exactly.
 import { PATTERNS, type Pattern } from './types';
 
 /** TAM-081: suggested tiers and split by tickets in play. Full House is always the largest. */
@@ -117,11 +117,11 @@ export function planPrizes(input: PlanInput): PrizePlan {
   const amounts = new Map<Pattern, number>(fixed);
   if (free.length > 0) {
     const sink = sinkOf(free, weights);
-    for (const [p, a] of splitEqually(pool, unit, free, weights, sink, 'amounts')) amounts.set(p, a);
+    for (const [p, a] of splitNearest(pool, unit, free, weights, sink)) amounts.set(p, a);
   }
 
   // Percentages: equal shares show equal percentages, different shares different ones; the rest goes to the sink.
-  const percents = splitEqually(100, 1, patterns, weights, sinkOf(patterns, weights), 'floor');
+  const percents = splitPercents(patterns, weights, sinkOf(patterns, weights));
   return {
     pot,
     tiers: patterns.map((pattern) => ({
@@ -145,59 +145,53 @@ function sinkOf(free: readonly Pattern[], weights: ReadonlyMap<Pattern, number>)
 }
 
 /**
- * Splits `pool` across `items` in proportion to their weights, in whole `unit`s (TAM-082, TAM-092):
- * items with the same weight always get the same amount, and every item but `sink` is a whole number of
- * units. For amounts, leftover units go, a whole group at a time, to the groups with the largest
- * remainders, unless that would make a group larger than the sink; whatever is still left, including
- * anything smaller than a unit, goes to `sink`. In 'floor' mode every leftover goes to the sink.
+ * Splits `pool` across `items` in proportion to their weights (TAM-082, owner decision 2026-09-29): every item
+ * but `sink` is its exact share rounded to the nearest `unit`, an exact half rounding down, and `sink` (Full House
+ * when it is free) takes the rest, so the total is exact. Items with the same weight get the same amount (TAM-092).
+ * Only when a pot is too small for that (the sink would be below zero or smaller than another tier) are whole
+ * groups of equal tiers stepped down a unit at a time, largest first, until the sink is the largest again.
  */
-function splitEqually(
+function splitNearest(
   pool: number,
   unit: number,
   items: readonly Pattern[],
   weights: ReadonlyMap<Pattern, number>,
   sink: Pattern,
-  mode: 'amounts' | 'floor',
 ): Map<Pattern, number> {
   const raw = items.map((p) => weights.get(p)!);
   const w = raw.every((x) => x === 0) ? raw.map(() => 1) : raw;
   const total = w.reduce((a, b) => a + b, 0);
-  const units = Math.floor(pool / unit);
-  const got = new Map<Pattern, number>(items.map((p, i) => [p, Math.floor((units * w[i]!) / total)]));
-  let left = units - [...got.values()].reduce((a, b) => a + b, 0);
-
-  const groups = new Map<number, { weight: number; first: number; members: Pattern[] }>();
+  const out = new Map<Pattern, number>();
   items.forEach((p, i) => {
     if (p === sink) return;
-    const g = groups.get(w[i]!) ?? { weight: w[i]!, first: i, members: [] };
-    g.members.push(p);
-    groups.set(w[i]!, g);
+    // share / unit = pool × w / (total × unit); nearest whole with an exact half going down = ceil(x − ½).
+    const num = 2 * pool * w[i]! - total * unit;
+    const den = 2 * total * unit;
+    out.set(p, Math.max(0, Math.ceil(num / den)) * unit);
   });
-  const ordered = [...groups.values()].sort(
-    (a, b) => ((units * b.weight) % total) - ((units * a.weight) % total) || b.weight - a.weight || a.first - b.first,
-  );
-  const gifted: Pattern[][] = [];
-  for (const g of mode === 'amounts' ? ordered : []) {
-    if (left <= 0) break;
-    if (g.members.length > left) continue;
-    for (const p of g.members) got.set(p, got.get(p)! + 1);
-    left -= g.members.length;
-    gifted.push(g.members);
+  const rest = () => pool - [...out.values()].reduce((a, b) => a + b, 0);
+  const tooBig = () => {
+    const s = rest();
+    return s < 0 || [...out.values()].some((a) => a > s);
+  };
+  while (tooBig()) {
+    const top = Math.max(...out.values());
+    if (top <= 0) break;
+    for (const [p, a] of out) if (a === top) out.set(p, a - unit);
   }
-  got.set(sink, got.get(sink)! + left);
+  out.set(sink, rest());
+  return out;
+}
 
-  const out = new Map<Pattern, number>();
-  for (const [p, u] of got) out.set(p, u * unit);
-  out.set(sink, out.get(sink)! + (pool - units * unit));
-
-  if (mode === 'amounts') {
-    const tooBig = () => items.some((p) => p !== sink && out.get(p)! > out.get(sink)!);
-    while (tooBig() && gifted.length > 0) {
-      for (const p of gifted.pop()!) {
-        out.set(p, out.get(p)! - unit);
-        out.set(sink, out.get(sink)! + unit);
-      }
-    }
-  }
+/**
+ * The percentages shown for the tiers: each is its weight's share of 100, rounded down, so equal shares show
+ * equal percentages; whatever is left goes to `sink`.
+ */
+function splitPercents(items: readonly Pattern[], weights: ReadonlyMap<Pattern, number>, sink: Pattern): Map<Pattern, number> {
+  const raw = items.map((p) => weights.get(p)!);
+  const w = raw.every((x) => x === 0) ? raw.map(() => 1) : raw;
+  const total = w.reduce((a, b) => a + b, 0);
+  const out = new Map<Pattern, number>(items.map((p, i) => [p, Math.floor((100 * w[i]!) / total)]));
+  out.set(sink, out.get(sink)! + 100 - [...out.values()].reduce((a, b) => a + b, 0));
   return out;
 }
