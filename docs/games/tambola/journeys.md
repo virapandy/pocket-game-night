@@ -120,9 +120,9 @@ The host settles in cash or UPI, outside the app.
 | Stage | Player does | What they see on their phone |
 |---|---|---|
 | Before the day | Opens the shared app link once, with internet | "You're ready for game night" |
-| Join | Pays the host; scans the QR | Their own ticket and ticket number, plus the prize tiers for this game |
-| During | Listens and **taps** numbers to mark them (no auto-marking by default); taps again to unmark | Their ticket with their marks |
-| Claim | Shouts; taps **Show claim**, picks the prize; shows the claim QR to the host | Their claim QR; the verdict appears on the host phone |
+| Join | Pays the host; scans the QR the host shows for them ("Ticket 3 → Riya") with the phone's camera, or types the short code | "Riya, ticket 3", the game code and the prize tiers (TAM-170, TAM-172) |
+| During | Listens to the anchor and **taps** numbers to mark them; taps again to unmark | Their ticket with their own marks only: offline, the phone doesn't know which numbers were called (TAM-050) |
+| Claim | Shouts first; taps **Show claim**, picks the ticket (if several) and the prize; holds up the claim QR for the host to scan | A large claim QR with "Top Line · Ticket 3 · Riya"; the verdict appears on the host phone (TAM-177, TAM-190) |
 | Phone dies | Tells the host | Switches to a paper ticket from the book, or the host reads out their app ticket from the host phone |
 | After | Collects their prize | The payout summary is on the host phone |
 
@@ -134,11 +134,11 @@ numbers (TAM-050 to TAM-055).
 ## Lifecycle: the game over time
 | Situation | What happens |
 |---|---|
-| Host leaves a game unfinished | Saved at every step. Back within 12 hours: resumes, paused. Later: "Resume", "End it" or "Discard it". Never ended automatically. |
-| Host starts a new game while one is unfinished | Asked to resume, end or discard the current one first (one game at a time) |
+| Host leaves a game unfinished | Saved at every step. Within 12 hours the home screen shows it with "Tap to resume"; later it asks "Resume", "End it" or "Discard it". Never ended automatically (PLT-004). |
+| Host starts a new game while one is unfinished | It just starts; unfinished games stay listed on the home screen (PLT-002) |
 | **End game** | Prizes won are paid; money of unclaimed prizes goes back to the players, equally per ticket (TAM-088) |
 | **Discard game** | Void: nobody is paid; the summary lists each player's contribution to hand back |
-| Several games in one gathering | Grouped in a named session; the session tally gives each person one net amount across ended, unsettled games; Settle marks them done (Phase 1b) |
+| Several games in one gathering (Phase 1b) | Grouped in a named session. The **tally** shows each person's net amount across ended, unsettled games. **Settle up** lists who pays whom in the fewest hand-overs; **Mark as settled** closes them, with 5 seconds to undo (PLT-016 to PLT-028) |
 | Looking back | History, newest first; each game opens read-only with every call and claim, for disputes |
 | Same group next week | "Use this setup" on a past game: same players, contribution and tiers |
 | Deleting | One game (with 5-second Undo), or all history (with a specific confirmation) |
@@ -148,11 +148,11 @@ numbers (TAM-050 to TAM-055).
 ## Moments every game must handle
 | Moment | Expected behaviour |
 |---|---|
-| A player arrives late | Pays, gets a ticket, catches up from the board. **Open:** do earlier numbers count, and does their contribution grow the pot after prizes are locked? |
+| A player arrives late (Phase 1b) | Allowed until 10 numbers are called. Pays, gets a ticket, catches up from the board: earlier numbers count, but a prize already complete when they join can't be claimed. Their contribution is split across the prizes not yet won; the anchor announces the new amounts. Added by mistake: removable before the next number (TAM-067, TAM-184) |
 | The host phone locks or the app closes | The game resumes exactly where it was, prizes included |
 | A first-timer doesn't know the rules | **How to play** on the start screen, offline |
-| Nobody wants to anchor | The host turns on **Phone speaks the call**, after a one-time warning; the host confirms prizes instead |
-| The game drags | The host ends early; unclaimed tiers follow the owner's rule |
+| Nobody wants to anchor (Phase 1b) | The host turns on **Phone speaks the call** (one-time warning), and optionally **auto-call** every 5–30 seconds (default 10), with one-tap pause and mute; auto-call pauses while a win is being recorded (TAM-120, TAM-180, TAM-185, TAM-186) |
+| The game drags | The host ends early; prizes won are paid and the rest is handed back per ticket (TAM-066, TAM-088) |
 
 ---
 

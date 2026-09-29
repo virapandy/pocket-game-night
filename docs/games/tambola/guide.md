@@ -111,8 +111,10 @@ Many groups add a **Second (and Third) Full House**, and hosts sometimes invent 
 - At the end, the app shows who won what. Money changes hands between people, never through the app.
 - Shortcuts (phone speaks the calls, auto-marking, Claim buttons) exist but are off by default,
   because the shouting and checking are the fun.
-- Mistakes are forgiving: the host can undo a wrongly entered claim. A number already called
-  can't be taken back, because the room has heard it.
+- Mistakes are forgiving: the host can undo a wrongly recorded win, and a mis-tapped number within
+  5 seconds. After that a called number stands, because the room has heard it.
+- A whole evening: games are grouped in a named session. At the end, the tally shows each person's net
+  amount, and "Settle up" lists who pays whom in the fewest hand-overs.
 
 ## Contract check (for the builders)
 How Tambola answers the seven contract questions in `src/engine/CLAUDE.md`. Checked 28 September 2026.
