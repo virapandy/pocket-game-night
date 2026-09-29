@@ -29,6 +29,9 @@ export function toSaved(prev: TambolaSaved, match: TambolaMatch, now: number, st
     status: match.state.result ? derived : (status ?? derived),
     setup: match.setup,
     records: match.records,
+    // A game stays in the session it was started in (PLT-026).
+    ...(prev.sessionId !== undefined ? { sessionId: prev.sessionId } : {}),
+    ...(prev.settlementId !== undefined ? { settlementId: prev.settlementId } : {}),
   };
   return view.summary?.money ? { ...next, money: view.summary.money } : next;
 }
@@ -40,8 +43,9 @@ export function newSaved(id: string, setup: TambolaMatch['setup'], now: number):
 /** One line about a saved game, for the home list and History (PLT-002, PLT-007). */
 export function describeGame(saved: SavedGame): { players: number; calls: number; result: string } {
   const match = loadMatch(saved);
-  const players = (saved as TambolaSaved).setup?.config?.players?.length ?? 0;
-  if (!match) return { players, calls: 0, result: 'Could not be opened' };
+  const setupPlayers = (saved as TambolaSaved).setup?.config?.players?.length ?? 0;
+  if (!match) return { players: setupPlayers, calls: 0, result: 'Could not be opened' };
+  const players = match.state.players.length;
   const view = tambolaRules.view(match.state, { kind: 'host' });
   let result = 'In progress';
   if (saved.status === 'paused') result = 'Paused';

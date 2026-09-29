@@ -12,15 +12,19 @@ import {
   tambolaRules,
   type CheckResult,
   type Pattern,
+  type Rhyme,
   type TambolaMove,
   type TambolaSettings,
   type TambolaView,
+  type Tier,
 } from '../rules';
-import { buzz, keepAwake, tick } from './device';
+import { buzz, freshSeed, keepAwake, tick } from './device';
 import { plural, rupees } from './format';
 import { toSaved, type TambolaMatch, type TambolaSaved } from './saved';
 import { loadSettings, saveSettings, SettingsPanel } from './Settings';
 import { Summary } from './Summary';
+import { isDark, setDark } from './theme';
+import { hasVoice, hush, speakCall } from './voice';
 
 const CALL_UNDO_MS = 5_000;
 /** TAM-101: two taps within half a second call one number. */
@@ -29,6 +33,11 @@ const NEXT_COOLDOWN_MS = 500;
 const LONG_PRESS_MS = 600;
 /** TAM-128: the screen-sleep tip is shown once per phone. */
 const SLEEP_TIP_KEY = 'tambola.sleep-tip.seen';
+/** TAM-186: 5 to 30 seconds between auto-calls, in 5-second steps, 10 by default. */
+const AUTO_CALL_CHOICES = [5, 10, 15, 20, 25, 30];
+const AUTO_CALL_DEFAULT = 10;
+/** TAM-187: how long the "voice isn't working" note stays on screen (shown once per game). */
+const VOICE_NOTE_MS = 8_000;
 
 /** Short names for the prize chips (TAM-126). */
 const CHIP_NAMES: Readonly<Record<Pattern, string>> = {
@@ -62,9 +71,27 @@ type Sheet =
   | { kind: 'menu' }
   | { kind: 'record'; sheet: RecordSheet }
   | { kind: 'check'; pattern?: Pattern; text: string; result?: CheckResult }
-  | { kind: 'board' };
+  | { kind: 'board' }
+  | { kind: 'late'; name: string; tickets: string; error?: string };
 
-type Dialog = { kind: 'end' } | { kind: 'discard' } | { kind: 'undo-record'; seq: number };
+type Dialog =
+  | { kind: 'end' }
+  | { kind: 'discard' }
+  | { kind: 'undo-record'; seq: number }
+  | { kind: 'prizes'; tiers: readonly Tier[] };
+
+/** Shortcuts that warn the host once per game before turning on (TAM-061, TAM-062). */
+type Shortcut = 'voice' | 'auto';
+const WARNINGS: Readonly<Record<Shortcut, { title: string; text: string }>> = {
+  voice: {
+    title: 'Let the phone speak the calls?',
+    text: "The anchor calling each number aloud is part of the fun. The phone's voice is here if the anchor needs a rest.",
+  },
+  auto: {
+    title: 'Call numbers automatically?',
+    text: 'The phone will call a number on a timer and say it aloud, without waiting for anyone. It pauses for every win.',
+  },
+};
 
 type TambolaRecord = MoveRecord<TambolaMove>;
 const isRecording = (r: TambolaRecord) => r.move.type === 'record-win' || r.move.type === 'record-bogey';
@@ -107,6 +134,22 @@ export function Play({
   const [, setNow] = useState(0);
   const lastCallAt = useRef<number | null>(null);
   const pressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Phase 1b, per game and off in every new one: the phone's voice and auto-call (TAM-060, TAM-120, TAM-180).
+  const [voiceOn, setVoiceOn] = useState(false);
+  const [muted, setMuted] = useState(false);
+  const [autoOn, setAutoOn] = useState(false);
+  const [autoPaused, setAutoPaused] = useState(false);
+  const [autoSecs, setAutoSecs] = useState(AUTO_CALL_DEFAULT);
+  const [warned, setWarned] = useState<Readonly<Record<Shortcut, boolean>>>({ voice: false, auto: false });
+  const [asking, setAsking] = useState<Shortcut | null>(null);
+  const [voiceNote, setVoiceNote] = useState(false);
+  const voiceNoted = useRef(false);
+  const autoSecsRef = useRef(autoSecs);
+  autoSecsRef.current = autoSecs;
+  const autoCallRef = useRef<() => void>(() => {});
+  const [autoRetry, setAutoRetry] = useState(0);
+  const [dark, setDarkState] = useState(() => isDark(prefs));
+  const canSpeak = hasVoice();
 
   const view = tambolaRules.view(match.state, { kind: 'host' });
   const over = view.over;
@@ -137,6 +180,44 @@ export function Play({
 
   // TAM-110: keep the screen awake during the game, and ask again on return to the front.
   useEffect(() => (over ? undefined : keepAwake(setWakeRefused)), [over]);
+
+  // TAM-180, TAM-187: the phone speaks the call when the voice or auto-call is on; a failure never stops the game.
+  const speaking = canSpeak && (voiceOn || autoOn) && !muted;
+  const onVoiceFail = () => {
+    if (voiceNoted.current) return;
+    voiceNoted.current = true;
+    setVoiceNote(true);
+  };
+  const say = (n: number, rhyme: Rhyme | null) => {
+    if (speaking) speakCall(n, rhyme, onVoiceFail);
+  };
+  useEffect(() => {
+    if (!voiceNote) return;
+    const t = setTimeout(() => setVoiceNote(false), VOICE_NOTE_MS);
+    return () => clearTimeout(t);
+  }, [voiceNote]);
+  useEffect(() => () => hush(), []);
+
+  // TAM-120: going to the background pauses auto-call; "Paused: tap to resume" shows on return.
+  useEffect(() => {
+    if (!autoOn) return;
+    const onVisibility = () => {
+      if (document.visibilityState === 'hidden') setAutoPaused(true);
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+    return () => document.removeEventListener('visibilitychange', onVisibility);
+  }, [autoOn]);
+
+  // TAM-120, TAM-186: while running, the next number comes after the chosen time, counted from the last call
+  // or from resuming. A new time applies from the next call.
+  const calledNow = view.called.length;
+  const autoCanCall = tambolaRules.legalMoves(match.state, HOST).some((m) => m.type === 'call');
+  const autoRunning = autoOn && !autoPaused && !over && autoCanCall;
+  useEffect(() => {
+    if (!autoRunning) return;
+    const t = setTimeout(() => autoCallRef.current(), autoSecsRef.current * 1000);
+    return () => clearTimeout(t);
+  }, [autoRunning, calledNow, autoRetry]);
 
   useEffect(() => {
     if (!showResumed) return;
@@ -201,13 +282,13 @@ export function Play({
   }
 
   const nameOf = (id: string) => view.players.find((p) => p.id === id)?.name ?? id;
-  const canCall = tambolaRules.legalMoves(match.state, HOST).some((m) => m.type === 'call');
-  const onNext = () => {
+  const canCall = autoCanCall;
+  const callNext = (auto: boolean): boolean => {
     // TAM-101: a second tap within half a second draws nothing. This compares times rather than
-    // trusting a flag, so a late timer can never leave the button stuck.
-    if (sinceLastCall(lastCallAt.current) < NEXT_COOLDOWN_MS || !canCall) return;
+    // trusting a flag, so a late timer can never leave the button stuck. Auto-call is never a double tap.
+    if ((!auto && sinceLastCall(lastCallAt.current) < NEXT_COOLDOWN_MS) || !canCall) return false;
     const r = move({ type: 'call' });
-    if (!r.ok) return;
+    if (!r.ok) return false;
     lastCallAt.current = performance.now();
     const rec = r.value.records[r.value.records.length - 1];
     setToastSeq(rec ? rec.seq : null);
@@ -215,6 +296,17 @@ export function Play({
     setResultSeq(null);
     setShowResumed(false);
     feel();
+    const current = tambolaRules.view(r.value.state, { kind: 'host' }).current;
+    if (current) say(current.number, current.rhyme);
+    return true;
+  };
+  const onNext = () => void callNext(false);
+  autoCallRef.current = () => {
+    // If the call could not be made, try again after the same time rather than stopping.
+    if (!callNext(true)) setAutoRetry((n) => n + 1);
+  };
+  const pauseAuto = () => {
+    if (autoOn) setAutoPaused(true);
   };
 
   if (room) {
@@ -222,6 +314,16 @@ export function Play({
   }
 
   if (settingsOpen) {
+    const turn = (which: Shortcut, on: boolean) => {
+      if (on && !warned[which]) return setAsking(which);
+      if (which === 'voice') {
+        setVoiceOn(on);
+        if (on) setMuted(false);
+      } else {
+        setAutoOn(on);
+        setAutoPaused(false);
+      }
+    };
     return (
       <main className="screen">
         <SettingsPanel
@@ -231,10 +333,72 @@ export function Play({
             setDevice(next);
             saveSettings(prefs, next);
           }}
+          dark={dark}
+          onDark={(on) => {
+            setDark(prefs, on);
+            setDarkState(on);
+          }}
+          gameControls={
+            <>
+              <h2 className="section-title">This game</h2>
+              <label className="check-row">
+                <input type="checkbox" checked={voiceOn && canSpeak} disabled={!canSpeak} onChange={(e) => turn('voice', e.target.checked)} />
+                <span>Phone speaks the call</span>
+              </label>
+              {!canSpeak && <p className="note">This phone has no voice, so it can't speak the calls. The anchor calls.</p>}
+              <label className="check-row">
+                <input type="checkbox" checked={autoOn} onChange={(e) => turn('auto', e.target.checked)} />
+                <span>Auto-call</span>
+              </label>
+              {autoOn && (
+                <label className="field">
+                  <span>Time between calls</span>
+                  <select value={String(autoSecs)} onChange={(e) => setAutoSecs(Number(e.target.value))}>
+                    {AUTO_CALL_CHOICES.map((n) => (
+                      <option key={n} value={String(n)}>
+                        {n} seconds
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              )}
+            </>
+          }
           onDone={() => setSettingsOpen(false)}
         >
           <RenamePlayers view={view} rename={(playerId, name) => move({ type: 'rename', playerId, name })} />
         </SettingsPanel>
+        {asking && (
+          <Modal onClose={() => setAsking(null)}>
+            <p className="lead">
+              <strong>{WARNINGS[asking].title}</strong>
+            </p>
+            <p className="note">{WARNINGS[asking].text}</p>
+            <div className="row">
+              <button
+                type="button"
+                className="button"
+                onClick={() => {
+                  const which = asking;
+                  setWarned((w) => ({ ...w, [which]: true }));
+                  setAsking(null);
+                  if (which === 'voice') {
+                    setVoiceOn(true);
+                    setMuted(false);
+                  } else {
+                    setAutoOn(true);
+                    setAutoPaused(false);
+                  }
+                }}
+              >
+                Turn on
+              </button>
+              <button type="button" className="button button-quiet" onClick={() => setAsking(null)}>
+                Cancel
+              </button>
+            </div>
+          </Modal>
+        )}
       </main>
     );
   }
@@ -344,13 +508,45 @@ export function Play({
             {view.current?.rhyme?.text ?? ''}
           </p>
           <div className="rhyme-actions">
-            <button type="button" className="text-button" disabled={!view.current} onClick={() => setFlash((f) => f + 1)}>
+            <button
+              type="button"
+              className="text-button"
+              disabled={!view.current}
+              onClick={() => {
+                setFlash((f) => f + 1);
+                if (view.current) say(view.current.number, view.current.rhyme);
+              }}
+            >
               Repeat
             </button>
             <span aria-hidden="true">·</span>
-            <button type="button" className="text-button" disabled={!view.current} onClick={() => move({ type: 'another-rhyme' })}>
+            <button
+              type="button"
+              className="text-button"
+              disabled={!view.current}
+              onClick={() => {
+                const r = move({ type: 'another-rhyme' });
+                const current = r.ok ? tambolaRules.view(r.value.state, { kind: 'host' }).current : null;
+                if (current) say(current.number, current.rhyme);
+              }}
+            >
               Another rhyme
             </button>
+            {canSpeak && (voiceOn || autoOn) && (
+              <>
+                <span aria-hidden="true">·</span>
+                <button
+                  type="button"
+                  className="text-button"
+                  onClick={() => {
+                    if (!muted) hush();
+                    setMuted(!muted);
+                  }}
+                >
+                  {muted ? 'Unmute voice' : 'Mute voice'}
+                </button>
+              </>
+            )}
           </div>
           <LastCalls numbers={view.lastCalls} />
           <PrizeChips view={view} names={nameOf} onClose={(p) => move({ type: 'close-tier', pattern: p })} />
@@ -370,6 +566,12 @@ export function Play({
               Got it
             </button>
           </div>
+        )}
+
+        {voiceNote && (
+          <p className="voice-note" role="status">
+            The phone's voice isn't working; the anchor calls.
+          </p>
         )}
 
         {result && isRecording(result) && (
@@ -399,7 +601,10 @@ export function Play({
               type="button"
               className="toast-button"
               onClick={() => {
-                if (undoRecord(lastRecord.seq)) setToastSeq(null);
+                if (undoRecord(lastRecord.seq)) {
+                  setToastSeq(null);
+                  pauseAuto();
+                }
               }}
             >
               Undo ({Math.max(1, Math.ceil(toastLeft / 1000))}s)
@@ -411,10 +616,16 @@ export function Play({
             Game resumed
           </p>
         )}
+        {autoOn && (
+          <button type="button" className="button button-quiet auto-call" onClick={() => setAutoPaused(!autoPaused)}>
+            {autoPaused ? 'Paused: tap to resume' : 'Pause auto-call'}
+          </button>
+        )}
         <button
           type="button"
           className="button button-quiet record-win"
           onClick={() => {
+            pauseAuto();
             setResultSeq(null);
             setSheet({ kind: 'record', sheet: { step: 'pattern' } });
           }}
@@ -431,7 +642,17 @@ export function Play({
             ['Settings', () => setSettingsOpen(true)],
             ['Show the room', () => setRoom('menu')],
             ['Board', () => setSheet({ kind: 'board' })],
-            ['Check numbers', () => setSheet({ kind: 'check', text: '' })],
+            [
+              'Check numbers',
+              () => {
+                pauseAuto();
+                setSheet({ kind: 'check', text: '' });
+              },
+            ],
+            // TAM-067: shown unless late joining is off; greyed out once the limit is reached.
+            ...(match.setup.config.settings.lateJoinUntil > 0
+              ? [['Add a late player', () => setSheet({ kind: 'late', name: '', tickets: '1' }), !view.canAddPlayer && view.lateJoiners.every((j) => !j.removable)] as MenuEntry]
+              : []),
             ['End game', () => setDialog({ kind: 'end' })],
             ['Discard game', () => setDialog({ kind: 'discard' })],
           ]}
@@ -501,6 +722,52 @@ export function Play({
         </SheetFrame>
       )}
 
+      {sheet?.kind === 'late' && (
+        <SheetFrame label="Add a late player" onClose={() => setSheet(null)}>
+          <LatePlayer
+            state={sheet}
+            view={view}
+            money={match.setup.config.money}
+            onChange={(next) => setSheet({ kind: 'late', ...next })}
+            onAdd={() => {
+              const tickets = Number(sheet.tickets.trim() || '1');
+              const r = move({ type: 'add-player', player: { id: `late-${freshSeed(4)}`, name: sheet.name, tickets } });
+              if (!r.ok) return setSheet({ ...sheet, error: r.reason });
+              setSheet(null);
+              if (money) setDialog({ kind: 'prizes', tiers: tambolaRules.view(r.value.state, { kind: 'host' }).tiers });
+            }}
+            onRemove={(playerId) => {
+              const r = move({ type: 'remove-player', playerId });
+              if (!r.ok) return setSheet({ ...sheet, error: r.reason });
+              setSheet(null);
+              if (money) setDialog({ kind: 'prizes', tiers: tambolaRules.view(r.value.state, { kind: 'host' }).tiers });
+            }}
+            onClose={() => setSheet(null)}
+          />
+        </SheetFrame>
+      )}
+
+      {dialog?.kind === 'prizes' && (
+        <Modal onClose={() => setDialog(null)}>
+          <div className="stack-tight" data-testid="prize-update">
+            <p className="lead">
+              <strong>New prizes.</strong> The anchor announces them to the room:
+            </p>
+            <ul className="summary-tiers">
+              {dialog.tiers.map((t) => (
+                <li key={t.pattern} data-pattern={t.pattern} data-amount={String(t.amount)}>
+                  {PATTERN_NAMES[t.pattern]}: {rupees(t.amount)}
+                </li>
+              ))}
+            </ul>
+            <p className="note">Pot {rupees(dialog.tiers.reduce((sum, t) => sum + t.amount, 0))}</p>
+          </div>
+          <button type="button" className="button" onClick={() => setDialog(null)}>
+            Done
+          </button>
+        </Modal>
+      )}
+
       {sheet?.kind === 'board' && (
         <SheetFrame label="Board" onClose={() => setSheet(null)}>
           <Board called={view.called} />
@@ -557,12 +824,15 @@ export function Play({
   );
 }
 
+/** A menu item: its words, what it does, and whether it is greyed out. */
+type MenuEntry = [string, () => void, boolean?];
+
 function MenuSheet({
   items,
   onClose,
   setSheet,
 }: {
-  items: [string, () => void][];
+  items: MenuEntry[];
   onClose: () => void;
   setSheet: (s: Sheet | null) => void;
 }) {
@@ -571,12 +841,13 @@ function MenuSheet({
     <div className="menu-backdrop" onClick={(e) => e.target === e.currentTarget && onClose()}>
       <div className="menu" role="dialog" aria-modal="true" aria-label="Menu">
         <div role="menu" aria-label="Game menu" className="menu-list">
-          {items.map(([label, act]) => (
+          {items.map(([label, act, disabled]) => (
             <button
               key={label}
               type="button"
               role="menuitem"
               className="menu-item"
+              disabled={disabled === true}
               onClick={() => {
                 setSheet(null);
                 act();
@@ -591,6 +862,90 @@ function MenuSheet({
         </button>
       </div>
     </div>
+  );
+}
+
+/** TAM-067, TAM-184: add a late joiner, or take one out again before the next number. */
+function LatePlayer({
+  state,
+  view,
+  money,
+  onChange,
+  onAdd,
+  onRemove,
+  onClose,
+}: {
+  state: Extract<Sheet, { kind: 'late' }>;
+  view: TambolaView;
+  money: { contribution: number } | null;
+  onChange: (next: { name: string; tickets: string; error?: string }) => void;
+  onAdd: () => void;
+  onRemove: (playerId: string) => void;
+  onClose: () => void;
+}) {
+  const removable = view.lateJoiners.filter((j) => j.removable);
+  return (
+    <>
+      <h2 className="section-title">Add a late player</h2>
+      {view.canAddPlayer ? (
+        <>
+          <p className="note">
+            {money
+              ? `They pay ${rupees(money.contribution)} per ticket, and the prizes not won yet grow.`
+              : 'They join with a paper ticket, like everyone else.'}
+          </p>
+          <label className="field">
+            <span>Name of late player</span>
+            <input
+              type="text"
+              autoComplete="off"
+              maxLength={30}
+              value={state.name}
+              onChange={(e) => onChange({ name: e.target.value, tickets: state.tickets })}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') onAdd();
+              }}
+            />
+          </label>
+          <label className="field">
+            <span>Tickets</span>
+            <input
+              type="number"
+              inputMode="numeric"
+              min={1}
+              max={3}
+              value={state.tickets}
+              onChange={(e) => onChange({ name: state.name, tickets: e.target.value })}
+            />
+          </label>
+          <button type="button" className="button" disabled={state.name.trim() === ''} onClick={onAdd}>
+            Add
+          </button>
+        </>
+      ) : (
+        <p className="lead">Late joining has closed for this game.</p>
+      )}
+      {state.error && (
+        <p className="error" role="alert">
+          {state.error}
+        </p>
+      )}
+      {removable.length > 0 && (
+        <div className="stack-tight">
+          <p className="note">Added by mistake? Take them out before the next number.</p>
+          <div className="row">
+            {removable.map((j) => (
+              <button key={j.id} type="button" className="button button-quiet" onClick={() => onRemove(j.id)}>
+                Remove {j.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+      <button type="button" className="button button-quiet" onClick={onClose}>
+        Close
+      </button>
+    </>
   );
 }
 

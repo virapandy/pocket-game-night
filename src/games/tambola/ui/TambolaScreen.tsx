@@ -1,19 +1,31 @@
 // Tambola's screens: start, how to play, settings, setup, the game, and a past game (read-only).
-import { useState } from 'react';
-import { startMatch, type Preferences, type SavedGame, type SavedGameStore } from '../../../engine';
+import { useState, type ReactNode } from 'react';
+import {
+  startMatch,
+  type Preferences,
+  type SavedGame,
+  type SavedGameStore,
+  type Session,
+  type SessionPicker,
+} from '../../../engine';
 import { PATTERN_NAMES, tambolaRules, type TambolaConfig } from '../rules';
 import { freshSeed } from './device';
 import { HowToPlay } from './HowToPlay';
 import { Play } from './Play';
 import { loadMatch, newSaved, type TambolaMatch, type TambolaSaved } from './saved';
 import { loadSettings, saveSettings, SettingsPanel } from './Settings';
-import { draftFromConfig, Setup, type SetupDraft, type SetupStep } from './Setup';
+import { clearDraft, draftFromConfig, loadDraft, saveDraft, Setup, type SetupDraft, type SetupStep } from './Setup';
+import { SessionQuestionScreen } from './SessionQuestion';
 import { Summary } from './Summary';
+import { isDark, setDark } from './theme';
 
 export interface OpenRequest {
   readonly id: string;
-  /** Resume it, or open it asking to end or discard (PLT-004, after 12 hours). */
-  readonly action?: 'resume' | 'end' | 'discard';
+  /**
+   * Resume it, or open it asking to end or discard (PLT-004, after 12 hours), or start a new game with a
+   * past game's setup ("Use this setup", PLT-009).
+   */
+  readonly action?: 'resume' | 'end' | 'discard' | 'reuse';
 }
 
 type Route =
@@ -21,13 +33,20 @@ type Route =
   | { name: 'how' }
   | { name: 'settings' }
   | { name: 'setup'; initial?: { draft: SetupDraft; step: SetupStep } }
+  | { name: 'session'; config: TambolaConfig; ask: 'name' | { continue: Session } }
   | { name: 'play'; saved: TambolaSaved; match: TambolaMatch; resumed: boolean; startDialog?: 'end' | 'discard' };
+
+/** The setup of a played game, with any renames and late joiners (TAM-068, PLT-009, PLT-020). */
+function configToReuse(saved: TambolaSaved, match: TambolaMatch | null): TambolaConfig {
+  return match ? { ...saved.setup.config, players: match.state.players, tiers: match.state.tiers } : saved.setup.config;
+}
 
 function openRoute(store: SavedGameStore, open: OpenRequest | undefined): Route {
   if (!open) return { name: 'start' };
   const saved = store.get(open.id) as TambolaSaved | undefined;
   const match = saved && loadMatch(saved);
   if (!saved || !match) return { name: 'start' };
+  if (open.action === 'reuse') return { name: 'setup', initial: { draft: draftFromConfig(configToReuse(saved, match)), step: 'prizes' } };
   let current = saved;
   if (!match.state.result && saved.status !== 'in-progress') {
     current = { ...saved, status: 'in-progress' };
@@ -41,24 +60,34 @@ export function TambolaScreen({
   onExit,
   store,
   prefs,
+  sessions,
   open,
 }: {
   onExit: () => void;
   store: SavedGameStore;
   prefs: Preferences;
+  sessions: SessionPicker;
   open?: OpenRequest;
 }) {
   const [route, setRoute] = useState<Route>(() => openRoute(store, open));
   const [settings, setSettings] = useState(() => loadSettings(prefs));
+  const [dark, setDarkState] = useState(() => isDark(prefs));
 
-  const start = (config: TambolaConfig) => {
+  const begin = (config: TambolaConfig, session: Session) => {
     const now = Date.now();
     const id = freshSeed(8);
     const setup = { gameId: id, seeds: { draw: freshSeed(16) }, config };
     const match = startMatch(tambolaRules, setup, now);
-    const saved = newSaved(id, setup, now);
+    const saved: TambolaSaved = { ...newSaved(id, setup, now), sessionId: session.id };
     store.put(saved);
     setRoute({ name: 'play', saved, match, resumed: false });
+  };
+  /** Prizes confirmed: the setup is no longer "unfinished" (PLT-006); then the session question (PLT-016). */
+  const start = (config: TambolaConfig) => {
+    clearDraft(prefs);
+    const q = sessions.question(Date.now());
+    if (q.kind === 'join') begin(config, q.session);
+    else setRoute({ name: 'session', config, ask: q.kind === 'name' ? 'name' : { continue: q.session } });
   };
 
   switch (route.name) {
@@ -74,6 +103,11 @@ export function TambolaScreen({
               setSettings(next);
               saveSettings(prefs, next);
             }}
+            dark={dark}
+            onDark={(on) => {
+              setDark(prefs, on);
+              setDarkState(on);
+            }}
             onDone={() => setRoute({ name: 'start' })}
           />
         </main>
@@ -84,8 +118,18 @@ export function TambolaScreen({
           prefs={prefs}
           settings={loadSettings(prefs)}
           {...(route.initial ? { initial: route.initial } : {})}
+          onDraft={(draft) => saveDraft(prefs, draft)}
           onStart={start}
           onCancel={() => setRoute({ name: 'start' })}
+        />
+      );
+    case 'session':
+      return (
+        <SessionQuestionScreen
+          ask={route.ask}
+          onStart={(name) => begin(route.config, sessions.create(name, Date.now()))}
+          onContinue={(session) => begin(route.config, session)}
+          onBack={() => setRoute({ name: 'setup', initial: { draft: draftFromConfig(route.config), step: 'prizes' } })}
         />
       );
     case 'play':
@@ -104,8 +148,7 @@ export function TambolaScreen({
             onExit();
           }}
           onPlayAgain={(finished) => {
-            const m = loadMatch(finished);
-            const config = m ? { ...finished.setup.config, players: m.state.players } : finished.setup.config;
+            const config = configToReuse(finished, loadMatch(finished));
             setRoute({ name: 'setup', initial: { draft: draftFromConfig(config), step: 'prizes' } });
           }}
         />
@@ -121,7 +164,15 @@ export function TambolaScreen({
           <section className="centre">
             <h1 className="game-title">Tambola</h1>
             <p className="lead">Housie with paper tickets. This phone draws the numbers with rhymes, keeps the board, records every win and works out the payouts.</p>
-            <button type="button" className="button button-big" onClick={() => setRoute({ name: 'setup' })}>
+            <button
+              type="button"
+              className="button button-big"
+              onClick={() => {
+                // PLT-006: a setup left unconfirmed comes back, ready to change or confirm.
+                const draft = loadDraft(prefs);
+                setRoute(draft ? { name: 'setup', initial: { draft, step: 'mode' } } : { name: 'setup' });
+              }}
+            >
               New game
             </button>
             <button type="button" className="button button-quiet" onClick={() => setRoute({ name: 'how' })}>
@@ -137,7 +188,7 @@ export function TambolaScreen({
 }
 
 /** A past game in History: the summary plus every call and claim, read-only (PLT-008, TAM-143). */
-export function TambolaPastGame({ saved, onBack }: { saved: SavedGame; onBack: () => void }) {
+export function TambolaPastGame({ saved, onBack, actions }: { saved: SavedGame; onBack: () => void; actions?: ReactNode }) {
   const match = loadMatch(saved);
   const view = match && tambolaRules.view(match.state, { kind: 'host' });
   const name = (id: string) => view?.players.find((p) => p.id === id)?.name ?? id;
@@ -152,6 +203,7 @@ export function TambolaPastGame({ saved, onBack }: { saved: SavedGame; onBack: (
       <p className="note">
         {new Date(saved.createdAt).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}
       </p>
+      {actions}
       {!view ? (
         <p className="lead">This game could not be opened.</p>
       ) : (

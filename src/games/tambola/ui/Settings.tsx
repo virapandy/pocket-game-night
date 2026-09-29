@@ -14,6 +14,7 @@ export function loadSettings(prefs: Preferences): TambolaSettings {
     ...(saved.bogey === 'carry-on' || saved.bogey === 'out' ? { bogey: saved.bogey } : {}),
     ...(typeof saved.vibrate === 'boolean' ? { vibrate: saved.vibrate } : {}),
     ...(typeof saved.sound === 'boolean' ? { sound: saved.sound } : {}),
+    ...(Number.isInteger(saved.lateJoinUntil) && saved.lateJoinUntil! >= 0 && saved.lateJoinUntil! <= 90 ? { lateJoinUntil: saved.lateJoinUntil! } : {}),
     rhymes: {
       language: saved.rhymes?.language === 'hi' || saved.rhymes?.language === 'both' ? saved.rhymes.language : tambolaDefaults.rhymes.language,
       familyFriendly: typeof saved.rhymes?.familyFriendly === 'boolean' ? saved.rhymes.familyFriendly : tambolaDefaults.rhymes.familyFriendly,
@@ -22,26 +23,39 @@ export function loadSettings(prefs: Preferences): TambolaSettings {
 }
 
 export function saveSettings(prefs: Preferences, settings: TambolaSettings) {
-  prefs.set(KEY, settings);
+  // Voice and auto-call are chosen in each game and start off in every new one (TAM-060, TAM-120, TAM-180).
+  prefs.set(KEY, { ...settings, speakCalls: false, autoCall: 'off' });
 }
+
+/** Choices for late joining (TAM-067): until how many numbers are called; 0 turns it off. */
+const LATE_JOIN_CHOICES = [0, 5, 10, 15, 20, 30];
 
 export function SettingsPanel({
   settings,
   onChange,
   inGame,
   children,
+  gameControls,
+  dark,
+  onDark,
   onDone,
 }: {
   settings: TambolaSettings;
   onChange: (next: TambolaSettings) => void;
   inGame: boolean;
   children?: ReactNode;
+  /** In a game: the voice and auto-call switches, for this game only (TAM-180, TAM-120). */
+  gameControls?: ReactNode;
+  dark: boolean;
+  onDark: (on: boolean) => void;
   onDone: () => void;
 }) {
   const set = (patch: Partial<TambolaSettings>) => onChange({ ...settings, ...patch });
   return (
     <section className="stack" aria-labelledby="settings-title">
       <h1 id="settings-title" className="step-title">Settings</h1>
+
+      {gameControls}
 
       <h2 className="section-title">This phone</h2>
       <label className="check-row">
@@ -51,6 +65,10 @@ export function SettingsPanel({
       <label className="check-row">
         <input type="checkbox" checked={settings.sound} onChange={(e) => set({ sound: e.target.checked })} />
         <span>Sound</span>
+      </label>
+      <label className="check-row">
+        <input type="checkbox" role="switch" checked={dark} onChange={(e) => onDark(e.target.checked)} />
+        <span>Dark mode</span>
       </label>
 
       {children}
@@ -79,10 +97,23 @@ export function SettingsPanel({
           <strong>Tickets per player:</strong> {settings.ticketsPerPlayer} each, up to {settings.maxTicketsPerPlayer}.
         </li>
         <li>
-          <strong>Late joining:</strong> new players can join until {settings.lateJoinUntil} numbers are called (coming in a later version).
+          <label className="field">
+            <span>Late joining</span>
+            <select
+              value={String(LATE_JOIN_CHOICES.includes(settings.lateJoinUntil) ? settings.lateJoinUntil : 10)}
+              onChange={(e) => set({ lateJoinUntil: Number(e.target.value) })}
+            >
+              {LATE_JOIN_CHOICES.map((n) => (
+                <option key={n} value={String(n)}>
+                  {n === 0 ? 'Off: no late players' : `Until ${n} numbers are called`}
+                </option>
+              ))}
+            </select>
+          </label>
         </li>
         <li>
-          <strong>Auto-call:</strong> off. The anchor calls each number aloud.
+          <strong>Calling:</strong> the anchor calls each number aloud. The phone's voice and auto-call can be turned on
+          in a game's Settings.
         </li>
       </ul>
 

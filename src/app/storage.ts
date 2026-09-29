@@ -1,9 +1,21 @@
 // Browser storage for games and preferences: everything stays on this phone (PLT-012, PLT-013).
 // Every change is written at once (PLT-003). A damaged entry is skipped, so it never stops the app opening.
-import { readSavedGame, type Preferences, type SavedGame, type SavedGameStore } from '../engine';
+import {
+  readSavedGame,
+  readSession,
+  sessionQuestion,
+  SESSION_FORMAT,
+  type Preferences,
+  type SavedGame,
+  type SavedGameStore,
+  type Session,
+  type SessionPicker,
+  type SessionStore,
+} from '../engine';
 
 const GAME_PREFIX = 'pgn.game.';
 const PREF_PREFIX = 'pgn.pref.';
+const SESSION_PREFIX = 'pgn.session.';
 
 function storage(): Storage | null {
   try {
@@ -83,5 +95,60 @@ export const preferences: Preferences = {
     } catch {
       // Storage full or blocked: preferences are a convenience only.
     }
+  },
+};
+
+export const sessionStore: SessionStore = {
+  list() {
+    const s = storage();
+    if (!s) return [];
+    const out: Session[] = [];
+    for (let i = 0; i < s.length; i++) {
+      const key = s.key(i);
+      if (!key?.startsWith(SESSION_PREFIX)) continue;
+      try {
+        const read = readSession(JSON.parse(s.getItem(key) ?? 'null'));
+        if (read) out.push(read);
+      } catch {
+        // A damaged entry: skip it.
+      }
+    }
+    return out;
+  },
+  get(id) {
+    try {
+      return readSession(JSON.parse(storage()?.getItem(SESSION_PREFIX + id) ?? 'null')) ?? undefined;
+    } catch {
+      return undefined;
+    }
+  },
+  put(session) {
+    try {
+      storage()?.setItem(SESSION_PREFIX + session.id, JSON.stringify(session));
+    } catch (e) {
+      console.warn('Could not save the session', e);
+    }
+  },
+  remove(id) {
+    storage()?.removeItem(SESSION_PREFIX + id);
+  },
+};
+
+/** A fresh id from the phone's secure random source. */
+export function freshId(bytes = 8): string {
+  const a = new Uint8Array(bytes);
+  crypto.getRandomValues(a);
+  return Array.from(a, (b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+/** What a game's screens use to put a new game in a session (PLT-016). */
+export const sessionPicker: SessionPicker = {
+  question(now) {
+    return sessionQuestion(sessionStore.list(), gameStore.list(), now);
+  },
+  create(name, now) {
+    const session: Session = { format: SESSION_FORMAT, id: freshId(), name: name.trim(), createdAt: now, settlements: [] };
+    sessionStore.put(session);
+    return session;
   },
 };

@@ -42,6 +42,34 @@ export const emptyDraft: SetupDraft = {
 };
 
 const NAMES_KEY = 'names.recent';
+const DRAFT_KEY = 'tambola.setup-draft';
+
+/** PLT-006: the setup being made, kept on this phone until the prizes are confirmed. */
+export function saveDraft(prefs: Preferences, draft: SetupDraft) {
+  prefs.set(DRAFT_KEY, draft);
+}
+
+export function clearDraft(prefs: Preferences) {
+  prefs.set(DRAFT_KEY, null);
+}
+
+/** The setup left unconfirmed last time, or null. */
+export function loadDraft(prefs: Preferences): SetupDraft | null {
+  const d = prefs.get<Partial<SetupDraft> | null>(DRAFT_KEY, null);
+  if (!d || typeof d !== 'object') return null;
+  const strings = (x: unknown) => (Array.isArray(x) ? x.map((v) => (typeof v === 'string' ? v : '')) : []);
+  const numbers = (x: unknown) => (Array.isArray(x) ? x.map((v) => (Number.isInteger(v) ? (v as number) : 1)) : []);
+  return {
+    count: typeof d.count === 'string' ? d.count : emptyDraft.count,
+    names: strings(d.names),
+    tickets: numbers(d.tickets),
+    contribution: typeof d.contribution === 'string' ? d.contribution : emptyDraft.contribution,
+    noMoney: d.noMoney === true,
+    patterns: Array.isArray(d.patterns) ? PATTERNS.filter((p) => d.patterns!.includes(p)) : null,
+    fixed: d.fixed && typeof d.fixed === 'object' ? d.fixed : {},
+    labels: d.labels && typeof d.labels === 'object' ? d.labels : {},
+  };
+}
 const MAX_PLAYERS = 30;
 
 function playerCount(d: SetupDraft): number {
@@ -125,12 +153,15 @@ export function Setup({
   prefs,
   settings,
   initial,
+  onDraft,
   onStart,
   onCancel,
 }: {
   prefs: Preferences;
   settings: TambolaSettings;
   initial?: { draft: SetupDraft; step: SetupStep };
+  /** Told of every change, so an unfinished setup can be remembered (PLT-006). */
+  onDraft?: (draft: SetupDraft) => void;
   onStart: (config: TambolaConfig) => void;
   onCancel: () => void;
 }) {
@@ -139,7 +170,11 @@ export function Setup({
   const [error, setError] = useState<string | null>(null);
   const [recent] = useState<string[]>(() => prefs.get<string[]>(NAMES_KEY, []).filter((n) => typeof n === 'string'));
   const update = (patch: Partial<SetupDraft>) => {
-    setDraft((d) => ({ ...d, ...patch }));
+    setDraft((d) => {
+      const next = { ...d, ...patch };
+      onDraft?.(next);
+      return next;
+    });
     setError(null);
   };
   const go = (next: SetupStep) => {
