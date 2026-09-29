@@ -42,6 +42,17 @@ async function pageScrolls(page: Page): Promise<boolean> {
 }
 
 test.describe('TAM-181: the main button stays at the bottom on every setup step', () => {
+  test('ticket-mode step (owner decision 2026-09-29): no separate "Next"; tapping "Paper tickets" moves on at once', async ({ page }) => {
+    await openTambola(page);
+    await page.getByRole('button', { name: 'New game' }).click();
+    await expect(page.getByRole('button', { name: 'Paper tickets' })).toBeVisible();
+    await expect(nextButton(page)).toHaveCount(0);
+    await page.getByRole('button', { name: 'Paper tickets' }).click();
+    // One tap, and the players step is there: nothing else to confirm.
+    await expect(page.getByLabel('Number of players')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Paper tickets' })).toHaveCount(0);
+  });
+
   test('players step: "Next" is fixed at the bottom for 6, 12 and 20 players, and never hides the last name box', async ({ page }) => {
     await toPlayers(page);
     let first: { x: number; y: number } | null = null;

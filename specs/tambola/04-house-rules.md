@@ -41,7 +41,7 @@ Because the next number waits until the host closes a won tier (TAM-145), "befor
 means "before the host closes the tier".
 
 ## TAM-043: Late claims
-Status: approved, owner, 2026-09-28 (decided by convention, as the owner asked: B, a late claim is a bogey)
+Status: approved, owner, 2026-09-28 (decided by convention, as the owner asked: B, a late claim is a bogey). Reworded 2026-09-29 on the owner's decision (docs/decisions.md): the app's record of which number completed a pattern is for phone tickets only
 Phase: Phase 1a
 A player's pattern was complete after number 45 was called, but they only claimed after 12 was called next.
 Options:
@@ -50,7 +50,9 @@ Options:
 Scenario once chosen:
 When the host checks the late claim
 Then it is accepted (A) or treated as a bogey with the reason "too late" (B)
-(For B, the app records which number completed each ticket's pattern, so "late" is exact.)
+(For B, with phone tickets (Phase 2) the app records which number completed each ticket's pattern, so "late" is
+exact, TAM-038. With paper tickets the anchor judges whether a claim is late, and the host records the result,
+a win or a bogey (TAM-037); the app does not judge lateness.)
 
 ## TAM-044: What happens after a bogey?
 Status: approved, owner, 2026-09-28 (decided by convention, as the owner asked: B, the ticket is out of the game. The host can switch to "carry on" in settings for gentle family games. The ticket's contribution stays in the pot.)

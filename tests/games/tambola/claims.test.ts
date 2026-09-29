@@ -216,6 +216,19 @@ describe('TAM-043 and TAM-044 with paper tickets: the anchor rules, the host rec
     expect(g.lastClaim.verdict).toBe('accepted');
   });
 
+  it('owner decision 2026-09-29: with paper tickets the app does not judge lateness; a win the anchor accepts is recorded, however many numbers later', () => {
+    const g = new Game().call(5);
+    g.call(12); // the anchor, not the app, decides whether the claim came in time
+    expect(g.win('top-line', 'p1').ok).toBe(true);
+    expect(g.lastClaim.verdict).toBe('accepted');
+    expect(g.lastClaim.reason).toBeUndefined();
+    // Even a win recorded many numbers later is accepted: lateness is the anchor's call, not the app's.
+    g.close('top-line').call(20);
+    expect(g.win('bottom-line', 'p2').ok).toBe(true);
+    expect(g.lastClaim.verdict).toBe('accepted');
+    expect(g.lastClaim.reason).toBeUndefined();
+  });
+
   it('with "carry on", a bogey changes nothing but the record', () => {
     const g = new Game({ settings: { bogey: 'carry-on' } }).call(10);
     g.bogey('p2', 'top-line');

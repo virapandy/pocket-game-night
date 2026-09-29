@@ -111,10 +111,12 @@ And if the phone has no voice at all, the option is greyed out with a one-line r
 From `docs/games/tambola/ux-calling-screen.md`, setup problems 9 to 11 (problem 12 is TAM-082). New drafts.
 
 ## TAM-181: The main button stays at the bottom on every setup step
-Status: approved, owner, 2026-09-28 (scenario review outcome: product owner verdict, owner sign-off for Phase 1a.1); was draft (new, tester, 2026-09-28, from the redesign)
+Status: approved, owner, 2026-09-28 (scenario review outcome: product owner verdict, owner sign-off for Phase 1a.1); was draft (new, tester, 2026-09-28, from the redesign). Ticket-mode step decided 2026-09-29 (docs/decisions.md): tapping "Paper tickets" moves on at once, with no separate "Next"
 Phase: Phase 1a
 Given a 390 × 844 screen
-On every setup step (ticket mode, players, contribution, prizes, confirm)
+On the ticket-mode step, a one-choice step
+Then there is no separate "Next": tapping "Paper tickets" moves on to the players step at once
+On every other setup step (players, contribution, prizes, confirm)
 Then the step's main button ("Next", or "Confirm prizes" on the last step) is fixed at the bottom of the screen
 And it stays visible without scrolling, however many players or tiers there are (for example 6, 12 or 20 players)
 And nothing on the step is hidden behind it: the last player's name box can still be scrolled into view above it

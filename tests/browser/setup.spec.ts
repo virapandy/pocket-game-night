@@ -1,6 +1,6 @@
 // Setting up a game: TAM-137, PLT-024, TAM-063, TAM-080, TAM-081, TAM-084, TAM-090, TAM-060.
 import { expect, test } from '@playwright/test';
-import { expectNoPaymentUi, fillPlayers, nextNumber, openTambola, setUpPaperGame } from './helpers';
+import { confirmPrizes, expectNoPaymentUi, fillPlayers, nextNumber, openTambola, setUpPaperGame } from './helpers';
 
 test('TAM-137: the first choice is Paper tickets or Phone tickets', async ({ page }) => {
   await openTambola(page);
@@ -90,7 +90,8 @@ test('TAM-084: the anchor can change a tier; the total still equals the pot', as
   expect(Number(amounts[1].replace(/[^\d]/g, ''))).toBe(80);
   const total = amounts.map((t) => Number(t.replace(/[^\d]/g, ''))).reduce((a, b) => a + b, 0);
   expect(total).toBe(500);
-  await page.getByRole('button', { name: 'Confirm prizes' }).click();
+  // Confirm prizes; the first game of a gathering also asks for a session name (PLT-016, Phase 1b).
+  await confirmPrizes(page);
   await expect(nextNumber(page)).toBeVisible();
 });
 

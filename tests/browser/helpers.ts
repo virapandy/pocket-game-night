@@ -7,6 +7,7 @@ export const HOME = './';
 export interface SetupOptions {
   players?: string[]; // names; '' leaves a name blank
   contribution?: number | 'none';
+  session?: { name?: string; newSession?: boolean }; // how to answer the session question (PLT-016)
 }
 
 export async function openTambola(page: Page) {
@@ -28,8 +29,42 @@ export async function setUpPaperGame(page: Page, opts: SetupOptions = {}) {
     await page.getByLabel('Contribution per ticket').fill(String(opts.contribution ?? 50));
   }
   await page.getByRole('button', { name: 'Next' }).click();
+  await confirmPrizes(page, opts.session);
+}
+
+/**
+ * Taps "Confirm prizes", then answers the session question if the app asks it (PLT-016, Phase 1b): the first
+ * game of a gathering asks for a session name; a game more than 3 hours after the session's last game asks
+ * "Continue '<name>' or start a new session?". By default the helper keeps the suggested name, or continues.
+ */
+export async function confirmPrizes(page: Page, session?: SessionAnswer) {
   await page.getByRole('button', { name: 'Confirm prizes' }).click();
+  await answerSession(page, session);
   await expect(nextNumber(page)).toBeVisible();
+}
+
+/** How a test answers the session question: keep the suggestion / continue (default), a name, or a new session. */
+export type SessionAnswer = { name?: string; newSession?: boolean };
+
+export const sessionNameField = (page: Page) => page.getByLabel('Session name', { exact: true });
+export const continueOrNew = (page: Page) => page.getByText(/Continue .+ or start a new session\?/).first();
+
+/** Answers the session question if one is showing (or appears together with the game screen). */
+export async function answerSession(page: Page, answer: SessionAnswer = {}) {
+  await expect(nextNumber(page).or(sessionNameField(page)).or(continueOrNew(page)).first()).toBeVisible();
+  // The question may show over the game screen: give it a moment to appear.
+  await sessionNameField(page).or(continueOrNew(page)).first().waitFor({ state: 'visible', timeout: 500 }).catch(() => {});
+  if (await continueOrNew(page).isVisible()) {
+    if (answer.newSession || answer.name) {
+      await page.getByRole('button', { name: 'New session', exact: true }).click();
+    } else {
+      await page.getByRole('button', { name: /^Continue / }).click();
+    }
+  }
+  if (await sessionNameField(page).isVisible()) {
+    if (answer.name) await sessionNameField(page).fill(answer.name);
+    await page.getByRole('button', { name: 'Start', exact: true }).click();
+  }
 }
 
 /** The shared players step (PLT-024): number of players, then a name box per player. */
@@ -156,4 +191,140 @@ export async function endGame(page: Page) {
 export async function expectNoPaymentUi(page: Page) {
   await expect(page.getByText(/\b(pay now|upi:\/\/|wallet|send money|payment link)\b/i)).toHaveCount(0);
   await expect(page.locator('a[href^="upi:"]')).toHaveCount(0);
+}
+
+// ---- Phase 1b ----
+
+/** "N of 90 called" from the top bar: how many numbers have been called. */
+export async function calledCount(page: Page): Promise<number> {
+  const text = (await page.getByTestId('top-bar').textContent()) ?? '';
+  const m = text.match(/(\d+) of 90 called/);
+  return m ? Number(m[1]) : 0;
+}
+
+/** A setting's on/off control: a checkbox or a switch with this name. */
+export const toggle = (page: Page, name: string) =>
+  page.getByRole('checkbox', { name, exact: true }).or(page.getByRole('switch', { name, exact: true })).first();
+
+/** Turns a switch on in the game's Settings (menu → Settings); confirms a one-time warning if one shows. */
+export async function turnOnInGame(page: Page, name: string, { confirmWarning = true } = {}) {
+  await fromMenu(page, 'Settings');
+  await toggle(page, name).click();
+  const warning = page.getByRole('dialog').filter({ has: page.getByRole('button', { name: 'Turn on', exact: true }) });
+  if (confirmWarning && (await warning.isVisible().catch(() => false))) {
+    await warning.getByRole('button', { name: 'Turn on', exact: true }).click();
+  }
+}
+
+/** Records a win for every tier in play for one player, closes each, then ends the game (TAM-037, TAM-145). */
+export async function winEverythingAndEnd(page: Page, player: string, tiers: string[]) {
+  if ((await calledCount(page)) === 0) await call(page);
+  for (const tier of tiers) {
+    await recordWin(page, tier, [player]);
+    await page.getByRole('button', { name: `Close ${tier}`, exact: true }).click();
+  }
+  const endNow = page.getByRole('button', { name: 'End game and show payouts' });
+  if (await endNow.isVisible()) await endNow.click();
+  else await endGame(page);
+  await expect(page.getByTestId('payout-summary')).toBeVisible();
+}
+
+/** The tiers suggested for 2 to 5 tickets (TAM-081). */
+export const THREE_TIERS = ['Early Five', 'Top Line', 'Full House'];
+
+/** Home → Sessions (PLT-022). */
+export async function openSessions(page: Page) {
+  await page.goto(HOME);
+  await page.getByRole('button', { name: 'Sessions', exact: true }).click();
+}
+
+/** Home → Sessions → the session with this name. */
+export async function openSession(page: Page, name: string | RegExp) {
+  await openSessions(page);
+  await page.getByTestId('session').filter({ hasText: name }).first().click();
+}
+
+/** The people in the tally on screen: name, paid, got back, net (from the row's data attributes). */
+export async function tallyPeople(page: Page, scope = 'tally') {
+  const rows = page.getByTestId(scope).getByTestId('tally-person');
+  const n = await rows.count();
+  const out: { name: string; paid: number; gotBack: number; net: number }[] = [];
+  for (let i = 0; i < n; i++) {
+    const r = rows.nth(i);
+    out.push({
+      name: (await r.getAttribute('data-name')) ?? '',
+      paid: Number(await r.getAttribute('data-paid')),
+      gotBack: Number(await r.getAttribute('data-got-back')),
+      net: Number(await r.getAttribute('data-net')),
+    });
+  }
+  return out;
+}
+
+/** Home → History. */
+export async function openHistory(page: Page) {
+  await page.goto(HOME);
+  await page.getByRole('button', { name: 'History' }).click();
+}
+
+/**
+ * Stands in for the phone's voice (speechSynthesis), before the page loads. `voices: null` means the phone has
+ * no voice at all. With `fail`, every utterance ends in an error, as a broken voice does. What the app asked
+ * to be said is in `window.__spoken`: { text, lang, voice, voiceLang }.
+ */
+export async function fakeVoices(page: Page, voices: { name: string; lang: string }[] | null, fail = false) {
+  await page.addInitScript(
+    ({ voices, fail }) => {
+      const w = window as any;
+      w.__spoken = [];
+      if (voices === null) {
+        Object.defineProperty(w, 'speechSynthesis', { configurable: true, value: undefined });
+        return;
+      }
+      class Utterance {
+        text: string; lang = ''; voice: any = null; rate = 1; pitch = 1; volume = 1;
+        onstart: any = null; onend: any = null; onerror: any = null;
+        private l: Record<string, ((e: any) => void)[]> = {};
+        constructor(text = '') { this.text = text; }
+        addEventListener(t: string, f: (e: any) => void) { (this.l[t] ??= []).push(f); }
+        removeEventListener(t: string, f: (e: any) => void) { this.l[t] = (this.l[t] ?? []).filter((x) => x !== f); }
+        fire(type: string, extra: Record<string, unknown> = {}) {
+          const e = Object.assign(new Event(type), { utterance: this, charIndex: 0, elapsedTime: 0 }, extra);
+          (this as any)['on' + type]?.(e);
+          (this.l[type] ?? []).forEach((f) => f(e));
+        }
+      }
+      const list = voices.map((v) => ({ name: v.name, lang: v.lang, default: false, localService: true, voiceURI: v.name }));
+      const synth = {
+        speaking: false, pending: false, paused: false, onvoiceschanged: null,
+        getVoices: () => list,
+        speak(u: any) {
+          w.__spoken.push({ text: u.text, lang: u.lang ?? '', voice: u.voice?.name ?? null, voiceLang: u.voice?.lang ?? null });
+          setTimeout(() => (fail ? u.fire?.('error', { error: 'synthesis-failed' }) : (u.fire?.('start'), u.fire?.('end'))), 20);
+        },
+        cancel() {}, pause() {}, resume() {}, addEventListener() {}, removeEventListener() {}, dispatchEvent() { return true; },
+      };
+      Object.defineProperty(w, 'speechSynthesis', { configurable: true, value: synth });
+      Object.defineProperty(w, 'SpeechSynthesisUtterance', { configurable: true, writable: true, value: Utterance });
+    },
+    { voices, fail },
+  );
+}
+
+/** What the app has asked the phone to say so far. */
+export const spoken = (page: Page): Promise<{ text: string; lang: string; voice: string | null; voiceLang: string | null }[]> =>
+  page.evaluate(() => (window as any).__spoken ?? []);
+
+/** Pretends the app went to the background and came back (visibilitychange). */
+export async function backgroundAndReturn(page: Page) {
+  await page.evaluate(() => {
+    Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => 'hidden' });
+    Object.defineProperty(document, 'hidden', { configurable: true, get: () => true });
+    document.dispatchEvent(new Event('visibilitychange'));
+    window.dispatchEvent(new Event('pagehide'));
+    Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => 'visible' });
+    Object.defineProperty(document, 'hidden', { configurable: true, get: () => false });
+    document.dispatchEvent(new Event('visibilitychange'));
+    window.dispatchEvent(new Event('pageshow'));
+  });
 }

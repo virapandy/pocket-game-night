@@ -1,4 +1,4 @@
-# What the Tambola tests expect (Phase 1a, with the 1a.1 feedback fixes)
+# What the Tambola tests expect (Phase 1a with the 1a.1 fixes, and Phase 1b)
 
 For the Build workspace. The tests are the definition of done; this page lists the names and shapes
 they import, so you don't have to reverse-engineer them. If something here is wrong or impossible,
@@ -59,13 +59,16 @@ tickets, or if the tier amounts don't add up to the pot (tickets × contribution
 | `{ type: 'rename', playerId, name }` | Rename a player during the game; a duplicate name is refused (PLT-024) |
 | `{ type: 'end' }` | End the game now (TAM-066) |
 | `{ type: 'discard' }` | Discard the game: void, contributions handed back (TAM-140) |
+| `{ type: 'add-player', player: { id, name, tickets } }` | Phase 1b, TAM-067: a late joiner with 1 to 3 tickets. A *detail move*. See "Late joiners" below |
+| `{ type: 'remove-player', playerId }` | Phase 1b, TAM-184: take out a late joiner added by mistake. A *detail move* |
 
 `legalMoves(state, HOST)`, until the game is over:
 - while a won tier is waiting to be closed: one `close-tier` per such tier, `end`, `discard` (no `call`: the next
   number waits, TAM-145);
 - once the last Full House tier is closed: only `end` and `discard` (no more calls, TAM-075);
 - otherwise: `call` (while fewer than 90 are called), `end`, `discard`.
-After the game is over: nothing. `detailMoves` includes `'record-win'`, `'record-bogey'` and `'rename'`.
+After the game is over: nothing. `detailMoves` includes `'record-win'`, `'record-bogey'`, `'rename'`,
+`'add-player'` and `'remove-player'`.
 `call` is refused (`ok: false`) while a won tier waits to be closed, and after the last Full House tier is closed.
 
 `apply` returns `ok: false` (nothing changes) for: a pattern not in this game (TAM-031); a pattern
@@ -146,6 +149,31 @@ a bogey still gets its share (TAM-093). Discard (TAM-140) and "nobody won anythi
 contribution. Prizes paid out plus money handed back always equal the pot. The room and player views must never hold the draw seed or any number
 not yet called (TAM-052).
 
+## Late joiners (Phase 1b: TAM-067, TAM-184, TAM-093)
+Tested in `late-joiners.test.ts`, through the two moves above.
+- `add-player` is accepted while fewer than `settings.lateJoinUntil` numbers have been called (10 by default;
+  at 10 it is refused with a reason). With `lateJoinUntil: 0` it is always refused. Also refused, with nothing
+  changed: a name already in the game (PLT-024), 0 or more than 3 tickets (TAM-045), an id already used, and
+  anything after the game is over.
+- The numbers already called stay called; nothing about the draw changes. The joiner can be named in
+  `record-win` like anyone else.
+- Money game: the pot grows by `tickets × contribution`, and that money is split across the tiers **not yet
+  won** (a tier with a recorded winner keeps its amount, even before it is closed), rounded as in TAM-092:
+  every tier except Full House grows by a whole multiple of the ₹10 unit (the tests check this for ₹50 added
+  to the suggested tiers for 6 tickets); Full House takes the rest and stays the largest, so the tiers in
+  `view.tiers` always add up to the new pot exactly. The new amounts are in `view.tiers` for the host screen.
+  "No money" game: the player is added and the tiers do not change.
+- `remove-player` works only for a late joiner, and only if no number has been called since they joined.
+  It puts every tier amount back exactly as it was before they joined; adding them again gives the same
+  amounts as the first time. After a later call it is refused, and nothing changes.
+- A late joiner is in `summary.payouts` (after the players listed at setup, in the order they joined), pays
+  `tickets × contribution`, and their tickets count like every other ticket in money handed back (TAM-093),
+  extra rupees still going in player order. `summary.money` balances (`moneyProblems` is empty).
+- A game with late joiners replays exactly (TAM-073).
+- Paper tickets: a pattern already complete when someone joins "cannot be claimed" (TAM-067); with paper
+  tickets that is the anchor's call, like any late claim (TAM-043), so the app records whatever win the anchor
+  accepts. The app's own check waits for phone tickets (Phase 2).
+
 ## Prizes
 ```ts
 planPrizes({
@@ -176,5 +204,7 @@ were taken out of the paper-ticket suite. They come back as phone-ticket tests o
   stays a bogey after that number is called, and replays the same.
 - **TAM-038** (a late claim shows "Top Line was complete at 45"): checked `reason: 'late'` and `completedAt`,
   the number that completed the pattern.
-The late-claim part of **TAM-043** follows TAM-038: with paper tickets the anchor judges lateness and the host
-records a bogey (claims.test.ts).
+**TAM-043** (reworded on the owner's decision of 29 September 2026): the app's record of which number
+completed a pattern is for phone tickets only (TAM-038, Phase 2). With paper tickets the anchor judges whether
+a claim is late; the host records a win or a bogey, and a win the anchor accepts is recorded however many
+numbers later it comes, with no `reason` (claims.test.ts).

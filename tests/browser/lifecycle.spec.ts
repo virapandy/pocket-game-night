@@ -2,7 +2,7 @@
 // PLT-002, PLT-003, PLT-004, PLT-005, PLT-007, PLT-008, PLT-012, PLT-013. End game and Discard are in the menu (TAM-124).
 import { expect, test } from '@playwright/test';
 import {
-  call, callMany, calledNumbers, currentNumber, endGame, fromMenu, HOME, menuButton, menuItem, nextNumber, openTambola, recordWin,
+  call, callMany, calledNumbers, confirmPrizes, currentNumber, endGame, fromMenu, HOME, menuButton, menuItem, nextNumber, openTambola, recordWin,
   setUpPaperGame,
 } from './helpers';
 
@@ -65,7 +65,7 @@ test('TAM-068: Play again keeps the players and prizes, and the anchor confirms 
   await endGame(page);
   await page.getByRole('button', { name: 'Play again' }).click();
   await expect(page.getByRole('button', { name: 'Confirm prizes' })).toBeVisible();
-  await page.getByRole('button', { name: 'Confirm prizes' }).click();
+  await confirmPrizes(page); // Play again stays in the same session (PLT-016): the helper only answers if asked
   const second = await callMany(page, 3);
   expect(second).not.toEqual(first); // a new draw
   await page.getByRole('button', { name: 'Record a win' }).click();

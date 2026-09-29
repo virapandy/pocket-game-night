@@ -371,8 +371,10 @@ test.describe('TAM-129: landscape, the phone on a stand facing the room', () => 
     }
     expect(await pageScrolls(page)).toBe(false);
     for (const l of [currentNumber(page), currentRhyme(page), nextNumber(page), recordAWin(page)]) expect(await fullyVisible(page, l)).toBe(true);
-    // At least as readable as in portrait.
-    expect(await digitHeight(currentNumber(page))).toBeGreaterThanOrEqual(portraitDigits - 0.5);
+    // At least as readable as in portrait (owner decision 2026-09-29): digits at least 160 CSS px, never smaller than portrait.
+    const landscapeDigits = await digitHeight(currentNumber(page));
+    expect(landscapeDigits).toBeGreaterThanOrEqual(160);
+    expect(landscapeDigits).toBeGreaterThanOrEqual(portraitDigits - 0.5);
     await page.setViewportSize({ width: 390, height: 844 });
     await expect(currentNumber(page)).toHaveText(String(calls[3]));
     const shown = (await lastCalls(page).locator('[data-number]').allTextContents()).map((t) => Number(t.trim()));

@@ -259,11 +259,12 @@ And no permanent line of text takes space on the calling screen
 And when the phone does keep the screen awake, neither the tip nor the icon appears
 
 ## TAM-129: Landscape: the phone on a stand, facing the room
-Status: approved, owner, 2026-09-28 (scenario review outcome: product owner verdict, owner sign-off for Phase 1a.1); was draft (new, tester, 2026-09-28, from the redesign)
+Status: approved, owner, 2026-09-28 (scenario review outcome: product owner verdict, owner sign-off for Phase 1a.1); was draft (new, tester, 2026-09-28, from the redesign). "At least as readable" decided 2026-09-29 (docs/decisions.md)
 Phase: Phase 1a
 Given the host turns the phone to landscape during a game (844 × 390)
 Then the number fills the left half, the rhyme and the last calls sit on the right, and the buttons run along the bottom
-And nothing needs scrolling, and the number is at least as readable as in portrait
+And nothing needs scrolling, and the number is at least as readable as in portrait:
+its digits are at least 160 CSS px tall (TAM-107) and never smaller than in portrait
 And turning back to portrait keeps the game exactly where it was
 
 ## TAM-188: Dark mode keeps the readability rules
