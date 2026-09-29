@@ -191,11 +191,12 @@ to TAM-129 turn the redesign's layout and acceptance list into checks; they are 
 All sizes are checked on a 390 × 844 screen (a typical Android phone) unless a scenario says otherwise.
 
 ## TAM-138: The calling screen needs no scrolling, and the number never goes out of view
-Status: approved, owner, 2026-09-28 (change request)
+Status: approved, owner, 2026-09-29 (reworded on the owner's decision of 2026-09-29, docs/decisions.md: the one-time screen-sleep tip never covers the number); was approved, owner, 2026-09-28 (change request)
 Phase: Phase 1a
 Given a game in progress on a 390 × 844 screen
 Then the calling screen needs no scrolling
 And the called number stays fully visible after calls, claims, undo and closing a tier
+And nothing lies on top of the number, including the one-time screen-sleep tip (TAM-128) while it is shown
 
 ## TAM-123: The number dominates the calling screen
 Status: approved, owner, 2026-09-28 (scenario review outcome: product owner verdict, owner sign-off for Phase 1a.1); was draft (new, tester, 2026-09-28, from the redesign)
@@ -250,10 +251,11 @@ And one tap closes it, and the calling screen is exactly as it was, number fully
 And the board never pushes the number off the screen
 
 ## TAM-128: The screen-sleep hint is a one-time tip, not a permanent line
-Status: approved, owner, 2026-09-28 (scenario review outcome: product owner verdict, owner sign-off for Phase 1a.1); was draft (new, tester, 2026-09-28, from the redesign; refines the hint in TAM-110)
+Status: approved, owner, 2026-09-29 (reworded on the owner's decision of 2026-09-29, docs/decisions.md: the tip never covers the called number); was approved, owner, 2026-09-28 (scenario review outcome: product owner verdict, owner sign-off for Phase 1a.1); was draft (new, tester, 2026-09-28, from the redesign; refines the hint in TAM-110)
 Phase: Phase 1a
 Given the phone refuses to keep the screen awake (TAM-110)
 Then a one-time tip explains it, and can be dismissed
+And while the tip is shown, it never covers the called number (TAM-138)
 And after that, only a small icon with a word ("Screen may sleep", TAM-109) stays in the top bar
 And no permanent line of text takes space on the calling screen
 And when the phone does keep the screen awake, neither the tip nor the icon appears

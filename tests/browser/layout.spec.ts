@@ -432,6 +432,22 @@ test.describe('TAM-128: the screen-sleep hint is a one-time tip, not a permanent
     await expect(topBar(page).getByText('Screen may sleep')).toBeVisible();
   });
 
+  // Owner decision 2026-09-29: the one-time tip never covers the called number (TAM-128, TAM-138).
+  test('TAM-128 and TAM-138: while the one-time tip is shown, it never covers the called number', async ({ page }) => {
+    await page.addInitScript(() => {
+      Object.defineProperty(navigator, 'wakeLock', { configurable: true, value: { request: async () => { throw new Error('NotAllowedError'); } } });
+    });
+    await setUpPaperGame(page);
+    await call(page);
+    await expect(page.getByText(/keep your screen on/i)).toBeVisible();
+    expect(await numberInView(page, 'screen-sleep tip shown')).toEqual([]);
+    await call(page);
+    if (await page.getByText(/keep your screen on/i).isVisible()) {
+      expect(await numberInView(page, 'screen-sleep tip still shown after the next call')).toEqual([]);
+    }
+    expect(await pageScrolls(page)).toBe(false);
+  });
+
   test('when the phone keeps the screen awake, neither the tip nor the icon appears', async ({ page }) => {
     await page.addInitScript(() => {
       Object.defineProperty(navigator, 'wakeLock', {

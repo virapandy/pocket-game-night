@@ -94,6 +94,30 @@ test.describe('with six named players', () => {
     await expect(nextNumber(page)).toBeEnabled();
   });
 
+  // Owner decision 2026-09-29 (review finding 4): after the host closes a tier, its result goes away by itself.
+  test('TAM-145: after "Close Top Line" the win goes away by itself; no Done is needed', async ({ page }) => {
+    await callMany(page, 3);
+    await recordWin(page, 'Top Line', ['Riya']);
+    await expect(result(page)).toBeVisible();
+    await page.getByRole('button', { name: 'Close Top Line', exact: true }).click();
+    // Nothing else is tapped: no Done, no Close, no tap on the card.
+    await expect(result(page)).toBeHidden();
+    await expect(page.getByRole('button', { name: 'Done', exact: true })).toHaveCount(0);
+    await expect(nextNumber(page)).toBeEnabled();
+  });
+
+  test('TAM-145: a shared win goes away by itself too, once the host closes the tier', async ({ page }) => {
+    await callMany(page, 3);
+    await recordWin(page, 'Top Line', ['Riya']);
+    await page.getByRole('button', { name: 'Add another winner' }).click();
+    await page.getByRole('button', { name: 'Asha', exact: true }).click();
+    await page.getByRole('button', { name: 'Confirm', exact: true }).click();
+    await expect(result(page).getByText(/Shared/)).toBeVisible();
+    await page.getByRole('button', { name: 'Close Top Line', exact: true }).click();
+    await expect(result(page)).toBeHidden();
+    await expect(page.getByRole('button', { name: 'Done', exact: true })).toHaveCount(0);
+  });
+
   test('TAM-139, TAM-105: "Check numbers" is only in the menu; it shows ✓ and ✗ per number and records nothing', async ({ page }) => {
     const calls = await callMany(page, 6);
     // Not on the calling screen itself.

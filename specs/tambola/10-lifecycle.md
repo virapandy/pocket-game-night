@@ -39,7 +39,7 @@ And nobody is paid a prize, and the summary shows each player's contribution to 
 (Equally per ticket means each player gets back exactly what they paid.)
 
 ## TAM-145: Closing a prize tier is a manual step, and so is ending the game
-Status: approved, owner, 2026-09-28 (owner: the win and the end of the game are manual; the host can add another winner, for every tier)
+Status: approved, owner, 2026-09-29 (added on the owner's decision of 2026-09-29, docs/decisions.md: the result goes away by itself after closing); was approved, owner, 2026-09-28 (owner: the win and the end of the game are manual; the host can add another winner, for every tier)
 Phase: Phase 1a
 Given Top Line has just been accepted for Riya
 Then Top Line stays open, and the host sees "Add another winner" and "Close Top Line"
@@ -48,6 +48,7 @@ When the host checks Asha's Top Line claim before closing, and it completed on t
 Then it is accepted and the prize is shared (TAM-041, TAM-087)
 When the host taps "Close Top Line"
 Then Top Line is closed: a later Top Line claim is refused with "Top Line already won" (TAM-030), and "Next number" works again
+And after the host closes a tier, its result goes away by itself; no Done is needed
 And the same holds for every tier, Full House included: the last Full House is closed by hand, then the host ends the game (TAM-075)
 (A claim that completed on an earlier number is still late, TAM-043. Closing a tier nobody won does nothing,
 so undoing a wrong claim still reopens its tier, TAM-070.)

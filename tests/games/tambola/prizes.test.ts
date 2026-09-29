@@ -111,8 +111,43 @@ describe('TAM-082: Full House takes every rounding difference (product owner rev
       'early-five': 30, 'top-line': 40, 'middle-line': 40, 'bottom-line': 40, 'full-house': 150,
     });
   });
+});
 
-  it('for every pot, ticket count and unit: a tier other than Full House is its own share rounded to the unit, never more than one unit away; a share that is already whole units is kept exactly; Full House takes the rest', () => {
+describe('TAM-082: every tier but Full House rounds to the nearest unit, an exact half rounds down; Full House takes the rest (owner decision 2026-09-29)', () => {
+  // Nearest unit with an exact half going down, in whole-rupee arithmetic: the share is pot × percent / 100.
+  const nearestHalfDown = (pot: number, percent: number, unit: number) => {
+    const twice = 2 * pot * percent; // twice the share, in hundredths of a rupee
+    const step = 100 * unit; // one unit, in hundredths of a rupee
+    return Math.max(0, Math.ceil((twice - step) / (2 * step))) * unit;
+  };
+
+  it('a ₹530 pot across 10 / 20 / 70 %: ₹53 rounds to ₹50, ₹106 rounds to ₹110, Full House takes ₹370', () => {
+    const plan = planPrizes({ tickets: 5, contribution: 106 });
+    expect(byPattern(plan.tiers, 'amount')).toEqual({ 'early-five': 50, 'top-line': 110, 'full-house': 370 });
+  });
+
+  it('an exact half rounds down: 10 tickets at ₹45 (a ₹450 pot): Early Five ₹45 → ₹40, each Line ₹67.50 → ₹70, Full House ₹200', () => {
+    const plan = planPrizes({ tickets: 10, contribution: 45 });
+    expect(plan.pot).toBe(450);
+    expect(byPattern(plan.tiers, 'amount')).toEqual({
+      'early-five': 40, 'top-line': 70, 'middle-line': 70, 'bottom-line': 70, 'full-house': 200,
+    });
+  });
+
+  it('an exact half rounds down in a smaller game: 3 tickets at ₹150 (a ₹450 pot) across 10 / 20 / 70 %: ₹40 / ₹90 / ₹320', () => {
+    const plan = planPrizes({ tickets: 3, contribution: 150 });
+    expect(plan.pot).toBe(450);
+    expect(byPattern(plan.tiers, 'amount')).toEqual({ 'early-five': 40, 'top-line': 90, 'full-house': 320 });
+  });
+
+  it('a ₹2,800 pot (16 tickets at ₹175): Early Five and Four Corners are exactly ₹280, never ₹290', () => {
+    const plan = planPrizes({ tickets: 16, contribution: 175 });
+    const a = byPattern(plan.tiers, 'amount');
+    expect(a['early-five']).toBe(280);
+    expect(a['four-corners']).toBe(280);
+  });
+
+  it('for every pot, ticket count and unit: each tier but Full House is exactly its share rounded to the nearest unit (half down), and Full House is the pot minus the rest', () => {
     fc.assert(
       fc.property(
         fc.integer({ min: 2, max: 200 }),
@@ -122,10 +157,9 @@ describe('TAM-082: Full House takes every rounding difference (product owner rev
           const plan = planPrizes({ tickets, contribution, unit });
           const others = plan.tiers.filter((t) => t.pattern !== 'full-house');
           for (const t of others) {
-            const exact = (plan.pot * t.percent) / 100;
-            const why = `${t.pattern} at ${t.percent}% of ₹${plan.pot} (unit ₹${unit}) is ₹${exact}, got ₹${t.amount}`;
-            expect(Math.abs(t.amount - exact), why).toBeLessThan(unit);
-            if (Number.isInteger(exact / unit)) expect(t.amount, why).toBe(exact);
+            const expected = nearestHalfDown(plan.pot, t.percent, unit);
+            const why = `${t.pattern} at ${t.percent}% of ₹${plan.pot} (unit ₹${unit}) is ₹${(plan.pot * t.percent) / 100}: expected ₹${expected}, got ₹${t.amount}`;
+            expect(t.amount, why).toBe(expected);
           }
           const fh = plan.tiers.find((t) => t.pattern === 'full-house')!.amount;
           expect(fh).toBe(plan.pot - sum(others.map((t) => t.amount)));
