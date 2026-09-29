@@ -303,13 +303,15 @@ read it with jsQR (`readDrawnQr` in `phone.ts`): what is drawn must read back ex
 - Layouts (TAM-173, TAM-191, TAM-122): with several tickets, all are shown by default: portrait 390 × 844 stacked in
   ticket order, no page scrolling, every cell at least 40 × 40 CSS px, rows running left to right; landscape 844 × 390:
   the first two side by side, the third below, no scrolling, cells at least 40 px. Turning the phone keeps every mark.
-  `One at a time` shows one ticket (cells at least 44 px) with tabs, `role="tab"`, named `Ticket 3`, `Ticket 4` …
+  `One at a time` shows one ticket (cells at least 42 px; on a 390 px portrait screen the whole ticket fits with no
+  sideways sliding: nothing around or inside the ticket scrolls or is clipped sideways, and every cell is fully on
+  screen, owner decision 2026-09-30) with tabs, `role="tab"`, named `Ticket 3`, `Ticket 4` …
   (the visible text may be shorter); `All tickets` goes back. The choice is remembered on the phone, for the next game too.
 - `Quick mark` (TAM-192): `quick-mark-pad` with buttons named `1` to `90`; `quick-mark-message`: "✓ 36 marked on ticket
   3", "37: not on your tickets" (for a number on two tickets, both ticket numbers, TAM-194); tapping a marked number
   again unmarks it. Under the pad, one `quick-mark-thumbnail` per ticket, with `data-ticket` and cells as in
   `phone-ticket` (a marked cell's background differs from an unmarked one's). Tapping a thumbnail shows that ticket
-  alone (as `One at a time`, cells at least 44 px); `Back` returns to quick mark, and `Back` in quick mark returns to
+  alone (as `One at a time`: cells at least 42 px, no sideways sliding); `Back` returns to quick mark, and `Back` in quick mark returns to
   the tickets.
 - `pattern-cue` (TAM-195): one element holding the cue lines, such as "Your marks fill the top row of ticket 3. Shout if
   it's right!" (one line per filled prize; Early Five mentions the ticket, not a row or corners). It exists only
@@ -319,7 +321,9 @@ read it with jsQR (`readDrawnQr` in `phone.ts`): what is drawn must read back ex
   `claim-screen`: the text "Top Line · Ticket 3 · Riya" (any case), "Show this to the host", `claim-qr` with
   `data-payload` (the claim QR's text), above one `phone-ticket` (the claimed one) with the pattern's cells
   `data-outlined="true"` (Top Line: the top row; Four Corners: the corners; Full House: all 15; Early Five: none),
-  and `Done`. Never a verdict.
+  and `Done`. Never a verdict. A ticket opened only by typed code has no prize list, so it offers every usual prize
+  (`Early Five`, `Top Line`, `Middle Line`, `Bottom Line`, `Four Corners`, `Full House`); the host's scan refuses a
+  prize this game doesn't have in `claim-refused`, never as a bogey (TAM-117, TAM-177, owner decision 2026-09-30).
 
 ### Checking a claim (host)
 - `Scan a claim` opens `claim-scanner` and starts the camera at once (the hook's `start` is called

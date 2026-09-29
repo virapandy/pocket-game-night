@@ -2,13 +2,13 @@
 // internet. The host's camera is replaced by the documented test hook `window.__pgnCamera` (phone.ts, fakeCamera;
 // README.md "Phase 2: phone tickets"), so no real camera is needed.
 // Scenarios: TAM-020, TAM-022, TAM-026, TAM-028, TAM-030, TAM-032, TAM-033, TAM-038, TAM-044, TAM-058, TAM-060,
-// TAM-174, TAM-175, TAM-177, TAM-178, TAM-179, TAM-190, TAM-193, TAM-196.
+// TAM-117, TAM-174, TAM-175, TAM-177, TAM-178, TAM-179, TAM-190, TAM-193, TAM-196.
 import { expect, test, type Page } from './fixtures';
-import { call, endGame, fromMenu, mainButton, nextNumber, payoutPeople } from './helpers';
+import { call, endGame, fromMenu, HOME, mainButton, nextNumber, payoutPeople } from './helpers';
 import {
-  callUntil, cellsWith, claimRefused, claimResult, closePhones, cornersOf, countOn, enterTicketNumber, fakeCamera,
-  gameCodeOf, gridOf, handOutAll, newPhone, numbersOf, openHostTickets, phoneGame, playerWith, PORTRAIT, readDrawnQr,
-  rowOf, scanClaim, scanClaimButton, setUpPhoneGame, showClaim,
+  callUntil, cellsWith, claimRefused, claimResult, closePhones, cornersOf, countOn, currentHandOut, enterTicketNumber,
+  fakeCamera, gameCodeOf, gridOf, handOutAll, newPhone, numbersOf, openHostTickets, phoneGame, playerWith, PORTRAIT, readDrawnQr,
+  phoneTicket, rowOf, scanClaim, scanClaimButton, setUpPhoneGame, showClaim,
 } from './phone';
 
 test.afterEach(closePhones);
@@ -196,6 +196,39 @@ test.describe('The host scans the claim', () => {
     await expect(claimResult(page)).toHaveCount(0);
     await dismissClaim(page);
     await expect(mainButton(page)).toHaveText(/Next number/);
+  });
+
+  test('TAM-117, TAM-177 and TAM-031: a ticket opened by typed code offers every usual prize; the host refuses one this game doesn\'t have, calmly, not as a bogey', async ({ page, browser }, testInfo) => {
+    // Owner decision 2026-09-30. With 3 tickets this game has no Four Corners (as above).
+    await setUpPhoneGame(page, THREE);
+    const h = await currentHandOut(page);
+    await handOutAll(page);
+    const typed = await newPhone(browser, testInfo, PORTRAIT);
+    await typed.goto(HOME);
+    await typed.getByRole('button', { name: 'Enter ticket code', exact: true }).click();
+    await typed.getByLabel('Ticket code', { exact: true }).fill(h.code);
+    await typed.getByRole('button', { name: 'Open ticket', exact: true }).click();
+    await expect(phoneTicket(typed, h.ticket)).toBeVisible();
+    await typed.getByRole('button', { name: 'Show claim', exact: true }).click();
+    for (const p of ['Early Five', 'Top Line', 'Middle Line', 'Bottom Line', 'Four Corners', 'Full House']) {
+      await expect(typed.getByRole('button', { name: p, exact: true }), `a typed-code ticket should offer ${p}`).toBeVisible();
+    }
+    await typed.getByRole('button', { name: 'Four Corners', exact: true }).click();
+    const qr = typed.getByTestId('claim-qr');
+    await expect(qr).toBeVisible();
+    const payload = (await qr.getAttribute('data-payload')) ?? '';
+    await call(page);
+    await scanClaim(page, payload);
+    await expect(claimRefused(page)).toBeVisible({ timeout: 2000 });
+    expect(((await claimRefused(page).textContent()) ?? '').trim().length, 'the refusal gives a plain reason').toBeGreaterThan(0);
+    await expect(claimResult(page)).toHaveCount(0);
+    await expect(page.getByText(/Bogey/)).toHaveCount(0);
+    await dismissClaim(page);
+    await expect(mainButton(page)).toHaveText(/Next number/);
+    // The ticket still plays: a real prize from the same typed-code phone is judged as usual.
+    await typed.getByRole('button', { name: 'Done', exact: true }).click();
+    await scanClaim(page, await showClaim(typed, 'Full House'));
+    await expect(claimResult(page)).toContainText('✗ Bogey', { timeout: 2000 });
   });
 
   test('TAM-179: something that is not a claim QR is refused with a plain reason, and nothing changes', async ({ page }) => {

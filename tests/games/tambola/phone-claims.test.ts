@@ -266,6 +266,20 @@ describe('TAM-172 and TAM-175: the host keeps who holds each ticket, and can cor
     expect(g.try({ type: 'assign', ticket: 99, playerId: 'p1' }).ok).toBe(false);
     expect(g.match).toBe(before);
   });
+
+  it('TAM-175 wrong input: giving a player a ticket they already hold is refused, "Ticket 1 is already Riya\'s", and nothing changes', () => {
+    const players = [{ id: 'p1', name: 'Riya' }, { id: 'p2', name: 'Arjun' }, { id: 'p3', name: 'Dad' }];
+    for (const called of [0, 3]) {
+      const g = new PhoneGame({ seed: `already-${called}`, players }).call(called);
+      expect(g.ticket(1).playerId).toBe('p1');
+      const before = g.match;
+      const r = g.try({ type: 'assign', ticket: 1, playerId: 'p1' });
+      expect(r.ok).toBe(false);
+      expect(r.reason).toMatch(/^Ticket 1 is already Riya['’]s\.?$/);
+      expect(g.match).toBe(before);
+      expect(g.ticket(1).playerId).toBe('p1');
+    }
+  });
 });
 
 describe('TAM-176 and TAM-032: tickets not in the game', () => {
@@ -313,6 +327,19 @@ describe('TAM-030, TAM-031 and TAM-044 with phone tickets: refusals are never bo
   it('TAM-031: a pattern not in this game is refused', () => {
     const g = new PhoneGame({ tiers: phoneTiers(300).filter((t) => t.pattern !== 'four-corners').map((t) => (t.pattern === 'full-house' ? { ...t, amount: t.amount + 30 } : t)) }).call(5);
     expect(g.claim(1, 'four-corners').ok).toBe(false);
+  });
+
+  it('TAM-031, TAM-117 and TAM-177: a claim for a prize this game doesn\'t have (as a typed-code ticket may send) is refused with a reason, is not a bogey, and changes nothing', () => {
+    // Owner decision 2026-09-30: a typed-code ticket offers every usual prize; the host refuses the ones not in the game.
+    const g = new PhoneGame({ settings: { bogey: 'out' }, tiers: phoneTiers(300).filter((t) => t.pattern !== 'four-corners').map((t) => (t.pattern === 'full-house' ? { ...t, amount: t.amount + 30 } : t)) }).call(5);
+    const before = g.match;
+    const claims = g.host.claims.length;
+    const r = g.claim(1, 'four-corners');
+    expect(r.ok).toBe(false);
+    expect((r.reason ?? '').trim().length).toBeGreaterThan(0);
+    expect(g.host.claims).toHaveLength(claims);
+    expect(g.match).toBe(before);
+    expect(g.ticket(1).status).not.toBe('out');
   });
 
   it('TAM-044 (out): after a bogey the ticket is out; its next claim is refused "Ticket 3 is out", and is not another bogey', () => {
@@ -363,7 +390,10 @@ describe('TAM-041, TAM-190 and TAM-145: a tie on the same number, even on one pl
 
   it('both claims are accepted, the tier waits to be closed, and the prize is shared; both shares go to Riya when she holds both', () => {
     const { g, tied } = findTie();
-    for (const t of tied) g.do({ type: 'assign', ticket: t, playerId: 'p1' });
+    // Give Riya only the tied tickets that are not already hers: giving her own ticket again is refused (TAM-175,
+    // owner decision 2026-09-30).
+    for (const t of tied) if (g.ticket(t).playerId !== 'p1') g.do({ type: 'assign', ticket: t, playerId: 'p1' });
+    for (const t of tied) expect(g.ticket(t).playerId).toBe('p1');
     g.claim(tied[0]!, 'early-five');
     expect(lastClaim(g).verdict).toBe('accepted');
     expect(g.host.awaitingClose).toEqual(['early-five']);

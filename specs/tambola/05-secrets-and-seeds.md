@@ -149,13 +149,14 @@ Then the verdict shows the owner ("Top Line: ✓ Accepted, ₹60 to Riya")
 And the prize is credited to Riya, with no need to pick the player (unlike paper tickets, TAM-039)
 
 ## TAM-175: The host can correct who holds a ticket
-Status: approved, owner, 2026-09-28
+Status: approved, owner, 2026-09-30 (refusal added on the owner's decision of 2026-09-30, docs/decisions.md; was approved 2026-09-28)
 Phase: Phase 2 (phone tickets)
 Given ticket 3 was assigned to Riya by mistake and Arjun has it
 When the host changes ticket 3's owner to Arjun
 Then any prize ticket 3 wins from then on, and any it already won, is credited to Arjun
 And the change is recorded in the game's history (so a replay shows it)
 And Arjun's phone still shows "Riya" on the ticket until he rescans; that label is only a display
+Wrong input: giving a player a ticket they already hold is refused politely, "Ticket 1 is already Riya's", and nothing changes
 
 ## TAM-176: Tickets that were never handed out are not in the game
 Status: approved, owner, 2026-09-28
@@ -164,7 +165,7 @@ Given the host made a sheet of 6 but handed out only 4 tickets
 Then the other 2 tickets are not in play, count for nothing in the pot, and any claim on them is refused (TAM-032)
 
 ## TAM-177: A phone-ticket claim is verified by scanning the player's claim QR
-Status: approved, owner, 2026-09-28 (change request)
+Status: approved, owner, 2026-09-30 (typed-code prizes noted on the owner's decision of 2026-09-30; was approved 2026-09-28, change request)
 Phase: Phase 2 (phone tickets)
 Given Riya holds ticket 3 on her phone
 When she shouts "Top Line!" and taps "Show claim" on her phone, picking Top Line
@@ -173,6 +174,8 @@ When the host taps "Scan a claim" and points the host phone at it
 Then the verdict appears within 2 seconds, with no internet: "Top Line: ✓ Accepted, ₹50 to Riya"
 or "✗ Bogey: 72 not called"
 And the host phone checks the ticket against its own copy (TAM-055), so an edited QR is refused
+And a ticket opened only by typed code (TAM-117) offers every usual prize under "Show claim"; if the player picks a
+prize this game doesn't have, the host's scan refuses it calmly with a plain reason, never as a bogey (owner decision 2026-09-30)
 (TAM-060 still holds: the player shouts first; the QR only replaces typing, not the shout.)
 
 ## TAM-178: When scanning fails, typing the ticket number takes over
@@ -207,11 +210,12 @@ Then she picks the ticket as well as the prize, and the claim QR carries only th
 And a tie on her own two tickets is two claims, scanned one after the other (TAM-041, TAM-145 "Add another winner")
 
 ## TAM-191: The player can switch between all tickets and one at a time
-Status: approved, owner, 2026-09-29 (new with the Phase 2 sign-off: docs/games/tambola/changes-2026-09-29-phone-tickets.md)
+Status: approved, owner, 2026-09-30 (42 px portrait fit added on the owner's decision of 2026-09-30); was approved, owner, 2026-09-29 (new with the Phase 2 sign-off: docs/games/tambola/changes-2026-09-29-phone-tickets.md)
 Phase: Phase 2 (phone tickets)
 Given Riya has 3 tickets
 When she taps "One at a time"
 Then one ticket fills the screen, with tabs "Ticket 3 · 4 · 8" to switch
+And on a 390 px portrait screen the whole ticket fits, cells at least 42 CSS px, with no sideways sliding (TAM-122)
 When she taps "All tickets"
 Then all 3 show again (TAM-173)
 And her choice is remembered on her phone for the next game

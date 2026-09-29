@@ -267,10 +267,11 @@ refused `add-player` adds no tickets.
 
 `check-claim` is refused (`ok: false`, nothing changes) with: a ticket not in this game (0, negative, fractional,
 `NaN`, a string, or beyond the tickets handed out; reason containing the number and "in this game", such as "No ticket
-14 in this game", TAM-032); a pattern not in this game (TAM-031); a closed tier ("Top Line already won", TAM-030); a
+14 in this game", TAM-032); a pattern not in this game (TAM-031; never a bogey: a typed-code ticket may send any usual prize, TAM-117, TAM-177, owner decision 2026-09-30); a closed tier ("Top Line already won", TAM-030); a
 ticket that is out ("Ticket 3 is out", TAM-044); a paper ticket (reason mentions "paper"); the same ticket winning
 the same tier twice; before the first number or after the game is over. `assign` and `to-paper` are refused for an
-unknown player or ticket. A claim can be undone any time, like a recorded win (TAM-070, TAM-072).
+unknown player or ticket; `assign` is also refused when the player already holds that ticket, with the reason
+"Ticket 1 is already Riya's" (TAM-175, owner decision 2026-09-30). A claim can be undone any time, like a recorded win (TAM-070, TAM-072).
 
 ### Back from "Waiting for Phase 2"
 The checks taken out of the paper suite by the change request of 28 September 2026 are back, as phone-ticket

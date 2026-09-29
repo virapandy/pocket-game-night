@@ -233,6 +233,33 @@ async function smallestCell(player: Page) {
   const boxes = await cellBoxes(player.locator('[data-testid="phone-ticket"]:visible'));
   return Math.min(...boxes.map((b) => Math.min(b.w, b.h)));
 }
+/**
+ * TAM-122 and TAM-191 (owner decision 2026-09-30): in "One at a time" on a 390 px portrait screen the whole ticket
+ * fits, with no sideways sliding. Nothing scrolls or is clipped sideways: not the page, not the ticket, not anything
+ * around it; and every cell lies fully on screen. Returns what is wrong, or an empty list.
+ */
+async function slidesSideways(player: Page): Promise<string[]> {
+  return player.evaluate(() => {
+    const wrong: string[] = [];
+    const doc = document.scrollingElement ?? document.documentElement;
+    if (doc.scrollWidth > window.innerWidth + 1) wrong.push(`page is ${doc.scrollWidth} px wide on a ${window.innerWidth} px screen`);
+    const ticket = [...document.querySelectorAll<HTMLElement>('[data-testid="phone-ticket"]')].find((e) => e.offsetParent !== null);
+    if (!ticket) return ['no ticket shown'];
+    const around: HTMLElement[] = [...ticket.querySelectorAll<HTMLElement>('*'), ticket];
+    for (let e = ticket.parentElement; e; e = e.parentElement) around.push(e);
+    for (const e of around) {
+      if (e.scrollWidth > e.clientWidth + 1 && e.clientWidth > 0 && !e.hasAttribute('data-cell')) {
+        wrong.push(`<${e.tagName.toLowerCase()} ${e.getAttribute('data-testid') ?? e.className}> holds ${e.scrollWidth} px in ${e.clientWidth} px (overflow-x: ${getComputedStyle(e).overflowX})`);
+      }
+      if (e.scrollLeft !== 0) wrong.push(`<${e.tagName.toLowerCase()}> is slid ${e.scrollLeft} px sideways`);
+    }
+    for (const c of ticket.querySelectorAll<HTMLElement>('[data-cell]')) {
+      const r = c.getBoundingClientRect();
+      if (r.left < -1 || r.right > window.innerWidth + 1) { wrong.push(`a cell runs off the side (${Math.round(r.left)} to ${Math.round(r.right)} px)`); break; }
+    }
+    return wrong;
+  });
+}
 
 test.describe('Several tickets on one phone', () => {
   test('TAM-173 and TAM-122: portrait 390 × 844: all 3 tickets stacked, no scrolling, cells at least 40 px, rows run across', async ({ page, browser }, testInfo) => {
@@ -281,17 +308,20 @@ test.describe('Several tickets on one phone', () => {
     for (const t of riya.tickets) expect(await markedOn(phoneTicket(riya.page, t))).toEqual(marks.get(t));
   });
 
-  test('TAM-191 and TAM-122: "One at a time" shows one ticket with tabs, cells at least 44 px; "All tickets" shows all 3 again', async ({ page, browser }, testInfo) => {
+  test('TAM-191 and TAM-122: "One at a time" shows one ticket with tabs, cells at least 42 px and the whole ticket on a 390 px portrait screen with no sideways sliding; "All tickets" shows all 3 again', async ({ page, browser }, testInfo) => {
     const handOuts = await phoneGame(page, TWELVE);
     const riya = await playerWith(browser, testInfo, handOuts, 'Riya', PORTRAIT);
     const [t1, t2, t3] = riya.tickets as [number, number, number];
     await oneAtATime(riya.page).click();
     await expect(shownTickets(riya.page)).toHaveCount(1);
     for (const t of [t1, t2, t3]) await expect(ticketTab(riya.page, t)).toBeVisible();
-    expect(await smallestCell(riya.page)).toBeGreaterThanOrEqual(44);
+    expect(await smallestCell(riya.page)).toBeGreaterThanOrEqual(42);
+    expect(await slidesSideways(riya.page), 'the ticket slides sideways in portrait').toEqual([]);
     await ticketTab(riya.page, t2).click();
     await expect(shownTickets(riya.page)).toHaveCount(1);
     await expect(phoneTicket(riya.page, t2)).toBeVisible();
+    expect(await smallestCell(riya.page)).toBeGreaterThanOrEqual(42);
+    expect(await slidesSideways(riya.page), 'the ticket slides sideways in portrait').toEqual([]);
     expect(await gridOf(phoneTicket(riya.page, t2))).toEqual(riya.grids.get(t2));
     // A mark made here shows in "All tickets" too.
     const n = numbersOf(riya.grids.get(t2)!)[0]!;
@@ -366,7 +396,8 @@ test.describe('Quick mark', () => {
     await thumbnail(riya.page, t2).click();
     await expect(shownTickets(riya.page)).toHaveCount(1);
     await expect(phoneTicket(riya.page, t2)).toBeVisible();
-    expect(await smallestCell(riya.page)).toBeGreaterThanOrEqual(44);
+    expect(await smallestCell(riya.page)).toBeGreaterThanOrEqual(42);
+    expect(await slidesSideways(riya.page), 'the ticket slides sideways in portrait').toEqual([]);
     await riya.page.getByRole('button', { name: 'Back', exact: true }).click();
     await expect(quickMarkPad(riya.page)).toBeVisible();
   });

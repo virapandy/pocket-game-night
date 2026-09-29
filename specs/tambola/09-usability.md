@@ -123,7 +123,7 @@ Then every tap shows a visible response within 100 ms
 And the app is usable within 5 seconds of opening over a slow connection the first time
 
 ## TAM-117: Joining a phone ticket works with the phone's camera, or a typed code
-Status: approved, owner, 2026-09-30 (reworded on the owner's decision of 2026-09-30, docs/decisions.md: 20 characters, because 12 cannot hold a ticket; was approved 2026-09-29 with "at most 12 characters")
+Status: approved, owner, 2026-09-30 (typed-code prizes noted on the owner's decision of 2026-09-30; reworded on the owner's decision of 2026-09-30, docs/decisions.md: 20 characters, because 12 cannot hold a ticket; was approved 2026-09-29 with "at most 12 characters")
 Phase: Phase 2 (phone tickets)
 When a player points their phone's own camera at the ticket QR
 Then their ticket opens, with no separate scanner app
@@ -133,6 +133,8 @@ And typing that code opens the same ticket, with the same numbers, its ticket nu
 (The code carries the whole ticket, so it opens offline; nothing is fetched and no seed is shared. The player's
 name, the start time and the prize list come only with the QR.)
 Wrong input: a code that is not a ticket (too short, wrong letters) is refused with a one-line reason
+And a ticket opened only by typed code offers every usual prize under "Show claim" (it has no prize list);
+the host's scan refuses a prize the game doesn't have, calmly, never as a bogey (TAM-177, TAM-179; owner decision 2026-09-30)
 
 ## TAM-118: iPhone hosts get a one-time install tip
 Status: approved, owner, 2026-09-28
@@ -167,11 +169,12 @@ When a player turns on "Larger text" on their phone ticket
 Then the ticket and all text grow, and nothing is cut off or overlaps
 
 ## TAM-122: Tickets work in both orientations
-Status: approved, owner, 2026-09-29 (Phase 2 sign-off; replaced by docs/games/tambola/changes-2026-09-29-phone-tickets.md: was "Tickets on phones default to landscape")
+Status: approved, owner, 2026-09-30 (reworded on the owner's decision of 2026-09-30, docs/decisions.md: 42 px cells in "One at a time" so the ticket fits a 390 px portrait screen; was approved 2026-09-29 with "at least 44 CSS px in One at a time")
 Phase: Phase 2 (phone tickets)
 When a player opens their phone tickets
 Then they follow the phone's orientation (TAM-173); nothing forces landscape
-And ticket cells are at least 40 CSS px with all tickets shown, and at least 44 CSS px in "One at a time"
+And ticket cells are at least 40 CSS px with all tickets shown, and at least 42 CSS px in "One at a time"
+And in "One at a time" on a 390 px portrait screen the whole ticket fits, with no sideways sliding (TAM-191)
 
 ## TAM-134: Dark mode is an option, not the default
 Status: approved, owner, 2026-09-28
