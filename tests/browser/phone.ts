@@ -190,7 +190,8 @@ export async function showClaim(player: Page, prize: string, ticket?: number): P
 
 // ---------- Host: checking claims ----------
 
-export const scanClaimButton = (host: Page) => host.getByRole('button', { name: /^(Scan|Check) a claim$/ });
+/** The host's button is "Scan a claim" (owner decision 2026-09-30). */
+export const scanClaimButton = (host: Page) => host.getByRole('button', { name: 'Scan a claim', exact: true });
 export const claimResult = (host: Page) => host.getByTestId('claim-result');
 export const claimRefused = (host: Page) => host.getByTestId('claim-refused');
 

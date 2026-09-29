@@ -59,7 +59,7 @@ describe('TAM-050 and TAM-051: a player sees only their own ticket, and no calle
   });
 });
 
-describe('TAM-053, TAM-054, TAM-170, TAM-172: the ticket QR carries only that ticket', () => {
+describe('TAM-053 (reworded 2026-09-30), TAM-054, TAM-170, TAM-172: the ticket QR carries only that ticket', () => {
   it('ticketInfo gives ticket 3\'s numbers and layout, its number, the game code, the owner\'s name, the start time and the prizes', () => {
     const g = game();
     const info = ticketInfo(g.host, 3, T0);
@@ -78,7 +78,7 @@ describe('TAM-053, TAM-054, TAM-170, TAM-172: the ticket QR carries only that ti
     expect(codes.size).toBeGreaterThanOrEqual(19);
   });
 
-  it('round trip: decoding the QR gives back exactly the ticket info, with format version 1, and nothing else', () => {
+  it('round trip: decoding the QR gives back exactly the ticket, its number, the game code, the name, the start time and the prizes, with format version 1, and nothing else', () => {
     const g = game();
     for (const t of g.tickets) {
       const info = ticketInfo(g.host, t.number, T0);
@@ -137,46 +137,57 @@ describe('TAM-055 and TAM-057: the ticket on the phone is identical to the host\
   });
 });
 
-describe('TAM-117: the typed code', () => {
-  it('uses only letters and digits with no look-alikes (no 0, O, 1, I or L), in groups of 4', () => {
-    const g = game();
+describe('TAM-117: the typed code (20 characters in 5 groups of 4, owner decision 2026-09-30)', () => {
+  const FORMAT = /^[2-9A-HJKMNP-Z]{4}(-[2-9A-HJKMNP-Z]{4}){4}$/;
+
+  it('is 20 characters in 5 groups of 4, such as "K7QM-2XPA-9RTD-4HWC-B3NF", with no look-alikes (no 0, O, 1, I or L)', () => {
+    const g = game({ players: [{ id: 'p1', name: 'Riya', tickets: 3 }, { id: 'p2', name: 'Asha', tickets: 3 }, { id: 'p3', name: 'Dad', tickets: 3 }] });
     for (const t of g.tickets) {
       const code = typedCode(ticketInfo(g.host, t.number, T0));
-      const groups = code.split(/[- ]/);
-      for (const grp of groups) {
-        expect(grp).toMatch(CODE_ALPHABET);
-        expect(grp.length).toBeLessThanOrEqual(4);
-      }
-      groups.slice(0, -1).forEach((grp) => expect(grp).toHaveLength(4));
+      expect(code).toMatch(FORMAT);
+      expect(code.replace(/-/g, '')).toMatch(CODE_ALPHABET);
+      expect(code.replace(/-/g, '')).toHaveLength(20);
     }
   });
 
-  it('is at most 12 characters (not counting the separators)', () => {
-    // See reports/latest.md, spec questions: a ticket alone needs about 62 bits; 12 such characters hold about 59.5.
-    const g = game();
-    for (const t of g.tickets) {
-      const code = typedCode(ticketInfo(g.host, t.number, T0));
-      expect(code.replace(/[- ]/g, '').length).toBeLessThanOrEqual(12);
-    }
+  it('each ticket in a game has its own code', () => {
+    const g = game({ players: [{ id: 'p1', name: 'Riya', tickets: 3 }, { id: 'p2', name: 'Asha', tickets: 3 }, { id: 'p3', name: 'Dad', tickets: 3 }] });
+    const codes = g.tickets.map((t) => typedCode(ticketInfo(g.host, t.number, T0)));
+    expect(new Set(codes).size).toBe(codes.length);
   });
 
-  it('typing it opens the same ticket, with no internet: the code alone gives the numbers and layout', () => {
+  it('typing it opens the whole ticket with no internet: the code alone gives the numbers and layout, the ticket number and the game code', () => {
     fc.assert(fc.property(fc.string({ minLength: 1, maxLength: 12 }), fc.integer({ min: 1, max: 6 }), (seed, n) => {
       const g = new PhoneGame({ seed: `c-${seed}`, sheetSeed: `cs-${seed}` });
-      const r = decodeTypedCode(typedCode(ticketInfo(g.host, n, T0)));
+      const code = typedCode(ticketInfo(g.host, n, T0));
+      expect(code).toMatch(FORMAT);
+      const r = decodeTypedCode(code);
       expect(r.ok).toBe(true);
       expect(r.ticket.rows).toEqual(g.ticket(n).rows);
+      expect(r.ticket.ticket).toBe(n);
+      expect(r.ticket.game).toBe(g.host.code);
     }), { numRuns: 100 });
   });
 
-  it('holds no seed; wrong input is refused with a plain reason', () => {
+  it('works for a big game too: ticket 30 of 30 still fits in 20 characters and opens with its number', () => {
+    const players = Array.from({ length: 10 }, (_, i) => ({ id: `p${i}`, name: `Player ${i + 1}`, tickets: 3 }));
+    const g = game({ players });
+    const code = typedCode(ticketInfo(g.host, 30, T0));
+    expect(code).toMatch(FORMAT);
+    const r = decodeTypedCode(code);
+    expect(r.ok).toBe(true);
+    expect(r.ticket.ticket).toBe(30);
+    expect(r.ticket.rows).toEqual(g.ticket(30).rows);
+  });
+
+  it('holds no seed; wrong input (empty, too short, look-alike letters, the old 12-character length) is refused with a plain reason', () => {
     const g = game();
     const code = typedCode(ticketInfo(g.host, 1, T0));
     expect(hides(code, DRAW)).toBe(false);
     expect(hides(code, SHEET)).toBe(false);
-    for (const bad of ['', 'ABCD', '0000-0000-0000', 'hello world!']) {
+    for (const bad of ['', 'ABCD', '0000-0000-0000', 'hello world!', '7K3P-M4X9-2TRD', 'OOOO-IIII-LLLL-1111-0000', code.slice(0, 19)]) {
       const r = decodeTypedCode(bad);
-      expect(r.ok).toBe(false);
+      expect(r.ok, `"${bad}" should be refused`).toBe(false);
       expect(typeof r.reason).toBe('string');
     }
   });

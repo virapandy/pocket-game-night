@@ -199,7 +199,8 @@ never the `excludeText` one if another is allowed; `null` if none is allowed.
 Tests: `tickets.test.ts`, `phone-claims.test.ts`, `phone-secrets.test.ts` (helpers in `phone.ts`), and
 `tests/contract/tambola-phone.test.ts`. Everything is still imported from `src/games/tambola/index.ts` only.
 Scenarios: TAM-001 to TAM-008, TAM-020 to TAM-029, TAM-030 to TAM-032, TAM-034 to TAM-036, TAM-038, TAM-041,
-TAM-044, TAM-048, TAM-050 to TAM-058, TAM-117, TAM-170, TAM-172, TAM-174 to TAM-179, TAM-190, TAM-194, TAM-196.
+TAM-044, TAM-048, TAM-050 to TAM-058, TAM-117, TAM-170, TAM-172, TAM-174 to TAM-179, TAM-190, TAM-194, TAM-196,
+TAM-212 (`phone-late-joiners.test.ts`).
 
 ### Extra exports
 | Export | What it is |
@@ -207,7 +208,7 @@ TAM-044, TAM-048, TAM-050 to TAM-058, TAM-117, TAM-170, TAM-172, TAM-174 to TAM-
 | `makeTickets(sheetSeed, count)` | Tickets 1..count from sheets of 6: `{ number, sheet, rows }[]`. `rows` is 3 rows of 9 cells, `number` or `null` for a blank. Ticket n is on sheet ⌈n/6⌉; every full sheet holds 1–90 exactly once (TAM-006); fewer tickets are the first ones of the same sheets (`makeTickets(s, 4)` equals the first 4 of `makeTickets(s, 18)`). Same seed, same tickets (TAM-008). A count of 0 or less gives `[]` (or throws); never a broken ticket |
 | `ticketInfo(hostView, ticket, startedAt)` | What the hand-out QR carries for one ticket: `{ game, ticket, name, rows, startedAt, tiers }` (`v` allowed too). `game` is the host view's `code`, `name` the owner's name, `tiers` the patterns in play in tier order (TAM-053, TAM-170, TAM-172) |
 | `encodeTicket(info)` / `decodeTicket(text)` | The ticket QR's text and back. `decodeTicket` returns `{ ok: true, ticket: { v: 1, game, ticket, name, rows, startedAt, tiers } }` (exactly these keys) or `{ ok: false, reason }` for anything else (garbage, a claim QR). The text depends only on `info`: no seed, no other ticket, no called number (TAM-053, TAM-054) |
-| `typedCode(info)` / `decodeTypedCode(code)` | The typed code "7K3P-M4X9-2TRD": letters and digits without 0, O, 1, I, L, in groups of 4 (TAM-117). Decoding it alone gives `{ ok: true, ticket: { rows, … } }` with the ticket's numbers, or `{ ok: false, reason }`. See the note on its length below |
+| `typedCode(info)` / `decodeTypedCode(code)` | The typed code "K7QM-2XPA-9RTD-4HWC-B3NF": exactly 20 letters and digits without 0, O, 1, I, L, in 5 groups of 4 joined by `-` (TAM-117, owner decision 2026-09-30). Each ticket of a game has its own. Decoding it alone gives `{ ok: true, ticket: { rows, ticket, game, … } }` (the numbers and layout, the ticket number, the game code), or `{ ok: false, reason }` for anything else (too short, look-alike letters) |
 | `encodeClaim(claim)` / `decodeClaim(text)` | The claim QR: `{ game, ticket, pattern, rows }` in, `{ ok: true, claim: { v: 1, game, ticket, pattern, rows } }` (exactly these keys) or `{ ok: false, reason }` out. A ticket QR is not a claim QR, and the other way round (TAM-177) |
 | `readClaim(hostView, text)` | The host reading a claim QR against its own copy (TAM-177, TAM-179). Pure, never throws, changes nothing. `{ ok: true, ticket, pattern }`, or `{ ok: false, reason, checkByNumber? }` |
 
@@ -228,8 +229,21 @@ rows match the host's copy exactly.
 seeds: { draw: string, sheet: string }       // both host-only (TAM-008, TAM-052)
 config: { ticketMode: 'phone', players, money, tiers, settings }   // as for paper
 ```
-Tickets are handed out in the order players are listed, each player's tickets together: Riya (2) gets 1–2,
-Asha (3) 3–5, Dad (1) 6, Kabir (3) 7–9 (TAM-172, TAM-194). Tickets not handed out are not in the game (TAM-176).
+Tickets are handed out strictly in the order players are listed, each player's tickets together: Riya (2) gets 1–2,
+Asha (3) 3–5, Dad (1) 6, Kabir (3) 7–9 (TAM-172, TAM-194). No ticket is skipped: the tickets in the game are always
+1 to the number handed out, so a player's tickets span two sheets when the current one has too few left (owner,
+2026-09-30). Tickets not handed out are not in the game (TAM-176).
+
+### Late joiners with phone tickets (TAM-212, owner decision 2026-09-30)
+The same `add-player` move as with paper (see "Late joiners"). In a phone-ticket game it also adds the joiner's
+tickets to the host view's `tickets` (`playerId` the joiner, `status: 'in-play'`), each the sheet seed's ticket of
+that number (`makeTickets(sheetSeed, n)[n - 1]`, on sheet ⌈n/6⌉). They come from the next sheet: after 6 tickets
+(one full sheet), a joiner with 2 tickets gets 7 and 8. Every joiner's tickets are consecutive and numbered after
+every ticket already in the game; no number is used twice. Before the joiner is added, their ticket numbers are
+"not in this game". `ticketInfo`, `typedCode` and `check-claim` work on the joiner's tickets like any other (the
+verdict names the joiner). A pattern already complete on a joiner's ticket when they joined cannot be claimed, even
+if the latest call completed it: `check-claim` is refused, or recorded as a bogey, never accepted (TAM-067). A
+refused `add-player` adds no tickets.
 
 ### Views
 - Host view adds `code` (the game code: 4 characters from `2-9 A-H J K M N P-Z`, different between games; worked
@@ -268,11 +282,10 @@ tests in `phone-claims.test.ts`:
   for the camera never makes a claim late by itself (TAM-178).
 - **TAM-038**: a late claim is a bogey with `reason: 'late'` and `completedAt` ("Top Line was complete at 45").
 
-### Note on the typed code (question for the owner, in `reports/latest.md`)
-TAM-117 asks for at most 12 characters, and TAM-055/TAM-057 for the ticket to open from the code alone, with no
-seed. 12 characters from 31 allowed letters and digits hold about 59.5 bits; a Tambola ticket alone needs about 61.7
-bits (there are about 3.7 × 10^18 valid tickets), before the ticket number and game code. Both tests are written as
-the scenarios say; they cannot both pass until the owner decides.
+### The typed code (owner decision 2026-09-30)
+TAM-117 was "at most 12 characters", but 12 characters from 31 letters and digits hold about 59.5 bits and a ticket
+alone needs about 61.7. The owner chose 20 characters in 5 groups of 4 (about 99 bits): room for the ticket, its
+number and the game code, so it opens offline with no seed. The name, start time and prize list come only with the QR.
 
 **TAM-043** (reworded on the owner's decision of 29 September 2026): the app's record of which number
 completed a pattern is for phone tickets only (TAM-038, Phase 2). With paper tickets the anchor judges whether

@@ -123,14 +123,16 @@ Then every tap shows a visible response within 100 ms
 And the app is usable within 5 seconds of opening over a slow connection the first time
 
 ## TAM-117: Joining a phone ticket works with the phone's camera, or a typed code
-Status: approved, owner, 2026-09-29 (Phase 2 sign-off, with the product owner's verdict of 2026-09-28)
+Status: approved, owner, 2026-09-30 (reworded on the owner's decision of 2026-09-30, docs/decisions.md: 20 characters, because 12 cannot hold a ticket; was approved 2026-09-29 with "at most 12 characters")
 Phase: Phase 2 (phone tickets)
 When a player points their phone's own camera at the ticket QR
 Then their ticket opens, with no separate scanner app
-And the host screen also shows a typed code of at most 12 characters, in groups of 4, with no
-look-alike characters (no 0, O, 1, I or L)
-And typing that code opens the same ticket, with no internet
-(The code carries the ticket's numbers, so it needs more than 6 characters.)
+And the host screen also shows a typed code of 20 characters in 5 groups of 4, such as
+K7QM-2XPA-9RTD-4HWC-B3NF, with no look-alike characters (no 0, O, 1, I or L)
+And typing that code opens the same ticket, with the same numbers, its ticket number and the game code, with no internet
+(The code carries the whole ticket, so it opens offline; nothing is fetched and no seed is shared. The player's
+name, the start time and the prize list come only with the QR.)
+Wrong input: a code that is not a ticket (too short, wrong letters) is refused with a one-line reason
 
 ## TAM-118: iPhone hosts get a one-time install tip
 Status: approved, owner, 2026-09-28

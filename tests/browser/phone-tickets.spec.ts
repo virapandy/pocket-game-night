@@ -59,7 +59,7 @@ test.describe('Host: handing out tickets', () => {
     await expect(phone.getByText(/Ticket 1\b/).first()).toBeVisible();
   });
 
-  test('TAM-117: the hand-out shows a large QR (a link to the app) and a typed code of at most 12 characters in groups of 4, with no look-alikes', async ({ page }) => {
+  test('TAM-117: the hand-out shows a large QR (a link to the app) and a typed code of 20 characters in 5 groups of 4, with no look-alikes', async ({ page }) => {
     await setUpPhoneGame(page, THREE);
     const qr = page.getByTestId('ticket-qr');
     await expect(qr).toBeVisible();
@@ -69,8 +69,8 @@ test.describe('Host: handing out tickets', () => {
     const h = await currentHandOut(page);
     // The phone's own camera opens a link: the QR holds the app's address, so no scanner app is needed.
     expect(h.payload).toMatch(/^https?:\/\/[^/]+\/pocket-game-night\//);
-    expect(h.code).toMatch(/^[2-9A-HJKMNP-Z]{1,4}([- ][2-9A-HJKMNP-Z]{1,4}){0,2}$/);
-    expect(h.code.replace(/[- ]/g, '').length).toBeLessThanOrEqual(12);
+    // Owner decision 2026-09-30: 20 characters in 5 groups of 4, such as K7QM-2XPA-9RTD-4HWC-B3NF.
+    expect(h.code).toMatch(/^[2-9A-HJKMNP-Z]{4}(-[2-9A-HJKMNP-Z]{4}){4}$/);
     await expect(handOutScreen(page).getByText(/Scan with your phone's camera/i)).toBeVisible();
   });
 
@@ -92,7 +92,7 @@ test.describe('Host: handing out tickets', () => {
     expect(rest.map((h) => h.player)).toEqual(['Asha']);
     // Mixed game: phone claims are checked, paper wins are recorded (TAM-037).
     await callMany(page, 2);
-    await expect(page.getByRole('button', { name: /^(Scan|Check) a claim$/ })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Scan a claim', exact: true })).toBeVisible();
     await page.getByRole('button', { name: 'Record a win' }).click();
     await page.getByRole('button', { name: 'Early Five', exact: true }).click();
     await page.getByRole('button', { name: 'Dad', exact: true }).click();
@@ -474,6 +474,10 @@ test('TAM-117 and TAM-057: typing the code on a phone opens the same ticket, wit
   await typed.getByRole('button', { name: 'Open ticket', exact: true }).click();
   await expect(phoneTicket(typed, h.ticket)).toBeVisible();
   expect(await gridOf(phoneTicket(typed, h.ticket))).toEqual(want);
+  // The code carries the whole ticket: its number and the game code show too (TAM-170).
+  const code = await gameCodeOf(page);
+  await expect(typed.getByTestId('phone-ticket-header').first()).toContainText(new RegExp(`Ticket ${h.ticket}\\b`));
+  await expect(typed.getByTestId('phone-ticket-header').first()).toContainText(code);
   // Wrong input: a code that is not a ticket is refused with a one-line reason.
   const other = await newPhone(browser, testInfo, PORTRAIT);
   await other.goto(HOME);
@@ -499,8 +503,9 @@ test('TAM-057: scanning a ticket fetches nothing from any other server: everythi
 
 // Owner decision 2026-09-28 (docs/decisions.md): offline reloads run in Chromium only, because Playwright's WebKit
 // cannot load a page a service worker answers while offline (microsoft/playwright#42775). iPhone checked by hand.
+// The decision of 2026-09-30 confirms it covers this test (TAM-057): the iPhone offline scan is a by-hand check.
 test('TAM-057: with no internet, a phone that opened the app once opens its ticket from the QR and can mark it', async ({ page, browser, browserName }, testInfo) => {
-  test.skip(browserName === 'webkit', 'Playwright WebKit cannot load offline under a service worker (microsoft/playwright#42775); owner decision 2026-09-28, iPhone checked by hand');
+  test.skip(browserName === 'webkit', 'Playwright WebKit cannot load offline under a service worker (microsoft/playwright#42775); owner decisions 2026-09-28 and 2026-09-30, iPhone checked by hand');
   await setUpPhoneGame(page, THREE);
   const h = await currentHandOut(page);
   const phone = await newPhone(browser, testInfo, PORTRAIT);

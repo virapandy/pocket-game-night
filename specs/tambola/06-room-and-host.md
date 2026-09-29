@@ -55,7 +55,7 @@ Then the game ends and the payout summary shows the winners so far
 And unclaimed tiers follow TAM-088
 
 ## TAM-067: A late joiner can get a ticket mid-game
-Status: decided 2026-09-28 (convention: numbers already called count; the claim-before-next-number rule means a pattern already complete on joining cannot be claimed)
+Status: decided 2026-09-28 (convention: numbers already called count; the claim-before-next-number rule means a pattern already complete on joining cannot be claimed); last line (phone tickets, TAM-212) added, approved, owner, 2026-09-30
 Phase: Phase 1b
 Given 6 numbers have been called, and late joining is allowed until 10 numbers (host setting; 0 turns it off)
 When a new player arrives and the host adds them with a ticket (paper or phone)
@@ -65,6 +65,23 @@ And their contribution is added to the pot and split across the tiers not yet wo
 And the new prize amounts are shown on the host screen for the anchor to announce
 When 10 numbers have been called
 Then the host can no longer add players until the next game
+In a phone-ticket game, the late joiner gets phone tickets from the next sheet: see TAM-212 (Phase 2, owner, 2026-09-30)
+
+## TAM-212: In a phone-ticket game, a late joiner gets phone tickets from the next sheet
+Status: approved, owner, 2026-09-30 (docs/decisions.md: late joiners in a phone-ticket game get phone tickets from the next sheet; extends TAM-067)
+Phase: Phase 2 (phone tickets)
+Given a phone-ticket game in which all 6 tickets of the first sheet were handed out, and 4 numbers have been called
+When Kabir arrives and the host adds him with 2 tickets ("Add a late player", TAM-067)
+Then the host hands him tickets 7 and 8, from the next sheet of 6, on the same hand-out screen as before the game:
+"Ticket 7 → Kabir (1 of 2)", with its QR and typed code (TAM-117, TAM-172), then back to calling
+And his tickets are new: never a ticket already in the game, and made by the same sheet rules (TAM-001 to TAM-008)
+And two tickets of his from one sheet never share a number (TAM-006, TAM-194)
+And the numbers already called count on his tickets; a claim on them is checked by the host phone like any other
+phone ticket and credited to Kabir (TAM-174, TAM-177)
+And a pattern already complete on his ticket at the moment he joined cannot be claimed (TAM-067)
+And the money and the limit of 10 numbers work exactly as in TAM-067
+Wrong input: a ticket number beyond those handed out, including his, before he is added is "not in this game" (TAM-032);
+adding him with 0 or more than 3 tickets, or after the limit, is refused and hands out nothing
 
 ## TAM-068: Play again keeps the setup
 Status: approved, owner, 2026-09-28

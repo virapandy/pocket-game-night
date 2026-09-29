@@ -133,6 +133,11 @@ or buttons anywhere (TAM-090).
 - After adding or removing: `prize-update`, the new prize amounts for the anchor to announce, one element per
   tier with `data-pattern` ("early-five") and `data-amount`, shown with ₹; closed with `Close` or `Done`.
 - The late joiner can be picked in Record a win, and appears in `payout-summary` (with "Pot ₹200" for the new pot).
+- Phone-ticket game (TAM-212, Phase 2, `phone-late-joiners.spec.ts`): after `Add`, the hand-out screen (`hand-out`,
+  as before the game) shows the joiner's tickets from the next sheet, "Ticket 7 → Kabir (1 of 2)", with `ticket-qr`
+  and `ticket-code`; `Next ticket` between them, and after the last one `Back to calling` (or `Start calling`), which
+  returns to the calling screen with the calls kept. `prize-update` may show before or after the hand-out. The
+  joiner's tickets are in menu → `Tickets` with their name.
 - Tambola start screen: a `Settings` button with the field `Late joining` (a select or number: numbers until
   which late joining is allowed, 10 by default, 0 = off). The same screen keeps its `Rhyme language` select
   (values `en`, `hi`, `both`), which the voice tests and `rhymes.spec.ts` set to `hi`. With `hi`, a number with
@@ -238,7 +243,7 @@ context (its own storage), made by `newPhone` with the same device settings as t
 runs on the Android and the iPhone sizes. Players' phones are 390 × 844 portrait (`PORTRAIT`) unless a test turns
 them to 844 × 390 (`LANDSCAPE`). Scenarios: TAM-020, TAM-022, TAM-023, TAM-030, TAM-032, TAM-033, TAM-036, TAM-038,
 TAM-044, TAM-050, TAM-051, TAM-055 to TAM-058, TAM-117, TAM-121, TAM-122, TAM-131, TAM-132, TAM-170 to TAM-179,
-TAM-190 to TAM-196.
+TAM-190 to TAM-196, TAM-212 (`phone-late-joiners.spec.ts`).
 
 ### The camera test hook (host phone)
 The host's camera is replaced in tests, before the page loads, by `window.__pgnCamera`. When it exists, "Scan a
@@ -260,14 +265,16 @@ tests never need to decode an image.
   - `ticket-qr`: the QR, at least 200 × 200 CSS px, drawn as `svg`, `canvas` or `img`, with `data-payload` holding
     the whole link it encodes: the app's own address (`…/pocket-game-night/…`) with the ticket in it, so a phone's
     camera opens the app (TAM-117). The text "Scan with your phone's camera".
-  - `ticket-code`: the typed code, "7K3P-M4X9-2TRD" (see the note on its length in `tests/games/tambola/README.md`).
+  - `ticket-code`: the typed code, exactly "K7QM-2XPA-9RTD-4HWC-B3NF": 20 letters and digits (no 0, O, 1, I, L) in 5
+    groups of 4 joined by `-` (TAM-117, owner decision 2026-09-30). Typed on a phone, it opens the ticket with its
+    number and the game code in `phone-ticket-header`.
   - `hand-out-progress`: "0 of 4 handed out", counting each `Next ticket` (TAM-132).
   - `hand-out-waiting`: "Waiting: Asha 2, Dad 1": every player still waiting for a ticket; a player leaves the list once
     all their tickets are handed out.
   - `game-code`: the 4-character game code (TAM-170). Also shown on the calling screen (top bar or its own line).
   - Buttons: `Next ticket`, which becomes `Start calling` after the last ticket (then the calling screen);
     `Can't scan? Give a paper ticket`: that player plays on paper, and the rest of their tickets are skipped (TAM-058).
-- Calling screen with phone tickets: `Scan a claim` or `Check a claim` (either name) instead of, or next to,
+- Calling screen with phone tickets: `Scan a claim` (exactly this name, owner decision 2026-09-30) instead of, or next to,
   `Record a win`. With paper players in the game (TAM-058), `Record a win` stays, as in 1a.1, for them.
 - Menu → `Tickets` (TAM-056, host only): one `host-ticket` per ticket in the game, with `data-ticket`, the owner's
   name in its text, 27 `[data-cell]` cells as below, a button starting `Change owner` (then player buttons by
@@ -314,7 +321,7 @@ tests never need to decode an image.
   and `Done`. Never a verdict.
 
 ### Checking a claim (host)
-- `Scan a claim` / `Check a claim` opens `claim-scanner` and starts the camera at once (the hook's `start` is called
+- `Scan a claim` opens `claim-scanner` and starts the camera at once (the hook's `start` is called
   on the tap). `Enter ticket number` is always visible there. If the camera fails, or no QR is read within 10
   seconds, the text "Enter the ticket number instead" shows and the field `Ticket number` takes over (hidden before
   10 seconds). The typed path: `Ticket number`, a prize button (if the prize is not already picked), `Check`.

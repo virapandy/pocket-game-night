@@ -37,11 +37,12 @@ For every QR code, share link, printed ticket and player view
 Then none of them contains the draw seed, or anything the draw order can be worked out from
 
 ## TAM-053: A player's QR code carries only their own ticket
-Status: approved, owner, 2026-09-29 (Phase 2 sign-off, with the product owner's verdict of 2026-09-28)
+Status: approved, owner, 2026-09-30 (reworded on the owner's decision of 2026-09-30, docs/decisions.md, to match TAM-170 and TAM-172; was approved 2026-09-29)
 Phase: Phase 2 (phone tickets)
 When the host shows the join QR for ticket 3
-Then the QR holds ticket 3's 15 numbers and layout, its ticket number and the game code, and nothing else
-And no seed of any kind
+Then the QR holds exactly: ticket 3's 15 numbers and layout, its ticket number, the game code, the player's
+name (TAM-172), the game's start time and its prize list (TAM-170), and nothing else
+And no seed of any kind, and no other ticket's numbers or called numbers (TAM-054)
 (A seed would let a curious phone rebuild the other tickets on the same sheet of 6.)
 
 ## TAM-054: One ticket reveals nothing useful about other tickets or the draw
@@ -240,13 +241,16 @@ Then the claim QR is shown above ticket 3, and ticket 3's top row is outlined
 And the outline is a visual aid only: the phone never says whether the claim is right (the host's scan does, TAM-177)
 
 ## TAM-194: A player's tickets come from one sheet where possible
-Status: approved, owner, 2026-09-29 (new with the Phase 2 sign-off: docs/games/tambola/changes-2026-09-29-phone-tickets.md)
+Status: approved, owner, 2026-09-30 (clarified on the owner's decision of 2026-09-30, docs/decisions.md: strictly in order; was approved 2026-09-29)
 Phase: Phase 2 (phone tickets)
-Given the host hands out tickets in order (TAM-172)
-Then a player's tickets are consecutive tickets from the same sheet of 6 whenever the sheet has enough left
+Given the host hands out tickets strictly in order from sheets of 6 (TAM-172)
+Then each player's tickets are consecutive: with Riya 2, Asha 3, Dad 1 and Kabir 3 tickets, Riya gets 1–2,
+Asha 3–5, Dad 6 and Kabir 7–9
+And a player's tickets are on the same sheet whenever the current sheet has enough left
 So a called number is on at most one of that player's tickets (TAM-006)
-When a player's tickets must span two sheets
-Then quick mark (TAM-192) marks every one of their tickets that has the number
+When the current sheet has too few left (Asha, with 3 tickets, after 4 are handed out)
+Then her tickets span two sheets (5 and 6 on the first, 7 on the next); no ticket is skipped to start a fresh sheet
+And quick mark (TAM-192) marks every one of her tickets that has the number
 
 ## TAM-195: The phone points out when the player's own marks fill a pattern
 Status: approved, owner, 2026-09-29 (new with the Phase 2 sign-off: docs/games/tambola/changes-2026-09-29-phone-tickets.md)

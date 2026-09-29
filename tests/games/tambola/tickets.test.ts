@@ -171,6 +171,24 @@ describe('TAM-194 and TAM-172: tickets are handed out in order, a player\'s tick
     ]);
   });
 
+  it('strictly in order (owner, 2026-09-30): when the sheet has too few left, the tickets span two sheets; none is skipped for a fresh sheet', () => {
+    const g = new PhoneGame({ players: [
+      { id: 'p1', name: 'Riya', tickets: 2 }, { id: 'p2', name: 'Dad', tickets: 2 }, { id: 'p3', name: 'Asha', tickets: 3 },
+    ] });
+    expect(g.tickets.map((t) => [t.number, t.sheet, t.playerId])).toEqual([
+      [1, 1, 'p1'], [2, 1, 'p1'], [3, 1, 'p2'], [4, 1, 'p2'], [5, 1, 'p3'], [6, 1, 'p3'], [7, 2, 'p3'],
+    ]);
+  });
+
+  it('property: the tickets in the game are exactly 1 to the number handed out, with no gaps', () => {
+    fc.assert(fc.property(seedArb, fc.array(fc.integer({ min: 1, max: 3 }), { minLength: 1, maxLength: 12 }), (seed, counts) => {
+      const ps = counts.map((k, i) => ({ id: `q${i}`, name: `Player ${i + 1}`, tickets: k }));
+      const g = new PhoneGame({ players: ps, sheetSeed: seed });
+      const total = counts.reduce((a, b) => a + b, 0);
+      expect(g.tickets.map((t) => t.number)).toEqual(Array.from({ length: total }, (_, i) => i + 1));
+    }), { numRuns: 60 });
+  });
+
   it('a player whose tickets fit on one sheet has them all on that sheet, so a called number is on at most one of them', () => {
     fc.assert(fc.property(seedArb, fc.array(fc.integer({ min: 1, max: 3 }), { minLength: 1, maxLength: 10 }), (seed, counts) => {
       const ps = counts.map((k, i) => ({ id: `q${i}`, name: `Player ${i + 1}`, tickets: k }));
