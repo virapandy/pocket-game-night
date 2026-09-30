@@ -71,6 +71,41 @@ function addressOf(route: Route): string {
       return '';
   }
 }
+/**
+ * TAM-111, UX guideline 23: during a game, the back gesture or button never leaves the game.
+ * A spare history entry at the same address sits on top; going back uses it up and the game stays.
+ * Chrome ignores entries added without a tap (they are skipped on the next back), so a new one is
+ * added only while the host's tap is still "fresh": on entering the game, and after each later tap.
+ */
+function useBackGuard(active: boolean) {
+  useEffect(() => {
+    if (!active) return;
+    const guarded = () => (history.state as { pgnGuard?: boolean } | null)?.pgnGuard === true;
+    const tapFresh = () => {
+      const ua = (navigator as Navigator & { userActivation?: { isActive: boolean } }).userActivation;
+      return !ua || ua.isActive;
+    };
+    let href = location.href;
+    const arm = () => {
+      if (guarded() || !tapFresh()) return;
+      href = location.href;
+      history.pushState({ ...((history.state as object | null) ?? {}), pgnGuard: true }, '', href);
+    };
+    const onPop = () => {
+      // The spare entry was used up: stay on this screen at the same address. A new one waits for the
+      // next tap, never added here: Chrome would skip an entry added before the host touches the screen again.
+      if (location.href !== href) history.replaceState(history.state, '', href);
+    };
+    arm();
+    window.addEventListener('popstate', onPop);
+    for (const e of ['click', 'pointerup', 'keydown'] as const) window.addEventListener(e, arm, true);
+    return () => {
+      window.removeEventListener('popstate', onPop);
+      for (const e of ['click', 'pointerup', 'keydown'] as const) window.removeEventListener(e, arm, true);
+    };
+  }, [active]);
+}
+
 const time = (t: number) => new Date(t).toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit', hour12: true });
 
 type Crash = { message: string; stack?: string };
@@ -194,6 +229,7 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
     if (decodeURIComponent(location.hash.slice(1)) === want) return;
     history.replaceState(history.state, '', want ? `#${encodeURIComponent(want).replace(/%2F/g, '/')}` : `${location.pathname}${location.search}`);
   }, [route]);
+  useBackGuard(route.name === 'game');
   const home = () => setRoute({ name: 'home' });
   const expire = useCallback(() => setDeleted(null), []);
 

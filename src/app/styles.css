@@ -63,6 +63,9 @@ html, body {
   background: var(--bg);
   /* No pull-to-refresh or bounce: a game can't be lost by accident (23). */
   overscroll-behavior: none;
+  /* TAM-116: no double-tap zoom, so Chrome never waits about 300 ms to see whether a tap is a double tap.
+     Pinch zoom still works. */
+  touch-action: manipulation;
 }
 
 body { -webkit-tap-highlight-color: transparent; }
@@ -118,6 +121,7 @@ body { -webkit-tap-highlight-color: transparent; }
   border: 0;
   border-radius: 12px;
   cursor: pointer;
+  touch-action: manipulation;
 }
 .button-quiet { color: var(--accent); background: transparent; border: 2px solid var(--border); }
 
@@ -248,6 +252,7 @@ body { -webkit-tap-highlight-color: transparent; }
 @supports (overflow: clip) { .play { overflow: clip; } }
 /* The top bar always sits above the number, so Back and Menu always take the tap (TAM-123, TAM-180, TAM-186). */
 .play-bar { position: relative; z-index: 10; flex: none; display: flex; align-items: center; gap: 4px; min-height: 52px; background: var(--bg); }
+button, [role="button"], a { touch-action: manipulation; }
 .bar-button {
   min-height: 44px;
   min-width: 44px;
