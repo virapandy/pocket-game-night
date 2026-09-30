@@ -69,7 +69,7 @@ Then the automatic boundary check fails the build if any game imports another ga
 or if the engine imports any game (`src/CLAUDE.md`, dependency rules)
 
 ## PLT-110: The generic simulated player can play any game
-Status: draft (product owner verdict 2026-09-28: approve; awaiting owner sign-off when extended testing comes up)
+Status: approved, owner, 2026-09-29 (extended testing sign-off, with the product owner's verdict of 2026-09-28: approve)
 Phase: Phase 2.5
 Given a registered game, a player's view and a persona (for example "slow grandparent")
 When the simulation asks for that player's next move
@@ -77,21 +77,21 @@ Then the move is always one of the player's legal moves
 And code states the facts in the view first (such as "row 1: 5 of 5 marked"); Jev only chooses
 
 ## PLT-111: Simulations work without Jev
-Status: draft (product owner verdict 2026-09-28: approve; awaiting owner sign-off when extended testing comes up)
+Status: approved, owner, 2026-09-29 (extended testing sign-off, with the product owner's verdict of 2026-09-28: approve)
 Phase: Phase 2.5
 Given Jev is unavailable, out of its weekly cap, or turned off
 When a simulation runs
 Then random and scripted players take over, and the run completes with the same summary format
 
 ## PLT-112: Jev is never the referee
-Status: draft (product owner verdict 2026-09-28: approve; awaiting owner sign-off when extended testing comes up)
+Status: approved, owner, 2026-09-29 (extended testing sign-off, with the product owner's verdict of 2026-09-28: approve)
 Phase: Phase 2.5
 Then only the rules engine decides whether a move is legal or a claim is valid
 And when a simulated player expects a different outcome, the disagreement is recorded, not applied
 
 ## PLT-113: Jev spending is capped
-Status: draft (product owner verdict 2026-09-28: approve; awaiting owner sign-off when extended testing comes up)
+Status: approved, owner, 2026-09-29 (extended testing sign-off, with the product owner's verdict of 2026-09-28: approve)
 Phase: Phase 2.5
-Given the owner has set a weekly cap on Jev calls
+Given the owner has set a weekly cap on Jev calls: **20,000 Jev decisions a week** (owner, 2026-09-29)
 When a run reaches the cap
-Then no more Jev calls are made that week, and the run finishes with random players
+Then no more Jev calls are made that week, and the run finishes with scripted players (owner, 2026-09-29)
