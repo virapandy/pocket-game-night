@@ -8,6 +8,7 @@ import { describe, expect, it } from 'vitest';
 import { moneyProblems, replay } from '../../src/engine';
 import { rules } from '../games/tambola/helpers';
 import { simulate } from '../sim/tambola-sim';
+import { playGame } from '../sim/mass';
 
 const dir = fileURLToPath(new URL('.', import.meta.url));
 const files = readdirSync(dir).filter((f) => f.endsWith('.json')).sort();
@@ -18,7 +19,7 @@ describe('Saved replays (TAM-074)', () => {
   });
 
   for (const file of files) {
-    it(`${file} replays cleanly`, () => {
+    it(`${file} replays cleanly`, async () => {
       const raw = JSON.parse(readFileSync(dir + file, 'utf8'));
       const saved = raw.report
         ? { game: raw.report.game?.gameType, setup: raw.report.game?.setup, records: raw.report.game?.records, note: raw.note, expect: raw.expect }
@@ -30,6 +31,8 @@ describe('Saved replays (TAM-074)', () => {
       if (saved.expect?.over !== undefined) expect(rules.isOver(r.value.state)).toBe(saved.expect.over);
       // A game found by the simulation is also played again from its seed: it must now have no problems.
       if (saved.sim) expect(simulate(saved.sim).problems, `Saved because: ${saved.note}`).toEqual([]);
+      // A game found by the mass simulation (PLT-116) is played again from its seed too.
+      if (saved.massSim) expect((await playGame(saved.massSim)).problems, `Saved because: ${saved.note}`).toEqual([]);
       const summary = rules.view(r.value.state, { kind: 'host' }).summary;
       if (summary?.money) expect(moneyProblems(summary.money)).toEqual([]);
     });
