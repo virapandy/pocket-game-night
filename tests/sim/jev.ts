@@ -64,10 +64,12 @@ export interface Budget {
   take(n: number): boolean;
   /** Decisions this run used. */
   readonly thisRun: number;
+  /** Why the last `take` was refused: the owner's weekly cap, or this run's own lower limit. */
+  readonly stoppedBy: 'weekly cap' | 'run limit' | null;
 }
 
 /** A budget kept in memory only (tests), or in a JSON file per ISO week (real runs). */
-export function makeBudget(opts: { cap?: number; usedAlready?: number; file?: string | null; now?: number } = {}): Budget {
+export function makeBudget(opts: { cap?: number; runLimit?: number; usedAlready?: number; file?: string | null; now?: number } = {}): Budget {
   const cap = opts.cap ?? WEEKLY_CAP;
   const week = isoWeek(opts.now ?? Date.now());
   const file = opts.file ?? null;
@@ -76,6 +78,8 @@ export function makeBudget(opts: { cap?: number; usedAlready?: number; file?: st
     try { before = Number(JSON.parse(readFileSync(file, 'utf8'))[week] ?? 0) || 0; } catch { before = 0; }
   }
   let run = 0;
+  let stoppedBy: Budget['stoppedBy'] = null;
+  const runLimit = opts.runLimit ?? Infinity;
   const save = () => {
     if (!file) return;
     let all: Record<string, number> = {};
@@ -87,14 +91,16 @@ export function makeBudget(opts: { cap?: number; usedAlready?: number; file?: st
   return {
     cap,
     used: () => before + run,
-    left: () => Math.max(0, cap - before - run),
+    left: () => Math.max(0, Math.min(cap - before - run, runLimit - run)),
     take(n: number) {
-      if (before + run + n > cap) return false;
+      if (before + run + n > cap) { stoppedBy = 'weekly cap'; return false; }
+      if (run + n > runLimit) { stoppedBy = 'run limit'; return false; }
       run += n;
       save();
       return true;
     },
     get thisRun() { return run; },
+    get stoppedBy() { return stoppedBy; },
   };
 }
 
@@ -129,7 +135,7 @@ export const httpTransport: Transport = async (body, key) => {
   return (await res.json()) as JevResponse;
 };
 
-export interface JevStats { calls: number; decisions: number; inputTokens: number; failures: string[]; capReached: boolean }
+export interface JevStats { calls: number; decisions: number; inputTokens: number; failures: string[]; capReached: boolean; stoppedBy: Budget['stoppedBy'] }
 
 export interface Jev {
   readonly stats: JevStats;
@@ -146,19 +152,23 @@ export interface Jev {
  */
 export function makeJev(opts: { key: string | null; budget: Budget; transport?: Transport }): Jev {
   const transport = opts.transport ?? httpTransport;
-  const stats: JevStats = { calls: 0, decisions: 0, inputTokens: 0, failures: [], capReached: false };
+  const stats: JevStats = { calls: 0, decisions: 0, inputTokens: 0, failures: [], capReached: false, stoppedBy: null };
   let broken = !opts.key;
   return {
     stats,
     available(questions = 1) {
       if (broken) return false;
-      if (opts.budget.left() < questions) { stats.capReached = true; return false; }
+      if (opts.budget.left() < questions) {
+        stats.capReached = true;
+        stats.stoppedBy = opts.budget.cap - opts.budget.used() < questions ? 'weekly cap' : 'run limit';
+        return false;
+      }
       return true;
     },
     async choose(state, questions) {
       const n = Object.keys(questions).length;
       if (n === 0 || broken || !opts.key) return null;
-      if (!opts.budget.take(n)) { stats.capReached = true; return null; }
+      if (!opts.budget.take(n)) { stats.capReached = true; stats.stoppedBy = opts.budget.stoppedBy; return null; }
       const body: JevRequest = { state, model: JEV_MODEL, questions };
       for (let attempt = 0; attempt < 2; attempt++) {
         try {

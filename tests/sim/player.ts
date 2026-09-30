@@ -146,7 +146,8 @@ export async function decideAll(
     else asking.push(i);
   });
   if (asking.length) {
-    const why = !jev ? 'no Jev key' : !jev.available(asking.length) ? (jev.stats.capReached ? 'weekly Jev cap reached' : 'Jev unavailable') : null;
+    const stopped = () => (jev?.stats.stoppedBy === 'run limit' ? "this run's Jev limit reached" : 'weekly Jev cap reached');
+    const why = !jev ? 'no Jev key' : !jev.available(asking.length) ? (jev.stats.capReached ? stopped() : 'Jev unavailable') : null;
     let answers: Record<string, ChoiceAnswer> | null = null;
     if (!why && jev) {
       const questions = Object.fromEntries(asking.map((i) => [`q${i}`, jevQuestion(items[i]!.situation)]));
@@ -156,7 +157,7 @@ export async function decideAll(
       const it = items[i]!;
       out[i] = answers
         ? fromJev(it.situation, answers[`q${i}`], rng, it.chooser.script)
-        : scriptedChoice(it.situation, rng, it.chooser.script, why ?? (jev?.stats.capReached ? 'weekly Jev cap reached' : 'Jev unavailable'));
+        : scriptedChoice(it.situation, rng, it.chooser.script, why ?? (jev?.stats.capReached ? stopped() : 'Jev unavailable'));
     }
   }
   // PLT-110: whatever happened above, every decision is one of the offered options.

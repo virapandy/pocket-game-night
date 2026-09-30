@@ -580,7 +580,9 @@ export async function runMany(opts: RunOpts): Promise<RunSummary> {
   const jev = opts.jev ?? null;
   if (jev) {
     s.jev = { line: '', calls: jev.stats.calls, decisions: jev.stats.decisions, capReached: jev.stats.capReached, failures: jev.stats.failures.slice(0, 5) };
-    s.jev.line = jev.stats.capReached
+    s.jev.line = jev.stats.capReached && jev.stats.stoppedBy === 'run limit'
+      ? `Jev: ${jev.stats.decisions} decisions in ${jev.stats.calls} calls, then this run's own limit was reached; the rest of the run used scripted players`
+      : jev.stats.capReached
       ? `Jev: weekly cap of ${WEEKLY_CAP.toLocaleString('en-GB')} decisions reached; the rest of the run used scripted players`
       : jev.stats.failures.length && jev.stats.decisions === 0 ? 'Jev unavailable: ran with random and scripted players'
       : `Jev: ${jev.stats.decisions} decisions in ${jev.stats.calls} calls`;

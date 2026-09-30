@@ -171,6 +171,17 @@ describe('PLT-113: Jev spending is capped at 20,000 decisions a week', () => {
     expect(summaryText(s)).toContain('weekly cap of 20,000 decisions reached; the rest of the run used scripted players');
   });
 
+  it('a run can set its own lower limit; the summary says so and never claims the weekly cap was reached', async () => {
+    const log: JevRequest[] = [];
+    const budget = makeBudget({ runLimit: 9 });
+    const jev = makeJev({ key: FAKE_KEY, budget, transport: fakeJev(uniform, log) });
+    const s = await runMany({ games: 10, prefix: 'plt-113-limit', jev, jevShare: 1 });
+    expect(log.reduce((a, b) => a + Object.keys(b.questions).length, 0)).toBeLessThanOrEqual(9);
+    expect(s.failures).toEqual([]);
+    expect(summaryText(s)).toContain("this run's own limit was reached; the rest of the run used scripted players");
+    expect(summaryText(s)).not.toContain('weekly cap');
+  });
+
   it('the count is kept for the whole week across runs, and starts again the next week', async () => {
     const file = `${mkdtempSync(`${tmpdir()}/jev-usage-`)}/usage.json`;
     const monday = Date.UTC(2026, 8, 28, 9), sunday = Date.UTC(2026, 9, 4, 22), nextMonday = Date.UTC(2026, 9, 5, 9);
