@@ -1,0 +1,153 @@
+# Once a week (and on request): the long, report-only checks (PLT-118).
+# Mass simulation with an optional Jev smoke run, mutation testing, and the Android phone emulator.
+# Separate from "Check and publish" (ci.yml): it never blocks, cancels or waits on it, and never publishes.
+# Every job is report-only: a failure here shows in the results but fails nothing else.
+name: Weekly extended checks
+
+on:
+  schedule:
+    - cron: '0 2 * * 1' # Mondays 02:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: weekly-extended-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  simulation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: ISO week
+        id: week
+        run: echo "week=$(date -u +%G-W%V)" >> "$GITHUB_OUTPUT"
+      # This week's Jev decision count is kept between runs, so repeated manual runs stay under the weekly cap.
+      # Each run saves a new copy (a cache key cannot be overwritten); the newest one for the week is restored.
+      - uses: actions/cache@v4
+        with:
+          path: reports/runs/jev-usage.json
+          key: jev-usage-${{ steps.week.outputs.week }}-${{ github.run_id }}
+          restore-keys: |
+            jev-usage-${{ steps.week.outputs.week }}-
+            jev-usage-
+      - name: Mass simulation and Jev smoke run
+        run: npm run test:extended
+        env:
+          JEV_API_KEY: ${{ secrets.JEV_API_KEY }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: simulation
+          path: |
+            reports/sim/
+            tests/replays/
+          if-no-files-found: warn
+
+  mutation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Mutation testing
+        run: npm run test:mutation
+      - name: Mutation summary
+        if: always()
+        run: npm run test:mutation:summary
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mutation
+          path: |
+            reports/mutation-latest.md
+            reports/stryker/
+          if-no-files-found: warn
+
+  android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - name: Enable hardware acceleration for the emulator (KVM)
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Android emulator tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 33
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: true
+          script: npm run test:android
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: android
+          path: test-results/android/
+          if-no-files-found: warn
+
+  # Collects the three jobs' results and summaries into one artifact and the run's summary page.
+  # It does not commit: the Test role copies what it needs into reports/.
+  report:
+    needs: [simulation, mutation, android]
+    if: always()
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      - name: Write the weekly report
+        env:
+          SIMULATION: ${{ needs.simulation.outcome }}
+          MUTATION: ${{ needs.mutation.outcome }}
+          ANDROID: ${{ needs.android.outcome }}
+        run: |
+          day=$(date -u +%Y-%m-%d)
+          mkdir -p weekly
+          out="weekly/$day.md"
+          {
+            echo "# Weekly run $day"
+            echo
+            echo "| Job | Result |"
+            echo "|---|---|"
+            echo "| Mass simulation and Jev smoke run | $SIMULATION |"
+            echo "| Mutation testing | $MUTATION |"
+            echo "| Android emulator | $ANDROID |"
+            echo
+            echo "## Simulation summary"
+            cat artifacts/simulation/reports/sim/summary-latest.md 2>/dev/null || echo "No simulation summary."
+            echo
+            echo "## Mutation summary"
+            cat artifacts/mutation/mutation-latest.md 2>/dev/null || cat artifacts/mutation/reports/mutation-latest.md 2>/dev/null || echo "No mutation summary."
+          } > "$out"
+          cat "$out" >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: weekly-report
+          path: weekly/

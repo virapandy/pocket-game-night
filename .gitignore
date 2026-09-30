@@ -5,6 +5,7 @@ playwright-report/
 test-results/
 reports/stryker/
 reports/runs/
+.stryker-tmp/
 .env
 .env.*
 .claude/settings.local.json

@@ -11,6 +11,10 @@
     "preview": "vite preview",
     "test": "vitest run --config tests/vitest.config.ts --passWithNoTests",
     "test:browser": "playwright test --config tests/playwright.config.ts",
+    "test:mutation": "stryker run tests/stryker.config.mjs",
+    "test:mutation:summary": "node tests/mutation/summary.mjs",
+    "test:extended": "vitest run --config tests/vitest.extended.config.ts",
+    "test:android": "playwright test --config tests/playwright.android.config.ts",
     "build:rhymes": "node scripts/build-rhymes.mjs"
   },
   "dependencies": {
@@ -21,6 +25,8 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.63.0",
+    "@stryker-mutator/core": "^10.0.0",
+    "@stryker-mutator/vitest-runner": "^10.0.0",
     "@types/node": "^26.6.3",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
