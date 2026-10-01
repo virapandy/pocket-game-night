@@ -97,6 +97,21 @@ test.describe('PLT-121: Android-only behaviour on the emulator (390 × 844)', ()
     expect((await calledNumbers(page)).sort((a, b) => a - b)).toEqual([...calls].sort((a, b) => a - b));
   });
 
+  // TAM-111 says a swipe from the edge during a game never navigates away; it does not say "only after a tap".
+  // So two or three back gestures in a row, with nothing tapped in between, must also leave the game on screen.
+  test('TAM-111: back gestures in a row, with no tap in between, do not navigate away', async ({ page, device }) => {
+    await setUpPaperGame(page);
+    const calls = await callMany(page, 3);
+    const url = page.url();
+    for (let round = 1; round <= 3; round++) {
+      await backGesture(device);
+      await page.waitForTimeout(1500);
+      expect(page.url(), `back gesture ${round} in a row: the page navigated away`).toBe(url);
+      await expect(currentNumber(page), `back gesture ${round} in a row: the calling screen is gone`).toHaveText(String(calls[calls.length - 1]), { timeout: 3000 });
+    }
+    expect((await calledNumbers(page)).sort((a, b) => a - b)).toEqual([...calls].sort((a, b) => a - b));
+  });
+
   test('TAM-111 and TAM-065: if the page is left anyway, the game resumes exactly where it was', async ({ page }) => {
     await setUpPaperGame(page);
     const calls = await callMany(page, 3);
