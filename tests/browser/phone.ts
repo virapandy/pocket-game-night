@@ -139,8 +139,22 @@ export async function phoneGame(host: Page, players: PhonePlayer[], contribution
 
 // ---------- Player phone ----------
 
+/**
+ * The app already open on this phone has finished starting: its screen is drawn and two frames have passed.
+ * A person cannot scan a QR within milliseconds of the app opening, but Playwright can: on the slower
+ * automation runner its next step landed in the few milliseconds between the first screen being drawn and the
+ * app listening for a new "#t=…" address, and the scan was lost (automation runs 36610989976 to 36804238090,
+ * iPhone engine). Waiting for this state is not a looser check: the ticket must still appear within 5 seconds.
+ */
+export async function appStarted(player: Page) {
+  if (!/^https?:/.test(player.url())) return; // nothing open yet: the scan itself opens the app
+  await expect(player.getByRole('main').first()).toBeVisible();
+  await player.evaluate(() => new Promise<void>((r) => requestAnimationFrame(() => requestAnimationFrame(() => r()))));
+}
+
 /** "Scans" a ticket QR: the phone's camera opens the link inside it. */
 export async function scanTicket(player: Page, payload: string) {
+  await appStarted(player);
   await player.goto(payload);
   await expect(player.getByTestId('phone-ticket').first()).toBeVisible();
 }
