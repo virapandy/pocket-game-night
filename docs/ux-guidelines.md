@@ -49,6 +49,9 @@ speed [8]. Our users:
 16. **Instant feedback on every host tap:** a visible change within 100 ms [22], plus a short
     vibration and sound where supported, so the host knows it worked without looking **[Inference]** [2].
 17. **Labels with every icon.** Only a handful of icons are universally understood [19].
+17a. **One main button per screen, and it is the next step.** Only one button has the solid main look. A chosen
+    option shows an outline, a ✓ and a light tint, never the main look. Choices between equals (host or join,
+    paper or phone) look equal. Destructive actions are never the main button (owner, 1 October 2026).
 
 ## 4. Mis-touches: prevent, then forgive
 18. **Undo beats confirmation.** Confirmations used too often get clicked through by habit; keep them

@@ -15,6 +15,7 @@ current; instructions live here, not in chat. History from Phase 0 and 1a is fur
 | Product owner review of Phase 2 and Phase 7 | **Done** (1 October, live, two browser tabs as host and player): matches the scenarios; small findings in step 2 below |
 | Extended testing | Started (122da49, 23d3f41, e289eb8) while automation was red |
 | UX review of several tickets on one phone (UX designer and product owner) | **Done** (1 October): fixes in step 2b |
+| UX review of home, paper/phone choice and button hierarchy (owner's observations) | **Done** (1 October): fixes in step 2d |
 | Phase 6 (connected mode), new games | On hold |
 
 ### Next, in order (for the orchestrator)
@@ -45,6 +46,9 @@ current; instructions live here, not in chat. History from Phase 0 and 1a is fur
    player's ticket), then run the loop. Most urgent: the pattern message covers ticket rows in landscape and pushes
    "Show claim" off screen in portrait. Tickets per player stay 1 to 3. This supersedes the "optional polish" quick-mark
    bullet in step 2 (now required).
+2d. **Host or player, paper or phone, and one main button per screen** (`docs/games/tambola/ux-review-2026-10-01-action-hierarchy.md`,
+   from the owner's own observations, 1 October). Ask the tester for the new and changed scenarios listed at the end
+   of that doc, then run the loop. Most urgent: Home's two equal choices and the paper/phone step. Can run with 2b.
 2c. **When idle: add the UX designer helper** (`docs/proposals/ux-designer-role.md`, owner approved 1 October):
    agent file, role guard entry (read only), Roles tables.
 3. **Answers to the open report questions** (report 357b824):

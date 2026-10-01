@@ -110,6 +110,7 @@
 | 2026-10-01 | A phone may hold another player's ticket (e.g. Grandma's); it keeps the holder's name on the phone, on claims and in payouts. A phone holds at most the per-player limit (3), held tickets included. | Owner |
 | 2026-10-01 | Several-ticket screens: the pattern message is one slim line that never covers tickets or pushes buttons off screen; Quick mark keys at least 44 px and show marks; "Which ticket?" shows thumbnails with the flagged ticket first; pattern outline not colour alone (TAM-195, TAM-192, TAM-190; `docs/games/tambola/ux-review-2026-10-01-several-tickets.md`). | Product owner with UX designer |
 | 2026-10-01 | A UX designer helper joins the product owner's chat: tests and recommends, decides with the product owner, edits nothing (`docs/proposals/ux-designer-role.md`). | Owner |
+| 2026-10-01 | Home shows two equal choices, "Host a game" and "Join with my ticket", above unfinished games; paper and phone tickets are two equal cards with no default; one main button per screen, always the next step (UX guideline 17a; `docs/games/tambola/ux-review-2026-10-01-action-hierarchy.md`). | Owner's observations, product owner with UX designer |
 
 "Convention" means the established Tambola rule in `docs/games/tambola/guide.md`, chosen because the owner asked
 Claude to follow game conventions. Every Tambola rule above is also a host setting with this default.
