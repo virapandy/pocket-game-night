@@ -1,6 +1,6 @@
 # Test report
 Commit tested: d3aa874   Date: 2026-10-01
-Result: GREEN locally (every layer, Android and iPhone). Automation result for this push: see the commit that follows this one, or the orchestrator's summary.
+Result: GREEN. Every layer passes locally on Android and iPhone, and automation is green on the report push b528bdf (run 36823684540: check and publish both succeeded; live preview published).
 
 Task: loop step 4 for `docs/handover.md` items 2 (small fixes) and 3 (report answers Q1 to Q4).
 Scenarios: TAM-198, TAM-181/TAM-199, PLT-201, PLT-204, PLT-205, PLT-202/PLT-209, plus the whole suite.
