@@ -14,8 +14,7 @@ current; instructions live here, not in chat. History from Phase 0 and 1a is fur
 | Product owner review of what is live (money, 1b and play-test fixes) | Matches the scenarios and the owner's 30 September decisions: payout rows with "Settle with host" and "Settle with players", "Session tally" and "Play again" fixed at the bottom, compact tally with "Settle up", the session line, "Close Early Five" as the main button with the screen dimmed. Two small findings below. |
 | Product owner review of Phase 2 and Phase 7 | **Done** (1 October, live, two browser tabs as host and player): matches the scenarios; small findings in step 2 below |
 | Extended testing | Started (122da49, 23d3f41, e289eb8) while automation was red |
-| UX review of several tickets on one phone (UX designer and product owner) | **Done** (1 October): fixes in step 2b |
-| UX review of home, paper/phone choice and button hierarchy (owner's observations) | **Done** (1 October): fixes in step 2d |
+| UX reviews (UX designer with product owner): several tickets; home, paper/phone and button hierarchy | **Done** (1 October): one consolidated list in step 2b |
 | Phase 6 (connected mode), new games | On hold |
 
 ### Next, in order (for the orchestrator)
@@ -30,27 +29,38 @@ current; instructions live here, not in chat. History from Phase 0 and 1a is fur
    ticket out; "Ticket 1 is out" refused calmly; "Report a problem" on host and player, with the preview of what is
    sent, held until the game ends, kept on the phone.
 2. **Small fixes from the product owner's reviews** (owner-approved scenarios, no new behaviour):
-   - Hand-out screen: "Next ticket" / "Start calling" sits mid-screen; fix it at the bottom like every other step
-     (TAM-181).
    - Problem reports show "App version: 0.0.0+059aaaa"; give the app a real version number (for example 1.0.0)
      so reports can be matched to a release (PLT-200).
-   - Optional polish: the quick-mark pad could also show which numbers the player has marked (the design sketch
-     did); TAM-192 does not require it, so only if cheap.
    - TAM-198 says the called number stays bright while the screen is dimmed; live, the number is dimmed too.
-   - Payout screen at 390 × 844 with 6 players: "Settle with host" and "Settle with players" sit below the
-     bottom, so the host scrolls to find them. Keep them reachable without scrolling (for example in the fixed
-     bottom area with "Session tally" and "Play again", or by folding the per-person rows).
-2b. **Several tickets on one phone: UX fixes** (`docs/games/tambola/ux-review-2026-10-01-several-tickets.md`, owner
-   approved the behaviour on 1 October). Ask the tester to update the scenarios listed at the end of that doc
-   (TAM-195, TAM-192, TAM-190, TAM-122/TAM-191, TAM-183, TAM-117, and one new scenario for holding another
-   player's ticket), then run the loop. Most urgent: the pattern message covers ticket rows in landscape and pushes
-   "Show claim" off screen in portrait. Tickets per player stay 1 to 3. This supersedes the "optional polish" quick-mark
-   bullet in step 2 (now required).
-2d. **Host or player, paper or phone, and one main button per screen** (`docs/games/tambola/ux-review-2026-10-01-action-hierarchy.md`,
-   from the owner's own observations, 1 October). Ask the tester for the new and changed scenarios listed at the end
-   of that doc, then run the loop. Most urgent: Home's two equal choices and the paper/phone step. Can run with 2b.
+   - (The hand-out button, quick-mark marks and payout buttons moved into the UX list in step 2b.)
+2b. **UX fixes: one consolidated list** (product owner with the UX designer, behaviour approved by the owner on
+   1 October; process in `docs/ux-evaluation-playbook.md`). This is the **only** UX list: the product owner merges each
+   new review into it, in priority order. Details and sketches: `docs/games/tambola/ux-review-2026-10-01-several-tickets.md`
+   (S) and `docs/games/tambola/ux-review-2026-10-01-action-hierarchy.md` (H). Ask the tester to write or update the
+   scenarios named, then run the loop from the top. Severity: 4 blocks play, 3 a core task falters, 2 slower, 1 polish.
+
+   | # | Sev | Change | Scenarios | From |
+   |---|---|---|---|---|
+   | 1 | 4 | The "marks fill a pattern" message is one slim line that never covers a ticket (landscape) or pushes "One at a time", "Quick mark" or "Show claim" off screen (portrait), with 1–3 tickets and Larger text | TAM-195 | S |
+   | 2 | 3 | Home: two equal choices, "Host a game" and "Join with my ticket" (scan or type), above unfinished games shown as plain rows; "You're ready for game night" on a first visit | new PLT, TAM-057 | H |
+   | 3 | 3 | Paper or phone tickets: two equal cards with their explanation inside, neither chosen in advance; start screen says "Housie on paper or on phones" | new TAM (near TAM-058) | H |
+   | 4 | 3 | One main-style button per screen, always the next step; a chosen option shows outline, ✓ and tint, never the main look (UX guideline 17a) | new PLT | H |
+   | 5 | 3 | Payouts: "Settle with host" and "Settle with players" reachable without scrolling (390 × 844, 6 players); "Play again" outlined | TAM-089, TAM-197 | step 2, H |
+   | 6 | 3 | End game question: "Keep playing" is the main button, "End game" outlined | TAM-103, TAM-124 | H |
+   | 7 | 3 | Quick mark: keys at least 44 px tall; marked numbers filled with ✓; thumbnails captioned "Ticket 1…"; "Show claim" in the bottom spot, "Back" at the top | TAM-192 | S, H |
+   | 8 | 2 | Host's claim scan by number: the chosen prize isn't styled like "Check"; "Check" works once ticket and prize are filled; "Enter ticket number" hidden while its form is open | TAM-178 | H |
+   | 9 | 2 | Hand-out: "Next ticket" / "Start calling" full width at the bottom; "Can't scan? Give a paper ticket" as a link above it | TAM-181 | step 2, H |
+   | 10 | 2 | "Which ticket?": small pictures of each ticket; the one the pattern message named first, marked "Pattern filled" | TAM-190 | S |
+   | 11 | 2 | Pattern outline not colour alone (thicker, plus a corner mark); Early Five said once | TAM-195 | S |
+   | 12 | 2 | A phone may hold another player's ticket under that player's name (claims and payouts go to them); a phone holds at most 3 tickets: "This phone already holds 3 tickets" | new TAM | S |
+   | 13 | 2 | Calling: the "Called 60 · Undo" bar lighter, with more space above "Scan a claim" | TAM-119 | H |
+   | 14 | 2 | Player's "Which prize?": "Cancel" as a link, not a prize-like button | TAM-177 | H |
+   | 15 | 1 | Polish: One at a time keeps a 12 px side margin (TAM-122, TAM-191); host prize chips wrap (TAM-183); code field shows a pattern hint and the button says "Add a ticket by code" (TAM-117); "Done" outlined under the claim QR; "Waiting: Player 1 (1 ticket)" (TAM-132); "New game" at the bottom; "Remove" in grey | listed | S, H |
+
+   Not changing: tickets per player stay 1 to 3 (a later version decides from play-tests); the 20-character typed code;
+   "Show claim" stays the player's main button. After the next green build the UX designer re-checks each row.
 2c. **When idle: add the UX designer helper** (`docs/proposals/ux-designer-role.md`, owner approved 1 October):
-   agent file, role guard entry (read only), Roles tables.
+   agent file pointing at `docs/ux-evaluation-playbook.md`, role guard entry (read only), Roles tables.
 3. **Answers to the open report questions** (report 357b824):
    - **Q1, money in reports (owner, 1 October):** reports **include** the game's money numbers (contribution per
      ticket, prize amounts, payouts), with names still replaced by "Player 1", "Player 2"; the host still sees
