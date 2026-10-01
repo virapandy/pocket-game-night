@@ -130,17 +130,6 @@ async function todayPattern(page: Page): Promise<RegExp> {
 
 // ---------- Checks on a report's text ----------
 
-const MONEY_KEYS = ['contribution', 'amount', 'pot', 'paid', 'won', 'net', 'prize', 'handedBack', 'hostGives', 'gotBack', 'gives'];
-function moneyIn(value: unknown, path = '', out: string[] = []): string[] {
-  if (Array.isArray(value)) value.forEach((v, i) => moneyIn(v, `${path}[${i}]`, out));
-  else if (value && typeof value === 'object') {
-    for (const [k, v] of Object.entries(value)) {
-      if (MONEY_KEYS.includes(k) && v !== null && v !== 0) out.push(`${path}.${k} = ${JSON.stringify(v)}`);
-      moneyIn(v, `${path}.${k}`, out);
-    }
-  }
-  return out;
-}
 function hides(text: string, secret: string): boolean {
   const b64 = Buffer.from(secret).toString('base64').replace(/=+$/, '');
   const b64url = b64.replace(/\+/g, '-').replace(/\//g, '_');
@@ -171,7 +160,7 @@ async function paperGameWithAWin(page: Page) {
 // =====================================================================================================
 
 test.describe('PLT-200, PLT-201, PLT-208: the host reports a problem after a game', () => {
-  test('from the payout screen: the host sees exactly what will be sent; no names, session name or money; kept on this phone, nothing leaves', async ({ page, context }, testInfo) => {
+  test('from the payout screen: the host sees exactly what will be sent; no names or session name; the money numbers are in; kept on this phone, nothing leaves', async ({ page, context }, testInfo) => {
     test.setTimeout(60_000);
     const requests = await watchNetwork(context);
     await paperGameWithAWin(page);
@@ -195,14 +184,20 @@ test.describe('PLT-200, PLT-201, PLT-208: the host reports a problem after a gam
     expect(seedValues(report).length).toBeGreaterThan(0);
     expect(callMoves(report)).toBe(calls);
 
-    // PLT-201: players are "Player 1" …; no name, no session name, no money.
+    // PLT-201: players are "Player 1" …; no name, no session name.
     for (const name of [...NAMES, SESSION, 'Diwali']) expect(text, `the report holds "${name}"`).not.toContain(name);
-    expect(text).not.toContain('₹');
-    expect(moneyIn(report)).toEqual([]);
     expect(report.game.setup.config.players.map((p: any) => p.name)).toEqual(['Player 1', 'Player 2', 'Player 3', 'Player 4']);
-    // The host sees it: the words, the version and the phone are on screen in the preview.
+    // PLT-201, PLT-204 (owner, 1 October 2026): the money numbers are in: ₹37 a ticket, the prize amounts, the payouts.
+    expect(report.game.setup.config.money?.contribution, 'the contribution per ticket').toBe(37);
+    const tierAmounts = (report.game.setup.config.tiers ?? []).map((t: any) => t.amount);
+    expect(tierAmounts.reduce((a: number, b: number) => a + b, 0), 'the prize amounts add up to the pot, 4 × ₹37').toBe(148);
+    expect(report.game.money?.people?.map((p: any) => p.paid), 'the payouts: what each person paid').toEqual([37, 37, 37, 37]);
+    expect(report.game.money.people.map((p: any) => p.name)).toEqual(['Player 1', 'Player 2', 'Player 3', 'Player 4']);
+    expect(report.game.money.people[0].won, 'Player 1 won Early Five').toBeGreaterThan(0);
+    // The host sees it: the words, the version and the money are on screen in the preview.
     await expect(preview(page)).toContainText("Player 1's prize looked wrong");
     await expect(preview(page)).toContainText(report.appVersion);
+    await expect(preview(page), 'the host sees the contribution that is sent').toContainText('37');
 
     // PLT-208: the stub keeps the report on this phone; nothing leaves it.
     await sendButton(page).click();
@@ -465,6 +460,65 @@ test.describe('PLT-209: reports waiting to send can be seen and cancelled, and e
     expect(JSON.parse(all[1]!.text).id).toBe(JSON.parse(all[0]!.text).id);
     await openWaiting(page);
     await expect(waitingReports(page)).toHaveCount(0);
+  });
+});
+
+test.describe('PLT-202, PLT-209: with sending not set up yet, kept reports are listed as waiting, with a note', () => {
+  // Product owner, 1 October 2026 (docs/decisions.md): reports kept by the stub are listed under "Reports waiting to
+  // send" with the note "Kept on this phone: sending isn't set up yet". No sending hook here: the real app's stub.
+  const NOTE = /Kept on this phone: sending isn[’']t set up yet/;
+
+  test('a report kept by the stub is listed with its date, first line and the note; it stays after a reload and can be deleted', async ({ page, context }) => {
+    test.setTimeout(60_000);
+    const requests = await watchNetwork(context);
+    await page.goto(HOME);
+    await openReport(page);
+    await writeReport(page, 'Stub kept: the board froze');
+    await sendButton(page).click();
+    await expect(keptOnPhone(page)).toBeVisible();
+    await page.goto(HOME);
+    await openWaiting(page);
+    await expect(waitingReports(page)).toHaveCount(1);
+    const item = waitingReports(page).first();
+    await expect(item).toContainText('Stub kept: the board froze');
+    await expect(item).toContainText(await todayPattern(page));
+    await expect(page.getByText(NOTE).first(), 'the note on the list').toBeVisible();
+
+    // Still there after the connection drops and returns (nothing can send it) and after a reload.
+    await context.setOffline(true);
+    await context.setOffline(false);
+    await page.waitForTimeout(1500);
+    await page.reload();
+    await openWaiting(page);
+    await expect(waitingReports(page)).toHaveCount(1);
+    await expect(page.getByText(NOTE).first()).toBeVisible();
+
+    await waitingReports(page).first().getByRole('button', { name: /^Delete/ }).click();
+    const confirm = page.getByRole('dialog').getByRole('button', { name: /^Delete/ });
+    if (await confirm.isVisible().catch(() => false)) await confirm.click();
+    await expect(waitingReports(page)).toHaveCount(0);
+    await expectNothingLeft(page, requests);
+  });
+
+  test('a report kept while offline is listed with the note too, alongside one about a game still being played', async ({ page, context }) => {
+    test.setTimeout(60_000);
+    await setUpPaperGame(page, { players: NAMES, contribution: 37 });
+    await callMany(page, 3);
+    await openReport(page);
+    await writeReport(page, 'Mid-game problem');
+    await sendButton(page).click();
+    await endGame(page);
+    await context.setOffline(true);
+    await openReport(page);
+    await writeReport(page, 'Offline problem');
+    await sendButton(page).click();
+    await expect(whatField(page)).toBeHidden();
+    await context.setOffline(false);
+    await page.goto(HOME);
+    await openWaiting(page);
+    await expect(waitingReports(page)).toHaveCount(2);
+    for (const words of ['Mid-game problem', 'Offline problem']) await expect(waitingReports(page).filter({ hasText: words })).toHaveCount(1);
+    await expect(page.getByText(NOTE).first()).toBeVisible();
   });
 });
 

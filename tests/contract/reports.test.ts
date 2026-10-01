@@ -154,7 +154,7 @@ describe('PLT-200: a report holds the app version, the phone type, the host\'s s
   });
 });
 
-describe('PLT-201: a report never holds names, session names or money amounts; players become "Player 1", "Player 2"', () => {
+describe('PLT-201: a report never holds names or session names; players become "Player 1", "Player 2"; it does hold the money numbers', () => {
   it('the setup\'s players are "Player 1" … in setup order; no name, old or new, is anywhere in the report', () => {
     const g = endedPaperGame();
     const r = hostReport(g, 'Something odd');
@@ -183,16 +183,49 @@ describe('PLT-201: a report never holds names, session names or money amounts; p
     expect(claimsOf(m)).toEqual(claimsOf(g.match));
   });
 
-  it('no money: no contribution, tier amount, pot, paid, won or net, and no ₹, even for a game that ended with money', () => {
-    const g = endedPaperGame();
-    const r = hostReport(g);
-    const text = reportText(r);
-    expect(moneyIn(JSON.parse(text))).toEqual([]);
-    expect(text).not.toContain('₹');
-    expect(text).not.toContain('INR');
+  // Owner, 1 October 2026 (docs/decisions.md; was "no money amounts"): the game's money numbers ARE in the report.
+  it('the money numbers are in: the contribution per ticket and every prize amount, as the host set them', () => {
+    const r = hostReport(endedPaperGame());
+    const back = readReport(reportText(r));
+    expect(back.ok).toBe(true);
+    const config = back.report.game.setup.config;
+    expect(config.money).toEqual({ currency: 'INR', contribution: 37 });
+    expect(config.tiers.map((t: any) => [t.pattern, t.amount])).toEqual([['early-five', 23], ['top-line', 31], ['full-house', 94]]);
   });
 
-  it('no session name, and nothing from the saved game\'s money record, even if handed in', () => {
+  it('the payouts are in: the saved game\'s money record, each person paid and won as recorded, names as "Player N"', () => {
+    const g = endedPaperGame();
+    const record = g.summary.money;
+    expect(record, 'the ended game has a money record').toBeTruthy();
+    const r = hostReport(g);
+    const back = readReport(reportText(r)).report;
+    expect(back.game.money, 'game.money: the payouts as the app recorded them').toBeTruthy();
+    expect(back.game.money.currency).toBe(record.currency);
+    expect(back.game.money.people.map((p: any) => ({ personId: p.personId, paid: p.paid, won: p.won })))
+      .toEqual(record.people.map((p: any) => ({ personId: p.personId, paid: p.paid, won: p.won })));
+    expect(back.game.money.people.map((p: any) => p.name)).toEqual(['Player 1', 'Player 2', 'Player 3', 'Player 4']);
+    const text = reportText(r);
+    for (const name of [...NAMES, 'Daddyji Sharma']) expect(text, `the name ${name}`).not.toContain(name);
+  });
+
+  it('edge: a game still being played holds its money numbers too (but no seeds, PLT-206), and no payouts yet', () => {
+    const g = paperGame().call(4);
+    const r = hostReport(g);
+    expect(r.waitingForGameEnd).toBe(true);
+    expect(r.game.setup.config.money.contribution).toBe(37);
+    expect(r.game.setup.config.tiers.map((t: any) => t.amount)).toEqual([23, 31, 94]);
+    expect(r.game.money ?? null).toBeNull();
+  });
+
+  it('edge: a "No money" game has no money numbers to add, and still makes a report', () => {
+    const g = paperGame({ money: null, tiers: [{ pattern: 'early-five', amount: 0, label: 'Chocolate' }, { pattern: 'top-line', amount: 0, label: 'Ice cream' }, { pattern: 'full-house', amount: 0, label: 'The big cake' }] }).call(5).finish();
+    const r = hostReport(g);
+    expect(moneyIn(JSON.parse(reportText(r)))).toEqual([]);
+    expect(r.game.money ?? null).toBeNull();
+    expect(calledOf(replayOf(r))).toEqual(g.called);
+  });
+
+  it('no session name, and no settlement, even if handed in; the money record goes in with names replaced', () => {
     const g = endedPaperGame();
     const r = makeReport({
       what: '', ...APP, at: g.clock + 1000,
@@ -200,7 +233,9 @@ describe('PLT-201: a report never holds names, session names or money amounts; p
     });
     const text = reportText(r);
     expect(text).not.toContain('Diwali');
-    expect(moneyIn(JSON.parse(text))).toEqual([]);
+    expect(text).not.toContain('settle-1');
+    for (const name of NAMES) expect(text).not.toContain(name);
+    expect(r.game.money.people.length).toBe(4);
   });
 
   it('what is sent is exactly what the host saw: the text reads back as the same report, and is the same every time', () => {
@@ -307,6 +342,22 @@ describe('PLT-204: every report with seeds and moves becomes a replay of the exa
     expect(s.callsMade).toBe(g.summary.callsMade);
     expect(s.bogeys.map((b: any) => [b.playerId, b.pattern])).toEqual(g.summary.bogeys.map((b: any) => [b.playerId, b.pattern]));
     expect(rules.invariants(m.state)).toEqual([]);
+  });
+
+  it('money bugs can be replayed: the replayed game has the same pot, prize amounts, winners\' shares and payouts', () => {
+    // Owner, 1 October 2026: reports include the money numbers so that money bugs can be replayed (PLT-204).
+    const g = paperGame().call(6);
+    g.do({ type: 'record-win', pattern: 'early-five', playerIds: ['p1', 'p3'] }).close('early-five');
+    g.call(4).finish();
+    const m = replayOf(readReport(reportText(hostReport(g, 'the shares looked wrong'))).report);
+    const s = rules.view(m.state, { kind: 'host' }).summary;
+    expect(s.pot).toBe(148);
+    expect(s.pot).toBe(g.summary.pot);
+    expect(s.tiers.map((t: any) => ({ pattern: t.pattern, amount: t.amount, winners: t.winners })))
+      .toEqual(g.summary.tiers.map((t: any) => ({ pattern: t.pattern, amount: t.amount, winners: t.winners })));
+    const pay = (xs: any[]) => xs.map((p: any) => ({ playerId: p.playerId, paid: p.paid, won: p.won, handedBack: p.handedBack, net: p.net, hostGives: p.hostGives }));
+    expect(pay(s.payouts)).toEqual(pay(g.summary.payouts));
+    expect(s.money.people.map((p: any) => [p.personId, p.paid, p.won])).toEqual(g.summary.money.people.map((p: any) => [p.personId, p.paid, p.won]));
   });
 
   it('a phone-ticket game replays too: the same tickets, the same claim verdicts', () => {
@@ -461,6 +512,65 @@ describe('PLT-205: reports are sorted into bug, confusion, idea or noise, groupe
     const shuffled = sortReports([...reports].reverse(), { now: NOW });
     const norm = (o: any) => o.groups.map((g: any) => ({ kind: g.kind, ids: [...g.reportIds].sort() }));
     expect(norm(shuffled)).toEqual(norm(out));
+  });
+
+  // Product owner, 1 October 2026 (docs/decisions.md): bug = something went wrong, confusion = didn't know how,
+  // idea = a wish, otherwise noise. A report with a caught error stays a bug.
+  const kindOf = (what: string, extra: Record<string, unknown> = {}) => {
+    const one = r(what, 1, extra);
+    const out = sortReports([one], { now: NOW });
+    return out.groups.find((g: any) => g.reportIds.includes(one.id))?.kind;
+  };
+  const SORTED: [string, string][] = [
+    ['The app crashed when I tapped Next number', 'bug'],
+    ['There was an error on the payout screen', 'bug'],
+    ['The prize amount was wrong', 'bug'],
+    ["Undo didn't work", 'bug'],
+    ['The screen got stuck on the board', 'bug'],
+    ['How do I undo a call?', 'confusion'],
+    ['Where is the board?', 'confusion'],
+    ["I can't find the settings", 'confusion'],
+    ['The prizes step is confusing', 'confusion'],
+    ["We didn't understand the bogey rule", 'confusion'],
+    ['Please add a Hindi voice', 'idea'],
+    ['I wish it had dark mode', 'idea'],
+    ['A timer would be nice', 'idea'],
+    ['Could you make the numbers bigger?', 'idea'],
+    ['Idea: a scoreboard for rummy', 'idea'],
+    ['Lovely game, thank you', 'noise'],
+    ['asdf', 'noise'],
+    ['', 'noise'],
+  ];
+  for (const [what, kind] of SORTED) {
+    it(`"${what}" is ${kind === 'idea' ? 'an' : 'a'} ${kind}`, () => {
+      expect(kindOf(what)).toBe(kind);
+    });
+  }
+
+  it('the words are found in any case: "CRASH", "WHERE IS", "WISH"', () => {
+    expect(kindOf('IT WILL CRASH EVERY TIME')).toBe('bug');
+    expect(kindOf('WHERE IS THE MENU')).toBe('confusion');
+    expect(kindOf('WISH LIST: voices')).toBe('idea');
+  });
+
+  it("edge: a phone's curly apostrophe counts the same: \"didn’t work\" is a bug, \"can’t find\" a confusion", () => {
+    expect(kindOf('Undo didn\u2019t work')).toBe('bug');
+    expect(kindOf('I can\u2019t find the board')).toBe('confusion');
+  });
+
+  it('a report with a caught error stays a bug, whatever the words say', () => {
+    const err = { error: { message: 'TypeError: y is undefined' } };
+    expect(kindOf('Could you add a timer?', err)).toBe('bug');
+    expect(kindOf('Where is the board?', err)).toBe('bug');
+    expect(kindOf('Lovely game', err)).toBe('bug');
+    expect(kindOf('', err)).toBe('bug');
+  });
+
+  it('in the week\'s list, "Where is the board?" and "where is the board" are one confusion group, the Hindi voice an idea', () => {
+    const reports = week();
+    const out = sortReports(reports, { now: NOW });
+    expect(out.groups.find((g: any) => g.reportIds.includes(reports[3].id)).kind).toBe('confusion');
+    expect(out.groups.find((g: any) => g.reportIds.includes(reports[5].id)).kind).toBe('idea');
   });
 
   it('works with no Jev and no reports: an empty list', () => {

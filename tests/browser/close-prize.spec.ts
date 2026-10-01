@@ -68,6 +68,42 @@ const buttonAnimations = (page: Page) =>
       .map((a) => ({ iterations: a.effect?.getComputedTiming().iterations ?? 1 })),
   );
 
+/**
+ * What the called number looks like on the screen, from a screenshot of its box (so anything painted over it or
+ * behind it counts, whatever lies on top for taps): the most common colour (the background behind the digits) and
+ * the colour that differs most from it among the common ones (the digits).
+ */
+async function numberLook(page: Page): Promise<{ bg: number[]; ink: number[] }> {
+  await page.waitForTimeout(700); // let the number's own call animation finish
+  const png = (await currentNumber(page).screenshot({ animations: 'disabled' })).toString('base64');
+  return page.evaluate(async (data) => {
+    const img = new Image();
+    img.src = `data:image/png;base64,${data}`;
+    await img.decode();
+    const c = document.createElement('canvas');
+    c.width = img.width;
+    c.height = img.height;
+    const ctx = c.getContext('2d')!;
+    ctx.drawImage(img, 0, 0);
+    const px = ctx.getImageData(0, 0, c.width, c.height).data;
+    const counts = new Map<string, { n: number; rgb: number[] }>();
+    for (let i = 0; i < px.length; i += 4) {
+      const rgb = [px[i]!, px[i + 1]!, px[i + 2]!].map((v) => Math.round(v / 4) * 4);
+      const k = rgb.join(',');
+      const e = counts.get(k) ?? { n: 0, rgb };
+      e.n++;
+      counts.set(k, e);
+    }
+    const all = [...counts.values()].sort((a, b) => b.n - a.n);
+    const bg = all[0]!.rgb;
+    const common = all.filter((e) => e.n >= (px.length / 4) * 0.01);
+    const dist = (a: number[]) => Math.abs(a[0]! - bg[0]!) + Math.abs(a[1]! - bg[1]!) + Math.abs(a[2]! - bg[2]!);
+    const ink = common.reduce((best, e) => (dist(e.rgb) > dist(best.rgb) ? e : best), all[0]!).rgb;
+    return { bg, ink };
+  }, png);
+}
+const near = (a: number[], b: number[]) => a.every((v, i) => Math.abs(v - b[i]!) <= 12);
+
 test.describe('TAM-198: after a win, closing the prize is the main action', () => {
   test.beforeEach(async ({ page }) => {
     // Keep the screen awake, so the one-time screen-sleep tip (TAM-128) is not on the screen.
@@ -143,6 +179,17 @@ test.describe('TAM-198: after a win, closing the prize is the main action', () =
       if (!(await onTopAtCentre(l))) problems.push(`${what} is covered`);
     }
     expect(problems).toEqual([]);
+  });
+
+  test('strict: while dimmed, the called number looks exactly as bright as before the win (no dim behind or over it)', async ({ page }) => {
+    // TAM-198: "the rest of the calling screen is dimmed, except the win card, the number and these two buttons".
+    // Product owner's review, 1 October 2026: live, the number is dimmed too. Checked here on the pixels themselves.
+    const before = await numberLook(page);
+    await recordWin(page, 'Top Line', ['Riya']);
+    await expect(mainButton(page)).toHaveAccessibleName('Close Top Line');
+    const after = await numberLook(page);
+    expect(near(after.bg, before.bg), `the background behind the number: before ${before.bg}, while dimmed ${after.bg}`).toBe(true);
+    expect(near(after.ink, before.ink), `the number's digits: before ${before.ink}, while dimmed ${after.ink}`).toBe(true);
   });
 
   test('a tap in the dimmed area does nothing there, and pulses "Close Top Line" once; it never blinks on its own', async ({ page }) => {

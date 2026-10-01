@@ -22,7 +22,7 @@ The shared steps live in `helpers.ts`.
 | Board sheet (TAM-127) | a `role="dialog"` holding `board`, with `Close`, `Done` or `Back` |
 | Screen-sleep tip (TAM-128) | text "keep your screen on", `Got it`, `OK` or `Close`; afterwards "Screen may sleep" in the top bar |
 | Dialogs (`role="dialog"`) | End: text "End the game and show payouts?", `End game`, `Keep playing`. Discard: `Discard…`, and "N prize(s) was/were already won" when true. Undo claim: `Undo…` |
-| After the game | `Play again` and `Session tally` (TAM-197), both fixed at the bottom of the screen (TAM-181); `Session tally` opens the session screen of the session this game is in. Below the person rows: `Settle with host` (TAM-089) and `Settle with players` (TAM-199) |
+| After the game | `Play again` and `Session tally` (TAM-197), both fixed at the bottom of the screen (TAM-181); `Session tally` opens the session screen of the session this game is in. `Settle with host` (TAM-089) and `Settle with players` (TAM-199), both reachable without scrolling (owner, 2026-10-01) |
 | Resume | `Tap to resume`, or after 12 hours `Resume`, `End it…`, `Discard it…` |
 | Settings (from the menu) | a checkbox or switch named `Vibration`; `Done`, `Close` or `Back` |
 | iPhone tip | inside `install-tip`: `Got it`, `Close` or `OK` |
@@ -188,6 +188,11 @@ Tests: `payouts-and-tally.spec.ts`, `close-prize.spec.ts`, `session-line.spec.ts
 - `Play again` and `Session tally` fixed at the bottom (bottom edge within 40 px of the screen's, fully on screen
   without scrolling, same place after scrolling), also with 20 players; the last `payout-person` can be scrolled
   into view above them and is not covered.
+- `Settle with host` and `Settle with players` reachable without scrolling (product owner's review, approved by the owner
+  1 October 2026): at 390 × 844 with 6 and with 20 players, with the page and every scrolling area at the top, each lies
+  wholly on the screen and is topmost at its centre, while `Play again` and `Session tally` stay at the bottom; a tap
+  at its centre works (`settle-with-host` shows). Where they go (the fixed bottom area, above the rows, or folded rows)
+  is the Build workspace's choice.
 - `Session tally` opens that game's session: `tally` visible and the session's name on the screen.
 
 ### The session screen (TAM-181, PLT-017, TAM-109)
@@ -210,6 +215,9 @@ Tests: `payouts-and-tally.spec.ts`, `close-prize.spec.ts`, `session-line.spec.ts
   0.05 and 0.98, or a backdrop blur/brightness), or they are faded (opacity ≤ 0.7 up the tree, or a brightness,
   grayscale or opacity filter). Not dimmed: `claim-result` (with its `Undo…`), `current-number`, `main-button` and
   `Add another winner`: each topmost at its centre, opacity ≥ 0.95, no filter.
+- Strict (product owner's review, 1 October 2026): a screenshot of `current-number`'s box looks the same while dimmed
+  as just before the win: its most common colour (the background behind the digits) and its digits' colour each
+  within 12 per channel of before. A dim layer behind a see-through number box, or over it, fails this.
 - Still working while dimmed (owner, 2026-09-30), so topmost at their centre (whether they look dimmed is not
   checked): `Menu` (opens with `End game`, `Discard game`, `Show the room`, each working as usual; End game pays the
   won prize), the won chip's `Close` (inside its `prize-chip`; closes the prize exactly like `Close Top Line`) and
@@ -352,6 +360,9 @@ PLT-209. What a report holds is defined in `tests/contract/README.md`, "Problem 
   **player's ticket screen** (inside its `Menu`).
 - The form: a field labelled `What happened?` (empty at first; optional), `report-preview`, `Send report` (enabled
   even with nothing typed) and `Cancel` (closes the form, sends nothing).
+- Money (owner, 1 October 2026): for a game with money, the report holds the contribution and prize amounts and, after
+  the game, `game.money` (what is in it: `tests/contract/README.md`, "Problem reports"); the preview's visible text shows
+  the contribution amount (for example "37"), so the host sees the money that is sent.
 - `report-preview`: what will be sent, shown to the host before sending (PLT-201). Its `data-payload` attribute holds
   **exactly** the text that will be sent (`reportText`, JSON), kept up to date as the host types; its visible text
   includes the sentence (with names already replaced, "Player 1's prize looked wrong") and the app version.
@@ -389,3 +400,7 @@ Settings (the home screen's `Settings` if there is one, otherwise the Tambola st
 waiting for their game to end), each with its date ("29 Sep") and the first line of its words, and a button starting
 `Delete` (a confirming `dialog` with a button starting `Delete` is allowed). A deleted report is never sent. The list
 updates by itself when reports are sent. The tests reach it by taps only (no page load), also offline.
+While sending is not set up yet (the stub, no sending hook; product owner, 1 October 2026): every report the stub keeps
+is listed there as a `waiting-report` (also one kept while offline, and one that waited for its game to end), and the
+screen shows the note "Kept on this phone: sending isn't set up yet" (straight or curly apostrophe). They stay listed
+after a reload and after the connection returns, and can be deleted the same way.

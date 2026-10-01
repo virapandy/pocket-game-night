@@ -128,7 +128,7 @@ And if the phone has no voice at all, the option is greyed out with a one-line r
 From `docs/games/tambola/ux-calling-screen.md`, setup problems 9 to 11 (problem 12 is TAM-082). New drafts.
 
 ## TAM-181: The main button stays at the bottom on every setup step
-Status: approved, owner, 2026-09-28 (scenario review outcome: product owner verdict, owner sign-off for Phase 1a.1); was draft (new, tester, 2026-09-28, from the redesign). Ticket-mode step decided 2026-09-29 (docs/decisions.md): tapping "Paper tickets" moves on at once, with no separate "Next"
+Status: approved, owner, 2026-10-01 (the settle buttons on the payout screen reachable without scrolling); approved, owner, 2026-09-28 (scenario review outcome: product owner verdict, owner sign-off for Phase 1a.1); was draft (new, tester, 2026-09-28, from the redesign). Ticket-mode step decided 2026-09-29 (docs/decisions.md): tapping "Paper tickets" moves on at once, with no separate "Next"
 Phase: Phase 1a
 Given a 390 × 844 screen
 On the ticket-mode step, a one-choice step
@@ -139,6 +139,9 @@ And it stays visible without scrolling, however many players or tiers there are 
 And nothing on the step is hidden behind it: the last player's name box can still be scrolled into view above it
 The same holds after the game (1b review findings 1 and 2, approved, owner, 2026-09-29, docs/games/tambola/changes-2026-09-29-money-and-1b.md):
 On the payout screen, "Play again" (and "Session tally", TAM-197) is fixed at the bottom, however many players there are
+And on the payout screen, "Settle with host" and "Settle with players" (TAM-199) can be reached without scrolling:
+on a 390 × 844 screen they are on the screen as it first appears, with 6 or 20 players (product owner's review,
+approved, owner, 2026-10-01, docs/handover.md)
 On a session's screen, "Settle up" and "Mark as settled" are fixed at the bottom, however many people are in the tally
 And nothing is hidden behind them: the last person can still be scrolled into view above them
 

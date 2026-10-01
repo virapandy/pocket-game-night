@@ -11,19 +11,23 @@ And the report includes the app version, the phone type, and the game's seeds an
 (For a game still in progress, the seeds wait until the game ends: PLT-206.)
 
 ## PLT-201: Reports never include personal data
-Status: approved, owner, 2026-09-29 (Phase 7 sign-off, with the product owner's verdict of 2026-09-28: approve)
+Status: approved, owner, 2026-10-01 (docs/decisions.md 2026-10-01: reports include the game's money numbers); was approved, owner, 2026-09-29 (Phase 7 sign-off, with the product owner's verdict of 2026-09-28: approve; then "never includes … money amounts")
 Phase: Phase 7
-Then a report never includes player names, session names or money amounts;
+Then a report never includes player names or session names;
 names are replaced with "Player 1", "Player 2" …
+And it does include the game's money numbers: the contribution per ticket, the prize amounts and the payouts
+(what each person paid and won), with the names in them replaced too, so money bugs can be replayed (PLT-204)
 And the host sees exactly what will be sent before sending it
 
 ## PLT-202: Reports wait for a connection
-Status: approved, owner, 2026-09-29 (Phase 7 sign-off, with the product owner's verdict of 2026-09-28: approve)
+Status: approved, owner, 2026-10-01 (docs/decisions.md 2026-10-01: reports kept by the stub are listed as waiting); was approved, owner, 2026-09-29 (Phase 7 sign-off, with the product owner's verdict of 2026-09-28: approve)
 Phase: Phase 7
 Given the phone has no internet
 When the host sends a report
 Then it is kept on the phone and sent automatically when a connection returns
 And it never interrupts a game
+And while sending is not set up yet (the stub, PLT-208), every report kept on the phone is listed under
+"Reports waiting to send" (PLT-209) with the note "Kept on this phone: sending isn't set up yet"
 
 ## PLT-203: Crashes are caught and offered as reports
 Status: approved, owner, 2026-09-29 (Phase 7 sign-off, with the product owner's verdict of 2026-09-28: approve)
@@ -33,17 +37,25 @@ Then the game is saved, the host sees a calm "Something went wrong; your game is
 and is offered to send a report (never sent without asking)
 
 ## PLT-204: Every report becomes a replay
-Status: approved, owner, 2026-09-29 (Phase 7 sign-off, with the product owner's verdict of 2026-09-28: approve)
+Status: approved, owner, 2026-10-01 (docs/decisions.md 2026-10-01: money bugs can be replayed from a report); was approved, owner, 2026-09-29 (Phase 7 sign-off, with the product owner's verdict of 2026-09-28: approve)
 Phase: Phase 7
 When a report arrives with seeds and moves
 Then the Test workspace can replay the exact game, and a confirmed bug is saved as a permanent test (TAM-074)
+And because the report holds the money numbers (PLT-201), the replay has the same pot, prize amounts, winners'
+shares and payouts, so a money bug can be replayed too
 
 ## PLT-205: Reports are sorted before anyone reads them
-Status: approved, owner, 2026-09-29 (Phase 7 sign-off, with the product owner's verdict of 2026-09-28: approve)
+Status: approved, owner, 2026-10-01 (docs/decisions.md 2026-10-01: the sorting words); was approved, owner, 2026-09-29 (Phase 7 sign-off, with the product owner's verdict of 2026-09-28: approve)
 Phase: Phase 7
 When reports arrive
 Then each is sorted into bug, confusion, idea or noise, and grouped with similar reports
 (By Jev where available, otherwise by simple rules), and the owner gets a ranked weekly list
+The simple rules (product owner, 2026-10-01, docs/decisions.md), on the words in "What happened?", in any case:
+- bug: something went wrong ("crash", "error", "wrong", "didn't work", "stuck")
+- confusion: didn't know how ("how do I", "where is", "can't find", "confusing", "didn't understand")
+- idea: a wish ("add", "wish", "would be nice", "could you", "idea")
+- otherwise noise
+And a report with a caught error (PLT-203) is always a bug
 
 ## Gaps found in the review of 28 September 2026 (new drafts)
 
@@ -73,10 +85,12 @@ And sending a report needs no account and no sign-in, and costs nothing ("$0 per
 And until a real destination is chosen, sending goes to a stub: the report is kept on the phone and nothing leaves it; a real free, no-account destination is required before any wider public release (owner, 2026-09-28).
 
 ## PLT-209: Reports waiting to be sent can be seen and cancelled
-Status: approved, owner, 2026-09-29 (Phase 7 sign-off, with the product owner's verdict of 2026-09-28: approve)
+Status: approved, owner, 2026-10-01 (docs/decisions.md 2026-10-01: reports kept by the stub are listed, with a note); was approved, owner, 2026-09-29 (Phase 7 sign-off, with the product owner's verdict of 2026-09-28: approve)
 Phase: Phase 7
 Given two reports are waiting for a connection (PLT-202)
 When the host opens Settings, "Reports waiting to send"
 Then both are listed with their date and first line
 And the host can delete either before it is sent
 And a report is sent only once, even if the connection drops and returns while sending
+And while sending is not set up yet (PLT-208), the reports kept on the phone are listed here too, with the note
+"Kept on this phone: sending isn't set up yet", and can be deleted the same way

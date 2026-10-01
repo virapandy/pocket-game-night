@@ -89,7 +89,9 @@ Report = {
     gameType: string,
     setup: SetupInput,          // anonymised (below); `seeds` only once the game is over
     records: MoveRecord[],      // the moves at the time of the report, anonymised
-    …                           // anything else (status, id) that holds no name, money or seed
+    money?: MoneyRecord | null, // the saved game's money record (the payouts), names as "Player N"; null or absent
+                                // while the game is still being played and for a "No money" game (PLT-201, 2026-10-01)
+    …                           // anything else (status, id) that holds no name or seed
   },
   waitingForGameEnd: boolean,   // PLT-206: true while the game is in progress or paused
   tickets?: { ticket: number; rows: (number | null)[][]; marks: number[] }[],   // player reports only
@@ -101,10 +103,12 @@ Report = {
 - **No names (PLT-201).** The players in `game.setup` are named `Player 1`, `Player 2` … in setup order; late joiners
   and renamed players get `Player N` too (in the moves as well), and the game still replays with the same calls and
   claims. A player's name typed in `what` becomes their `Player N` ("Ashalata got a bogey" → "Player 2 got a bogey").
-- **No money (PLT-201).** No money amount anywhere: the keys `contribution`, `amount`, `pot`, `paid`, `won`, `net`,
-  `prize`, `handedBack`, `hostGives`, `gotBack`, `gives` may appear only with `0` or `null`; no `₹` and no `INR`. The
-  game still replays without them (for Tambola, as a "No money" game: the same calls, claims, bogeys and ending).
-  Nothing from the saved game's `money` record, its session name or settlement goes in.
+- **Money numbers are in (PLT-201, PLT-204; owner, 1 October 2026, replacing "no money").** `game.setup.config`
+  keeps the game's `money` (`{ currency, contribution }`) and every tier's `amount` exactly as set up, also while the
+  game is in progress. For an ended game, `game.money` is the saved game's `MoneyRecord` with the same `currency`,
+  `personId`s, `paid` and `won`, each `name` replaced by that player's `Player N`. Read back from `reportText`, the game
+  replays with the same `pot`, tier amounts and winners, `payouts` (`paid`, `won`, `handedBack`, `net`, `hostGives`)
+  and `money`. A "No money" game has no amounts (`money: null`). The session name and settlement never go in.
 - No account, e-mail or sign-in details (no key named `email`, `account`, `userId`, `token`, `password`, `apiKey`, `key`).
 - Engine code cannot know a game's config, so `rules` is passed in; how a game anonymises its setup and moves (for
   example an optional method on `GameRules`) is the Build workspace's choice.
@@ -135,5 +139,10 @@ still in progress or paused, or for another game: the report unchanged (still wa
 ```
 Only reports with `now − 7 days < at ≤ now`, each in exactly one group. A report with an `error` is a `bug`, and
 reports with the same error message are one group. Reports whose `what` is the same apart from case, spaces and
-punctuation are one group. An empty report (no words, no error) is `noise`. Groups are ranked biggest first; the same
+punctuation are one group. An empty report (no words, no error) is `noise`.
+The kind (product owner, 1 October 2026), from the words of `what`, in any case, a curly apostrophe (’) counting as
+`'`: `bug` for "crash", "error", "wrong", "didn't work", "stuck"; `confusion` for "how do I", "where is", "can't find",
+"confusing", "didn't understand"; `idea` for "add", "wish", "would be nice", "could you", "idea"; otherwise `noise`.
+A report with an `error` is always a `bug`, whatever its words. (Which kind wins when words of two kinds appear is not
+decided; the tests use no such sentence.) Groups are ranked biggest first; the same
 reports in any order give the same groups in the same order. No reports: `groups: []`. Works with no Jev and no network.

@@ -4,10 +4,10 @@
 // fixed at the bottom), PLT-017 (one compact row per person in the tally; a tap shows the details), TAM-109 (each session in the list has a
 // readable label). Settle up stays player to player (PLT-028, unchanged: sessions.spec.ts). On a 390 × 844 screen.
 // Names and test ids: tests/browser/README.md.
-import { expect, test, type Page } from './fixtures';
+import { expect, test, type Locator, type Page } from './fixtures';
 import {
   callMany, confirmPrizes, endGame, expectAtBottom, expectNoPaymentUi, expectNotHiddenBehind, handOvers, hostGivesList, openSession, openSessions,
-  payoutPeople, recordWin, setUpPaperGame, tallyPeople, THREE_TIERS, winEverythingAndEnd,
+  onTopAtCentre, payoutPeople, recordWin, setUpPaperGame, tallyPeople, THREE_TIERS, winEverythingAndEnd,
 } from './helpers';
 
 test.use({ viewport: { width: 390, height: 844 }, timezoneId: 'Asia/Kolkata' });
@@ -266,6 +266,46 @@ test.describe('TAM-197 and TAM-181: from the payouts to the session tally; butto
     await expectAtBottom(page, mark, '"Mark as settled" under the hand-overs');
     await expectNotHiddenBehind(page, page.getByTestId('settle-up').getByTestId('hand-over').last(), [mark], 'the last hand-over');
   });
+});
+
+/** Scrolls the page, and every scrolling area in it, back to the top: the screen as it first appears. */
+const toTop = (page: Page) =>
+  page.evaluate(() => {
+    window.scrollTo(0, 0);
+    for (const el of Array.from(document.querySelectorAll('*'))) if (el.scrollTop > 0) el.scrollTop = 0;
+  });
+
+/** The button lies wholly on the 390 × 844 screen as it first appears, and nothing covers its centre. */
+async function expectReachableWithoutScrolling(page: Page, l: Locator, what: string) {
+  const vp = page.viewportSize()!;
+  await expect(l, `${what} is on the payout screen`).toBeVisible();
+  const b = (await l.boundingBox())!;
+  expect(b.y, `${what} starts on the screen`).toBeGreaterThanOrEqual(-0.5);
+  expect(b.y + b.height, `${what} ends on the screen (bottom at ${Math.round(b.y + b.height)} px, screen ${vp.height} px)`).toBeLessThanOrEqual(vp.height + 0.5);
+  expect(await onTopAtCentre(l), `nothing covers ${what}`).toBe(true);
+  return b;
+}
+
+test.describe('TAM-181 and TAM-199: "Settle with host" and "Settle with players" can be reached without scrolling', () => {
+  // Product owner's review of 1 October 2026 (docs/handover.md "Next, in order" item 2): with 6 players both buttons sat
+  // below the bottom of a 390 × 844 screen, so the host had to scroll to find them.
+  test.setTimeout(120_000);
+
+  for (const [label, players] of [['6 players', SIX], ['20 players', many(20)]] as const) {
+    test(`${label}: both settle buttons are on the screen as it first appears, and a tap there works`, async ({ page }) => {
+      await setUpPaperGame(page, { players: [...players] });
+      await earlyFiveThenEnd(page, players[0]!);
+      await toTop(page);
+      await expectReachableWithoutScrolling(page, settleWithPlayers(page), '"Settle with players"');
+      const host = await expectReachableWithoutScrolling(page, settleWithHost(page), '"Settle with host"');
+      // "Play again" and "Session tally" are still fixed at the bottom (TAM-197), and neither settle button is under them.
+      await expectAtBottom(page, playAgain(page), '"Play again"');
+      await expectAtBottom(page, sessionTally(page), '"Session tally"');
+      // A finger tap where "Settle with host" is, with no scrolling, opens what the host gives.
+      await page.mouse.click(host.x + host.width / 2, host.y + host.height / 2);
+      await expect(page.getByTestId('settle-with-host')).toBeVisible();
+    });
+  }
 });
 
 test.describe('PLT-017: the tally is one compact row per person', () => {

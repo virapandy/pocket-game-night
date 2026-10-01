@@ -1,63 +1,65 @@
 # Test report
-Commit tested: 280a32d (app, with e4f99e7's fixes; tests 6dbb0c5 plus this round's test-side timing fix)   Date: 2026-10-01
-Result: GREEN, here and in automation: run 36815880171 on 35ea968 (this fix) passed every layer and published the live preview
+Commit tested: 280a32d (app; unchanged at 059aaaa) with this round's new tests   Date: 2026-10-01
+Result: RED, as expected: new failing tests for `docs/handover.md` "Next, in order" items 2 and 3 (owner-approved).
+Every test that passed before still passes. Automation for this push will be red from these new tests only.
 
-Task: `docs/handover.md` "Next, in order" item 0, make automation ("Check and publish") green.
+Task: loop step 2 for handover items 2 (small fixes) and 3 (report answers Q1 to Q4).
 
 | Layer | Command | Passing | Failing | Skipped |
 |---|---|---|---|---|
-| Rules, contract, property, simulation, replays, key check (no Jev key) | `npm test` | 486 | 0 | 0 |
-| Browser, Android (Chromium) and iPhone (WebKit) together | `npm run build && npm run test:browser` | 508 | 0 | 8 (unchanged, deliberate) |
-| iPhone (WebKit) phone-ticket, claim, late-joiner and report files, 3 repeats, 8 workers, `CI=1` | `playwright test --project=iphone … --repeat-each=3` | 177 | 0 | 3 (deliberate) |
-| Automation "Check and publish", run 36815880171 on 35ea968 | every layer above, on GitHub's Linux runner | check: success | 0 | — |
+| Rules, contract, property, simulation, replays (no Jev key) | `npm test` | 503 | 9 (all new, `tests/contract/reports.test.ts`) | 0 |
+| Browser, Android (Chromium) and iPhone (WebKit) | `npm run build && npm run test:browser` | 506 | 12 (6 new tests × 2 phones) | 8 (unchanged, deliberate) |
 
-Automation publish job: success, so the live preview now has phone tickets (Phase 2) and "Report a problem" (Phase 7).
+## Scenarios changed (approved, owner, 2026-10-01)
+- PLT-201: reports include the game's money numbers (contribution per ticket, prize amounts, payouts); names and
+  session names still left out; the host sees exactly what is sent. (Q1)
+- PLT-204: money bugs can be replayed from a report. (Q1)
+- PLT-205: the sorting words for bug, confusion, idea, noise; a report with a caught error is always a bug. (Q3)
+- PLT-202, PLT-209: reports kept by the stub are listed under "Reports waiting to send" with the note
+  "Kept on this phone: sending isn't set up yet". (Q4)
+- TAM-181: on the payout screen, "Settle with host" and "Settle with players" are reachable without scrolling at
+  390 × 844, with 6 or 20 players. (Item 2)
+- TAM-198: wording unchanged; a strict check added. PLT-201 Q2 (free text): no change.
 
-Not re-run this round: the Android emulator, the 100,000-game simulation and mutation testing (not part of item 0).
+Tests replaced with the owner's approval (Q1, "replace tests that require money to be left out"): in
+`tests/contract/reports.test.ts`, "no money: no contribution, tier amount, pot …" and "no session name, and nothing
+from the saved game's money record" became the money-in tests below; in `tests/browser/report-problem.spec.ts` the
+PLT-201 "no ₹ / no money" assertions became "the money numbers are in".
 
-## Why automation was red since 53ac5db (runs 36610989976, 36656861486, 36788485111, 36804238090, 36813022751)
-Every failure in all five runs (2, 3, 8, 4 and 3 tests, a different set each time, iPhone engine only) is the same
-step: `scanTicket` in `tests/browser/phone.ts`, "the phone ticket appears" (`phone-ticket` not found within 5 s),
-on the first scan right after the test opened the app on a fresh player phone (`goto(HOME)` then the ticket link).
-Affected tests: phone-claims (TAM-179, TAM-196, TAM-044, TAM-178, TAM-036), phone-tickets (TAM-170, TAM-173,
-TAM-191, TAM-192, TAM-194, TAM-117/TAM-057), phone-late-joiners (TAM-212), report-problem (PLT-207, PLT-208).
-
-Cause: test timing, not an app bug. A ticket link opened in an app that is already showing its home screen
-changes only the "#t=…" part of the address, and the app picks it up once it has finished starting. Playwright
-changed the address the instant the page reported "loaded"; on the slower Linux runner (2 workers) that landed in
-the few milliseconds between the app's first screen being drawn and the app listening for a new address, so the
-link was missed. Reproduced here on both engines by changing the address at exactly that moment (ticket lost);
-changing it 1 ms or more later always worked. No person can scan a QR within milliseconds of the app opening, and
-a QR opened in a closed app works because the app reads the address on start.
-
-Fix (test side, no check loosened): `scanTicket` first waits until the app open on that phone has started (its
-main screen is visible and two frames have passed), then opens the link. The ticket must still appear within the
-same 5 seconds, and every assertion is unchanged. Checked with the worst case forced: 5 of 5 on each engine.
-
-Retries: configured as PLT-122 says. PLT-122 covers emulator and simulation runs: the Android emulator config
-retries once (`tests/playwright.android.config.ts`, `retries: 1`) and a failed Jev call is retried once
-(`tests/sim/jev.ts`). The ordinary browser checks keep `retries: 0` on purpose ("a flaky test is a finding"), and
-I have not changed that: retrying them would hide failures like this one, and that needs the owner's approval.
-
-## Failing (real bugs only)
-- None.
+## Failing (real bugs only: new behaviour not built yet)
+- TAM-198, `tests/browser/close-prize.spec.ts` "strict: while dimmed, the called number looks exactly as bright as
+  before the win": expected the number's background to stay the page colour (about 255,250,242), got grey (about
+  140,140,136). The number's box sits above the dim layer but is see-through, so the dim shows behind the digits.
+- TAM-181/TAM-199, `tests/browser/payouts-and-tally.spec.ts` "6 players: both settle buttons are on the screen as it
+  first appears, and a tap there works": expected "Settle with players" to end within 844 px, got 1057 px.
+- Same test, "20 players": expected within 844 px, got about 2428 px.
+- PLT-201, `tests/contract/reports.test.ts` "the money numbers are in": expected `game.setup.config.money` to be
+  `{ currency: 'INR', contribution: 37 }`, got `null`.
+- PLT-201, "the payouts are in": expected `game.money` (the saved money record, names as "Player N"), got none.
+- PLT-201, "edge: a game still being played holds its money numbers too": contribution missing.
+- PLT-201, "no session name, and no settlement … the money record goes in with names replaced": `game.money` missing.
+- PLT-204, "money bugs can be replayed": expected the replay's pot 148, got `null` (replayed as a "No money" game).
+- PLT-205, "Undo didn't work" and the curly-apostrophe edge ("didn’t work"): expected bug, got confusion.
+- PLT-205, "Lovely game, thank you" and "asdf": expected noise, got confusion.
+- PLT-201/PLT-200, `tests/browser/report-problem.spec.ts` "from the payout screen … the money numbers are in":
+  expected contribution 37 in the sent report, got none.
+- PLT-202/PLT-209, "a report kept by the stub is listed with its date, first line and the note": expected 1
+  `waiting-report`, got 0.
+- PLT-202/PLT-209, "a report kept while offline is listed with the note too …": expected 2, got 0.
 
 ## Flaky or setup problems (not for the Build workspace)
-- The failing automation runs above: test timing, fixed on the test side (see above).
-- The automation does not upload Playwright traces (`test-results/`), so failed runs can only be studied from the
-  log. Optional request below.
+- None this round.
 
 ## Requests for the Build workspace (dependencies, scripts, test hooks in the app)
-1. Optional, small: in `.github/workflows/ci.yml`, after "Browser tests", upload `test-results/browser/` as an
-   artifact when the step fails (`actions/upload-artifact@v4`, `if: failure()`, `retention-days: 7`), so the
-   tester can open traces of a failed run.
-2. Optional robustness, not a bug: a ticket link that arrives while the app is still starting (within
-   milliseconds) is dropped and the address cleared. No person can do this; only mention it if you touch that code.
-3. Earlier requests (Stryker, scripts, weekly workflow) were done in 280a32d.
+- Names, test ids and shapes are in `tests/browser/README.md` (payout screen; "After a win … main action", the new
+  "Strict" bullet; "Phase 7", money and "Reports waiting to send") and `tests/contract/README.md` ("Problem reports":
+  `game.money`, money numbers in `game.setup.config`, the sorting words).
+- Earlier optional requests (trace upload in automation, early ticket link) still stand.
 
 ## Notes for the owner (plain English)
-- The automatic checks have been failing because the test robot "scanned" a ticket a few thousandths of a second
-  after opening the app on a pretend phone, faster than any person can, on the slower online computer. The app was
-  fine. The robot now waits until the app has finished opening before it scans; it still checks everything it
-  checked before, just as strictly.
-- The automatic checks now pass, and the live preview has been updated with phone tickets and "Report a problem".
+- New checks were added for the two small fixes and the four report answers. They fail now because the app has not
+  been changed yet; that is expected at this step.
+- One open point for PLT-205: when a sentence has words of two kinds ("How do I add a player?" has "how do I" and
+  "add"), which kind wins is not decided. The tests avoid such sentences; please decide if it matters.
+- The tests count a phone's curly apostrophe ("didn’t work", as an iPhone types it) the same as "didn't work". Say so
+  if you disagree.
