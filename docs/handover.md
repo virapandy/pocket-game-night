@@ -1,6 +1,6 @@
 # Handover: start here
 
-## Now: status and what's next (product owner, updated 1 October 2026)
+## Now: status and what's next (product owner, updated 1 October 2026, after the Phase 2 and Phase 7 review)
 A new orchestrator session starts here: read this section, then work through **"Next, in order"** from the
 top, one item at a time, reporting to the owner after each. The product owner keeps this section
 current; instructions live here, not in chat. History from Phase 0 and 1a is further down.
@@ -9,10 +9,10 @@ current; instructions live here, not in chat. History from Phase 0 and 1a is fur
 | Item | State |
 |---|---|
 | Tester's report 357b824 on app a9ed2c3 | GREEN on the tester's machine for 1a.1 fixes, money and 1b review fixes, play-test fixes, Phase 2 and Phase 7 |
-| **Automation ("Check and publish")** | **RED on every run since 53ac5db** (Phase 2 tests): 2 or 3 iPhone-engine browser checks fail, different ones each run (phone claims, quick mark, typed code, player report). Rule and Android layers pass. |
-| **Live preview** | **Stuck at 7d765c8** (before Phase 2): phone tickets and "Report a problem" are **not live** |
+| Automation ("Check and publish") | **Green again** (a test scanned before the app had started; fixed, checks as strict as before) |
+| Live preview | **Up to date: phone tickets and "Report a problem" are live** |
 | Product owner review of what is live (money, 1b and play-test fixes) | Matches the scenarios and the owner's 30 September decisions: payout rows with "Settle with host" and "Settle with players", "Session tally" and "Play again" fixed at the bottom, compact tally with "Settle up", the session line, "Close Early Five" as the main button with the screen dimmed. Two small findings below. |
-| Product owner review of Phase 2 and Phase 7 | **Waiting** until they are live |
+| Product owner review of Phase 2 and Phase 7 | **Done** (1 October, live, two browser tabs as host and player): matches the scenarios; 5 small findings in step 2 below |
 | Extended testing | Started (122da49, 23d3f41, e289eb8) while automation was red |
 | Phase 6 (connected mode), new games | On hold |
 
@@ -25,8 +25,21 @@ current; instructions live here, not in chat. History from Phase 0 and 1a is fur
    Phase 7.
    **From now on a test report is GREEN only if the automation run for that commit is green too**; the report
    names that run.
-1. **Product owner review of Phase 2 and Phase 7** on the live preview (the product owner does this once 0 is done).
-2. **Small fixes from the product owner's review** (owner-approved scenarios, no new behaviour):
+1. ~~Product owner review of Phase 2 and Phase 7~~ **done.** Works as specified: hand-out ("Ticket 1 → Riya (1 of 2)",
+   QR, 20-character code, "0 of 4 handed out", who's waiting, paper fallback); a valid ticket on the player's
+   phone; both tickets together with no scrolling and "One at a time"; quick mark ("✓ 54 marked on ticket 1",
+   "11: not on your tickets", thumbnails with filled cells); the claim screen (big QR, top row outlined);
+   crossing out prizes; Larger text; the host's "Scan a claim" falling back to the ticket number when there is no
+   camera, with only this game's prizes; "Top Line: ✗ Bogey: 12, 22, 30, 40, 80 not called", credited to Riya,
+   ticket out; "Ticket 1 is out" refused calmly; "Report a problem" on host and player, with the preview of what is
+   sent, held until the game ends, kept on the phone.
+2. **Small fixes from the product owner's reviews** (owner-approved scenarios, no new behaviour):
+   - Hand-out screen: "Next ticket" / "Start calling" sits mid-screen; fix it at the bottom like every other step
+     (TAM-181).
+   - Problem reports show "App version: 0.0.0+059aaaa"; give the app a real version number (for example 1.0.0)
+     so reports can be matched to a release (PLT-200).
+   - Optional polish: the quick-mark pad could also show which numbers the player has marked (the design sketch
+     did); TAM-192 does not require it, so only if cheap.
    - TAM-198 says the called number stays bright while the screen is dimmed; live, the number is dimmed too.
    - Payout screen at 390 × 844 with 6 players: "Settle with host" and "Settle with players" sit below the
      bottom, so the host scrolls to find them. Keep them reachable without scrolling (for example in the fixed
@@ -42,7 +55,11 @@ current; instructions live here, not in chat. History from Phase 0 and 1a is fur
      understand"); idea = a wish ("add", "wish", "would be nice", "could you", "idea"); otherwise noise (PLT-205).
    - **Q4, stub reports (product owner):** yes, list them under "Reports waiting to send" with the note "Kept on
      this phone: sending isn't set up yet" (PLT-202, PLT-209).
-4. **Extended testing** (signed off; weekly Jev cap 20,000 decisions) continues once 0 is done.
+4. **Owner check on two real Android phones (owner's task):** scan a ticket QR with a phone camera, mark a few
+   numbers, show a claim QR and scan it with the host phone. This is the one path the review could not try (no
+   camera in the review browser). Check the player's phone shows their **name and the game's start time** (a
+   typed code carries neither, which is expected), and that the verdict appears within 2 seconds.
+5. **Extended testing** (signed off; weekly Jev cap 20,000 decisions) continues once 0 is done.
 
 ---
 
