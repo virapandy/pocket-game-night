@@ -24,6 +24,11 @@ export interface PhoneGameFacts {
   readonly name: string | null;
   readonly startedAt: number | null;
   readonly tiers: readonly Pattern[] | null;
+  /**
+   * TAM-195: the host turned the pattern cue on (from a format-2 ticket QR). Off for older QRs, typed codes and
+   * games saved on this phone before the setting existed.
+   */
+  readonly cue: boolean;
   readonly tickets: readonly PhoneTicketCopy[];
   readonly facts: readonly Fact[];
 }
@@ -50,6 +55,7 @@ export function loadPhoneGame(prefs: Preferences): PhoneGameFacts | null {
     name: typeof g.name === 'string' ? g.name : null,
     startedAt: typeof g.startedAt === 'number' ? g.startedAt : null,
     tiers: Array.isArray(g.tiers) ? g.tiers.filter(isPattern) : null,
+    cue: g.cue === true,
     tickets,
     facts,
   };
@@ -65,7 +71,7 @@ export function savePhoneGame(prefs: Preferences, game: PhoneGameFacts | null) {
  */
 export function addTicket(
   current: PhoneGameFacts | null,
-  t: { game: string; ticket: number; rows: Rows; name?: string; startedAt?: number; tiers?: readonly Pattern[] },
+  t: { game: string; ticket: number; rows: Rows; name?: string; startedAt?: number; tiers?: readonly Pattern[]; cue?: boolean },
 ): PhoneGameFacts {
   const same = current && current.game === t.game ? current : null;
   const tickets = [...(same?.tickets ?? []).filter((x) => x.number !== t.ticket), { number: t.ticket, rows: t.rows }].sort(
@@ -77,6 +83,9 @@ export function addTicket(
     name: t.name ?? same?.name ?? null,
     startedAt: t.startedAt ?? same?.startedAt ?? null,
     tiers: t.tiers ?? same?.tiers ?? null,
+    // A scanned QR says whether the host turned the cue on; a typed code says nothing, so it stays as it was (off
+    // for a new game).
+    cue: t.cue ?? same?.cue ?? false,
     tickets,
     facts: same?.facts ?? [],
   };
@@ -154,27 +163,37 @@ export function patternCells(rows: Rows, pattern: Pattern): number[] {
   }
 }
 
-const CUE_WORDS: Readonly<Record<Pattern, string>> = {
-  'early-five': '5 numbers of',
-  'top-line': 'the top row of',
-  'middle-line': 'the middle row of',
-  'bottom-line': 'the bottom row of',
-  'four-corners': 'the four corners of',
-  'full-house': 'every number of',
-  'second-full-house': 'every number of',
+/** How the cue line names each prize (TAM-195, owner 2026-10-01): "Ticket 3: top row filled". */
+export const CUE_WORDS: Readonly<Record<Pattern, string>> = {
+  'early-five': 'Early Five filled',
+  'top-line': 'top row filled',
+  'middle-line': 'middle row filled',
+  'bottom-line': 'bottom row filled',
+  'four-corners': 'four corners filled',
+  'full-house': 'Full House filled',
+  'second-full-house': 'Full House filled',
 };
 
+export interface CueFill {
+  readonly ticket: number;
+  readonly pattern: Pattern;
+}
+
 /**
- * TAM-195: where the player's own marks fill a prize of this game. Based only on their marks: never a verdict.
- * One line per filled prize, and the cells to outline per ticket.
+ * TAM-195: where the player's own marks fill a prize of this game, only when the host turned the cue on. Based
+ * only on their marks: never a verdict. Each fill (ticket order; Early Five last on a ticket, as the lines and
+ * corners say more), and the cells to outline per ticket.
  */
-export function patternCue(game: PhoneGameFacts): { lines: string[]; cells: Map<number, Set<number>> } {
+export function patternCue(game: PhoneGameFacts): { fills: CueFill[]; cells: Map<number, Set<number>> } {
+  const fills: CueFill[] = [];
+  const cells = new Map<number, Set<number>>();
+  if (!game.cue) return { fills, cells };
   const crossed = crossedOut(game);
   const prizes = prizesOf(game).filter((p) => !crossed.has(p));
   // Second Full House fills exactly when Full House does: say it once.
-  const said = prizes.filter((p) => p !== 'second-full-house' || !prizes.includes('full-house'));
-  const lines: string[] = [];
-  const cells = new Map<number, Set<number>>();
+  const said = prizes
+    .filter((p) => p !== 'second-full-house' || !prizes.includes('full-house'))
+    .sort((a, b) => Number(a === 'early-five') - Number(b === 'early-five'));
   for (const t of game.tickets) {
     const marks = marksOn(game, t.number);
     const numbers = numbersOn(t.rows);
@@ -182,11 +201,31 @@ export function patternCue(game: PhoneGameFacts): { lines: string[]; cells: Map<
       const need = patternCells(t.rows, p);
       const filled = p === 'early-five' ? numbers.filter((n) => marks.has(n)).length >= 5 : need.every((n) => marks.has(n));
       if (!filled) continue;
-      lines.push(`Your marks fill ${CUE_WORDS[p]} ticket ${t.number}. Shout if it's right!`);
+      fills.push({ ticket: t.number, pattern: p });
       const set = cells.get(t.number) ?? new Set<number>();
       need.forEach((n) => set.add(n));
       cells.set(t.number, set);
     }
   }
-  return { lines, cells };
+  return { fills, cells };
 }
+
+/** "Tickets 1 and 3", "Tickets 1, 2 and 3". */
+function ticketList(numbers: readonly number[]): string {
+  if (numbers.length === 1) return `Ticket ${numbers[0]}`;
+  return `Tickets ${numbers.slice(0, -1).join(', ')} and ${numbers[numbers.length - 1]}`;
+}
+
+/**
+ * The cue's one line (TAM-195, row 1a): "Ticket 3: top row filled. Shout if it's right!", or with fills on several
+ * tickets "Tickets 1 and 3: patterns filled. Shout if it's right!". `more` is true when there is more to say.
+ */
+export function cueLine(fills: readonly CueFill[]): { line: string; more: boolean } | null {
+  if (fills.length === 0) return null;
+  const tickets = [...new Set(fills.map((f) => f.ticket))];
+  const what = tickets.length === 1 ? CUE_WORDS[fills[0]!.pattern] : 'patterns filled';
+  return { line: `${ticketList(tickets)}: ${what}. Shout if it's right!`, more: fills.length > 1 };
+}
+
+/** Each fill in full, for "More": "Ticket 1: top row filled". */
+export const cueDetail = (f: CueFill) => `Ticket ${f.ticket}: ${CUE_WORDS[f.pattern]}`;

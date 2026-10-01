@@ -17,6 +17,8 @@
   --hover: #f3ece2;
   --ok-bg: #e3f1e4;
   --bad-bg: #fbe4e2;
+  /* A chosen option (PLT-301, guideline 17a): a light tint with an outline and a ✓, never the main look. */
+  --chosen-bg: #fbe9e6;
   --toast-bg: #1c1b1a;
   --toast-text: #ffffff;
   --toast-button: #ffd9d4;
@@ -49,6 +51,7 @@
   --hover: #2c2a27;
   --ok-bg: #1f3321;
   --bad-bg: #3b1f1c;
+  --chosen-bg: #3a2422;
   --toast-bg: #33302d;
   --toast-text: #ffffff;
   --toast-button: #ffd9d4;
@@ -581,7 +584,8 @@ button, [role="button"], a { touch-action: manipulation; }
 .call-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); gap: 6px; }
 .call-list li { padding: 6px; font-weight: 800; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
 .unfinished, .history-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
-.unfinished-row { display: flex; flex-direction: column; gap: 8px; padding: 14px; background: var(--surface); border: 2px solid var(--accent); border-radius: var(--radius); }
+.unfinished-row { display: flex; flex-direction: column; gap: 8px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+.unfinished-row .button { align-self: flex-start; }
 .unfinished-line { margin: 0; font-weight: 800; font-size: 1.1rem; }
 .history-row {
   width: 100%;
@@ -724,17 +728,28 @@ button.tcell { cursor: pointer; }
 .phone-buttons { display: flex; gap: 8px; }
 .phone-buttons > .button { flex: 1 1 0; min-width: 0; padding: 0 8px; }
 .listen { font-size: 0.9rem; text-align: center; }
-.pattern-cue { flex: none; padding: 6px 10px; font-weight: 700; color: var(--ok); background: var(--ok-bg); border-radius: 10px; }
-.pattern-cue p { margin: 0; font-size: 0.9rem; line-height: 1.3; }
-.pattern-cue-float { position: fixed; left: 8px; right: 8px; bottom: 56px; z-index: 5; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15); }
+/* TAM-195 (row 1a): the cue is one slim line in the flow, never over a ticket; its size does not grow with Larger
+   text (rem), and a long line ends in "…" with "More" beside it. */
+.pattern-cue {
+  flex: none; display: flex; align-items: center; gap: 6px; min-width: 0; padding: 4px 10px;
+  font-size: 0.9rem; line-height: 1.3; font-weight: 700; color: var(--ok); background: var(--ok-bg); border-radius: 10px;
+}
+.pattern-cue-text { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pattern-cue-more {
+  flex: none; min-height: 32px; padding: 0 6px; font: inherit; font-size: 0.9rem; line-height: 1.3; font-weight: 800;
+  color: var(--ok); background: transparent; border: 0; text-decoration: underline; cursor: pointer;
+}
+.cue-list { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; font-weight: 700; }
 .phone-landscape { gap: 6px; padding: 4px 8px; }
 .phone-landscape .phone-bar { min-height: 40px; }
 .phone-landscape .phone-actions { flex-direction: row; align-items: center; }
 .phone-landscape .phone-actions .listen { flex: 1; text-align: left; }
-.phone-landscape .phone-buttons > .button { min-height: 44px; }
+.phone-landscape .phone-buttons { flex: none; }
+.phone-landscape .phone-buttons > .button { flex: none; min-height: 44px; padding: 0 14px; white-space: nowrap; }
+.phone-landscape .phone-actions .pattern-cue { flex: 1 1 0; }
 .ticket-tabs { flex: none; display: flex; gap: 6px; }
 .ticket-tab { min-height: 44px; min-width: 56px; padding: 0 12px; font: inherit; font-weight: 800; color: var(--accent); background: transparent; border: 2px solid var(--border); border-radius: 10px; cursor: pointer; }
-.ticket-tab-on { color: var(--accent-text); background: var(--accent); border-color: var(--accent); }
+.ticket-tab-on { color: var(--accent); background: var(--chosen-bg); border-color: var(--accent); }
 .prize-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
 .prize-item { width: 100%; min-height: 48px; padding: 0 14px; text-align: left; font: inherit; font-weight: 800; color: var(--text); background: var(--surface); border: 2px solid var(--border); border-radius: 12px; cursor: pointer; }
 .prize-crossed { color: var(--disabled-text); background: var(--closed-bg); }
@@ -744,9 +759,13 @@ button.tcell { cursor: pointer; }
 /* Quick mark (TAM-192): the 1–90 pad, then every ticket as a thumbnail. */
 .quick-message { flex: none; margin: 0; min-height: 1.5em; font-weight: 800; text-align: center; }
 .quick-pad { flex: none; display: grid; grid-template-columns: repeat(10, 1fr); gap: 3px; }
-.quick-key { min-height: 36px; padding: 0; font: inherit; font-weight: 700; color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; touch-action: manipulation; }
+.quick-key { position: relative; min-height: 44px; padding: 0; font: inherit; font-weight: 700; color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; touch-action: manipulation; }
+/* A marked number: a tint, an outline and a ✓, so it never relies on colour alone (owner 2026-10-01). */
+.quick-key-on { color: var(--accent); background: var(--chosen-bg); border: 2px solid var(--accent); }
+.quick-tick { position: absolute; top: 1px; right: 3px; font-size: 0.7rem; line-height: 1; }
 .thumbs { flex: none; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
-.thumb { padding: 2px; background: transparent; border: 0; cursor: pointer; }
+.thumb { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 2px; font: inherit; color: var(--muted); background: transparent; border: 0; cursor: pointer; }
+.thumb-caption { font-size: 0.8rem; font-weight: 700; line-height: 1.2; }
 
 /* The claim screen (TAM-177, TAM-193): the claim QR above the claimed ticket. */
 .claim-screen { align-items: center; text-align: center; }
@@ -792,3 +811,47 @@ button.tcell { cursor: pointer; }
 .waiting-row > span { overflow-wrap: anywhere; }
 .home-report { align-self: center; }
 .push-right { margin-left: auto; }
+
+/* ----- Home (PLT-300) and equal choices (TAM-213, PLT-301) ----- */
+.home-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.home-bar .app-title { margin: 0; }
+.ready { margin: 0; font-weight: 800; color: var(--ok); }
+/* Choices between equals look equal: same size (equal rows), same colours and weight. */
+.home-choices, .choice-cards { display: grid; grid-auto-rows: 1fr; gap: 12px; }
+.choice-card {
+  position: relative;
+  width: 100%;
+  min-height: 96px;
+  padding: 16px 44px 16px 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  text-align: left;
+  font: inherit;
+  color: var(--text);
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+.choice-card-title { font-size: 1.35rem; font-weight: 800; line-height: 1.2; }
+.choice-card-text { color: var(--muted); line-height: 1.3; }
+.choice-card-on { background: var(--chosen-bg); border-color: var(--accent); }
+.choice-card-tick { position: absolute; top: 12px; right: 14px; font-size: 1.4rem; font-weight: 800; color: var(--accent); }
+.home-row {
+  display: flex; align-items: center; justify-content: space-between; min-height: 48px; padding: 0 4px;
+  font: inherit; font-weight: 700; color: var(--text); background: transparent; border: 0; border-bottom: 1px solid var(--border); cursor: pointer; text-align: left;
+}
+
+/* The host's pattern-cue switch on the ticket-type step (TAM-195). */
+.cue-setting { display: flex; flex-direction: column; gap: 8px; }
+.switch-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 56px; padding: 8px 4px;
+  font: inherit; font-weight: 700; text-align: left; color: var(--text); background: transparent; border: 0; cursor: pointer;
+}
+.switch-track { flex: none; position: relative; width: 52px; height: 30px; border-radius: 15px; background: var(--disabled-bg); border: 2px solid var(--border); }
+.switch-knob { position: absolute; top: 2px; left: 2px; width: 22px; height: 22px; border-radius: 50%; background: var(--surface); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3); }
+.switch-track-on { background: var(--ok); border-color: var(--ok); }
+.switch-track-on .switch-knob { left: 24px; }
+.cue-warning { font-weight: 600; }

@@ -330,7 +330,8 @@ export function Play({
               Session tally
             </button>
           )}
-          <button type="button" className="button button-big" onClick={() => onPlayAgain(saved)}>
+          {/* PLT-301, TAM-197 (owner 2026-10-01): "Play again" is outlined, not the main look. */}
+          <button type="button" className="button button-quiet button-big" onClick={() => onPlayAgain(saved)}>
             Play again
           </button>
         </div>
@@ -979,10 +980,11 @@ export function Play({
           <p className="lead">End the game and show payouts?</p>
           {money && <p className="note">The money of any prize not won is handed back to everyone, equally per ticket.</p>}
           <div className="row">
-            <button type="button" className="button" onClick={() => (setDialog(null), move({ type: 'end' }))}>
+            {/* TAM-103, PLT-301: "Keep playing" is the main button; ending is outlined (guideline 15). */}
+            <button type="button" className="button button-quiet" onClick={() => (setDialog(null), move({ type: 'end' }))}>
               End game
             </button>
-            <button type="button" className="button button-quiet" onClick={() => setDialog(null)}>
+            <button type="button" className="button" onClick={() => setDialog(null)}>
               Keep playing
             </button>
           </div>
@@ -996,10 +998,11 @@ export function Play({
           )}
           {money && <p className="note">Everyone gets their contribution back.</p>}
           <div className="row">
-            <button type="button" className="button" onClick={() => (setDialog(null), move({ type: 'discard' }))}>
+            {/* PLT-301: a destructive action is never the main button. */}
+            <button type="button" className="button button-quiet" onClick={() => (setDialog(null), move({ type: 'discard' }))}>
               Discard game
             </button>
-            <button type="button" className="button button-quiet" onClick={() => setDialog(null)}>
+            <button type="button" className="button" onClick={() => setDialog(null)}>
               Cancel
             </button>
           </div>

@@ -28,6 +28,8 @@ export interface SetupDraft {
   patterns: Pattern[] | null;
   fixed: Partial<Record<Pattern, number>>;
   labels: Partial<Record<Pattern, string>>;
+  /** TAM-195: phone tickets only: players' phones say when their marks fill a prize pattern. Off by default. */
+  patternCue: boolean;
 }
 
 export type SetupStep = 'mode' | 'players' | 'money' | 'prizes';
@@ -43,6 +45,7 @@ export const emptyDraft: SetupDraft = {
   patterns: null,
   fixed: {},
   labels: {},
+  patternCue: false,
 };
 
 const NAMES_KEY = 'names.recent';
@@ -73,6 +76,7 @@ export function loadDraft(prefs: Preferences): SetupDraft | null {
     patterns: Array.isArray(d.patterns) ? PATTERNS.filter((p) => d.patterns!.includes(p)) : null,
     fixed: d.fixed && typeof d.fixed === 'object' ? d.fixed : {},
     labels: d.labels && typeof d.labels === 'object' ? d.labels : {},
+    patternCue: d.patternCue === true,
   };
 }
 const MAX_PLAYERS = 30;
@@ -144,6 +148,7 @@ export function draftFromConfig(config: TambolaConfig): SetupDraft {
     patterns,
     fixed: {},
     labels: Object.fromEntries(config.tiers.filter((t) => t.label).map((t) => [t.pattern, t.label])),
+    patternCue: config.ticketMode === 'phone' && config.settings.patternCue === true,
   };
   if (!config.money) return draft;
   // Keep any amounts the anchor had changed.
@@ -176,6 +181,8 @@ export function Setup({
 }) {
   const [step, setStep] = useState<SetupStep>(initial?.step ?? 'mode');
   const [draft, setDraft] = useState<SetupDraft>(initial?.draft ?? emptyDraft);
+  // TAM-213: a new setup has neither paper nor phone chosen; a setup coming back (PLT-006, Play again) keeps its choice.
+  const [modeChosen, setModeChosen] = useState<boolean>(initial !== undefined);
   const [error, setError] = useState<string | null>(null);
   const [recent] = useState<string[]>(() => prefs.get<string[]>(NAMES_KEY, []).filter((n) => typeof n === 'string'));
   const update = (patch: Partial<SetupDraft>) => {
@@ -223,7 +230,7 @@ export function Setup({
       players,
       money: contribution === null ? null : { currency: 'INR', contribution },
       tiers,
-      settings,
+      settings: { ...settings, patternCue: draft.ticketMode === 'phone' && draft.patternCue },
     });
   };
 
@@ -236,39 +243,16 @@ export function Setup({
         </button>
       </header>
       {step === 'mode' && (
-        <>
-          <section className="stack setup-body">
-            <h1 className="step-title">New game</h1>
-            <p className="lead">How are tickets handed out?</p>
-            <p className="note">Paper tickets: everyone brings a ticket from a Tambola ticket book.</p>
-            <p className="note">
-              Phone tickets: this phone makes a ticket for each player. They scan it with their phone's camera, then
-              mark it and show a claim QR for you to scan. Works with no internet once their phone has opened this app.
-            </p>
-            <button
-              type="button"
-              className="button button-quiet button-big"
-              onClick={() => {
-                update({ ticketMode: 'phone' });
-                go('players');
-              }}
-            >
-              Phone tickets
-            </button>
-          </section>
-          <BottomAction>
-            <button
-              type="button"
-              className="button button-big"
-              onClick={() => {
-                update({ ticketMode: 'paper' });
-                go('players');
-              }}
-            >
-              Paper tickets
-            </button>
-          </BottomAction>
-        </>
+        <TicketTypeStep
+          mode={modeChosen ? draft.ticketMode : null}
+          cue={draft.patternCue}
+          onMode={(ticketMode) => {
+            setModeChosen(true);
+            update({ ticketMode });
+          }}
+          onCue={(patternCue) => update({ patternCue })}
+          onNext={() => modeChosen && go('players')}
+        />
       )}
       {step === 'players' && (
         <PlayersStep
@@ -302,6 +286,72 @@ export function Setup({
       )}
       {step === 'prizes' && <PrizesStep draft={draft} update={update} error={error} onConfirm={confirm} sessionLine={sessionLine} />}
     </main>
+  );
+}
+
+const CUE_NAME = "Players' phones say when their marks fill a prize pattern";
+
+/**
+ * TAM-213: paper or phone tickets, two equal cards, neither chosen in advance; "Next" at the bottom moves on once
+ * one is chosen. TAM-195: with phone tickets, the host's pattern-cue switch, off by default, with a warning when on.
+ */
+function TicketTypeStep({
+  mode,
+  cue,
+  onMode,
+  onCue,
+  onNext,
+}: {
+  mode: TicketMode | null;
+  cue: boolean;
+  onMode: (mode: TicketMode) => void;
+  onCue: (on: boolean) => void;
+  onNext: () => void;
+}) {
+  const card = (kind: TicketMode, title: string, text: string) => {
+    const on = mode === kind;
+    return (
+      <button type="button" className={on ? 'choice-card choice-card-on' : 'choice-card'} aria-pressed={on} onClick={() => onMode(kind)}>
+        <span className="choice-card-title">{title}</span>
+        <span className="choice-card-text">{text}</span>
+        {on && <span className="choice-card-tick">✓</span>}
+      </button>
+    );
+  };
+  return (
+    <>
+      <section className="stack setup-body">
+        <h1 className="step-title">New game</h1>
+        <p className="lead">How are tickets handed out?</p>
+        <div className="choice-cards">
+          {card('paper', 'Paper tickets', 'Always works. Print or bring tickets.')}
+          {card('phone', 'Phone tickets', 'Each player gets their ticket on their phone. Everyone must have opened the link once.')}
+        </div>
+        {mode === 'phone' && (
+          <div className="cue-setting">
+            <button type="button" role="switch" aria-checked={cue} className="switch-row" onClick={() => onCue(!cue)}>
+              <span className="switch-label">{CUE_NAME}</span>
+              <span className={cue ? 'switch-track switch-track-on' : 'switch-track'} aria-hidden="true">
+                <span className="switch-knob" />
+              </span>
+            </button>
+            {cue ? (
+              <p className="banner cue-warning">
+                Some players may stop listening and wait for the phone, and paper players get no help. Claims are still
+                shouted and checked.
+              </p>
+            ) : (
+              <p className="note">Off: players spot their own wins, as on paper.</p>
+            )}
+          </div>
+        )}
+      </section>
+      <BottomAction>
+        <button type="button" className="button button-big" disabled={mode === null} onClick={onNext}>
+          Next
+        </button>
+      </BottomAction>
+    </>
   );
 }
 

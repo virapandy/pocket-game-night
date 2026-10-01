@@ -10,6 +10,8 @@ import {
   addTicket,
   AWAY_KEY,
   crossedOut,
+  cueDetail,
+  cueLine,
   LARGE_TEXT_KEY,
   LAYOUT_KEY,
   loadPhoneGame,
@@ -34,7 +36,8 @@ type Screen =
   | { name: 'claim-ticket' }
   | { name: 'claim-prize'; ticket: number }
   | { name: 'claim'; ticket: number; pattern: Pattern }
-  | { name: 'enter'; text: string; error: string | null };
+  /** `typing` false: "Join with my ticket" first offers the camera, then "Type the code" (PLT-300). */
+  | { name: 'enter'; text: string; error: string | null; typing: boolean };
 
 /**
  * Whether this phone holds tickets: `open` means the player hasn't gone back home from them, so the app
@@ -78,18 +81,21 @@ export function PhoneTickets({
 }: {
   prefs: Preferences;
   link: string | null;
-  enter: boolean;
+  /** true: the typed-code form; 'join': Home's "Join with my ticket" (scan with the camera, or type the code). */
+  enter: boolean | 'join';
   nonce: number;
   onHome: () => void;
   /** Phase 7: "Report a problem" with only this phone's own tickets and marks (PLT-207). */
   onReport?: (subject: ReportSubject) => void;
 }) {
   const [game, setGame] = useState<PhoneGameFacts | null>(() => loadPhoneGame(prefs));
-  const [screen, setScreen] = useState<Screen>(() => (enter ? { name: 'enter', text: '', error: null } : { name: 'tickets' }));
+  const [screen, setScreen] = useState<Screen>(() =>
+    enter ? { name: 'enter', text: '', error: null, typing: enter === true } : { name: 'tickets' },
+  );
   const [layout, setLayout] = useState<Layout>(() => (prefs.get<string>(LAYOUT_KEY, 'all') === 'one' ? 'one' : 'all'));
   const [selected, setSelected] = useState<number | null>(null);
   const [large, setLarge] = useState(() => prefs.get<boolean>(LARGE_TEXT_KEY, false) === true);
-  const [popup, setPopup] = useState<'menu' | 'prizes' | null>(null);
+  const [popup, setPopup] = useState<'menu' | 'prizes' | 'cue' | null>(null);
   const [linkError, setLinkError] = useState<string | null>(null);
   const { w, h } = useViewport();
 
@@ -109,7 +115,15 @@ export function PhoneTickets({
     setLinkError(null);
     prefs.set(AWAY_KEY, false);
     const t = d.ticket;
-    const next = addTicket(loadPhoneGame(prefs), { game: t.game, ticket: t.ticket, rows: t.rows, name: t.name, startedAt: t.startedAt, tiers: t.tiers });
+    const next = addTicket(loadPhoneGame(prefs), {
+      game: t.game,
+      ticket: t.ticket,
+      rows: t.rows,
+      name: t.name,
+      startedAt: t.startedAt,
+      tiers: t.tiers,
+      cue: t.cue,
+    });
     save(next);
     setSelected(t.ticket);
     setScreen({ name: 'tickets' });
@@ -145,10 +159,10 @@ export function PhoneTickets({
   const rootClass = `phone${large ? ' phone-large' : ''}${w > h ? ' phone-landscape' : ''}`;
 
   if (screen.name === 'enter' || !game) {
-    const s = screen.name === 'enter' ? screen : { text: '', error: linkError };
+    const s = screen.name === 'enter' ? screen : { text: '', error: linkError, typing: true };
     const open = () => {
       const d = decodeTypedCode(s.text);
-      if (!d.ok) return setScreen({ name: 'enter', text: s.text, error: d.reason });
+      if (!d.ok) return setScreen({ name: 'enter', text: s.text, error: d.reason, typing: true });
       prefs.set(AWAY_KEY, false);
       save(addTicket(loadPhoneGame(prefs), { game: d.ticket.game, ticket: d.ticket.ticket, rows: d.ticket.rows }));
       setSelected(d.ticket.ticket);
@@ -158,32 +172,45 @@ export function PhoneTickets({
       <main className={`screen ${rootClass}`}>
         <header className="top-bar">
           <button type="button" className="button button-quiet" onClick={game ? openTickets : leave}>
-            ← {game ? 'Back' : 'Home'}
+            <span aria-hidden="true">← </span>
+            {game ? 'Back' : 'Home'}
           </button>
         </header>
-        <h1 className="step-title">Your Tambola ticket</h1>
-        <p className="lead">Scan the QR on the host's phone with your camera, or type the code shown under it.</p>
-        <label className="field">
-          <span>Ticket code</span>
-          <input
-            type="text"
-            autoComplete="off"
-            autoCapitalize="characters"
-            spellCheck={false}
-            placeholder="K7QM-2XPA-9RTD-4HWC-B3NF"
-            value={s.text}
-            onChange={(e) => setScreen({ name: 'enter', text: e.target.value, error: null })}
-            onKeyDown={(e) => e.key === 'Enter' && open()}
-          />
-        </label>
-        {s.error && (
-          <p className="error" role="alert">
-            {s.error}
-          </p>
+        <h1 className="step-title">{s.typing ? 'Type the code' : 'Join with my ticket'}</h1>
+        {!s.typing ? (
+          <>
+            <p className="lead">Scan the QR on the host's phone with your phone's camera. Your ticket opens here.</p>
+            <p className="note">No QR to scan? The host's screen also shows a code under it.</p>
+            <button type="button" className="button button-quiet button-big" onClick={() => setScreen({ name: 'enter', text: s.text, error: null, typing: true })}>
+              Type the code
+            </button>
+          </>
+        ) : (
+          <>
+            <p className="lead">Type the code shown under the QR on the host's phone, or scan the QR with your camera.</p>
+            <label className="field">
+              <span>Ticket code</span>
+              <input
+                type="text"
+                autoComplete="off"
+                autoCapitalize="characters"
+                spellCheck={false}
+                placeholder="XXXX-XXXX-XXXX-XXXX-XXXX"
+                value={s.text}
+                onChange={(e) => setScreen({ name: 'enter', text: e.target.value, error: null, typing: true })}
+                onKeyDown={(e) => e.key === 'Enter' && open()}
+              />
+            </label>
+            {s.error && (
+              <p className="error" role="alert">
+                {s.error}
+              </p>
+            )}
+            <button type="button" className="button button-big" onClick={open}>
+              Open ticket
+            </button>
+          </>
         )}
-        <button type="button" className="button button-big" onClick={open}>
-          Open ticket
-        </button>
       </main>
     );
   }
@@ -192,6 +219,7 @@ export function PhoneTickets({
   const numbersList = tickets.map((t) => t.number);
   const current = tickets.find((t) => t.number === selected) ?? tickets[0]!;
   const cue = patternCue(game);
+  const cueSays = cueLine(cue.fills);
   const crossed = crossedOut(game);
   const prizes = prizesOf(game);
   const mark = (ticket: number) => (n: number) => save(toggleMark(game, ticket, n));
@@ -205,7 +233,7 @@ export function PhoneTickets({
   const caption = landscape ? 0 : 20;
   // The caption beside each ticket in landscape, and the ticket's 2 px border on each side.
   const side = (landscape ? 20 : 0) + 4;
-  const chrome = landscape ? 104 : 190 + (cue.lines.length > 0 ? 24 * cue.lines.length : 0);
+  const chrome = landscape ? 104 : 190 + (cueSays ? 32 : 0);
   const allCell = Math.max(
     40,
     Math.min(
@@ -220,8 +248,13 @@ export function PhoneTickets({
     ? Math.max(44, Math.min(80, Math.floor((w - 16 - side) / 9), Math.floor((h - chrome - 60) / 3)))
     : Math.max(42, Math.min(80, Math.floor(w / 9), Math.floor((h - chrome - 60) / 3)));
 
-  const header = (
+  const header = (onBack?: () => void) => (
     <header className="phone-bar">
+      {onBack && (
+        <button type="button" className="bar-button" onClick={onBack}>
+          <span aria-hidden="true">← </span>Back
+        </button>
+      )}
       <p className="phone-ticket-header" data-testid="phone-ticket-header">
         {[game.name, `Ticket ${numbersList.join(' · ')}`, `Game ${game.game}`, game.startedAt !== null ? time(game.startedAt) : null]
           .filter(Boolean)
@@ -270,6 +303,21 @@ export function PhoneTickets({
           </button>
         </Popup>
       )}
+      {popup === 'cue' && (
+        <Popup label="Patterns filled" onClose={() => setPopup(null)}>
+          <div data-testid="pattern-cue-more" className="stack-tight">
+            <ul className="cue-list">
+              {cue.fills.map((f) => (
+                <li key={`${f.ticket}-${f.pattern}`}>{cueDetail(f)}</li>
+              ))}
+            </ul>
+            <p className="note">Shout if it's right! Only the host's check decides.</p>
+            <button type="button" className="button button-quiet" onClick={() => setPopup(null)}>
+              Close
+            </button>
+          </div>
+        </Popup>
+      )}
       {popup === 'menu' && (
         <Popup label="Menu" onClose={() => setPopup(null)}>
           <div role="menu" aria-label="Ticket menu" className="menu-list">
@@ -284,7 +332,7 @@ export function PhoneTickets({
               />
               <span>Larger text</span>
             </label>
-            <button type="button" role="menuitem" className="menu-item" onClick={() => (setPopup(null), setScreen({ name: 'enter', text: '', error: null }))}>
+            <button type="button" role="menuitem" className="menu-item" onClick={() => (setPopup(null), setScreen({ name: 'enter', text: '', error: null, typing: true }))}>
               Enter a ticket code
             </button>
             {onReport && (
@@ -322,11 +370,15 @@ export function PhoneTickets({
     </>
   );
 
-  const cueBox = cue.lines.length > 0 && (
-    <div className={landscape ? 'pattern-cue pattern-cue-float' : 'pattern-cue'} data-testid="pattern-cue" role="status">
-      {cue.lines.map((l) => (
-        <p key={l}>{l}</p>
-      ))}
+  // TAM-195 (row 1a): one slim line, never over a ticket and never pushing the buttons off screen; "More" for the rest.
+  const cueBox = cueSays && (
+    <div className="pattern-cue" data-testid="pattern-cue" role="status">
+      <span className="pattern-cue-text">{cueSays.line}</span>
+      {cueSays.more && (
+        <button type="button" className="pattern-cue-more" onClick={() => setPopup('cue')}>
+          More
+        </button>
+      )}
     </div>
   );
 
@@ -342,33 +394,51 @@ export function PhoneTickets({
     </section>
   );
 
+  const startClaim = () => {
+    setPopup(null);
+    setScreen(tickets.length > 1 ? { name: 'claim-ticket' } : { name: 'claim-prize', ticket: tickets[0]!.number });
+  };
+  // PLT-301: "Show claim" is the player's one main button, in the bottom spot.
+  const showClaimButton = (
+    <button type="button" className="button" onClick={startClaim}>
+      Show claim
+    </button>
+  );
+
   // ---------- Quick mark (TAM-192) ----------
   if (screen.name === 'quick') {
     const thumbCell = Math.max(8, Math.min(16, Math.floor((w - 32 - (tickets.length - 1) * 8) / (9 * tickets.length))));
+    // A number marked on any ticket (on the pad or on the ticket) shows a fill and a ✓ on its key (owner 2026-10-01).
+    const markedAnywhere = new Set(tickets.flatMap((t) => [...marksOn(game, t.number)]));
     return (
-      <main className={rootClass}>
-        {header}
+      <main className={`${rootClass} quick-screen`}>
+        {header(() => setScreen({ name: 'tickets' }))}
         <p className="note listen">Listen to the anchor, then tap the number you heard.</p>
         <p className="quick-message" data-testid="quick-mark-message" aria-live="polite">
-          {screen.message ?? ' '}
+          {screen.message ?? '\u00a0'}
         </p>
         <div className="quick-pad" data-testid="quick-mark-pad">
-          {Array.from({ length: 90 }, (_, i) => i + 1).map((n) => (
-            <button
-              key={n}
-              type="button"
-              className="quick-key"
-              onClick={() => {
-                const r = quickMark(game, n);
-                if (r.on.length === 0) return setScreen({ name: 'quick', message: `${n}: not on your tickets` });
-                save(r.game);
-                const where = r.on.length === 1 ? `ticket ${r.on[0]}` : `tickets ${r.on.slice(0, -1).join(', ')} and ${r.on[r.on.length - 1]}`;
-                setScreen({ name: 'quick', message: r.marked ? `✓ ${n} marked on ${where}` : `${n} unmarked on ${where}` });
-              }}
-            >
-              {n}
-            </button>
-          ))}
+          {Array.from({ length: 90 }, (_, i) => i + 1).map((n) => {
+            const on = markedAnywhere.has(n);
+            return (
+              <button
+                key={n}
+                type="button"
+                className={on ? 'quick-key quick-key-on' : 'quick-key'}
+                aria-pressed={on}
+                onClick={() => {
+                  const r = quickMark(game, n);
+                  if (r.on.length === 0) return setScreen({ name: 'quick', message: `${n}: not on your tickets` });
+                  save(r.game);
+                  const where = r.on.length === 1 ? `ticket ${r.on[0]}` : `tickets ${r.on.slice(0, -1).join(', ')} and ${r.on[r.on.length - 1]}`;
+                  setScreen({ name: 'quick', message: r.marked ? `✓ ${n} marked on ${where}` : `${n} unmarked on ${where}` });
+                }}
+              >
+                {n}
+                {on && <span className="quick-tick">✓</span>}
+              </button>
+            );
+          })}
         </div>
         <div className="thumbs">
           {tickets.map((t) => (
@@ -381,15 +451,14 @@ export function PhoneTickets({
               aria-label={`Open ticket ${t.number}`}
               onClick={() => setScreen({ name: 'zoom', ticket: t.number, message: screen.message })}
             >
+              <span className="thumb-caption">Ticket {t.number}</span>
               <TicketGrid rows={t.rows} cell={thumbCell} marks={marksFor(t.number)} className="ticket-thumb" />
             </button>
           ))}
         </div>
-        {cueBox}
         <div className="phone-actions">
-          <button type="button" className="button button-quiet" onClick={() => setScreen({ name: 'tickets' })}>
-            Back
-          </button>
+          {cueBox}
+          <div className="phone-buttons">{showClaimButton}</div>
         </div>
         {popups}
       </main>
@@ -400,13 +469,11 @@ export function PhoneTickets({
     const t = tickets.find((x) => x.number === screen.ticket) ?? current;
     return (
       <main className={rootClass}>
-        {header}
+        {header(() => setScreen({ name: 'quick', message: screen.message }))}
         <div className="tickets tickets-one">{ticketBox(t, oneCell)}</div>
-        {cueBox}
         <div className="phone-actions">
-          <button type="button" className="button button-quiet" onClick={() => setScreen({ name: 'quick', message: screen.message })}>
-            Back
-          </button>
+          {cueBox}
+          <div className="phone-buttons">{showClaimButton}</div>
         </div>
         {popups}
       </main>
@@ -481,36 +548,38 @@ export function PhoneTickets({
   // ---------- The tickets (TAM-131, TAM-173, TAM-191) ----------
   const showOne = layout === 'one';
   const shown = showOne ? [current] : tickets;
-  const startClaim = () => {
-    setPopup(null);
-    setScreen(tickets.length > 1 ? { name: 'claim-ticket' } : { name: 'claim-prize', ticket: tickets[0]!.number });
-  };
   return (
     <main className={rootClass}>
-      {header}
+      {header()}
       {showOne && (
         <div className="ticket-tabs" role="tablist" aria-label="Your tickets">
-          {tickets.map((t) => (
-            <button
-              key={t.number}
-              type="button"
-              role="tab"
-              aria-selected={t.number === current.number}
-              aria-label={`Ticket ${t.number}`}
-              className={t.number === current.number ? 'ticket-tab ticket-tab-on' : 'ticket-tab'}
-              onClick={() => setSelected(t.number)}
-            >
-              {t.number}
-            </button>
-          ))}
+          {tickets.map((t) => {
+            const on = t.number === current.number;
+            // PLT-301: the chosen tab is outlined, ticked and tinted, never the main look.
+            return (
+              <button
+                key={t.number}
+                type="button"
+                role="tab"
+                aria-selected={on}
+                aria-label={`Ticket ${t.number}`}
+                className={on ? 'ticket-tab ticket-tab-on' : 'ticket-tab'}
+                onClick={() => setSelected(t.number)}
+              >
+                {t.number}
+                {on && <span className="ticket-tab-tick"> ✓</span>}
+              </button>
+            );
+          })}
         </div>
       )}
       <div className={showOne ? 'tickets tickets-one' : cols === 2 ? 'tickets tickets-two' : 'tickets'}>
         {shown.map((t) => ticketBox(t, showOne ? oneCell : allCell))}
       </div>
-      {cueBox}
       <div className="phone-actions">
-        <p className="note listen">Listen to the anchor and mark your numbers.</p>
+        {/* In landscape the cue line takes the place of the reminder, beside the buttons, so it adds no height. */}
+        {!(landscape && cueBox) && <p className="note listen">Listen to the anchor and mark your numbers.</p>}
+        {cueBox}
         <div className="phone-buttons">
           {tickets.length > 1 &&
             (showOne ? (
@@ -525,9 +594,7 @@ export function PhoneTickets({
           <button type="button" className="button button-quiet" onClick={() => (setPopup(null), setScreen({ name: 'quick', message: null }))}>
             Quick mark
           </button>
-          <button type="button" className="button" onClick={startClaim}>
-            Show claim
-          </button>
+          {showClaimButton}
         </div>
       </div>
       {popups}

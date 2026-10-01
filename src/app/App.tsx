@@ -20,9 +20,9 @@ type Route =
   | { name: 'past'; id: string }
   | { name: 'sessions' }
   | { name: 'session'; id: string }
-  | { name: 'game'; gameId: GameId; open?: { id: string; action: OpenAction } }
+  | { name: 'game'; gameId: GameId; open?: { id: string; action: OpenAction }; startAt?: 'settings' }
   /** A player's phone (Phase 2): tickets opened from a ticket QR's link, or typed in. */
-  | { name: 'phone'; gameId: GameId; link: string | null; enter: boolean; nonce: number };
+  | { name: 'phone'; gameId: GameId; link: string | null; enter: boolean | 'join'; nonce: number };
 
 const gameOf = (type: string) => games.find((g) => g.info.id === type);
 
@@ -257,6 +257,7 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
           onReport={onReport}
           settingsExtra={<WaitingReports />}
           {...(route.open ? { open: route.open } : {})}
+          {...(route.startAt ? { startAt: route.startAt } : {})}
         />
       );
     }
@@ -314,6 +315,7 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
       onHistory={() => setRoute({ name: 'history' })}
       onSessions={() => setRoute({ name: 'sessions' })}
       onTickets={(enter) => setRoute({ name: 'phone', gameId: games[0].info.id as GameId, link: null, enter, nonce: Date.now() })}
+      onSettings={() => setRoute({ name: 'game', gameId: games[0].info.id as GameId, startAt: 'settings' })}
       onReport={() => onReport(null)}
     />
   );
@@ -359,6 +361,13 @@ function PastGameActions({ saved, onReuse, onDelete }: { saved: SavedGame; onReu
   );
 }
 
+const SEEN_KEY = 'home.seen';
+
+/**
+ * Home (PLT-300): two equal choices, "Host a game" and "Join with my ticket", then any unfinished games as plain
+ * rows. Sessions, History, Report a problem and Settings sit in the menu (⋯). A first visit says "You're ready for
+ * game night" (TAM-057): the app is saved on this phone and opens with no internet from now on.
+ */
 function Home({
   needRefresh,
   onUpdate,
@@ -366,6 +375,7 @@ function Home({
   onHistory,
   onSessions,
   onTickets,
+  onSettings,
   onReport,
 }: {
   needRefresh: boolean;
@@ -375,10 +385,22 @@ function Home({
   onGame: (gameId: GameId, open?: { id: string; action: OpenAction }) => void;
   onHistory: () => void;
   onSessions: () => void;
-  /** Phase 2: a player's phone tickets, or typing a ticket code. */
-  onTickets: (enter: boolean) => void;
+  /** Phase 2: a player's phone tickets (false), joining with a ticket ('join'), or typing a ticket code (true). */
+  onTickets: (enter: boolean | 'join') => void;
+  onSettings: () => void;
 }) {
   const [holdsTickets] = useState(() => games.some((g) => g.phone.hasTickets(preferences, false)));
+  const [firstVisit] = useState(() => preferences.get<boolean>(SEEN_KEY, false) !== true);
+  useEffect(() => {
+    if (firstVisit) preferences.set(SEEN_KEY, true);
+  }, [firstVisit]);
+  const [menu, setMenu] = useState(false);
+  useEffect(() => {
+    if (!menu) return;
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setMenu(false);
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [menu]);
   const [unfinished] = useState<SavedGame[]>(() =>
     gameStore
       .list()
@@ -386,8 +408,13 @@ function Home({
       .sort((a, b) => b.updatedAt - a.updatedAt),
   );
   const [now] = useState(() => Date.now());
+  const host = games[0];
+  const pick = (run: () => void) => () => {
+    setMenu(false);
+    run();
+  };
   return (
-    <main className="screen">
+    <main className="screen home">
       {needRefresh && (
         <div className="update" role="status">
           <span>A new version is ready.</span>
@@ -397,8 +424,54 @@ function Home({
         </div>
       )}
       <InstallTip />
-      <h1 className="app-title">Pocket Game Night</h1>
-      <p className="lead">Pick a game. One phone runs it; the fun stays in the room.</p>
+      <header className="home-bar">
+        <h1 className="app-title">Pocket Game Night</h1>
+        <button type="button" className="bar-button" aria-haspopup="menu" aria-expanded={menu} onClick={() => setMenu(!menu)}>
+          ⋯ Menu
+        </button>
+      </header>
+      {menu && (
+        <div className="backdrop sheet-backdrop" onClick={(e) => e.target === e.currentTarget && setMenu(false)}>
+          <div className="sheet" role="dialog" aria-modal="true" aria-label="Menu">
+            <div role="menu" aria-label="Home menu" className="menu-list">
+              <button type="button" role="menuitem" className="menu-item" onClick={pick(onSessions)}>
+                Sessions
+              </button>
+              <button type="button" role="menuitem" className="menu-item" onClick={pick(onHistory)}>
+                History
+              </button>
+              <button type="button" role="menuitem" className="menu-item" onClick={pick(onReport)}>
+                Report a problem
+              </button>
+              <button type="button" role="menuitem" className="menu-item" onClick={pick(onSettings)}>
+                Settings
+              </button>
+            </div>
+            <button type="button" className="menu-item menu-close" onClick={() => setMenu(false)}>
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+      {firstVisit && <p className="ready">✓ You're ready for game night</p>}
+
+      <div className="home-choices">
+        <button type="button" className="choice-card home-card" onClick={() => onGame(host.info.id as GameId)}>
+          <span className="choice-card-title">Host a game</span>
+          <span className="choice-card-text">Run {host.info.title} on this phone</span>
+        </button>
+        <button type="button" className="choice-card home-card" onClick={() => onTickets('join')}>
+          <span className="choice-card-title">Join with my ticket</span>
+          <span className="choice-card-text">Got a QR or code from the host?</span>
+        </button>
+      </div>
+
+      {holdsTickets && (
+        <button type="button" className="home-row" onClick={() => onTickets(false)}>
+          <span>Your tickets</span>
+          <span aria-hidden="true">›</span>
+        </button>
+      )}
 
       {unfinished.length > 0 && (
         <section aria-labelledby="unfinished-title" className="stack-tight">
@@ -420,7 +493,7 @@ function Home({
                     <>
                       <p className="note">Left more than 12 hours ago. What should happen to it?</p>
                       <div className="row">
-                        <button type="button" className="button" onClick={() => onGame(id, { id: g.id, action: 'resume' })}>
+                        <button type="button" className="button button-quiet" onClick={() => onGame(id, { id: g.id, action: 'resume' })}>
                           Resume
                         </button>
                         <button type="button" className="button button-quiet" onClick={() => onGame(id, { id: g.id, action: 'end' })}>
@@ -432,7 +505,7 @@ function Home({
                       </div>
                     </>
                   ) : (
-                    <button type="button" className="button" onClick={() => onGame(id, { id: g.id, action: 'resume' })}>
+                    <button type="button" className="button button-quiet" onClick={() => onGame(id, { id: g.id, action: 'resume' })}>
                       Tap to resume
                     </button>
                   )}
@@ -442,38 +515,6 @@ function Home({
           </ul>
         </section>
       )}
-
-      <ul className="game-list">
-        {games.map((g) => (
-          <li key={g.info.id}>
-            <button type="button" className="game-card" onClick={() => onGame(g.info.id)}>
-              <span className="game-card-title">{g.info.title}</span>
-              <span className="game-card-tagline">{g.info.tagline}</span>
-            </button>
-          </li>
-        ))}
-      </ul>
-      <div className="row">
-        {holdsTickets && (
-          <button type="button" className="button button-quiet grow" onClick={() => onTickets(false)}>
-            Your tickets
-          </button>
-        )}
-        <button type="button" className="button button-quiet grow" onClick={() => onTickets(true)}>
-          Enter ticket code
-        </button>
-      </div>
-      <div className="row">
-        <button type="button" className="button button-quiet grow" onClick={onSessions}>
-          Sessions
-        </button>
-        <button type="button" className="button button-quiet grow" onClick={onHistory}>
-          History
-        </button>
-      </div>
-      <button type="button" className="button button-quiet home-report" onClick={onReport}>
-        Report a problem
-      </button>
     </main>
   );
 }

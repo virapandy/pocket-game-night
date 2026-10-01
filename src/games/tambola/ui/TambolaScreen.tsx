@@ -66,8 +66,11 @@ export function TambolaScreen({
   onSession,
   onReport,
   settingsExtra,
+  startAt,
 }: {
   onExit: () => void;
+  /** PLT-300: Home's menu opens Tambola's settings directly; "Done" then goes back to Home. */
+  startAt?: 'settings';
   /** Phase 7: "Report a problem" on the calling screen and the payouts (PLT-200). */
   onReport?: (subject: ReportSubject) => void;
   /** Phase 7: the app's "Reports waiting to send", shown in Settings (PLT-209). */
@@ -79,7 +82,7 @@ export function TambolaScreen({
   sessions: SessionPicker;
   open?: OpenRequest;
 }) {
-  const [route, setRoute] = useState<Route>(() => openRoute(store, open));
+  const [route, setRoute] = useState<Route>(() => (startAt === 'settings' && !open ? { name: 'settings' } : openRoute(store, open)));
   const [settings, setSettings] = useState(() => loadSettings(prefs));
   const [dark, setDarkState] = useState(() => isDark(prefs));
   /** PLT-029: the session the host picked with "Change"; null means the one suggested. */
@@ -134,7 +137,7 @@ export function TambolaScreen({
               setDark(prefs, on);
               setDarkState(on);
             }}
-            onDone={() => setRoute({ name: 'start' })}
+            onDone={() => (startAt === 'settings' ? onExit() : setRoute({ name: 'start' }))}
           >
             {settingsExtra}
           </SettingsPanel>
@@ -194,7 +197,7 @@ export function TambolaScreen({
           </header>
           <section className="centre">
             <h1 className="game-title">Tambola</h1>
-            <p className="lead">Housie with paper tickets. This phone draws the numbers with rhymes, keeps the board, records every win and works out the payouts.</p>
+            <p className="lead">Housie on paper or on phones. This phone draws the numbers with rhymes, keeps the board, records every win and works out the payouts.</p>
             <button
               type="button"
               className="button button-big"
