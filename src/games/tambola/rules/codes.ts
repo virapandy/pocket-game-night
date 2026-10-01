@@ -1,6 +1,6 @@
 // Phase 2: what travels between phones, as text. The game code (TAM-170), the typed ticket code (TAM-117),
 // the ticket QR (TAM-053) and the claim QR (TAM-177). None of them holds a seed, another ticket or a call.
-// Both QR formats start with a version ("T1", "C1"), so a later version can add to them and still read these.
+// Both QR formats start with a version ("T2", "C1"; "T1" is still read), so a later version can add to them and still read these.
 import { deriveSeed } from '../../../engine';
 import { COLUMNS, isValidTicket, type Rows } from './tickets';
 import { isPattern, PATTERN_NAMES, type Pattern, type TambolaView } from './types';
@@ -168,37 +168,65 @@ export interface TicketInfo {
   readonly rows: Rows;
   readonly startedAt: number;
   readonly tiers: readonly Pattern[];
+  /** TAM-195: the host turned on the pattern cue for players' phones. Off in format-1 QRs and typed codes. */
+  readonly cue: boolean;
 }
 
-/** The hand-out QR's facts for one ticket, from the host's view (TAM-053, TAM-170, TAM-172). */
+/** The hand-out QR's facts for one ticket, from the host's view (TAM-053, TAM-170, TAM-172, TAM-195). */
 export function ticketInfo(view: TambolaView, ticket: number, startedAt: number): TicketInfo {
   const t = view.tickets.find((x) => x.number === ticket);
   if (!t || view.code === null) throw new Error(`No ticket ${ticket} in this game.`);
   const name = view.players.find((p) => p.id === t.playerId)?.name ?? '';
-  return { game: view.code, ticket, name, rows: t.rows, startedAt, tiers: view.tiers.map((x) => x.pattern) };
+  return {
+    game: view.code,
+    ticket,
+    name,
+    rows: t.rows,
+    startedAt,
+    tiers: view.tiers.map((x) => x.pattern),
+    cue: view.patternCue === true,
+  };
 }
 
-const TICKET_PREFIX = 'T1';
+// Format 1 (until 1 October 2026): "T1.<typed code>.<start time>.<prizes>.<name>". Still read, with the cue off.
+// Format 2: "T2.<typed code>.<start time>.<prizes>.<flags>.<name>"; flags "1" = the cue on, "0" = off.
+const TICKET_PREFIX_V1 = 'T1';
+const TICKET_PREFIX = 'T2';
 const CLAIM_PREFIX = 'C1';
 
-/** The ticket QR's text: "T1.<typed code>.<start time>.<prizes>.<name>". It depends only on `info`. */
+/** The ticket QR's text (format 2). It depends only on `info`. */
 export function encodeTicket(info: TicketInfo): string {
   const code = typedCode(info).replace(/-/g, '');
   const tiers = info.tiers.map((p) => PATTERN_LETTERS[p]).join('');
-  return [TICKET_PREFIX, code, Math.max(0, Math.floor(info.startedAt)).toString(36), tiers, encodeURIComponent(info.name)].join('.');
+  return [
+    TICKET_PREFIX,
+    code,
+    Math.max(0, Math.floor(info.startedAt)).toString(36),
+    tiers,
+    info.cue ? '1' : '0',
+    encodeURIComponent(info.name),
+  ].join('.');
 }
 
 const NOT_A_TICKET = 'This is not a Pocket Game Night ticket.';
 
-/** Reads a ticket QR's text, or the whole link it sits in. */
-export function decodeTicket(text: string): Decoded<{ v: 1 } & TicketInfo> {
+/** Reads a ticket QR's text (format 1 or 2), or the whole link it sits in. */
+export function decodeTicket(text: string): Decoded<{ v: 1 | 2 } & TicketInfo> {
   if (typeof text !== 'string' || text.length > 2000) return { ok: false, reason: NOT_A_TICKET };
   let body = text.trim();
   const at = body.search(/[#?&]t=/);
   if (at >= 0) body = body.slice(at + 3);
-  const parts = splitN(body, '.', 5);
-  if (!parts || parts[0] !== TICKET_PREFIX) return { ok: false, reason: NOT_A_TICKET };
-  const [, code, started, tierText, rawName] = parts as [string, string, string, string, string];
+  const version = body.startsWith(`${TICKET_PREFIX}.`) ? 2 : body.startsWith(`${TICKET_PREFIX_V1}.`) ? 1 : 0;
+  if (version === 0) return { ok: false, reason: NOT_A_TICKET };
+  const parts = splitN(body, '.', version === 2 ? 6 : 5);
+  if (!parts) return { ok: false, reason: NOT_A_TICKET };
+  const [, code, started, tierText] = parts as [string, string, string, string];
+  let cue = false;
+  if (version === 2) {
+    if (parts[4] !== '0' && parts[4] !== '1') return { ok: false, reason: NOT_A_TICKET };
+    cue = parts[4] === '1';
+  }
+  const rawName = parts[parts.length - 1]!;
   const decoded = decodeTypedCode(code);
   if (!decoded.ok) return { ok: false, reason: NOT_A_TICKET };
   if (!/^[0-9a-z]{1,12}$/.test(started)) return { ok: false, reason: NOT_A_TICKET };
@@ -214,13 +242,14 @@ export function decodeTicket(text: string): Decoded<{ v: 1 } & TicketInfo> {
   return {
     ok: true,
     ticket: {
-      v: 1,
+      v: version,
       game: decoded.ticket.game,
       ticket: decoded.ticket.ticket,
       name,
       rows: decoded.ticket.rows,
       startedAt: Number.parseInt(started, 36),
       tiers: tiers as Pattern[],
+      cue,
     },
   };
 }

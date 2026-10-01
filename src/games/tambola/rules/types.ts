@@ -56,6 +56,11 @@ export interface TambolaSettings {
   readonly autoMark: boolean;
   readonly claimButtons: boolean;
   readonly verdictsOnPhones: boolean;
+  /**
+   * TAM-195 (owner 2026-10-01): players' phones say when their marks fill a prize pattern. Off by default; the host
+   * turns it on at the ticket-type step. Games saved before this setting existed have it off (missing = off).
+   */
+  readonly patternCue?: boolean;
   readonly vibrate: boolean;
   readonly sound: boolean;
   readonly rhymes: RhymeSettings;
@@ -309,4 +314,6 @@ export interface TambolaView {
   readonly code: string | null;
   /** Phase 2: the host sees every ticket (TAM-056); a player only their own (TAM-050); the room none. */
   readonly tickets: readonly TicketView[];
+  /** TAM-195: the host turned the pattern cue on for players' phones (travels in the ticket QR). */
+  readonly patternCue: boolean;
 }

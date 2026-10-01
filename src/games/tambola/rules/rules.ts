@@ -53,6 +53,7 @@ export const tambolaDefaults: TambolaSettings = {
   autoMark: false,
   claimButtons: false,
   verdictsOnPhones: false,
+  patternCue: false,
   vibrate: true,
   sound: true,
   rhymes: { language: 'en', familyFriendly: true },
@@ -736,6 +737,7 @@ function view(state: TambolaState, viewer: Viewer): TambolaView {
     }),
     code: state.code,
     tickets,
+    patternCue: state.config.settings.patternCue === true,
   };
 }
 
@@ -761,6 +763,7 @@ function playerView(state: TambolaState, playerId: string): TambolaView {
     lateJoiners: [],
     code: state.code,
     tickets: state.tickets.filter((t) => t.playerId === playerId).map((t) => ({ number: t.number, rows: t.rows })),
+    patternCue: state.config.settings.patternCue === true,
   };
 }
 
