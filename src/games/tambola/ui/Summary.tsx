@@ -55,6 +55,8 @@ export function Summary({ view }: { view: TambolaView }) {
 
       {payouts && (
         <>
+          {/* TAM-181, TAM-199 (owner, 2026-10-01): above the rows, so both are on screen without scrolling. */}
+          <Settle payouts={payouts} />
           <ul className="payout-people">
             {payouts.map((p) => (
               <li
@@ -78,7 +80,6 @@ export function Summary({ view }: { view: TambolaView }) {
             Pot <strong>{rupees(s.pot ?? 0)}</strong>
             {!discarded && anyWinner ? `: ${rupees(prizes)} in prizes${back > 0 ? ` and ${rupees(back)} handed back, equally per ticket` : ''}.` : '.'}
           </p>
-          <Settle payouts={payouts} />
         </>
       )}
 

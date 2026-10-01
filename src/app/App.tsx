@@ -213,6 +213,7 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
     updateServiceWorker,
   } = useRegisterSW();
   const [route, setRoute] = useState<Route>(firstRoute);
+  const initialRoute = useRef(route);
   routeName.current = route.name;
   // Scanning another ticket while the app is open changes only the address's "#t=…" part.
   useEffect(() => {
@@ -221,6 +222,9 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
       if (link) setRoute(link);
     };
     window.addEventListener('hashchange', onHash);
+    // A ticket link that arrived while the app was still starting (before this listener) is kept, not dropped.
+    const early = phoneLink();
+    if (early && !(initialRoute.current.name === 'phone' && initialRoute.current.link === early.link)) setRoute(early);
     return () => window.removeEventListener('hashchange', onHash);
   }, []);
   const [deleted, setDeleted] = useState<Deleted | null>(null);

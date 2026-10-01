@@ -794,13 +794,10 @@ function forReport(setup: SetupInput<TambolaConfig>, records: readonly MoveRecor
     if (m.type === 'add-player' && m.player) return { ...r, move: { ...m, player: { id: m.player.id, name: note(m.player.id, m.player.name), tickets: m.player.tickets } } };
     return r;
   });
-  const config: TambolaConfig = {
-    ...setup.config,
-    players,
-    money: null,
-    tiers: (setup.config.tiers ?? []).map((t) => ({ pattern: t.pattern, amount: 0 })),
-  };
-  return { setup: { gameId: setup.gameId, seeds: setup.seeds, config }, records: safeRecords, names };
+  // Owner, 2026-10-01 (PLT-201, PLT-204): the money numbers stay, so money bugs replay.
+  const config: TambolaConfig = { ...setup.config, players };
+  const ids = [...alias.entries()].map(([id, as]) => ({ id, as }));
+  return { setup: { gameId: setup.gameId, seeds: setup.seeds, config }, records: safeRecords, names, ids };
 }
 
 // ----- The contract -----

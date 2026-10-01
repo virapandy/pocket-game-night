@@ -2,7 +2,7 @@
 // will be sent, the calm message after a crash, and the list of reports waiting to send (in Settings).
 import { useEffect, useMemo, useState } from 'react';
 import { reportText, type Report } from '../engine';
-import { deleteWaiting, onReportsChange, waitingReports } from './reports';
+import { deleteWaiting, hasRealDestination, listedReports, onReportsChange } from './reports';
 import { Dialog } from './Sessions';
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -11,6 +11,19 @@ const day = (t: number) => {
   return `${d.getDate()} ${MONTHS[d.getMonth()]}`;
 };
 const firstLine = (r: Report) => r.what.split('\n')[0]?.trim() || (r.error ? 'After an unexpected error' : 'No words');
+
+/** The money numbers in the report, in words, so the host sees them (PLT-201, owner 2026-10-01). */
+function moneyLine(report: Report): string | null {
+  const config = report.game?.setup?.config as { money?: { currency?: string; contribution?: number } | null; tiers?: { amount?: number }[] } | undefined;
+  const contribution = config?.money?.contribution;
+  if (typeof contribution !== 'number' || contribution <= 0) return null;
+  const currency = config?.money?.currency === 'INR' ? '₹' : `${config?.money?.currency ?? ''} `;
+  const prizes = (config?.tiers ?? []).map((t) => t.amount).filter((a): a is number => typeof a === 'number');
+  const paidOut = report.game?.money?.people.map((p) => `${p.name} paid ${currency}${p.paid}, got ${currency}${p.won}`) ?? [];
+  return [`${currency}${contribution} a ticket`, prizes.length ? `prizes ${prizes.map((a) => `${currency}${a}`).join(', ')}` : '', ...paidOut]
+    .filter((x) => x !== '')
+    .join('; ');
+}
 
 /** The form: "What happened?", a preview of exactly what will be sent (PLT-201), Send report and Cancel. */
 export function ReportForm({
@@ -27,6 +40,7 @@ export function ReportForm({
   const report = useMemo(() => build(what), [build, what]);
   const text = reportText(report);
   const game = report.game;
+  const money = moneyLine(report);
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onCancel();
     window.addEventListener('keydown', onKey);
@@ -42,7 +56,7 @@ export function ReportForm({
           <label htmlFor="report-what">What happened?</label>
           <textarea id="report-what" rows={3} value={what} onChange={(e) => setWhat(e.target.value)} />
         </div>
-        <p className="note">Optional. Player names are changed to Player 1, Player 2 … No money amounts are included.</p>
+        <p className="note">Optional. Player names are changed to Player 1, Player 2 … The game's money amounts are included.</p>
         {report.waitingForGameEnd && <p className="note report-wait">Your report will be sent when this game ends.</p>}
         <section className="report-preview" data-testid="report-preview" data-payload={text} aria-label="What will be sent">
           <h3 className="report-preview-title">What will be sent</h3>
@@ -56,6 +70,7 @@ export function ReportForm({
               {report.waitingForGameEnd ? ' (its secret numbers are added only when the game ends)' : ', with its seeds so it can be replayed'}
             </p>
           )}
+          {money && <p>Money: {money}</p>}
           {report.tickets && <p>Your {report.tickets.length === 1 ? 'ticket' : 'tickets'} and marks: {report.tickets.map((t) => `Ticket ${t.ticket}`).join(', ')}</p>}
           <details>
             <summary>Show everything</summary>
@@ -104,11 +119,11 @@ export function ReportToast({ text }: { text: string }) {
 
 /** PLT-209: Settings → "Reports waiting to send": each with its date and first line, and Delete. */
 export function WaitingReports() {
-  const [list, setList] = useState<Report[]>(waitingReports);
+  const [list, setList] = useState<Report[]>(listedReports);
   const [open, setOpen] = useState(false);
   const [asking, setAsking] = useState<Report | null>(null);
   useEffect(() => {
-    const refresh = () => setList(waitingReports());
+    const refresh = () => setList(listedReports());
     const off = onReportsChange(refresh);
     const t = setInterval(refresh, 2_000);
     return () => {
@@ -121,6 +136,7 @@ export function WaitingReports() {
       <button type="button" className="button button-quiet" aria-expanded={open} onClick={() => setOpen(!open)}>
         Reports waiting to send ({list.length})
       </button>
+      {open && !hasRealDestination() && <p className="note">Kept on this phone: sending isn't set up yet</p>}
       {open &&
         (list.length === 0 ? (
           <p className="note">No reports waiting.</p>

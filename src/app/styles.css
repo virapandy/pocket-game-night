@@ -281,6 +281,8 @@ button, [role="button"], a { touch-action: manipulation; }
   font-weight: 800;
   line-height: 1;
   color: var(--text);
+  /* TAM-198: solid, so the dim layer behind it never shows through: the number looks the same while dimmed. */
+  background: var(--bg);
   font-variant-numeric: tabular-nums;
   user-select: none;
   -webkit-user-select: none;

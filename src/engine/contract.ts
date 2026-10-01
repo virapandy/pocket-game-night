@@ -75,7 +75,7 @@ export interface GameRules<Config, State, M extends Move, View = unknown> {
 
   /**
    * Phase 7 (PLT-201): the setup and moves for a problem report, with every player name replaced by "Player N"
-   * and every money amount taken out, still replaying the same calls and claims. Seeds are left to the engine.
+   * (money numbers kept, owner 2026-10-01), still replaying the same calls and claims. Seeds are left to the engine.
    */
   forReport?(setup: SetupInput<Config>, records: readonly MoveRecord<M>[]): ReportSafeGame<Config, M>;
 }

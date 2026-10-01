@@ -2,11 +2,12 @@
 // no screen, and the clock only through `at` / `now`. The app decides where a report goes (for now a stub that
 // keeps it on the phone, PLT-208).
 //
-// A report never holds a name, a session name or a money amount (PLT-201): each game says how to take them out
-// of its setup and moves (`GameRules.forReport`). A report about a game still being played holds no seed until
+// A report never holds a name or a session name (PLT-201): each game says how to take names out of its setup and
+// moves (`GameRules.forReport`). The money numbers stay in (owner, 2026-10-01), so money bugs replay (PLT-204). A report about a game still being played holds no seed until
 // that game ends (PLT-206): `addSeeds` puts them in afterwards.
 import type { GameRules, SetupInput } from './contract';
 import type { Move, MoveRecord } from './moves';
+import type { MoneyRecord } from './money';
 import type { GameStatus, SavedGame } from './saved-game';
 
 export const REPORT_FORMAT = 1;
@@ -16,10 +17,12 @@ export interface ReportGame {
   readonly id: string;
   /** The game's status when it was reported. */
   readonly status: GameStatus;
-  /** The setup with names and money taken out; `seeds` empty until the game is over (PLT-206). Null if the game cannot say. */
+  /** The setup with names taken out (money numbers kept); `seeds` empty until the game is over (PLT-206). Null if the game cannot say. */
   readonly setup: SetupInput<unknown> | null;
   /** The moves when it was reported, with names taken out. */
   readonly records: readonly MoveRecord[];
+  /** The saved game's money record once it has ended, names as "Player N"; null otherwise (PLT-201). */
+  readonly money?: MoneyRecord | null;
 }
 
 export interface ReportTicket {
@@ -45,12 +48,14 @@ export interface Report {
   readonly tickets?: readonly ReportTicket[];
 }
 
-/** A game's setup and moves made safe to report: names become "Player N", no money (PLT-201). */
+/** A game's setup and moves made safe to report: names become "Player N" (PLT-201). */
 export interface ReportSafeGame<Config, M extends Move> {
   readonly setup: SetupInput<Config>;
   readonly records: readonly MoveRecord<M>[];
   /** Every name that was in the game (setup, renames, late joiners) and what it became, to clean the sentence typed. */
   readonly names: readonly { readonly name: string; readonly as: string }[];
+  /** Each player id and the "Player N" it became, to clean the money record. */
+  readonly ids?: readonly { readonly id: string; readonly as: string }[];
 }
 
 /** What a screen asks the app to report on: the game on screen (by its saved id), a player's tickets, or nothing. */
@@ -114,6 +119,24 @@ export function replaceNames(text: string, names: readonly { readonly name: stri
 
 const OVER: readonly GameStatus[] = ['ended', 'abandoned'];
 
+/** The saved money record with each name replaced by that player's "Player N"; nothing else from it. */
+function safeMoney(money: MoneyRecord, safe: ReportSafeGame<unknown, Move>): MoneyRecord {
+  const byId = new Map((safe.ids ?? []).map((x) => [x.id, x.as]));
+  return {
+    currency: money.currency,
+    people: money.people.map((p, i) => {
+      const as = byId.get(p.personId) ?? safe.names.find((n) => n.name === p.name.trim())?.as ?? `Player ${i + 1}`;
+      return {
+        personId: p.personId,
+        name: as,
+        paid: p.paid,
+        won: p.won,
+        ...(p.prizes !== undefined ? { prizes: p.prizes } : {}),
+      };
+    }),
+  };
+}
+
 /** The host phone's report (PLT-200, PLT-201, PLT-203, PLT-206). */
 export function makeReport(input: ReportInput): Report {
   const id = input.id ?? newId(input.at, input.what);
@@ -132,6 +155,7 @@ export function makeReport(input: ReportInput): Report {
       status: saved.status,
       setup: safe ? { gameId: safe.setup.gameId, seeds: over ? { ...safe.setup.seeds } : {}, config: safe.setup.config } : null,
       records: safe ? safe.records.map((r) => ({ v: r.v, seq: r.seq, at: r.at, by: r.by, move: r.move })) : [],
+      money: over && safe && saved.money ? safeMoney(saved.money, safe) : null,
     };
   }
   const error = input.error
@@ -225,11 +249,21 @@ const WEEK_MS = 7 * 24 * 3600 * 1000;
 const KIND_ORDER: readonly ReportKind[] = ['bug', 'confusion', 'idea', 'noise'];
 const normalise = (s: string) => s.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
 
-/** Simple rules for now (no Jev, no network): what the words sound like. */
-function kindOf(words: string): ReportKind {
-  if (/\b(crash|crashed|froze|frozen|stuck|wrong|broke|broken|error|bug|lost|missing|disappeared|vanished|blank)\b/.test(words)) return 'bug';
-  if (/\b(please add|add|could you|would be nice|wish|idea|suggest|feature|would love|can you add)\b/.test(words)) return 'idea';
-  return 'confusion';
+/**
+ * The simple rules (product owner, 2026-10-01, PLT-205), on the words in any case, a curly apostrophe counting as
+ * a straight one. A word counts at the start of a word ("crash" in "crashed"). When words of two kinds appear,
+ * bug wins over confusion, and confusion over idea (not yet decided by the owner: docs/test-questions.md).
+ */
+const KIND_WORDS: readonly (readonly [ReportKind, readonly string[]])[] = [
+  ['bug', ['crash', 'error', 'wrong', "didn't work", 'stuck']],
+  ['confusion', ['how do i', 'where is', "can't find", 'confusing', "didn't understand"]],
+  ['idea', ['add', 'wish', 'would be nice', 'could you', 'idea']],
+];
+const KIND_RES = KIND_WORDS.map(([kind, words]) => [kind, new RegExp(`(?<![\\p{L}\\p{N}])(${words.map(escape).join('|')})`, 'u')] as const);
+function kindOf(what: string): ReportKind {
+  const text = what.toLowerCase().replace(/[\u2018\u2019\u02bc]/g, "'").replace(/\s+/g, ' ');
+  for (const [kind, re] of KIND_RES) if (re.test(text)) return kind;
+  return 'noise';
 }
 
 /** Reports of the last 7 days, sorted into kinds, grouped, biggest group first (PLT-205). */
@@ -250,7 +284,7 @@ export function sortReports(reports: readonly Report[], { now }: { now: number }
       about = '';
       key = 'noise';
     } else {
-      kind = kindOf(words);
+      kind = kindOf(r.what ?? '');
       about = words;
       key = `words:${words}`;
     }

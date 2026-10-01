@@ -63,10 +63,25 @@ export function onReportsChange(f: () => void): () => void {
 
 export const waitingReports = (): Report[] => readList(WAITING_KEY);
 
+/**
+ * What "Reports waiting to send" lists (PLT-209). While sending is not set up yet (the stub, PLT-208), the reports
+ * the stub has kept on this phone are listed too (product owner, 2026-10-01, PLT-202), oldest first.
+ */
+export function listedReports(): Report[] {
+  const waiting = waitingReports();
+  if (hasRealDestination()) return waiting;
+  const ids = new Set(waiting.map((r) => r.id));
+  return [...readList(KEPT_KEY).filter((r) => !ids.has(r.id)), ...waiting];
+}
+
 export function deleteWaiting(id: string) {
   writeList(
     WAITING_KEY,
     waitingReports().filter((r) => r.id !== id),
+  );
+  writeList(
+    KEPT_KEY,
+    readList(KEPT_KEY).filter((r) => r.id !== id),
   );
   changed();
 }
@@ -74,7 +89,7 @@ export function deleteWaiting(id: string) {
 /** The stub destination (PLT-208): keeps the report on this phone. Nothing leaves it. */
 function stubSend(text: string): Promise<void> {
   const r = readReport(text);
-  if (r.ok) writeList(KEPT_KEY, [...readList(KEPT_KEY), r.report].slice(-KEPT_MAX));
+  if (r.ok) writeList(KEPT_KEY, [...readList(KEPT_KEY).filter((k) => k.id !== r.report.id), r.report].slice(-KEPT_MAX));
   return Promise.resolve();
 }
 

@@ -41,8 +41,18 @@ jobs:
         if: hashFiles('tests/playwright.config.ts') != ''
         run: npx playwright install --with-deps chromium webkit
       - name: Browser tests
+        id: browser
         if: hashFiles('tests/playwright.config.ts') != ''
         run: npm run test:browser
+      # When the browser step fails, keep its traces and screenshots so the Test workspace can see why.
+      - name: Keep browser results
+        if: failure() && steps.browser.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-test-results
+          path: test-results/browser/
+          retention-days: 14
+          if-no-files-found: ignore
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
