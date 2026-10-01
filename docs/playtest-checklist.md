@@ -29,6 +29,7 @@ Scenario IDs are there so each finding can be tied to the rule it touches; you d
 | 12 | The screen | Did the screen go dark during the game? | TAM-110, TAM-128 |
 | 13 | Interruptions | Phone locked, a call came in, app switched: did the game come back where it was? | TAM-065, TAM-112 |
 | 14 | Phone tickets | Did anyone ask to have their ticket on their own phone? | Phase 2 |
+| 16 | Tickets per player | How many tickets each person wanted; did anyone ask for a 4th, or hold a ticket for someone else? (sets the limit for a later version) | TAM-045 |
 | 15 | Anything else | Late arrivals who wanted to join, requests for the phone to speak, dark mode | TAM-067, TAM-180, TAM-134 |
 
 ## At the end of each game

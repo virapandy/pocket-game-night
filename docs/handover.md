@@ -14,6 +14,7 @@ current; instructions live here, not in chat. History from Phase 0 and 1a is fur
 | Product owner review of what is live (money, 1b and play-test fixes) | Matches the scenarios and the owner's 30 September decisions: payout rows with "Settle with host" and "Settle with players", "Session tally" and "Play again" fixed at the bottom, compact tally with "Settle up", the session line, "Close Early Five" as the main button with the screen dimmed. Two small findings below. |
 | Product owner review of Phase 2 and Phase 7 | **Done** (1 October, live, two browser tabs as host and player): matches the scenarios; small findings in step 2 below |
 | Extended testing | Started (122da49, 23d3f41, e289eb8) while automation was red |
+| UX review of several tickets on one phone (UX designer and product owner) | **Done** (1 October): fixes in step 2b |
 | Phase 6 (connected mode), new games | On hold |
 
 ### Next, in order (for the orchestrator)
@@ -38,6 +39,14 @@ current; instructions live here, not in chat. History from Phase 0 and 1a is fur
    - Payout screen at 390 × 844 with 6 players: "Settle with host" and "Settle with players" sit below the
      bottom, so the host scrolls to find them. Keep them reachable without scrolling (for example in the fixed
      bottom area with "Session tally" and "Play again", or by folding the per-person rows).
+2b. **Several tickets on one phone: UX fixes** (`docs/games/tambola/ux-review-2026-10-01-several-tickets.md`, owner
+   approved the behaviour on 1 October). Ask the tester to update the scenarios listed at the end of that doc
+   (TAM-195, TAM-192, TAM-190, TAM-122/TAM-191, TAM-183, TAM-117, and one new scenario for holding another
+   player's ticket), then run the loop. Most urgent: the pattern message covers ticket rows in landscape and pushes
+   "Show claim" off screen in portrait. Tickets per player stay 1 to 3. This supersedes the "optional polish" quick-mark
+   bullet in step 2 (now required).
+2c. **When idle: add the UX designer helper** (`docs/proposals/ux-designer-role.md`, owner approved 1 October):
+   agent file, role guard entry (read only), Roles tables.
 3. **Answers to the open report questions** (report 357b824):
    - **Q1, money in reports (owner, 1 October):** reports **include** the game's money numbers (contribution per
      ticket, prize amounts, payouts), with names still replaced by "Player 1", "Player 2"; the host still sees

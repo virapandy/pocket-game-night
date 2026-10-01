@@ -106,6 +106,10 @@
 | 2026-10-01 | Problem reports include the game's money numbers (contribution per ticket, prize amounts, payouts), with names still replaced by Player 1, Player 2, so money bugs can be replayed (PLT-201, PLT-204). | Owner |
 | 2026-10-01 | Report sorting: bug (something went wrong), confusion (didn't know how), idea (a wish), otherwise noise; stub-kept reports are listed under "Reports waiting to send" with "Kept on this phone: sending isn't set up yet" (PLT-205, PLT-202, PLT-209). | Product owner |
 | 2026-10-01 | A test report counts as GREEN only when the automation run for that commit is green too. | Product owner |
+| 2026-10-01 | Tickets per player stay 1 to 3 for now (TAM-045); the limit is proposed for a later version from what real games show. | Owner |
+| 2026-10-01 | A phone may hold another player's ticket (e.g. Grandma's); it keeps the holder's name on the phone, on claims and in payouts. A phone holds at most the per-player limit (3), held tickets included. | Owner |
+| 2026-10-01 | Several-ticket screens: the pattern message is one slim line that never covers tickets or pushes buttons off screen; Quick mark keys at least 44 px and show marks; "Which ticket?" shows thumbnails with the flagged ticket first; pattern outline not colour alone (TAM-195, TAM-192, TAM-190; `docs/games/tambola/ux-review-2026-10-01-several-tickets.md`). | Product owner with UX designer |
+| 2026-10-01 | A UX designer helper joins the product owner's chat: tests and recommends, decides with the product owner, edits nothing (`docs/proposals/ux-designer-role.md`). | Owner |
 
 "Convention" means the established Tambola rule in `docs/games/tambola/guide.md`, chosen because the owner asked
 Claude to follow game conventions. Every Tambola rule above is also a host setting with this default.
