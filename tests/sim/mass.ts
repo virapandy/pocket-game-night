@@ -518,7 +518,7 @@ export interface RunOpts extends GameOpts {
   /** Seeds are `${prefix}-${i}`. */
   prefix?: string;
   saveReplays?: boolean;
-  /** The Jev situation, for the summary: 'no-key' | 'jev' | 'off'. */
+  /** The Jev situation, for the summary: 'no-key' | 'jev' | 'off' | 'scripted' (a part of the run that never uses Jev). */
   jevNote?: string;
 }
 
@@ -587,7 +587,9 @@ export async function runMany(opts: RunOpts): Promise<RunSummary> {
       : jev.stats.failures.length && jev.stats.decisions === 0 ? 'Jev unavailable: ran with random and scripted players'
       : `Jev: ${jev.stats.decisions} decisions in ${jev.stats.calls} calls`;
   } else {
-    s.jev.line = opts.jevNote === 'off' ? 'Jev turned off: ran with random and scripted players' : NO_KEY_MESSAGE;
+    s.jev.line = opts.jevNote === 'off' ? 'Jev turned off: ran with random and scripted players'
+      : opts.jevNote === 'scripted' ? 'Scripted players only (this part of the run never uses Jev)'
+      : NO_KEY_MESSAGE;
   }
   return s;
 }

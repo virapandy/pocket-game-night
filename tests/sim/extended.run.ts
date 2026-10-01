@@ -22,7 +22,7 @@ const write = () => {
 describe('PLT-118: the weekly long run', () => {
   let scripted: RunSummary;
   it(`${SIM_GAMES} scripted games (PLT-116)`, async () => {
-    scripted = await runMany({ games: SIM_GAMES, prefix: 'weekly', jev: null, jevNote: 'no-key', saveReplays: true });
+    scripted = await runMany({ games: SIM_GAMES, prefix: 'weekly', jev: null, jevNote: 'scripted', saveReplays: true });
     parts.push(summaryText(scripted, `Tambola mass simulation: ${SIM_GAMES} scripted games`));
     write();
     expect(scripted.failures.map((f) => `${f.seed}: ${f.problems[0]}`)).toEqual([]);

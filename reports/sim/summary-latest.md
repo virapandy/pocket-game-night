@@ -1,6 +1,6 @@
 # Tambola mass simulation: 100000 scripted games
 
-Players: No Jev key: ran with random and scripted players
+Players: Scripted players only (this part of the run never uses Jev)
 Games played: 100000 (49990 paper, 50010 phone; 2 to 60 tickets)
 How they ended: 85760 played to the end, 10550 ended early, 3690 discarded, 0 never ended
 Claims: 461564 wins recorded, 1151402 bogeys, 28679 shared prizes (ties)
