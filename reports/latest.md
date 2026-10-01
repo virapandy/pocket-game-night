@@ -1,6 +1,6 @@
 # Test report
 Commit tested: 280a32d (app, with e4f99e7's fixes; tests 6dbb0c5 plus this round's test-side timing fix)   Date: 2026-10-01
-Result: GREEN on this computer; automation run for the fix: PENDING (filled in below once it finishes)
+Result: GREEN, here and in automation: run 36815880171 on 35ea968 (this fix) passed every layer and published the live preview
 
 Task: `docs/handover.md` "Next, in order" item 0, make automation ("Check and publish") green.
 
@@ -9,11 +9,14 @@ Task: `docs/handover.md` "Next, in order" item 0, make automation ("Check and pu
 | Rules, contract, property, simulation, replays, key check (no Jev key) | `npm test` | 486 | 0 | 0 |
 | Browser, Android (Chromium) and iPhone (WebKit) together | `npm run build && npm run test:browser` | 508 | 0 | 8 (unchanged, deliberate) |
 | iPhone (WebKit) phone-ticket, claim, late-joiner and report files, 3 repeats, 8 workers, `CI=1` | `playwright test --project=iphone … --repeat-each=3` | 177 | 0 | 3 (deliberate) |
+| Automation "Check and publish", run 36815880171 on 35ea968 | every layer above, on GitHub's Linux runner | check: success | 0 | — |
+
+Automation publish job: success, so the live preview now has phone tickets (Phase 2) and "Report a problem" (Phase 7).
 
 Not re-run this round: the Android emulator, the 100,000-game simulation and mutation testing (not part of item 0).
 
-## Why automation was red since 53ac5db (runs 36610989976, 36656861486, 36788485111, 36804238090)
-Every failure in all four runs (2, 3, 8 and 4 tests, a different set each time, iPhone engine only) is the same
+## Why automation was red since 53ac5db (runs 36610989976, 36656861486, 36788485111, 36804238090, 36813022751)
+Every failure in all five runs (2, 3, 8, 4 and 3 tests, a different set each time, iPhone engine only) is the same
 step: `scanTicket` in `tests/browser/phone.ts`, "the phone ticket appears" (`phone-ticket` not found within 5 s),
 on the first scan right after the test opened the app on a fresh player phone (`goto(HOME)` then the ticket link).
 Affected tests: phone-claims (TAM-179, TAM-196, TAM-044, TAM-178, TAM-036), phone-tickets (TAM-170, TAM-173,
@@ -57,4 +60,4 @@ I have not changed that: retrying them would hide failures like this one, and th
   after opening the app on a pretend phone, faster than any person can, on the slower online computer. The app was
   fine. The robot now waits until the app has finished opening before it scans; it still checks everything it
   checked before, just as strictly.
-- Once the automatic checks pass, the live preview updates with phone tickets and "Report a problem".
+- The automatic checks now pass, and the live preview has been updated with phone tickets and "Report a problem".
