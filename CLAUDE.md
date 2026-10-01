@@ -30,6 +30,7 @@ always run on pushed code, never on half-finished edits:
 | **Build** | `coder` subagent, or Claude Code opened in `pocket-game-night/` | `pocket-game-night/` | `src/`, `content/`, root config files, `.github/`, `docs/` | type-check, build, lint |
 | **Test** | `tester` subagent, or the Claude desktop app opened in `pocket-game-night-testing/` | `pocket-game-night-testing/` | `tests/`, `specs/`, `reports/`, `docs/` | every test, simulations, iPhone Simulator, browser checks |
 | **Product owner** | the Claude desktop app opened in `pocket-game-night-product/` (or the workspace folder) | all, read only; writes only its own clone | `docs/` in `pocket-game-night-product/` | nothing that builds or tests |
+| **UX designer** | `ux-designer` subagent, called by the product owner | all, read only; the live preview | nothing | nothing (reviews screens by `docs/ux-evaluation-playbook.md`; reports to the product owner) |
 
 - **Usual way: three agents in one chat.** Open the workspace folder. The main session is the
   **orchestrator**; it runs the loop below by handing work to the **coder** and the **tester**

@@ -26,6 +26,7 @@ The owner is not a developer: explain in plain English and ask for approval of b
 | **coder** subagent | `pocket-game-night/` | writes app code; type-check, boundaries, build; pushes | reads the Test clone, writes or runs tests |
 | **tester** subagent | `pocket-game-night-testing/` | writes tests from approved scenarios, runs every layer, writes `reports/latest.md`; pushes | reads the Build clone, edits app code |
 | **product owner** (Claude desktop app, separate chat) | `pocket-game-night-product/` | owns the "what": game guides, journeys, UX guidelines, `docs/decisions.md`, new-game designs and scenario drafts in `docs/games/<game>/`, `docs/roadmap.md`; reviews green builds | edits the Build or Test clones, runs tests, drives the loop |
+| **ux-designer** subagent (called by the product owner) | all clones, read only; the live preview | reviews screens at phone sizes against `docs/ux-guidelines.md` by `docs/ux-evaluation-playbook.md`; findings go to the product owner, who merges them into the UX list in `docs/handover.md` | edits anything, runs commands or tests, talks to the coder or tester |
 
 `pocket-game-night/.claude/hooks/role-guard.mjs` enforces this for every edit, read and shell
 command. Never work around a block; report what is needed instead.

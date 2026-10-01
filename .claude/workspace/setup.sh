@@ -27,5 +27,9 @@ mkdir -p "$WS/.claude"
 link "$NAME/.claude/workspace/CLAUDE.md" "$WS/CLAUDE.md"
 link "../$NAME/.claude/workspace/settings.json" "$WS/.claude/settings.json"
 link "../$NAME/.claude/workspace/agents" "$WS/.claude/agents"
+# The product owner's chat (desktop app in the Product clone) calls the ux-designer helper from here.
+# The link is local to that clone, kept out of git through .git/info/exclude.
+link "workspace/agents" "$PRODUCT/.claude/agents"
+grep -qx '/.claude/agents' "$PRODUCT/.git/info/exclude" 2>/dev/null || echo '/.claude/agents' >> "$PRODUCT/.git/info/exclude"
 echo "Done. Open $WS in VS Code and start Claude Code there to orchestrate."
 echo "Product owner: open $PRODUCT (or $WS) in the Claude desktop app."

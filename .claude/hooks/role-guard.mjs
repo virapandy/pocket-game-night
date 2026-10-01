@@ -10,6 +10,8 @@
 //         product      the product owner: the Claude desktop app opened in pocket-game-night-product/
 //                      (or in the workspace folder); edits only docs/ in its own clone, runs no tests,
 //                      and may work in parallel with the others because it never writes to their clones
+//         ux           the ux-designer subagent the product owner calls: reads every clone, changes
+//                      nothing, runs no commands
 //
 // Modes:  pre     PreToolUse   - block edits and reads outside the role, and test runs outside Test
 //         post    PostToolUse  - catch shell commands that changed files the role must not touch
@@ -28,7 +30,7 @@ const TEST_RUNNERS =
   /\b(vitest|playwright|stryker|jest|mocha|appium)\b|\b(npm|pnpm|yarn|bun)\s+(run\s+)?(test|e2e|sim|mutation)\b|\bnpm\s+t\b/;
 const WEAKENING = /\.(skip|only|todo)\s*\(|\bx(it|describe|test)\s*\(/;
 const READ_TOOLS = ['Read', 'Grep', 'Glob'];
-const AGENT_ROLE = { coder: 'build', tester: 'test' };
+const AGENT_ROLE = { coder: 'build', tester: 'test', 'ux-designer': 'ux' };
 
 // This file lives in every clone; the clones sit side by side in the workspace folder.
 const real = (p) => { try { return realpathSync(p); } catch { return path.resolve(p); } };
@@ -44,8 +46,8 @@ const inside = (dir, root) => dir === root || dir.startsWith(root + path.sep);
 let role = entry === 'claude-desktop'
   ? (inside(projectDir, FOLDER.test) ? 'test' : 'product')
   : projectDir === WORKSPACE ? 'orchestrator' : 'build';
-let agent = null; // 'coder' or 'tester' when a subagent is acting
-const NAME = { build: 'Build role', test: 'Test role', orchestrator: 'orchestrator', product: 'product owner' };
+let agent = null; // 'coder', 'tester' or 'ux-designer' when a subagent is acting
+const NAME = { build: 'Build role', test: 'Test role', orchestrator: 'orchestrator', product: 'product owner', ux: 'UX designer' };
 const who = () => (agent ? `${agent} subagent` : NAME[role]);
 
 const git = (args, cwd) => execSync(`git ${args}`, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
@@ -102,6 +104,15 @@ function pre(input) {
   const tool = input.tool_name;
   const ti = input.tool_input || {};
   const cwd = input.cwd || projectDir;
+
+  // The UX designer reads anything and uses the browser, but changes nothing and runs nothing.
+  if (role === 'ux') {
+    if (READ_TOOLS.includes(tool)) process.exit(0);
+    if (tool === 'Bash' || ti.file_path || ti.notebook_path) {
+      decide('deny', 'The UX designer changes nothing and runs no commands. Report the finding to the product owner instead.');
+    }
+    process.exit(0);
+  }
 
   if (tool === 'Bash') {
     if (role !== 'test' && TEST_RUNNERS.test(ti.command || '')) {

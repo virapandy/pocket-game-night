@@ -1,8 +1,7 @@
 # Proposal: a UX designer helper for the product owner
 
-Status: **owner approved 1 October 2026** (helper inside the product owner's chat). To be applied by the
-orchestrator while it is idle; until then the product owner runs the UX designer as a general helper agent with
-the same brief and the same read-only limits.
+Status: **applied 1 October 2026** (owner approved the same day; helper inside the product owner's chat). Run
+`sh pocket-game-night/.claude/workspace/setup.sh` once on a machine to link the helper into the product clone.
 
 ## Why
 The owner can see the UX can be improved. Testing screens on phone sizes, measuring targets and checking them
