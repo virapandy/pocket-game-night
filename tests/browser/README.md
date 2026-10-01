@@ -9,9 +9,9 @@ The shared steps live in `helpers.ts`.
 ## Buttons (accessible name)
 | Where | Buttons |
 |---|---|
-| Home | `Tambola…` (the game card), `History` |
-| Tambola start | `New game`, `How to play` |
-| Setup | `Paper tickets`, `Phone tickets…` (enabled from Phase 2; see "Phase 2: phone tickets" below), `Next`, `No money`, one-tap name suggestions named after the name, `Confirm prizes`, a `Remove…` control per removable tier (TAM-183) |
+| Home | `Host a game…` and `Join with my ticket…` (PLT-300, see "UX list of 1 October 2026" below); `Sessions`, `History`, `Report a problem`, `Settings`, directly or inside a `Menu` button |
+| Tambola start | `New game`, `How to play`; the text "Housie on paper or on phones" (TAM-213) |
+| Setup | `Paper tickets…`, `Phone tickets…` (two cards, then `Next`, TAM-213; see "UX list of 1 October 2026"), `Next`, `No money`, one-tap name suggestions named after the name, `Confirm prizes`, a `Remove…` control per removable tier (TAM-183) |
 | Game: top bar (`top-bar`) | `Back`, the progress text "23 of 90 called", `Menu` (the ⋯ with its word, TAM-109) |
 | Game: calling screen | `Repeat`, `Another rhyme` (quiet text buttons), `Record a win` (its own row, not filled), `Next number` (full width at the very bottom, the only filled button). Nothing else: End game and Discard game are only in the menu (TAM-124) |
 | Game: menu | `Settings`, `Show the room`, `Board`, `Check numbers`, `End game`, `Discard game`, as `menuitem`s or buttons, visible only once `Menu` is tapped. A long press on the number also opens Show the room |
@@ -21,7 +21,7 @@ The shared steps live in `helpers.ts`.
 | Undo toast (TAM-125) | inside `undo-toast`: a button named `Undo…` |
 | Board sheet (TAM-127) | a `role="dialog"` holding `board`, with `Close`, `Done` or `Back` |
 | Screen-sleep tip (TAM-128) | text "keep your screen on", `Got it`, `OK` or `Close`; afterwards "Screen may sleep" in the top bar |
-| Dialogs (`role="dialog"`) | End: text "End the game and show payouts?", `End game`, `Keep playing`. Discard: `Discard…`, and "N prize(s) was/were already won" when true. Undo claim: `Undo…` |
+| Dialogs (`role="dialog"`) | End: text "End the game and show payouts?", `End game` (outlined), `Keep playing` (the main look, TAM-103). Discard: `Discard…`, and "N prize(s) was/were already won" when true. Undo claim: `Undo…` |
 | After the game | `Play again` and `Session tally` (TAM-197), both fixed at the bottom of the screen (TAM-181); `Session tally` opens the session screen of the session this game is in. `Settle with host` (TAM-089) and `Settle with players` (TAM-199), both reachable without scrolling (owner, 2026-10-01) |
 | Resume | `Tap to resume`, or after 12 hours `Resume`, `End it…`, `Discard it…` |
 | Settings (from the menu) | a checkbox or switch named `Vibration`; `Done`, `Close` or `Back` |
@@ -67,7 +67,7 @@ reason in an element with `role="alert"`.
 - The page never scrolls on the calling screen (TAM-138); `current-number` stays fully on screen; nothing but the top bar above it (TAM-123).
 - `current-number` digits at least 160 CSS px, its box at least 30% of the screen height; `current-rhyme` under it at 24 CSS px or more; `last-calls` under that.
 - Landscape 844 × 390 (TAM-129): number in the left half, rhyme and last calls in the right half, `Record a win` and `Next number` along the bottom; the number's digits at least 160 CSS px tall and never smaller than in portrait (owner decision, 29 September 2026).
-- Setup (TAM-181): `Next` / `Confirm prizes` fixed within 40 px of the bottom on every step, for 6, 12 or 20 players. The ticket-mode step has **no** `Next`: tapping `Paper tickets` goes straight to the players step (owner decision, 29 September 2026).
+- Setup (TAM-181): `Next` / `Confirm prizes` fixed within 40 px of the bottom on every step, for 6, 12 or 20 players. The ticket-mode step **has** `Next` too since 1 October 2026 (TAM-213, replacing the one-tap step of 29 September): tapping a card chooses it and does not move on; `Next` does, and does nothing before a card is chosen.
 
 ## Other checks
 - `overscroll-behavior-y: none` or `contain` on the page during a game (TAM-111).
@@ -294,7 +294,7 @@ read it with jsQR (`readDrawnQr` in `phone.ts`): what is drawn must read back ex
 - Scanning a ticket = opening the `data-payload` link. The ticket appears with no network requests to any other
   server; it opens with no internet once the phone has opened the app (TAM-057). Scanning further tickets of the
   same game adds them; a ticket of a new game replaces the old game's tickets, marks and all (TAM-171).
-- Typing a code: the home screen has `Enter ticket code`, then the field `Ticket code` and `Open ticket`. A code that
+- Typing a code: Home's `Join with my ticket` → `Type the code` (PLT-300; was `Enter ticket code` on Home), then the field `Ticket code` and `Open ticket`. A code that
   is not a ticket shows a one-line reason in `role="alert"`.
 - `phone-ticket`: one per ticket shown, with `data-ticket`. Inside, 27 elements with `data-cell`, in row order (row 1
   left to right, then rows 2 and 3); numbered cells also have `data-number`, blanks have none (or empty). A marked cell
@@ -321,9 +321,9 @@ read it with jsQR (`readDrawnQr` in `phone.ts`): what is drawn must read back ex
   `phone-ticket` (a marked cell's background differs from an unmarked one's). Tapping a thumbnail shows that ticket
   alone (as `One at a time`: cells at least 42 px, no sideways sliding); `Back` returns to quick mark, and `Back` in quick mark returns to
   the tickets.
-- `pattern-cue` (TAM-195): one element holding the cue lines, such as "Your marks fill the top row of ticket 3. Shout if
-  it's right!" (one line per filled prize; Early Five mentions the ticket, not a row or corners). It exists only
-  while the player's marks fill a prize in this game; never a verdict ("accepted", "correct", "winner"), never a claim.
+- `pattern-cue` (TAM-195): only when the host turned the cue on (off by default since 1 October 2026; see "UX list of 1
+  October 2026"). One slim line, such as "Ticket 3: top row filled. Shout if it's right!". It exists only while the
+  player's marks fill a prize in this game; never a verdict ("accepted", "correct", "winner"), never a claim.
 - `Show claim` (TAM-177, TAM-190, TAM-193): with several tickets, "Which ticket?" and buttons `Ticket 3` …; then one
   button per prize in this game (`Early Five`, `Top Line` …; a crossed-out prize is disabled or not offered). Then
   `claim-screen`: the text "Top Line · Ticket 3 · Riya" (any case), "Show this to the host", `claim-qr` with
@@ -404,3 +404,90 @@ While sending is not set up yet (the stub, no sending hook; product owner, 1 Oct
 is listed there as a `waiting-report` (also one kept while offline, and one that waited for its game to end), and the
 screen shows the note "Kept on this phone: sending isn't set up yet" (straight or curly apostrophe). They stay listed
 after a reload and after the connection returns, and can be deleted the same way.
+
+## UX list of 1 October 2026 (owner approved the behaviour; `docs/handover.md` step 2 and 2b, rows 1, 1a and 2 to 7)
+
+Tests: `home-and-buttons.spec.ts` (PLT-300, PLT-301, TAM-057, TAM-213, TAM-103, TAM-124, TAM-197), `pattern-cue.spec.ts`
+(TAM-195, TAM-053), the quick mark tests in `phone-tickets.spec.ts` (TAM-192), `setup-layout.spec.ts` (TAM-181 with
+TAM-213), `report-problem.spec.ts` (PLT-200). Rule side: `tests/games/tambola/phone-secrets.test.ts` (see
+`tests/games/tambola/README.md`, "The ticket QR, format version 2"). Shared steps in `helpers.ts` (`hostAGame`,
+`joinWithMyTicket`, `openTambola`, `ticketCard`, `chooseTicketType`, `cueSwitch`, `turnCueOn`, `fromHome`,
+`openTypedCode`, `typeTicketCode`, `hasMainLook`, `isOutlined`, `mainLookButtons`, `expectOneMainButton`) and
+`phone.ts` (`setUpPhoneGame(…, { cue })`, `phoneGame(…, { cue })`, `padKey`, `cueMore`, `allCueText`).
+
+### The main look and outlined (PLT-301, UX guideline 17a)
+- **Main look**: the control's own background is opaque (alpha ≥ 0.9, opacity ≥ 0.9) and has a contrast of at least
+  3:1 with the colour behind it (the nearest ancestor with an opaque background, or white). Today's solid red
+  `rgb(179, 38, 30)` on the cream page is the main look; a light tint is not; no fill is not.
+- **Outlined**: not the main look, with a visible border (≥ 1 px, not transparent), a CSS outline, or a box-shadow.
+- **One per screen**: among visible `button`, `[role=button]`, `a[href]`, `[role=radio]`, `[role=tab]`, `[role=switch]`
+  (only the top dialog's when a dialog is open; otherwise leaving out dialogs and open menus), at most one has the main
+  look, and it is the next step. Checked: Home (none), Tambola start (`New game` or none), ticket type (`Next`;
+  required once a card is chosen), players, contribution (`Next`, required), prizes (`Confirm prizes`, required),
+  calling (`Next number`, required, checked once it is enabled again after a call), the End game question
+  (`Keep playing`, required; `End game` outlined), the Discard question (`Discard…` never the main look), payouts (at
+  most one; `Play again` outlined, never the main look), a player's tickets, "One at a time" and quick mark
+  (`Show claim`, required; a chosen tab such as `Ticket 3` must not have the main look).
+- A **chosen option** says so with `aria-pressed="true"`, `aria-checked="true"` or `aria-selected="true"`, shows a "✓"
+  in its text, is outlined, and has a different (tinted) background from an unchosen one; never the main look.
+
+### Home (PLT-300, TAM-057)
+- Two buttons whose accessible names start `Host a game` and `Join with my ticket`: the same size (within 2 px), the
+  same background colour, top border colour and width, and font weight; neither has the main look. The host card's
+  text mentions "this phone"; the join card's mentions "QR" or "code".
+- First visit (fresh storage): the text "You're ready for game night" (straight or curly apostrophe).
+- `Host a game` → the Tambola start screen (`New game`); a game picker with a `Tambola…` button in between is fine.
+- `Join with my ticket` → some text mentioning the "camera" (scan the host's QR with the phone's camera) and a button
+  starting `Type the code`, which shows the field `Ticket code` and `Open ticket` (a wrong code: `role="alert"`).
+- `unfinished-games` sits wholly below both cards; nothing inside it has the main look ("Tap to resume" today is solid
+  red: that changes); tapping its "Tap to resume" (or "Resume") still goes back into the game (PLT-004).
+- `Sessions`, `History`, `Report a problem` and `Settings` stay reachable from Home: a button or `menuitem` with that
+  exact name, directly or after tapping a button named with "Menu". "Settings" there leads to the same settings as
+  the Tambola start screen's (the PLT-209 tests use it to reach `Reports waiting to send`).
+
+### Paper or phone (TAM-213, TAM-181)
+- The Tambola start screen shows "Housie on paper or on phones" (and no "Housie with paper tickets").
+- `New game` → two cards, buttons (or `role="radio"`) whose accessible names start `Paper tickets` and `Phone tickets`,
+  equal as on Home, holding "Always works. Print or bring tickets." and "Each player gets their ticket on their phone.
+  Everyone must have opened the link once." respectively. Neither is chosen, nor shows "✓", when the step opens.
+- Tapping a card chooses it (as "chosen option" above; the other is unchosen) and stays on the step. `Next` (fixed at
+  the bottom, the main look once a card is chosen) moves to the players step; before a choice it is disabled or does
+  nothing.
+
+### The pattern cue: a host option (TAM-195, TAM-053)
+- On the ticket-type step, once `Phone tickets` is chosen (never before, never with paper): a `role="switch"` or
+  checkbox whose accessible name contains "Players' phones say when their marks fill a prize pattern" (straight or
+  curly apostrophe), **off**, with the text "Off: players spot their own wins, as on paper." visible.
+- Turning it on shows "Some players may stop listening and wait for the phone, and paper players get no help. Claims
+  are still shouted and checked." (inline, or in a `dialog` with `Turn on`; the tests tap `Turn on` if there is one).
+  Then the switch is checked. Choosing paper again hides it.
+- The setting goes into every ticket QR of the game (format version 2). A ticket opened from a QR made before this
+  change (`tests/fixtures/ticket-qr-v1.json`, real links `#t=T1.…` from the app at d3aa874) still opens, with the cue
+  off. A ticket opened by typed code has the cue off. The player's menu has no cue switch.
+- **Cue off**: no `pattern-cue`, no cell with `data-cue="true"` (tickets and quick-mark thumbnails), no text "Shout if
+  it's right", "top row filled", "patterns filled" or "Pattern filled" anywhere, also on "Which ticket?". The claim
+  screen still outlines the picked prize (`data-outlined`, TAM-193).
+- **Cue on**: `pattern-cue` is one line (all its text at one height) such as "Ticket 3: top row filled. Shout if
+  it's right!". When more than one thing is filled it may end with a `More` button (or link) inside `pattern-cue`; with
+  fills on two tickets it reads "Tickets 1 and 3: patterns filled" and has `More`. `More` opens `pattern-cue-more`,
+  holding each fill in full, such as "Ticket 1: top row filled" and "Ticket 3: top row filled" (closed with a button
+  starting `Close`, `Done`, `Back` or `OK`, or Escape). Early Five's line names the ticket and "Early Five", no row or
+  corners; Four Corners' names the ticket and "corners".
+- **One slim line** (row 1a): on 375 × 812 and 812 × 375, Larger text off and on, with 1, 2 and 3 tickets, and the page
+  scrolled to the top: `pattern-cue`'s box overlaps no shown `phone-ticket` box; `One at a time` (when there is one),
+  `Quick mark` and `Show claim` are each wholly on the screen and topmost at their centre.
+
+### Quick mark (TAM-192)
+- Each pad key is a button named by its number; once marked, its name may also carry a "✓" before or after the number
+  (`^(✓\s*)?36(\s*✓)?$`). Keys never get `data-number` (TAM-050: only the player's own ticket cells have it).
+- Every key at least 44 CSS px tall on 390 × 844 and 375 × 812 (portrait).
+- A marked number's key (marked on the pad or on the ticket) has a "✓" in its text and a different background from an
+  unmarked key; unmarking removes both (same background as an unmarked key again).
+- Each `quick-mark-thumbnail` contains its caption "Ticket 3" (inside the thumbnail element).
+- `Show claim` (exact name) is on the quick mark screen: bottom edge within 40 px of the screen's bottom, wholly on
+  screen, not covered, the screen's one main look; tapping it opens the usual claim steps ("Which ticket?" with
+  several tickets). `Back` (exact name) has its centre in the top 15% of the screen.
+
+### The app version (PLT-200)
+`appVersion` in every report (host and player) is a release number: `^[1-9]\d*\.\d+\.\d+` with an optional build note
+after `+` or `-` ("1.0.0", "1.0.0+059aaaa"); "0.0.0+…" is refused.

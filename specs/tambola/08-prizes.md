@@ -108,7 +108,7 @@ And nothing carries over to another game
 (Per ticket confirmed by the owner on 2026-09-28.)
 
 ## TAM-089: The payout screen: each person's row, and "Settle with host"
-Status: approved, owner, 2026-09-30 (docs/decisions.md 2026-09-30: two settle buttons on the payout screen; was approved, owner, 2026-09-29, docs/games/tambola/changes-2026-09-29-money-and-1b.md: "Host gives Riya ₹77" on each person; was "The payout summary balances", approved, owner, 2026-09-28)
+Status: approved, owner, 2026-10-01 (both settle buttons reachable without scrolling, TAM-181; UX list row 5); approved, owner, 2026-09-30 (docs/decisions.md 2026-09-30: two settle buttons on the payout screen; was approved, owner, 2026-09-29, docs/games/tambola/changes-2026-09-29-money-and-1b.md: "Host gives Riya ₹77" on each person; was "The payout summary balances", approved, owner, 2026-09-28)
 Phase: Phase 1a
 When a game ends
 Then the summary lists each tier with its winner(s) and amount (or "not won") (TAM-088)
@@ -166,8 +166,9 @@ And with a game played for "No money" (TAM-090), unclaimed prizes are simply lis
 And a ticket that is out after a bogey (TAM-044) still gets its share, because its contribution stayed in the pot.
 
 ## TAM-197: From the payouts to the session tally in one tap
-Status: approved, owner, 2026-09-29 (docs/games/tambola/changes-2026-09-29-money-and-1b.md, 1b review finding 3)
+Status: approved, owner, 2026-10-01 ("Play again" outlined, UX list row 5, UX guideline 17a); was approved, owner, 2026-09-29 (docs/games/tambola/changes-2026-09-29-money-and-1b.md, 1b review finding 3)
 Phase: Phase 1b
 When a game ends and the payout summary shows
 Then "Play again" and "Session tally" are fixed at the bottom of the screen (TAM-181)
+And "Play again" is outlined, not the main look: settling up comes first (PLT-301)
 And "Session tally" opens this game's session tally (PLT-017)

@@ -4,8 +4,7 @@
 // game that is still in an unsettled tally). Names and test ids: tests/browser/README.md.
 import { expect, test, type Page } from './fixtures';
 import {
-  callMany, confirmPrizes, endGame, fillPlayers, HOME, nextNumber, openHistory, openSession, openTambola, setUpPaperGame,
-  tallyPeople, THREE_TIERS, winEverythingAndEnd,
+  callMany, confirmPrizes, endGame, fillPlayers, HOME, nextNumber, openHistory, openSession, openTambola, setUpPaperGame, tallyPeople, THREE_TIERS, winEverythingAndEnd, chooseTicketType, ticketCard, fromHome,
 } from './helpers';
 
 test.use({ timezoneId: 'Asia/Kolkata' });
@@ -28,7 +27,7 @@ async function noMoneyGame(page: Page, players = FAMILY, calls = 3) {
 test('PLT-006: an unfinished setup is remembered, ready to change or confirm', async ({ page }) => {
   await openTambola(page);
   await page.getByRole('button', { name: 'New game' }).click();
-  await page.getByRole('button', { name: 'Paper tickets' }).click();
+  await chooseTicketType(page, 'paper');
   await fillPlayers(page, ['Zoya', 'Farhan', 'Ira']);
   await page.getByRole('button', { name: 'Next' }).click();
   await page.getByLabel('Contribution per ticket').fill('70');
@@ -36,8 +35,7 @@ test('PLT-006: an unfinished setup is remembered, ready to change or confirm', a
   await page.goto(HOME);
   await openTambola(page);
   await page.getByRole('button', { name: 'New game' }).click();
-  const paper = page.getByRole('button', { name: 'Paper tickets' });
-  if (await paper.isVisible()) await paper.click();
+  if (await ticketCard(page, 'paper').isVisible()) await chooseTicketType(page, 'paper');
   await expect(page.getByLabel('Number of players')).toHaveValue('3');
   for (const [i, name] of ['Zoya', 'Farhan', 'Ira'].entries()) {
     await expect(page.getByLabel(`Name of player ${i + 1}`, { exact: true })).toHaveValue(name);
@@ -52,7 +50,7 @@ test('PLT-006: an unfinished setup is remembered, ready to change or confirm', a
 test('PLT-009: "Use this setup" starts a new game with the same players, contribution and tiers, and a new draw', async ({ page }) => {
   await openTambola(page);
   await page.getByRole('button', { name: 'New game' }).click();
-  await page.getByRole('button', { name: 'Paper tickets' }).click();
+  await chooseTicketType(page, 'paper');
   await fillPlayers(page, FAMILY);
   await page.getByRole('button', { name: 'Next' }).click();
   await page.getByLabel('Contribution per ticket').fill('70');
@@ -69,8 +67,7 @@ test('PLT-009: "Use this setup" starts a new game with the same players, contrib
   await rows(page).first().click();
   await page.getByRole('button', { name: 'Use this setup' }).click();
   // A new game in Setup: walk through it, checking everything came back.
-  const paper = page.getByRole('button', { name: 'Paper tickets' });
-  if (await paper.isVisible()) await paper.click();
+  if (await ticketCard(page, 'paper').isVisible()) await chooseTicketType(page, 'paper');
   const playersField = page.getByLabel('Number of players');
   if (await playersField.isVisible()) {
     for (const [i, name] of FAMILY.entries()) await expect(page.getByLabel(`Name of player ${i + 1}`, { exact: true })).toHaveValue(name);
@@ -130,7 +127,7 @@ test.describe('PLT-010: deleting a past game', () => {
     await callMany(page, 2);
     await page.goto(HOME);
     await expect(page.getByTestId('unfinished-games').getByRole('button', { name: /Delete/ })).toHaveCount(0);
-    await page.getByRole('button', { name: 'History' }).click();
+    await fromHome(page, 'History');
     for (let i = 0; i < (await rows(page).count()); i++) {
       if ((await rows(page).nth(i).textContent())?.match(/in progress|paused|2 numbers called/i)) {
         await rows(page).nth(i).click();

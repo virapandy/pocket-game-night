@@ -14,6 +14,8 @@ test.afterEach(closePhones);
 
 const NAMES = ['Riyaben', 'Ashalata', 'Daddyji', 'Kabirbhai'];
 const SESSION = 'Diwali Gathering';
+/** PLT-200 (owner 2026-10-01): a release number major.minor.patch from 1.0.0 up (a build note after + or - is allowed). */
+const RELEASE = /^[1-9]\d*\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$/;
 const APP_ORIGIN = 'http://localhost:4173';
 
 // ---------- The report form ----------
@@ -112,9 +114,19 @@ const settleSend = (page: Page) => page.evaluate(() => (window as any).__pgnPend
 
 /** Settings → "Reports waiting to send", reached by taps only (no page load, so it also works offline). */
 async function openWaiting(page: Page) {
-  const homeSettings = page.getByRole('button', { name: 'Settings', exact: true });
-  if (!(await homeSettings.isVisible())) await page.getByRole('button', { name: /^Tambola/ }).click();
-  await page.getByRole('button', { name: 'Settings', exact: true }).click();
+  // Home's Settings (directly or in Home's menu ⋯, PLT-300), otherwise the Tambola start screen's Settings.
+  const settings = page.getByRole('menuitem', { name: 'Settings', exact: true }).or(page.getByRole('button', { name: 'Settings', exact: true })).first();
+  const menu = page.getByRole('button', { name: /Menu/ }).first();
+  if (!(await settings.isVisible()) && (await menu.isVisible())) {
+    await menu.click();
+    await settings.waitFor({ state: 'visible', timeout: 1000 }).catch(() => {});
+    if (!(await settings.isVisible())) await page.keyboard.press('Escape');
+  }
+  if (!(await settings.isVisible())) {
+    const host = page.getByRole('button', { name: /^Host a game/ });
+    await ((await host.isVisible()) ? host : page.getByRole('button', { name: /^Tambola/ })).click();
+  }
+  await settings.click();
   await page.getByRole('button', { name: /^Reports waiting to send/ }).or(page.getByRole('link', { name: /^Reports waiting to send/ })).first().click();
 }
 const waitingReports = (page: Page) => page.getByTestId('waiting-report');
@@ -178,6 +190,8 @@ test.describe('PLT-200, PLT-201, PLT-208: the host reports a problem after a gam
     expect(report.from).toBe('host');
     expect(typeof report.appVersion).toBe('string');
     expect(report.appVersion.length).toBeGreaterThan(0);
+    // PLT-200 (owner 2026-10-01): a real release number, such as 1.0.0; never 0.0.0.
+    expect(report.appVersion, 'PLT-200: the app version is a release number such as "1.0.0"').toMatch(RELEASE);
     expect(report.phone).toMatch(testInfo.project.name === 'iphone' ? /iPhone/ : /Android/);
     expect(report.waitingForGameEnd).toBe(false);
     expect(report.game.gameType).toBe('tambola');
@@ -545,6 +559,8 @@ test.describe('PLT-207, PLT-208: a player reports a problem from their phone tic
     const { text, report } = await writeReport(riya, 'Riyaben here: my marks vanished', /my marks vanished/);
     expect(report.from).toBe('player');
     expect(report.appVersion.length).toBeGreaterThan(0);
+    // PLT-200 (owner 2026-10-01): the same kind of release number on a player's phone.
+    expect(report.appVersion, 'PLT-200: the app version is a release number such as "1.0.0"').toMatch(RELEASE);
     expect(report.phone).toMatch(testInfo.project.name === 'iphone' ? /iPhone/ : /Android/);
     expect(report.tickets.map((t: any) => ({ ticket: t.ticket, rows: t.rows, marks: [...t.marks].sort((a: number, b: number) => a - b) }))).toEqual([
       { ticket: mine, rows: grid, marks: [...marks].sort((a, b) => a - b) },

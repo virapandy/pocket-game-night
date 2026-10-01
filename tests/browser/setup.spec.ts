@@ -1,12 +1,13 @@
 // Setting up a game: TAM-137, PLT-024, TAM-063, TAM-080, TAM-081, TAM-084, TAM-090, TAM-060.
 import { expect, test } from './fixtures';
-import { confirmPrizes, expectNoPaymentUi, fillPlayers, nextNumber, openTambola, setUpPaperGame } from './helpers';
+import { confirmPrizes, expectNoPaymentUi, fillPlayers, nextNumber, openTambola, setUpPaperGame, chooseTicketType, ticketCard } from './helpers';
 
 test('TAM-137: the first choice is Paper tickets or Phone tickets', async ({ page }) => {
   await openTambola(page);
   await page.getByRole('button', { name: 'New game' }).click();
-  await expect(page.getByRole('button', { name: 'Paper tickets' })).toBeVisible();
-  await expect(page.getByRole('button', { name: /Phone tickets/ })).toBeVisible();
+  // Both are cards whose names start with these words (each holds its explanation, TAM-213).
+  await expect(ticketCard(page, 'paper')).toBeVisible();
+  await expect(ticketCard(page, 'phone')).toBeVisible();
 });
 
 test('TAM-063: 6 players with a contribution and the suggested split, ready to call within 60 seconds, no sign-in', async ({ page }) => {
@@ -29,7 +30,7 @@ test('PLT-024: blank names become Player 1, Player 2 …', async ({ page }) => {
 test('PLT-024: two players cannot have the same name; the app asks for an initial', async ({ page }) => {
   await openTambola(page);
   await page.getByRole('button', { name: 'New game' }).click();
-  await page.getByRole('button', { name: 'Paper tickets' }).click();
+  await chooseTicketType(page, 'paper');
   await fillPlayers(page, ['Riya', 'Riya']);
   await page.getByRole('button', { name: 'Next' }).click();
   await expect(page.getByText(/initial/i)).toBeVisible();
@@ -41,7 +42,7 @@ test('PLT-024: names used before are offered as one-tap suggestions', async ({ p
   await page.goto('./');
   await openTambola(page);
   await page.getByRole('button', { name: 'New game' }).click();
-  await page.getByRole('button', { name: 'Paper tickets' }).click();
+  await chooseTicketType(page, 'paper');
   await expect(page.getByRole('button', { name: 'Zoya' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Farhan' })).toBeVisible();
 });
@@ -49,7 +50,7 @@ test('PLT-024: names used before are offered as one-tap suggestions', async ({ p
 test('TAM-080 and TAM-081: the pot and the suggested tiers show before prizes are locked', async ({ page }) => {
   await openTambola(page);
   await page.getByRole('button', { name: 'New game' }).click();
-  await page.getByRole('button', { name: 'Paper tickets' }).click();
+  await chooseTicketType(page, 'paper');
   await fillPlayers(page, ['A1', 'B2', 'C3', 'D4', 'E5', 'F6']);
   await page.getByRole('button', { name: 'Next' }).click();
   await page.getByLabel('Contribution per ticket').fill('50');
@@ -75,7 +76,7 @@ test('TAM-080 and TAM-081: the pot and the suggested tiers show before prizes ar
 test('TAM-084: the anchor can change a tier; the total still equals the pot', async ({ page }) => {
   await openTambola(page);
   await page.getByRole('button', { name: 'New game' }).click();
-  await page.getByRole('button', { name: 'Paper tickets' }).click();
+  await chooseTicketType(page, 'paper');
   await fillPlayers(page, ['A1', 'B2', 'C3', 'D4', 'E5', 'F6', 'G7', 'H8', 'I9', 'J10']);
   await page.getByRole('button', { name: 'Next' }).click();
   await page.getByLabel('Contribution per ticket').fill('50');

@@ -1,0 +1,181 @@
+{
+ "about": "Ticket QRs in format version 1, made by the app at commit d3aa874 (before the pattern-cue setting, TAM-195, owner 2026-10-01). They must still open, with the cue off (TAM-053). Never edit: these are real old QRs.",
+ "rule": [
+  {
+   "text": "T1.8XM45462XX7WGWWB55X2.mubbs7i8.ETMBCF.Riya",
+   "ticket": {
+    "v": 1,
+    "game": "RQQM",
+    "ticket": 1,
+    "name": "Riya",
+    "rows": [
+     [
+      4,
+      18,
+      23,
+      null,
+      42,
+      null,
+      null,
+      70,
+      null
+     ],
+     [
+      null,
+      null,
+      null,
+      33,
+      43,
+      null,
+      67,
+      77,
+      82
+     ],
+     [
+      5,
+      19,
+      null,
+      39,
+      null,
+      56,
+      null,
+      null,
+      88
+     ]
+    ],
+    "startedAt": 1790000000000,
+    "tiers": [
+     "early-five",
+     "top-line",
+     "middle-line",
+     "bottom-line",
+     "four-corners",
+     "full-house"
+    ]
+   }
+  },
+  {
+   "text": "T1.EG9N2E4559EKDUJRPEBF.mubbs7i8.ETMBCF.Riya",
+   "ticket": {
+    "v": 1,
+    "game": "RQQM",
+    "ticket": 2,
+    "name": "Riya",
+    "rows": [
+     [
+      null,
+      16,
+      22,
+      30,
+      null,
+      null,
+      64,
+      null,
+      80
+     ],
+     [
+      null,
+      null,
+      28,
+      null,
+      null,
+      54,
+      65,
+      73,
+      85
+     ],
+     [
+      8,
+      null,
+      null,
+      32,
+      49,
+      59,
+      66,
+      null,
+      null
+     ]
+    ],
+    "startedAt": 1790000000000,
+    "tiers": [
+     "early-five",
+     "top-line",
+     "middle-line",
+     "bottom-line",
+     "four-corners",
+     "full-house"
+    ]
+   }
+  },
+  {
+   "text": "T1.HXKG389PM79F95AF2N9A.mubbs7i8.ETMBCF.Asha",
+   "ticket": {
+    "v": 1,
+    "game": "RQQM",
+    "ticket": 3,
+    "name": "Asha",
+    "rows": [
+     [
+      null,
+      10,
+      25,
+      34,
+      40,
+      null,
+      null,
+      null,
+      83
+     ],
+     [
+      2,
+      14,
+      null,
+      null,
+      null,
+      50,
+      69,
+      null,
+      89
+     ],
+     [
+      7,
+      null,
+      27,
+      38,
+      null,
+      53,
+      null,
+      71,
+      null
+     ]
+    ],
+    "startedAt": 1790000000000,
+    "tiers": [
+     "early-five",
+     "top-line",
+     "middle-line",
+     "bottom-line",
+     "four-corners",
+     "full-house"
+    ]
+   }
+  }
+ ],
+ "browser": [
+  {
+   "link": "#t=T1.A8BKNRBKHWP2DNGUWN2F.mupaqdu8.ETF.Riya",
+   "ticket": 1,
+   "name": "Riya"
+  },
+  {
+   "link": "#t=T1.GTPX6WZ7DXB6HHT4C52J.mupaqdu8.ETF.Riya",
+   "ticket": 2,
+   "name": "Riya"
+  },
+  {
+   "link": "#t=T1.4YKX8F23HNEPJN9UQFTV.mupaqdu8.ETF.Asha",
+   "ticket": 3,
+   "name": "Asha"
+  }
+ ]
+}

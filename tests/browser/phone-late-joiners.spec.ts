@@ -3,7 +3,7 @@
 // TAM-172 (named hand-out), TAM-056 (the host sees every ticket). Names and test ids: README.md,
 // "Late joiners" and "Phase 2: phone tickets".
 import { expect, test, type Page } from './fixtures';
-import { calledCount, callMany, dismiss, fromMenu, HOME, nextNumber } from './helpers';
+import { calledCount, callMany, dismiss, fromMenu, HOME, nextNumber, typeTicketCode } from './helpers';
 import {
   closePhones, currentHandOut, handOutScreen, newPhone, openHostTickets, phoneGame, phoneTicket,
   PORTRAIT, scanTicket,
@@ -72,9 +72,7 @@ test('TAM-212: the late joiner\'s typed code opens his ticket on a phone', async
   const h = await currentHandOut(page);
   const phone = await newPhone(browser, testInfo, PORTRAIT);
   await phone.goto(HOME);
-  await phone.getByRole('button', { name: 'Enter ticket code', exact: true }).click();
-  await phone.getByLabel('Ticket code', { exact: true }).fill(h.code);
-  await phone.getByRole('button', { name: 'Open ticket', exact: true }).click();
+  await typeTicketCode(phone, h.code);
   await expect(phoneTicket(phone, 7)).toBeVisible();
   await page.getByRole('button', { name: /^(Back to calling|Start calling)$/ }).click();
   await closePrizeUpdate(page);

@@ -4,7 +4,7 @@
 // Scenarios: TAM-020, TAM-022, TAM-026, TAM-028, TAM-030, TAM-032, TAM-033, TAM-038, TAM-044, TAM-058, TAM-060,
 // TAM-117, TAM-174, TAM-175, TAM-177, TAM-178, TAM-179, TAM-190, TAM-193, TAM-196.
 import { expect, test, type Page } from './fixtures';
-import { call, endGame, fromMenu, HOME, mainButton, nextNumber, payoutPeople } from './helpers';
+import { call, endGame, fromMenu, HOME, mainButton, nextNumber, payoutPeople, typeTicketCode } from './helpers';
 import {
   callUntil, cellsWith, claimRefused, claimResult, closePhones, cornersOf, countOn, currentHandOut, enterTicketNumber,
   fakeCamera, gameCodeOf, gridOf, handOutAll, newPhone, numbersOf, openHostTickets, phoneGame, playerWith, PORTRAIT, readDrawnQr,
@@ -205,9 +205,7 @@ test.describe('The host scans the claim', () => {
     await handOutAll(page);
     const typed = await newPhone(browser, testInfo, PORTRAIT);
     await typed.goto(HOME);
-    await typed.getByRole('button', { name: 'Enter ticket code', exact: true }).click();
-    await typed.getByLabel('Ticket code', { exact: true }).fill(h.code);
-    await typed.getByRole('button', { name: 'Open ticket', exact: true }).click();
+    await typeTicketCode(typed, h.code);
     await expect(phoneTicket(typed, h.ticket)).toBeVisible();
     await typed.getByRole('button', { name: 'Show claim', exact: true }).click();
     for (const p of ['Early Five', 'Top Line', 'Middle Line', 'Bottom Line', 'Four Corners', 'Full House']) {

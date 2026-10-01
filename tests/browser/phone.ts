@@ -4,7 +4,7 @@
 import { expect, type Browser, type BrowserContext, type Locator, type Page, type TestInfo } from '@playwright/test';
 import { fileURLToPath } from 'node:url';
 import { silence } from './fixtures';
-import { call, fillPlayers, fromMenu, HOME, nextNumber, openTambola, sessionNameField, continueOrNew } from './helpers';
+import { call, chooseTicketType, fillPlayers, fromMenu, HOME, nextNumber, openTambola, sessionNameField, continueOrNew } from './helpers';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export interface PhonePlayer { name: string; tickets?: number }
@@ -78,11 +78,14 @@ async function setTickets(page: Page, i: number, tickets: number) {
 
 export const handOutScreen = (page: Page) => page.getByTestId('hand-out');
 
-/** Tambola → New game → Phone tickets → players (and tickets each) → contribution → Confirm prizes → hand-out. */
-export async function setUpPhoneGame(page: Page, players: PhonePlayer[], contribution: number | 'none' = 50) {
+/**
+ * Tambola → New game → Phone tickets (the cue switch on if `opts.cue`, TAM-195) → Next → players (and tickets each) →
+ * contribution → Confirm prizes → hand-out. The cue stays off unless asked for (owner, 2026-10-01).
+ */
+export async function setUpPhoneGame(page: Page, players: PhonePlayer[], contribution: number | 'none' = 50, opts: { cue?: boolean } = {}) {
   await openTambola(page);
   await page.getByRole('button', { name: 'New game' }).click();
-  await page.getByRole('button', { name: /^Phone tickets/ }).click();
+  await chooseTicketType(page, 'phone', { cue: opts.cue });
   await fillPlayers(page, players.map((p) => p.name));
   for (const [i, p] of players.entries()) if ((p.tickets ?? 1) !== 1) await setTickets(page, i, p.tickets!);
   await page.getByRole('button', { name: 'Next' }).click();
@@ -131,9 +134,9 @@ export async function handOutAll(page: Page): Promise<HandOut[]> {
   throw new Error('hand-out never reached "Start calling"');
 }
 
-/** Sets up a phone game on the host and hands out every ticket. */
-export async function phoneGame(host: Page, players: PhonePlayer[], contribution: number | 'none' = 50) {
-  await setUpPhoneGame(host, players, contribution);
+/** Sets up a phone game on the host and hands out every ticket. `opts.cue`: the host turns the pattern cue on (TAM-195). */
+export async function phoneGame(host: Page, players: PhonePlayer[], contribution: number | 'none' = 50, opts: { cue?: boolean } = {}) {
+  await setUpPhoneGame(host, players, contribution, opts);
   return handOutAll(host);
 }
 
@@ -277,12 +280,33 @@ export async function openQuickMark(player: Page) {
   await player.getByRole('button', { name: 'Quick mark', exact: true }).click();
   await expect(quickMarkPad(player)).toBeVisible();
 }
+/** A key of the pad: named by its number, with a ✓ before or after it once marked (TAM-192, owner 2026-10-01). */
+export const padKey = (player: Page, n: number) => quickMarkPad(player).getByRole('button', { name: new RegExp(`^(✓\\s*)?${n}(\\s*✓)?$`) });
 export async function padTap(player: Page, n: number) {
-  await quickMarkPad(player).getByRole('button', { name: String(n), exact: true }).click();
+  await padKey(player, n).click();
 }
 
-/** The "your marks fill a pattern" cue (TAM-195). */
+/** The "your marks fill a pattern" cue (TAM-195): one slim line when the host turned it on (owner 2026-10-01). */
 export const patternCue = (player: Page) => player.getByTestId('pattern-cue');
+/** "More" inside the cue line (several fills, or a long line). */
+export const cueMore = (player: Page) =>
+  patternCue(player).getByRole('button', { name: /^More/ }).or(patternCue(player).getByRole('link', { name: /^More/ })).first();
+/** Everything the cue says: its line, plus the full list behind "More" (`pattern-cue-more`) when there is one. */
+export async function allCueText(player: Page): Promise<string> {
+  await expect(patternCue(player)).toBeVisible();
+  let text = ((await patternCue(player).textContent()) ?? '').replace(/\s+/g, ' ');
+  if (await cueMore(player).isVisible()) {
+    await cueMore(player).click();
+    const full = player.getByTestId('pattern-cue-more');
+    await expect(full).toBeVisible();
+    text += ' | ' + ((await full.textContent()) ?? '').replace(/\s+/g, ' ');
+    const close = full.getByRole('button', { name: /^(Close|Done|Back|OK)/ });
+    if (await close.first().isVisible()) await close.first().click();
+    else await player.keyboard.press('Escape');
+    await expect(full).toBeHidden();
+  }
+  return text;
+}
 /** Numbers of the cells with this attribute set to "true" in a scope: data-marked, data-cue or data-outlined. */
 export async function cellsWith(scope: Locator, attr: 'data-marked' | 'data-cue' | 'data-outlined'): Promise<number[]> {
   return (await scope.locator(`[data-number][${attr}="true"]`).evaluateAll((els) => els.map((e) => Number(e.getAttribute('data-number'))))).sort((a, b) => a - b);

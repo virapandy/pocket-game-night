@@ -24,11 +24,12 @@ When the host presses "Next number" and slides the finger off before lifting
 Then no number is drawn (the action fires only when the finger lifts on the button)
 
 ## TAM-103: Ending a game needs a specific confirmation
-Status: approved, owner, 2026-09-28
+Status: approved, owner, 2026-10-01 ("Keep playing" is the main button, UX list row 6, UX guideline 17a); was approved, owner, 2026-09-28
 Phase: Phase 1a
 When the host taps "End game"
 Then a confirmation asks "End the game and show payouts?" with buttons "End game" and "Keep playing"
 And "End game" sits away from the thumb zone, not where "Next number" is
+And "Keep playing" is the confirmation's one main button; "End game" is outlined, never the main look (PLT-301)
 
 ## TAM-104: Every control is big enough to hit
 Status: approved, owner, 2026-09-28
@@ -227,7 +228,8 @@ And "Record a win" (TAM-037) sits in its own row just above "Next number", full 
 And "Next number" is full width at the very bottom, centred (TAM-100)
 And the menu (⋯) holds Settings, Show the room, Board, Check numbers (TAM-139), End game and Discard game
 And End game and Discard game appear nowhere on the calling screen outside the menu, and still ask for their
-confirmations (TAM-103, PLT-005)
+confirmations (TAM-103, PLT-005), where the destructive button is never the main look ("Keep playing" is, owner,
+2026-10-01, UX list row 6, PLT-301)
 And "Show the room" can also be opened by a long press on the number (the menu stays the tap-only way, TAM-136)
 
 ## TAM-125: The undo toast never moves anything, and never covers the main buttons or the prize chips

@@ -3,11 +3,13 @@
 How real families tell us what went wrong, without accounts and without sharing personal data.
 
 ## PLT-200: Report a problem from any screen
-Status: approved, owner, 2026-09-29 (Phase 7 sign-off, with the product owner's verdict of 2026-09-28: approve)
+Status: approved, owner, 2026-10-01 (a real version number, docs/handover.md step 2); was approved, owner, 2026-09-29 (Phase 7 sign-off, with the product owner's verdict of 2026-09-28: approve)
 Phase: Phase 7
 When the host taps "Report a problem" (in the menu, not in the thumb zone)
 Then a short form asks "What happened?" with an optional sentence
 And the report includes the app version, the phone type, and the game's seeds and moves, so it can be replayed
+And the app version is a real release number, such as "1.0.0" (major.minor.patch, 1.0.0 or later; never "0.0.0"),
+the same on the host's and the players' phones, so every report can be matched to a release
 (For a game still in progress, the seeds wait until the game ends: PLT-206.)
 
 ## PLT-201: Reports never include personal data

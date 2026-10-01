@@ -6,8 +6,7 @@
 // "Mark as settled"), TAM-090 (no money is moved). Names and test ids: tests/browser/README.md.
 import { expect, test, type Page } from './fixtures';
 import {
-  call, callMany, confirmPrizes, continueOrNew, currentNumber, endGame, expectNoPaymentUi, HOME, nextNumber, openHistory,
-  openSession, openSessions, sessionNameField, setUpPaperGame, tallyPeople, THREE_TIERS, winEverythingAndEnd,
+  call, callMany, confirmPrizes, continueOrNew, currentNumber, endGame, expectNoPaymentUi, HOME, nextNumber, openHistory, openSession, openSessions, sessionNameField, setUpPaperGame, tallyPeople, THREE_TIERS, winEverythingAndEnd, chooseTicketType, openTambola,
 } from './helpers';
 
 test.use({ timezoneId: 'Asia/Kolkata' });
@@ -19,10 +18,9 @@ const DIWALI = "Diwali at Nani's";
 
 /** Setup up to (not including) "Confirm prizes". */
 async function setUpUntilConfirm(page: Page, players = FAMILY) {
-  await page.goto(HOME);
-  await page.getByRole('button', { name: /^Tambola/ }).click();
+  await openTambola(page);
   await page.getByRole('button', { name: 'New game' }).click();
-  await page.getByRole('button', { name: 'Paper tickets' }).click();
+  await chooseTicketType(page, 'paper');
   await page.getByLabel('Number of players').fill(String(players.length));
   for (const [i, n] of players.entries()) await page.getByLabel(`Name of player ${i + 1}`, { exact: true }).fill(n);
   await page.getByRole('button', { name: 'Next' }).click();

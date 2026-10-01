@@ -2,8 +2,7 @@
 // PLT-002, PLT-003, PLT-004, PLT-005, PLT-007, PLT-008, PLT-012, PLT-013. End game and Discard are in the menu (TAM-124).
 import { expect, test } from './fixtures';
 import {
-  call, callMany, calledNumbers, confirmPrizes, currentNumber, endGame, fromMenu, HOME, menuButton, menuItem, nextNumber, openTambola, recordWin,
-  setUpPaperGame,
+  call, callMany, calledNumbers, confirmPrizes, currentNumber, endGame, fromMenu, HOME, menuButton, menuItem, nextNumber, openTambola, recordWin, setUpPaperGame, fromHome,
 } from './helpers';
 
 test('TAM-065, TAM-111, PLT-003: a refresh or reopen resumes the game exactly where it was', async ({ page }) => {
@@ -84,7 +83,7 @@ test('PLT-005 and TAM-140: discarding asks first, voids the game, and shows cont
   await dialog.getByRole('button', { name: /Discard/ }).click();
   await expect(page.getByText(/hand back/i).first()).toBeVisible();
   await page.goto(HOME);
-  await page.getByRole('button', { name: 'History' }).click();
+  await fromHome(page, 'History');
   await expect(page.getByText('Abandoned').first()).toBeVisible();
 });
 
@@ -141,7 +140,7 @@ test('PLT-007, PLT-008, PLT-013: History lists past games newest first, read-onl
   await callMany(page, 4);
   await endGame(page);
   await page.goto(HOME);
-  await page.getByRole('button', { name: 'History' }).click();
+  await fromHome(page, 'History');
   await expect(page.getByText(/only on this phone/i)).toBeVisible();
   const row = page.getByTestId('history-game').first();
   await expect(row.getByText('Tambola')).toBeVisible();
@@ -179,7 +178,7 @@ test('PLT-012: when storage is nearly full, the app says so and offers to delete
     if (typeof StorageManager !== 'undefined') StorageManager.prototype.estimate = standIn;
   });
   await page.goto(HOME);
-  await page.getByRole('button', { name: 'History' }).click();
+  await fromHome(page, 'History');
   // The stand-in must still be what the app would call, or this test proves nothing.
   expect(await page.evaluate(() => !!(navigator.storage?.estimate as any)?.__standIn)).toBe(true);
   await expect(page.getByText(/storage is (nearly|almost) full/i)).toBeVisible();

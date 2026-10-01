@@ -37,11 +37,13 @@ For every QR code, share link, printed ticket and player view
 Then none of them contains the draw seed, or anything the draw order can be worked out from
 
 ## TAM-053: A player's QR code carries only their own ticket
-Status: approved, owner, 2026-09-30 (reworded on the owner's decision of 2026-09-30, docs/decisions.md, to match TAM-170 and TAM-172; was approved 2026-09-29)
+Status: approved, owner, 2026-10-01 (the host's pattern-cue setting added, TAM-195, docs/decisions.md 2026-10-01); was approved, owner, 2026-09-30 (reworded on the owner's decision of 2026-09-30, docs/decisions.md, to match TAM-170 and TAM-172; was approved 2026-09-29)
 Phase: Phase 2 (phone tickets)
 When the host shows the join QR for ticket 3
 Then the QR holds exactly: ticket 3's 15 numbers and layout, its ticket number, the game code, the player's
-name (TAM-172), the game's start time and its prize list (TAM-170), and nothing else
+name (TAM-172), the game's start time, its prize list (TAM-170) and whether the host turned the pattern cue on
+(TAM-195), and nothing else
+And the QR has a new format version (2) for this; a version 1 QR made before the change still opens, with the cue off
 And no seed of any kind, and no other ticket's numbers or called numbers (TAM-054)
 (A seed would let a curious phone rebuild the other tickets on the same sheet of 6.)
 
@@ -67,8 +69,10 @@ Then the host phone can show any ticket in the game
 (Only the host has this view.)
 
 ## TAM-057: A phone ticket works with no internet
-Status: approved, owner, 2026-09-29 (Phase 2 sign-off, with the product owner's verdict of 2026-09-28)
+Status: approved, owner, 2026-10-01 (first-visit line on Home, UX list row 2, docs/games/tambola/ux-review-2026-10-01-action-hierarchy.md); was approved, owner, 2026-09-29 (Phase 2 sign-off, with the product owner's verdict of 2026-09-28)
 Phase: Phase 2 (phone tickets)
+Given a guest opens the app link for the first time, before game night, with internet
+Then Home says "You're ready for game night" (PLT-300)
 Given a player opened the app link once before, and now has no internet
 When they scan their ticket QR
 Then their ticket appears and they can mark it
@@ -83,6 +87,23 @@ Then phone-ticket claims are checked by the host phone, by scanning the claim QR
 And paper-ticket wins are checked by the anchor and recorded by the host (TAM-037)
 And a player can switch from phone to paper mid-game
 (Changed by the tester on 2026-09-28 to fit the change request: paper claims were checked by the numbers read out.)
+
+## TAM-213: Paper or phone tickets: two equal choices, neither chosen in advance
+Status: approved, owner, 2026-10-01 (UX list row 3, docs/games/tambola/ux-review-2026-10-01-action-hierarchy.md; UX guideline 17a; replaces the 2026-09-29 decision that tapping "Paper tickets" moves on at once)
+Phase: Phase 2 (phone tickets)
+Given the host starts a new game
+Then the Tambola start screen says "Housie on paper or on phones"
+And the first step shows "Paper tickets" and "Phone tickets" as two equal cards: the same size and the same look
+And each card holds its own one-line explanation: paper "Always works. Print or bring tickets."; phone "Each
+player gets their ticket on their phone. Everyone must have opened the link once."
+And neither is chosen when the step opens
+When the host taps one card
+Then that card shows it is chosen with an outline, a ✓ and a light tint, never the main-button look (PLT-301),
+and the other card shows it is not chosen
+And the usual "Next" at the bottom (TAM-181) moves on to the players step
+When the host taps the other card
+Then the choice moves to it; only one is ever chosen
+Wrong input: tapping "Next" before choosing either card does not move on
 
 ## TAM-131: Players mark their own phone ticket, and can unmark
 Status: approved, owner, 2026-09-29 (Phase 2 sign-off, with the product owner's verdict of 2026-09-28)
@@ -235,6 +256,13 @@ read, but every marked cell is clearly filled, so each tap is seen landing on it
 When she taps a thumbnail
 Then that ticket opens full size ("One at a time", TAM-191), and "Back" returns to quick mark
 And quick mark never shows which numbers were called; the player still listens to the anchor (TAM-050)
+And (UX list row 7, approved, owner, 2026-10-01; docs/games/tambola/ux-review-2026-10-01-several-tickets.md and
+ux-review-2026-10-01-action-hierarchy.md) on a 390 × 844 or 375 × 812 portrait screen:
+- every key of the pad is at least 44 CSS px tall
+- a number she has marked shows on its key with a fill and a ✓ (not colour alone); unmarking takes both away
+- each thumbnail is captioned with its ticket: "Ticket 3", "Ticket 4", "Ticket 8"
+- "Show claim" sits in the bottom spot, as the screen's one main button (PLT-301), and opens the usual claim
+  steps (TAM-190, TAM-177); "Back" sits at the top
 
 ## TAM-193: The claim screen shows the ticket, with the claimed pattern outlined
 Status: approved, owner, 2026-09-29 (new with the Phase 2 sign-off: docs/games/tambola/changes-2026-09-29-phone-tickets.md)
@@ -256,15 +284,42 @@ When the current sheet has too few left (Asha, with 3 tickets, after 4 are hande
 Then her tickets span two sheets (5 and 6 on the first, 7 on the next); no ticket is skipped to start a fresh sheet
 And quick mark (TAM-192) marks every one of her tickets that has the number
 
-## TAM-195: The phone points out when the player's own marks fill a pattern
-Status: approved, owner, 2026-09-29 (new with the Phase 2 sign-off: docs/games/tambola/changes-2026-09-29-phone-tickets.md)
+## TAM-195: The phone points out when the player's own marks fill a pattern, only if the host turned it on
+Status: approved, owner, 2026-10-01 (UX list rows 1 and 1a: a host option, off by default, and one slim line;
+docs/decisions.md 2026-10-01, docs/games/tambola/ux-review-2026-10-01-several-tickets.md); was approved, owner,
+2026-09-29 (new with the Phase 2 sign-off: docs/games/tambola/changes-2026-09-29-phone-tickets.md; the cue was always on)
 Phase: Phase 2 (phone tickets)
+
+The host's switch
+Given the host is on the ticket-type step of a new game (TAM-213)
+Then there is no cue switch until "Phone tickets" is chosen, and none with "Paper tickets"
+When the host chooses "Phone tickets"
+Then a switch shows: "Players' phones say when their marks fill a prize pattern. Off: players spot their own wins,
+as on paper.", and it is off
+When the host turns it on
+Then a short warning shows: "Some players may stop listening and wait for the phone, and paper players get no
+help. Claims are still shouted and checked."
+And the setting is fixed for the game: it travels inside each ticket QR (TAM-053); players can't turn it on themselves
+
+With the cue off (the default; also every ticket opened by typed code, and every QR made before this change)
+When Riya's marks cover every number in ticket 3's top row
+Then nothing points it out: no outline on her tickets or under the quick-mark pad, no message line, and no
+"Pattern filled" tag when she picks a ticket in "Show claim"
+And when she chooses a prize in "Show claim", that pattern is still outlined on the claim screen (TAM-193), because
+she picked it
+
+With the cue on
 Given the game's prizes include Top Line
 When Riya's marks cover every number in ticket 3's top row
-Then that row is outlined on her tickets (on the ticket screen and under the quick-mark pad), and she sees
-"Your marks fill the top row of ticket 3. Shout if it's right!"
+Then that row is outlined on her tickets (on the ticket screen and under the quick-mark pad), and one slim line
+says "Ticket 3: top row filled. Shout if it's right!"
 And the same for any prize in this game: 5 marks on a ticket (Early Five), a full row (a Line), the four
 corners (Four Corners), every number (Full House)
+And with fills on several tickets the line names them all, such as "Tickets 1 and 3: patterns filled · More";
+"More" shows each one in full
+And the line is always one line at the bottom of the tickets: it never covers any part of a ticket, and never
+pushes "One at a time", "Quick mark" or "Show claim" off the screen, on a 375 × 812 phone in portrait or
+landscape, with Larger text on or off, with 1, 2 or 3 tickets
 And the cue is based only on her own marks: it never says the claim is right, never claims for her, and
 goes away if she unmarks a number
 And it never mentions a prize this game doesn't have

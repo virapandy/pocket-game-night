@@ -1,7 +1,7 @@
 // The setup redesign (change request of 28 September 2026, docs/games/tambola/ux-calling-screen.md, setup
 // problems 9 to 12): TAM-181, TAM-182, TAM-183, and TAM-082 on the prizes step. On a 390 × 844 screen.
 import { expect, test, type Locator, type Page } from './fixtures';
-import { fillPlayers, openTambola } from './helpers';
+import { chooseTicketType, fillPlayers, openTambola, ticketCard } from './helpers';
 
 test.use({ viewport: { width: 390, height: 844 } });
 
@@ -12,7 +12,7 @@ const names = (n: number) => Array.from({ length: n }, (_, i) => `Name${i + 1}`)
 async function toPlayers(page: Page) {
   await openTambola(page);
   await page.getByRole('button', { name: 'New game' }).click();
-  await page.getByRole('button', { name: 'Paper tickets' }).click();
+  await chooseTicketType(page, 'paper');
 }
 
 async function toPrizes(page: Page, players: number) {
@@ -42,15 +42,23 @@ async function pageScrolls(page: Page): Promise<boolean> {
 }
 
 test.describe('TAM-181: the main button stays at the bottom on every setup step', () => {
-  test('ticket-mode step (owner decision 2026-09-29): no separate "Next"; tapping "Paper tickets" moves on at once', async ({ page }) => {
+  test('ticket-mode step (owner, 2026-10-01, TAM-213; replaces the one-tap step of 2026-09-29): "Next" is fixed at the bottom and moves on once a card is chosen', async ({ page }) => {
     await openTambola(page);
     await page.getByRole('button', { name: 'New game' }).click();
-    await expect(page.getByRole('button', { name: 'Paper tickets' })).toBeVisible();
-    await expect(nextButton(page)).toHaveCount(0);
-    await page.getByRole('button', { name: 'Paper tickets' }).click();
-    // One tap, and the players step is there: nothing else to confirm.
+    await expect(ticketCard(page, 'paper')).toBeVisible();
+    await expect(ticketCard(page, 'phone')).toBeVisible();
+    // Nothing chosen yet: "Next" does not move on.
+    await expect(nextButton(page)).toBeVisible();
+    await atBottom(page, nextButton(page));
+    if (await nextButton(page).isEnabled()) await nextButton(page).click();
+    await expect(page.getByLabel('Number of players')).toHaveCount(0);
+    await expect(ticketCard(page, 'paper')).toBeVisible();
+    // Choosing a card does not move on by itself; "Next" does.
+    await ticketCard(page, 'paper').click();
+    await expect(page.getByLabel('Number of players')).toHaveCount(0);
+    await atBottom(page, nextButton(page));
+    await nextButton(page).click();
     await expect(page.getByLabel('Number of players')).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Paper tickets' })).toHaveCount(0);
   });
 
   test('players step: "Next" is fixed at the bottom for 6, 12 and 20 players, and never hides the last name box', async ({ page }) => {

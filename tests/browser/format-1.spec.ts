@@ -5,7 +5,7 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { expect, test, type Page } from './fixtures';
-import { HOME, call, currentNumber, endGame, nextNumber } from './helpers';
+import { HOME, call, currentNumber, endGame, nextNumber, fromHome } from './helpers';
 
 const fixture = JSON.parse(
   readFileSync(fileURLToPath(new URL('../fixtures/phase-1a-saved-games.json', import.meta.url)), 'utf8'),
@@ -31,7 +31,7 @@ const calledOnList = (page: Page) =>
 test.describe('PLT-014: games saved by the Phase 1a app still open', () => {
   test('the finished game is in History, with every call and the same payouts', async ({ page }) => {
     await phoneFromPhase1a(page);
-    await page.getByRole('button', { name: 'History' }).click();
+    await fromHome(page, 'History');
     const rows = page.getByTestId('history-game');
     await expect(rows).toHaveCount(1);
     await expect(rows.first().getByText('Tambola')).toBeVisible();

@@ -1,18 +1,27 @@
 // Phase 2: secrets, the ticket QR and code, and the claim QR (specs/tambola/05-secrets-and-seeds.md,
 // 09-usability.md). Scenarios: TAM-050, TAM-051, TAM-052 (with the sheet seed), TAM-053, TAM-054, TAM-055,
 // TAM-057, TAM-117, TAM-170, TAM-172, TAM-177, TAM-178, TAM-179, TAM-196 (the host's refusal), and the
-// extensibility note (versioned QR formats). Shapes: README.md, "Phase 2: phone tickets".
+// extensibility note (versioned QR formats), TAM-195 (the host's pattern-cue setting in the ticket QR, format
+// version 2, owner 2026-10-01). Shapes: README.md, "Phase 2: phone tickets".
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
-import { T0, type Pattern } from './helpers';
+import { defaults, T0, type Pattern } from './helpers';
 import {
   CODE_ALPHABET, decodeClaim, decodeTicket, decodeTypedCode, encodeClaim, encodeTicket, intsInArrays, makeTickets, nums,
   PhoneGame, readClaim, ticketInfo, typedCode, type Rows,
 } from './phone';
 
+/** Real format-1 ticket QRs from the app at d3aa874 (tests/fixtures/ticket-qr-v1.json). */
+const V1: { rule: { text: string; ticket: any }[]; browser: { link: string; ticket: number; name: string }[] } = JSON.parse(
+  readFileSync(fileURLToPath(new URL('../../fixtures/ticket-qr-v1.json', import.meta.url)), 'utf8'),
+);
+
 const DRAW = 'draw-seed-Xq93-secret';
 const SHEET = 'sheet-seed-Mv27-secret';
-const TICKET_KEYS = ['v', 'game', 'ticket', 'name', 'rows', 'startedAt', 'tiers'];
+// TAM-053 and TAM-195 (owner 2026-10-01): the ticket QR also carries the host's pattern-cue setting, as `cue`.
+const TICKET_KEYS = ['v', 'game', 'ticket', 'name', 'rows', 'startedAt', 'tiers', 'cue'];
 const CLAIM_KEYS = ['v', 'game', 'ticket', 'pattern', 'rows'];
 
 /** Every way a seed could hide in a string: as is, URL-encoded, or in base64. */
@@ -60,12 +69,13 @@ describe('TAM-050 and TAM-051: a player sees only their own ticket, and no calle
 });
 
 describe('TAM-053 (reworded 2026-09-30), TAM-054, TAM-170, TAM-172: the ticket QR carries only that ticket', () => {
-  it('ticketInfo gives ticket 3\'s numbers and layout, its number, the game code, the owner\'s name, the start time and the prizes', () => {
+  it('ticketInfo gives ticket 3\'s numbers and layout, its number, the game code, the owner\'s name, the start time, the prizes and the cue setting', () => {
     const g = game();
     const info = ticketInfo(g.host, 3, T0);
     expect(Object.keys(info).sort()).toEqual(TICKET_KEYS.filter((k) => k !== 'v' || 'v' in info).sort());
     expect(info).toMatchObject({ game: g.host.code, ticket: 3, name: 'Dad', rows: g.ticket(3).rows, startedAt: T0 });
     expect(info.tiers).toEqual(g.host.tiers.map((t: any) => t.pattern));
+    expect(info.cue, 'TAM-195: the cue is off unless the host turned it on').toBe(false);
   });
 
   it('TAM-170: the game code is 4 characters with no look-alikes, and differs between games', () => {
@@ -78,7 +88,7 @@ describe('TAM-053 (reworded 2026-09-30), TAM-054, TAM-170, TAM-172: the ticket Q
     expect(codes.size).toBeGreaterThanOrEqual(19);
   });
 
-  it('round trip: decoding the QR gives back exactly the ticket, its number, the game code, the name, the start time and the prizes, with format version 1, and nothing else', () => {
+  it('round trip: decoding the QR gives back exactly the ticket, its number, the game code, the name, the start time, the prizes and the cue setting, with format version 2, and nothing else', () => {
     const g = game();
     for (const t of g.tickets) {
       const info = ticketInfo(g.host, t.number, T0);
@@ -86,7 +96,7 @@ describe('TAM-053 (reworded 2026-09-30), TAM-054, TAM-170, TAM-172: the ticket Q
       expect(typeof text).toBe('string');
       const back = decodeTicket(text);
       expect(back.ok).toBe(true);
-      expect(back.ticket.v).toBe(1);
+      expect(back.ticket.v, 'TAM-053 (owner 2026-10-01): the ticket QR with the cue setting is format version 2').toBe(2);
       expect(Object.keys(back.ticket).sort()).toEqual([...TICKET_KEYS].sort());
       const { v: _v, ...rest } = back.ticket;
       const { v: _w, ...want } = info;
@@ -122,6 +132,61 @@ describe('TAM-053 (reworded 2026-09-30), TAM-054, TAM-170, TAM-172: the ticket Q
     const g = game().call(5);
     const claim = encodeClaim({ game: g.host.code, ticket: 1, pattern: 'top-line', rows: g.ticket(1).rows });
     expect(decodeTicket(claim).ok).toBe(false);
+  });
+});
+
+describe('TAM-195 and TAM-053 (owner 2026-10-01): the host\'s pattern-cue setting travels in the ticket QR; off by default', () => {
+  it('the cue is off by default in a new game\'s settings', () => {
+    expect(defaults?.patternCue, 'tambolaDefaults.patternCue').toBe(false);
+  });
+
+  it('with the host\'s switch on (settings.patternCue), every ticket QR says so; with it off, every one says off', () => {
+    for (const on of [true, false]) {
+      const g = game({ settings: { patternCue: on }, players: [{ id: 'p1', name: 'Riya', tickets: 3 }, { id: 'p2', name: 'Asha', tickets: 1 }] });
+      for (const t of g.tickets) {
+        const info = ticketInfo(g.host, t.number, T0);
+        expect(info.cue).toBe(on);
+        const back = decodeTicket(encodeTicket(info));
+        expect(back.ok).toBe(true);
+        expect(back.ticket.v).toBe(2);
+        expect(back.ticket.cue, `ticket ${t.number} with the cue ${on ? 'on' : 'off'}`).toBe(on);
+        expect(back.ticket.rows).toEqual(t.rows);
+      }
+    }
+  });
+
+  it('the setting changes nothing else in the QR: same ticket, number, game, name, start time and prizes', () => {
+    const on = game({ settings: { patternCue: true } });
+    const off = game({ settings: { patternCue: false } });
+    const a = decodeTicket(encodeTicket(ticketInfo(on.host, 2, T0))).ticket;
+    const b = decodeTicket(encodeTicket(ticketInfo(off.host, 2, T0))).ticket;
+    const { cue: ca, ...ra } = a;
+    const { cue: cb, ...rb } = b;
+    expect([ca, cb]).toEqual([true, false]);
+    expect(ra).toEqual(rb);
+  });
+
+  it('an older QR (format version 1, made before this change) still opens, exactly as before, with the cue off', () => {
+    for (const old of V1.rule) {
+      const back = decodeTicket(old.text);
+      expect(back.ok, `the version 1 QR "${old.text}" no longer opens`).toBe(true);
+      expect(back.ticket.v).toBe(1);
+      const { cue, ...rest } = back.ticket;
+      expect(cue ?? false, 'an older QR has the cue off').toBe(false);
+      expect(rest).toEqual(old.ticket);
+    }
+  });
+
+  it('a typed code never carries the cue: decoding it gives the cue off (or no cue at all), even when the host turned it on', () => {
+    const g = game({ settings: { patternCue: true }, players: [{ id: 'p1', name: 'Riya', tickets: 2 }] });
+    for (const t of g.tickets) {
+      const code = typedCode(ticketInfo(g.host, t.number, T0));
+      expect(code).toMatch(/^[2-9A-HJKMNP-Z]{4}(-[2-9A-HJKMNP-Z]{4}){4}$/);
+      const r = decodeTypedCode(code);
+      expect(r.ok).toBe(true);
+      expect(r.ticket.cue ?? false).toBe(false);
+      expect(r.ticket.rows).toEqual(t.rows);
+    }
   });
 });
 

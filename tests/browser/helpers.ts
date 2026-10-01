@@ -10,17 +10,71 @@ export interface SetupOptions {
   session?: { name?: string; newSession?: boolean }; // how to answer the session question (PLT-016)
 }
 
+/** PLT-300 (owner 2026-10-01): Home's two equal choices. */
+export const hostAGame = (page: Page) => page.getByRole('button', { name: /^Host a game/ });
+export const joinWithMyTicket = (page: Page) => page.getByRole('button', { name: /^Join with my ticket/ });
+
+/**
+ * Home → the Tambola start screen. Home's "Host a game" (PLT-300); if a game picker follows, "Tambola". Until Home
+ * changes, the older "Tambola" card on Home is tapped instead (PLT-300's own tests check Home strictly).
+ */
 export async function openTambola(page: Page) {
   await page.goto(HOME);
-  await page.getByRole('button', { name: /^Tambola/ }).click();
+  const tambola = page.getByRole('button', { name: /^Tambola/ });
+  await expect(hostAGame(page).or(tambola).first()).toBeVisible();
+  if (await hostAGame(page).isVisible()) {
+    await hostAGame(page).click();
+    await expect(page.getByRole('button', { name: 'New game' }).or(tambola).first()).toBeVisible();
+    if (!(await page.getByRole('button', { name: 'New game' }).isVisible())) await tambola.first().click();
+  } else {
+    await tambola.first().click();
+  }
+  await expect(page.getByRole('button', { name: 'New game' })).toBeVisible();
 }
 
-/** Tambola → New game → Paper tickets → players → contribution → Confirm prizes. */
+/** TAM-213: the two ticket-type cards ("Paper tickets …", "Phone tickets …"), as buttons or radio buttons. */
+export const ticketCard = (page: Page, kind: 'paper' | 'phone') => {
+  const name = kind === 'paper' ? /^Paper tickets/ : /^Phone tickets/;
+  return page.getByRole('button', { name }).or(page.getByRole('radio', { name })).first();
+};
+
+/** TAM-195 (owner 2026-10-01): the host's cue switch on the ticket-type step, shown once "Phone tickets" is chosen. */
+export const cueSwitch = (page: Page) => {
+  const name = /Players['’] phones say when their marks fill a prize pattern/;
+  return page.getByRole('switch', { name }).or(page.getByRole('checkbox', { name })).first();
+};
+export const CUE_WARNING = /Some players may stop listening and wait for the phone/;
+
+/**
+ * The ticket-type step (TAM-213): tap a card, (phone only) turn the cue on if asked (TAM-195), then "Next" to the
+ * players step. Until TAM-213 is built, tapping "Paper tickets" may move on at once (the older one-tap step).
+ */
+export async function chooseTicketType(page: Page, kind: 'paper' | 'phone', opts: { cue?: boolean } = {}) {
+  await ticketCard(page, kind).click();
+  if (opts.cue) await turnCueOn(page);
+  const players = page.getByLabel('Number of players');
+  const next = page.getByRole('button', { name: 'Next', exact: true });
+  await expect(players.or(next).first()).toBeVisible();
+  if (!(await players.isVisible())) await next.click();
+  await expect(players).toBeVisible();
+}
+
+/** TAM-195: turns the host's cue switch on and accepts the warning (a dialog with "Turn on", or a note on the step). */
+export async function turnCueOn(page: Page) {
+  await expect(cueSwitch(page), 'the pattern-cue switch on the ticket-type step (TAM-195)').toBeVisible();
+  await cueSwitch(page).click();
+  await expect(page.getByText(CUE_WARNING).first(), 'the warning when the cue is turned on').toBeVisible();
+  const turnOn = page.getByRole('dialog').getByRole('button', { name: 'Turn on', exact: true });
+  if (await turnOn.isVisible()) await turnOn.click();
+  await expect(cueSwitch(page)).toBeChecked();
+}
+
+/** Tambola → New game → Paper tickets (→ Next) → players → contribution → Confirm prizes. */
 export async function setUpPaperGame(page: Page, opts: SetupOptions = {}) {
   const names = opts.players ?? ['Riya', 'Asha', 'Dad', 'Kabir', 'Meera', 'Nani'];
   await openTambola(page);
   await page.getByRole('button', { name: 'New game' }).click();
-  await page.getByRole('button', { name: 'Paper tickets' }).click();
+  await chooseTicketType(page, 'paper');
   await fillPlayers(page, names);
   await page.getByRole('button', { name: 'Next' }).click();
   if (opts.contribution === 'none') {
@@ -244,10 +298,20 @@ export async function winEverythingAndEnd(page: Page, player: string, tiers: str
 /** The tiers suggested for 2 to 5 tickets (TAM-081). */
 export const THREE_TIERS = ['Early Five', 'Top Line', 'Full House'];
 
+/** Opens an item that Home offers directly or inside its menu ⋯ (PLT-300: Sessions, History, Report a problem, Settings). */
+export async function fromHome(page: Page, name: string) {
+  const item = page.getByRole('menuitem', { name, exact: true }).or(page.getByRole('button', { name, exact: true })).first();
+  const menu = page.getByRole('button', { name: /Menu/ }).first();
+  await expect(item.or(menu).first()).toBeVisible();
+  if (!(await item.isVisible())) await menu.click();
+  await item.click();
+}
+
 /** Home → Sessions (PLT-022). */
 export async function openSessions(page: Page) {
   await page.goto(HOME);
-  await page.getByRole('button', { name: 'Sessions', exact: true }).click();
+  await expect(page.getByRole('main').first()).toBeVisible();
+  await fromHome(page, 'Sessions');
 }
 
 /** Home → Sessions → the session with this name. */
@@ -276,7 +340,32 @@ export async function tallyPeople(page: Page, scope = 'tally') {
 /** Home → History. */
 export async function openHistory(page: Page) {
   await page.goto(HOME);
-  await page.getByRole('button', { name: 'History' }).click();
+  await expect(page.getByRole('main').first()).toBeVisible();
+  await fromHome(page, 'History');
+}
+
+/**
+ * Home → the typed-code form (TAM-117, PLT-300): "Join with my ticket" → "Type the code", then the field "Ticket code"
+ * and "Open ticket". Until Home changes, the older "Enter ticket code" on Home is tapped instead.
+ */
+export async function openTypedCode(page: Page) {
+  const field = page.getByLabel('Ticket code', { exact: true });
+  const old = page.getByRole('button', { name: 'Enter ticket code', exact: true });
+  await expect(joinWithMyTicket(page).or(old).first()).toBeVisible();
+  if (await joinWithMyTicket(page).isVisible()) {
+    await joinWithMyTicket(page).click();
+    await page.getByRole('button', { name: /^Type the code/ }).click();
+  } else {
+    await old.click();
+  }
+  await expect(field).toBeVisible();
+}
+
+/** Types a ticket code on a phone at Home and opens it (TAM-117). */
+export async function typeTicketCode(page: Page, code: string) {
+  await openTypedCode(page);
+  await page.getByLabel('Ticket code', { exact: true }).fill(code);
+  await page.getByRole('button', { name: 'Open ticket', exact: true }).click();
 }
 
 /**
@@ -429,4 +518,86 @@ export async function expectNotHiddenBehind(page: Page, last: Locator, buttons: 
     expect(lb.y + lb.height, `${what} sits above the fixed buttons`).toBeLessThanOrEqual(bb.y + 0.5);
   }
   expect(await onTopAtCentre(last), `${what} is not covered`).toBe(true);
+}
+
+// ---- UX list of 1 October 2026: one main button per screen (PLT-301, UX guideline 17a) ----
+
+/**
+ * The "main look" (PLT-301): a solid fill that stands out from what is behind it. The button's background is opaque
+ * (alpha at least 0.9, opacity at least 0.9) and has a contrast of at least 3:1 with the colour behind it (the
+ * nearest ancestor with an opaque background, or white). A light tint (a chosen option) or no fill is not the main look.
+ * Runs in the page: it must stay self-contained (no outside names).
+ */
+function mainLookIn(el: Element): boolean {
+  const parse = (c: string) => {
+    const m = c.match(/[\d.]+/g) ?? ['0', '0', '0', '0'];
+    return { r: +m[0]!, g: +m[1]!, b: +m[2]!, a: m[3] === undefined ? 1 : +m[3] };
+  };
+  const lum = (c: { r: number; g: number; b: number }) => {
+    const f = (v: number) => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
+    return 0.2126 * f(c.r) + 0.7152 * f(c.g) + 0.0722 * f(c.b);
+  };
+  const own = parse(getComputedStyle(el).backgroundColor);
+  if (own.a < 0.9 || Number(getComputedStyle(el).opacity) < 0.9) return false;
+  let behind = { r: 255, g: 255, b: 255, a: 1 };
+  for (let e = el.parentElement; e; e = e.parentElement) {
+    const c = parse(getComputedStyle(e).backgroundColor);
+    if (c.a >= 0.9) { behind = c; break; }
+  }
+  const a = lum(own), b = lum(behind);
+  return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05) >= 3;
+}
+
+/** True when this button has the main look (PLT-301). */
+export const hasMainLook = (l: Locator) => l.evaluate(mainLookIn);
+
+/**
+ * Outlined (PLT-301): not the main look, with a visible line around it: a border of at least 1 px in a colour that is
+ * not transparent, a CSS outline, or a box-shadow.
+ */
+export async function isOutlined(l: Locator): Promise<boolean> {
+  if (await hasMainLook(l)) return false;
+  return l.evaluate((el) => {
+    const s = getComputedStyle(el);
+    const seen = (w: string, style: string, color: string) =>
+      parseFloat(w) >= 1 && style !== 'none' && style !== 'hidden' && color !== 'transparent' && !/rgba\([^)]*,\s*0\)$/.test(color);
+    const sides = ['Top', 'Right', 'Bottom', 'Left'] as const;
+    const border = sides.some((k) => seen(s.getPropertyValue(`border-${k.toLowerCase()}-width`), s.getPropertyValue(`border-${k.toLowerCase()}-style`), s.getPropertyValue(`border-${k.toLowerCase()}-color`)));
+    const outline = seen(s.outlineWidth, s.outlineStyle, s.outlineColor);
+    const shadow = s.boxShadow !== 'none' && s.boxShadow !== '';
+    return border || outline || shadow;
+  });
+}
+
+const CONTROLS = 'button, [role="button"], a[href], [role="radio"], [role="tab"], [role="switch"]';
+
+/**
+ * Every visible control on the screen with the main look (PLT-301), by its words. With a dialog open, only the top
+ * dialog's controls count (the screen behind it is covered); otherwise controls in dialogs and open menus are left out.
+ */
+export async function mainLookButtons(page: Page): Promise<string[]> {
+  const dialogs = page.locator('[role="dialog"], [role="alertdialog"], dialog[open]').filter({ visible: true });
+  const n = await dialogs.count();
+  const scope = n ? dialogs.nth(n - 1).locator(CONTROLS) : page.locator(CONTROLS);
+  const all = scope.filter({ visible: true });
+  const out: string[] = [];
+  for (let i = 0; i < (await all.count()); i++) {
+    const c = all.nth(i);
+    if (!n && (await c.evaluate((el) => !!el.closest('[role="dialog"], [role="alertdialog"], dialog, [role="menu"]')))) continue;
+    if (!(await hasMainLook(c))) continue;
+    out.push(((await c.getAttribute('aria-label')) || (await c.innerText())).replace(/\s+/g, ' ').trim());
+  }
+  return out;
+}
+
+/**
+ * PLT-301: at most one control has the main look, and if one does, it is `next` (its words start with it). With
+ * `required`, exactly that one has it. `next` null: none may have it.
+ */
+export async function expectOneMainButton(page: Page, where: string, next: string | null, required = false) {
+  const main = await mainLookButtons(page);
+  expect(main.length, `${where}: controls with the main look: ${JSON.stringify(main)}`).toBeLessThanOrEqual(1);
+  if (next === null) expect(main, `${where}: no control should have the main look`).toEqual([]);
+  else if (main.length) expect(main[0]!.startsWith(next), `${where}: the main look is on "${main[0]}", not on "${next}"`).toBe(true);
+  if (required && next !== null) expect(main.length, `${where}: "${next}" has the main look`).toBe(1);
 }

@@ -42,6 +42,7 @@ TambolaSettings = {
   ticketsPerPlayer: 1, maxTicketsPerPlayer: 3, lateJoinUntil: 10, autoCall: 'off' | number,
   speakCalls: boolean, autoMark: boolean, claimButtons: boolean, verdictsOnPhones: boolean,
   vibrate: boolean, sound: boolean,
+  patternCue: boolean,   // TAM-195: phones point out filled patterns; false by default (owner 2026-10-01)
   rhymes: { language: 'en' | 'hi' | 'both'; familyFriendly: boolean },
 }
 ```
@@ -206,16 +207,24 @@ TAM-212 (`phone-late-joiners.test.ts`).
 | Export | What it is |
 |---|---|
 | `makeTickets(sheetSeed, count)` | Tickets 1..count from sheets of 6: `{ number, sheet, rows }[]`. `rows` is 3 rows of 9 cells, `number` or `null` for a blank. Ticket n is on sheet ⌈n/6⌉; every full sheet holds 1–90 exactly once (TAM-006); fewer tickets are the first ones of the same sheets (`makeTickets(s, 4)` equals the first 4 of `makeTickets(s, 18)`). Same seed, same tickets (TAM-008). A count of 0 or less gives `[]` (or throws); never a broken ticket |
-| `ticketInfo(hostView, ticket, startedAt)` | What the hand-out QR carries for one ticket: `{ game, ticket, name, rows, startedAt, tiers }` (`v` allowed too). `game` is the host view's `code`, `name` the owner's name, `tiers` the patterns in play in tier order (TAM-053, TAM-170, TAM-172) |
-| `encodeTicket(info)` / `decodeTicket(text)` | The ticket QR's text and back. `decodeTicket` returns `{ ok: true, ticket: { v: 1, game, ticket, name, rows, startedAt, tiers } }` (exactly these keys) or `{ ok: false, reason }` for anything else (garbage, a claim QR). The text depends only on `info`: no seed, no other ticket, no called number (TAM-053, TAM-054) |
+| `ticketInfo(hostView, ticket, startedAt)` | What the hand-out QR carries for one ticket: `{ game, ticket, name, rows, startedAt, tiers, cue }` (`v` allowed too). `game` is the host view's `code`, `name` the owner's name, `tiers` the patterns in play in tier order, `cue` the game's `settings.patternCue` (TAM-053, TAM-170, TAM-172, TAM-195) |
+| `encodeTicket(info)` / `decodeTicket(text)` | The ticket QR's text and back. `decodeTicket` returns `{ ok: true, ticket: { v: 2, game, ticket, name, rows, startedAt, tiers, cue } }` (exactly these keys; a format-1 QR gives `v: 1` and `cue: false`, see below) or `{ ok: false, reason }` for anything else (garbage, a claim QR). The text depends only on `info`: no seed, no other ticket, no called number (TAM-053, TAM-054) |
 | `typedCode(info)` / `decodeTypedCode(code)` | The typed code "K7QM-2XPA-9RTD-4HWC-B3NF": exactly 20 letters and digits without 0, O, 1, I, L, in 5 groups of 4 joined by `-` (TAM-117, owner decision 2026-09-30). Each ticket of a game has its own. Decoding it alone gives `{ ok: true, ticket: { rows, ticket, game, … } }` (the numbers and layout, the ticket number, the game code), or `{ ok: false, reason }` for anything else (too short, look-alike letters) |
 | `encodeClaim(claim)` / `decodeClaim(text)` | The claim QR: `{ game, ticket, pattern, rows }` in, `{ ok: true, claim: { v: 1, game, ticket, pattern, rows } }` (exactly these keys) or `{ ok: false, reason }` out. A ticket QR is not a claim QR, and the other way round (TAM-177) |
 | `readClaim(hostView, text)` | The host reading a claim QR against its own copy (TAM-177, TAM-179). Pure, never throws, changes nothing. `{ ok: true, ticket, pattern }`, or `{ ok: false, reason, checkByNumber? }` |
 
 The QR text returned by `encodeTicket` is what the app puts inside its own link for the hand-out QR (for example
 after `#t=`), so a phone's camera opens the app (TAM-117); `decodeTicket` must accept that text (accepting the whole
-link as well is fine). Both QR formats carry `v: 1` so later versions can add to them and still read old ones
-(the extensibility note in `specs/tambola/05-secrets-and-seeds.md`).
+link as well is fine). Both QR formats carry a version so later versions can add to them and still read old ones
+(the extensibility note in `specs/tambola/05-secrets-and-seeds.md`): the claim QR `v: 1`, the ticket QR `v: 2`.
+
+### The ticket QR, format version 2 (TAM-195, TAM-053; owner 2026-10-01)
+- `tambolaDefaults.patternCue` is `false`. With `settings.patternCue: true`, `ticketInfo(…).cue` is `true` and the
+  decoded ticket QR has `v: 2, cue: true`; with it off, `cue: false`. Nothing else in the QR changes with the setting.
+- A format-1 ticket QR (made before this change; real texts from the app at d3aa874 in
+  `tests/fixtures/ticket-qr-v1.json`, such as `T1.8XM45462XX7WGWWB55X2.mubbs7i8.ETMBCF.Riya`) still decodes, `ok: true`,
+  to exactly what it held (`v: 1`, same game, ticket, name, rows, start time, tiers) with `cue` `false` (or absent).
+- `decodeTypedCode` never gives the cue on: `cue` is `false` or absent, even when the host turned it on.
 
 `readClaim` reasons (none is a bogey, nothing changes): "This claim is for another game (code 7K3P)" (the other
 game's code); "Ticket 5 is not in this game" (never handed out, TAM-176); "This claim doesn't match ticket 3"

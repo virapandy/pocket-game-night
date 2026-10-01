@@ -5,7 +5,7 @@
 // "Session: <suggested name> (new) · Change"; Change lists up to 3 unsettled sessions from the last 7 days.
 import { expect, test, type Page } from './fixtures';
 import {
-  answerSession, call, callMany, continueOrNew, endGame, HOME, nextNumber, openSession, openSessions, sessionNameField, setUpPaperGame,
+  answerSession, call, callMany, continueOrNew, endGame, HOME, nextNumber, openSession, openSessions, sessionNameField, setUpPaperGame, chooseTicketType, openTambola,
 } from './helpers';
 
 test.use({ timezoneId: 'Asia/Kolkata' });
@@ -24,10 +24,9 @@ const sessionRows = (page: Page) => page.getByTestId('session');
 
 /** New game from home, up to (not including) "Confirm prizes". */
 async function newGameUntilConfirm(page: Page, players = FAMILY) {
-  await page.goto(HOME);
-  await page.getByRole('button', { name: /^Tambola/ }).click();
+  await openTambola(page);
   await page.getByRole('button', { name: 'New game' }).click();
-  await page.getByRole('button', { name: 'Paper tickets' }).click();
+  await chooseTicketType(page, 'paper');
   await page.getByLabel('Number of players').fill(String(players.length));
   for (const [i, n] of players.entries()) await page.getByLabel(`Name of player ${i + 1}`, { exact: true }).fill(n);
   await page.getByRole('button', { name: 'Next' }).click();

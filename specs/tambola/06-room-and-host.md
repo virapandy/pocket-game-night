@@ -110,7 +110,7 @@ And changing one applies only to this game and later games, never to a game in p
 Status: approved, owner, 2026-09-28
 Phase: Phase 1a
 When the host starts a new game
-Then the first choice is "Paper tickets" or "Phone tickets" (Phase 2)
+Then the first choice is "Paper tickets" or "Phone tickets" (Phase 2), as two equal cards with neither chosen (TAM-213)
 And the players step is the shared one (PLT-024): names are captured there, and blanks become "Player 1", "Player 2" …
 
 ## TAM-180: The phone's voice calls the number, only if the host wants it
@@ -128,12 +128,10 @@ And if the phone has no voice at all, the option is greyed out with a one-line r
 From `docs/games/tambola/ux-calling-screen.md`, setup problems 9 to 11 (problem 12 is TAM-082). New drafts.
 
 ## TAM-181: The main button stays at the bottom on every setup step
-Status: approved, owner, 2026-10-01 (the settle buttons on the payout screen reachable without scrolling); approved, owner, 2026-09-28 (scenario review outcome: product owner verdict, owner sign-off for Phase 1a.1); was draft (new, tester, 2026-09-28, from the redesign). Ticket-mode step decided 2026-09-29 (docs/decisions.md): tapping "Paper tickets" moves on at once, with no separate "Next"
+Status: approved, owner, 2026-10-01 (the ticket-mode step gets the usual "Next", UX list row 3, TAM-213; and the settle buttons on the payout screen reachable without scrolling); approved, owner, 2026-09-28 (scenario review outcome: product owner verdict, owner sign-off for Phase 1a.1); was draft (new, tester, 2026-09-28, from the redesign). Superseded: the 2026-09-29 decision that tapping "Paper tickets" moves on at once, with no separate "Next"
 Phase: Phase 1a
 Given a 390 × 844 screen
-On the ticket-mode step, a one-choice step
-Then there is no separate "Next": tapping "Paper tickets" moves on to the players step at once
-On every other setup step (players, contribution, prizes, confirm)
+On every setup step (ticket mode, players, contribution, prizes, confirm)
 Then the step's main button ("Next", or "Confirm prizes" on the last step) is fixed at the bottom of the screen
 And it stays visible without scrolling, however many players or tiers there are (for example 6, 12 or 20 players)
 And nothing on the step is hidden behind it: the last player's name box can still be scrolled into view above it

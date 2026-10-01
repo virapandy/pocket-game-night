@@ -4,12 +4,12 @@
 // TAM-170, TAM-171, TAM-172, TAM-173, TAM-191, TAM-192, TAM-194, TAM-195, TAM-196.
 // Every phone is its own browser context (its own storage). Names and test ids: README.md, "Phase 2: phone tickets".
 import { expect, test, type Page } from './fixtures';
-import { backgroundAndReturn, callMany, HOME } from './helpers';
+import { backgroundAndReturn, callMany, expectAtBottom, expectOneMainButton, HOME, onTopAtCentre, typeTicketCode } from './helpers';
 import {
   allTickets, cellBoxes, cellsWith, closePhones, cornersOf, currentHandOut, confirmHandOut, gameCodeOf, gridOf,
   handOutAll, handOutScreen, LANDSCAPE, markedOn, newPhone, notOn, numbersOf, oneAtATime, openHostTickets, openPrizes,
-  openQuickMark, padTap, pageFits, patternCue, phoneGame, phoneTicket, playerMenu, playerWith, PORTRAIT, prizeItem,
-  quickMarkMessage, quickMarkPad, readDrawnQr, rowOf, scanTicket, setUpPhoneGame, shownTickets, tapCell, thumbnail, ticketTab,
+  openQuickMark, padKey, padTap, pageFits, patternCue, phoneGame, phoneTicket, playerMenu, playerWith, PORTRAIT, prizeItem,
+  allCueText, quickMarkMessage, quickMarkPad, readDrawnQr, rowOf, scanTicket, setUpPhoneGame, shownTickets, tapCell, thumbnail, ticketTab,
 } from './phone';
 
 test.afterEach(closePhones);
@@ -402,6 +402,61 @@ test.describe('Quick mark', () => {
     await expect(quickMarkPad(riya.page)).toBeVisible();
   });
 
+  test('TAM-192 (owner 2026-10-01): every key is at least 44 px tall on 390 × 844 and 375 × 812; a marked number\'s key shows a fill and a ✓, and unmarking takes both away', async ({ page, browser }, testInfo) => {
+    const handOuts = await phoneGame(page, TWELVE);
+    const riya = await playerWith(browser, testInfo, handOuts, 'Riya', PORTRAIT);
+    const [t1, t2] = riya.tickets as [number, number];
+    const onTicket = numbersOf(riya.grids.get(t1)!)[0]!; // marked on the ticket itself, before quick mark opens
+    const viaPad = numbersOf(riya.grids.get(t2)!)[1]!;
+    await tapCell(riya.page, t1, onTicket);
+    await openQuickMark(riya.page);
+    for (const vp of [PORTRAIT, { width: 375, height: 812 }]) {
+      await riya.page.setViewportSize(vp);
+      const heights = await quickMarkPad(riya.page).getByRole('button').evaluateAll((els) => els.map((e) => e.getBoundingClientRect().height));
+      expect(heights.length, 'a key for each of 1 to 90').toBeGreaterThanOrEqual(90);
+      expect(Math.min(...heights), `the smallest key on ${vp.width} × ${vp.height}`).toBeGreaterThanOrEqual(44);
+    }
+    await riya.page.setViewportSize(PORTRAIT);
+    const look = (n: number) => padKey(riya.page, n).evaluate((e) => ({ bg: getComputedStyle(e).backgroundColor, text: e.textContent ?? '' }));
+    const plain = await look(notOn([...riya.grids.values()]));
+    expect(plain.text).not.toContain('✓');
+    // Marked on the ticket: its key shows it.
+    const a = await look(onTicket);
+    expect(a.text, `key ${onTicket}, marked on the ticket, shows a ✓`).toContain('✓');
+    expect(a.bg, `key ${onTicket}, marked, is filled differently`).not.toBe(plain.bg);
+    // Marked from the pad.
+    await padTap(riya.page, viaPad);
+    await expect(padKey(riya.page, viaPad)).toContainText('✓');
+    expect((await look(viaPad)).bg).not.toBe(plain.bg);
+    // Unmarked: both go.
+    await padTap(riya.page, viaPad);
+    await expect(padKey(riya.page, viaPad)).not.toContainText('✓');
+    expect((await look(viaPad)).bg).toBe(plain.bg);
+    expect(await cellsWith(thumbnail(riya.page, t2), 'data-marked')).toEqual([]);
+  });
+
+  test('TAM-192 (owner 2026-10-01): each thumbnail is captioned with its ticket, "Ticket 1", "Ticket 2" …', async ({ page, browser }, testInfo) => {
+    const handOuts = await phoneGame(page, TWELVE);
+    const riya = await playerWith(browser, testInfo, handOuts, 'Riya', PORTRAIT);
+    await openQuickMark(riya.page);
+    for (const t of riya.tickets) await expect(thumbnail(riya.page, t)).toContainText(new RegExp(`Ticket ${t}\\b`));
+  });
+
+  test('TAM-192 and PLT-301 (owner 2026-10-01): "Show claim" is in the bottom spot, the screen\'s one main button, and opens the claim steps; "Back" is at the top', async ({ page, browser }, testInfo) => {
+    const handOuts = await phoneGame(page, TWELVE);
+    const riya = await playerWith(browser, testInfo, handOuts, 'Riya', PORTRAIT);
+    await openQuickMark(riya.page);
+    const showClaim = riya.page.getByRole('button', { name: 'Show claim', exact: true });
+    await expect(showClaim).toBeVisible();
+    await expectAtBottom(riya.page, showClaim, '"Show claim" in quick mark');
+    expect(await onTopAtCentre(showClaim), '"Show claim" is not covered').toBe(true);
+    await expectOneMainButton(riya.page, 'quick mark', 'Show claim', true);
+    const back = (await riya.page.getByRole('button', { name: 'Back', exact: true }).boundingBox())!;
+    expect(back.y + back.height / 2, '"Back" sits at the top (its centre in the top 15% of the screen)').toBeLessThanOrEqual(PORTRAIT.height * 0.15);
+    await showClaim.click();
+    await expect(riya.page.getByText(/Which ticket\?/)).toBeVisible();
+  });
+
   test('TAM-194: when a player\'s tickets span two sheets, quick mark marks every ticket that has the number', async ({ page, browser }, testInfo) => {
     // Tickets 1–3 Riya, 4–5 Asha, 6–8 Dad: Dad's ticket 6 is on sheet 1, tickets 7 and 8 on sheet 2.
     const handOuts = await phoneGame(page, [{ name: 'Riya', tickets: 3 }, { name: 'Asha', tickets: 2 }, { name: 'Dad', tickets: 3 }]);
@@ -422,15 +477,19 @@ test.describe('Quick mark', () => {
 
 // ---------------------------------------------------------------- The "your marks fill a pattern" cue
 
-test.describe('The "your marks fill a pattern" cue', () => {
-  test('TAM-195: marks covering the top row outline it and say "Your marks fill the top row of ticket 1. Shout if it\'s right!"; unmarking removes it', async ({ page, browser }, testInfo) => {
-    const handOuts = await phoneGame(page, THREE);
+test.describe('The "your marks fill a pattern" cue, with the host\'s switch on (TAM-195, owner 2026-10-01)', () => {
+  // The cue is off by default since 1 October 2026; these games turn it on at setup. Off, old QRs, typed codes and
+  // the one-line layout: pattern-cue.spec.ts.
+  test('TAM-195: marks covering the top row outline it and the line says "Ticket 1: top row filled. Shout if it\'s right!"; unmarking removes it', async ({ page, browser }, testInfo) => {
+    const handOuts = await phoneGame(page, THREE, 50, { cue: true });
     const riya = await playerWith(browser, testInfo, handOuts, 'Riya', PORTRAIT);
     const top = rowOf(riya.grids.get(1)!, 0);
     for (const n of top.slice(0, 4)) await tapCell(riya.page, 1, n);
     await expect(patternCue(riya.page)).toHaveCount(0);
     await tapCell(riya.page, 1, top[4]!);
-    await expect(patternCue(riya.page)).toContainText("Your marks fill the top row of ticket 1. Shout if it's right!");
+    // One line naming the ticket; the top row (with Early Five, also filled by these 5 marks) in it or under "More".
+    await expect(patternCue(riya.page)).toContainText(/Ticket 1\b/);
+    expect(await allCueText(riya.page)).toMatch(/Ticket 1: top row filled/i);
     expect(await cellsWith(phoneTicket(riya.page, 1), 'data-cue')).toEqual(expect.arrayContaining([...top]));
     // Never a verdict, never a claim.
     await expect(riya.page.getByText(/accepted|you won|winner|correct|valid claim/i)).toHaveCount(0);
@@ -441,12 +500,13 @@ test.describe('The "your marks fill a pattern" cue', () => {
     await riya.page.getByRole('button', { name: 'Back', exact: true }).click();
     await expect(phoneTicket(riya.page, 1)).toBeVisible();
     await tapCell(riya.page, 1, top[2]!);
-    await expect(riya.page.getByText(/fill the top row/)).toHaveCount(0);
+    await expect(patternCue(riya.page)).toHaveCount(0);
+    await expect(riya.page.getByText(/top row filled/i)).toHaveCount(0);
     expect(await cellsWith(phoneTicket(riya.page, 1), 'data-cue')).toEqual([]);
   });
 
   test('TAM-195: 5 marks point out Early Five; the four corners are never mentioned in a game without Four Corners', async ({ page, browser }, testInfo) => {
-    const handOuts = await phoneGame(page, THREE); // Early Five, Top Line, Full House
+    const handOuts = await phoneGame(page, THREE, 50, { cue: true }); // Early Five, Top Line, Full House
     const riya = await playerWith(browser, testInfo, handOuts, 'Riya', PORTRAIT);
     const grid = riya.grids.get(1)!;
     const four = cornersOf(grid);
@@ -456,14 +516,15 @@ test.describe('The "your marks fill a pattern" cue', () => {
     // A fifth mark, off the top row: Early Five.
     const fifth = rowOf(grid, 1)[2]!;
     await tapCell(riya.page, 1, fifth);
-    await expect(patternCue(riya.page)).toContainText(/ticket 1\b/);
-    await expect(patternCue(riya.page)).toContainText("Shout if it's right!");
+    await expect(patternCue(riya.page)).toContainText(/ticket 1\b/i);
+    await expect(patternCue(riya.page)).toContainText(/Early Five/i);
+    await expect(patternCue(riya.page)).toContainText(/Shout if it['’]s right!/);
     await expect(patternCue(riya.page)).not.toContainText(/corner|row/i);
     await expect(riya.page.getByText(/accepted|you won|winner|correct/i)).toHaveCount(0);
   });
 
   test('TAM-195: with Four Corners in the game, marking the four corners outlines them', async ({ page, browser }, testInfo) => {
-    const handOuts = await phoneGame(page, TWELVE);
+    const handOuts = await phoneGame(page, TWELVE, 50, { cue: true });
     const riya = await playerWith(browser, testInfo, handOuts, 'Riya', PORTRAIT);
     const t = riya.tickets[0]!;
     const four = cornersOf(riya.grids.get(t)!);
@@ -512,9 +573,7 @@ test('TAM-117 and TAM-057: typing the code on a phone opens the same ticket, wit
   const want = await gridOf(phoneTicket(scanned, h.ticket));
   const typed = await newPhone(browser, testInfo, PORTRAIT);
   await typed.goto(HOME);
-  await typed.getByRole('button', { name: 'Enter ticket code', exact: true }).click();
-  await typed.getByLabel('Ticket code', { exact: true }).fill(h.code);
-  await typed.getByRole('button', { name: 'Open ticket', exact: true }).click();
+  await typeTicketCode(typed, h.code);
   await expect(phoneTicket(typed, h.ticket)).toBeVisible();
   expect(await gridOf(phoneTicket(typed, h.ticket))).toEqual(want);
   // The code carries the whole ticket: its number and the game code show too (TAM-170).
@@ -524,9 +583,7 @@ test('TAM-117 and TAM-057: typing the code on a phone opens the same ticket, wit
   // Wrong input: a code that is not a ticket is refused with a one-line reason.
   const other = await newPhone(browser, testInfo, PORTRAIT);
   await other.goto(HOME);
-  await other.getByRole('button', { name: 'Enter ticket code', exact: true }).click();
-  await other.getByLabel('Ticket code', { exact: true }).fill('ABCD-EFGH-JKMN');
-  await other.getByRole('button', { name: 'Open ticket', exact: true }).click();
+  await typeTicketCode(other, 'ABCD-EFGH-JKMN');
   await expect(other.getByRole('alert')).toBeVisible();
   await expect(other.getByTestId('phone-ticket')).toHaveCount(0);
 });
