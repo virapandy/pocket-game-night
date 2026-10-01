@@ -41,7 +41,8 @@ current; instructions live here, not in chat. History from Phase 0 and 1a is fur
 
    | # | Sev | Change | Scenarios | From |
    |---|---|---|---|---|
-   | 1 | 4 | The "marks fill a pattern" message is one slim line that never covers a ticket (landscape) or pushes "One at a time", "Quick mark" or "Show claim" off screen (portrait), with 1–3 tickets and Larger text | TAM-195 | S |
+   | 1 | 3 | The "marks fill a pattern" cue on players' phones is a **host option, off by default**: a switch on the ticket-type step once "Phone tickets" is chosen, with a warning when turned on; the setting travels in the ticket QR (new format version); typed codes and older QRs have it off; with it off, no outline, no message line and no "Pattern filled" tag (the outline still shows for the prize chosen in "Show claim") | TAM-195 | owner, S |
+   | 1a | 4 | When the cue is on: the message is one slim line that never covers a ticket (landscape) or pushes "One at a time", "Quick mark" or "Show claim" off screen (portrait), with 1–3 tickets and Larger text | TAM-195 | S |
    | 2 | 3 | Home: two equal choices, "Host a game" and "Join with my ticket" (scan or type), above unfinished games shown as plain rows; "You're ready for game night" on a first visit | new PLT, TAM-057 | H |
    | 3 | 3 | Paper or phone tickets: two equal cards with their explanation inside, neither chosen in advance; start screen says "Housie on paper or on phones" | new TAM (near TAM-058) | H |
    | 4 | 3 | One main-style button per screen, always the next step; a chosen option shows outline, ✓ and tint, never the main look (UX guideline 17a) | new PLT | H |
@@ -50,8 +51,8 @@ current; instructions live here, not in chat. History from Phase 0 and 1a is fur
    | 7 | 3 | Quick mark: keys at least 44 px tall; marked numbers filled with ✓; thumbnails captioned "Ticket 1…"; "Show claim" in the bottom spot, "Back" at the top | TAM-192 | S, H |
    | 8 | 2 | Host's claim scan by number: the chosen prize isn't styled like "Check"; "Check" works once ticket and prize are filled; "Enter ticket number" hidden while its form is open | TAM-178 | H |
    | 9 | 2 | Hand-out: "Next ticket" / "Start calling" full width at the bottom; "Can't scan? Give a paper ticket" as a link above it | TAM-181 | step 2, H |
-   | 10 | 2 | "Which ticket?": small pictures of each ticket; the one the pattern message named first, marked "Pattern filled" | TAM-190 | S |
-   | 11 | 2 | Pattern outline not colour alone (thicker, plus a corner mark); Early Five said once | TAM-195 | S |
+   | 10 | 2 | "Which ticket?": small pictures of each ticket; when the cue is on, the one the pattern message named first, marked "Pattern filled" | TAM-190 | S |
+   | 11 | 2 | When the cue is on: pattern outline not colour alone (thicker, plus a corner mark); Early Five said once | TAM-195 | S |
    | 12 | 2 | A phone may hold another player's ticket under that player's name (claims and payouts go to them); a phone holds at most 3 tickets: "This phone already holds 3 tickets" | new TAM | S |
    | 13 | 2 | Calling: the "Called 60 · Undo" bar lighter, with more space above "Scan a claim" | TAM-119 | H |
    | 14 | 2 | Player's "Which prize?": "Cancel" as a link, not a prize-like button | TAM-177 | H |

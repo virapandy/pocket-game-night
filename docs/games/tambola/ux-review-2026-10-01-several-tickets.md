@@ -56,3 +56,20 @@ player in two browser tabs, tickets loaded by typed code (no camera). The owner 
   the host's copy still credits Grandma.)
 - **TAM-122 / TAM-191 (one at a time):** 12 px side margin, no cut-off column.
 - Host prize chips wrap (TAM-183); ticket-code field hint and button wording (TAM-117).
+
+## Follow-up, same day: the pattern cue becomes a host option, off by default
+Owner's feedback: the player's phone should not alert players about a possible claim. The UX designer checked the
+code and setup; the product owner challenged and decided.
+- **Where:** a switch on the ticket-type step, shown only once "Phone tickets" is chosen, because the setting must
+  be fixed before tickets are handed out (it travels in the ticket QR). Wording: "Players' phones say when their
+  marks fill a prize pattern. Off: players spot their own wins, as on paper." **Off by default.** Turning it on
+  shows: "Some players may stop listening and wait for the phone, and paper players get no help. Claims are still
+  shouted and checked."
+- **Reaching the phone:** the ticket QR gains a cue flag (new QR format version). Older QRs and typed codes carry no
+  flag, so the cue stays off for them.
+- **With the cue off:** no outline on the ticket while playing, no message line (the tickets get the space back), no
+  "Pattern filled" tag on "Which ticket?". When the player chooses a prize in "Show claim", the outline of that pattern
+  still shows, because the player picked it.
+- **Host only:** players can't switch it on themselves, so everyone in the room plays by the same rule.
+- **Product owner's challenge:** does an off cue make players feel the app hid a win? No: the bogey and late-claim
+  messages already name the number that completed a pattern, and on paper nobody is told either. Accepted.

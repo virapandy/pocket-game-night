@@ -112,6 +112,7 @@
 | 2026-10-01 | A UX designer helper joins the product owner's chat: tests and recommends, decides with the product owner, edits nothing (`docs/proposals/ux-designer-role.md`). | Owner |
 | 2026-10-01 | Home shows two equal choices, "Host a game" and "Join with my ticket", above unfinished games; paper and phone tickets are two equal cards with no default; one main button per screen, always the next step (UX guideline 17a; `docs/games/tambola/ux-review-2026-10-01-action-hierarchy.md`). | Owner's observations, product owner with UX designer |
 | 2026-10-01 | UX reviews follow `docs/ux-evaluation-playbook.md`: comprehensive passes with evidence, the product owner and UX designer talk findings through, and the product owner consolidates the final recommendations into one UX list in `docs/handover.md`. | Owner |
+| 2026-10-01 | The "your marks fill a pattern" cue on players' phones is a host option on the ticket-type step (phone tickets only), **off by default**, with a short warning when turned on; it travels in the ticket QR; typed codes and older QRs have it off; players can't turn it on themselves (TAM-195). | Owner, details product owner with UX designer |
 
 "Convention" means the established Tambola rule in `docs/games/tambola/guide.md`, chosen because the owner asked
 Claude to follow game conventions. Every Tambola rule above is also a host setting with this default.
