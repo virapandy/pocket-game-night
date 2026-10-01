@@ -1,6 +1,6 @@
 // Usability on the host phone: TAM-104, TAM-106, TAM-109, TAM-110, TAM-113, TAM-116, TAM-118, TAM-135.
 import { expect, test, type Page } from './fixtures';
-import { call, callMany, dismiss, fromMenu, HOME, menuButton, nextNumber, openTambola, recordWin, setUpPaperGame } from './helpers';
+import { call, callMany, dismiss, fromMenu, HOME, hostAGame, menuButton, nextNumber, openTambola, recordWin, setUpPaperGame } from './helpers';
 
 /** Screens worth checking: home, Tambola, setup, a game, its menu, a recorded win, the room view. */
 async function eachScreen(page: Page, check: (name: string) => Promise<void>) {
@@ -174,7 +174,8 @@ test('TAM-116: usable within 5 seconds of opening over a slow connection the fir
   await cdp.send('Network.emulateNetworkConditions', { offline: false, latency: 150, downloadThroughput: 200_000, uploadThroughput: 90_000 });
   const start = Date.now();
   await page.goto(HOME);
-  await expect(page.getByRole('button', { name: /^Tambola/ })).toBeEnabled();
+  // Owner 2026-10-01: PLT-300 replaced the "Tambola…" Home button with "Host a game"; same 5-second limit.
+  await expect(hostAGame(page)).toBeEnabled();
   expect(Date.now() - start).toBeLessThan(5_000);
 });
 

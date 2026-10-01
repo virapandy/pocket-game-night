@@ -439,7 +439,8 @@ test.describe('Quick mark', () => {
     const handOuts = await phoneGame(page, TWELVE);
     const riya = await playerWith(browser, testInfo, handOuts, 'Riya', PORTRAIT);
     await openQuickMark(riya.page);
-    for (const t of riya.tickets) await expect(thumbnail(riya.page, t)).toContainText(new RegExp(`Ticket ${t}\\b`));
+    // Owner 2026-10-01: the caption is read on its own (an element whose whole text is "Ticket N"), not the thumbnail's run-together text.
+    for (const t of riya.tickets) await expect(thumbnail(riya.page, t).getByText(`Ticket ${t}`, { exact: true })).toBeVisible();
   });
 
   test('TAM-192 and PLT-301 (owner 2026-10-01): "Show claim" is in the bottom spot, the screen\'s one main button, and opens the claim steps; "Back" is at the top', async ({ page, browser }, testInfo) => {
