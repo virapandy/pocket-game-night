@@ -12,19 +12,13 @@ current; instructions live here, not in chat. History from Phase 0 and 1a is fur
 | Automation ("Check and publish") | **Green again** (a test scanned before the app had started; fixed, checks as strict as before) |
 | Live preview | **Up to date: phone tickets and "Report a problem" are live** |
 | Product owner review of what is live (money, 1b and play-test fixes) | Matches the scenarios and the owner's 30 September decisions: payout rows with "Settle with host" and "Settle with players", "Session tally" and "Play again" fixed at the bottom, compact tally with "Settle up", the session line, "Close Early Five" as the main button with the screen dimmed. Two small findings below. |
-| Product owner review of Phase 2 and Phase 7 | **Done** (1 October, live, two browser tabs as host and player): matches the scenarios; 5 small findings in step 2 below |
+| Product owner review of Phase 2 and Phase 7 | **Done** (1 October, live, two browser tabs as host and player): matches the scenarios; small findings in step 2 below |
 | Extended testing | Started (122da49, 23d3f41, e289eb8) while automation was red |
 | Phase 6 (connected mode), new games | On hold |
 
 ### Next, in order (for the orchestrator)
-0. **Make automation green and publish. Nothing else first.** The tester reproduces the failing iPhone-engine
-   browser checks from the automation logs and traces (runs 36610989976 and 36656861486: `phone-claims.spec.ts`,
-   `phone-tickets.spec.ts` quick mark and typed code, `report-problem.spec.ts` player report), decides for each
-   whether it is a real app bug or test timing (PLT-122: retry once; a failure that repeats is real), and the
-   coder or tester fixes it. Done when "Check and publish" is green and the live preview shows Phase 2 and
-   Phase 7.
-   **From now on a test report is GREEN only if the automation run for that commit is green too**; the report
-   names that run.
+0. ~~Make automation green and publish~~ **done** (1 October). Keep the rule: **a test report is GREEN only if the
+   automation run for that commit is green too**; the report names that run.
 1. ~~Product owner review of Phase 2 and Phase 7~~ **done.** Works as specified: hand-out ("Ticket 1 → Riya (1 of 2)",
    QR, 20-character code, "0 of 4 handed out", who's waiting, paper fallback); a valid ticket on the player's
    phone; both tickets together with no scrolling and "One at a time"; quick mark ("✓ 54 marked on ticket 1",
