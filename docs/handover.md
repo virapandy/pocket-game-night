@@ -1,52 +1,48 @@
 # Handover: start here
 
-## Now: status and what's next (product owner, updated 30 September 2026)
+## Now: status and what's next (product owner, updated 1 October 2026)
 A new orchestrator session starts here: read this section, then work through **"Next, in order"** from the
 top, one item at a time, reporting to the owner after each. The product owner keeps this section
 current; instructions live here, not in chat. History from Phase 0 and 1a is further down.
 
-### Status (30 September, ready for a new orchestrator session)
+### Status (1 October, product owner review after the run that ended with report 357b824)
 | Item | State |
 |---|---|
-| Phase 1a, 1a.1 and **1b** (sessions, tally and settle up, late joiners, voice, auto-call, dark mode, history tools) | **Green and live** at https://virapandy.github.io/pocket-game-night/ (tests on 6aced77: 315 rule checks, 156 Android and 151 iPhone browser checks) |
-| 1a.1 review findings (rounding, win card, undo toast, card after Close) | **Fixed** (5cf78c9, 257a5f5, 6aced77) |
-| Rhyme catalog revision 4 (361 rhymes, Hindi fallback) | The coder's fix (5c26598) is pushed, but **its automation run was cancelled** by later docs-only pushes, so the live app is still 6aced77; the tester has not reported on it |
-| Test clone | **Uncommitted work left behind:** a new `tests/browser/fixtures.ts` and import changes in 16 browser test files plus the test config |
-| Product owner review of the live 1b build | **Done:** money model decided (host is the bank per game; Settle up player to player) and 5 findings, in `docs/games/tambola/changes-2026-09-29-money-and-1b.md` |
-| Family play-test on Android | **Done** (30 September). Finding: closing a prize wasn't obvious; change request `docs/games/tambola/changes-2026-09-30-playtest.md` |
-| Phase 2, Phase 7, extended testing | **All signed off by the owner** (packs in `docs/signoff.md`) |
+| Tester's report 357b824 on app a9ed2c3 | GREEN on the tester's machine for 1a.1 fixes, money and 1b review fixes, play-test fixes, Phase 2 and Phase 7 |
+| **Automation ("Check and publish")** | **RED on every run since 53ac5db** (Phase 2 tests): 2 or 3 iPhone-engine browser checks fail, different ones each run (phone claims, quick mark, typed code, player report). Rule and Android layers pass. |
+| **Live preview** | **Stuck at 7d765c8** (before Phase 2): phone tickets and "Report a problem" are **not live** |
+| Product owner review of what is live (money, 1b and play-test fixes) | Matches the scenarios and the owner's 30 September decisions: payout rows with "Settle with host" and "Settle with players", "Session tally" and "Play again" fixed at the bottom, compact tally with "Settle up", the session line, "Close Early Five" as the main button with the screen dimmed. Two small findings below. |
+| Product owner review of Phase 2 and Phase 7 | **Waiting** until they are live |
+| Extended testing | Started (122da49, 23d3f41, e289eb8) while automation was red |
 | Phase 6 (connected mode), new games | On hold |
 
 ### Next, in order (for the orchestrator)
-0. **Stop docs-only pushes from cancelling automation.** Each push starts "Check and publish" and cancels the
-   run before it, so the product owner's docs pushes have been cancelling runs for code commits. The coder
-   makes automation skip pushes that change only `docs/` (for example `paths-ignore: ['docs/**']` in
-   `.github/workflows/ci.yml`). Then confirm the latest code (5c26598 or later) runs green and publishes.
-1. **Tidy the Test clone.** Ask the tester about the uncommitted `tests/browser/fixtures.ts` change: finish it,
-   run every layer and commit, or discard it. Nothing else starts in the Test clone until it is clean.
-2. **Close out the rhyme change.** The tester runs everything on 5c26598 (or later) and reports; fix until green
-   (TAM-150, TAM-153).
-3. **Money and 1b review fixes** (owner-approved): apply `docs/games/tambola/changes-2026-09-29-money-and-1b.md`:
-   the host is the bank for each game (TAM-089 reworded; the optional Settle up stays player to player, PLT-017
-   and PLT-028 unchanged) and the five 1b review findings (buttons fixed at the bottom, payouts to tally, compact tally,
-   labelled sessions; new TAM-197). Tester first, then coder.
-4. **Play-test fixes** (owner-approved): apply `docs/games/tambola/changes-2026-09-30-playtest.md` section 1:
-   after a win, the main button becomes "Close Top Line", the rest of the screen dims, and a tap elsewhere
-   pulses the button once (new TAM-198, TAM-145 reworded). Section 2 too (owner-approved): new PLT-029, the
-   last setup step shows "Session: Tuesday 29 Sep · Change" to start a new session or pick a recent one.
-   Steps 3 and 4 can share one round.
-5. **Phase 2 (phone tickets): signed off by the owner (29 September).** The tester applies the product owner's
-   verdicts (including TAM-050 reworded, TAM-133 moved to Phase 6, TAM-179 changed) **and** the additions in
-   `docs/games/tambola/changes-2026-09-29-phone-tickets.md` (all tickets visible together, switch to one at a
-   time, quick mark with the tickets underneath, claim screen showing the ticket, tickets from one sheet, the
-   "your marks fill a pattern" cue, players crossing out won prizes: TAM-122, TAM-173, TAM-191 to TAM-196), and the
-   **extensibility note** in that file: build the player's game knowledge so connected mode can be added later
-   without redesigning the screens, then writes tests; the coder builds to `docs/games/tambola/ux-phone-tickets.md`.
-6. **Phase 7 ("Report a problem", stub destination)**: **signed off** (29 September). The tester marks PLT-200 to
-   PLT-209 approved (PLT-208 with the stub wording) and writes tests when this step comes up.
-7. **Extended testing (simulations, mutation testing, Android emulator, Jev)**: **signed off** (29 September),
-   weekly Jev cap **20,000 decisions**. The tester marks PLT-110 to PLT-123 approved (PLT-118 and PLT-119 with
-   the product owner's wording) and sets the cap in PLT-113.
+0. **Make automation green and publish. Nothing else first.** The tester reproduces the failing iPhone-engine
+   browser checks from the automation logs and traces (runs 36610989976 and 36656861486: `phone-claims.spec.ts`,
+   `phone-tickets.spec.ts` quick mark and typed code, `report-problem.spec.ts` player report), decides for each
+   whether it is a real app bug or test timing (PLT-122: retry once; a failure that repeats is real), and the
+   coder or tester fixes it. Done when "Check and publish" is green and the live preview shows Phase 2 and
+   Phase 7.
+   **From now on a test report is GREEN only if the automation run for that commit is green too**; the report
+   names that run.
+1. **Product owner review of Phase 2 and Phase 7** on the live preview (the product owner does this once 0 is done).
+2. **Small fixes from the product owner's review** (owner-approved scenarios, no new behaviour):
+   - TAM-198 says the called number stays bright while the screen is dimmed; live, the number is dimmed too.
+   - Payout screen at 390 × 844 with 6 players: "Settle with host" and "Settle with players" sit below the
+     bottom, so the host scrolls to find them. Keep them reachable without scrolling (for example in the fixed
+     bottom area with "Session tally" and "Play again", or by folding the per-person rows).
+3. **Answers to the open report questions** (report 357b824):
+   - **Q1, money in reports (owner, 1 October):** reports **include** the game's money numbers (contribution per
+     ticket, prize amounts, payouts), with names still replaced by "Player 1", "Player 2"; the host still sees
+     exactly what is sent. Change PLT-201 ("never includes player names or session names") and PLT-204 (money
+     bugs can be replayed from a report).
+   - **Q2, free text:** no change. Only player names are replaced; the host sees exactly what is sent (PLT-201).
+   - **Q3, sorting (product owner):** bug = something went wrong ("crash", "error", "wrong", "didn't work",
+     "stuck"); confusion = didn't know how ("how do I", "where is", "can't find", "confusing", "didn't
+     understand"); idea = a wish ("add", "wish", "would be nice", "could you", "idea"); otherwise noise (PLT-205).
+   - **Q4, stub reports (product owner):** yes, list them under "Reports waiting to send" with the note "Kept on
+     this phone: sending isn't set up yet" (PLT-202, PLT-209).
+4. **Extended testing** (signed off; weekly Jev cap 20,000 decisions) continues once 0 is done.
 
 ---
 

@@ -103,6 +103,9 @@
 | 2026-09-30 | Giving a player a ticket they already hold is refused politely: "Ticket 1 is already Riya's" (TAM-175). | Owner |
 | 2026-09-30 | One ticket at a time in portrait uses 42 px cells so the ticket fits a 390 px screen with no sideways sliding (TAM-122, TAM-191). | Owner |
 | 2026-09-30 | A ticket opened by typed code offers every usual prize under "Show claim"; the host's scan refuses any prize the game doesn't have (TAM-117, TAM-177). | Owner |
+| 2026-10-01 | Problem reports include the game's money numbers (contribution per ticket, prize amounts, payouts), with names still replaced by Player 1, Player 2, so money bugs can be replayed (PLT-201, PLT-204). | Owner |
+| 2026-10-01 | Report sorting: bug (something went wrong), confusion (didn't know how), idea (a wish), otherwise noise; stub-kept reports are listed under "Reports waiting to send" with "Kept on this phone: sending isn't set up yet" (PLT-205, PLT-202, PLT-209). | Product owner |
+| 2026-10-01 | A test report counts as GREEN only when the automation run for that commit is green too. | Product owner |
 
 "Convention" means the established Tambola rule in `docs/games/tambola/guide.md`, chosen because the owner asked
 Claude to follow game conventions. Every Tambola rule above is also a host setting with this default.
