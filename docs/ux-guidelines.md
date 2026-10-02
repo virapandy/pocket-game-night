@@ -52,6 +52,8 @@ speed [8]. Our users:
 17a. **One main button per screen, and it is the next step.** Only one button has the solid main look. A chosen
     option shows an outline, a ✓ and a light tint, never the main look. Choices between equals (host or join,
     paper or phone) look equal. Destructive actions are never the main button (owner, 1 October 2026).
+    Marks and states (a marked cell, a chosen tab) never use the main-button colour (2 October 2026).
+17b. **In landscape, the bottom button never hides a setup choice** (2 October 2026).
 
 ## 4. Mis-touches: prevent, then forgive
 18. **Undo beats confirmation.** Confirmations used too often get clicked through by habit; keep them
@@ -73,6 +75,8 @@ speed [8]. Our users:
     marked cell; aim for 7:1 on the room screen [4][26][27].
 26. **Never colour alone.** About 1 in 12 men have colour-vision deficiency [28]. A marked cell gets a
     fill **and** a mark; a verdict gets an icon **and** a word: "✓ Accepted", "✗ Bogey" [29].
+26a. **Announce what the room hears:** the called number, its rhyme and every verdict reach screen readers
+    (a polite live region, WCAG 4.1.3) (2 October 2026).
 27. **Dark mode is an option, not the default,** and keeps its text large. Light mode still read
     better in night conditions in the study NN/g cites [30].
 28. **Nothing timed or auto-advancing by default,** so slower players are never rushed [9].
@@ -103,7 +107,7 @@ speed [8]. Our users:
 40. **A guest who can't load the app gets a paper ticket in one tap**, within about 10 seconds **[Inference]**.
 41. **Ticket size on a phone:** 9 columns in portrait gives cells of about 38 CSS px, below the 44 px
     AAA target but above the 24 px AA minimum [15][42]. Show the ticket in **landscape** by default
-    (cells about 80 px), with portrait allowed **[Inference]**.
+    (cells about 80 px), with portrait allowed **[Inference]**. Tickets always fit the screen width, down to 320 px (cells about 32 px there) (2 October 2026).
 
 ## 8. Low-end phones and battery
 42. **Small and fast:** about 170 KB of compressed JavaScript on the critical path, usable within
