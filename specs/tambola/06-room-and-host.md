@@ -128,7 +128,7 @@ And if the phone has no voice at all, the option is greyed out with a one-line r
 From `docs/games/tambola/ux-calling-screen.md`, setup problems 9 to 11 (problem 12 is TAM-082). New drafts.
 
 ## TAM-181: The main button stays at the bottom on every setup step
-Status: approved, owner, 2026-10-01 (the ticket-mode step gets the usual "Next", UX list row 3, TAM-213; and the settle buttons on the payout screen reachable without scrolling); approved, owner, 2026-09-28 (scenario review outcome: product owner verdict, owner sign-off for Phase 1a.1); was draft (new, tester, 2026-09-28, from the redesign). Superseded: the 2026-09-29 decision that tapping "Paper tickets" moves on at once, with no separate "Next"
+Status: approved, owner, 2026-10-01 (the ticket-mode step gets the usual "Next", UX list row 3, TAM-213; "New game" at the bottom and the hand-out button full width at the bottom, UX list rows 9 and 15; and the settle buttons on the payout screen reachable without scrolling); approved, owner, 2026-09-28 (scenario review outcome: product owner verdict, owner sign-off for Phase 1a.1); was draft (new, tester, 2026-09-28, from the redesign). Superseded: the 2026-09-29 decision that tapping "Paper tickets" moves on at once, with no separate "Next"
 Phase: Phase 1a
 Given a 390 × 844 screen
 On every setup step (ticket mode, players, contribution, prizes, confirm)
@@ -142,6 +142,13 @@ on a 390 × 844 screen they are on the screen as it first appears, with 6 or 20 
 approved, owner, 2026-10-01, docs/handover.md)
 On a session's screen, "Settle up" and "Mark as settled" are fixed at the bottom, however many people are in the tally
 And nothing is hidden behind them: the last person can still be scrolled into view above them
+The same holds before setup and while handing out (UX list rows 9 and 15, approved, owner, 2026-10-01,
+docs/games/tambola/ux-review-2026-10-01-action-hierarchy.md):
+On the Tambola start screen, "New game" is at the bottom like every step
+On the hand-out screen (TAM-172), "Next ticket", and after the last ticket "Start calling", is full width at the
+bottom of the screen, the screen's one main button (PLT-301)
+And "Can't scan? Give a paper ticket" (TAM-058) is a link just above it (no fill, no border), still at least 44 CSS px
+tall to tap (TAM-104)
 
 ## TAM-182: The contribution has a real default value, not a grey hint
 Status: approved, owner, 2026-09-28 (scenario review outcome: product owner verdict, owner sign-off for Phase 1a.1); was draft (new, tester, 2026-09-28, from the redesign)
@@ -152,10 +159,12 @@ And the host can change it or choose "No money" (TAM-090)
 Wrong input: an empty field, 0, a negative number or letters are refused with a one-line reason, and "Next" waits
 
 ## TAM-183: The prizes step fits on one screen
-Status: approved, owner, 2026-09-28 (scenario review outcome: product owner verdict, owner sign-off for Phase 1a.1); was draft (new, tester, 2026-09-28, from the redesign)
+Status: approved, owner, 2026-10-01 ("Remove" in grey, UX list row 15); approved, owner, 2026-09-28 (scenario review outcome: product owner verdict, owner sign-off for Phase 1a.1); was draft (new, tester, 2026-09-28, from the redesign)
 Phase: Phase 1a
 Given the suggested five tiers for 6 to 11 tickets (TAM-081)
 Then each tier shows its name and its amount once, with a small remove control (still at least 44 × 44 CSS px, TAM-104)
+And the remove control ("Remove") is a neutral grey, never the red of the main action, and its words still meet the
+contrast of TAM-106 (UX list row 15, approved, owner, 2026-10-01)
 And all five tiers, the pot and "Confirm prizes" fit on one 390 × 844 screen without scrolling
 And with six or seven tiers (12 or more tickets) the list may scroll, but "Confirm prizes" stays fixed at the bottom (TAM-181)
 

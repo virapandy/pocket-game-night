@@ -45,9 +45,9 @@ reason in an element with `role="alert"`.
 | `claim-result` | A recorded win or bogey, in large text (at least 24 CSS px): "Top Line: ✓ Riya, ₹60" ("Player 4" if unnamed; no ₹ with No money), or "✗ Bogey" with the name and pattern; "Shared" for a tie. With paper tickets no ticket or numbers are shown (no `data-called` inside) |
 | `check-result` | The Check numbers helper: each typed number as "23 ✓" or "91 ✗" with `data-called="true"/"false"`, and whether they complete the pattern ("complete" / "not complete"); a one-line reason for wrong input, such as "Top Line needs 5 numbers" |
 | `top-bar` | The calling screen's top bar |
-| `prize-chips` | The row of prize chips; scrolls sideways inside itself if needed, all chips on one line |
+| `prize-chips` | The row of prize chips. Since 1 October 2026 (TAM-126, UX list row 15) the chips **wrap** onto more lines instead of scrolling sideways: every chip wholly on screen with its words in full, the row never scrolls sideways, the page never scrolls (375 px and up, up to seven tiers) |
 | `prize-chip` | One tier: open "Top ●", won "Early 5 ✓ Riya" (a `Close` button on it until closed is optional since TAM-198), closed (greyed, no ●, no Close) |
-| `undo-toast` | "Called 21 · Undo (5s)", floating just above `Record a win`; moves nothing |
+| `undo-toast` | "Called 21 · Undo (5s)", floating just above `Record a win` (or `Scan a claim`); moves nothing. Since 1 October 2026 (TAM-125, UX list row 13): a light bar (under 3:1 against the screen behind it, words at 4.5:1) with at least 16 px between it and the button below |
 | `payout-summary` | The end-of-game summary: each tier's winners or "not won"; one `payout-person` row per person with paid, won and net (TAM-088, TAM-089); the pot ("₹300"); "Bogey: Riya" for recorded bogeys; no "handed back", no "Host gives" and no ₹ with No money |
 | `payout-person` | One per person in `payout-summary`, with `data-name`, `data-paid`, `data-won` (prizes only), `data-net` (= won + money handed back − paid), whole rupees; its text has the name and the words "paid", "won" and "net", and the net in ₹ |
 | `settle-with-host` | After tapping `Settle with host` (TAM-089): one `host-gives` per person, with `data-name`, `data-amount` (= paid + net: prize plus money handed back) and the text "Host gives Riya ₹77". The amounts add up to the pot |
@@ -278,11 +278,14 @@ read it with jsQR (`readDrawnQr` in `phone.ts`): what is drawn must read back ex
     groups of 4 joined by `-` (TAM-117, owner decision 2026-09-30). Typed on a phone, it opens the ticket with its
     number and the game code in `phone-ticket-header`.
   - `hand-out-progress`: "0 of 4 handed out", counting each `Next ticket` (TAM-132).
-  - `hand-out-waiting`: "Waiting: Asha 2, Dad 1": every player still waiting for a ticket; a player leaves the list once
-    all their tickets are handed out.
+  - `hand-out-waiting`: "Waiting: Riya (2 tickets), Asha (1 ticket), Dad (1 ticket)" (TAM-132, owner 2026-10-01; was
+    "Waiting: Asha 2, Dad 1"): every player still waiting, with the tickets they still wait for; a player leaves the list
+    once all their tickets are handed out.
   - `game-code`: the 4-character game code (TAM-170). Also shown on the calling screen (top bar or its own line).
   - Buttons: `Next ticket`, which becomes `Start calling` after the last ticket (then the calling screen);
     `Can't scan? Give a paper ticket`: that player plays on paper, and the rest of their tickets are skipped (TAM-058).
+    Since 1 October 2026 (TAM-181, UX list row 9): `Next ticket` / `Start calling` full width at the bottom, the one
+    main look; `Can't scan? Give a paper ticket` a link (a `button` or `link`) just above it: see "rows 8 to 15" below.
 - Calling screen with phone tickets: `Scan a claim` (exactly this name, owner decision 2026-09-30) instead of, or next to,
   `Record a win`. With paper players in the game (TAM-058), `Record a win` stays, as in 1a.1, for them.
 - Menu → `Tickets` (TAM-056, host only): one `host-ticket` per ticket in the game, with `data-ticket`, the owner's
@@ -335,7 +338,8 @@ read it with jsQR (`readDrawnQr` in `phone.ts`): what is drawn must read back ex
 
 ### Checking a claim (host)
 - `Scan a claim` opens `claim-scanner` and starts the camera at once (the hook's `start` is called
-  on the tap). `Enter ticket number` is always visible there. If the camera fails, or no QR is read within 10
+  on the tap). `Enter ticket number` is visible there until the typed form is open; while the field `Ticket number`
+  shows, `Enter ticket number` is hidden (TAM-178, owner 2026-10-01). If the camera fails, or no QR is read within 10
   seconds, the text "Enter the ticket number instead" shows and the field `Ticket number` takes over (hidden before
   10 seconds). The typed path: `Ticket number`, a prize button (if the prize is not already picked), `Check`.
 - The verdict appears in `claim-result` within 2 seconds of the read, with no internet: "Top Line: ✓ Accepted, ₹60
@@ -491,3 +495,83 @@ TAM-213), `report-problem.spec.ts` (PLT-200). Rule side: `tests/games/tambola/ph
 ### The app version (PLT-200)
 `appVersion` in every report (host and player) is a release number: `^[1-9]\d*\.\d+\.\d+` with an optional build note
 after `+` or `-` ("1.0.0", "1.0.0+059aaaa"); "0.0.0+…" is refused.
+
+## UX list of 1 October 2026, rows 8 to 15 (owner approved the behaviour; `docs/handover.md` step 2b)
+
+Tests: `ux-rows-8-15.spec.ts` (TAM-178, TAM-181, TAM-190, TAM-195, TAM-125/TAM-119, TAM-177, TAM-117, TAM-132, TAM-183,
+TAM-193), `held-tickets.spec.ts` (TAM-214, new), and changes in `phone-tickets.spec.ts` (TAM-191/TAM-122: the 12 px
+margin replaces "cells at least 42 px"), `layout.spec.ts` (TAM-126: chips wrap, replacing "scroll sideways"),
+`phone-claims.spec.ts` (TAM-190 choice names). New shared steps: `helpers.ts` (`hasLinkLook`, `contrast`, `luminance`,
+`isNeutral`, `backgrounds`) and `phone.ts` (`ticketChoice`, `ticketChoiceOrder`, `addTicketByCode`).
+
+### Looks
+- **Link look** (`hasLinkLook`): not the main look, no fill of its own (background alpha below 0.1), no border of 1 px
+  or more in a visible colour, no CSS outline at rest, no box-shadow. A `button` or an `a`/`role="link"` both count.
+- **Neutral grey** (`isNeutral`): red, green and blue within 24 of each other.
+
+### Row 8: the host's typed claim form (TAM-178), inside `claim-scanner`
+- While the field `Ticket number` shows, no visible `Enter ticket number`. With a camera, before 10 s: `Enter ticket
+  number` shows, the field doesn't; tapping it shows the field and hides the button.
+- Prize buttons are `button`s (or `role="radio"`) named by the prize, with an optional "✓" before or after
+  (`^(✓\s*)?Top Line(\s*✓)?$`). The chosen one: `aria-pressed`, `aria-checked` or `aria-selected` "true", a "✓" in
+  its text, outlined, a different background from an unchosen prize, never the main look.
+- `Check`: with no ticket number, or no prize, it is disabled or a tap does nothing: **no `claim-result` and no
+  `claim-refused`** (at 5c5030d an empty form gives a refusal). With both filled it is enabled and is the only control in
+  `claim-scanner` with the main look; tapping it gives the verdict.
+
+### Row 9 and polish: hand-out and start (TAM-181, TAM-132)
+- `Next ticket`, and `Start calling` on the last ticket: bottom edge within 40 px of the screen's, left edge within 24 px
+  of the screen's left and right edge within 24 px of its right (full width), not covered, the screen's one main look.
+- `Can't scan? Give a paper ticket` (button or link, name starting so): the link look, wholly above the main button and
+  at most 40 px above it, at least 44 px tall. Shown with both `Next ticket` and `Start calling`.
+- `hand-out-waiting` as in the hand-out section above.
+- Tambola start screen: `New game` bottom edge within 40 px of the screen's bottom, not covered.
+
+### Row 10: "Which ticket?" (TAM-190)
+- Each choice is a `button` whose accessible name **starts** "Ticket 3" (anything may follow: the picture's numbers if
+  not `aria-hidden`, "Pattern filled"; never "Ticket 30" for 3). Inside it, a small picture: `data-testid="ticket-picture"`
+  with `data-ticket` and 27 `[data-cell]` as in `phone-ticket` (numbers in `data-number`, her marks
+  `data-marked="true"`), at most 60% of the full ticket's height. With 3 tickets on 390 × 844 the page doesn't scroll
+  and every choice is wholly on screen.
+- Order shown (top to bottom, then left to right): ticket order with the cue off, and no "Pattern filled" text anywhere.
+  With the cue on, the ticket the `pattern-cue` line names first ("Ticket 3: …" or "Tickets 2 and 3: …") comes first,
+  and its choice contains "Pattern filled"; the others don't.
+
+### Row 11: the cue's outline and Early Five (TAM-195, cue on)
+- Every cell with `data-cue="true"` contains a visible `data-testid="cue-mark"` (the corner mark; `aria-hidden` is
+  fine); no cell without `data-cue="true"` contains one.
+- The outline is at least 4 CSS px (it was a 3 px inset shadow): the cue cell's own border, CSS outline or box-shadow
+  spread, or a `data-testid="cue-outline"` element inside the ticket with such a line.
+- Early Five: the cue line plus "More" mention "Early Five" exactly once, as "Early Five filled on ticket 1" (or "on
+  tickets 1 and 2"), however many tickets have 5 marks.
+
+### Row 12: holding another player's ticket (TAM-214, `held-tickets.spec.ts`)
+- Each `phone-ticket` names its holder in an element whose whole text is "Grandma · Ticket 3" (a typed code: just
+  "Ticket 3"); a held ticket never shows the phone's other name; the phone's own tickets still show "Riya".
+- `claim-screen`: "Top Line · Ticket 3 · Grandma" (never "Riya"); the host's verdict "… to Grandma"; Grandma's
+  `payout-person` has the prize.
+- A 4th ticket of the same game (QR link or typed code): `role="alert"` with "This phone already holds 3 tickets"; the 3
+  tickets and their marks stay; the 4th is not shown, also after a reload. Rescanning a held ticket: no refusal. A
+  ticket of a new game: replaces them (TAM-171), no refusal.
+- Adding by code on a phone with tickets: the player's `Menu` → `Add a ticket by code` (a `menuitem` or button; there
+  is no "Enter a ticket code" any more), then `Ticket code` and `Open ticket`.
+
+### Row 13: the undo toast (TAM-125, TAM-119)
+- With phone tickets and with paper: at least 16 px between the bottom of `undo-toast` and the top of `Scan a claim` /
+  `Record a win`. The toast as seen (its background, with its opacity, over the opaque colour behind it) has a contrast
+  under 3:1 with that colour behind; every text inside it has at least 4.5:1 against the toast.
+
+### Row 14: "Which prize?" (TAM-177)
+- `Cancel` (button or link) has the link look; a prize button does not. Tapping it: no `claim-qr`, back to the tickets.
+
+### Row 15: polish
+- `One at a time` (TAM-191, TAM-122) on 390 × 844 and 375 × 812: the shown `phone-ticket` box and every cell lie
+  between x = 12 and the screen width − 12; every cell at least (screen width − 32) / 9 CSS px (39.8 at 390, 38.1 at 375)
+  and never under 24. Also for a ticket opened from a quick-mark thumbnail.
+- Prize chips (TAM-126): see `prize-chips` above; checked with 7 tiers at 390 px and 5 and 7 tiers at 375 px.
+- Code field (TAM-117): `Ticket code`'s `placeholder` (or the text it is `aria-describedby`) matches
+  `^X{4}(-X{4})*(-?(…|\.\.\.))?$` ("XXXX-XXXX-XXXX-XXXX-XXXX" or "XXXX-XXXX-…"), on Home's typed-code form and after
+  `Add a ticket by code`.
+- `claim-screen`'s `Done` (TAM-193): outlined, never the main look, under `claim-qr`.
+- Prizes step (TAM-183): every visible `Remove…` button's text colour is a neutral grey with at least 4.5:1 contrast,
+  never the main look; a visible border is grey too.

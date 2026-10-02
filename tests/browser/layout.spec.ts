@@ -3,7 +3,7 @@
 import { expect, test, type Locator, type Page } from './fixtures';
 import {
   call, callMany, calledNumbers, closeBoard, currentNumber, currentRhyme, dismiss, fromMenu, lastCalls, mainButton, menuItem, nextNumber,
-  nextNumberWaits, openBoard, recordBogey, recordWin, setUpPaperGame, undoToast,
+  nextNumberWaits, onTopAtCentre, openBoard, recordBogey, recordWin, setUpPaperGame, undoToast,
 } from './helpers';
 
 test.use({ viewport: { width: 390, height: 844 } });
@@ -378,19 +378,31 @@ test.describe('TAM-126: prize chips show at a glance what is open, won and close
     await expect(chips(page).filter({ hasText: '●' })).toHaveCount(4);
   });
 
-  test('with seven tiers (25 tickets) the chips stay on one line and scroll sideways inside their row; the page never scrolls', async ({ page }) => {
-    test.setTimeout(90_000);
-    await setUpPaperGame(page, { players: Array.from({ length: 25 }, (_, i) => `P${i + 1}x`) });
-    await callMany(page, 2);
-    await expect(chips(page)).toHaveCount(7);
-    const tops = await Promise.all((await chips(page).all()).map(async (c) => Math.round((await box(c)).y)));
-    expect(new Set(tops).size).toBe(1);
-    const row = await page.getByTestId('prize-chips').evaluate((el) => ({
-      overflows: el.scrollWidth > el.clientWidth + 1, overflowX: getComputedStyle(el).overflowX,
-    }));
-    if (row.overflows) expect(['auto', 'scroll']).toContain(row.overflowX);
-    expect(await pageScrolls(page)).toBe(false);
-  });
+  // Owner, 2026-10-01 (UX list row 15, listed there as TAM-183; several-tickets review: "host's prize chips cut off
+  // ('Ho…')"): the chips wrap instead of scrolling sideways. Replaces "the chips stay on one line and scroll sideways
+  // inside their row" (approved 2026-09-28).
+  for (const [tickets, tiers, width] of [[25, 7, 0], [8, 5, 375], [25, 7, 375]] as const) {
+    test(`with ${tiers} tiers (${tickets} tickets)${width ? ` on a ${width} px screen` : ''} the chips wrap: every chip wholly on screen with its words in full; nothing scrolls sideways; the page never scrolls`, async ({ page }) => {
+      test.setTimeout(90_000);
+      if (width) await page.setViewportSize({ width, height: 812 });
+      await setUpPaperGame(page, { players: Array.from({ length: tickets }, (_, i) => `P${i + 1}x`) });
+      await callMany(page, 2);
+      await expect(chips(page)).toHaveCount(tiers);
+      const vw = page.viewportSize()!.width;
+      for (const c of await chips(page).all()) {
+        const b = await box(c);
+        const label = ((await c.textContent()) ?? '').trim();
+        expect(b.x >= -0.5 && b.x + b.width <= vw + 0.5, `the chip "${label}" is wholly on the screen (${Math.round(b.x)} to ${Math.round(b.x + b.width)} px on ${vw} px)`).toBe(true);
+        const cut = await c.evaluate((el) => [el, ...Array.from(el.querySelectorAll('*'))].some((e) =>
+          e.scrollWidth > e.clientWidth + 1 && e.clientWidth > 0 && getComputedStyle(e).overflowX !== 'visible'));
+        expect(cut, `the words of the chip "${label}" are cut off`).toBe(false);
+        expect(await onTopAtCentre(c), `the chip "${label}" is covered`).toBe(true);
+      }
+      const row = await page.getByTestId('prize-chips').evaluate((el) => ({ scrollWidth: el.scrollWidth, clientWidth: el.clientWidth, scrollLeft: el.scrollLeft }));
+      expect(row.scrollWidth, 'the chip row scrolls sideways').toBeLessThanOrEqual(row.clientWidth + 1);
+      expect(await pageScrolls(page)).toBe(false);
+    });
+  }
 });
 
 test.describe('TAM-127: the board opens as a sheet over the calling screen', () => {

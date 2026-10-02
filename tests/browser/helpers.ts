@@ -601,3 +601,56 @@ export async function expectOneMainButton(page: Page, where: string, next: strin
   else if (main.length) expect(main[0]!.startsWith(next), `${where}: the main look is on "${main[0]}", not on "${next}"`).toBe(true);
   if (required && next !== null) expect(main.length, `${where}: "${next}" has the main look`).toBe(1);
 }
+
+// ---- UX list of 1 October 2026, rows 8 to 15 ----
+
+/**
+ * The link look (TAM-181 hand-out, TAM-177 "Which prize?", owner 2026-10-01): a control that looks like a link, not a
+ * button: not the main look, no fill of its own (background alpha below 0.1), no border of 1 px or more in a visible
+ * colour, no CSS outline at rest, and no box-shadow. A real link (`a[href]` or `role="link"`) must look the same way.
+ */
+export async function hasLinkLook(l: Locator): Promise<boolean> {
+  if (await hasMainLook(l)) return false;
+  return l.evaluate((el) => {
+    const s = getComputedStyle(el);
+    const alpha = (c: string) => { const m = c.match(/[\d.]+/g); return !m ? 0 : m[3] === undefined ? 1 : +m[3]; };
+    if (alpha(s.backgroundColor) >= 0.1) return false;
+    for (const k of ['top', 'right', 'bottom', 'left']) {
+      const w = parseFloat(s.getPropertyValue(`border-${k}-width`));
+      const st = s.getPropertyValue(`border-${k}-style`);
+      if (w >= 1 && st !== 'none' && st !== 'hidden' && alpha(s.getPropertyValue(`border-${k}-color`)) > 0.05) return false;
+    }
+    if (s.outlineStyle !== 'none' && parseFloat(s.outlineWidth) >= 1) return false;
+    return s.boxShadow === 'none' || s.boxShadow === '';
+  });
+}
+
+/** Relative luminance (WCAG) of a CSS colour "rgb(…)" / "rgba(…)". */
+export function luminance(color: string): number {
+  const m = color.match(/[\d.]+/g) ?? ['0', '0', '0'];
+  const f = (v: number) => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
+  return 0.2126 * f(+m[0]!) + 0.7152 * f(+m[1]!) + 0.0722 * f(+m[2]!);
+}
+/** WCAG contrast ratio of two CSS colours. */
+export const contrast = (a: string, b: string) => {
+  const x = luminance(a), y = luminance(b);
+  return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05);
+};
+/** A neutral grey (or black or white): its red, green and blue differ by at most 24 (TAM-183 "Remove", owner 2026-10-01). */
+export const isNeutral = (color: string) => {
+  const m = (color.match(/[\d.]+/g) ?? ['0', '0', '0']).slice(0, 3).map(Number);
+  return Math.max(...m) - Math.min(...m) <= 24;
+};
+
+/** The element's own background, and the opaque colour behind it (the nearest ancestor with alpha ≥ 0.9, or white). */
+export const backgrounds = (l: Locator) =>
+  l.evaluate((el) => {
+    const alpha = (c: string) => { const m = c.match(/[\d.]+/g); return !m ? 0 : m[3] === undefined ? 1 : +m[3]; };
+    let behind = 'rgb(255, 255, 255)';
+    for (let e = el.parentElement; e; e = e.parentElement) {
+      const c = getComputedStyle(e).backgroundColor;
+      if (alpha(c) >= 0.9) { behind = c; break; }
+    }
+    const own = getComputedStyle(el).backgroundColor;
+    return { own: alpha(own) >= 0.9 ? own : behind, behind, color: getComputedStyle(el).color };
+  });

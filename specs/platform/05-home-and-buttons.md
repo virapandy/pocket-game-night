@@ -27,7 +27,7 @@ Then Home also says "You're ready for game night" (TAM-057)
 Wrong input: a typed code that is not a ticket is refused with a one-line reason, and no ticket opens (TAM-117)
 
 ## PLT-301: One main button per screen, and it is the next step
-Status: approved, owner, 2026-10-01 (UX list row 4; UX guideline 17a)
+Status: approved, owner, 2026-10-01 (UX list row 4; UX guideline 17a; hand-out and typed claim form named from UX list rows 8 and 9)
 Phase: Phase 2 (phone tickets)
 On every screen, host and player
 Then at most one button has the solid main look, and it is the next step on that screen:
@@ -35,6 +35,8 @@ Then at most one button has the solid main look, and it is the next step on that
 - calling: "Next number" (TAM-124)
 - the End game question: "Keep playing" (TAM-103)
 - a player's tickets and quick mark: "Show claim" (TAM-192)
+- handing out phone tickets: "Next ticket", then "Start calling" (TAM-181, UX list row 9, owner, 2026-10-01)
+- the host's typed claim form: "Check", once the ticket number and prize are filled in (TAM-178, UX list row 8)
 And a chosen option (such as the chosen ticket type, TAM-213) shows an outline, a ✓ and a light tint, never the
 main look
 And choices between equals look equal: "Host a game" and "Join with my ticket" (PLT-300); "Paper tickets" and

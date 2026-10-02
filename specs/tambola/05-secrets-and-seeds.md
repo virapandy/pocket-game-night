@@ -113,11 +113,13 @@ Then it shows as marked (fill and mark); tapping again unmarks it; nothing asks 
 And marks stay on the player's phone and never affect claim checks (TAM-035)
 
 ## TAM-132: The host sees which tickets have been handed out
-Status: approved, owner, 2026-09-29 (Phase 2 sign-off, with the product owner's verdict of 2026-09-28)
+Status: approved, owner, 2026-10-01 (waiting line wording, UX list row 15, docs/games/tambola/ux-review-2026-10-01-action-hierarchy.md); was approved, owner, 2026-09-29 (Phase 2 sign-off, with the product owner's verdict of 2026-09-28)
 Phase: Phase 2 (phone tickets)
 While handing out phone tickets
 When a player has scanned and the host taps "Next ticket"
 Then the host screen shows "7 of 10 handed out" and which tickets are still waiting
+And the waiting line names each player with the number of tickets they are still waiting for, in words:
+"Waiting: Riya (2 tickets), Asha (1 ticket), Dad (1 ticket)"; after Riya's first ticket it reads "Riya (1 ticket)"
 (With no internet, the host phone cannot know that a scan worked, so the host confirms each hand-out.)
 
 ## TAM-133: A player's phone can show the last calls
@@ -186,7 +188,7 @@ Given the host made a sheet of 6 but handed out only 4 tickets
 Then the other 2 tickets are not in play, count for nothing in the pot, and any claim on them is refused (TAM-032)
 
 ## TAM-177: A phone-ticket claim is verified by scanning the player's claim QR
-Status: approved, owner, 2026-09-30 (typed-code prizes noted on the owner's decision of 2026-09-30; was approved 2026-09-28, change request)
+Status: approved, owner, 2026-10-01 ("Cancel" on "Which prize?" as a link, UX list row 14, docs/games/tambola/ux-review-2026-10-01-action-hierarchy.md); was approved, owner, 2026-09-30 (typed-code prizes noted on the owner's decision of 2026-09-30; was approved 2026-09-28, change request)
 Phase: Phase 2 (phone tickets)
 Given Riya holds ticket 3 on her phone
 When she shouts "Top Line!" and taps "Show claim" on her phone, picking Top Line
@@ -197,10 +199,12 @@ or "✗ Bogey: 72 not called"
 And the host phone checks the ticket against its own copy (TAM-055), so an edited QR is refused
 And a ticket opened only by typed code (TAM-117) offers every usual prize under "Show claim"; if the player picks a
 prize this game doesn't have, the host's scan refuses it calmly with a plain reason, never as a bogey (owner decision 2026-09-30)
+And on the player's "Which prize?" step, "Cancel" looks like a link (no fill, no border), not like a prize button;
+tapping it goes back to the tickets with no claim QR shown (UX list row 14, approved, owner, 2026-10-01)
 (TAM-060 still holds: the player shouts first; the QR only replaces typing, not the shout.)
 
 ## TAM-178: When scanning fails, typing the ticket number takes over
-Status: approved, owner, 2026-09-29 (Phase 2 sign-off, with the product owner's verdict of 2026-09-28)
+Status: approved, owner, 2026-10-01 (the typed form's button looks, UX list row 8, docs/games/tambola/ux-review-2026-10-01-action-hierarchy.md); was approved, owner, 2026-09-29 (Phase 2 sign-off, with the product owner's verdict of 2026-09-28)
 Phase: Phase 2 (phone tickets)
 Given the host taps "Scan a claim"
 When the phone has no camera, the camera permission is refused, or no claim QR is read within 10 seconds
@@ -208,6 +212,14 @@ Then the host sees "Enter the ticket number instead" one tap away, with the priz
 And the verdict is exactly the same as a scan would give (TAM-174)
 And the claim is judged on the numbers called when the host scans or enters it (TAM-036), so waiting for the
 camera never makes a claim late by itself; "Next number" is not needed to try again
+The typed form (UX list row 8, approved, owner, 2026-10-01; UX guideline 17a, PLT-301)
+When the typed form is open (the "Ticket number" field shows)
+Then "Enter ticket number" is not shown: it only opens the form, so it is hidden while the form is open
+And the chosen prize shows it is chosen with an outline, a ✓ and a light tint, never the look of "Check"
+And "Check" is the only button in the form with the main look, and it works once both the ticket number and the
+prize are filled in
+Wrong input: with no ticket number, or no prize chosen, "Check" does nothing (it may be greyed out): no verdict and
+no refusal
 
 ## TAM-179: A claim QR that does not belong to this game is refused, calmly
 Status: approved, owner, 2026-09-29 (Phase 2 sign-off; changed by the product owner's verdict of 2026-09-28: a mismatched claim QR is refused, never a bogey, and the host can check by ticket number)
@@ -223,20 +235,26 @@ And none of these counts as a bogey
 And when a claim QR doesn't match the host's copy, the host is offered "Check ticket 3 by number", which gives the verdict from the host's own copy (TAM-174).
 
 ## TAM-190: A player with several tickets picks the ticket to claim with
-Status: approved, owner, 2026-09-29 (Phase 2 sign-off, with the product owner's verdict of 2026-09-28)
+Status: approved, owner, 2026-10-01 (small pictures and "Pattern filled", UX list row 10, docs/games/tambola/ux-review-2026-10-01-several-tickets.md); was approved, owner, 2026-09-29 (Phase 2 sign-off, with the product owner's verdict of 2026-09-28)
 Phase: Phase 2 (phone tickets)
 Given Riya has tickets 3 and 8 on her phone (TAM-173)
 When she taps "Show claim"
 Then she picks the ticket as well as the prize, and the claim QR carries only that ticket
 And a tie on her own two tickets is two claims, scanned one after the other (TAM-041, TAM-145 "Add another winner")
+And (UX list row 10, approved, owner, 2026-10-01) on "Which ticket?" each choice shows a small picture of that
+ticket, with her marks, under its name ("Ticket 3"); with 3 tickets every choice fits a 390 × 844 screen with no scrolling
+And with the host's pattern cue off (TAM-195), the tickets are listed in ticket order and none says "Pattern filled"
+And with the cue on, the ticket the pattern message names first is listed first, marked "Pattern filled"
 
 ## TAM-191: The player can switch between all tickets and one at a time
-Status: approved, owner, 2026-09-30 (42 px portrait fit added on the owner's decision of 2026-09-30); was approved, owner, 2026-09-29 (new with the Phase 2 sign-off: docs/games/tambola/changes-2026-09-29-phone-tickets.md)
+Status: approved, owner, 2026-10-01 (a 12 px margin each side, UX list row 15, docs/games/tambola/ux-review-2026-10-01-several-tickets.md, decision 7: cells about 39 px at 375 px; replaces "cells at least 42 CSS px"); was approved, owner, 2026-09-30 (42 px portrait fit added on the owner's decision of 2026-09-30); was approved, owner, 2026-09-29 (new with the Phase 2 sign-off: docs/games/tambola/changes-2026-09-29-phone-tickets.md)
 Phase: Phase 2 (phone tickets)
 Given Riya has 3 tickets
 When she taps "One at a time"
 Then one ticket fills the screen, with tabs "Ticket 3 · 4 · 8" to switch
-And on a 390 px portrait screen the whole ticket fits, cells at least 42 CSS px, with no sideways sliding (TAM-122)
+And on a 390 or 375 px portrait screen the whole ticket fits with no sideways sliding, and keeps a margin of at
+least 12 CSS px on each side; the cells fill the width between the margins (about 40 CSS px at 390 px, about 39 at
+375 px), never below 24 (TAM-122, TAM-104)
 When she taps "All tickets"
 Then all 3 show again (TAM-173)
 And her choice is remembered on her phone for the next game
@@ -265,12 +283,13 @@ ux-review-2026-10-01-action-hierarchy.md) on a 390 × 844 or 375 × 812 portrait
   steps (TAM-190, TAM-177); "Back" sits at the top
 
 ## TAM-193: The claim screen shows the ticket, with the claimed pattern outlined
-Status: approved, owner, 2026-09-29 (new with the Phase 2 sign-off: docs/games/tambola/changes-2026-09-29-phone-tickets.md)
+Status: approved, owner, 2026-10-01 ("Done" outlined, UX list row 15, docs/games/tambola/ux-review-2026-10-01-action-hierarchy.md); was approved, owner, 2026-09-29 (new with the Phase 2 sign-off: docs/games/tambola/changes-2026-09-29-phone-tickets.md)
 Phase: Phase 2 (phone tickets)
 When Riya taps "Show claim", picks ticket 3 and Top Line
 Then the claim QR is shown above ticket 3, and ticket 3's top row is outlined
 (Four Corners outlines the four corner numbers; Full House the whole ticket; Early Five nothing)
 And the outline is a visual aid only: the phone never says whether the claim is right (the host's scan does, TAM-177)
+And "Done" under the QR is outlined, never the main look, so the QR stands out (UX list row 15, approved, owner, 2026-10-01)
 
 ## TAM-194: A player's tickets come from one sheet where possible
 Status: approved, owner, 2026-09-30 (clarified on the owner's decision of 2026-09-30, docs/decisions.md: strictly in order; was approved 2026-09-29)
@@ -323,6 +342,10 @@ landscape, with Larger text on or off, with 1, 2 or 3 tickets
 And the cue is based only on her own marks: it never says the claim is right, never claims for her, and
 goes away if she unmarks a number
 And it never mentions a prize this game doesn't have
+And (UX list row 11, approved, owner, 2026-10-01) the outline does not rely on colour alone: it is a thicker line
+than the 3 CSS px line of 1 October (at least 4 CSS px), and every outlined cell also gets a corner mark that a marked cell outside the pattern doesn't have
+And Early Five is said once, however many of her tickets have 5 marks: "Early Five filled on ticket 1" (line and
+"More" together mention Early Five once)
 
 ## TAM-196: Players can cross out prizes that are gone; the host's scan catches the rest
 Status: approved, owner, 2026-09-29 (new with the Phase 2 sign-off: docs/games/tambola/changes-2026-09-29-phone-tickets.md; replaces "every prize stays selectable")
@@ -333,3 +356,22 @@ And a crossed-out prize is shown greyed with "won" and cannot be picked in "Show
 And every prize she has not crossed out stays selectable, because her phone cannot know what has been won
 And if she claims a prize that is gone, the host's scan refuses it calmly: "Top Line already won", not a bogey (TAM-179)
 (In connected mode, later, won prizes will be crossed out automatically: TAM-211, Phase 6.)
+
+## TAM-214: A phone may hold another player's ticket, under that player's name; at most 3 tickets per phone
+Status: approved, owner, 2026-10-01 (UX list row 12, docs/handover.md; docs/games/tambola/ux-review-2026-10-01-several-tickets.md, decisions 1 and 2)
+Phase: Phase 2 (phone tickets)
+Given Riya's phone holds her tickets 1 and 2, and the host handed ticket 3 to Grandma (TAM-172)
+When Riya scans Grandma's ticket 3 QR on her phone
+Then her phone holds all three, and ticket 3 shows "Grandma · Ticket 3", never Riya's name; tickets 1 and 2 still
+show Riya's name
+And a claim on ticket 3 reads "Top Line · Ticket 3 · Grandma"
+And the host's scan credits Grandma ("Early Five: ✓ Accepted, ₹… to Grandma"), and the payouts show the prize
+under Grandma (TAM-174: the host's own record decides)
+When Riya adds Grandma's ticket by its typed code instead (TAM-117: a code carries no name)
+Then ticket 3 shows just "Ticket 3", never Riya's name, and the host still credits Grandma
+Given a phone holds 3 tickets of a game (the per-player limit, TAM-045, held tickets included)
+When a 4th ticket of the same game is added, by QR or by typed code
+Then it is refused: "This phone already holds 3 tickets", and the 3 tickets and their marks stay as they were
+Edge: scanning one of the 3 tickets again is not a 4th ticket: nothing is refused and nothing changes
+Edge: a ticket of a new game still replaces the old game's tickets (TAM-171); it is never refused
+(The limit stays at 3 for now; a later version may change it from play-tests, docs/playtest-checklist.md row 16.)

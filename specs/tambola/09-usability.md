@@ -124,7 +124,7 @@ Then every tap shows a visible response within 100 ms
 And the app is usable within 5 seconds of opening over a slow connection the first time
 
 ## TAM-117: Joining a phone ticket works with the phone's camera, or a typed code
-Status: approved, owner, 2026-09-30 (typed-code prizes noted on the owner's decision of 2026-09-30; reworded on the owner's decision of 2026-09-30, docs/decisions.md: 20 characters, because 12 cannot hold a ticket; was approved 2026-09-29 with "at most 12 characters")
+Status: approved, owner, 2026-10-01 (the field's hint and "Add a ticket by code", UX list row 15, docs/games/tambola/ux-review-2026-10-01-several-tickets.md decision 7); approved, owner, 2026-09-30 (typed-code prizes noted on the owner's decision of 2026-09-30; reworded on the owner's decision of 2026-09-30, docs/decisions.md: 20 characters, because 12 cannot hold a ticket; was approved 2026-09-29 with "at most 12 characters")
 Phase: Phase 2 (phone tickets)
 When a player points their phone's own camera at the ticket QR
 Then their ticket opens, with no separate scanner app
@@ -136,6 +136,11 @@ name, the start time and the prize list come only with the QR.)
 Wrong input: a code that is not a ticket (too short, wrong letters) is refused with a one-line reason
 And a ticket opened only by typed code offers every usual prize under "Show claim" (it has no prize list);
 the host's scan refuses a prize the game doesn't have, calmly, never as a bogey (TAM-177, TAM-179; owner decision 2026-09-30)
+And (UX list row 15, approved, owner, 2026-10-01) the code field shows a pattern hint made only of X's and dashes,
+such as "XXXX-XXXX-XXXX-XXXX-XXXX", never a real-looking code
+And on a phone that already shows tickets, the way to add one more by code is a button "Add a ticket by code" (in
+the player's menu is fine); it opens the same code field, and the typed ticket joins the others (TAM-214 limits a
+phone to 3)
 
 ## TAM-118: iPhone hosts get a one-time install tip
 Status: approved, owner, 2026-09-28
@@ -145,7 +150,7 @@ Then a one-time tip shows how to add it ("Share → Add to Home Screen")
 And explains that games saved in Safari and in the home-screen app are separate
 
 ## TAM-119: Undo last call within 5 seconds
-Status: approved, owner, 2026-09-28 (decided: owner)
+Status: approved, owner, 2026-09-28 (decided: owner); the toast's look changed with TAM-125 (UX list row 13, approved, owner, 2026-10-01)
 Phase: Phase 1a
 Given the host tapped "Next number" by mistake
 When they tap "Undo last call" within 5 seconds
@@ -170,12 +175,15 @@ When a player turns on "Larger text" on their phone ticket
 Then the ticket and all text grow, and nothing is cut off or overlaps
 
 ## TAM-122: Tickets work in both orientations
-Status: approved, owner, 2026-09-30 (reworded on the owner's decision of 2026-09-30, docs/decisions.md: 42 px cells in "One at a time" so the ticket fits a 390 px portrait screen; was approved 2026-09-29 with "at least 44 CSS px in One at a time")
+Status: approved, owner, 2026-10-01 (12 px margin in "One at a time", UX list row 15); approved, owner, 2026-09-30 (reworded on the owner's decision of 2026-09-30, docs/decisions.md: 42 px cells in "One at a time" so the ticket fits a 390 px portrait screen; was approved 2026-09-29 with "at least 44 CSS px in One at a time")
 Phase: Phase 2 (phone tickets)
 When a player opens their phone tickets
 Then they follow the phone's orientation (TAM-173); nothing forces landscape
 And ticket cells are at least 40 CSS px with all tickets shown, and at least 42 CSS px in "One at a time"
 And in "One at a time" on a 390 px portrait screen the whole ticket fits, with no sideways sliding (TAM-191)
+And (UX list row 15, approved, owner, 2026-10-01) in "One at a time" the ticket keeps a margin of at least 12 CSS px
+on each side, so its cells are the width between the margins (about 40 CSS px at 390 px, 39 at 375 px) instead of
+"at least 42 CSS px"
 
 ## TAM-134: Dark mode is an option, not the default
 Status: approved, owner, 2026-09-28
@@ -233,7 +241,7 @@ confirmations (TAM-103, PLT-005), where the destructive button is never the main
 And "Show the room" can also be opened by a long press on the number (the menu stays the tap-only way, TAM-136)
 
 ## TAM-125: The undo toast never moves anything, and never covers the main buttons or the prize chips
-Status: approved, owner, 2026-09-29 (change: the toast never covers the prize chips either; product owner review of the live 1a.1 build, finding 3, docs/decisions.md 2026-09-29); was approved, owner, 2026-09-28 (scenario review outcome: product owner verdict, owner sign-off for Phase 1a.1); was draft (new, tester, 2026-09-28, from the redesign)
+Status: approved, owner, 2026-10-01 (a lighter bar with more space above the button below it, UX list row 13, docs/games/tambola/ux-review-2026-10-01-action-hierarchy.md); approved, owner, 2026-09-29 (change: the toast never covers the prize chips either; product owner review of the live 1a.1 build, finding 3, docs/decisions.md 2026-09-29); was approved, owner, 2026-09-28 (scenario review outcome: product owner verdict, owner sign-off for Phase 1a.1); was draft (new, tester, 2026-09-28, from the redesign)
 Phase: Phase 1a
 When the host calls 21
 Then a toast "Called 21 · Undo (5s)" floats just above the bottom buttons for 5 seconds (TAM-119)
@@ -242,9 +250,14 @@ And the toast never covers "Next number", "Record a win" or the prize chips (TAM
 When the host taps Undo on the toast within 5 seconds
 Then TAM-119 applies, and again nothing else moves
 Edge: calling again while a toast is showing replaces it with the new number's toast; only the latest call can be undone
+And (UX list row 13, approved, owner, 2026-10-01) the toast is a light bar, not a dark one: it does not stand out
+from the screen behind it the way the main button does (less than 3:1 against it), while its words still meet
+4.5:1 (TAM-106)
+And there are at least 16 CSS px between the toast and the button just below it ("Scan a claim" with phone tickets,
+"Record a win" with paper tickets)
 
 ## TAM-126: Prize chips show at a glance what is open, won and closed
-Status: approved, owner, 2026-09-28 (scenario review outcome: product owner verdict, owner sign-off for Phase 1a.1); was draft (new, tester, 2026-09-28, from the redesign)
+Status: approved, owner, 2026-10-01 (the chips wrap instead of scrolling sideways, UX list row 15, listed there under TAM-183; docs/games/tambola/ux-review-2026-10-01-several-tickets.md: "host's prize chips cut off ('Ho…')"); approved, owner, 2026-09-28 (scenario review outcome: product owner verdict, owner sign-off for Phase 1a.1); was draft (new, tester, 2026-09-28, from the redesign)
 Phase: Phase 1a
 Given a game with five tiers
 Then each tier shows as a chip on the calling screen: open ("Top ●"), won ("Early 5 ✓ Riya"), or closed (greyed)
@@ -254,7 +267,10 @@ Then its chip reads "Top Line ✓ Riya", and the main button reads "Close Top Li
 changed by the owner on 2026-09-30, docs/games/tambola/changes-2026-09-30-playtest.md: was "'Next number' reads
 'Close Top Line first'"); the chip also keeps a Close, which closes the prize too and works while the screen is
 dimmed (owner, 2026-09-30, docs/decisions.md)
-And if the chips do not fit on one line, they scroll sideways inside their own row; the page itself never scrolls (TAM-138)
+And if the chips do not fit on one line, they wrap onto the next line: every chip is wholly on screen with its
+words in full, nothing in the row scrolls sideways, and the page itself never scrolls (TAM-138), on a 375 px or
+wider screen with up to seven tiers (UX list row 15, approved, owner, 2026-10-01; replaces "they scroll sideways
+inside their own row")
 
 ## TAM-127: The board opens as a sheet over the calling screen
 Status: approved, owner, 2026-09-28 (scenario review outcome: product owner verdict, owner sign-off for Phase 1a.1); was draft (new, tester, 2026-09-28, from the redesign)

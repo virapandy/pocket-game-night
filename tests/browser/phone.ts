@@ -193,11 +193,28 @@ export async function markedOn(scope: Locator): Promise<number[]> {
   return (await scope.locator('[data-number][data-marked="true"]').evaluateAll((els) => els.map((e) => Number(e.getAttribute('data-number'))))).sort((a, b) => a - b);
 }
 
+/**
+ * A choice on "Which ticket?" (TAM-190): a button whose accessible name starts "Ticket 3" (its small picture and a
+ * "Pattern filled" tag may follow in the name, owner 2026-10-01), never "Ticket 30".
+ */
+export const ticketChoice = (player: Page, n: number) => player.getByRole('button', { name: new RegExp(`^\\s*Ticket ${n}(?!\\d)`) });
+/** Every choice on "Which ticket?", in the order shown (top to bottom, then left to right): their ticket numbers. */
+export async function ticketChoiceOrder(player: Page): Promise<number[]> {
+  const all = player.getByRole('button', { name: /^\s*Ticket \d+/ }).filter({ visible: true });
+  const out: { n: number; y: number; x: number }[] = [];
+  for (let i = 0; i < (await all.count()); i++) {
+    const name = (await all.nth(i).getAttribute('aria-label')) || (await all.nth(i).innerText());
+    const b = (await all.nth(i).boundingBox())!;
+    out.push({ n: Number(name.match(/Ticket (\d+)/)![1]), y: Math.round(b.y), x: Math.round(b.x) });
+  }
+  return out.sort((a, b) => a.y - b.y || a.x - b.x).map((o) => o.n);
+}
+
 /** Show claim → (Which ticket?) → Which prize? → the claim QR. Returns the text inside the claim QR. */
 export async function showClaim(player: Page, prize: string, ticket?: number): Promise<string> {
   await player.getByRole('button', { name: 'Show claim', exact: true }).click();
   if (ticket !== undefined) {
-    const pick = player.getByRole('button', { name: `Ticket ${ticket}`, exact: true });
+    const pick = ticketChoice(player, ticket);
     if (await pick.isVisible()) await pick.click();
   }
   await player.getByRole('button', { name: prize, exact: true }).click();
@@ -391,4 +408,17 @@ export async function readDrawnQr(qr: Locator): Promise<string | null> {
   } finally {
     await reader.close();
   }
+}
+
+/**
+ * Adds one more ticket by typed code on a phone that already shows tickets (TAM-117, TAM-214): the player's menu →
+ * "Add a ticket by code" (owner 2026-10-01; the older "Enter a ticket code" is also tapped here: the name itself is
+ * checked by the TAM-117 test), then "Ticket code" and "Open ticket".
+ */
+export async function addTicketByCode(player: Page, code: string) {
+  await player.getByRole('button', { name: /Menu/ }).click();
+  const names = /^(Add a ticket by code|Enter a ticket code)$/;
+  await player.getByRole('menuitem', { name: names }).or(player.getByRole('button', { name: names })).first().click();
+  await player.getByLabel('Ticket code', { exact: true }).fill(code);
+  await player.getByRole('button', { name: 'Open ticket', exact: true }).click();
 }

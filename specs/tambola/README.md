@@ -11,7 +11,7 @@ tests once the owner approves it. All are **draft** until approved.
 | [02-calling.md](02-calling.md) | Drawing and calling numbers | TAM-010 – TAM-017 |
 | [03-claims.md](03-claims.md) | Checking claims: accepted, bogey, already won; paper tickets recorded on the anchor's word; the "Check numbers" helper | TAM-020 – TAM-039, TAM-139 |
 | [04-house-rules.md](04-house-rules.md) | Scenarios that depend on owner decisions | TAM-040 – TAM-049 |
-| [05-secrets-and-seeds.md](05-secrets-and-seeds.md) | Nobody sees what they shouldn't; phone tickets; the claim QR | TAM-050 – TAM-058, TAM-131 – TAM-133 (TAM-133 is now Phase 6), TAM-170 – TAM-179, TAM-190 – TAM-196, TAM-213; the Phase 2 decisions and the extensibility note |
+| [05-secrets-and-seeds.md](05-secrets-and-seeds.md) | Nobody sees what they shouldn't; phone tickets; the claim QR | TAM-050 – TAM-058, TAM-131 – TAM-133 (TAM-133 is now Phase 6), TAM-170 – TAM-179, TAM-190 – TAM-196, TAM-213, TAM-214; the Phase 2 decisions and the extensibility note |
 | [06-room-and-host.md](06-room-and-host.md) | Fun-friction defaults, host controls, late joiners, play again, voice and auto-call, setup redesign | TAM-060 – TAM-069, TAM-130, TAM-137, TAM-180 – TAM-187, TAM-212 (Phase 2: late joiners with phone tickets) |
 | [07-undo-replay-end.md](07-undo-replay-end.md) | Undo, replay, and how the game ends | TAM-070 – TAM-078 |
 | [08-prizes.md](08-prizes.md) | Contribution, pot, suggested split, payouts, money of unwon prizes handed back; no money moved; from the payouts to the session tally; settle with host or with players | TAM-080 – TAM-093, TAM-197, TAM-199 |
@@ -42,7 +42,7 @@ Every scenario has a **Phase** line.
 |---|---|---|---|
 | **1a: one great game** | Paper tickets on one host phone: calling, rhymes, board, recording wins, undo, the prize pool for a single game, resume, history view, key UX rules; 1a.1 feedback fixes (calling screen and setup redesign); play-test fix: closing a prize is the main action (TAM-198); settle with players (TAM-199) | 102 | 11 |
 | **1b: the evening** | Sessions, tally and settle, reusing a setup, deleting history, late joiners, phone voice and auto-call, dark mode; payouts to the session tally (TAM-197), the session shown before the game (PLT-029) | 12 | 17 |
-| **2: phone tickets** | Tickets made by the app and scanned onto players' phones; claims checked by the host phone, by claim QR; several tickets on one phone | 56 (54 approved, owner, 2026-09-29; TAM-212 added and TAM-053, TAM-117, TAM-194 reworded, approved, owner, 2026-09-30; TAM-213 added and TAM-053, TAM-057, TAM-192, TAM-195 changed, approved, owner, 2026-10-01) | 2 (PLT-300, PLT-301) |
+| **2: phone tickets** | Tickets made by the app and scanned onto players' phones; claims checked by the host phone, by claim QR; several tickets on one phone | 57 (54 approved, owner, 2026-09-29; TAM-212 added and TAM-053, TAM-117, TAM-194 reworded, approved, owner, 2026-09-30; TAM-213 added and TAM-053, TAM-057, TAM-192, TAM-195 changed, approved, owner, 2026-10-01; TAM-214 added, UX list row 12, approved, owner, 2026-10-01) | 2 (PLT-300, PLT-301) |
 | **2.5: new-game kit** | The contract suite every game must pass; the generic simulated player | | 14 |
 | **6: connected mode** | Calls, claims and verdicts over the network, only if play-tests justify it | 13 (TAM-133, TAM-200 – TAM-211) | |
 | **7: feedback** | Problem reports, crash reports, sorting | | 10 |
@@ -67,6 +67,14 @@ when on; TAM-213 (paper or phone: two equal cards, neither chosen, then "Next"; 
 in TAM-181); TAM-057 gains "You're ready for game night"; TAM-192 quick mark keys, marks, captions and "Show claim";
 TAM-103 "Keep playing" is the main button; TAM-197 "Play again" outlined; platform PLT-300 (Home) and PLT-301 (one
 main button per screen); PLT-200 a real version number.
+UX list rows 8 to 15 (same day, owner approved the behaviour): TAM-178 typed claim form (chosen prize outlined,
+"Check" the one main button, "Enter ticket number" hidden while the form is open); TAM-181 hand-out button full width at
+the bottom with "Can't scan? Give a paper ticket" as a link, and "New game" at the bottom; TAM-190 small pictures and
+"Pattern filled" on "Which ticket?"; TAM-195 outline not colour alone, Early Five said once; TAM-214 (new: a phone may
+hold another player's ticket under their name, at most 3 tickets per phone); TAM-125 a lighter undo toast with more
+space (TAM-119); TAM-177 "Cancel" as a link; polish: TAM-122/TAM-191 12 px margin in "One at a time" (replaces "cells at
+least 42 px"), TAM-126 chips wrap (replaces sideways scrolling; the UX list names TAM-183), TAM-117 code hint and "Add a
+ticket by code", TAM-193 "Done" outlined, TAM-132 "Waiting: Riya (2 tickets)", TAM-183 "Remove" in grey.
 
 Why this split: 1b adds features on top of 1a without changing how a game is played or stored,
 so 1a can go to family play-tests first, and play-tests decide how much of 1b is needed.

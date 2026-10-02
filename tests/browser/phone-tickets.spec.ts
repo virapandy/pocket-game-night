@@ -95,7 +95,8 @@ test.describe('Host: handing out tickets', () => {
     await setUpPhoneGame(page, [{ name: 'Riya' }, { name: 'Dad', tickets: 2 }, { name: 'Asha' }]);
     await confirmHandOut(page); // Riya's ticket
     await expect(handOutScreen(page).getByTestId('hand-out-ticket')).toHaveText(/→\s*Dad \(1 of 2\)/);
-    await page.getByRole('button', { name: /^Can.t scan\? Give a paper ticket/ }).click();
+    // A button or, since 1 October 2026, a link (TAM-181, UX list row 9).
+    await page.getByRole('button', { name: /^Can.t scan\? Give a paper ticket/ }).or(page.getByRole('link', { name: /^Can.t scan\? Give a paper ticket/ })).first().click();
     // Dad's second ticket is skipped too: next is Asha.
     await expect(handOutScreen(page).getByTestId('hand-out-ticket')).toHaveText(/→\s*Asha/);
     const rest = await handOutAll(page);
@@ -234,6 +235,27 @@ async function smallestCell(player: Page) {
   return Math.min(...boxes.map((b) => Math.min(b.w, b.h)));
 }
 /**
+ * TAM-122 and TAM-191 (owner, 2026-10-01, UX list row 15; replaces "cells at least 42 CSS px"): in "One at a time" the
+ * ticket keeps a margin of at least 12 CSS px on each side (its box and every cell lie between x = 12 and the screen's
+ * width − 12), and the cells fill the width between: each at least (screen width − 24 − 8) / 9 CSS px (8 px allowed
+ * for the ticket's own frame: about 39.8 px at 390, 38.1 at 375), and never below 24 (TAM-104).
+ */
+async function expectOneAtATimeFit(player: Page, what: string) {
+  const vw = player.viewportSize()!.width;
+  const ticket = player.locator('[data-testid="phone-ticket"]:visible');
+  await expect(ticket).toHaveCount(1);
+  const t = (await ticket.boundingBox())!;
+  expect(t.x, `${what}: the ticket's left margin (owner: at least 12 px)`).toBeGreaterThanOrEqual(12 - 0.5);
+  expect(vw - (t.x + t.width), `${what}: the ticket's right margin (owner: at least 12 px)`).toBeGreaterThanOrEqual(12 - 0.5);
+  const cells = await cellBoxes(ticket);
+  for (const c of cells) {
+    expect(c.x >= 12 - 0.5 && c.x + c.w <= vw - 12 + 0.5, `${what}: a cell lies in the 12 px margin (${Math.round(c.x)} to ${Math.round(c.x + c.w)} px on ${vw} px)`).toBe(true);
+  }
+  const smallest = Math.min(...cells.map((c) => Math.min(c.w, c.h)));
+  expect(smallest, `${what}: the cells fill the width between the margins`).toBeGreaterThanOrEqual(Math.max(24, (vw - 24 - 8) / 9));
+}
+
+/**
  * TAM-122 and TAM-191 (owner decision 2026-09-30): in "One at a time" on a 390 px portrait screen the whole ticket
  * fits, with no sideways sliding. Nothing scrolls or is clipped sideways: not the page, not the ticket, not anything
  * around it; and every cell lies fully on screen. Returns what is wrong, or an empty list.
@@ -308,21 +330,27 @@ test.describe('Several tickets on one phone', () => {
     for (const t of riya.tickets) expect(await markedOn(phoneTicket(riya.page, t))).toEqual(marks.get(t));
   });
 
-  test('TAM-191 and TAM-122: "One at a time" shows one ticket with tabs, cells at least 42 px and the whole ticket on a 390 px portrait screen with no sideways sliding; "All tickets" shows all 3 again', async ({ page, browser }, testInfo) => {
+  test('TAM-191 and TAM-122 (owner 2026-10-01): "One at a time" shows one ticket with tabs, a 12 px margin each side, cells filling the width between, the whole ticket on a 390 and a 375 px portrait screen with no sideways sliding; "All tickets" shows all 3 again', async ({ page, browser }, testInfo) => {
     const handOuts = await phoneGame(page, TWELVE);
     const riya = await playerWith(browser, testInfo, handOuts, 'Riya', PORTRAIT);
     const [t1, t2, t3] = riya.tickets as [number, number, number];
     await oneAtATime(riya.page).click();
     await expect(shownTickets(riya.page)).toHaveCount(1);
     for (const t of [t1, t2, t3]) await expect(ticketTab(riya.page, t)).toBeVisible();
-    expect(await smallestCell(riya.page)).toBeGreaterThanOrEqual(42);
+    await expectOneAtATimeFit(riya.page, 'ticket ' + t1);
     expect(await slidesSideways(riya.page), 'the ticket slides sideways in portrait').toEqual([]);
     await ticketTab(riya.page, t2).click();
     await expect(shownTickets(riya.page)).toHaveCount(1);
     await expect(phoneTicket(riya.page, t2)).toBeVisible();
-    expect(await smallestCell(riya.page)).toBeGreaterThanOrEqual(42);
+    await expectOneAtATimeFit(riya.page, 'ticket ' + t2);
     expect(await slidesSideways(riya.page), 'the ticket slides sideways in portrait').toEqual([]);
     expect(await gridOf(phoneTicket(riya.page, t2))).toEqual(riya.grids.get(t2));
+    // The same on a 375 × 812 phone (owner 2026-10-01: cells about 39 px there).
+    await riya.page.setViewportSize({ width: 375, height: 812 });
+    await riya.page.evaluate(() => new Promise<void>((r) => requestAnimationFrame(() => requestAnimationFrame(() => r()))));
+    await expectOneAtATimeFit(riya.page, 'ticket ' + t2 + ' on 375 × 812');
+    expect(await slidesSideways(riya.page), 'the ticket slides sideways on 375 px').toEqual([]);
+    await riya.page.setViewportSize(PORTRAIT);
     // A mark made here shows in "All tickets" too.
     const n = numbersOf(riya.grids.get(t2)!)[0]!;
     await tapCell(riya.page, t2, n);
@@ -396,7 +424,7 @@ test.describe('Quick mark', () => {
     await thumbnail(riya.page, t2).click();
     await expect(shownTickets(riya.page)).toHaveCount(1);
     await expect(phoneTicket(riya.page, t2)).toBeVisible();
-    expect(await smallestCell(riya.page)).toBeGreaterThanOrEqual(42);
+    await expectOneAtATimeFit(riya.page, 'ticket ' + t2 + ' opened from its thumbnail');
     expect(await slidesSideways(riya.page), 'the ticket slides sideways in portrait').toEqual([]);
     await riya.page.getByRole('button', { name: 'Back', exact: true }).click();
     await expect(quickMarkPad(riya.page)).toBeVisible();

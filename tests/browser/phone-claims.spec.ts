@@ -8,7 +8,7 @@ import { call, endGame, fromMenu, HOME, mainButton, nextNumber, payoutPeople, ty
 import {
   callUntil, cellsWith, claimRefused, claimResult, closePhones, cornersOf, countOn, currentHandOut, enterTicketNumber,
   fakeCamera, gameCodeOf, gridOf, handOutAll, newPhone, numbersOf, openHostTickets, phoneGame, playerWith, PORTRAIT, readDrawnQr,
-  phoneTicket, rowOf, scanClaim, scanClaimButton, setUpPhoneGame, showClaim,
+  phoneTicket, rowOf, scanClaim, scanClaimButton, setUpPhoneGame, showClaim, ticketChoice,
 } from './phone';
 
 test.afterEach(closePhones);
@@ -66,7 +66,7 @@ test.describe('The claim QR on the player\'s phone', () => {
 
     await riya.page.getByRole('button', { name: 'Show claim', exact: true }).click();
     await expect(riya.page.getByText(/Which ticket\?/)).toBeVisible();
-    await riya.page.getByRole('button', { name: `Ticket ${t2}`, exact: true }).click();
+    await ticketChoice(riya.page, t2).click(); // its small picture may follow in the name (TAM-190, owner 2026-10-01)
     await riya.page.getByRole('button', { name: 'Four Corners', exact: true }).click();
     await expect(screen.getByTestId('phone-ticket')).toHaveCount(1);
     await expect(screen.getByTestId('phone-ticket')).toHaveAttribute('data-ticket', String(t2));
