@@ -14,9 +14,16 @@ import {
   type SessionStore,
 } from '../engine';
 
-const GAME_PREFIX = 'pgn.game.';
-const PREF_PREFIX = 'pgn.pref.';
-const SESSION_PREFIX = 'pgn.session.';
+/**
+ * The start of every key this app keeps. The owner's preview build (served under /preview/, owner decision 3 October
+ * 2026) keeps its own saved games, sessions, settings and reports, so it never reads or changes the families' on the
+ * same phone. The families' build keeps today's keys exactly, so every game saved before still opens.
+ */
+export const KEY_ROOT = (import.meta.env.BASE_URL ?? '/').endsWith('/preview/') ? 'pgn.preview.' : 'pgn.';
+
+const GAME_PREFIX = `${KEY_ROOT}game.`;
+const PREF_PREFIX = `${KEY_ROOT}pref.`;
+const SESSION_PREFIX = `${KEY_ROOT}session.`;
 
 function storage(): Storage | null {
   try {

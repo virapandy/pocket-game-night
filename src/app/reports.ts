@@ -9,10 +9,12 @@
 // "sending" goes to a stub that keeps the report on this phone and sends nothing anywhere. A real free,
 // no-account destination must replace `stubSend` before any wider public release (docs/handover.md).
 import { addSeeds, readReport, reportText, type Report, type SavedGameStore } from '../engine';
+import { KEY_ROOT } from './storage';
 
-const WAITING_KEY = 'pgn.reports.waiting';
+// The preview build keeps its own reports (KEY_ROOT, owner decision 3 October 2026); the families' keys are unchanged.
+const WAITING_KEY = `${KEY_ROOT}reports.waiting`;
 /** Reports the stub has "sent": kept on this phone only (PLT-208). */
-const KEPT_KEY = 'pgn.reports.kept';
+const KEPT_KEY = `${KEY_ROOT}reports.kept`;
 const KEPT_MAX = 50;
 /** How often waiting reports are looked at (a game may have ended), and how long a failed send waits to retry. */
 const CHECK_MS = 1_500;
