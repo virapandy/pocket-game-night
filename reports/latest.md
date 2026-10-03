@@ -1,101 +1,99 @@
 # Test report
-Progress (2026-10-03 12:20 local, tester): step 2: quick verify 37101188825 on 0e1062a was cancelled at its 15-minute
-limit (every Android browser test ran, since the push touched phone.ts; 323 of 350 reached); 2 failures, both test
-faults (phone-tickets.spec.ts read the Early Five / Four Corners words only from the line; on the runner's wider fonts
-the approved row 1 swap puts them behind "More"). Fixed; pushing; then quick verify again. Screenshot spec being set up.
-Rows built: 25 of 25.
+Progress (2026-10-03 13:05 local, tester): step 1 done (tests updated for lane A's 3 cue fixes, row 7 ask once / ask
+again, row 19 History wording; TAM-058 "paper" check tightened); step 2 done: quick verify 37104619193 on 882fb03
+GREEN (every Android browser test, 349 passed, 1 skipped); step 3 done: screenshot comparison set up
+(`screens.spec.ts`, 19 screens × 3 sizes = 57 reference pictures, Mac only so far), pushed. Next: the release
+candidate's complete run; the product owner / UX designer check the pictures. Rows built: 25 of 25; rows with all
+their tests green: 25 of 25.
 
-Commit tested: dccc48e (app; lanes A-C at 92a84f9 plus the C3 batch)   Date: 2026-10-03
-Automation run: quick verify 37099201480 on e8c83b0 (these tests; app unchanged since dccc48e): RED. Every browser
-test on Android (the push touched shared test set-up): 346 run, 340 passed, 5 failed, 1 skipped; rule tests green.
-The 5 failures are the 3 bugs below and nothing else.
-Result: RED (3 real bugs, all in the player's pattern cue, TAM-195; everything else green)
+Commit tested: f6f154a (app; unchanged at 882fb03, the commit automation ran)   Date: 2026-10-03
+Automation run: quick verify 37104619193 on 882fb03: GREEN. Smoke set 16 passed; the push touched shared test set-up,
+so every browser test ran on Android: 349 passed, 1 skipped (the same one as before); rule tests green.
+Result: GREEN
 
-Task: `docs/change-sop.md`, the tester's part of C1/C2 lanes A, B, C and the C3 batch (rows 6, 8, 20, 21, 23).
-Scenarios: the UX list rows of `docs/handover.md` 2b, approved, owner, 2026-10-03.
+Task: SOP quick-verify round on lane A's TAM-195 cue fixes (rows 1, 3, 11) and lane C's row 7 "ask once" and row 19
+History wording, then release prep (screenshot comparison, `docs/change-sop.md` "Added 3 October" item 2).
 
-## Layers (run on the owner's Mac: `caffeinate -i taskpolicy -b`, at most 3 workers, Android first)
+## Layers (owner's Mac: `caffeinate -i taskpolicy -b`, at most 3 workers, Android first)
 | Layer | Tests run | Passing | Failing |
 |---|---|---|---|
 | Rule tests (`npm test`) | 520 | 520 | 0 |
-| Browser, Android: every spec the lanes broke or I changed (phone-claims, phone-tickets, after-the-game, held-tickets, phone-late-joiners, sessions, session-line, layout, history, ux-rows-3-oct (new), pattern-cue, ux-rows-8-15, home-and-buttons, report-problem) | 206 | 202 | 4 (3 real bugs; one of them in 2 tests) |
-| Browser, iPhone: specs touching layout (layout, phone-tickets, ux-rows-3-oct) | 83 | 82 | 0 (1 skipped, as before) |
-| Automation, Android, every browser test (run 37099201480) | 346 | 340 | 5 (the same 3 bugs; 1 skipped) |
-| Scoped mutation, C3 batch (`40717a7..dccc48e`, `rules.ts:875-877`, canUndo "to-paper") | 5 mistakes | 5 caught (100%) | 0 |
-The automation run on 92a84f9 (quick verify 37095588430, Android, 292 tests) was red with 60 failures; all but the 3
-below came from tests needing the approved new behaviour (mostly one shared hand-out step, row 7).
+| Browser, Android: changed specs (ux-rows-3-oct, history, pattern-cue, ux-rows-8-15, phone-claims) | 77 | 77 | 0 |
+| Browser, Android: the rest of lanes A and C (phone-tickets, held-tickets, home-and-buttons, report-problem, phone-late-joiners, after-the-game, sessions, session-line) | 98 | 98 | 0 |
+| Browser, iPhone: specs touching layout (ux-rows-3-oct, pattern-cue, history) | 41 | 41 | 0 |
+| Automation, Android, every browser test (run 37104619193) | 350 | 349 | 0 (1 skipped, as before) |
+| Screenshot comparison, Android (`screens.spec.ts`, 24 tests, 57 pictures), 3 repeats | 72 | 72 | 0 |
+
+The first run on these tests, quick verify 37101188825 on 0e1062a, was cancelled at its 15-minute limit (323 of 350
+reached) with 2 failures, both test faults (below), fixed in 882fb03.
 
 ## Failing (real bugs only)
-All three are lane A, the pattern cue with the host's switch on (TAM-195, UX list rows 1 and 11):
-- `pattern-cue.spec.ts` "1/2/3 ticket(s) on a 375 × 812 phone" (TAM-195, row 1): at 812 × 375 landscape, Larger text
-  off, the line "Ticket 5: Early Five and Top Line filled. Shout if it's right!" wraps onto 2 lines; expected one line,
-  with "More" when it doesn't fit. (2 and 3 tickets on the Mac; 1, 2 and 3 tickets in automation, whose fonts are wider.)
-- `pattern-cue.spec.ts` "fills on two tickets…" (TAM-195, product owner's answer 2, row 1): "More" lists "Ticket 1: top
-  row filled", "Ticket 3: top row filled"; expected each ticket to name its prizes: "Ticket 1: Top Line filled" (the
-  line itself, "Tickets 1 and 3: patterns filled · More", is right).
-- `ux-rows-8-15.spec.ts` "Early Five on two tickets is said once" (TAM-195, row 11, and row 3's "Early Five named
-  once"): the line says "Early Five filled on tickets 1 and 2" and "More" says it again; expected Early Five mentioned
-  once across the line and "More", naming the first ticket: "Early Five filled on ticket 1".
+- None.
 
-## Tests updated (the approved rows; nothing unrelated loosened)
-- Lane A: `phone-tickets.spec.ts` landscape test now waits, within its existing 1 second, for the tickets to re-lay
-  after turning (see flaky section). Row 2 (fit to 320 px) added as a new test; the 390 px "at least 40 px" checks stay.
-- Lane B: `layout.spec.ts` "nothing above the number" skips only screen-reader-only elements (the row 4 live region is
-  1 × 1 px and clipped; nothing visible is excused); TAM-129 landscape now checks row 11: "Next number" at the bottom and
-  72 px tall, "Record a win" just above it, never beside it (was: both within 40 px of the bottom); the iPhone turn gets
-  the same 1-second settle. `after-the-game.spec.ts`: one past game is deleted with "Delete" ("Delete the past game",
-  row 19).
-- Lane C: `phone.ts` hand-out step answers the row 7 question with "Start anyway" (`startAnywayIfAsked`, also in
-  `phone-late-joiners.spec.ts`); `phone-tickets.spec.ts` hand-out instruction is row 25's "Scan with your camera to get
-  your ticket. Check it says Game 7K3P."; `sessions.spec.ts` and `session-line.spec.ts` PLT-016: the first game names its
-  session on the session line, no naming screen (row 9; stricter: no question may follow).
-- Shared: `enterTicketNumber` taps "Enter ticket number" only while the form is still closed (with no camera the form
-  now opens by itself while the test was tapping).
-- Specs reworded to the rows: TAM-122 (row 2), TAM-131/TAM-193 (rows 3, 13), PLT-302 new (row 4), TAM-132 (row 7),
-  TAM-058 (row 8), PLT-016 (row 9), TAM-129 (row 11), TAM-089/TAM-199 "gets ₹100 overall" (row 14), TAM-120 (row 18),
-  PLT-011 (rows 5, 19), TAM-140/PLT-005 (row 22), TAM-174 (row 24), TAM-107/TAM-172 (row 25).
+## Tests changed (the approved rows; nothing loosened)
+- Row 7 (TAM-132), `ux-rows-3-oct.spec.ts`, 2 new tests: after "Hand it out now" the next "Start calling" starts calling
+  with no question and the ticket stays Dad's phone ticket; after "Hand it out now" and giving the ticket to Asha,
+  "Start calling" asks again naming Asha, and once more only once. Spec TAM-132 has both lines (C2 choice, lane C).
+- Row 19 (PLT-025, PLT-011), `history.spec.ts`, new test: one past game in an unsettled tally, "Clear all history" says
+  "It's in an unsettled tally, and will be taken out of it." and never "of them". Spec PLT-025 has the line.
+- TAM-195 (rows 1, 3, 11), `pattern-cue.spec.ts`: "More" must say "Ticket 1: Early Five and Top Line filled" and
+  "Ticket 3: Top Line filled" (was: either, with Early Five at most once; now exactly once, for the first ticket); the
+  cue-off check also refuses "Top Line filled"; new test: at 360 px one ticket's too-wide line reads "Ticket 6:
+  patterns filled. Shout if it's right!" with "More", the full words only behind "More", one line, Early Five once.
+  `ux-rows-8-15.spec.ts`: "Early Five filled on ticket 1" exactly, never "on tickets".
+- TAM-058, `phone-claims.spec.ts` and `ux-rows-3-oct.spec.ts`: "the ticket says paper" now reads the ticket's own words
+  without its buttons (new helper `textOutsideButtons`), and the "Switch to paper" button must be gone.
+- Test faults found by run 37101188825, `phone-tickets.spec.ts` (TAM-195): two tests looked for "Early Five" and
+  "corners" on the line itself; on the runner's wider fonts the approved row 1 swap puts those words behind "More".
+  They now read the line and "More" together and are stricter: "Early Five filled on ticket 1", "Ticket N: Four
+  Corners filled". The line must still name the ticket and say "Shout if it's right!".
+- `tests/browser/README.md`: "top row filled" replaced by the prize names (around lines 379 and 525–535); the swap, row 7
+  and row 19 described; new section "Screenshot comparison".
 
-## New tests
-- `ux-rows-3-oct.spec.ts` (18 tests, all pass on Android; layout ones on iPhone): row 4 announcer (call and rhyme,
-  "Another rhyme", recorded win, scanned accepted and bogey, never the proof line, never seen); row 7 (the question and
-  its three answers; after "Start anyway" the last ticket is still the player's and his claim is judged as usual); row 22
-  (banner after End with phone tickets, after End with paper, after Discard; above the payouts; nothing timed); row 24
-  (proof line scanned accepted, bogey, by number; none for a paper win); row 25 (game code on hand-out, top bar, room
-  view); row 2 (320 × 640 and 375 × 667).
-- Rule tests: row 8 "to-paper" undo before the first call, never after (`phone-claims.test.ts`); the host's and each
-  player's view carry the cue setting (`phone-secrets.test.ts`), the gap the last scoped mutation found at `rules.ts:766`.
-- C3 tests written first (after-the-game, phone-claims row 6, held-tickets): all pass on dccc48e.
+## Screenshot comparison (new, `tests/browser/screens.spec.ts`, tag `@screens`)
+Android phone, 360 × 640, 390 × 844 and 812 × 375, each screen as it first appears. Seeded randomness (same games,
+tickets and game codes every run), clock starting 7:00 pm India time, animations off; QR codes and the counting-down
+"Called 24 · Undo (5s)" bar covered by a box. Stable: 72 of 72 over 3 repeats. Screens (file name start, rows):
+host-ticket-type (11, 1); host-prizes (9, 19); host-hand-out (10, 19, 25); host-not-handed-out-question (7);
+host-plays-on-paper (8); host-calling (11, 16, 25); host-room-view (25); host-record-a-win (5);
+host-game-over-payouts (14, 22, 5); host-verdict-proof (24, 5); host-settings-in-game (18); history-clear-one (5, 19);
+player-tickets-cue (1, 2, 3); player-quick-mark (3); player-which-ticket (12); player-which-prize (17);
+player-claim-qr (13, 19); player-done-with-this-game (20); player-home-saved-tickets (21).
+- The references are the Mac's (`-android-darwin.png`); fonts differ on Linux, so the complete run will report these 24
+  tests as skipped with "no approved linux reference picture … yet" until Linux pictures exist (never a pass).
+- They are not yet approved: the product owner or UX designer checks them at release.
 
 ## Quarantined
 SOP item 6 (standing owner approval): a test that fails and then passes with no change is set aside for at most 2 days,
-listed here with its date, and fixed by the tester; never deleted or weakened. A test that blocks a release is not
-quarantined without asking the owner.
+listed here with its date, and fixed by the tester; never deleted or weakened.
 | Test | Set aside on | Why | Back by |
 |---|---|---|---|
 | (none) | | | |
 
 ## Flaky or setup problems (not for the Build workspace)
-- Two turn-the-phone tests read the screen one frame too early after the lane B/A layout changes (Android tickets: still
-  stacked at the first frame; iPhone calling screen: the number 0 px tall for a frame). Fixed in the tests by waiting at
-  most 1 second for the turn, the allowance already used for the tickets; not quarantined, since the cause is known.
-- `enterTicketNumber` race (see above): fixed in the helper.
+- Quick verify 37101188825 was cancelled at the 15-minute job limit: a push touching shared test set-up runs all 350
+  Android tests, which took 13.0 minutes on the green run and over 15 on the cancelled one. Not a test failure.
+- Screenshots: a clock that never moves stalled the app (clicks that never finished), and the "Undo (5s)" countdown
+  moved the bar's words; fixed in the spec (running clock, the bar covered). Not quarantined: never in the gate yet.
 
 ## Requests for the Build workspace
-- None. The new names (`announcer`, `game-over`, `claim-proof`, `room-game-code`, `game-code` in the top bar) are as
-  built; listed in `tests/browser/README.md`, last section.
+- `quick.yml`: the 15-minute limit is shorter than an "every browser test" run can take (13.0 and over 15 minutes
+  today); raise it, or split that run into two shards.
+- `quick.yml`: add `--grep-invert @screens` to its browser runs. Until then `screens.spec.ts` skips itself when
+  `GITHUB_WORKFLOW` contains "quick".
+- Linux reference pictures: a way to collect them from the runner, such as a manual workflow that runs
+  `SCREENS_NEW=1 npm run test:browser -- --project=android --grep @screens --update-snapshots` and uploads
+  `tests/browser/screens.spec.ts-snapshots/`. I then commit the approved ones.
 
 ## Notes for the owner (plain English)
-- Row 7 works as built, but asks at the end of every phone-ticket hand-out: the last ticket is on screen when "Start
-  calling" appears, so it always counts as "waiting", even when the player has scanned. "Hand it out now" goes back to
-  the same ticket, and "Start calling" asks again; only "Start anyway" or "Give a paper ticket" get past it. The
-  tests accept this (it matches the row), but the product owner may want "Start calling" on the last ticket to count it
-  as handed out, or a "Yes, they have it" answer. A C2 choice; not a bug.
-- Row 22: in a paper-ticket game the banner says just "✓ Game over" (no "phones away" line, since nobody has a phone
-  ticket). I took that as the sensible reading and wrote it into TAM-140; the product owner can say otherwise.
-- With one past game in unsettled tallies, the History question says "1 of them is in unsettled tallies": slightly odd
-  English with only one game (polish, not tested).
-- The ticket list's "Switch to paper (Dad)" button contains the word "paper", so the older TAM-058 browser check "the
-  ticket says paper" would pass even before switching; the new row 7 test checks the button is gone instead. I'll
-  tighten the older check next round (it doesn't loosen anything).
-- The C3 batch (rows 6, 8, 20, 21, 23): every test written first now passes; mutation caught all 5 deliberate mistakes in
-  the one rules change. Row 8's "Undo" coming back after undoing the first call is accepted (reviewer note).
+- Every change in this round works as the rows say: the player's cue names prizes ("Ticket 1: Top Line filled"), says
+  Early Five once for the first ticket, and shortens itself to "Ticket 1: patterns filled. Shout if it's right!" with
+  "More" when the full words don't fit; "Start calling" asks once, and again only if the ticket changes hands; History
+  says "It's in an unsettled tally…" for one game.
+- Question for the product owner (row 1): in landscape (812 × 375) even the short line is cut with "…" ("Ticket 1:
+  patterns filled. Shout if it's ri… More"). Row 1 said "in landscape the line is never cut off"; lane A's fix chose "…"
+  plus "More". The tests accept it (one line, "More" holds everything); see `player-tickets-cue-812x375`.
+- Seen in the pictures, polish only: before the first call the calling screen already shows "Repeat · Another rhyme"
+  and an empty "Last" (`host-plays-on-paper`).
+- The 57 pictures are ready for the product owner or UX designer to look through at release; once approved they become
+  the reference that any later look change is compared against.

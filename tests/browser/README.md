@@ -701,3 +701,40 @@ C2 rows written alongside the build, and the C1 rules a screenshot can't show. R
 | tickets at 320 × 640 and 375 × 667 | "All tickets" and "One at a time": no sideways sliding, every cell on screen, cells at least 24 px and at least (width − 40) / 9 wide | 2, TAM-122 |
 | History, one past game | "Delete the past game from this phone?…" with "Delete" and "Keep"; in an unsettled tally also "It's in an unsettled tally, and will be taken out of it." (never "1 of them") | 19, PLT-011, PLT-025 |
 | hand-out helper (`phone.ts`) | `confirmHandOut` / `startAnywayIfAsked` answer the row 7 question with "Start anyway" | 7 |
+
+## Screenshot comparison (`screens.spec.ts`, tag `@screens`; docs/change-sop.md, "Added 3 October", item 2)
+Reference pictures of the screens UX list rows 1–25 touched, on the Android phone at 360 × 640, 390 × 844 and
+812 × 375 (CSS pixels), in `screens.spec.ts-snapshots/`, named `<screen>-<size>-android-<platform>.png`. They become
+the approved pictures once the product owner or UX designer has checked them at release.
+- Runs in the complete run (release, nightly), never in quick verify (the spec skips itself when `GITHUB_WORKFLOW`
+  says "quick"), and on the Android phone only (the iPhone project reports these as skipped).
+- Steady pictures: `crypto.getRandomValues` and `Math.random` come from a fixed seed (carried across page loads in
+  `sessionStorage` key `__screens_seed`), so games, tickets and game codes repeat; every phone's clock starts at
+  3 October 2026, 7:00 pm India time and runs on (a clock that never moves stalled the app); animations and the caret
+  off; QR codes and the counting-down "Called 24 · Undo (5s)" bar (`undo-toast`) covered by a box (they change with the clock); each picture waits 0.8 s for
+  short timed states (the half-second rest of "Next number").
+- Fonts differ between computers, so each platform has its own references (Playwright's default). Where a platform has
+  none yet, each test is skipped with the reason "no approved … reference picture …", never passed. To take new
+  pictures: `SCREENS_NEW=1 npm run test:browser -- --project=android --grep @screens --update-snapshots`.
+
+| Screen (file name start) | What is on it | Rows |
+|---|---|---|
+| `host-ticket-type` | ticket-type step, "Phone tickets" chosen, cue switch on with its warning | 11, 1 |
+| `host-prizes` | prizes step with the session line above "Confirm prizes" (phone game, 3 players, ₹50) | 9, 19 |
+| `host-hand-out` | hand-out of ticket 1: game code, QR, typed code, waiting line, link and main button | 10, 19, 25 |
+| `host-not-handed-out-question` | "Dad hasn't got their ticket" with its three answers | 7 |
+| `host-plays-on-paper` | calling screen with "Dad plays on paper · Undo" | 8 |
+| `host-calling` | calling screen, phone tickets, after 3 calls | 11, 16, 25 |
+| `host-room-view` | Show the room after 3 calls | 25 |
+| `host-record-a-win` | Record a win, Top Line, Riya chosen | 5 |
+| `host-game-over-payouts` | summary after End: "Game over" banner and payouts (Riya won Top Line) | 14, 22, 5 |
+| `host-verdict-proof` | a ticket-number check, Top Line bogey, with its proof line | 24, 5 |
+| `host-settings-in-game` | Settings opened during a game, "Back" at the top | 18 |
+| `history-clear-one` | "Clear all history" with one past game in an unsettled tally | 5, 19 |
+| `player-tickets-cue` | Riya's 3 tickets, cue on, ticket 1's top row filled | 1, 2, 3 |
+| `player-quick-mark` | quick mark with those marks | 3 |
+| `player-which-ticket` | "Which ticket?" with the small pictures, the cue's ticket marked | 12 |
+| `player-which-prize` | "Which prize?" with "Cancel" as a link | 17 |
+| `player-claim-qr` | claim QR for Top Line, ticket 1, only that pattern outlined, "Done" | 13, 19 |
+| `player-done-with-this-game` | "Clear your tickets from this phone?" | 20 |
+| `player-home-saved-tickets` | Home 6 h 10 min later: "Your tickets from 7:00 pm · Open · Clear" | 21 |
