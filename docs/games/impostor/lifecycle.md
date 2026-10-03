@@ -51,7 +51,7 @@ game arrives; with two games, two cards are enough.
 | Talking | **Free flow** with "Vote now" | Timer: 2 minutes, gentle chime |
 | Score | **No** | Yes: the night's scoreboard |
 | Words | **Whole family** | "+ Grown-ups" adds words kids or elders may not know; non-veg food stays off unless switched on in Categories |
-| Categories | All 8 | Switch any off |
+| Categories | All 9 | Switch any off |
 | Impostors | 1; 2 offered from 8 players | |
 
 The four choices are equal two-way switches (guideline 17a: a chosen option is outlined with ✓, never the main
