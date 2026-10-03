@@ -1,13 +1,15 @@
 # Test report
-Progress (2026-10-03 10:40 local, tester): lanes A, B, C (C1/C2) and the C3 batch tested on dccc48e; tests the lanes
+Progress (2026-10-03 11:10 local, tester): lanes A, B, C (C1/C2) and the C3 batch tested on dccc48e; tests the lanes
 broke updated to the approved rows; C2 tests written for rows 4, 7, 22, 24 (row 9 in the session tests); C3 tests pass;
 scoped mutation for the C3 batch 100%. Next: the coder fixes the 3 pattern-cue bugs below (lane A, TAM-195), then a
 release candidate. Rows built: 25 of 25 merged (1-25 in lanes and C3); rows with all their tests green: 22 of 25 (rows 1
 and 3 wait on the cue fixes; row 11's "Early Five once" too).
 
 Commit tested: dccc48e (app; lanes A-C at 92a84f9 plus the C3 batch)   Date: 2026-10-03
-Automation run: see "Automation" below (filled in after the push)
-Result: RED (3 real bugs in 4 tests, all in the player's pattern cue, TAM-195; everything else green locally)
+Automation run: quick verify 37099201480 on e8c83b0 (these tests; app unchanged since dccc48e): RED. Every browser
+test on Android (the push touched shared test set-up): 346 run, 340 passed, 5 failed, 1 skipped; rule tests green.
+The 5 failures are the 3 bugs below and nothing else.
+Result: RED (3 real bugs, all in the player's pattern cue, TAM-195; everything else green)
 
 Task: `docs/change-sop.md`, the tester's part of C1/C2 lanes A, B, C and the C3 batch (rows 6, 8, 20, 21, 23).
 Scenarios: the UX list rows of `docs/handover.md` 2b, approved, owner, 2026-10-03.
@@ -18,15 +20,16 @@ Scenarios: the UX list rows of `docs/handover.md` 2b, approved, owner, 2026-10-0
 | Rule tests (`npm test`) | 520 | 520 | 0 |
 | Browser, Android: every spec the lanes broke or I changed (phone-claims, phone-tickets, after-the-game, held-tickets, phone-late-joiners, sessions, session-line, layout, history, ux-rows-3-oct (new), pattern-cue, ux-rows-8-15, home-and-buttons, report-problem) | 206 | 202 | 4 (3 real bugs; one of them in 2 tests) |
 | Browser, iPhone: specs touching layout (layout, phone-tickets, ux-rows-3-oct) | 83 | 82 | 0 (1 skipped, as before) |
+| Automation, Android, every browser test (run 37099201480) | 346 | 340 | 5 (the same 3 bugs; 1 skipped) |
 | Scoped mutation, C3 batch (`40717a7..dccc48e`, `rules.ts:875-877`, canUndo "to-paper") | 5 mistakes | 5 caught (100%) | 0 |
 The automation run on 92a84f9 (quick verify 37095588430, Android, 292 tests) was red with 60 failures; all but the 3
 below came from tests needing the approved new behaviour (mostly one shared hand-out step, row 7).
 
 ## Failing (real bugs only)
 All three are lane A, the pattern cue with the host's switch on (TAM-195, UX list rows 1 and 11):
-- `pattern-cue.spec.ts` "2 ticket(s)" and "3 ticket(s) on a 375 × 812 phone" (TAM-195, row 1): at 812 × 375 landscape,
-  Larger text off, the line "Ticket 5: Early Five and Top Line filled. Shout if it's right!" wraps onto 2 lines;
-  expected one line, with "More" when it doesn't fit.
+- `pattern-cue.spec.ts` "1/2/3 ticket(s) on a 375 × 812 phone" (TAM-195, row 1): at 812 × 375 landscape, Larger text
+  off, the line "Ticket 5: Early Five and Top Line filled. Shout if it's right!" wraps onto 2 lines; expected one line,
+  with "More" when it doesn't fit. (2 and 3 tickets on the Mac; 1, 2 and 3 tickets in automation, whose fonts are wider.)
 - `pattern-cue.spec.ts` "fills on two tickets…" (TAM-195, product owner's answer 2, row 1): "More" lists "Ticket 1: top
   row filled", "Ticket 3: top row filled"; expected each ticket to name its prizes: "Ticket 1: Top Line filled" (the
   line itself, "Tickets 1 and 3: patterns filled · More", is right).
