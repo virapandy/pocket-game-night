@@ -71,6 +71,7 @@ export function Turn({
   seeAgain,
   onDone,
   onDontKnow,
+  onHoldScreen,
 }: {
   name: string;
   /** The next player's name, or null for the last player ("Done, everyone's seen"). */
@@ -86,8 +87,15 @@ export function Turn({
   seeAgain?: boolean;
   onDone: () => void;
   onDontKnow?: () => void;
+  /** Told when screen B shows and when it goes (the screen marks itself `imp-hold-screen`, IMP-010 landscape). */
+  onHoldScreen?: (shown: boolean) => void;
 }) {
   const [screen, setScreen] = useState<'A' | 'B'>('A');
+  useLayoutEffect(() => {
+    if (screen !== 'B' || !onHoldScreen) return;
+    onHoldScreen(true);
+    return () => onHoldScreen(false);
+  }, [screen, onHoldScreen]);
   if (screen === 'A') return <ScreenA name={name} progress={progress} banner={banner} onMe={() => setScreen('B')} />;
   return (
     <ScreenB

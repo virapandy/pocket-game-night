@@ -81,6 +81,8 @@ export function Game({
   const [leftHalfway, setLeftHalfway] = useState(() => resumed && leftTooLong(initial.match, ui.get<UiState>(initial.saved.id, {}), Date.now()));
   const [banner, setBanner] = useState<Banner>(() => (resumed && step === 'deal' ? { turn: turnKey, kind: 'welcome' } : null));
   const [returns, setReturns] = useState(0);
+  /** Screen B of the deal is showing (IMP-010: in landscape its top bar runs y = 0 to 48). */
+  const [holdScreen, setHoldScreen] = useState(false);
   const [seeAgain, setSeeAgain] = useState<{ name: string; key: number } | null>(null);
   const [said, setSaid] = useState('');
   const announce = useCallback((text: string) => setSaid(text), []);
@@ -346,6 +348,7 @@ export function Game({
         secret={secretFor(seeAgain.name)}
         banner={null}
         tapPref={tapPref}
+        onHoldScreen={setHoldScreen}
         seeAgain
         onDone={() => setSeeAgain(null)}
       />
@@ -361,6 +364,7 @@ export function Game({
         secret={secretFor(name)}
         banner={banner?.turn === turnKey ? banner.kind : null}
         tapPref={tapPref}
+        onHoldScreen={setHoldScreen}
         onDone={() => {
           act({ type: 'seen' });
           setBanner(null);
@@ -480,7 +484,7 @@ export function Game({
   const sheet = overlay === 'rules' || overlay === 'settings' || overlay === 'players';
   const dialog = overlay === 'dealAgain' || overlay === 'end' || overlay === 'playersMid' || overlay === 'whose';
   return (
-    <main className="imp-screen imp-room">
+    <main className={holdScreen ? 'imp-screen imp-room imp-hold-screen' : 'imp-screen imp-room'}>
       <HideMainButton.Provider value={dialog || sheet}>
         <div className="imp-screen-inner" hidden={sheet}>
           <header className="imp-bar">
