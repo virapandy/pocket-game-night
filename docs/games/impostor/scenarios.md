@@ -377,8 +377,8 @@ Status: approved, owner, 2026-10-03
 Phase: Impostor 1
 When the host taps "Categories: all 9 ›"
 Then a sheet "Categories" shows 9 switches, named and ordered exactly: "Food", "Festivals and occasions",
-"Around the house", "Travel and places", "Films, music and TV", "Sports and games", "School and childhood",
-"Weddings and family", "Desi life"; on the first ever evening all are on
+"Around the house", "Out and about", "Films, music and TV", "Sports and games", "School and childhood",
+"Weddings and family", "Everyday moments"; on the first ever evening all are on
 And below them the switch "Include non-veg food", off on the first ever evening
 And when only one category switch is on, that switch is disabled and "Keep at least one category." shows
 When the host switches off two categories and taps "Done"
@@ -927,7 +927,7 @@ Then every row of `words.csv` (parsed as CSV, quoted fields allowed) and of `wor
 nonveg "yes" or "no" (`true`/`false` in JSON); a non-empty hint that is not, ignoring case, the word, one of its
 names (split on " / "), or one of its other names
 And no two rows have the same word, ignoring case
-And `words.json` has exactly the rows of `words.csv`, in the same order (309 rows on 3 October 2026)
+And `words.json` has exactly the rows of `words.csv`, in the same order (291 rows on 4 October 2026)
 
 ## IMP-055: The shipped word list file
 Status: approved, owner, 2026-10-03 (detail of IMP-054)
@@ -1306,8 +1306,8 @@ Then every evening is saved, at every move, as one engine `SavedGame` at the eng
              "config": { "players": ["Riya", "Arjun", "Meena", "Kabir"],
                          "choices": { "mode": "easy", "talking": "free", "score": false, "words": "family",
                                       "categories": ["Food", "Festivals and occasions", "Around the house",
-                                                     "Travel and places", "Films, music and TV", "Sports and games",
-                                                     "School and childhood", "Weddings and family", "Desi life"],
+                                                     "Out and about", "Films, music and TV", "Sports and games",
+                                                     "School and childhood", "Weddings and family", "Everyday moments"],
                                       "nonveg": false },
                          "excludedWords": { "dealtTonight": ["IMPW-002"], "recent": ["IMPW-003"],
                                             "blocked": ["IMPW-018"] } } },

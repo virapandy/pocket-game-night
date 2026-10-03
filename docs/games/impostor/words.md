@@ -39,8 +39,8 @@ about 800 reviews the top complaints were paywalls, ads, and **the same words re
 mixed-region fairness, every word free and offline, no repeats.
 
 ## Categories
-Nine, named exactly as in `words.csv`: Food · Festivals and occasions · Around the house · Travel and places ·
-Films, music and TV · Sports and games · School and childhood · Weddings and family · **Desi life** (funny everyday
+Nine, named exactly as in `words.csv`: Food · Festivals and occasions · Around the house · Out and about ·
+Films, music and TV · Sports and games · School and childhood · Weddings and family · **Everyday moments** (funny everyday
 moments). Each word is marked **family** (dealt by default) or **grown-ups** (dealt with "+ Grown-ups"); nothing about
 politics, religion as a joke, caste, or real people other than well-loved film and sports names.
 The host can switch categories off (for example no Films for grandparents).
@@ -54,7 +54,7 @@ The host can switch categories off (for example no Films for grandparents).
 **No word repeats within an evening**, and recent evenings' words are avoided where possible (to decide, see
 `decisions.md`).
 
-## The list: `words.csv` (version 3, 309 words)
+## The list: `words.csv` (version 4, 291 words)
 Drafted 3 October, then checked by **nine simulated players** (persona reviewers, each judging every word as that
 person would): Delhi 34, Lucknow 56, Chennai 29, Hyderabad 41, Bengaluru 27, Calicut 45, Kolkata 50, a Jain
 vegetarian grandmother of 70 from Ahmedabad, and a 10-year-old in Pune. The changed rows were checked again.
@@ -72,11 +72,18 @@ Films is the thinnest for families (11), because films split by age more than an
 
 **Biggest lesson:** age divides a family table more than region does (56 words against 16).
 
-**Version 3, quirky and funny (owner, 3 October):** 95 more drafted, including a 9th category, **Desi life**
+**Version 3, quirky and funny (owner, 3 October):** 95 more drafted, including a 9th category, **Everyday moments**
 (everyday funny moments: Ice cream tub full of dal, Neighbour aunty, Monkey stealing food, Mummy finding it in two
 seconds). The same nine reviewers also judged "does it make you smile" and "is it kind". 33 dropped as not
 funny (Sneeze, Dentist), unkind or scary (Mummy's chappal, Stuck in the lift) or regional (Jugaad, Holi colour);
-6 added from the reviewers' own suggestions. **Now 309 words: 239 whole family, 70 grown-ups, 2 non-veg.**
+6 added from the reviewers' own suggestions.
+
+**Version 4, after the owner's play (4 October):** an editorial audit of every row. Category names made accurate:
+"Cricket and games" → **Sports and games**, "Travel and places" → **Out and about**, "Desi life" → **Everyday moments**.
+Dropped 18 words that were too broad (Rain, Baby), near-duplicates (Pressure cooker whistle, Frozen video call, three
+extra photo words, extra cricket words) or not clue-able; moved 8 to the category they belong in; renamed 2 ("Screen
+time", "Squeezing in one more"); 19 clearer hints (e.g. Badminton "Net", Hockey "Stick"); removed two clashing other
+names. **Now 291 words in 9 categories: 225 whole family, 66 grown-ups, 2 non-veg.**
 
 Columns: id, word, other names, category, audience (family / grownups), nonveg, difficulty, hint (Easy mode),
 close cousin (for a later Undercover variant), what changed, notes.
