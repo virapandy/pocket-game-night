@@ -118,6 +118,9 @@
 | 2026-10-02 | First game of all: the session line above "Confirm prizes" replaces a separate naming screen (PLT-016 follows PLT-029). | Product owner |
 | 2026-10-02 | Tester's questions: keep "Tap to resume"; the cue names both prizes in prize order; "You're ready" on the first visit only; Settings in Home's menu; "Settle with host" is the payout screen's main button until a tab opens; at 812 × 375 with Larger text all three tickets fit. | Product owner with UX designer |
 
+| 2026-10-03 | "One at a time" tickets keep a 12 px side margin; cells fill the space between (about 39 px at 390 px wide), replacing the 42 px minimum of 30 September (TAM-122, TAM-191). | Owner |
+| 2026-10-03 | Prize chips on the calling screen wrap onto a second line instead of being cut off (TAM-126, UX list row 15). | Owner |
+
 "Convention" means the established Tambola rule in `docs/games/tambola/guide.md`, chosen because the owner asked
 Claude to follow game conventions. Every Tambola rule above is also a host setting with this default.
 
