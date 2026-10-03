@@ -934,11 +934,15 @@ button.tcell { cursor: pointer; }
 /* A marked number: the marks' deep blue fill and a ✓, so it never relies on colour alone (owner 2026-10-01, UX list row 3). */
 .quick-key-on { color: var(--mark-text); background: var(--mark-bg); border: 2px solid var(--mark-bg); }
 .quick-tick { position: absolute; top: 1px; right: 3px; font-size: 14px; line-height: 1; }
-/* RC fix (C1): on a short portrait phone (360 x 640) the whole pad and "Show claim" fit without scrolling: the screen
-   is exactly the phone's height and the keys give up height (44 px down to 28 px) instead of pushing it off. */
+/* RC fix (C1, round 2): on a short portrait phone (360 x 640) the whole pad, the thumbnails, the cue line and
+   "Show claim" fit without scrolling: the screen is exactly the phone's height and the keys give up height (44 px
+   down to 28 px) instead of pushing the rest off. The pad needs its own min-height: a flex item's default
+   (min-height: auto) is its content's height, the full 44 px rows, so without it the pad never shrank.
+   Sum at 360 x 640 with the cue on: 8 + 62 bar + 44 note + 24 message + 72 thumbnails + 94 cue and button + 8
+   + 5 gaps of 6 = 342, leaving 298 px for 9 rows and 8 gaps of 3: keys about 30 px. */
 @media (orientation: portrait) and (max-height: 700px) {
-  .quick-screen { height: 100dvh; }
-  .quick-screen .quick-pad { flex: 0 1 auto; grid-template-rows: repeat(9, minmax(28px, 44px)); }
+  .quick-screen { height: 100dvh; gap: 6px; }
+  .quick-screen .quick-pad { flex: 0 1 auto; min-height: calc(9 * 28px + 8 * 3px); grid-template-rows: repeat(9, minmax(28px, 44px)); }
   .quick-screen .quick-key { min-height: 0; }
 }
 .thumbs { flex: none; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
