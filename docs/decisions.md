@@ -121,6 +121,7 @@
 | 2026-10-03 | "One at a time" tickets keep a 12 px side margin; cells fill the space between (about 39 px at 390 px wide), replacing the 42 px minimum of 30 September (TAM-122, TAM-191). | Owner |
 | 2026-10-03 | Prize chips on the calling screen wrap onto a second line instead of being cut off (TAM-126, UX list row 15). | Owner |
 | 2026-10-03 | After a game: players clear tickets with "Done with this game" (confirmation); tickets more than 6 hours old open on Home with Open / Clear; the host's summary shows "Game over" after End or Discard; claims from ended or discarded games get their own calm refusal (TAM-171, TAM-179; `docs/games/tambola/ux-review-2026-10-03-after-the-game.md`). | Owner (all four), details product owner with UX designer |
+| 2026-10-03 | The host sees the proof that a claim is from its game: each scanned verdict adds "Ticket 3 · game 7K3P · same numbers as your copy" (bogeys too; "checked from your copy" by number); the game code shows on the calling screen, the room view and the hand-out screen (TAM-179). | Owner, details product owner with UX designer |
 
 "Convention" means the established Tambola rule in `docs/games/tambola/guide.md`, chosen because the owner asked
 Claude to follow game conventions. Every Tambola rule above is also a host setting with this default.

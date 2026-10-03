@@ -61,7 +61,9 @@ current; instructions live here, not in chat. History from Phase 0 and 1a is fur
    | 22 | 2 | Host's summary after End or Discard starts with a "Game over" banner ("Players: phones away…"; Discard: "Nobody wins…"), payouts still visible below | TAM-140, PLT-005 | A |
    | 23 | 2 | A claim from an old game, looked up in History: "That game has ended (game 7K3P, 9:15 pm)…" or "That game was discarded…"; unknown games as today; a new game's ticket replacing old ones says "Your tickets from game 7K3P were cleared" | TAM-179, TAM-171 | A |
 
-   (Rows 20–23, added 3 October from `docs/games/tambola/ux-review-2026-10-03-after-the-game.md` (A), are severity 2 but
+   | 24 | 2 | Every scanned verdict shows its proof on a second line: "Ticket 3 · game 7K3P · same numbers as your copy" (accepted and bogey); after "Check by number": "…· checked from your copy" | TAM-174, TAM-177, TAM-179 | A |
+   | 25 | 2 | The game code is visible to the room: calling screen top bar "Tambola · Game 7K3P"; room view small "Game 7K3P" bottom-left; hand-out screen "Game 7K3P" above the QR and "Check it says Game 7K3P" in the instruction | TAM-107, TAM-172 | A |
+   (Rows 20–25, added 3 October from `docs/games/tambola/ux-review-2026-10-03-after-the-game.md` (A), are severity 2 but
    numbered at the end so earlier row numbers stay as the tester already uses them.)
    Not changing: tickets per player stay 1 to 3; the 20-character typed code; "Show claim" stays the player's main
    button; "Tap to resume" stays; auto-call calls at once when the host turns it on. After the next green build the UX

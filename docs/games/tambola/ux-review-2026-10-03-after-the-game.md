@@ -37,3 +37,18 @@ replaces it (TAM-171). A claim QR from an old game gets "This claim is for anoth
 - **New (PLT-300 Home):** tickets more than 6 hours old open on Home with the dated row, Open and Clear.
 - **New (TAM-140 / PLT-005):** the "Game over" banner after End and after Discard, payouts still visible.
 - **TAM-179:** claims from an ended or a discarded game get their own calm wording; unknown games as today.
+
+## Follow-up: the host can see that a claim is from its own game (owner approved, 3 October)
+The host phone already checks every claim QR against what only it holds (TAM-179): the game code, that the ticket
+was handed out in this game, and all 15 numbers in their places against its own copy, which comes from a secret
+that never leaves the host. A copied real ticket still pays the person the host gave it to. What was missing is
+that the host couldn't **see** the proof. Decided (product owner with UX designer):
+- **Every verdict from a scan gets a second, smaller line:** "Ticket 3 · game 7K3P · same numbers as your copy",
+  for accepted claims **and bogeys** (a bogey is where arguments start). After "Check by number" (no QR compared):
+  "Ticket 3 · game 7K3P · checked from your copy". Ordinary text colour; the ✓/✗ and words carry the meaning; screen
+  readers read the first line. ("Same numbers as your copy" chosen over "matches your copy" as plainer for hosts.)
+- **The game code is visible to the room:** calling screen top bar "Tambola · Game 7K3P" (quiet text, not a control);
+  room view a small "Game 7K3P" in the bottom-left corner, kept in from the edge, well below the number and last-3
+  strip; hand-out screen "Game 7K3P" above the QR, with the line "Scan with your camera to get your ticket. Check it
+  says Game 7K3P." Players' tickets already show "Game 7K3P" in their header.
+- The code uses no look-alike characters (no 0, O, 1, I, L), so it can be read aloud (guideline 38).
