@@ -1,7 +1,9 @@
 # Test report
-Progress (2026-10-03 11:35 local, tester): step 1 done on f6f154a: tests updated for lane A's 3 cue fixes and lane C's
-row 7 "ask once" / "ask again" and row 19 History wording; TAM-058 "paper" check tightened; affected specs green locally
-(Android 77/77, iPhone 41/41, rules 520/520). Next: push, then the quick-verify run on it. Rows built: 25 of 25.
+Progress (2026-10-03 12:20 local, tester): step 2: quick verify 37101188825 on 0e1062a was cancelled at its 15-minute
+limit (every Android browser test ran, since the push touched phone.ts; 323 of 350 reached); 2 failures, both test
+faults (phone-tickets.spec.ts read the Early Five / Four Corners words only from the line; on the runner's wider fonts
+the approved row 1 swap puts them behind "More"). Fixed; pushing; then quick verify again. Screenshot spec being set up.
+Rows built: 25 of 25.
 
 Commit tested: dccc48e (app; lanes A-C at 92a84f9 plus the C3 batch)   Date: 2026-10-03
 Automation run: quick verify 37099201480 on e8c83b0 (these tests; app unchanged since dccc48e): RED. Every browser

@@ -553,9 +553,11 @@ test.describe('The "your marks fill a pattern" cue, with the host\'s switch on (
     const fifth = rowOf(grid, 1)[2]!;
     await tapCell(riya.page, 1, fifth);
     await expect(patternCue(riya.page)).toContainText(/ticket 1\b/i);
-    await expect(patternCue(riya.page)).toContainText(/Early Five/i);
     await expect(patternCue(riya.page)).toContainText(/Shout if it['’]s right!/);
-    await expect(patternCue(riya.page)).not.toContainText(/corner|row/i);
+    // The words may be on the line or, when it is too wide, behind "More" (UX list row 1, 3 October 2026).
+    const all = await allCueText(riya.page);
+    expect(all).toMatch(/Early Five filled on ticket 1\b/i);
+    expect(all).not.toMatch(/corner|row/i);
     await expect(riya.page.getByText(/accepted|you won|winner|correct/i)).toHaveCount(0);
   });
 
@@ -565,7 +567,9 @@ test.describe('The "your marks fill a pattern" cue, with the host\'s switch on (
     const t = riya.tickets[0]!;
     const four = cornersOf(riya.grids.get(t)!);
     for (const n of four) await tapCell(riya.page, t, n);
-    await expect(patternCue(riya.page)).toContainText(new RegExp(`corners.*ticket ${t}\\b|ticket ${t}\\b.*corners`, 'i'));
+    await expect(patternCue(riya.page)).toContainText(new RegExp(`ticket ${t}\\b`, 'i'));
+    // The words may be on the line or, when it is too wide, behind "More" (UX list row 1, 3 October 2026).
+    expect(await allCueText(riya.page)).toMatch(new RegExp(`Ticket ${t}: Four Corners filled`, 'i'));
     expect(await cellsWith(phoneTicket(riya.page, t), 'data-cue')).toEqual([...four].sort((a, b) => a - b));
   });
 });
