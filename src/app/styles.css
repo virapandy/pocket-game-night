@@ -969,6 +969,9 @@ button.tcell { cursor: pointer; }
 /* ----- Home (PLT-300) and equal choices (TAM-213, PLT-301) ----- */
 .home-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .home-bar .app-title { margin: 0; }
+/* RC fix (C1): "Menu" never shrinks under the title (its text spilled to the screen's edge at 360 px); the title
+   wraps instead, so the 16 px margin holds. */
+.home-bar > .bar-button { flex: none; }
 .ready { margin: 0; font-weight: 800; color: var(--ok); }
 /* Choices between equals look equal: same size (equal rows), same colours and weight. */
 .home-choices, .choice-cards { display: grid; grid-auto-rows: 1fr; gap: 12px; }
