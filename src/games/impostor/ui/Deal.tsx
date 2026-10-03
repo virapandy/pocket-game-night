@@ -6,8 +6,16 @@ import type { ImpostorWord } from '../rules';
 import { buzz } from './device';
 import { Caps, Dialog, HideMainButton, MainButton, QuietButton } from './parts';
 
-/** What one player may see: the round's word for the crew; for the impostor only what their mode allows. */
-export type Secret = { readonly role: 'crew' | 'impostor'; readonly word: ImpostorWord; readonly mode: 'easy' | 'hard' };
+/**
+ * What one player may see: the round's word for the crew; for the impostor only what their mode allows. `lastGuess`
+ * is the choice "Last guess for a caught impostor" (IMP-076), which changes only the impostor's fourth line.
+ */
+export type Secret = {
+  readonly role: 'crew' | 'impostor';
+  readonly word: ImpostorWord;
+  readonly mode: 'easy' | 'hard';
+  readonly lastGuess: boolean;
+};
 
 /** IMP-011: always five lines, in this order, for every role and mode. */
 export function blockLines(s: Secret): [string, string, string, string, string] {
@@ -18,8 +26,14 @@ export function blockLines(s: Secret): [string, string, string, string, string] 
       : ['Your secret', s.word.word, 'Give one-word clues.', "Don't say it!", other];
   }
   return s.mode === 'easy'
-    ? ['Your secret', "You're the impostor", `Category: ${s.word.category} · Hint: ${s.word.hint}`, 'Listen, blend in, guess the word.', '']
-    : ['Your secret', "You're the impostor", 'Listen and blend in.', 'Guess the word if caught.', ''];
+    ? [
+        'Your secret',
+        "You're the impostor",
+        `Category: ${s.word.category} · Hint: ${s.word.hint}`,
+        s.lastGuess ? 'Listen, blend in, guess the word.' : "Listen and blend in. Don't get caught!",
+        '',
+      ]
+    : ['Your secret', "You're the impostor", 'Listen and blend in.', s.lastGuess ? 'Guess the word if caught.' : "Don't get caught!", ''];
 }
 
 /**
