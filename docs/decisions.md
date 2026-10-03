@@ -142,3 +142,20 @@ Claude to follow game conventions. Every Tambola rule above is also a host setti
 - iPhone check by hand, later (owner has only Android for now): open the preview once, turn on Airplane Mode, reopen, and check Tambola opens. The automated iPhone offline tests are skipped until Playwright issue #42775 is fixed.
 - Before wider public release: replace the "Report a problem" stub with a real destination (PLT-208)
 - Approval of Phase 2, 2.5, 6 and 7 scenarios (when those phases come up)
+
+## Impostor: open questions (3 October 2026; design in `docs/games/impostor/`)
+| # | Question | Options (norm = convention) | Recommendation |
+|---|---|---|---|
+| I1 | What the impostor sees | "You are the impostor" only · **plus the category (norm in phone apps)** · plus a hint word (easy mode) | Category; hint word later |
+| I2 | Who starts the clues | Random (norm) · **random, never the impostor (ours)** | Never the impostor |
+| I3 | Scoring | +3/+2/+1 to 10 (imposter.online) · **escape +2, caught but guessed +1, caught crew +1 each (simplified)** | Simplified, no race to a target |
+| I4 | A tied vote, after one re-vote | Host decides · **impostor escapes (common house rule)** · another clue round | Impostor escapes |
+| I5 | Picking the impostor | Purely random (norm; reviewers complain one person gets it often) · random, but never 3 rounds in a row | Never 3 in a row |
+| I6 | Discussion timer | Off · **60 s, visible, skippable (ours)** · 2–3 min | 60 s |
+| I7 | "See my word again" | Not allowed · **allowed, by passing the phone and holding (family trust)** | Allowed |
+| I8 | Players' own phones | First release · **one phone first; own phones with connected mode (Phase 6)** | One phone first |
+| I9 | Word repeats | Never within an evening (all agree) · also avoid the last 3 evenings | Both |
+| I10 | Multicultural fairness rule and per-player script (`words.md`) | As drafted | As drafted |
+| I11 | Word reviewers | Someone who grew up in each region reads its list; one North and one South reader for Multicultural | Owner names them |
+| I12 | Family in-jokes (adding your own words) | First release · later | Later |
+
