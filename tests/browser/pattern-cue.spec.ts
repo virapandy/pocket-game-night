@@ -34,7 +34,7 @@ async function fillTopRow(player: Page, ticket: number): Promise<number[]> {
 /** Nothing on the phone points out a filled pattern (TAM-195 with the cue off). */
 async function expectNoCue(player: Page, tickets: number[]) {
   await expect(patternCue(player)).toHaveCount(0);
-  await expect(player.getByText(/Shout if it['’]s right|top row filled|patterns? filled|Pattern filled/i)).toHaveCount(0);
+  await expect(player.getByText(/Shout if it['’]s right|top row filled|Top Line filled|patterns? filled|Pattern filled/i)).toHaveCount(0);
   for (const t of tickets) expect(await cellsWith(phoneTicket(player, t), 'data-cue'), `cue outline on ticket ${t}`).toEqual([]);
 }
 
@@ -243,11 +243,32 @@ test.describe('TAM-195 (row 1a): with the cue on, the message is one slim line t
     await expect(cueMore(riya.page)).toBeVisible();
     await expectSlimCue(riya.page, '3 tickets, two with fills');
     const all = await allCueText(riya.page);
-    // Each ticket names its prizes (product owner's answer 2, 2 October 2026); Early Five is said once (row 11).
-    expect(all).toMatch(/Ticket 1: (Early Five and )?Top Line filled/i);
-    expect(all).toMatch(/Ticket 3: (Early Five and )?Top Line filled/i);
-    expect((all.match(/Early Five/gi) ?? []).length, `Early Five is said at most once in "${all}"`).toBeLessThanOrEqual(1);
+    // Each ticket names its prizes (product owner's answer 2, 2 October 2026); Early Five is said once, for the first
+    // ticket (rows 11 and 3): both full top rows are also 5 marks, so ticket 1 gets it and ticket 3 doesn't.
+    expect(all).toMatch(/Ticket 1: Early Five and Top Line filled/i);
+    expect(all).toMatch(/Ticket 3: Top Line filled/i);
+    expect(all).not.toMatch(/top row filled/i);
+    expect((all.match(/Early Five/gi) ?? []).length, `Early Five is said once in "${all}"`).toBe(1);
     // Never a verdict, never a claim.
     await expect(riya.page.getByText(/accepted|you won|winner|correct|valid claim/i)).toHaveCount(0);
+  });
+
+  test('row 1 (3 October): one ticket whose line is too wide reads "Ticket 6: patterns filled. Shout if it\'s right!" with More; the full words only behind More', async ({ page, browser }, testInfo) => {
+    const handOuts = await phoneGame(page, PLAYERS, 50, { cue: true });
+    // 360 px wide: "Ticket 6: Early Five and Top Line filled. Shout if it's right!" can't fit on one line beside "More".
+    const dad = await playerWith(browser, testInfo, handOuts, 'Dad', { width: 360, height: 640 });
+    await fillTopRow(dad.page, 6);
+    const cue = patternCue(dad.page);
+    await expect(cue).toContainText(/Ticket 6: patterns filled\. Shout if it['’]s right!/);
+    await expect(cue).not.toContainText(/Early Five|Top Line/);
+    await expect(cueMore(dad.page)).toBeVisible();
+    expect(await lineCount(dad.page), 'the cue takes one line').toBe(1);
+    await cueMore(dad.page).click();
+    const full = dad.page.getByTestId('pattern-cue-more');
+    await expect(full).toBeVisible();
+    await expect(full).toContainText(/Ticket 6: Early Five and Top Line filled/);
+    // Said once: the line and More together name Early Five once.
+    const all = `${await cue.textContent()} | ${await full.textContent()}`;
+    expect((all.match(/Early Five/gi) ?? []).length, `Early Five is said once in "${all}"`).toBe(1);
   });
 });

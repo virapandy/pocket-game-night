@@ -221,6 +221,8 @@ Then the confirmation says so: "This game is in the unsettled tally for 'Diwali 
 And after deleting, the tally no longer includes it, and still balances
 When the host taps "Clear all history" (PLT-011) and some tallies are unsettled
 Then the confirmation also says how many games are in unsettled tallies
+And with only one past game, in an unsettled tally, it says "It's in an unsettled tally, and will be taken out of it."
+(UX list row 19, C1 wording, 3 October 2026)
 And "Deleted. Undo" (PLT-010) brings the game back into the same tally
 
 ## PLT-026: A game stays in the session it was started in

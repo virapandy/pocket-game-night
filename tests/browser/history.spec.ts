@@ -220,4 +220,19 @@ test.describe('PLT-025: deleting a game that is still in an unsettled tally', ()
     await dialog.getByRole('button', { name: 'Keep', exact: true }).click();
     await expect(rows(page)).toHaveCount(2);
   });
+
+  test('row 19: with one past game in an unsettled tally, "Clear all history" says "It\'s in an unsettled tally, and will be taken out of it."', async ({ page }) => {
+    await page.clock.install({ time: T0 });
+    await setUpPaperGame(page, { players: FAMILY, session: { name: DIWALI } });
+    await winEverythingAndEnd(page, 'Riya', THREE_TIERS);
+    await openHistory(page);
+    await expect(rows(page)).toHaveCount(1);
+    await page.getByRole('button', { name: 'Clear all history' }).click();
+    const dialog = page.getByRole('dialog');
+    await expect(dialog).toContainText(/Delete the past game from this phone\?/);
+    await expect(dialog).toContainText(/It['’]s in an unsettled tally, and will be taken out of it\./);
+    await expect(dialog).not.toContainText(/of them/);
+    await dialog.getByRole('button', { name: 'Keep', exact: true }).click();
+    await expect(rows(page)).toHaveCount(1);
+  });
 });

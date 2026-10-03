@@ -133,6 +133,10 @@ Then nothing is called yet, and a question asks "Dad hasn't got their ticket" ("
 handed out.") with "Hand it out now", "Give a paper ticket" and "Start anyway"
 When the host taps "Hand it out now"
 Then the hand-out screen shows that ticket and its QR again, and calling has not started
+And (row 7, asked once, C2 choice built by lane C on 3 October 2026) the next "Start calling" on that ticket starts
+calling without asking again, and the ticket stays that player's
+But if the host first gives that ticket to someone else (tapping the name), "Start calling" asks again, naming the new
+owner
 When the host taps "Give a paper ticket"
 Then that player plays on paper (TAM-058: "Dad plays on paper · Undo") and calling starts
 When the host taps "Start anyway"
@@ -368,7 +372,7 @@ With the cue on
 Given the game's prizes include Top Line
 When Riya's marks cover every number in ticket 3's top row
 Then that row is outlined on her tickets (on the ticket screen and under the quick-mark pad), and one slim line
-says "Ticket 3: top row filled. Shout if it's right!"
+says "Ticket 3: Top Line filled. Shout if it's right!" (each prize by its name, product owner's answer 2, 2 October 2026)
 And the same for any prize in this game: 5 marks on a ticket (Early Five), a full row (a Line), the four
 corners (Four Corners), every number (Full House)
 And with fills on several tickets the line names them all, such as "Tickets 1 and 3: patterns filled · More";
@@ -381,11 +385,13 @@ goes away if she unmarks a number
 And it never mentions a prize this game doesn't have
 And (UX list row 11, approved, owner, 2026-10-01) the outline does not rely on colour alone: it is a thicker line
 than the 3 CSS px line of 1 October (at least 4 CSS px), and every outlined cell also gets a corner mark that a marked cell outside the pattern doesn't have
-And Early Five is said once, however many of her tickets have 5 marks: "Early Five filled on ticket 1" (line and
-"More" together mention Early Five once)
+And Early Five is said once, however many of her tickets have 5 marks, for the first ticket that has them: "Early
+Five filled on ticket 1", or with that ticket's line, "Ticket 1: Early Five and Top Line filled" (line and "More"
+together mention Early Five once)
 And (product owner's answers 2 and 6, 2 October 2026, docs/handover.md step 3; UX list row 1) when one ticket fills
 two prizes at once, the line names both, in prize order: "Ticket 1: Early Five and Top Line filled. Shout if it's
-right!", with "More" when it doesn't fit
+right!"; when that is too wide for the screen, the line reads "Ticket 1: patterns filled. Shout if it's right!"
+("pattern filled" for one prize) with "More", and the full words are only behind "More" (UX list row 1, 3 October 2026)
 And on an 812 × 375 phone in landscape with 3 tickets and Larger text on, all three tickets fit with no scrolling
 
 ## TAM-196: Players can cross out prizes that are gone; the host's scan catches the rest

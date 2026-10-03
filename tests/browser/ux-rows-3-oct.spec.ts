@@ -12,7 +12,7 @@ import {
 import {
   allTickets, callUntil, cellBoxes, claimResult, closePhones, countOn, currentHandOut, enterTicketNumber, fakeCamera,
   gameCodeOf, handOutScreen, notHandedOutQuestion, numbersOf, oneAtATime, openHostTickets, phoneGame,
-  playerWith, PORTRAIT, scanClaim, scanClaimButton, setUpPhoneGame, shownTickets, showClaim,
+  playerWith, PORTRAIT, scanClaim, scanClaimButton, setUpPhoneGame, shownTickets, showClaim, textOutsideButtons,
 } from './phone';
 
 test.afterEach(closePhones);
@@ -134,6 +134,47 @@ test.describe('TAM-132 (UX list row 7): "Start calling" while a ticket waits ask
     await expect(nextNumber(page).filter({ visible: true })).toHaveCount(0);
   });
 
+  test('asked once: after "Hand it out now", the next "Start calling" starts calling with no question, and the ticket stays Dad\'s phone ticket', async ({ page }) => {
+    await setUpPhoneGame(page, THREE);
+    await upToTheLastTicket(page);
+    const dads = await currentHandOut(page);
+    const start = page.getByRole('button', { name: 'Start calling', exact: true });
+    await start.click();
+    await notHandedOutQuestion(page).getByRole('button', { name: 'Hand it out now', exact: true }).click();
+    await expect(notHandedOutQuestion(page)).toHaveCount(0);
+    await start.click();
+    await expect(nextNumber(page)).toBeVisible();
+    await expect(notHandedOutQuestion(page)).toHaveCount(0);
+    await expect(page.getByText(/Dad plays on paper/)).toHaveCount(0);
+    await openHostTickets(page);
+    await expect(hostTicket(page, dads.ticket)).toContainText('Dad');
+    await expect(hostTicket(page, dads.ticket).getByRole('button', { name: /^Switch to paper/ }), 'still a phone ticket').toBeVisible();
+  });
+
+  test('asked again after the ticket changes owner: "Hand it out now", give it to Asha, "Start calling" asks about Asha', async ({ page }) => {
+    await setUpPhoneGame(page, THREE);
+    await upToTheLastTicket(page);
+    const start = page.getByRole('button', { name: 'Start calling', exact: true });
+    await start.click();
+    await notHandedOutQuestion(page).getByRole('button', { name: 'Hand it out now', exact: true }).click();
+    // The name on the hand-out screen is a button that lists the other players (TAM-175).
+    await handOutScreen(page).getByTestId('hand-out-ticket').getByRole('button').first().click();
+    await handOutScreen(page).getByRole('button', { name: 'Asha', exact: true }).click();
+    await expect(handOutScreen(page).getByTestId('hand-out-ticket')).toHaveText(/Ticket 3\s*→\s*Asha/);
+    await start.click();
+    const q = notHandedOutQuestion(page);
+    await expect(q).toBeVisible();
+    await expect(q).toContainText(/Asha hasn['’]t got (their|her) ticket/);
+    await expect(q).toContainText(/Ticket 3/);
+    await expect(nextNumber(page).filter({ visible: true })).toHaveCount(0);
+    // And it is asked once for Asha too.
+    await q.getByRole('button', { name: 'Hand it out now', exact: true }).click();
+    await start.click();
+    await expect(nextNumber(page)).toBeVisible();
+    await openHostTickets(page);
+    await expect(hostTicket(page, 3)).toContainText('Asha');
+  });
+
   test('"Give a paper ticket": Dad plays on paper ("Dad plays on paper · Undo") and calling starts', async ({ page }) => {
     await setUpPhoneGame(page, THREE);
     await upToTheLastTicket(page);
@@ -142,7 +183,8 @@ test.describe('TAM-132 (UX list row 7): "Start calling" while a ticket waits ask
     await expect(nextNumber(page)).toBeVisible();
     await expect(page.getByText(/Dad plays on paper/).first()).toBeVisible();
     await openHostTickets(page);
-    await expect(hostTicket(page, 3)).toContainText(/paper/i);
+    // The ticket itself says "paper", not just its "Switch to paper" button, which is gone.
+    await expect.poll(() => textOutsideButtons(hostTicket(page, 3)), { message: 'ticket 3 says "paper"' }).toMatch(/paper/i);
     await expect(hostTicket(page, 3).getByRole('button', { name: /^Switch to paper/ }), 'already on paper').toHaveCount(0);
   });
 

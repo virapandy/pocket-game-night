@@ -1,9 +1,7 @@
 # Test report
-Progress (2026-10-03 11:10 local, tester): lanes A, B, C (C1/C2) and the C3 batch tested on dccc48e; tests the lanes
-broke updated to the approved rows; C2 tests written for rows 4, 7, 22, 24 (row 9 in the session tests); C3 tests pass;
-scoped mutation for the C3 batch 100%. Next: the coder fixes the 3 pattern-cue bugs below (lane A, TAM-195), then a
-release candidate. Rows built: 25 of 25 merged (1-25 in lanes and C3); rows with all their tests green: 22 of 25 (rows 1
-and 3 wait on the cue fixes; row 11's "Early Five once" too).
+Progress (2026-10-03 11:35 local, tester): step 1 done on f6f154a: tests updated for lane A's 3 cue fixes and lane C's
+row 7 "ask once" / "ask again" and row 19 History wording; TAM-058 "paper" check tightened; affected specs green locally
+(Android 77/77, iPhone 41/41, rules 520/520). Next: push, then the quick-verify run on it. Rows built: 25 of 25.
 
 Commit tested: dccc48e (app; lanes A-C at 92a84f9 plus the C3 batch)   Date: 2026-10-03
 Automation run: quick verify 37099201480 on e8c83b0 (these tests; app unchanged since dccc48e): RED. Every browser

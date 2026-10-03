@@ -316,7 +316,8 @@ test.describe('TAM-195 (UX list row 11): with the cue on, the outline is not col
     for (const n of rowOf(riya.grids.get(t2)!, 1)) await tapCell(riya.page, t2, n);
     all = await allCueText(riya.page);
     expect(all.match(/Early Five/gi) ?? [], `Early Five is said once, with 5 marks on two tickets, in "${all}"`).toHaveLength(1);
-    expect(all).toMatch(new RegExp(`Early Five filled on tickets? ${t1}\\b`, 'i'));
+    expect(all).toMatch(new RegExp(`Early Five filled on ticket ${t1}\\b`, 'i')); // the first ticket only, never "on tickets 1 and 2"
+    expect(all).not.toMatch(/on tickets\b/i);
   });
 });
 

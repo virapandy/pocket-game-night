@@ -297,6 +297,18 @@ export async function openHostTickets(host: Page) {
   await expect(host.getByTestId('host-ticket').first()).toBeVisible();
 }
 
+/**
+ * A host-ticket's own words, leaving out its buttons' names (TAM-058): "Switch to paper (Dad)" contains the word
+ * "paper", so "the ticket says paper" is read from the rest of the ticket only.
+ */
+export async function textOutsideButtons(scope: Locator): Promise<string> {
+  return scope.evaluate((el) => {
+    const copy = el.cloneNode(true) as HTMLElement;
+    copy.querySelectorAll('button, [role="button"], a').forEach((b) => b.remove());
+    return (copy.textContent ?? '').replace(/\s+/g, ' ').trim();
+  });
+}
+
 /** The game code the host shows (TAM-170): four characters, no look-alikes. */
 export async function gameCodeOf(host: Page): Promise<string> {
   const text = ((await host.getByTestId('game-code').first().textContent()) ?? '').trim();

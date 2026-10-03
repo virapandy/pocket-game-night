@@ -8,7 +8,7 @@ import { call, endGame, fromMenu, HOME, mainButton, nextNumber, payoutPeople, ty
 import {
   callUntil, cellsWith, claimRefused, claimResult, closePhones, cornersOf, countOn, currentHandOut, enterTicketNumber,
   fakeCamera, gameCodeOf, gridOf, handOutAll, newPhone, numbersOf, openHostTickets, phoneGame, playerWith, PORTRAIT, readDrawnQr,
-  phoneTicket, rowOf, scanClaim, scanClaimButton, setUpPhoneGame, showClaim, showToCamera, ticketChoice,
+  phoneTicket, rowOf, scanClaim, scanClaimButton, setUpPhoneGame, showClaim, showToCamera, textOutsideButtons, ticketChoice,
 } from './phone';
 
 test.afterEach(closePhones);
@@ -314,7 +314,9 @@ test.describe('The host\'s list of tickets', () => {
     await call(page);
     await openHostTickets(page);
     await hostTicket(page, 3).getByRole('button', { name: /^Switch to paper/ }).click();
-    await expect(hostTicket(page, 3)).toContainText(/paper/i);
+    // The ticket itself says "paper", not just its "Switch to paper" button, which is gone.
+    await expect(hostTicket(page, 3).getByRole('button', { name: /^Switch to paper/ })).toHaveCount(0);
+    await expect.poll(() => textOutsideButtons(hostTicket(page, 3)), { message: 'ticket 3 says "paper"' }).toMatch(/paper/i);
     await page.getByRole('button', { name: /^(Close|Done|Back)$/ }).first().click();
     await enterTicketNumber(page, 3, 'Early Five');
     await expect(page.getByText(/paper/i).first()).toBeVisible();
