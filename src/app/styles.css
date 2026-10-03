@@ -458,6 +458,11 @@ button, [role="button"], a { touch-action: manipulation; }
   border-radius: var(--radius);
 }
 .result-card .row { gap: 8px; }
+/* RC fix (C1), 360 × 640 with the screen-sleep tip: a tall verdict never runs over the chips or "Scan a claim".
+   The side column gives way, and the card scrolls inside itself; the chips and its own buttons keep their size. */
+.stage-side:has(> .result-card) { flex: 0 1 auto; min-height: 0; }
+.stage-side:has(> .result-card) > * { flex: none; }
+.stage-side > .result-card { flex: 0 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
 .button-strong { border-color: var(--accent); }
 .verdict { margin: 0; font-size: 1.7rem; line-height: 1.2; font-weight: 800; overflow-wrap: anywhere; }
 .verdict-ok { color: var(--ok); }
