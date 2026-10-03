@@ -41,6 +41,8 @@ export function HandOut({
 }) {
   const [picking, setPicking] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  /** UX list row 7 (TAM-132): "Start calling" while a ticket still waits asks first. */
+  const [asking, setAsking] = useState(false);
   const number = queue[Math.min(index, queue.length - 1)];
   const ticket = view.tickets.find((t) => t.number === number);
   const nameOf = (id: string | undefined) => view.players.find((p) => p.id === id)?.name ?? '';
@@ -139,10 +141,54 @@ export function HandOut({
         <button type="button" className="text-button hand-out-paper" onClick={() => onPaper(owner)}>
           Can't scan? Give a paper ticket
         </button>
-        <button type="button" className="button button-big" onClick={last ? onDone : onNext}>
+        <button
+          type="button"
+          className="button button-big"
+          onClick={() => {
+            if (!last) return onNext();
+            // UX list row 7: the last ticket's player hasn't been confirmed yet, so starting asks first.
+            if (doneLabel === 'Start calling' && waiting.size > 0) return setAsking(true);
+            onDone();
+          }}
+        >
           {last ? doneLabel : 'Next ticket'}
         </button>
       </div>
+      {asking && (
+        <div className="backdrop">
+          <div className="dialog" role="dialog" aria-modal="true" aria-labelledby="start-ask-title" data-testid="start-ask">
+            <h2 className="section-title" id="start-ask-title">
+              {nameOf(owner)} hasn't got their ticket
+            </h2>
+            <p className="note">Ticket {number} is still waiting to be handed out.</p>
+            <div className="stack-tight">
+              <button type="button" className="button" onClick={() => setAsking(false)}>
+                Hand it out now
+              </button>
+              <button
+                type="button"
+                className="button button-quiet"
+                onClick={() => {
+                  setAsking(false);
+                  onPaper(owner);
+                }}
+              >
+                Give a paper ticket
+              </button>
+              <button
+                type="button"
+                className="button button-quiet"
+                onClick={() => {
+                  setAsking(false);
+                  onDone();
+                }}
+              >
+                Start anyway
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
