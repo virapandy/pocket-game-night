@@ -302,22 +302,34 @@ export function cueTickets(fills: readonly CueFill[]): number[] {
   return lines.length ? lines : five !== undefined ? [five] : [];
 }
 
-const SHOUT = "Shout if it's right!";
+const SHOUT = 'Shout!';
 
 /**
- * The cue's one line (TAM-195, UX list row 1). One part: "Ticket 1: Early Five and Top Line filled. Shout if it's
- * right!", or, when that doesn't fit, the short line "Ticket 1: patterns filled. Shout if it's right!" with "More"
- * holding the full words (so nothing is said twice, row 11). Several tickets: the approved short wording, "Tickets 1
- * and 3: patterns filled. Shout if it's right!", with "More" always there for each ticket's prizes.
+ * The cue line's groups (UX list point a, 3 October 2026): each ticket the cue names, in ticket order, with its prizes
+ * in prize order. Early Five is named once, for the first ticket it fills (rows 11 and 3).
  */
-export function cueLine(fills: readonly CueFill[]): { line: string; short: string; more: boolean } | null {
+function cueGroups(fills: readonly CueFill[]): { ticket: number; prizes: Pattern[] }[] {
+  const five = fills.find((f) => f.pattern === 'early-five')?.ticket;
+  const groups: { ticket: number; prizes: Pattern[] }[] = [];
+  for (const f of fills) {
+    if (f.pattern === 'early-five' && f.ticket !== five) continue;
+    const g = groups.find((x) => x.ticket === f.ticket);
+    if (g) g.prizes.push(f.pattern);
+    else groups.push({ ticket: f.ticket, prizes: [f.pattern] });
+  }
+  return groups.sort((a, b) => a.ticket - b.ticket);
+}
+
+/**
+ * The cue's line (TAM-195; UX list point a, 3 October 2026), up to two lines on screen. `line` names each ticket's
+ * prizes in the short wording, "Ticket 1: Early Five, Top Line. Ticket 3: Top Line. Shout!"; `short` is the approved
+ * fallback, "Tickets 1 and 3: patterns filled. Shout!", shown with "More" only when `line` doesn't fit in two lines.
+ */
+export function cueLine(fills: readonly CueFill[]): { line: string; short: string } | null {
   if (fills.length === 0) return null;
-  const parts = cueParts(fills);
-  const tickets = cueTickets(fills);
-  const many = parts.length > 1 || parts[0]!.includes(' and ');
-  const short = `${ticketList(tickets)}: ${many ? 'patterns' : 'pattern'} filled. ${SHOUT}`;
-  if (parts.length === 1) return { line: `${parts[0]}. ${SHOUT}`, short, more: false };
-  if (tickets.length > 1) return { line: short, short, more: true };
-  // One ticket with lines, and Early Five said apart on another ticket: name the ticket, the rest under "More".
-  return { line: `${parts[0]}. ${SHOUT}`, short: `${parts[0]}. ${SHOUT}`, more: true };
+  const groups = cueGroups(fills);
+  const line = `${groups.map((g) => `Ticket ${g.ticket}: ${g.prizes.map((p) => PATTERN_NAMES[p]).join(', ')}`).join('. ')}. ${SHOUT}`;
+  const many = groups.reduce((n, g) => n + g.prizes.length, 0) > 1;
+  const short = `${ticketList(groups.map((g) => g.ticket))}: ${many ? 'patterns' : 'pattern'} filled. ${SHOUT}`;
+  return { line, short };
 }

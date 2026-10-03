@@ -354,7 +354,7 @@ export function PhoneTickets({
   const caption = landscape ? 0 : 20;
   // The caption beside each ticket in landscape, and the ticket's 2 px border on each side.
   const side = (landscape ? 20 : 0) + 4;
-  const chrome = landscape ? 104 : 190 + (cueSays ? 32 : 0);
+  const chrome = landscape ? 104 : 190 + (cueSays ? 48 : 0);
   // The height: what the layout gives the tickets once measured (each ticket's caption and 4 px of border, 8 px
   // between rows); before that, an estimate.
   const tallest =
@@ -497,9 +497,9 @@ export function PhoneTickets({
     </>
   );
 
-  // TAM-195 (rows 1a and 1): one slim line, never over a ticket and never pushing the buttons off screen; "More" when
-  // it doesn't fit.
-  const cueBox = cueSays && <CueLine line={cueSays.line} short={cueSays.short} always={cueSays.more} onMore={() => setPopup('cue')} />;
+  // TAM-195 (rows 1a and 1; point a, 3 October): up to two lines, never over a ticket and never pushing the buttons off
+  // screen; "More" only when even the short wording doesn't fit.
+  const cueBox = cueSays && <CueLine line={cueSays.line} short={cueSays.short} onMore={() => setPopup('cue')} />;
 
   // `outlined`: the claim screen (UX list row 13) outlines only the chosen prize's pattern, never the cue's.
   const ticketBox = (t: (typeof tickets)[number], cell: number, extra?: { outlined?: ReadonlySet<number>; noTap?: boolean }) => (
@@ -694,6 +694,9 @@ export function PhoneTickets({
   // ---------- The tickets (TAM-131, TAM-173, TAM-191) ----------
   const showOne = layout === 'one';
   const shown = showOne ? [current] : tickets;
+  // Point a (3 October): in landscape with an odd number of tickets side by side, the cue line takes the empty space
+  // beside the last ticket instead of squeezing in beside the buttons.
+  const cueBeside = !!cueBox && !showOne && cols === 2 && shown.length % 2 === 1;
   return (
     <main className={rootClass}>
       {header()}
@@ -731,11 +734,12 @@ export function PhoneTickets({
       )}
       <div className={`${showOne ? 'tickets tickets-one' : cols === 2 ? 'tickets tickets-two' : 'tickets'} tickets-fill`} ref={ticketsRef}>
         {shown.map((t) => ticketBox(t, showOne ? oneCell : allCell))}
+        {cueBeside && cueBox}
       </div>
       <div className="phone-actions">
         {/* The cue line takes the place of the reminder (row 1); in landscape beside the buttons, so it adds no height. */}
         {!cueBox && <p className="note listen">Listen to the anchor and mark your numbers.</p>}
-        {cueBox}
+        {!cueBeside && cueBox}
         <div className="phone-buttons">
           {tickets.length > 1 &&
             (showOne ? (
@@ -759,10 +763,11 @@ export function PhoneTickets({
 }
 
 /**
- * The cue's line (TAM-195, UX list row 1), always one line: "More" when it names several tickets, or, when the full
- * words don't fit, the short line with "More" (the full words only behind "More", so nothing is said twice: row 11).
+ * The cue's line (TAM-195; UX list point a, 3 October 2026): up to two lines. The short wording naming each ticket's
+ * prizes when it fits in two lines; otherwise the fallback ("Tickets 1 and 3: patterns filled. Shout!") with "More"
+ * holding the full words (so nothing is said twice: row 11).
  */
-function CueLine({ line, short, always, onMore }: { line: string; short: string; always: boolean; onMore: () => void }) {
+function CueLine({ line, short, onMore }: { line: string; short: string; onMore: () => void }) {
   const box = useRef<HTMLDivElement>(null);
   const text = useRef<HTMLSpanElement>(null);
   const [tooLong, setTooLong] = useState(false);
@@ -771,14 +776,35 @@ function CueLine({ line, short, always, onMore }: { line: string; short: string;
     const span = text.current;
     if (!el || !span) return;
     const read = () => {
-      // The full line's width, measured off-screen so its words are never in the page twice.
+      // The line's height at the room it would have (no "More" beside it), measured off-screen so its words are
+      // never in the page twice; it fits if it takes at most two lines.
       const style = getComputedStyle(span);
-      const ctx = document.createElement('canvas').getContext('2d');
-      if (!ctx) return setTooLong(span.scrollWidth > span.clientWidth + 1);
-      ctx.font = `${style.fontStyle} ${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
       const pad = getComputedStyle(el);
       const room = el.clientWidth - parseFloat(pad.paddingLeft) - parseFloat(pad.paddingRight);
-      setTooLong(Math.ceil(ctx.measureText(line).width) + 2 > room);
+      const probe = document.createElement('div');
+      probe.setAttribute('aria-hidden', 'true');
+      Object.assign(probe.style, {
+        position: 'absolute',
+        left: '-10000px',
+        top: '0',
+        visibility: 'hidden',
+        width: `${room}px`,
+        whiteSpace: 'normal',
+        fontStyle: style.fontStyle,
+        fontWeight: style.fontWeight,
+        fontSize: style.fontSize,
+        fontFamily: style.fontFamily,
+        lineHeight: style.lineHeight,
+        letterSpacing: style.letterSpacing,
+        wordSpacing: style.wordSpacing,
+      });
+      document.body.appendChild(probe);
+      probe.textContent = 'M';
+      const one = probe.getBoundingClientRect().height;
+      probe.textContent = line;
+      const all = probe.getBoundingClientRect().height;
+      probe.remove();
+      setTooLong(all > one * 2 + 1);
     };
     read();
     if (typeof ResizeObserver === 'undefined') return;
@@ -786,13 +812,12 @@ function CueLine({ line, short, always, onMore }: { line: string; short: string;
     ro.observe(el);
     return () => ro.disconnect();
   }, [line]);
-  const useShort = !always && tooLong;
   return (
     <div className="pattern-cue" data-testid="pattern-cue" role="status" ref={box}>
       <span className="pattern-cue-text" ref={text}>
-        {useShort ? short : line}
+        {tooLong ? short : line}
       </span>
-      {(always || useShort) && (
+      {tooLong && (
         <button type="button" className="pattern-cue-more" onClick={onMore}>
           More
         </button>

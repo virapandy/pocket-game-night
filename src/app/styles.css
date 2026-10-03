@@ -907,13 +907,16 @@ button.tcell { cursor: pointer; }
 .phone-buttons { display: flex; gap: 8px; }
 .phone-buttons > .button { flex: 1 1 0; min-width: 0; padding: 0 8px; }
 .listen { font-size: 0.9rem; text-align: center; }
-/* TAM-195 (row 1a): the cue is one slim line in the flow, never over a ticket; its size does not grow with Larger
-   text (rem), and a long line ends in "…" with "More" beside it. */
+/* TAM-195 (row 1a; point a, 3 October): the cue is a slim line in the flow, never over a ticket; up to two lines;
+   its size does not grow with Larger text (rem); when even two lines are too few, the short wording with "More". */
 .pattern-cue {
   flex: none; display: flex; align-items: center; gap: 6px; min-width: 0; padding: 4px 10px;
   font-size: 0.9rem; line-height: 1.3; font-weight: 700; color: var(--ok); background: var(--ok-bg); border-radius: 10px;
 }
-.pattern-cue-text { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pattern-cue-text {
+  flex: 1 1 auto; min-width: 0; overflow: hidden; white-space: normal;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2;
+}
 .pattern-cue-more {
   flex: none; min-height: 32px; padding: 0 6px; font: inherit; font-size: 0.9rem; line-height: 1.3; font-weight: 800;
   color: var(--ok); background: transparent; border: 0; text-decoration: underline; cursor: pointer;
@@ -923,9 +926,11 @@ button.tcell { cursor: pointer; }
 .phone-landscape .phone-bar { min-height: 40px; }
 .phone-landscape .phone-actions { flex-direction: row; align-items: center; }
 .phone-landscape .phone-actions .listen { flex: 1; text-align: left; }
-.phone-landscape .phone-buttons { flex: none; }
+.phone-landscape .phone-buttons { flex: none; margin-left: auto; }
 .phone-landscape .phone-buttons > .button { flex: none; min-height: 44px; padding: 0 14px; white-space: nowrap; }
 .phone-landscape .phone-actions .pattern-cue { flex: 1 1 0; }
+/* Point a (3 October): in landscape the cue may sit in the empty space beside the last ticket (three tickets). */
+.tickets-two > .pattern-cue { align-self: center; }
 /* Player phone, UX list row 1: the tickets take the height the bar, cue line and buttons leave (measured by the
    screen, which sizes the cells to it), so nothing is pushed off. In landscape too the cue stays one line beside the
    buttons; when it doesn't fit, "More" holds the rest. */
