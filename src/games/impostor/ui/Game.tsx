@@ -163,12 +163,20 @@ export function Game({
       if (!cur.match.state.over) keepEv(endEvening(store, cur.saved, cur.match, Date.now()));
       setEnded(true);
     };
+    // The limit is "more than 3 hours": exactly 3 hours still offers "Oops". A timer that fires before the clock has
+    // passed the limit checks again rather than ending early.
+    let t: ReturnType<typeof setTimeout> | undefined;
+    const check = () => {
+      const wait = shownAt + LEFT_HALFWAY_MS - Date.now();
+      if (wait < 0) endIt();
+      else t = setTimeout(check, Math.max(wait + 1, 250));
+    };
     const wait = shownAt + LEFT_HALFWAY_MS - Date.now();
     if (wait < 0) {
       endIt();
       return;
     }
-    const t = setTimeout(endIt, wait + 1);
+    t = setTimeout(check, wait + 1);
     return () => clearTimeout(t);
     // Once per showing of the summary.
     // eslint-disable-next-line react-hooks/exhaustive-deps
