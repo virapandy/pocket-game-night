@@ -796,13 +796,10 @@ button.tcell { cursor: pointer; }
 .phone-landscape .phone-buttons > .button { flex: none; min-height: 44px; padding: 0 14px; white-space: nowrap; }
 .phone-landscape .phone-actions .pattern-cue { flex: 1 1 0; }
 /* Player phone, UX list row 1: the tickets take the height the bar, cue line and buttons leave (measured by the
-   screen, which sizes the cells to it), so nothing is pushed off. In landscape the cue line may use two lines beside
-   the buttons, so it is never cut off; "More" shows only if even that isn't enough. */
+   screen, which sizes the cells to it), so nothing is pushed off. In landscape too the cue stays one line beside the
+   buttons; when it doesn't fit, "More" holds the rest. */
 .phone .tickets-fill { flex: 1 1 0; min-height: 0; }
 .phone .tickets-two.tickets-fill { align-content: start; }
-.phone-landscape .phone-actions .pattern-cue-text {
-  white-space: normal; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2;
-}
 .ticket-tabs { flex: none; display: flex; gap: 6px; }
 .ticket-tab { min-height: 44px; min-width: 56px; padding: 0 12px; font: inherit; font-weight: 800; color: var(--accent); background: transparent; border: 2px solid var(--border); border-radius: 10px; cursor: pointer; }
 .ticket-tab-on { color: var(--accent); background: var(--chosen-bg); border-color: var(--accent); }
