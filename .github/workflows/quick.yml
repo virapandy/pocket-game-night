@@ -1,6 +1,6 @@
 # Quick verify (docs/change-sop.md), on every push to main, aiming for about 3 minutes:
 # type-check, boundary check, build, every rule test, then the browser smoke set (tests tagged @smoke)
-# and the browser tests for the areas this push touched (tests/browser/areas.json), Android only.
+# and the browser tests for the areas changed since the last green quick run (tests/browser/areas.json), Android only.
 # Green: publishes the owner's preview link, https://virapandy.github.io/pocket-game-night/preview/.
 # The families' link is left on the last release (the families' half is rebuilt from that commit).
 # Pushes that change only docs/ or reports/ do not start a run.
@@ -15,10 +15,13 @@ on:
 
 permissions:
   contents: read
+  actions: read # to find the last green quick run (the area tests' diff base)
 
+# Queue, never cancel: a run that is nearly done is kept. GitHub keeps only the newest waiting run,
+# but each run diffs from the last green quick run, so a skipped push's areas are still covered.
 concurrency:
   group: quick-verify-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   verify:
@@ -27,7 +30,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # the push's changed files pick the area tests
+          fetch-depth: 0 # the changed files since the last green run pick the area tests
       - uses: actions/setup-node@v4
         with:
           node-version: 24
@@ -63,15 +66,26 @@ jobs:
         id: smoke
         if: hashFiles('tests/playwright.config.ts') != ''
         run: npm run test:browser -- --project=android --grep @smoke
-      # Area tests: spec files mapped from the changed paths. No map, or no match: the smoke set alone.
+      # Area tests: spec files mapped from the paths changed since the last green quick run on main
+      # (falling back to the push's own range), so a push whose run was skipped or failed is covered.
+      # No map, or no match: the smoke set alone.
       # __ALL__ (an area mapped to "*", such as package.json): every browser spec on Android.
       - name: Browser tests for the changed areas
         id: areas
         if: hashFiles('tests/playwright.config.ts') != '' && (success() || steps.smoke.outcome == 'failure')
         env:
-          BEFORE: ${{ github.event.before }}
+          GH_TOKEN: ${{ github.token }}
+          PUSH_BEFORE: ${{ github.event.before }}
           AFTER: ${{ github.sha }}
         run: |
+          BEFORE=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow quick.yml --branch main --status success \
+            --limit 1 --json headSha --jq '.[0].headSha // empty' 2>/dev/null || true)
+          if [ -n "$BEFORE" ] && git cat-file -e "$BEFORE^{commit}" 2>/dev/null && git merge-base --is-ancestor "$BEFORE" "$AFTER"; then
+            echo "Diff base: last green quick run, $BEFORE."
+          else
+            BEFORE="$PUSH_BEFORE"
+            echo "No usable green quick run found; diff base: this push's previous commit, $BEFORE."
+          fi
           specs=$(node scripts/browser-areas.mjs "$BEFORE" "$AFTER")
           if [ -z "$specs" ]; then echo "No area tests mapped for this push; smoke set only."; exit 0; fi
           if [ "$specs" = "__ALL__" ]; then
