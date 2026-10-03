@@ -812,7 +812,10 @@ button, [role="button"], a { touch-action: manipulation; }
   .hand-out .hand-out-actions { grid-column: 2; grid-row: 4; padding: 0 0 max(8px, env(safe-area-inset-bottom)); }
   .hand-out .qr { width: clamp(160px, calc(100dvh - 72px), 280px) !important; height: clamp(160px, calc(100dvh - 72px), 280px) !important; }
 }
-.ticket-code { font-size: 1.15rem; letter-spacing: 0.04em; white-space: nowrap; font-variant-numeric: tabular-nums; }
+/* RC fix (C1): the whole 20-character code shows on a 360 px phone with a wide font: it shrinks with the screen
+   width, and if it still does not fit it wraps between its groups of 4 (never inside a group). */
+.ticket-code { display: inline-block; font-size: min(1.15rem, 4.6vw); letter-spacing: 0.04em; font-variant-numeric: tabular-nums; }
+.ticket-code > span { white-space: nowrap; }
 
 /* A ticket: 3 rows of 9 square cells, --cell pixels each, no gaps (so cells never overlap, TAM-121). */
 .ticket-grid { display: grid; grid-template-columns: repeat(9, var(--cell)); grid-auto-rows: var(--cell); width: max-content; background: var(--surface); border: 2px solid var(--text); border-radius: 6px; }
