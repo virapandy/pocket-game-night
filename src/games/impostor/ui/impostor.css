@@ -1,0 +1,388 @@
+/* Impostor's screens (docs/games/impostor/ux.md; sizes from specs/impostor/README.md, Terms, and IMP-073, IMP-088).
+   Tambola's look and colours (the app's variables); everything here is scoped to `.imp`. */
+
+.imp {
+  /* Terms: body text 17 px and small lines 15 px; with Larger text (IMP-109) 21 px and 19 px. */
+  --imp-body: 17px;
+  --imp-small: 15px;
+  --imp-gutter: 16px;
+  --imp-main-h: 60px;
+  /* The space kept free above the bottom edge for the main button. */
+  --imp-foot: calc(var(--imp-main-h) + 2 * var(--imp-gutter));
+  --imp-tint: color-mix(in srgb, var(--accent) 10%, transparent);
+  font-size: var(--imp-body);
+}
+.imp.imp-larger { --imp-body: 21px; --imp-small: 19px; }
+.imp [hidden] { display: none !important; }
+
+.imp-screen {
+  box-sizing: border-box;
+  height: 100dvh;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: max(12px, env(safe-area-inset-top)) max(var(--imp-gutter), env(safe-area-inset-right)) var(--imp-foot)
+    max(var(--imp-gutter), env(safe-area-inset-left));
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow: hidden;
+}
+.imp-screen-inner { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; gap: 12px; }
+.imp-bar { flex: none; display: flex; align-items: center; gap: 8px; min-height: 48px; }
+.imp-grow { flex: 1; }
+.imp-scroll { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; display: flex; flex-direction: column; gap: 12px; padding-bottom: 8px; }
+.imp-stage { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; gap: 12px; }
+.imp-center { justify-content: center; align-items: center; text-align: center; }
+.imp p, .imp h1, .imp h2, .imp ol, .imp ul { margin: 0; }
+
+.imp-title { font-size: 1.75rem; font-weight: 800; line-height: 1.15; }
+.imp-subtitle { font-size: var(--imp-body); font-weight: 800; }
+.imp-body { font-size: var(--imp-body); line-height: 1.4; }
+.imp-small { font-size: var(--imp-small); line-height: 1.35; color: var(--muted); }
+.imp-caps { text-transform: uppercase; }
+.imp-alert { color: var(--danger); font-weight: 700; font-size: var(--imp-body); }
+.imp-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ----- Buttons (Terms) ----- */
+.imp-main {
+  position: fixed;
+  z-index: 5;
+  left: max(var(--imp-gutter), env(safe-area-inset-left));
+  right: max(var(--imp-gutter), env(safe-area-inset-right));
+  bottom: max(var(--imp-gutter), env(safe-area-inset-bottom));
+  height: var(--imp-main-h);
+  padding: 0 16px;
+  font: inherit;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--accent-text);
+  background: var(--accent);
+  border: 0;
+  border-radius: 12px;
+  cursor: pointer;
+  touch-action: manipulation;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.imp-main:disabled { opacity: 0.5; cursor: default; }
+.imp-main-inline { position: static; width: 100%; }
+.imp-quiet {
+  min-height: 48px;
+  padding: 0 16px;
+  font: inherit;
+  font-weight: 700;
+  color: var(--accent);
+  background: transparent;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.imp-quiet:disabled { opacity: 0.5; cursor: default; }
+.imp-option {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 48px;
+  padding: 4px 8px;
+  font: inherit;
+  font-size: var(--imp-body);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--text);
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+.imp-selected { color: var(--accent); background: var(--imp-tint); border-color: var(--accent); }
+.imp-icon {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  font: inherit;
+  color: var(--accent);
+  background: transparent;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+}
+.imp-icon:disabled { opacity: 0.5; cursor: default; }
+.imp-chip {
+  min-height: 44px;
+  padding: 0 14px;
+  font: inherit;
+  font-weight: 700;
+  color: var(--text);
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 22px;
+  cursor: pointer;
+}
+.imp-row-button {
+  min-height: 48px;
+  padding: 0 4px;
+  text-align: left;
+  font: inherit;
+  font-weight: 700;
+  color: var(--accent);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+.imp-menu-button {
+  min-height: 48px;
+  padding: 0 12px;
+  font: inherit;
+  font-weight: 700;
+  color: var(--accent);
+  background: transparent;
+  border: 0;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.imp-practice {
+  padding: 4px 12px;
+  font-weight: 800;
+  font-size: var(--imp-small);
+  color: var(--accent);
+  border: 2px solid var(--accent);
+  border-radius: 16px;
+}
+
+/* ----- Switches ----- */
+.imp-switch {
+  width: 100%;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 4px 0;
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
+  color: var(--text);
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+}
+.imp-switch:disabled { opacity: 0.5; cursor: default; }
+.imp-switch-track { flex: none; position: relative; width: 48px; height: 28px; background: var(--disabled-bg); border-radius: 14px; }
+.imp-switch-thumb { position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; background: var(--surface); border-radius: 50%; }
+.imp-switch-on { background: var(--accent); }
+.imp-switch-on .imp-switch-thumb { left: 23px; }
+.imp-switches { display: flex; flex-direction: column; }
+.imp-settings { display: flex; flex-direction: column; gap: 8px; }
+.imp-skipped { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.imp-skipped-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+
+/* ----- Toasts, dialogs, sheets, the menu ----- */
+.imp-toast {
+  position: fixed;
+  z-index: 6;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(var(--imp-foot) - 4px);
+  max-width: calc(100vw - 32px);
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 14px;
+  color: var(--toast-text);
+  background: var(--toast-bg);
+  border-radius: 22px;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.18);
+  white-space: nowrap;
+}
+.imp-toast-button {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0 6px;
+  font: inherit;
+  font-weight: 800;
+  color: var(--toast-button);
+  background: transparent;
+  border: 0;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.imp-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(28, 27, 26, 0.55);
+}
+.imp-dialog {
+  width: min(100%, 460px);
+  max-height: calc(100dvh - 32px);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  background: var(--surface);
+  border-radius: 16px;
+}
+.imp-dialog-text { font-size: var(--imp-body); font-weight: 700; line-height: 1.4; }
+.imp-dialog-buttons { display: flex; flex-direction: column; gap: 8px; }
+.imp-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  box-sizing: border-box;
+  padding: max(16px, env(safe-area-inset-top)) var(--imp-gutter) var(--imp-foot);
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+}
+.imp-sheet-body { flex: 1 1 auto; min-height: 0; max-width: 640px; width: 100%; margin: 0 auto; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+.imp-rules { display: flex; flex-direction: column; gap: 10px; font-size: var(--imp-body); line-height: 1.4; }
+.imp-menu-backdrop { position: fixed; inset: 0; z-index: 25; }
+.imp-menu {
+  position: absolute;
+  top: max(60px, calc(env(safe-area-inset-top) + 60px));
+  right: max(12px, env(safe-area-inset-right));
+  width: min(280px, calc(100vw - 24px));
+  display: flex;
+  flex-direction: column;
+  padding: 6px;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+.imp-menu-item {
+  min-height: 48px;
+  padding: 0 14px;
+  text-align: left;
+  font: inherit;
+  font-weight: 700;
+  color: var(--text);
+  background: transparent;
+  border: 0;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.imp-menu-item:hover, .imp-menu-item:focus-visible { background: var(--hover); }
+/* IMP-018: while the page is hidden, an opaque cover over everything. */
+.imp-cover { position: fixed; inset: 0; z-index: 1000; background: var(--bg); }
+
+/* ----- Who's playing? (IMP-003) ----- */
+.imp-players { display: flex; flex-direction: column; gap: 10px; }
+.imp-player-list { list-style: none; padding: 0; display: flex; flex-direction: column; }
+.imp-player-row { min-height: 56px; display: flex; align-items: center; gap: 6px; border-bottom: 1px solid var(--border); }
+.imp-player-num { flex: none; width: 24px; font-weight: 800; color: var(--muted); }
+.imp-player-name { flex: 1; min-width: 0; font-weight: 700; overflow-wrap: anywhere; }
+.imp-add { display: flex; gap: 8px; }
+.imp-input {
+  flex: 1;
+  min-width: 0;
+  min-height: 48px;
+  padding: 0 12px;
+  font: inherit;
+  color: var(--text);
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+}
+.imp-add-button { flex: none; }
+.imp-past { display: flex; flex-wrap: wrap; gap: 8px; }
+.imp-clear { align-self: flex-start; }
+
+/* ----- How do you want to play? (IMP-005, IMP-088) ----- */
+.imp-groups { display: flex; flex-direction: column; gap: 10px; }
+.imp-group-wrap { display: flex; flex-direction: column; gap: 4px; }
+.imp-group { display: grid; grid-template-columns: 64px 1fr 1fr; gap: 8px; align-items: center; }
+.imp-group-label { font-weight: 800; }
+.imp-option-line { padding-left: 72px; }
+.imp-tick { font-weight: 800; }
+@media (max-width: 340px) {
+  .imp-option { font-size: var(--imp-small); }
+}
+@media (max-height: 640px) and (orientation: portrait) {
+  .imp-setup .imp-title { font-size: 1.35rem; }
+  .imp-setup .imp-scroll { gap: 8px; }
+  .imp-groups { gap: 6px; }
+  .imp-setup .imp-bar { min-height: 44px; }
+}
+
+/* ----- Read this aloud (IMP-070) ----- */
+.imp-read { padding-left: 24px; display: flex; flex-direction: column; gap: 10px; font-size: var(--imp-body); line-height: 1.4; }
+
+/* ----- The deal (IMP-010 to IMP-014) ----- */
+.imp-pass { font-size: 1.35rem; font-weight: 700; }
+.imp-welcome { font-size: 1.35rem; font-weight: 800; }
+.imp-room-title { font-size: 28px; font-weight: 800; line-height: 1.2; }
+/* IMP-073: 48 px, shrunk to fit one line (to 32 px, then wrapping) by the screen. */
+.imp-pass-name { width: 100%; font-size: 48px; font-weight: 800; line-height: 1.1; white-space: nowrap; overflow-wrap: anywhere; }
+.imp-turn-name { flex: none; text-align: center; font-size: 1.75rem; font-weight: 800; line-height: 1.15; overflow-wrap: anywhere; }
+.imp-hold { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; gap: 12px; }
+.imp-block-area { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; justify-content: flex-end; }
+.imp-block { display: flex; flex-direction: column; gap: 4px; text-align: center; }
+.imp-private-word { font-size: 36px; font-weight: 800; line-height: 1.15; overflow-wrap: anywhere; color: var(--text); }
+.imp-block-long .imp-private-word, .imp-larger .imp-private-word { font-size: 30px; }
+.imp-line5 { min-height: 1.35em; }
+.imp-pad-area { flex: none; display: flex; flex-direction: column; gap: 8px; }
+.imp-pad {
+  min-height: 160px;
+  padding: 12px;
+  font: inherit;
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--accent);
+  background: var(--surface);
+  border: 3px solid var(--accent);
+  border-radius: 20px;
+  cursor: pointer;
+  touch-action: none;
+}
+/* IMP-013: nothing on the pad or the block can be selected, copied, looked up or dragged. */
+.imp-pad, .imp-pad *, .imp-block, .imp-block * {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-user-drag: none;
+}
+@media (max-height: 640px) and (orientation: portrait) {
+  .imp-pad { min-height: 120px; }
+  .imp-room .imp-bar { min-height: 44px; }
+}
+
+/* ----- The clues (IMP-016, IMP-020) ----- */
+.imp-clues { justify-content: center; align-items: center; text-align: center; gap: 8px; }
+.imp-starter { width: 100%; font-size: 56px; font-weight: 800; line-height: 1.1; white-space: nowrap; overflow-wrap: anywhere; }
+.imp-starts { font-size: 1.35rem; font-weight: 700; }
+.imp-clue-order { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+
+/* ----- Landscape (812 × 375): the main button bottom right, 358 px wide; block left, pad right (IMP-010, IMP-081) ----- */
+@media (orientation: landscape) and (max-height: 600px) {
+  .imp-screen { max-width: none; padding-top: 8px; gap: 6px; }
+  .imp-main { left: auto; width: 358px; }
+  .imp-main-inline { width: 100%; }
+  .imp-bar { min-height: 44px; }
+  .imp-groups { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; }
+  .imp-hold { flex-direction: row; gap: 16px; }
+  .imp-block-area { justify-content: center; }
+  .imp-pad-area { width: 358px; align-self: stretch; margin-left: auto; }
+  .imp-pad { flex: 1 1 auto; min-height: 64px; }
+  .imp-turn-name { font-size: 1.35rem; text-align: left; }
+  .imp-starter { font-size: 40px; }
+}
