@@ -70,7 +70,8 @@ updated only by a release. (Build to set up; until then the single link updates 
    needed where a picture can't show the rule (for example "no sideways scrolling").
 3. **One small change at a time.** Inside a lane, each UX row (or part of one) is its own commit and is merged on its
    own, so a failure points at one change.
-4. **Parallel coders, runtime rules.** Each working copy runs the app on its own port with its own settings file;
+4. **Parallel coders, runtime rules.** Each working copy runs the app on its own port with its own settings file
+   (`DEV_PORT` and `PREVIEW_PORT` in that copy's gitignored `.env.local`; defaults 5173 and 4173; lanes A-C use 518x/418x);
    never `git stash` in shared working copies; quick verify after **every** merge, because changes that merge cleanly
    can still break each other.
 5. **AI reviewer before merge.** A read-only reviewer helper checks each change against its UX row, the UX guidelines
