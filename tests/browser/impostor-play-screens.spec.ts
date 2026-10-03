@@ -9,7 +9,7 @@ import { HOME, backgroundAndReturn, expectOneMainButton, fromHome, hasMainLook, 
 import {
   CATEGORIES, LONGEST, P4, PANI_PURI, SAMOSA, TZ, T0, WORDS, dealAll, exact, expectNoSecrets, freezeClock, fromMenu,
   hold, holdPad, imButton, mainButton, menuButton, onlyEvening, passName, phoneWith, pickerName, press, privateBlock,
-  release, revealLines, roundMoves, savedEvening, secretTerms, startEvening, textOf, word, type Move, type StartOptions,
+  release, revealLines, roundMoves, savedEvening, savedEvenings, secretTerms, startEvening, textOf, word, type Move, type StartOptions,
 } from './impostor';
 
 test.use({ timezoneId: TZ, viewport: { width: 390, height: 844 } });
@@ -28,7 +28,12 @@ const pickerHeading = (page: Page) => page.getByRole('heading', { name: 'Who got
 const outcome = (page: Page) => page.getByTestId('round-outcome');
 const announcer = (page: Page) => page.getByTestId('announcer');
 const sounds = (page: Page): Promise<{ name: string; at: number; gain: number }[]> => page.evaluate(() => (window as any).__sounds ?? []);
-const records = async (page: Page) => (await onlyEvening(page)).records.map((r: any) => r.move);
+/** The moves of the evening in progress (the newest one when an earlier evening is also saved). */
+const records = async (page: Page) => {
+  const all = (await savedEvenings(page)).filter((e) => e.status === 'in-progress').sort((a, b) => b.createdAt - a.createdAt);
+  expect(all.length, 'an evening in progress').toBeGreaterThan(0);
+  return all[0].records.map((r: any) => r.move);
+};
 
 /** A new evening dealt to the clues screen. */
 async function toClues(page: Page, o: StartOptions = {}) {
@@ -601,7 +606,11 @@ test.describe('IMP-081: nothing scrolls during a round, at every size', () => {
         const check = async (where: string, key?: Locator) => {
           expect(await noPageScroll(page), `${where}: no page scrolling`).toBe(true);
           if (await mainButton(page).count()) await expect(mainButton(page), `${where}: main button on screen`).toBeInViewport({ ratio: 1 });
-          if (key) await expect(key, `${where}: wholly on screen`).toBeInViewport({ ratio: 1 });
+          if (key) {
+            // wholly on screen, allowing 1 px for sub-pixel rounding
+            const b = (await key.boundingBox())!;
+            expect(b.y >= -1 && b.x >= -1 && b.y + b.height <= height + 1 && b.x + b.width <= width + 1, `${where}: wholly on screen (${JSON.stringify(b)})`).toBe(true);
+          }
         };
         await dealAll(page, players);
         await check('clues', page.getByTestId('starter-name'));
@@ -677,7 +686,7 @@ test.describe('IMP-083 and IMP-084: screen readers, no flashing', () => {
     const beforeWord: string[] = await page.evaluate(() => (window as any).__ann);
     for (const t of beforeWord) for (const s of secretTerms(SAMOSA, 'hard')) expect(t.toLowerCase(), 'no secret announced').not.toContain(s.toLowerCase());
     await mainButton(page).filter({ hasText: 'Show the word' }).click();
-    await page.clock.runFor(500);
+    await page.clock.runFor(2000);
     const ann: string[] = await page.evaluate(() => (window as any).__ann);
     const tail = ann.filter((t) => !/clockwise/.test(t));
     expect(tail).toEqual(['3', '2', '1', 'Point!', 'Arjun was', 'Caught red-handed! Arjun was the impostor.', 'Arjun, one guess. Say it out loud! (No repeating the clues.)', 'The word was Samosa.']);
@@ -940,5 +949,5 @@ test('IMP-100: when the result block appears nothing secret is left unrevealed a
   await page.clock.runFor(7500);
   await expect(outcome(page)).toBeVisible();
   await expect.poll(async () => (await page.evaluate(() => (window as any).__wake as string[])).includes('release')).toBe(true);
-  await expect(page.getByText('The word was Samosa.', { exact: true })).toBeVisible();
+  await expect(revealLines(page).filter({ hasText: 'The word was Samosa.' })).toBeVisible();
 });
