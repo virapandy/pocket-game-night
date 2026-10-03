@@ -3,7 +3,8 @@ Progress (2026-10-03, tester, the whole of Impostor on main at c857400): rule te
 phones, on GitHub (the owner's Mac was under macOS system load, about 140, and could not start browsers): 176 Impostor
 tests per phone (49 new in `impostor-play-screens.spec.ts`); every expected-to-fail mark is off except one open question
 (IMP-075 "left halfway" menu). Real failures: IMP-102 (Tambola names after Impostor), IMP-081 hold screen at 320 and
-360, IMP-088 at 320, IMP-003 "← Back" list. Tambola: every Tambola test passes on both phones in the complete run,
+360, IMP-088 at 320, IMP-003 "← Back" list, IMP-083 (word line not announced), IMP-034 in Hard + Timer (escaped reveal
+stops), IMP-099/101 (summary's "Oops" gone at exactly 3 hours). Tambola: every Tambola test passes on both phones in the complete run,
 except 4 Android screenshot comparisons that changed where last round's flagged screen problems were fixed.
 
 Commit tested: c857400 (app), tests at this push   Date: 2026-10-03
@@ -12,16 +13,29 @@ skipped; iPhone 518 passed, 8 failed, 31 skipped (screenshot tests are Android o
 failures below, the announcer test and IMP-006 / IMP-099 test faults fixed in this push, and the 4 Android screenshots.
 Quick verify 37133348530 (tests 385df28, Android): 348 passed, 8 failed (same list, Android). Quick verify on this
 report's push is named in the tester's hand-back.
-Result: RED (5 real failures, below)
+Result: RED (8 real failures, below)
 
 ## Layers (c857400)
 | Layer | Tests | Passing | Failing |
 |---|---|---|---|
 | Rule tests (`npm test`, local) | 627 | 627 | 0 |
-| Impostor browser, per phone (complete run 37133348919, Android and iPhone) | 176 | 165 | 8: 7 real (IMP-081 ×4, IMP-088, IMP-003, IMP-102) and the IMP-083 announcer test fault; plus 3 marked tests failing as marked (IMP-006 and IMP-099 summary 3 h, test faults fixed and unmarked here; IMP-075 open question) |
+| Impostor browser, per phone (complete run 37133348919, Android and iPhone; confirmed by quick verify 37134265228 on this report's tests) | 176 | 165 | 10 real (IMP-081 ×4, IMP-088, IMP-003, IMP-102, IMP-083, IMP-034 via the IMP-006 test, IMP-099 summary 3 h) + 1 marked (IMP-075 open question) |
 | Tambola and platform browser tests (same run) | 381 per phone (Android 1 skipped; iPhone 31 skipped: screenshots and Android-only tests) | all run, except 4 Android screenshots | 4 screenshots (not behaviour) |
 
 ## Failing (real bugs only)
+- IMP-083, impostor-play-screens.spec.ts "the announcer gets the countdown and each reveal line" (iPhone in both
+  complete runs, Android in 3 of 4 GitHub runs): after "Show the word", "The word was Samosa." shows as a reveal line
+  but is never put in `announcer`; everything before it is announced in order. Expected: every reveal line announced
+  as it appears.
+- IMP-034 (found by the IMP-006 test, impostor-round-screens.spec.ts, Android quick verify 37134265228 and the complete
+  run): Hard mode, Timer, "Vote now" before 0:00, then "Reveal Riya" (crew): at 7.5 s the screen still shows only "Riya
+  was crew!" and "The impostor was Arjun. Escaped!", with a "··· Menu" button; no "The word was …" and no result block.
+  Expected: the word at 5.5 s and "Arjun escaped!" with "Next round" at 7.0 s (as it does in Easy, Free flow). IMP-006
+  itself is therefore not checked yet.
+- IMP-099 / IMP-101, impostor-saved-evenings.spec.ts "the summary's 3 hours" (Android; clock held exactly at
+  summaryShownAt + 3 h): the summary opens without "Oops, keep playing". Expected: still offered at exactly 3 hours
+  (limits are "more than"), gone 1 ms later. (The round's last move was 3 h 5 min earlier; IMP-099 says the round's
+  3 hours are not used once summaryShownAt is set.)
 - IMP-102, impostor-play-screens.spec.ts "Play something else → What shall we play?; Tambola's setup arrives with
   tonight's names" (both phones): after an Impostor evening with Riya, Arjun, Meena, Kabir and "Play something else",
   Tambola → New game → Paper tickets → Next shows "Name of player 1" empty (placeholder "Player 1"). Expected: Riya,
@@ -42,17 +56,20 @@ Result: RED (5 real failures, below)
 Removed on c857400 (pass on both phones): 38 marks (quick verify 37130708905 and complete run 37133348919): privacy
 IMP-013 ×2, 053, 031/033; saved evenings IMP-037, 091 ×7, 092 ×2, 093, 094 ×2 (096 fixture included), 095, 097, 098 ×2;
 scoring IMP-035, 040–044 (14); setup IMP-071 after the practice result; round screens IMP-075 result menu, IMP-087
-release. In this push also IMP-006 and IMP-099 summary 3 h (test faults fixed; quick verify on this push confirms).
+release. Also IMP-006 and IMP-099 summary 3 h (test faults fixed): they now fail on real bugs (above), unmarked.
 Still marked: 1 per phone.
 | File | Test | Why |
 |---|---|---|
 | impostor-round-screens.spec.ts | IMP-075 the "left halfway" screen has the between-rounds menu | open question for the product owner (below); fails only on "Change how we play" |
 
 ## Tests changed (test faults; no assertion loosened)
-- IMP-083 announcer (new): the clock jumped 6 s at once, so the screen could skip drawing one announcement ("3" in one
-  run, "The word was Samosa." in another). It now steps one moment at a time, as the passing IMP-030 test does.
+- IMP-083 announcer (new): the clock jumped 6 s at once, so the screen could skip drawing one announcement ("3" went
+  missing once). It now steps one moment at a time, as the passing IMP-030 test does; the word line is still missing
+  (real, above).
 - IMP-006 (written last round, marked): waited 4 s after "Reveal Riya"; an escaped reveal reaches its result at 7 s.
-- IMP-099 summary 3 h: the same real-time drift as last round's exact-3-hours test; `fixed: true` now.
+  Now 7.5 s; the reveal still stops (real, above).
+- IMP-099 summary 3 h: the same real-time drift as last round's exact-3-hours test; `fixed: true` now; still fails
+  (real, above).
 - New file fixes before any verdict: IMP-052 looked up "the only saved evening" while an earlier evening is saved too;
   IMP-100 matched the word line twice (the announcer has it too); IMP-081 play screens allow 1 px of sub-pixel rounding.
 
