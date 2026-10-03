@@ -991,6 +991,15 @@ button.tcell { cursor: pointer; }
 .quick-tick { position: absolute; top: 1px; right: 2px; font-size: 14px; line-height: 1; pointer-events: none; }
 .quick-n { display: inline-block; font-variant-numeric: tabular-nums; }
 .quick-key-on .quick-n { transform: translate(-3px, 4px); }
+/* N4 (C1): on small keys (about 30 px: a short portrait phone such as 360 x 640, and landscape) a 14 px ✓ and a
+   17 px number cannot both fit, so there the ✓ shrinks to 11 px (small keys only), the number to 15 px, and the
+   number moves further left and down: the ✓ keeps the top-right corner and never touches the digits. */
+@media (orientation: portrait) and (max-height: 700px) {
+  .quick-screen .quick-tick { top: 1px; right: 1px; font-size: 11px; }
+  .quick-screen .quick-key-on .quick-n { font-size: 15px; transform: translate(-4px, 5px); }
+}
+.phone-landscape.quick-screen .quick-tick { top: 1px; right: 1px; font-size: 11px; }
+.phone-landscape.quick-screen .quick-key-on .quick-n { font-size: 15px; transform: translate(-5px, 5px); }
 /* RC fix (C1, round 2): on a short portrait phone (360 x 640) the whole pad, the thumbnails, the cue line and
    "Show claim" fit without scrolling: the screen is exactly the phone's height and the keys give up height (44 px
    down to 28 px) instead of pushing the rest off. The pad needs its own min-height: a flex item's default
