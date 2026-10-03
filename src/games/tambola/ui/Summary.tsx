@@ -115,7 +115,7 @@ function Settle({ payouts }: { payouts: readonly Payout[] }) {
     <div className="stack-tight">
       {/* PLT-301, guideline 17a: "Settle with host" has the main look until a tab is opened; an opened tab shows an
           outline, a ✓ and a tint, never the main look. */}
-      <div className="row">
+      <div className="row settle-tabs">
         <button
           type="button"
           className={shown === null ? 'button grow settle-tab' : shown === 'host' ? 'button button-quiet grow settle-tab pick-on' : 'button button-quiet grow settle-tab'}

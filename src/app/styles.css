@@ -1191,6 +1191,9 @@ button.tcell { cursor: pointer; }
   .over-screen .summary .row .button { padding: 0 6px; font-size: 0.9rem; }
   .over-screen > .bottom-actions { padding-bottom: max(12px, env(safe-area-inset-bottom)); box-shadow: 0 -10px 12px -10px rgba(0, 0, 0, 0.3); }
   .over-screen > .bottom-actions .button { min-height: 52px; padding: 0 8px; font-size: 1rem; white-space: nowrap; }
+  /* Polish (C1): "Settle with players" fits whole inside its button at 360 px (it lost its last letter at 0.9rem). */
+  .over-screen .summary .settle-tabs { gap: 8px; }
+  .over-screen .summary .settle-tabs .button { padding: 0 4px; font-size: 0.8rem; }
 }
 /* RC fix (C1), payouts in landscape (812 × 375): "Session tally" and "Play again" stand on the right, one above the
    other, so the payouts get the screen's full height on the left instead of a sliver above the buttons. */
