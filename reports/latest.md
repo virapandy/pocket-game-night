@@ -1,4 +1,9 @@
 # Test report
+Progress (2026-10-03, tester, next UX list after 1.1.0, on main at 0f54b99 with tests e5fb4a7): quick verify on
+0f54b99 (run 37116779688) red only because it ran the previous tests (old hand-out question); on e5fb4a7 (run
+37116782570) 3 of 357 browser tests red, all test faults, fixed and run locally on both phones. 26 Linux and 24 Mac
+screenshot references replaced (Screenshots run 37116796764). Three screen problems for the coder (below).
+
 Progress (2026-10-03, tester, Impostor step 1: specs and C3 tests first, on main at e5fb4a7): `specs/impostor/` added,
 copied unchanged from `docs/games/impostor/scenarios.md` v2.2 (README with Terms, Canonical strings and Test hooks;
 01-setup.md to 11-after-the-game.md and 12-later.md; 91 scenarios, statuses kept "approved, owner, 2026-10-03").
@@ -15,71 +20,82 @@ is not there yet). Three questions for the product owner in `docs/test-questions
 after "Vote now", IMP-099 summary left over 3 hours). Request for the Build workspace: IMP-064's release-build half can
 only be seen on a `--mode release` build; the rule test covers `readTestSeeds(raw, true)`.
 
-Progress (2026-10-03, tester, release-candidate fix round 3, last check before the release freeze): pulled main at
-e6fc91a (85b9cc1, "quick mark thumbnails stay on one row at 360", plus a docs-only Impostor commit on top). New Linux
-reference from Screenshots run 37111322622 on main (green); the Mac picture regenerated locally. The quick mark problem
-at 360 × 640 is fixed: "Show claim" is wholly on screen. No test needed changing.
-
-Commit tested: 85b9cc1 (main at e6fc91a; the later commit changes only docs)   Date: 2026-10-03
-Automation run: Screenshots run 37111322622 on e6fc91a, green (all 24 screenshot tests, 57 pictures per machine).
-Quick verify on this report's own push is named in the tester's hand-back to the orchestrator (one push per round, so
-it cannot be written into this file). Last complete-layer runs: round 2 below.
-Result: GREEN (every test run this round passed; no layout problem left in the pictures).
+Commit tested: 0f54b99 (app), tests at e5fb4a7 plus this round's fixes   Date: 2026-10-03
+Automation runs: quick verify 37116779688 on 0f54b99 (red: the old tests, see Flaky or setup problems); quick verify
+37116782570 on e5fb4a7 (red: 3 test faults, fixed here); Screenshots run 37116796764 on e5fb4a7 (green, pictures taken).
+Quick verify on this report's own push is named in the tester's hand-back to the orchestrator (one push per round).
+Result: GREEN for the tests (no behaviour scenario fails once the 3 test faults are fixed); 3 screen problems flagged in
+the pictures for the coder (below), none covered by a failing test.
 
 ## Layers this round (owner's Mac: `caffeinate -i taskpolicy -b`, at most 3 workers)
+Impostor files in this clone (untracked, another chat's work) were left out of every run and of the commit.
 | Layer | Tests run | Passing | Failing |
 |---|---|---|---|
-| Browser, Android + iPhone: phone-tickets, TAM-192 (quick mark) | 10 | 10 | 0 |
-| Screenshots, Linux (Screenshots run 37111322622 on e6fc91a) | 24 tests, 57 pictures | 24 | 0 (1 picture changed: player-quick-mark-360x640) |
-| Screenshots, Mac (player test only, `SCREENS_NEW=1 --update-snapshots`) | 3 tests (one per size), 18 pictures | 3 | 0 (the same 1 picture changed) |
-
-Rule tests were not rerun locally this round (the only code change is one screen file); quick verify runs all of them
-on the push. Round 2 (9cb6133): rule tests 520 of 520; Android 207 of 208 and iPhone 131 of 132 (1 skipped each, as
-before), all passing.
+| Rule tests (`npm test`, Impostor excluded) | 520 | 520 | 0 |
+| Browser, quick verify 37116782570 on e5fb4a7 (Every browser test, 2 shards) | 357 | 353 (1 skipped, as before) | 3, all test faults (below) |
+| Browser, local after the fixes, Android + iPhone: pattern-cue.spec.ts | 24 | 24 | 0 |
+| Browser, local after the fixes, Android + iPhone: phone-claims.spec.ts | 50 | 50 | 0 |
+| Screenshots, Linux (Screenshots run 37116796764) | 24 tests, 57 pictures | taken | 26 pictures changed, references replaced |
+| Screenshots, Mac (`--update-snapshots=changed`) | 24 tests, 57 pictures | 24 | 24 pictures changed, references replaced |
 
 ## Failing (real bugs only)
-- None.
-- Fixed this round: `player-quick-mark-360x640` (row 3). On Linux and Mac the three ticket pictures sit on one row
-  under the pad, and "Show claim" is whole on screen (button from about 584 to 631 px of 640). Keys measure about
-  30 × 32 px (at least 28). The other 56 Linux pictures are byte-for-byte unchanged. The screenshot set has no
-  375 × 812 portrait size (only 360 × 640, 390 × 844 and 812 × 375 landscape), so 375 is covered by the TAM-192 test
-  only (keys at least 44 px tall on 375 × 812 and 390 × 844, passing on both phones).
+No scenario test fails. Three screen problems seen in the pictures (polish rows of the next UX list; no test covers
+the exact look), for the coder:
+- Settle buttons at 360 (polish, TAM-181/TAM-199 screen): "Settle with players" is now on one line but its last
+  letter is cut off by the button's edge ("Settle with player"). Expected: the whole label inside the button.
+  Picture: `host-game-over-payouts-360x640-android-linux.png`.
+- N4, quick mark ✓ (TAM-192 screen) at 360 × 640: the ✓ sits over the second digit of every marked key (23, 30, 52, 61,
+  74), so the number is partly crossed out. Expected: the ✓ in the key's corner, clear of the number, as it now is at
+  390 × 844. At 812 × 375 it just touches the digit. Picture: `player-quick-mark-360x640-android-linux.png`.
+- Point b, verdict buttons (TAM-174 screen) at 812 × 375: "Undo claim" and "Done" are pinned but their bottom edge is
+  cut off by the card's bottom; the "Ticket 1 · checked from your copy" line no longer shows. Expected: both buttons
+  whole. Picture: `host-verdict-proof-812x375-android-linux.png`.
 
-## Tests changed
-- None. Only the reference picture `player-quick-mark-360x640` (Linux and Mac) was replaced with the picture of 85b9cc1.
-  (Round 2: 13 Linux and 13 Mac pictures replaced with those of 9cb6133.)
+## Tests changed (test faults; no assertion loosened)
+- `pattern-cue.spec.ts`, TAM-195 point a "when even the short words need a third line": the test's case (two tickets,
+  three prizes, 320 × 568, Larger text) fits in two lines on the app ("Ticket 1: Early Five, Top Line. Ticket 3: Top
+  Line. Shout!", Larger text on, checked), so the app rightly kept the full words. The case now fills the top and
+  middle rows of tickets 1 and 3 (five prizes), which does need a third line; the same checks: "Tickets 1 and 3: patterns
+  filled. Shout!", "More", at most two lines, "More" keeps the full words, Early Five said once.
+- `pattern-cue.spec.ts`, the line counter: it counted "More", sitting beside the two message lines and centred between
+  them, as a third line. It now counts the message's lines, and still counts "More" as a line if it sits above or
+  below them.
+- `phone-claims.spec.ts`, N1 (TAM-058, TAM-198): (1) putting a refusal away tapped the first "Close" on the screen,
+  which is the prize chip's Close (it closes the prize); it now taps the refusal's own Close (the refusal does have
+  its own, plus "Try again"). (2) After "Add another winner", Riya's accepted win stays on screen (it waits to be
+  closed); the check "no result shown" now checks that this result is unchanged and does not name Dad.
 
 ## Screenshot comparison (`tests/browser/screens.spec.ts`, tag `@screens`)
-Android phone, 360 × 640, 390 × 844 and 812 × 375; 19 screens, 57 pictures per machine. References: Linux
-(`-android-linux.png`, from Screenshots run 37111322622 on e6fc91a, what the complete run compares against) and Mac
-(`-android-darwin.png`, regenerated locally). Both unapproved until the product owner or UX designer checks them.
+Android phone, 360 × 640, 390 × 844 and 812 × 375; 19 screens, 57 pictures per machine. References: Linux from
+Screenshots run 37116796764 on e5fb4a7 (app 0f54b99), Mac regenerated locally. Both unapproved until the product owner
+or UX designer checks them.
 
-## Screenshots to approve (rc-2026-10-03, pictures of 85b9cc1)
+## Screenshots to approve (next UX list after 1.1.0, pictures of 0f54b99)
 Folder: `tests/browser/screens.spec.ts-snapshots/`, names `<screen>-<size>-android-linux.png` (Mac: `-darwin`).
-Pink boxes are the test's covers over QR codes; the Undo bar after a call shows as an empty bar. "Before" is the
-tester's first look at 882fb03; "Now" is 85b9cc1 (round 3; only quick mark at 360 changed since round 2's 9cb6133).
+Pink boxes are the test's covers over QR codes. "Before" is 1.1.0 (85b9cc1); "Now" is 0f54b99. The 1.1.0 release review
+approved 16 of 19 and flagged host-verdict-proof, player-tickets-cue and player-quick-mark.
 
-| Screen | Rows | Before | Now | Approve / Flag |
+| Screen | Items | Before (1.1.0) | Now (0f54b99) | Approve / Flag |
 |---|---|---|---|---|
-| host-ticket-type | 11, 1 | 360, 812: title and question half hidden under the Cancel bar | Fixed (round 1), unchanged | |
-| host-prizes | 9, 19 | 812: list squeezed to a sliver; 360: "+ Bottom Line" cut, "Remove" touching the box edge | Fixed. 812: title and pot line beside Back, all three prizes and all four add buttons whole, "Remove" inside its box, Confirm on screen. 360 and 390: fine (polish, as before: at 360 the prize names wrap to two lines, and the session line ends "Saturday 3 O…") | |
-| host-hand-out | 10, 19, 25 | 812: QR over "Can't scan?" and "Next ticket"; 360: lines clipped, typed code and "0 of 3 handed out" off screen | Fixed. 360 (Linux font): the whole code "8XM2-ETZD-PSXS-CM3F-N42K" on one line. 812: QR about 280 px (well above 170), nothing overlaps. 390 fine | |
-| host-not-handed-out-question | 7 | test cover hid the pop-up's words | Fixed (test); pictures changed only behind the pop-up (typed code) | |
-| host-plays-on-paper | 8 | fine; polish: "Repeat · Another rhyme" and empty "Last" before the first call | Header now one line ("Game Z9QB"); polish unchanged | |
-| host-calling | 11, 16, 25 | 360: big number's top cut under the header | Fixed: at 360 the header shows "3 of 90 called / Game Z9QB" on two short lines, clear of the number; 390 and 812 unchanged | |
-| host-room-view | 25 | 812: "Last" over the rhyme, tiles cut | Fixed (round 1), unchanged | |
-| host-record-a-win | 5 | 360: test cover over Back and Cancel | Fixed (test), unchanged | |
-| host-game-over-payouts | 14, 22, 5 | 812: list a sliver; 360: Riya's net cut, Home/Report wrap | Fixed. 360: no lone "·"; Riya's whole row (name, "paid ₹50 · won ₹30 · handed back ₹40", "net: gets ₹20") above the fold. Polish as before: "Settle with players" wraps to 2 lines | |
-| host-verdict-proof | 24, 5 | 360: verdict card over "Scan a claim" and the chips | Fixed; at 360 the header is now one line. Note as before: "Undo claim" and "Done" are reached by scrolling the card | |
-| host-settings-in-game | 18 | fine | Unchanged | |
-| history-clear-one | 5, 19 | fine | Unchanged | |
-| player-tickets-cue | 1, 2, 3 | fine; landscape line cut with "…" + More (question for the product owner) | Unchanged. At 360 and 390 on Linux even the short line is cut: "Ticket 1: patterns filled. S… More" (360), "…Shou… More" (390). Product owner question, row 1 | |
-| player-quick-mark | 3 | 360, 390: header a tall thin column; 360: rows 71–90 and "Show claim" off screen | Fixed (round 3). 360: keys about 30 × 32 px, pad and cue line on screen, the three ticket pictures on one row, "Show claim" whole. Polish: at 360 on Linux the header line ends "Game Z9QB ·" (time cut), on Mac it fits. 390 and 812 unchanged | |
-| player-which-ticket | 12 | 812: ticket pictures very small | Fixed (round 1), unchanged | |
-| player-which-prize | 17 | fine | Unchanged | |
-| player-claim-qr | 13, 19 | fine | Unchanged | |
-| player-done-with-this-game | 20 | fine | Fine | |
-| player-home-saved-tickets | 21 | 360: "Menu" touching the right edge | Fixed (round 1), unchanged | |
+| host-ticket-type | | approved | Unchanged | |
+| host-prizes | polish | 360: session line "Saturday 3 O…", "Once you confirm…" cut | Fixed: at 360 the title sits beside Back, "Once you confirm, the prizes are locked for this game." and "Session: Saturday 3 Oct (new)" in full. Prize names still wrap to two lines at 360 (as before) | |
+| host-hand-out | | approved | Unchanged | |
+| host-not-handed-out-question | N5 | "Dad hasn't got their ticket", "Hand it out now" main | Fixed: "Has Dad got their ticket?", "Ticket 3 is the last one to hand out.", "Yes, start calling" main, then "Not yet, hand it out", "Give a paper ticket"; all three sizes | |
+| host-plays-on-paper | polish (rhyme, bar) | "Repeat · Another rhyme" and empty "Last" before the first call; boxed "Dad plays on paper · Undo" bar | Fixed: nothing under "Tap Next number to call the first number." before the first call; the bar is a light pill, not a button look. Note: at 360 the sleep tip now sits lower, leaving a blank band under the header | |
+| host-calling | N2 | approved | Unchanged: the pictures show the one-time sleep tip (before "Got it"), so N2's line under the header is not in any picture; the TAM-128 browser test passed on both phones | |
+| host-room-view | | approved | Unchanged | |
+| host-record-a-win | | approved | Unchanged | |
+| host-game-over-payouts | polish | "Settle with players" on 2 lines | One line now, but the last letter is cut: "Settle with player" (bug above). 390: unchanged layout | Flag |
+| host-verdict-proof | point b | flagged: "Undo claim" and "Done" reached by scrolling | 360: fixed, both pinned whole at the card's bottom; the ticket proof now scrolls under them (only its top edge shows). 812: buttons pinned but cut off at the bottom (bug above) | Flag (812) |
+| host-settings-in-game | | approved | Unchanged | |
+| history-clear-one | | approved | Unchanged | |
+| player-tickets-cue | point a | flagged: "Ticket 1: patterns filled. S… More" | Fixed: "Ticket 1: Early Five, Top Line. Shout!" in full on two lines at 360 and 390, no "More"; 812: in full on one line in the space beside ticket 2 | |
+| player-quick-mark | N3, N4 | flagged | N3 fixed: in landscape the pad is on the left, the words, three ticket pictures, cue and "Show claim" on the right, all on screen. N4: 390 fixed (✓ in the corner, clear); 360: ✓ over the second digit (bug above); 812: ✓ touches the digit | Flag (360) |
+| player-which-ticket | | approved | Unchanged | |
+| player-which-prize | landscape polish | 812: buttons squeezed to the left, names on 2 lines | Fixed: title centred, three equal buttons across, names on one line, "Cancel" centred | |
+| player-claim-qr | landscape polish | 812: ticket and "Done" below the fold | Fixed: QR on the left; title, "Show this to the host", ticket and "Done" on the right, all on screen | |
+| player-done-with-this-game | (cue behind) | approved | Only the cue line behind the question changed (two lines, as above) | |
+| player-home-saved-tickets | (not this list) | approved | "Host a game" now reads "Tambola or Impostor on this phone" (from main's Impostor work); layout fine | |
 
 ## Quarantined
 SOP item 6 (standing owner approval): a test that fails and then passes with no change is set aside for at most 2 days,
@@ -89,18 +105,25 @@ listed here with its date, and fixed by the tester; never deleted or weakened.
 | (none) | | | |
 
 ## Flaky or setup problems (not for the Build workspace)
-- None this round: every local run passed first time, no retries.
+- Quick verify 37116779688 (0f54b99) ran the tests from before e5fb4a7, which wait for the old question "Dad hasn't got
+  their ticket"; every test that hands out tickets failed there (102). Not a bug: the run on e5fb4a7 has the new
+  wording and passes those tests.
+- A first local browser run was spoiled by another chat's Playwright run sharing this clone's results folder (missing
+  trace files, closed browsers); it was stopped. Later runs used their own results folder and passed.
 
 ## Requests for the Build workspace
-- None. (Done since the last report: quick mark at 360 × 640, "Show claim" whole on screen.)
+- The three screen problems above (settle label cut at 360; quick mark ✓ over the digits at 360; verdict buttons cut in
+  landscape).
 
 ## Notes for the owner (plain English)
-- The second round of layout fixes worked for four of the five problems: on a small phone the hand-out screen shows the
-  whole typed code, the payouts list no longer has a stray dot and shows a whole row, and the calling screen's header
-  stays clear of the big number; in landscape the Prizes screen shows every button whole.
-- Now fixed too: on a small 360 × 640 phone the player's "Quick mark" screen shows the whole "Show claim" button, with
-  the three ticket pictures on one row. All five layout problems from the first look are fixed.
-- Still open from before: the cue line on the player's tickets is cut with "…" plus "More" on narrower phones and in
-  landscape (a question for the product owner); before the first call the calling screen shows "Repeat · Another
-  rhyme" and an empty "Last" (polish).
-- The 57 pictures are ready for the product owner or UX designer to approve or flag at release.
+- Done and working: the player's hint line now says the prizes in full on up to two lines; the hand-out question reads
+  "Has Dad got their ticket?" with "Yes, start calling" as the main answer; nothing clutters the calling screen before
+  the first number; the "plays on paper" bar is lighter; the Prizes step fits a small phone; in landscape "Which
+  prize?", the claim QR and Quick mark are laid out side by side with everything on screen; a paper ticket's claim
+  now offers the name list.
+- Three small look problems remain: "Settle with players" loses its last letter on a small phone; on a small phone the
+  quick mark tick covers part of the number; in landscape the "Undo claim" and "Done" buttons on a verdict are cut off
+  at the bottom.
+- For the product owner: the scenario's example of when the hint needs "More" ("two tickets with three prizes at
+  320 px") actually fits in two lines, so the app shows the full words there. That follows the rule; only the example
+  is off. The test now uses a case with five prizes.

@@ -20,7 +20,11 @@ const TWELVE = [{ name: 'Riya', tickets: 3 }, { name: 'Asha', tickets: 3 }, { na
 const hostTicket = (host: Page, n: number) => host.locator(`[data-testid="host-ticket"][data-ticket="${n}"]`);
 /** Leaves a refusal or the scanner: Close, OK, Done or Cancel. */
 async function dismissClaim(host: Page) {
-  await host.getByRole('button', { name: /^(Close|OK|Done|Cancel)$/ }).first().click();
+  // A refusal has its own Close. While a win waits to be closed, the prize chip also has a "Close" (TAM-126), which
+  // closes the prize: never tap that one to put a refusal away.
+  const refused = claimRefused(host);
+  const scope = (await refused.isVisible()) ? refused : host;
+  await scope.getByRole('button', { name: /^(Close|OK|Done|Cancel)$/ }).first().click();
 }
 
 test.describe('The claim QR on the player\'s phone', () => {
@@ -444,12 +448,20 @@ async function dadToPaper(host: Page) {
   await host.getByRole('button', { name: /^(Close|Done|Back)$/ }).first().click();
 }
 
-/** The paper refusal for ticket 3: the sentence, "Pick the winner by name" as the main button, no "Record a win". */
-async function expectPaperRefusal(host: Page) {
+/**
+ * The paper refusal for ticket 3: the sentence, "Pick the winner by name" as the main button, no "Record a win", and
+ * nothing recorded. `resultBefore`: the win already shown and waiting to be closed (from "Add another winner"); it
+ * stays exactly as it was. Without it, no result is shown at all.
+ */
+async function expectPaperRefusal(host: Page, resultBefore?: string) {
   const refused = claimRefused(host);
   await expect(refused).toContainText(PAPER_REFUSAL, { timeout: 2000 });
   await expect(refused, 'no dead end: never sends the host to "Record a win"').not.toContainText(/Record a win/);
-  await expect(claimResult(host)).toHaveCount(0);
+  if (resultBefore === undefined) await expect(claimResult(host)).toHaveCount(0);
+  else {
+    await expect(claimResult(host), 'the waiting win is unchanged').toHaveText(resultBefore);
+    await expect(claimResult(host)).not.toContainText(/Dad/);
+  }
   await expect(pickByName(host)).toBeVisible();
   expect(await hasMainLook(pickByName(host)), '"Pick the winner by name" is the main button').toBe(true);
 }
@@ -509,9 +521,10 @@ test.describe('N1 (TAM-058, TAM-198): a claim for a ticket that plays on paper o
     await expect(claimResult(page).getByText(/Early Five: ✓ Accepted, ₹\d+ to Riya/)).toBeVisible({ timeout: 2000 });
     await expect(mainButton(page)).toHaveAccessibleName('Close Early Five');
 
+    const riyaWin = (await claimResult(page).textContent()) ?? '';
     await addAnotherWinnerScanner(page);
     await enterTicketNumber(page, 3, 'Early Five');
-    await expectPaperRefusal(page);
+    await expectPaperRefusal(page, riyaWin);
     await pickDad(page, 'Another Early Five winner');
     await expect(claimResult(page).getByText(/Shared/)).toBeVisible();
     await expect(mainButton(page), 'the prize still waits to be closed').toHaveAccessibleName('Close Early Five');

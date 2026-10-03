@@ -33,6 +33,13 @@ async function fillTopRow(player: Page, ticket: number): Promise<number[]> {
   return top;
 }
 
+/** Marks every number of one row (0 top, 1 middle, 2 bottom) of a ticket on the phone. Returns them. */
+async function fillRow(player: Page, ticket: number, row: number): Promise<number[]> {
+  const numbers = rowOf(await gridOf(phoneTicket(player, ticket).first()), row);
+  for (const n of numbers) await tapCell(player, ticket, n);
+  return numbers;
+}
+
 /** Nothing on the phone points out a filled pattern (TAM-195 with the cue off). */
 async function expectNoCue(player: Page, tickets: number[]) {
   await expect(patternCue(player)).toHaveCount(0);
@@ -135,10 +142,20 @@ test.describe('TAM-195: with the cue off (the default), nothing points out a fil
 
 // ---------------------------------------------------------------- With the cue on: a slim line, at most two lines
 
-/** How many lines the cue's text runs on: the distinct heights its pieces of text sit at. */
+/**
+ * How many lines the cue takes: the distinct heights its message's pieces of text sit at. "More" is a control, not
+ * part of the message: it may sit beside the message's lines (for instance centred between two), and then adds no
+ * line; if it sits above or below them, it is a line of its own and is counted.
+ */
 async function lineCount(player: Page): Promise<number> {
   return patternCue(player).evaluate((el) => {
+    const isMore = (n: Node) => {
+      const c = n.parentElement?.closest('button, a');
+      return !!c && el.contains(c) && /^\s*More/.test(c.textContent ?? '');
+    };
     const tops: number[] = [];
+    const lines: { top: number; bottom: number }[] = [];
+    const more: DOMRect[] = [];
     const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
     for (let n = walker.nextNode(); n; n = walker.nextNode()) {
       if (!n.textContent?.trim()) continue;
@@ -146,11 +163,15 @@ async function lineCount(player: Page): Promise<number> {
       range.selectNodeContents(n);
       for (const r of Array.from(range.getClientRects())) {
         if (r.width < 1 || r.height < 1) continue;
+        if (isMore(n)) { more.push(r); continue; }
         const mid = r.top + r.height / 2;
-        if (!tops.some((t) => Math.abs(t - mid) <= r.height / 2)) tops.push(mid);
+        if (!tops.some((t) => Math.abs(t - mid) <= r.height / 2)) { tops.push(mid); lines.push({ top: r.top, bottom: r.bottom }); }
       }
     }
-    return tops.length;
+    const first = Math.min(...lines.map((l) => l.top)), last = Math.max(...lines.map((l) => l.bottom));
+    // "More" outside the message's lines (above the first or below the last) is a line of its own.
+    const moreLines = new Set(more.filter((r) => r.top + r.height / 2 < first || r.top + r.height / 2 > last).map((r) => Math.round(r.top)));
+    return tops.length + moreLines.size;
   });
 }
 
@@ -267,23 +288,28 @@ test.describe('TAM-195 (row 1a, point a): with the cue on, the message is a slim
     });
   }
 
-  test('point a: when even the short words need a third line (two tickets, 320 × 568, Larger text), the line reads "Tickets 1 and 3: patterns filled. Shout!" with "More"; "More" keeps the full words', async ({ page, browser }, testInfo) => {
+  // Two tickets with three prizes between them ("Ticket 1: Early Five, Top Line. Ticket 3: Top Line. Shout!") still fit in
+  // two lines at 320 × 568 with Larger text (checked on the app at 0f54b99), so the cue rightly keeps the full words there.
+  // This case fills five prizes across two tickets, which needs a third line on any phone of 320 px.
+  test('point a: when even the short words need a third line (two tickets with top and middle rows filled, 320 × 568, Larger text), the line reads "Tickets 1 and 3: patterns filled. Shout!" with "More"; "More" keeps the full words', async ({ page, browser }, testInfo) => {
     const handOuts = await phoneGame(page, PLAYERS, 50, { cue: true });
     const riya = await playerWith(browser, testInfo, handOuts, 'Riya', { width: 320, height: 568 });
     await playerMenu(riya.page, 'Larger text');
     await riya.page.keyboard.press('Escape').catch(() => {});
-    await fillTopRow(riya.page, 1);
-    await fillTopRow(riya.page, 3);
+    for (const t of [1, 3]) {
+      await fillTopRow(riya.page, t);
+      await fillRow(riya.page, t, 1);
+    }
     const cue = patternCue(riya.page);
     await expect(cue).toContainText(/Tickets 1 and 3: patterns filled\. Shout!/);
-    await expect(cue).not.toContainText(/Early Five|Top Line/);
+    await expect(cue).not.toContainText(/Early Five|Top Line|Middle Line/);
     await expect(cueMore(riya.page)).toBeVisible();
     expect(await lineCount(riya.page), 'the cue takes at most two lines').toBeLessThanOrEqual(2);
     await cueMore(riya.page).click();
     const full = riya.page.getByTestId('pattern-cue-more');
     await expect(full).toBeVisible();
-    await expect(full).toContainText(/Ticket 1: Early Five and Top Line filled/);
-    await expect(full).toContainText(/Ticket 3: Top Line filled/);
+    await expect(full).toContainText(/Ticket 1: Early Five, Top Line and Middle Line filled/);
+    await expect(full).toContainText(/Ticket 3: Top Line and Middle Line filled/);
     // Said once: the line and More together name Early Five once.
     const all = `${await cue.textContent()} | ${await full.textContent()}`;
     expect((all.match(/Early Five/gi) ?? []).length, `Early Five is said once in "${all}"`).toBe(1);
