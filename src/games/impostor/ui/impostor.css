@@ -310,12 +310,19 @@
 /* ----- How do you want to play? (IMP-005, IMP-088) ----- */
 .imp-groups { display: flex; flex-direction: column; gap: 10px; }
 .imp-group-wrap { display: flex; flex-direction: column; gap: 4px; }
-.imp-group { display: grid; grid-template-columns: 64px 1fr 1fr; gap: 8px; align-items: center; }
+/* IMP-088: the label in a 64 px column (56 px and its 8 px gap), the two options sharing the rest equally: at 320 px
+   wide each option is (320 − 32 − 64 − 8) / 2 = 108 px. Option text on one line ("Whole family" included): the ✓
+   sits in the corner, out of the text's way. */
+.imp-group { display: grid; grid-template-columns: 56px minmax(0, 1fr) minmax(0, 1fr); gap: 8px; align-items: center; }
 .imp-group-label { font-weight: 800; }
-.imp-option-line { padding-left: 72px; }
+.imp-group .imp-option { position: relative; padding: 4px; white-space: nowrap; overflow-wrap: normal; }
+.imp-group .imp-tick { position: absolute; top: 1px; right: 5px; font-size: 12px; line-height: 1; }
+.imp-option-line { padding-left: 64px; }
 .imp-tick { font-weight: 800; }
 @media (max-width: 340px) {
   .imp-option { font-size: var(--imp-small); }
+  /* IMP-088: with Larger text, 17 px at 320 px wide. */
+  .imp-larger .imp-group .imp-option { font-size: 17px; }
 }
 /* The choices heading sits on its own line under "← Back"; on short phones it shares the bar's row (below). */
 .imp-bar-title { flex-wrap: wrap; row-gap: 12px; }
