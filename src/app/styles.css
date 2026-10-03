@@ -348,6 +348,10 @@ button, [role="button"], a { touch-action: manipulation; }
   overflow: hidden;
 }
 .current-number > span { display: inline-block; }
+/* RC fix (C1), 360 × 640 with the screen-sleep tip: the number's box can be shorter than its font. The box measures
+   itself, and the digits shrink to its height when they would not fit, so their top is never cut. */
+.current-number { container-type: size; }
+.current-number > span { font-size: min(1em, 100cqh); }
 .flash { animation: flash 0.5s ease-out; }
 @keyframes flash { from { transform: scale(1.08); } to { transform: scale(1); } }
 .stage-side { flex: none; display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; min-width: 0; }
