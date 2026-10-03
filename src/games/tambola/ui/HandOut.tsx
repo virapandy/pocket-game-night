@@ -72,10 +72,6 @@ export function HandOut({
     );
   }
   const owner = ticket.playerId!;
-  // UX list row 7: "Start calling" hands out the ticket on screen, as "Next ticket" does; the question is only for
-  // a ticket still waiting besides it (one skipped earlier).
-  const otherWaiting = queue.slice(index + 1)[0];
-  const otherOwner = view.tickets.find((t) => t.number === otherWaiting)?.playerId;
   const mine = view.tickets.filter((t) => t.playerId === owner).map((t) => t.number);
   const info = ticketInfo(view, number, startedAt);
   const link = ticketLink(encodeTicket(info));
@@ -158,20 +154,22 @@ export function HandOut({
           className="button button-big"
           onClick={() => {
             if (!last) return onNext();
-            if (doneLabel === 'Start calling' && otherOwner) return setAsking(true);
+            // UX list row 7: the last ticket's player isn't confirmed yet, so starting asks first (no one is charged
+            // for a ticket they never got).
+            if (doneLabel === 'Start calling' && waiting.size > 0) return setAsking(true);
             onDone();
           }}
         >
           {last ? doneLabel : 'Next ticket'}
         </button>
       </div>
-      {asking && otherOwner && otherWaiting !== undefined && (
+      {asking && (
         <div className="backdrop">
           <div className="dialog" role="dialog" aria-modal="true" aria-labelledby="start-ask-title" data-testid="start-ask">
             <h2 className="section-title" id="start-ask-title">
-              {nameOf(otherOwner)} hasn't got their ticket
+              {nameOf(owner)} hasn't got their ticket
             </h2>
-            <p className="note">Ticket {otherWaiting} is still waiting to be handed out.</p>
+            <p className="note">Ticket {number} is still waiting to be handed out.</p>
             <div className="stack-tight">
               <button type="button" className="button" onClick={() => setAsking(false)}>
                 Hand it out now
@@ -181,7 +179,7 @@ export function HandOut({
                 className="button button-quiet"
                 onClick={() => {
                   setAsking(false);
-                  onPaper(otherOwner);
+                  onPaper(owner);
                 }}
               >
                 Give a paper ticket
