@@ -189,6 +189,8 @@ export function Play({
     const queue = initialMatch.state.tickets.filter((t) => t.status === 'in-play').map((t) => t.number);
     return queue.length > 0 ? { queue, index: 0, late: false } : null;
   });
+  /** UX list row 8 (TAM-058): "Kabir plays on paper · Undo", until the first number is called. */
+  const [paperUndo, setPaperUndo] = useState<{ seq: number; name: string; skipped: readonly number[] } | null>(null);
 
   const view = tambolaRules.view(match.state, { kind: 'host' });
   const over = view.over;
@@ -379,6 +381,29 @@ export function Play({
     if (autoOn) setAutoPaused(true);
   };
 
+  // UX list row 8: putting a player back on phone tickets, before the first call; their skipped tickets are handed
+  // out next.
+  const paperNote =
+    paperUndo && view.called.length === 0 ? (
+      <div className="toast paper-toast" role="status" data-testid="paper-toast">
+        {paperUndo.name} plays on paper ·{' '}
+        <button
+          type="button"
+          className="toast-button"
+          onClick={() => {
+            if (!undoRecord(paperUndo.seq)) return setPaperUndo(null);
+            const skipped = paperUndo.skipped;
+            setPaperUndo(null);
+            if (skipped.length === 0) return;
+            if (handOut) setHandOut({ ...handOut, queue: [...handOut.queue.slice(0, handOut.index), ...skipped, ...handOut.queue.slice(handOut.index)] });
+            else setHandOut({ queue: skipped, index: 0, late: false });
+          }}
+        >
+          Undo
+        </button>
+      </div>
+    ) : null;
+
   if (handOut) {
     const done = () => setHandOut(null);
     return (
@@ -389,6 +414,7 @@ export function Play({
         startedAt={saved.createdAt}
         late={handOut.late}
         calls={view.called.length}
+        notice={paperNote}
         onAssign={(ticket, playerId) => {
           const r = move({ type: 'assign', ticket, playerId });
           return r.ok ? null : r.reason;
@@ -399,6 +425,9 @@ export function Play({
           if (!r.ok) return;
           const owners = new Map(view.tickets.map((t) => [t.number, t.playerId]));
           const queue = [...handOut.queue.slice(0, handOut.index), ...handOut.queue.slice(handOut.index).filter((n) => owners.get(n) !== playerId)];
+          const rec = r.value.records[r.value.records.length - 1];
+          const skipped = handOut.queue.slice(handOut.index).filter((n) => owners.get(n) === playerId);
+          setPaperUndo(rec && view.called.length === 0 ? { seq: rec.seq, name: nameOf(playerId), skipped } : null);
           if (handOut.index >= queue.length) done();
           else setHandOut({ ...handOut, queue });
         }}
@@ -793,6 +822,7 @@ export function Play({
     <>
       {!showCard && (
         <div className="toast-slot">
+          {paperNote}
           {toastLeft >= 0 && lastRecord && view.current && (
             <div className="toast" data-testid="undo-toast">
               Called {view.current.number} ·{' '}

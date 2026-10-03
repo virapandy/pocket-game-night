@@ -2,7 +2,7 @@
 // a time, already named for its player ("Ticket 3 → Riya (1 of 2)"), with a large QR that opens the app on the
 // player's phone and a typed code for when scanning fails (TAM-117, TAM-132, TAM-172). The host confirms each
 // hand-out; nothing comes back from the phones (offline). Late joiners get theirs the same way (TAM-212).
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { encodeTicket, ticketInfo, typedCode, type TambolaView } from '../rules';
 import { QrCode } from './qr';
 
@@ -19,6 +19,7 @@ export function HandOut({
   startedAt,
   late,
   calls,
+  notice,
   onAssign,
   onPaper,
   onNext,
@@ -33,6 +34,8 @@ export function HandOut({
   startedAt: number;
   late: boolean;
   calls: number;
+  /** UX list row 8 (TAM-058): "Kabir plays on paper · Undo", shown until the first number is called. */
+  notice?: ReactNode;
   onAssign: (ticket: number, playerId: string) => string | null;
   onPaper: (playerId: string) => void;
   onNext: () => void;
@@ -61,6 +64,7 @@ export function HandOut({
       <main className="screen hand-out" data-testid="hand-out">
         <div className="hand-out-body stack">
           <p className="lead">Every ticket is handed out.</p>
+          {notice}
         </div>
         {/* UX list row 10 (TAM-181): the main button full width at the bottom, as on every hand-out screen. */}
         <div className="bottom-action hand-out-actions">
@@ -143,6 +147,7 @@ export function HandOut({
         <p className="note" data-testid="hand-out-waiting">
           Waiting: {[...waiting.entries()].map(([id, n]) => `${nameOf(id)} (${n} ${n === 1 ? 'ticket' : 'tickets'})`).join(', ')}
         </p>
+        {notice}
       </div>
       {/* TAM-181 (UX list row 10): the one main button full width at the bottom, the paper fallback a link above it. */}
       <div className="bottom-action hand-out-actions">

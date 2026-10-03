@@ -872,6 +872,9 @@ export const tambolaRules: GameRules<TambolaConfig, TambolaState, TambolaMove, T
         const lastAt = state.callTimes[state.callTimes.length - 1];
         return lastAt !== undefined && record.at === lastAt && now >= record.at && now - record.at <= CALL_UNDO_MS;
       }
+      case 'to-paper':
+        // TAM-058 (UX list row 8, owner 2026-10-03): "plays on paper" can be undone until the first number is called.
+        return state.calledCount === 0;
       default:
         return false;
     }
