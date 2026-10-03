@@ -419,13 +419,14 @@ export function PhoneTickets({
   // it doesn't fit.
   const cueBox = cueSays && <CueLine line={cueSays} onMore={() => setPopup('cue')} />;
 
+  // `outlined`: the claim screen (UX list row 13) outlines only the chosen prize's pattern, never the cue's.
   const ticketBox = (t: (typeof tickets)[number], cell: number, extra?: { outlined?: ReadonlySet<number>; noTap?: boolean }) => (
     <section key={t.number} className={landscape ? 'phone-ticket phone-ticket-side' : 'phone-ticket'} data-testid="phone-ticket" data-ticket={t.number}>
       <p className="phone-ticket-caption">{labelOf(t)}</p>
       <TicketGrid
         rows={t.rows}
         cell={cell}
-        marks={{ ...marksFor(t.number), ...(extra?.outlined ? { outlined: extra.outlined } : {}) }}
+        marks={extra?.outlined ? { marked: marksOn(game, t.number), outlined: extra.outlined } : marksFor(t.number)}
         {...(extra?.noTap ? {} : { onTap: mark(t.number) })}
       />
     </section>
