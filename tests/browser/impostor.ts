@@ -87,9 +87,11 @@ export interface TestSeeds { word?: string; starter?: string; deals?: { wordId?:
 
 /** A fresh phone at `time` (fake clock installed), with these keys in storage before the app loads. */
 const clocked = new WeakSet<Page>();
-export async function freshPhone(page: Page, opts: { time?: number; seeds?: TestSeeds; storage?: Record<string, unknown> } = {}) {
+export async function freshPhone(page: Page, opts: { time?: number; seeds?: TestSeeds; storage?: Record<string, unknown>; fixed?: boolean } = {}) {
   if (!clocked.has(page)) { await page.clock.install({ time: opts.time ?? T0 }); clocked.add(page); }
   else await page.clock.setSystemTime(opts.time ?? T0);
+  // `fixed`: Date.now() stays exactly at `time` while the app opens (timers still run), for limits measured to the ms.
+  if (opts.fixed) await page.clock.setFixedTime(opts.time ?? T0);
   await page.goto(HOME);
   const items: Record<string, string> = {};
   if (opts.seeds) items['pgn.test.seeds'] = JSON.stringify(opts.seeds);
@@ -173,14 +175,14 @@ export function savedEvening(s: EveningSpec): any {
 export const session = (id = SESSION_ID, createdAt = T0 - 60_000) => ({ format: 1, id, name: 'Saturday 3 Oct', createdAt, settlements: [] });
 
 /** Opens the app at `now` on a phone that holds these evenings (and their session), and optional screen state. */
-export async function phoneWith(page: Page, evenings: any[], opts: { now: number; ui?: Record<string, unknown>; storage?: Record<string, unknown> }) {
+export async function phoneWith(page: Page, evenings: any[], opts: { now: number; ui?: Record<string, unknown>; storage?: Record<string, unknown>; fixed?: boolean }) {
   const storage: Record<string, unknown> = { ...opts.storage };
   for (const e of evenings) {
     storage[`pgn.game.${e.id}`] = e;
     if (e.sessionId) storage[`pgn.session.${e.sessionId}`] = session(e.sessionId, Math.min(e.createdAt - 60_000, T0 - 60_000));
   }
   for (const [id, ui] of Object.entries(opts.ui ?? {})) storage[`pgn.impostor-ui.${id}`] = ui;
-  await freshPhone(page, { time: opts.now, storage });
+  await freshPhone(page, { time: opts.now, storage, fixed: opts.fixed });
 }
 
 /** Home → the unfinished Impostor evening (IMP-001: Home's row, "Tap to resume"). */
@@ -192,7 +194,9 @@ export async function resumeFromHome(page: Page) {
 
 // ---- Starting an evening on screen ----
 
-export const impostorCard = (page: Page) => page.getByRole('button', { name: /^Impostor\b/ });
+/** The "Impostor" game card (IMP-001); not the resume card "Impostor · round 4 · Tap to resume" above it. */
+export const impostorCard = (page: Page) =>
+  page.getByRole('button', { name: /^Impostor\b/ }).and(page.locator(':not([data-testid="resume-card"])'));
 export const playerField = (page: Page) => page.getByLabel('Player name', { exact: true });
 
 /** "Who's playing?": types each name and taps "Add". */
@@ -252,6 +256,14 @@ export const privateWord = (page: Page) => page.getByTestId('private-word');
 export const imButton = (page: Page, name: string) => page.getByRole('button', { name: new RegExp(`^I'm ${ci(name)}$`) });
 export const doneButton = (page: Page) => mainButton(page).filter({ hasText: /^Done, (pass to |everyone's seen)/ });
 export const dontKnow = (page: Page) => page.getByRole('button', { name: "Don't know this word?", exact: true });
+
+/**
+ * Stops the fake clock from also moving with real time (Playwright's installed clock keeps ticking naturally), so a
+ * hold of 499 ms is exactly 499 ms of the app's time. `page.clock.resume()` lets it run naturally again.
+ */
+export async function freezeClock(page: Page) {
+  await page.clock.pauseAt((await page.evaluate(() => Date.now())) + 50);
+}
 
 /** Presses the pad (pointerdown) and keeps it pressed for `ms` of fake time; `release` lets go (pointerup). */
 export async function press(page: Page, ms = 0) {

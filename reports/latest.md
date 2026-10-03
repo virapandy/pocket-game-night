@@ -1,4 +1,91 @@
 # Test report
+Progress (2026-10-03, tester, Impostor lane E on main at 870cd2f: setup, deal and privacy, saved evenings, first clue
+screen): rule tests 627 of 627 pass. Browser, local, Android + iPhone: the three Impostor files have 30 tests per phone
+that now pass (marks removed) and 36 per phone still marked (they need talk, vote, reveal, result, summary, History's
+look back or scoring). Two new screen files (61 tests per phone) for IMP-001 (dialog), 003–009, 016/020/022 (clues),
+070, 071, 075, 081, 087, 088, 109. Real failures: IMP-081 and IMP-088 at 320 × 568, IMP-003 "← Back" list, IMP-001
+"PM" on iPhone. Test faults fixed: 5 (fake clock drifting with real time; one helper). The rest of Impostor (c857400)
+is next. Quick verify on this push is named in the hand-back.
+
+Commit tested: 870cd2f (app), tests at this push   Date: 2026-10-03
+Result: RED (4 real failures below, all lane E layout or wording; no privacy, rule or saved-evening failure)
+
+## Layers this round (owner's Mac: `caffeinate -i taskpolicy -b`, at most 3 workers)
+| Layer | Tests run | Passing | Failing |
+|---|---|---|---|
+| Rule tests (`npm test`) | 627 | 627 | 0 |
+| Browser, Android + iPhone: impostor-privacy, impostor-saved-evenings, impostor-scoring | 132 per run (66 per phone) | 30 per phone pass; 36 per phone fail as marked | 0 unexpected |
+| Browser, Android + iPhone: impostor-setup (new) | 30 per phone | 27 Android, 25 iPhone (+1 marked, failing as expected) | 2 Android, 4 iPhone (real, below) |
+| Browser, Android + iPhone: impostor-round-screens (new) | 31 per phone | 25 per phone (+4 marked) | 2 per phone (real, below) |
+| Browser, Tambola Home / picker / History / Sessions set (app-shell, home-and-buttons, usability, history, setup, lifecycle, sessions, after-the-game) | 172 | see Flaky or setup problems | not a verdict this round |
+
+## Failing (real bugs only)
+- impostor-round-screens.spec.ts, "320 × 568 (and with Larger text): after "Don't know this word?" appears, the block
+  clears the name and the pad" (IMP-081, IMP-010; the coder's layout note): confirmed. With the longest word
+  ("Five more minutes, then phone off") and a 16-character name, the private block (y 59–232) lies right over the
+  player's name (y 72–140), so both are unreadable; with Larger text the block starts above the screen (y −22).
+  Expected: block and name apart, block wholly above the pad, nothing scrolling. 360, 390 and 812 pass.
+- impostor-setup.spec.ts, "320 × 568: one row per group … everything shows with no page scrolling" (IMP-088):
+  "Start round" covers the "Categories: all 9 ›" button (Categories y 502–550, "Start round" y 492–552), and the
+  last option line is cut ("Words kids and grandparents"). Expected: four groups, Categories and "Start round" all
+  on screen at 320 × 568, Larger text off.
+- impostor-setup.spec.ts, ""← Back" returns to "What shall we play?"; the list is kept when the host comes back in
+  the same visit" (IMP-003): after "← Back" and tapping the Impostor card again, "Who's playing?" is empty (2 names
+  typed). Expected: Riya and Arjun still listed. (If the Build role reads "the same visit" differently, it is a
+  question for the product owner.)
+- iPhone only, impostor-setup.spec.ts IMP-001 dialog and IMP-070 "← Back" (Home row): the time reads "9:30 PM";
+  Canonical strings say "9:30 pm" ("The evening from 8:40 pm will be ended.", "Impostor, 8:40 pm, round 4").
+  Android shows "pm".
+
+## Expected to fail (not built yet on 870cd2f)
+Owner decision, 3 October 2026 (Vitest `it.fails`, Playwright `test.fail`). Removed this round (pass on both phones):
+impostor-privacy IMP-010 (3 tests), 011 (3), 012 (6, the 4 property batches included), 013 select/copy, 014 (2),
+015 (2), 016/020 (2), 017, 060/064 (2); impostor-saved-evenings IMP-090 (3), 091 clues and "left halfway" (2), 096
+saves every move, 099 exact 3 h and 12 h (2). Still marked:
+| File | Marked per phone | Scenario IDs | Needs |
+|---|---|---|---|
+| impostor-privacy.spec.ts | 4 | IMP-013 (easy, hard), IMP-053, IMP-031/033 | talk, vote, reveal |
+| impostor-saved-evenings.spec.ts | 18 | IMP-037, 091 (talk, timer, picker, re-vote, reveals), 092, 093, 094, 095, 096 (fixture in History), 097, 098, 099 (summary 3 h) | talk to summary, History |
+| impostor-scoring.spec.ts | 14 | IMP-035, 040–044 | result, scoring |
+| impostor-setup.spec.ts | 1 | IMP-071 after the practice result | result |
+| impostor-round-screens.spec.ts | 4 | IMP-075 result menu, IMP-006, IMP-087 release; IMP-075 "left halfway" menu | result; the last one is an open question (below) |
+Totals: 41 per phone.
+
+## Tests changed this round (test faults; no assertion loosened)
+- Playwright's installed fake clock also moves with real time, so a "499 ms" hold, a "7,999 ms" tap-mode wait and
+  "exactly 3 hours / 12 hours" reopenings were a few real milliseconds longer than written. New `freezeClock`
+  (impostor.ts) stops that around those holds (IMP-010 main test, IMP-012 same moment, IMP-014 setting on, IMP-004
+  toast), and `phoneWith(…, { fixed: true })` holds `Date.now()` at the opening moment (IMP-099 two tests). Same checks.
+- `impostorCard` (impostor.ts) also matched the resume card "Impostor · round 1 · Tap to resume"; it now skips it.
+- New tests, IMP-008/IMP-070 "later evening": first written with an ended evening put in storage; the app decides
+  "first Impostor evening of the session" from the evening that showed the card, so they now play it for real (card
+  shown, evening left, "Start new"). The card is then skipped, as the scenario says.
+
+## Notes (not failures)
+- IMP-020/073: a 16-character starter name fits at 320 wide (32 px, two lines) when the screen opens at that size, but
+  when the screen changes size while the clues show (390 → 320, or turning the phone), the name keeps its size and is cut
+  off (33 px on one line, 355 px wide in 288). Tests open at the size; worth a look for rotation.
+- IMP-107 test hook confirmed: `pgn.pref.impostor.blockedWords` is stored oldest first and Settings lists it newest
+  first ("Skipped words (3)": Kheer / Payasam, Pani puri, Samosa for [Samosa, Pani puri, Kheer]); "Bring back"
+  removes the row and the id at once, no toast or dialog. Consistent with IMP-107 (the scenario fixes only the shown
+  order).
+- No Tambola browser test opens Settings from Home; the new IMP-109 test does (both switches and the note found there).
+
+## Questions
+- IMP-075 / IMP-091: the "left halfway" screen's menu has no "Change how we play" (the rules refuse it mid-round). The
+  test follows the scenario and is marked expected to fail until the product owner answers (orchestrator's instruction).
+- IMP-003: does "the same visit to the Impostor setup" include going back to "What shall we play?" and tapping the
+  Impostor card again? The test reads it as yes.
+
+## Flaky or setup problems (not for the Build workspace)
+- A preview server left from an earlier run (16:06) stopped answering, and the runs kept reusing it; stopped.
+- The Mac was under heavy system load (load average 120–150 from macOS update and asset services), so Chromium
+  sometimes could not start within 3 minutes. Android IMP-010/011 timed out once under load and passed alone. The Tambola
+  set gave timeouts only ("setting up page", browser launch), no assertion failures; its verdict this round is the
+  quick verify run (Android smoke set: Home, Host a game, History, Sessions) named in the hand-back.
+
+---
+# Earlier report (kept until the next release review)
 Progress (2026-10-03, tester, Impostor core rules on main at 381b514; tests at f595a30 plus this round): the
 expected-to-fail marks went on in f595a30 (owner decision of 3 October). On 381b514 every marked rule and contract
 test passed (they turned red, as intended), so all 94 marks are off. Rule tests (`npm test`): 627 of 627 pass, Tambola

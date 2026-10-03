@@ -6,7 +6,7 @@
 import { expect, test, type Page } from './fixtures';
 import { expectOneMainButton } from './helpers';
 import {
-  KHEER, LONGEST, P4, P5, PANI_PURI, SAMOSA, ci, phrase, dealAll, dontKnow, doneButton, exact, expectNoSecrets, fromMenu,
+  KHEER, LONGEST, P4, P5, PANI_PURI, SAMOSA, ci, phrase, dealAll, dontKnow, doneButton, exact, expectNoSecrets, freezeClock, fromMenu,
   hold, holdPad, imButton, mainButton, menuButton, onlyEvening, passName, pickerName, press, privateBlock, privateWord,
   release, revealLines, reveal, secretTerms, startEvening, textOf, toPicker, turn, word,
 } from './impostor';
@@ -16,7 +16,7 @@ test.use({ viewport: { width: 390, height: 844 } });
 const settingsClose = (page: Page) => page.getByRole('button', { name: /^(← Back|Back|Done|Close)$/ }).last();
 
 test.describe('IMP-010: each player sees their role privately, in seat order', () => {
-  test.fail('screen A, screen B, the hold, "Done…" only after 500 ms, then the next player', async ({ page }) => {
+  test('screen A, screen B, the hold, "Done…" only after 500 ms, then the next player', async ({ page }) => {
     await startEvening(page, { seeds: { word: 'w', starter: 's', deals: [{ wordId: SAMOSA, impostor: 'Arjun', starter: 'Meena' }] } });
     await expect(page.getByText('Pass the phone to', { exact: true })).toBeVisible();
     await expect(passName(page)).toHaveText(exact('Riya'));
@@ -28,7 +28,8 @@ test.describe('IMP-010: each player sees their role privately, in seat order', (
     await expect(page.getByRole('button', { name: 'Tap instead', exact: true })).toBeVisible();
     await expect(privateWord(page)).toHaveCount(0);
     await expectOneMainButton(page, 'screen B before a hold', null);
-    // Pressed: the block shows at once, wholly above the pad.
+    // Pressed: the block shows at once, wholly above the pad. (Fake time only, so 499 ms is exactly 499 ms.)
+    await freezeClock(page);
     await press(page);
     await expect(privateBlock(page)).toBeVisible();
     const b = (await privateBlock(page).boundingBox())!;
@@ -48,6 +49,7 @@ test.describe('IMP-010: each player sees their role privately, in seat order', (
     await expect(privateWord(page)).toHaveCount(0);
     await expect(doneButton(page)).toHaveText(exact('Done, pass to Arjun'));
     await expect(dontKnow(page)).toBeVisible();
+    await page.clock.resume();
     // Further holds of any length change nothing else.
     await press(page, 50);
     await release(page);
@@ -62,7 +64,7 @@ test.describe('IMP-010: each player sees their role privately, in seat order', (
     await expect(doneButton(page)).toHaveText(exact("Done, everyone's seen"));
   });
 
-  test.fail('at 812 × 375 the block is wholly left of the pad', async ({ page }) => {
+  test('at 812 × 375 the block is wholly left of the pad', async ({ page }) => {
     await page.setViewportSize({ width: 812, height: 375 });
     await startEvening(page, { seeds: { deals: [{ wordId: SAMOSA, impostor: 'Arjun' }] } });
     await imButton(page, 'Riya').click();
@@ -76,7 +78,7 @@ test.describe('IMP-010: each player sees their role privately, in seat order', (
 });
 
 test.describe('IMP-011: what each role sees: always five lines', () => {
-  test.fail('Easy: the crew sees the word, category and other names; the impostor the category and hint, never the word', async ({ page }) => {
+  test('Easy: the crew sees the word, category and other names; the impostor the category and hint, never the word', async ({ page }) => {
     await startEvening(page, { seeds: { deals: [{ wordId: PANI_PURI, impostor: 'Arjun', starter: 'Riya' }] } });
     const lines = await dealAll(page);
     expect(lines.Riya).toEqual(['Your secret', 'Pani puri', 'Category: Food', "Give one-word clues. Don't say it!", 'Also called Golgappa / Puchka']);
@@ -84,14 +86,14 @@ test.describe('IMP-011: what each role sees: always five lines', () => {
     expect(lines.Meena).toEqual(lines.Riya);
   });
 
-  test.fail('Hard: the crew sees the word only; the impostor nothing', async ({ page }) => {
+  test('Hard: the crew sees the word only; the impostor nothing', async ({ page }) => {
     await startEvening(page, { mode: 'hard', seeds: { deals: [{ wordId: SAMOSA, impostor: 'Kabir', starter: 'Riya' }] } });
     const lines = await dealAll(page);
     expect(lines.Riya).toEqual(['Your secret', 'Samosa', 'Give one-word clues.', "Don't say it!", '']);
     expect(lines.Kabir).toEqual(['Your secret', "You're the impostor", 'Listen and blend in.', 'Guess the word if caught.', '']);
   });
 
-  test.fail('line 5 is an empty element one small line tall when there are no other names, and always for the impostor', async ({ page }) => {
+  test('line 5 is an empty element one small line tall when there are no other names, and always for the impostor', async ({ page }) => {
     await startEvening(page, { seeds: { deals: [{ wordId: PANI_PURI, impostor: 'Arjun' }] } });
     const heights: Record<string, number[]> = {};
     for (const p of ['Riya', 'Arjun']) {
@@ -149,7 +151,7 @@ test.describe('IMP-012: the impostor\'s turn looks exactly like everyone else\'s
   // Property (200 seeded deals, Easy and Hard): 4 batches of 50, the impostor alternating between Riya and Arjun.
   for (const mode of ['easy', 'hard'] as const) {
     for (const batch of [1, 2]) {
-      test.fail(`property: screens A and B are the same for crew and impostor once names are replaced (${mode}, deals ${batch * 50 - 49}–${batch * 50})`, async ({ page }) => {
+      test(`property: screens A and B are the same for crew and impostor once names are replaced (${mode}, deals ${batch * 50 - 49}–${batch * 50})`, async ({ page }) => {
         test.setTimeout(240_000);
         const deals = Array.from({ length: 51 }, (_, k) => ({ impostor: k % 2 ? 'Riya' : 'Arjun' }));
         await startEvening(page, { mode, seeds: { word: `imp012-${mode}-${batch}`, starter: `imp012-s-${mode}-${batch}`, deals } });
@@ -158,7 +160,7 @@ test.describe('IMP-012: the impostor\'s turn looks exactly like everyone else\'s
     }
   }
 
-  test.fail('"Done…" appears at the same moment for the same hold, and every press vibrates once (10 ms), crew and impostor alike', async ({ page }) => {
+  test('"Done…" appears at the same moment for the same hold, and every press vibrates once (10 ms), crew and impostor alike', async ({ page }) => {
     await page.addInitScript(() => {
       (window as any).__vibrations = [];
       Object.defineProperty(Navigator.prototype, 'vibrate', { configurable: true, value: (p: unknown) => { (window as any).__vibrations.push(p); return true; } });
@@ -167,12 +169,14 @@ test.describe('IMP-012: the impostor\'s turn looks exactly like everyone else\'s
     await startEvening(page, { seeds: { deals: [{ wordId: SAMOSA, impostor: 'Arjun' }] } });
     for (const p of ['Riya', 'Arjun']) {
       await imButton(page, p).click();
+      await freezeClock(page); // fake time only, so 499 ms is exactly 499 ms
       await press(page, 499);
       await release(page);
       await expect(doneButton(page), `${p}: 499 ms adds nothing`).toHaveCount(0);
       await press(page, 500);
       await release(page);
       await expect(doneButton(page), `${p}: 500 ms adds "Done…"`).toBeVisible();
+      await page.clock.resume();
       expect(await page.evaluate(() => (window as any).__vibrations), `${p}: one vibrate(10) per press`).toEqual([10, 10]);
       await page.evaluate(() => { (window as any).__vibrations = []; });
       await doneButton(page).click();
@@ -180,7 +184,7 @@ test.describe('IMP-012: the impostor\'s turn looks exactly like everyone else\'s
     expect(await page.evaluate(() => (window as any).__sounds ?? []), 'no sound during the deal').toEqual([]);
   });
 
-  test.fail('the longest word fits the block in 3 lines', async ({ page }) => {
+  test('the longest word fits the block in 3 lines', async ({ page }) => {
     await page.setViewportSize({ width: 320, height: 568 });
     await startEvening(page, { seeds: { deals: [{ wordId: LONGEST, impostor: 'Kabir' }] } });
     await imButton(page, 'Riya').click();
@@ -243,7 +247,7 @@ test.describe('IMP-013 and IMP-062: the word is never in the page except while h
     });
   }
 
-  test.fail('nothing on the pad or the block can be selected, copied, looked up or dragged', async ({ page }) => {
+  test('nothing on the pad or the block can be selected, copied, looked up or dragged', async ({ page }) => {
     await startEvening(page, { seeds: { deals: [{ wordId: SAMOSA, impostor: 'Arjun' }] } });
     await imButton(page, 'Riya').click();
     await press(page);
@@ -273,12 +277,13 @@ test.describe('IMP-013 and IMP-062: the word is never in the page except while h
 });
 
 test.describe('IMP-014: tap to show, for players who can\'t hold', () => {
-  test.fail('with the setting on: "Tap to see your word", "Tap to hide", hidden again after 8 s, then "Done…"', async ({ page }) => {
+  test('with the setting on: "Tap to see your word", "Tap to hide", hidden again after 8 s, then "Done…"', async ({ page }) => {
     await startEvening(page, { storage: { 'pgn.pref.impostor.tapToShow': true }, seeds: { deals: [{ wordId: SAMOSA, impostor: 'Kabir' }] } });
     await imButton(page, 'Riya').click();
     await expect(holdPad(page)).toHaveAccessibleName('Tap to see your word');
     await expect(page.getByRole('button', { name: 'Tap instead', exact: true })).toHaveCount(0);
     await expectOneMainButton(page, 'tap mode before a tap', null);
+    await freezeClock(page); // fake time only, so 7,999 ms is exactly 7,999 ms
     await holdPad(page).click();
     await expect(privateWord(page)).toHaveText('Samosa');
     await expect(holdPad(page)).toHaveAccessibleName('Tap to hide');
@@ -291,7 +296,7 @@ test.describe('IMP-014: tap to show, for players who can\'t hold', () => {
     await expect(dontKnow(page)).toBeVisible();
   });
 
-  test.fail('"Tap instead" switches only this player\'s turn; the next player starts in hold mode', async ({ page }) => {
+  test('"Tap instead" switches only this player\'s turn; the next player starts in hold mode', async ({ page }) => {
     await startEvening(page, { seeds: { deals: [{ wordId: SAMOSA, impostor: 'Kabir' }] } });
     await imButton(page, 'Riya').click();
     await page.getByRole('button', { name: 'Tap instead', exact: true }).click();
@@ -307,7 +312,7 @@ test.describe('IMP-014: tap to show, for players who can\'t hold', () => {
 });
 
 test.describe('IMP-015: "Don\'t know this word?" redeals without giving anything away', () => {
-  test.fail('"No problem! New word coming." and back to the first player, with a new word', async ({ page }) => {
+  test('"No problem! New word coming." and back to the first player, with a new word', async ({ page }) => {
     await startEvening(page, { seeds: { deals: [{ wordId: SAMOSA, impostor: 'Arjun' }, { wordId: PANI_PURI, impostor: 'Kabir', starter: 'Riya' }] } });
     await turn(page, 'Riya');
     await turn(page, 'Arjun');
@@ -327,7 +332,7 @@ test.describe('IMP-015: "Don\'t know this word?" redeals without giving anything
     expect(lines[1]).toBe('Pani puri');
   });
 
-  test.fail('the button is the same on the impostor\'s screen B', async ({ page }) => {
+  test('the button is the same on the impostor\'s screen B', async ({ page }) => {
     await startEvening(page, { seeds: { deals: [{ wordId: SAMOSA, impostor: 'Riya' }] } });
     await imButton(page, 'Riya').click();
     await hold(page, 600);
@@ -336,7 +341,7 @@ test.describe('IMP-015: "Don\'t know this word?" redeals without giving anything
 });
 
 test.describe('IMP-016 and IMP-020: straight to the clues; who starts', () => {
-  test.fail('after the last "Done": everyone has seen, phone in the middle, MEENA starts, then clockwise from her', async ({ page }) => {
+  test('after the last "Done": everyone has seen, phone in the middle, MEENA starts, then clockwise from her', async ({ page }) => {
     await startEvening(page, { players: P5, seeds: { deals: [{ wordId: SAMOSA, impostor: 'Arjun', starter: 'Meena' }] } });
     await dealAll(page, P5);
     await expect(page.getByText('Phone in the middle, face up.', { exact: true })).toBeVisible();
@@ -348,7 +353,7 @@ test.describe('IMP-016 and IMP-020: straight to the clues; who starts', () => {
     await expect(page.getByTestId('announcer')).toContainText(phrase('Meena starts, then clockwise: Meena, Kabir, Zoya, Riya, Arjun'));
   });
 
-  test.fail('Timer: the clues screen\'s main button is "Start the 2-minute timer"', async ({ page }) => {
+  test('Timer: the clues screen\'s main button is "Start the 2-minute timer"', async ({ page }) => {
     await startEvening(page, { talking: 'timer', seeds: { deals: [{ wordId: SAMOSA, impostor: 'Arjun' }] } });
     await dealAll(page);
     await expect(mainButton(page)).toHaveText('Start the 2-minute timer');
@@ -356,7 +361,7 @@ test.describe('IMP-016 and IMP-020: straight to the clues; who starts', () => {
 });
 
 test.describe('IMP-017: see my word again', () => {
-  test.fail('from the clues: "Whose word?", Meena\'s turn again with "Done, everyone\'s seen", then the same screen; nothing recorded', async ({ page }) => {
+  test('from the clues: "Whose word?", Meena\'s turn again with "Done, everyone\'s seen", then the same screen; nothing recorded', async ({ page }) => {
     await startEvening(page, { seeds: { deals: [{ wordId: SAMOSA, impostor: 'Arjun', starter: 'Riya' }] } });
     await dealAll(page);
     const before = (await onlyEvening(page)).records;
@@ -422,7 +427,7 @@ test.describe('IMP-031 and IMP-033: pick, then reveal; caught, the guess before 
 });
 
 test.describe('IMP-060 and IMP-064: seeds made on the phone; test seeds honoured in preview builds', () => {
-  test.fail('without test seeds, a new evening has a fresh word seed and starter seed, different each evening', async ({ page }) => {
+  test('without test seeds, a new evening has a fresh word seed and starter seed, different each evening', async ({ page }) => {
     await startEvening(page);
     const a = await onlyEvening(page);
     expect(typeof a.setup.seeds.word).toBe('string');
@@ -436,7 +441,7 @@ test.describe('IMP-060 and IMP-064: seeds made on the phone; test seeds honoured
     expect(b.setup.seeds.starter).not.toBe(a.setup.seeds.starter);
   });
 
-  test.fail('in a preview build, pgn.test.seeds sets the evening\'s seeds and its forced deals exactly', async ({ page }) => {
+  test('in a preview build, pgn.test.seeds sets the evening\'s seeds and its forced deals exactly', async ({ page }) => {
     const seeds = { word: 'imp064-word', starter: 'imp064-starter', deals: [{ wordId: SAMOSA, impostor: 'Arjun', starter: 'Meena' }] };
     await startEvening(page, { seeds });
     const e = await onlyEvening(page);
@@ -445,7 +450,7 @@ test.describe('IMP-060 and IMP-064: seeds made on the phone; test seeds honoured
   });
 });
 
-test.fail('IMP-010: screens A and B never show the previous player\'s block, even after a quick double tap on "Done…"', async ({ page }) => {
+test('IMP-010: screens A and B never show the previous player\'s block, even after a quick double tap on "Done…"', async ({ page }) => {
   await startEvening(page, { seeds: { deals: [{ wordId: SAMOSA, impostor: 'Kabir' }] } });
   await imButton(page, 'Riya').click();
   await hold(page, 600);

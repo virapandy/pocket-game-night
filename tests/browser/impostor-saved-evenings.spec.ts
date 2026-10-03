@@ -44,7 +44,7 @@ const quiet = (page: Page, name: string) => page.getByRole('button', { name, exa
 const historyRows = (page: Page) => page.getByTestId('history-game');
 
 test.describe('IMP-090: interrupted during the deal', () => {
-  test.fail('reloaded within 3 hours after Riya\'s "Done": "Welcome back." and Arjun starts his turn again at screen A', async ({ page }) => {
+  test('reloaded within 3 hours after Riya\'s "Done": "Welcome back." and Arjun starts his turn again at screen A', async ({ page }) => {
     const e = savedEvening({ deals: DEALS, moves: [START, ...seen(1)] });
     await phoneWith(page, [e], { now: lastAt(e) + H });
     await openEvening(page);
@@ -56,7 +56,7 @@ test.describe('IMP-090: interrupted during the deal', () => {
     await expectNoSecrets(page, secretTerms(SAMOSA, 'hard'), '"Welcome back."');
   });
 
-  test.fail('a return from hidden while Arjun holds his word: "Welcome back.", his screen A again, never a block', async ({ page }) => {
+  test('a return from hidden while Arjun holds his word: "Welcome back.", his screen A again, never a block', async ({ page }) => {
     await startEvening(page, { seeds: { deals: [{ wordId: SAMOSA, impostor: 'Kabir' }] } });
     await turn(page, 'Riya');
     await imButton(page, 'Arjun').click();
@@ -72,7 +72,7 @@ test.describe('IMP-090: interrupted during the deal', () => {
     await expect(passName(page)).toHaveText(exact('Arjun'));
   });
 
-  test.fail('reopened more than 3 hours after the round\'s last move: "This round was left halfway."', async ({ page }) => {
+  test('reopened more than 3 hours after the round\'s last move: "This round was left halfway."', async ({ page }) => {
     const e = savedEvening({ deals: DEALS, moves: [START, ...seen(1)] });
     await phoneWith(page, [e], { now: lastAt(e) + 3 * H + 1 });
     await openEvening(page);
@@ -89,7 +89,7 @@ test.describe('IMP-091: interrupted later in a round', () => {
     return e;
   };
 
-  test.fail('the clues screen shows again', async ({ page }) => {
+  test('the clues screen shows again', async ({ page }) => {
     await reopen(page, [START, ...seen(4)]);
     await expect(page.getByText('Phone in the middle, face up.', { exact: true })).toBeVisible();
     await expect(page.getByTestId('starter-name')).toHaveText(exact('Riya'));
@@ -161,7 +161,7 @@ test.describe('IMP-091: interrupted later in a round', () => {
     await expect(quiet(page, 'Undo')).toHaveCount(0);
   });
 
-  test.fail('more than 3 hours later: "left halfway"; "Next round" deals the round again (dealAgain), from the first player', async ({ page }) => {
+  test('more than 3 hours later: "left halfway"; "Next round" deals the round again (dealAgain), from the first player', async ({ page }) => {
     await reopen(page, [START, ...seen(4), { type: 'startTalk' }], { after: 3 * H + 1 });
     await expect(leftHalfway(page)).toBeVisible();
     await mainButton(page).click();
@@ -274,7 +274,7 @@ test.describe('IMP-094: what History keeps', () => {
     ]);
   });
 
-  test.fail('IMP-096: the app saves every evening as a format 2 SavedGame of gameType "impostor", by the host, at every move', async ({ page }) => {
+  test('IMP-096: the app saves every evening as a format 2 SavedGame of gameType "impostor", by the host, at every move', async ({ page }) => {
     await startEvening(page, { seeds: { word: 'w96', starter: 's96', deals: [{ wordId: SAMOSA, impostor: 'Arjun' }] } });
     let saved = await onlyEvening(page);
     expect(saved).toMatchObject({ format: 2, gameType: 'impostor', status: 'in-progress', setup: { gameId: 'impostor', seeds: { word: 'w96', starter: 's96' } } });
@@ -358,16 +358,16 @@ test.describe('IMP-095, IMP-097, IMP-098: the summary', () => {
 });
 
 test.describe('IMP-099: time limits, measured exactly', () => {
-  test.fail('3 hours after the round\'s last move exactly: the same step; 1 ms more: "left halfway"', async ({ page, browser }) => {
+  test('3 hours after the round\'s last move exactly: the same step; 1 ms more: "left halfway"', async ({ page, browser }) => {
     const e = savedEvening({ deals: DEALS, moves: [START, ...seen(4)] });
-    await phoneWith(page, [e], { now: lastAt(e) + 3 * H });
+    await phoneWith(page, [e], { now: lastAt(e) + 3 * H, fixed: true });
     await openEvening(page);
     await expect(page.getByText('Phone in the middle, face up.', { exact: true })).toBeVisible();
     await expect(leftHalfway(page)).toHaveCount(0);
     const ctx = await browser.newContext({ timezoneId: TZ, viewport: { width: 390, height: 844 } });
     await silence(ctx);
     const later = await ctx.newPage();
-    await phoneWith(later, [e], { now: lastAt(e) + 3 * H + 1 });
+    await phoneWith(later, [e], { now: lastAt(e) + 3 * H + 1, fixed: true });
     await openEvening(later);
     await expect(leftHalfway(later)).toBeVisible();
     await ctx.close();
@@ -394,18 +394,18 @@ test.describe('IMP-099: time limits, measured exactly', () => {
     await ctx.close();
   });
 
-  test.fail('12 hours after the last completed round: still unfinished at exactly 12 hours; 1 ms later ended by itself and kept in History', async ({ page, browser }) => {
+  test('12 hours after the last completed round: still unfinished at exactly 12 hours; 1 ms later ended by itself and kept in History', async ({ page, browser }) => {
     const moves = [...R1_CAUGHT_WRONG, { type: 'nextRound' }, ...seen(1)];
     const verdictAt = T0 + 9 * 20_000; // record 10, the verdict
     const e = savedEvening({ deals: DEALS, moves, at: { 9: verdictAt, 10: verdictAt + 60_000, 11: verdictAt + 120_000 } });
     expect(e.records[9].move.type).toBe('verdict');
-    await phoneWith(page, [e], { now: verdictAt + 12 * H });
+    await phoneWith(page, [e], { now: verdictAt + 12 * H, fixed: true });
     await expect(page.getByTestId('unfinished-games').filter({ hasText: /Impostor/ })).toBeVisible();
     const ctx = await browser.newContext({ timezoneId: TZ, viewport: { width: 390, height: 844 } });
     await silence(ctx);
     const later = await ctx.newPage();
     const now = verdictAt + 12 * H + 1;
-    await phoneWith(later, [e], { now });
+    await phoneWith(later, [e], { now, fixed: true });
     await expect(later.getByRole('button', { name: /^Host a game/ })).toBeVisible();
     await expect(later.getByTestId('unfinished-games').filter({ hasText: /Impostor/ })).toHaveCount(0);
     const saved = await onlyEvening(later);

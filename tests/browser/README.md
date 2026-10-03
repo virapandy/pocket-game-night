@@ -780,6 +780,13 @@ How the tests drive the game (Test hooks items 3 to 9 and 13):
   "Done, everyone's seen", "Don't know this word?".
 - **Reopening:** a saved evening is opened from Home's `unfinished-games` row ("Tap to resume") when Home shows first,
   or straight away when the app opens on it.
+- **Screens (C1/C2, 3 October 2026):** `impostor-setup.spec.ts` (IMP-001's "Start new" dialog, IMP-003 to IMP-009,
+  IMP-070, IMP-071, IMP-088) and `impostor-round-screens.spec.ts` (the clues screen of IMP-016/020/022, IMP-075,
+  IMP-087, IMP-109 with IMP-107's list, IMP-081's hold screen at the four sizes). Settings switches are `role="switch"`
+  named "Larger text" and "Tap to show instead of hold"; `pgn.pref.impostor.blockedWords` is written oldest first;
+  the wake lock is stubbed on `navigator.wakeLock`. `freezeClock` (impostor.ts) stops real time leaking into the fake
+  clock where a limit is measured to the millisecond (499 ms, 8 s, 5 s toasts); `phoneWith(..., { fixed: true })`
+  holds `Date.now()` at the opening time (IMP-099's exact 3 and 12 hours).
 - **Privacy (IMP-013):** the word, its other names, its hint, "You're the impostor" and (Hard) its category must not be
   in `document.documentElement.outerHTML` (script bodies left out) or `document.title`, case-insensitive, as whole
   phrases. The 200-deal outerHTML property of IMP-012 runs as 4 tests of 50 deals ("Deal again with a new word" between

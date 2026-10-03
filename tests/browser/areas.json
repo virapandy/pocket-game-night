@@ -281,7 +281,7 @@
       "name": "Impostor: rules, screens, saved evenings, word list (C3 tests written first, 3 October 2026; not in the smoke set until they pass)",
       "lane": "shared",
       "paths": ["src/games/impostor/**", "content/impostor/**", "tests/browser/impostor.ts", "tests/fixtures/impostor-saved-evenings.json"],
-      "specs": ["impostor-privacy.spec.ts", "impostor-saved-evenings.spec.ts", "impostor-scoring.spec.ts"]
+      "specs": ["impostor-privacy.spec.ts", "impostor-saved-evenings.spec.ts", "impostor-scoring.spec.ts", "impostor-setup.spec.ts", "impostor-round-screens.spec.ts"]
     },
     {
       "name": "Build, dependencies and test set-up: everything",
