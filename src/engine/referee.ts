@@ -2,7 +2,7 @@
 // invariants after every move, replays saved games, and undoes a move by replaying without it.
 // A match is never changed in place; every call returns a new one.
 
-import type { GameRules, MoveContext, SetupInput, Verdict, Viewer } from './contract';
+import type { GameRules, SetupInput, Verdict, Viewer } from './contract';
 import { MOVE_RECORD_VERSION, type ActorId, type Move, type MoveRecord } from './moves';
 import { silent, type Announce } from './events';
 
@@ -37,11 +37,10 @@ export function play<C, S, M extends Move>(
   const last = match.records[match.records.length - 1];
   if (last && ctx.at < last.at) return { ok: false, reason: 'A move cannot be earlier than the move before it.' };
 
-  const seq = (last?.seq ?? 0) + 1;
-  const result = step(rules, match.state, move, { by: ctx.by, at: ctx.at, seq });
+  const result = step(rules, match.state, move, ctx);
   if (!result.ok) return result;
 
-  const record: MoveRecord<M> = { v: MOVE_RECORD_VERSION, seq, at: ctx.at, by: ctx.by, move };
+  const record: MoveRecord<M> = { v: MOVE_RECORD_VERSION, seq: (last?.seq ?? 0) + 1, at: ctx.at, by: ctx.by, move };
   const next = { setup: match.setup, records: [...match.records, record], state: result.value };
 
   const meta = { gameType: rules.id, gameId: match.setup.gameId, at: ctx.at };
@@ -82,7 +81,7 @@ export function replay<C, S, M extends Move>(
   for (const record of records) {
     if (record.v !== MOVE_RECORD_VERSION) return { ok: false, reason: `Move ${record.seq} has unknown format ${record.v}.` };
     if (rules.isOver(state)) return { ok: false, reason: `Move ${record.seq} comes after the game ended.` };
-    const result = step(rules, state, record.move, { by: record.by, at: record.at, seq: record.seq });
+    const result = step(rules, state, record.move, { by: record.by, at: record.at });
     if (!result.ok) return { ok: false, reason: `Move ${record.seq}: ${result.reason}` };
     state = result.value;
   }
@@ -93,7 +92,7 @@ export function viewFor<C, S, M extends Move, V>(rules: GameRules<C, S, M, V>, m
   return rules.view(match.state, viewer);
 }
 
-function step<C, S, M extends Move>(rules: AnyRules<C, S, M>, state: S, move: M, ctx: MoveContext): Verdict<S> {
+function step<C, S, M extends Move>(rules: AnyRules<C, S, M>, state: S, move: M, ctx: { by: ActorId; at: number }): Verdict<S> {
   const result = rules.apply(state, move, ctx);
   if (!result.ok) return result;
   const broken = rules.invariants(result.value);

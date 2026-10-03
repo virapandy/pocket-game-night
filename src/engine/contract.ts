@@ -26,11 +26,6 @@ export interface MoveContext {
   readonly by: ActorId;
   /** The time on the move record. */
   readonly at: number;
-  /**
-   * The record's position number (`MoveRecord.seq`), so a game can name exactly which record a later undo may take
-   * back (Impostor's verdict, IMP-037). Set by the referee in `play` and `replay`; absent when a rule is called directly.
-   */
-  readonly seq?: number;
 }
 
 export type Verdict<T> = { readonly ok: true; readonly value: T } | { readonly ok: false; readonly reason: string };

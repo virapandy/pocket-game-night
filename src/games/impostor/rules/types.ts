@@ -137,8 +137,14 @@ export interface ImpostorState {
   readonly startedThisCycle: readonly string[];
   /** The impostor of each completed round, oldest first. */
   readonly recentImpostors: readonly string[];
-  /** The record number (`seq`) of the verdict that "Undo" may still take back (IMP-037), or null. */
+  /** Moves accepted so far: the position of the latest move among the records (rebuilt identically by replay). */
+  readonly moves: number;
+  /**
+   * The verdict that "Undo" may still take back (IMP-037): its position among the records (the `moves` count after
+   * it), and its time stamp. Null when nothing can be undone.
+   */
   readonly undoVerdictSeq: number | null;
+  readonly undoVerdictAt: number | null;
   /** Every player's total over the scored rounds, players who left included (IMP-042). */
   readonly totals: Readonly<Record<string, number>>;
 }

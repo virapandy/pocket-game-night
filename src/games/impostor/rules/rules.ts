@@ -71,7 +71,9 @@ function setup(config: ImpostorConfig, seeds: Readonly<Record<string, string>>):
     allowRepeats: false,
     startedThisCycle: [],
     recentImpostors: [],
+    moves: 0,
     undoVerdictSeq: null,
+    undoVerdictAt: null,
     totals: Object.fromEntries(config.players.map((p) => [p, 0])),
   };
 }
@@ -183,7 +185,13 @@ function totalsFor(totals: Readonly<Record<string, number>>, players: readonly s
 const REDEAL_STEPS: readonly RoundStep[] = ['deal', 'clues', 'talk', 'vote', 'revote', 'caught', 'guess'];
 const AFTER_REVEAL: readonly RoundStep[] = ['caught', 'guess', 'result'];
 
+/** Every accepted move adds one to the move counter, so replay rebuilds it exactly. */
 function apply(s: ImpostorState, move: ImpostorMove, ctx: MoveContext): Result {
+  const r = applyMove(s, move, ctx);
+  return r.ok ? ok({ ...r.value, moves: s.moves + 1 }) : r;
+}
+
+function applyMove(s: ImpostorState, move: ImpostorMove, ctx: MoveContext): Result {
   if (s.over) return no('The evening has ended.');
   if (ctx.by !== HOST) return no('Only the host phone records moves.');
   if (typeof move !== 'object' || move === null) return no('Not a move.');
@@ -250,11 +258,11 @@ function apply(s: ImpostorState, move: ImpostorMove, ctx: MoveContext): Result {
     case 'verdict':
       if (step !== 'guess') return no('The verdict comes after the word is shown.');
       if (typeof move.right !== 'boolean') return no('The verdict is right or wrong.');
-      return ok({ ...complete(s, r!, true, move.right, { verdict: move.right }), undoVerdictSeq: ctx.seq ?? null });
+      return ok({ ...complete(s, r!, true, move.right, { verdict: move.right }), undoVerdictSeq: s.moves + 1, undoVerdictAt: ctx.at });
 
     case 'nextRound':
       if (step !== 'result') return no('The round has no result yet.');
-      return ok(deal({ ...s, undoVerdictSeq: null }, false));
+      return ok(deal({ ...s, undoVerdictSeq: null, undoVerdictAt: null }, false));
 
     case 'dealAgain':
       if (!r || step === null || !REDEAL_STEPS.includes(step)) return no('There is no round to deal again.');
@@ -288,7 +296,7 @@ function apply(s: ImpostorState, move: ImpostorMove, ctx: MoveContext): Result {
         players,
         totals: totalsFor(s.totals, players),
         startedThisCycle: s.startedThisCycle.filter((p) => players.includes(p)),
-        undoVerdictSeq: null,
+        undoVerdictSeq: null, undoVerdictAt: null,
       });
     }
 
@@ -296,13 +304,13 @@ function apply(s: ImpostorState, move: ImpostorMove, ctx: MoveContext): Result {
       if (!betweenRounds) return no('Choices change only between rounds.');
       const problem = choicesProblem(move.choices);
       if (problem) return no(problem);
-      const next = { ...s, choices: copyChoices(move.choices), undoVerdictSeq: null };
+      const next = { ...s, choices: copyChoices(move.choices), undoVerdictSeq: null, undoVerdictAt: null };
       // IMP-052 "Change categories": the same round is dealt again under the new choices.
       return ok(s.phase === 'noWords' ? deal(next, s.pendingPractice) : next);
     }
 
     case 'endEvening':
-      return ok({ ...s, over: true, undoVerdictSeq: null });
+      return ok({ ...s, over: true, undoVerdictSeq: null, undoVerdictAt: null });
 
     default:
       return no('Unknown move.');
@@ -393,7 +401,10 @@ export const impostorRules: GameRules<ImpostorConfig, ImpostorState, ImpostorMov
       by === HOST &&
       record.move.type === 'verdict' &&
       state.undoVerdictSeq !== null &&
-      record.seq === state.undoVerdictSeq &&
+      // The verdict's position is a lower bound for its seq (seq never goes below the position; it can be higher
+      // after an earlier undo left a gap), and the time stamp must match too, so an older verdict never qualifies.
+      record.seq >= state.undoVerdictSeq &&
+      record.at === state.undoVerdictAt &&
       state.round?.verdict === record.move.right
     );
   },
