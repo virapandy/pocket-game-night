@@ -48,13 +48,13 @@ The host can switch categories off (for example no Films for grandparents).
 ## How big
 | Theme | Words at first release | Why |
 |---|---|---|
-| Multicultural | 291 in 9 categories (revised 4 October, below) | The only theme at first; must not repeat across several evenings |
+| Multicultural | 291 active in 9 categories, plus 20 retired rows (revised 4 October, below) | The only theme at first; must not repeat across several evenings |
 | Each regional theme (later) | about 160 (8 × 20) | Enough for 4–5 evenings of 8 rounds with no repeats |
 
 **No word repeats within an evening**, and recent evenings' words are avoided where possible (to decide, see
 `decisions.md`).
 
-## The list: `words.csv` (version 4, 291 words)
+## The list: `words.csv` (version 4: 311 rows, 291 active, 20 retired)
 Drafted 3 October, then checked by **nine simulated players** (persona reviewers, each judging every word as that
 person would): Delhi 34, Lucknow 56, Chennai 29, Hyderabad 41, Bengaluru 27, Calicut 45, Kolkata 50, a Jain
 vegetarian grandmother of 70 from Ahmedabad, and a 10-year-old in Pune. The changed rows were checked again.
@@ -83,7 +83,8 @@ funny (Sneeze, Dentist), unkind or scary (Mummy's chappal, Stuck in the lift) or
 Dropped 18 words that were too broad (Rain, Baby), near-duplicates (Pressure cooker whistle, Frozen video call, three
 extra photo words, extra cricket words) or not clue-able; moved 8 to the category they belong in; renamed 2 ("Screen
 time", "Squeezing in one more"); 19 clearer hints (e.g. Badminton "Net", Hockey "Stick"); removed two clashing other
-names. **Now 291 words in 9 categories: 225 whole family, 66 grown-ups, 2 non-veg.**
+names. **Now 291 active words in 9 categories: 225 whole family, 66 grown-ups, 2 non-veg; plus 20 retired rows (`retired` =
+"yes", never dealt, kept so past evenings still replay; they may carry old category names).**
 
 Columns: id, word, other names, category, audience (family / grownups), nonveg, difficulty, hint (Easy mode),
 close cousin (for a later Undercover variant), what changed, notes.

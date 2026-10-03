@@ -1,4 +1,4 @@
-# Impostor: scenarios (version 3.4, 4 October 2026)
+# Impostor: scenarios (version 3.5, 4 October 2026)
 
 Status: **IMP-001 to IMP-108 approved by the owner, 3 October 2026.** Version 2 (same day) makes every approved
 scenario exact, from two independent readers (a coder-reader and a tester-reader, `docs/spec-rules.md` rule 12) and
@@ -11,6 +11,8 @@ IMP-200+ are approved as direction, built later.
 then everything at once, the word always shown); the last guess becomes the optional "Last-chance guess" (off by
 default); "How to play" opens only on request (choices screen and menu) and holds the rules; the deal shows
 "Player 2 of 4" and "Everyone else, look away!". Changed IDs carry "Status: approved, owner, 2026-10-04 (changed)".
+**Version 3.5 (same day):** final fixes from a tester read and a coder read; `words.csv` now has 311 rows (291
+active, 20 retired).
 **Version 3.4 (same day):** the "How to play" text (F7), the category switch colour, and the hold layer's exact
 bounds (IMP-010, IMP-070, IMP-072, IMP-007).
 **Version 3.3 (same day):** the UX designer's review of the first build, decided by the product owner (`ux.md`,
@@ -114,7 +116,8 @@ Example words, all real rows of `words.csv`: **Samosa** (IMPW-004, Food, family,
 **Pani puri** (IMPW-005, Food, other names "Golgappa / Puchka", hint "Street corner"); **Kheer / Payasam** (IMPW-007,
 Food, other names "Payesh", hint "Cardamom"); **School trip** (IMPW-203, School and childhood, other names
 "Excursion", hint "Headcount"); **Mummy finding it in two seconds** (the longest word, 31 characters).
-`words.csv` has 291 rows (4 October 2026) in 9 categories: Food, Festivals and occasions, Around the house, Out and
+`words.csv` has 311 rows (4 October 2026): 291 active rows in 9 categories and 20 retired rows (`retired` = "yes").
+The 9 categories: Food, Festivals and occasions, Around the house, Out and
 about, Films, music and TV, Sports and games, School and childhood, Weddings and family, Everyday moments.
 
 ---
@@ -170,7 +173,7 @@ U+2192; "✓" is U+2713; "›" is U+203A; "–" in "3–20" is U+2013; apostroph
 | Impostor line | "<NAME> was the impostor" | paragraph `result-impostor` | IMP-033 |
 | Word | "The word was" · "School trip" · small line "Also called Excursion" · chip "School and childhood" | `word-label`; `result-word`; `also-called`; `word-category` | IMP-033 |
 | Last-chance guess | "Last chance, <Name>! Guess the word out loud. Get it right and you steal the round." · main "<Name> guessed. Show the word" · "Guessed right" / "Wrong guess" | `guess-line`; main button; two quiet buttons | IMP-039 |
-| Result headline | "The crew wins!" · "<Name> steals the round!" · "<Name> escaped!" | h2 `round-outcome` | IMP-035, 034 |
+| Round outcome | "The crew wins!" · "<Name> steals the round!" · "<Name> escaped!" | h2 `round-outcome` | IMP-035, 034, 085 |
 | Result, Score No | "Tonight: impostor caught 3 · escaped 2" | paragraph `evening-line` | IMP-040 |
 | Result, Score Yes | "+2 Arjun" · "+1 Arjun" · "+1 each: Riya, Meena, Kabir"; caption "Scores since round 4" | `round-points`; small line in `scoreboard` | IMP-044, 043 |
 | Result buttons | main "Next round"; quiet "Undo" (after a verdict, last-chance guess only; never with it off); quiet "This word didn't work"; toast "Samosa won't come up again · Undo" | buttons; `undo-toast` | IMP-037, 107 |
@@ -490,7 +493,9 @@ And stored category names from before 4 October are mapped: "Travel and places" 
 "Cricket and games" → "Sports and games", "Desi life" → "Everyday moments"; any other name not among the 9 is
 dropped; when no category is left, all 9 are on
 And on a phone that has never played, the IMP-005 defaults apply (last-chance guess off)
-And "Play again" (IMP-103) uses the choices of the evening it was tapped on instead (mapped the same way)
+And "Play again" (IMP-103) uses the choices of the evening it was tapped on instead; the category name mapping
+applies only to the stored `lastChoices`; a category name in a past evening's choices that is not among the 9 is
+dropped (all 9 when none is left)
 When "Start round" is tapped
 Then the evening joins tonight's session by PLT-016's rules with no question (no "Session name" field, no
 "Continue … or start a new session?")
@@ -530,8 +535,9 @@ And the layer's top edge is the top of the viewport (y = 0) and its bottom edge 
 the block lies wholly inside it: at 320 × 568 the pad's top is at y = 268, so the layer runs from y = 0 to y = 260
 and the block's bottom edge is at y ≤ 260; at 360 × 640, y = 0 to y = 332; at 390 × 844, y = 0 to y = 536 (the pad's
 top is 300 px above the bottom edge: 160 + 8 + 48 + 8 + 60 + 16)
-And at 812 × 375 the layer covers the left half, x = 0 to x = 406, y = 0 to y = 375 (the block's right edge ≤ the
-pad's left edge)
+And at 812 × 375 the layer covers the whole top bar across the full width (y = 0 to 48, x = 0 to 812; the menu
+button cannot be tapped while held) and the left half, x = 0 to x = 406, y = 0 to y = 375 (the block's right edge ≤
+the pad's left edge)
 When she lets go (`pointerup`)
 Then the layer and the block leave the page at once (IMP-013), and the pad reads "Hold here to see your word" again
 And the first time the block hides after showing for at least 500 ms without a break (by `pointerup`,
@@ -545,10 +551,16 @@ on in seat order
 And the last player's button reads "Done, everyone's seen" (IMP-016)
 And no screen A or B ever shows the previous player's block
 And a double tap on "Done…" may open the next player's screen B; nothing private shows there without a hold
-Arithmetic (rule 4), screen B at 320 × 568, Larger text on (the tallest case): pad 160 + 8 + "Tap instead" 48 + 8 +
-main button 60 + 16 = 300 px from the bottom, leaving 268 px for the layer; the block needs at most 27 (line 1) + 72
-(`private-word`, 2 × 36) + 2 × 59 (lines 3 and 4, 2 lines each at 21 px) + 27 (line 5) = 244 px, so it fits; the top
-bar, `deal-progress` (29), the name and the text button (48) fit in the 268 px when the block is hidden
+And inside the layer the block's lines have line-height 1.2, 4 px gaps between the 5 lines and no padding, starting at
+y = 0; when the block would be taller than the layer, first lines 3, 4 and 5 shrink to 15 px, then `private-word`
+shrinks to 30 px
+Arithmetic (rule 4), screen B at 320 × 568: pad 160 + 8 + "Tap instead" 48 + 8 + main button 60 + 16 = 300 px from the
+bottom, so the pad's top is at y = 268 and the layer is 260 px tall (y = 0 to 260). Worst case, Larger text on, a
+two-line line 3, line 4 and line 5: 22.8 (line 1, 19 px) + 86.4 (`private-word`, 2 × 36 × 1.2) + 2 × 50.4 (lines 3
+and 4 at 21 px) + 45.6 (line 5 at 19 px) + 16 (gaps) = 271.6 px > 260, so lines 3–5 shrink to 15 px: 22.8 + 86.4 +
+2 × 36 + 36 + 16 = 233.2 px, bottom at y ≤ 260; `private-word` stays 36 px. Larger text off: 18 + 86.4 + 2 × 40.8 +
+36 + 16 = 238 px, no shrinking. The top bar, `deal-progress` (21), the name and the text button (48) fit above the
+pad when the block is hidden
 
 ## IMP-011: What each role sees: always five lines
 Status: approved, owner, 2026-10-04 (changed)
@@ -580,7 +592,8 @@ Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
 Then for crew and impostor alike: the same screens A and B, the same buttons in the same places, the same background
 colour, the same five-line block with the same font sizes per line, `navigator.vibrate(10)` once on every
-`pointerdown` on the pad (or on "Tap to see your word"), no sound when the block shows, and "Done…" appearing at the
+`pointerdown` on the pad while it reads "Hold here to see your word", or tap on it while it reads "Tap to see your
+word" (never while it reads "Let go to hide" or "Tap to hide"), no sound when the block shows, and "Done…" appearing at the
 same fake-clock moment for the same hold (guideline 45)
 And `private-word` is a box exactly 2 × its line-height tall for every role (guideline 45a; F11), its text centred
 horizontally and vertically; 36 px; with Larger text on, or for a word longer than 20 characters, it may be any
@@ -682,12 +695,14 @@ And if the page becomes hidden during it, on return it shows "Pass the phone to"
 And it is not recorded as a move and changes no round state
 
 ## IMP-018: Hide triggers and the privacy cover
-Status: approved, owner, 2026-10-03 (detail of IMP-013)
+Status: approved, owner, 2026-10-04 (changed; detail of IMP-013)
 Phase: Impostor 1
 Given a player's block is shown (held, or tapped open)
 When any of these happens: `pointerup`, `pointercancel` or `pointerleave` on the pad (hold mode); `scroll` on
 `window`; `resize` or `scroll` on `window.visualViewport`; `visibilitychange` to hidden; `pagehide`
 Then the block and `private-live` are emptied in the same event (before any later task)
+And only a hide by `pointerup`, `pointercancel` or `pointerleave` after at least 500 ms adds "Done…" and "Don't know
+this word?" (IMP-010); the other hides here (scroll, viewport resize or scroll, hidden page, `pagehide`) add nothing
 And while `document.visibilityState` is hidden, `privacy-cover` is in the page: `position: fixed`, covering the whole
 viewport, opaque, above everything; it is removed when the page is visible again
 And a return to visible during the deal shows "Welcome back." (IMP-090)
@@ -777,7 +792,8 @@ and counts down once per second: "1:59" at t = 1 s … "0:00" at t = 120 s, with
 quiet "Pause"; there is no `talk-heading` and no "Who sounded unsure?"
 And `timer` is 120 px (112 px at 320 px wide)
 And at "1:00" the announcer says "1 minute left"
-And at "0:00": `timer` stays showing "0:00"; the heading "Time's up!" appears; sound `chime` plays once (if sound on);
+And at "0:00": `timer` stays showing "0:00"; the heading "Time's up!" (h1, 40 px, never shrinks) appears directly
+under `timer`; sound `chime` plays once (if sound on);
 the announcer says "Time's up"; the main button "Vote now" is replaced by "Get ready to point"; "Pause" is replaced
 by the quiet "1 more minute"
 When "1 more minute" is tapped (no move)
@@ -847,6 +863,8 @@ side by side and of equal width, the text buttons "It's a tie" and "Count again"
 never look like names); and the main button "Reveal", disabled
 Arithmetic (rule 4), 390 × 844, 12 players, Larger text off: top bar 48 + heading 70 + 6 rows × 64 = 384 + 24 + 24 +
 48 + main button 76 + 3 gaps of 8 = 698 px ≤ 844
+And at 812 × 375 the heading and the names box (two columns, scrolling inside its own box) sit in the left half;
+"Not sure?", "It's a tie" (or "Still a tie"), "Count again" and the main button sit in the right half
 When the host taps Arjun
 Then Arjun is selected (outline, ✓, tint, `aria-pressed="true"`), nothing is revealed, and the main button reads
 "Reveal Arjun", enabled
@@ -908,8 +926,8 @@ And with reduced motion the build-up and the switch at t = 1.5 s happen with no 
 And nothing else appears later on this screen; it stays until "Next round" (or the menu) is used
 Arithmetic (rule 4), 390 × 844, Score No, guess off, a word of up to 12 characters with no other names, a name of up
 to 8 characters, Larger text off: top bar 48 + 67 + 77 (2 lines) + 24 + 53 + 36 + 34 + 24 + 48 + main button 76 + 9
-gaps of 8 = 559 px ≤ 844, so it does not scroll; with Score Yes and 12 players (scoreboard 6 rows × 36 = 216 and
-`round-points` 24 in place of `evening-line`) 775 px ≤ 844. At 320 × 568 and 360 × 640, with Larger text, longer
+gaps of 8 = 559 px ≤ 844, so it does not scroll; with Score Yes and 12 players (scoreboard 6 rows × 36 = 216,
+`round-points` 24 in place of `evening-line`, and one more 8 px gap) 783 px ≤ 844. At 320 × 568 and 360 × 640, with Larger text, longer
 words or names, or `also-called`, the page may scroll
 
 ## IMP-034: The result when the crew picked the wrong person
@@ -1052,7 +1070,7 @@ players come first in seat order, then players who left, in the order they left
 And a player who left and is added again with the same name (ignoring case) is a current player again, keeps their
 old total, and is no longer greyed
 And each row shows the rank, the name and the total, with `data-rank`, `data-name`, `data-points`
-And rows are 36 px tall; at widths of 360 px or less (320 × 568, 360 × 640) and at 812 × 375 (where the scoreboard
+And each row has a minimum height of 36 px; a name that does not fit on one line wraps and the row grows; at widths of 360 px or less (320 × 568, 360 × 640) and at 812 × 375 (where the scoreboard
 sits in the right half, IMP-081) the scoreboard is one column; at 390 px wide and more in portrait (390 × 844) it is
 two columns of 50% each, the first column holding the first ceil(n / 2) rows in rank order and the second the rest
 (12 players: 6 and 6; 7 players: 4 and 3; 3 players: 2 and 1)
@@ -1105,24 +1123,27 @@ And when even "Allow repeats" would find no word (every allowed word blocked), "
 "Change categories" is the main button
 
 ## IMP-053: Both names are shown where a thing has two
-Status: approved, owner, 2026-10-03
+Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
 Given the word is "Kheer / Payasam"
-Then the crew's `private-word` reads exactly "Kheer / Payasam", line 5 reads "Also called Payesh", and the reveal
-reads "The word was Kheer / Payasam."
+Then the crew's `private-word` reads exactly "Kheer / Payasam", line 5 reads "Also called Payesh", and the result
+screen shows `word-label` "The word was" and `result-word` "Kheer / Payasam" (IMP-033)
 
 ## IMP-054: Every word in the list is valid
 Status: approved, owner, 2026-10-04 (changed: the 4 October list)
 Phase: Impostor 1
 Then every row of `words.csv` (parsed as CSV, quoted fields allowed) and of `words.json` has: an id "IMPW-" plus
-3 digits, unique; a non-empty word; a category that is one of the 9 (IMP-007); audience "family" or "grownups";
+3 digits, unique; a non-empty word; a category that is one of the 9 (IMP-007), except retired rows, which may carry
+a retired category name ("Travel and places", "Cricket and games", "Desi life"); audience "family" or "grownups";
 nonveg "yes" or "no" (`true`/`false` in JSON); a non-empty hint that is not, ignoring case, the word, one of its
 names (split on " / "), or one of its other names
-And no two rows have the same word, ignoring case
 And rows are never deleted from `words.csv`: a word taken out gets "yes" in a column `retired` (empty otherwise); a
 retired word is never dealt (IMP-050, IMP-052) but still resolves for replay and History (IMP-096, IMP-105)
-And `words.json` has exactly the rows of `words.csv`, in the same order: the shipped list is `words.csv` as of
-4 October 2026 (291 rows, the 9 categories of IMP-007)
+And no two rows (active or retired) have the same word, ignoring case; a renamed word gets a new id and its old row
+is retired with its old word (IMPW-397 → IMPW-403 "Squeezing in one more", IMPW-402 → IMPW-404 "Screen time")
+And `words.json` has exactly the rows of `words.csv`, in the same order, with `retired` as `true`/`false`: the
+shipped list is `words.csv` as of 4 October 2026: 311 rows, 291 active (in the 9 categories of IMP-007) and 20
+retired (`retired` = "yes")
 
 ## IMP-055: The shipped word list file
 Status: approved, owner, 2026-10-03 (detail of IMP-054)
@@ -1251,7 +1272,9 @@ Then at every size, these sizes hold (guideline 46):
 |---|---|---|---|
 | `starter-name` | 56 px | name over 8 characters, or 320 px wide | 32 px (may wrap onto 2 lines) |
 | `talk-heading` | 56 px | 320 px wide | 32 px |
-| `pass-name` | 48 px | name would not fit in 1 line at 48 px | 32 px (may wrap onto 2 lines); on screen B at 320 × 568 and 360 × 640, 20 px on one line (product owner, 4 October) |
+| `pass-name` on screen A | 48 px | name would not fit in 1 line at 48 px | 32 px (may wrap onto 2 lines) |
+| `pass-name` on screen B | 48 px | name would not fit in 1 line at 48 px (it never wraps) | 32 px; 20 px at 320 × 568 and 360 × 640 (product owner, 4 October) |
+| "Time's up!" (h1) | 40 px | never | 40 px |
 | `timer` | 120 px | 320 px wide: exactly 112 px | 112 px |
 | `countdown-heading` "Get ready to point…" | 40 px | never | 40 px |
 | `timer-label` | 28 px | never | 28 px |
@@ -1270,6 +1293,8 @@ Then at every size, these sizes hold (guideline 46):
 
 And "may shrink" means the size is any value from the floor to the full size; with no listed reason it is exactly the
 full size
+And every row that may shrink also may shrink, on any row, when the screen's content is taller than the screen
+(IMP-081 step 2)
 
 ## IMP-074: Late joiner and someone leaving
 Status: approved, owner, 2026-10-03
@@ -1328,8 +1353,8 @@ And "Include non-veg food" stays in the Categories sheet (IMP-007)
 And the setting changes exactly these and nothing else: the impostor's private line 4 (IMP-011), the guess step
 (IMP-033, IMP-039, IMP-071), Undo (IMP-037), the +1 to the impostor (IMP-041, IMP-044), the menu during the guess
 and verdict steps (IMP-075), the main look on the verdict step (IMP-080), the wake lock release (IMP-087), reopening
-during the guess (IMP-091), the verdict kept in History (IMP-094, IMP-105), and the read-aloud line 4 and rule 5
-(IMP-070, IMP-072)
+during the guess (IMP-091), the verdict kept in History (IMP-094, IMP-105), and the paragraph "A caught impostor can
+steal the round by guessing the word." in "How to play" (IMP-070)
 
 ---
 
@@ -1358,7 +1383,8 @@ And the result screen (and the summary, IMP-092) scrolls as one page (guideline 
 the bottom; no element inside has its own scroll area; when the screen appears it is scrolled to the top (after the
 last-chance guess's verdict: scrolled so `round-outcome` is wholly in view)
 And the main button stays wholly on screen and fixed at the bottom on every screen
-And at 812 × 375 the hold screen puts the block on the left and the pad (and "Done…") on the right; the result
+And at 812 × 375 the hold screen puts the block on the left (its layer also covers the whole top bar, menu button
+included, IMP-010) and the pad (and "Done…") on the right; the result
 screen puts `result-headline`, `result-note`, `result-impostor`, the word, `also-called`, the chip and
 `round-outcome` in the left half, and `evening-line` or `round-points` with the scoreboard, and the quiet buttons, in
 the right half; the guess and verdict steps of IMP-039 do the same (lines and word left; "Arjun guessed. Show the
@@ -1372,6 +1398,8 @@ shows 12 players in two columns with no scrolling at all (arithmetic in IMP-031)
 And otherwise (13 to 20 players, longer names, Larger text, smaller screens or landscape) the picker's names are two
 columns and scroll inside their own box, the main button stays fixed at the bottom, and the heading stays wholly on
 screen
+And at 812 × 375 the layout is IMP-031's (heading and names box left; "Not sure?", the text buttons and the main
+button right)
 And the scoreboard follows IMP-044 (one or two columns; never its own scroll area)
 
 ## IMP-083: Screen readers
@@ -1406,11 +1434,12 @@ And the result screens for caught, escaped and "Still a tie" have the same `body
 text, with no coloured background)
 
 ## IMP-085: Kind words
-Status: approved, owner, 2026-10-03
+Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
 Then no Impostor text (every string in this file, every screen's text) contains, ignoring case, "liar", "loser",
 "fooled", "stupid" or "bad clue"
-And the result headlines are exactly "The crew wins!", "Arjun steals the round!" and "Arjun escaped!"
+And the `round-outcome` lines are exactly "The crew wins!", "Arjun steals the round!" and "Arjun escaped!"; the
+`result-headline` is exactly "✓ Caught!" or "✗ Escaped!"
 
 ## IMP-086: A slipped finger costs nothing
 Status: approved, owner, 2026-10-03
@@ -1434,13 +1463,12 @@ Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
 Then on "How do you want to play?" each group is one row: the label in a 64 px column, then the two options sharing
 the rest of the row equally (each at least 48 px tall), with only the selected option's line under it
-And option text is 17 px (15 px at 320 px wide; with Larger text 21 px, and 19 px at 320 px wide); "Whole family"
+And option text is 17 px (15 px at 320 px wide; with Larger text 21 px, and 17 px at 320 px wide); "Whole family"
 fits on one line inside its 48 px-tall button at every size (at 320 px wide each option is (320 − 32 − 64 − 8) / 2 =
 108 px wide)
-And at 320 × 568 with Larger text off, the four groups, the Categories button, the row "More options ›" /
-"How to play" and "Start round" show with no scrolling at all
-And with Larger text the content above "Start round" may scroll inside its own box; "Start round" stays fixed at the
-bottom and the page does not scroll
+And at 320 × 568, with Larger text on or off, the content above "Start round" (the four groups, the Categories
+button and the row "More options ›" / "How to play") may scroll inside its own box; at the other sizes it scrolls
+inside that box only with Larger text on; "Start round" stays fixed at the bottom and the page never scrolls
 And at 812 × 375 the four groups sit in a 2 × 2 grid and "Start round" overlaps none of them (guideline 17b)
 
 ## IMP-089: Sounds, vibration and voice
@@ -1668,8 +1696,10 @@ And when Tambola is picked and Tambola has an unfinished setup (PLT-006), that s
 (its own names); tonight's names fill only a new Tambola setup (product owner, 4 October)
 
 ## IMP-103: Play again another day
-Status: approved, owner, 2026-10-03
+Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
+Given History lists only evenings that replay (evenings saved before version 3.1 without word ids are hidden,
+IMP-096)
 When the host taps "Play again" on a past evening in History (PLT-009)
 Then "Who's playing?" opens with that evening's players in its final seat order (leavers left out), then "Next"
 opens "How do you want to play?" with that evening's final choices (IMP-009)

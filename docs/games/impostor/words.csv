@@ -54,6 +54,7 @@ IMPW-053,Sparkler,Phuljhari,Festivals and occasions,family,no,easy,Hand,,Cracker
 IMPW-054,Rangoli / Kolam,Muggu / Alpana,Festivals and occasions,family,no,easy,Dots,,Mehendi,hint rewritten,
 IMPW-055,Diya,Deepam,Festivals and occasions,family,no,easy,Clay,,Candle,kept,
 IMPW-056,Mithai box,Sweets box,Festivals and occasions,family,no,easy,Visiting,,Dry fruit box,kept,
+IMPW-057,Garba / Dandiya,,Festivals and occasions,family,no,easy,Circle,yes,Bhangra,kept; retired 4 Oct,
 IMPW-058,Kite flying,Patang,Festivals and occasions,family,no,easy,Wind,,Balloon,hint rewritten,
 IMPW-059,Iftar,,Festivals and occasions,grownups,no,medium,Sunset,,Feast,hint rewritten; grownups,
 IMPW-060,Picnic,,Out and about,family,no,easy,Sunday,,School trip,kept; audit 4 Oct,
@@ -158,6 +159,7 @@ IMPW-171,Marbles,Kanche / Goli,Sports and games,grownups,no,easy,Pocket,,Spinnin
 IMPW-172,Spinning top,Lattu / Pambaram,Sports and games,grownups,no,medium,String,,Marbles,grownups,
 IMPW-173,Badminton,,Sports and games,family,no,easy,Net,,Tennis,kept; audit 4 Oct,
 IMPW-174,Dumb charades,,Sports and games,grownups,no,easy,Party,,Pictionary,grownups,
+IMPW-175,Stumps,Wickets,Cricket and games,grownups,no,easy,Wood,yes,Bails,grownups; retired 4 Oct,
 IMPW-176,Cricket bat,,Sports and games,family,no,easy,Kit,,Hockey stick,kept,
 IMPW-177,Hockey,,Sports and games,family,no,easy,Stick,,Football,kept; audit 4 Oct,
 IMPW-178,P. V. Sindhu,,Sports and games,grownups,no,medium,Medal,,Saina Nehwal,grownups,
@@ -204,6 +206,7 @@ IMPW-222,Wedding card,Invitation card,Weddings and family,family,no,easy,Post,,R
 IMPW-223,Return gift,,Weddings and family,family,no,easy,Leaving,,Gift envelope,kept,
 IMPW-224,Gift envelope,Shagun envelope / Cover,Weddings and family,family,no,easy,Pocket,,Return gift,other names changed,cash gift; regional names (Moi) left out
 IMPW-225,Wedding photographer,,Weddings and family,family,no,easy,Flash,,Wedding album,hint rewritten,
+IMPW-226,Wedding album,,Weddings and family,grownups,no,medium,Shelf,yes,Family photo,grownups; retired 4 Oct,
 IMPW-227,Bride,,Weddings and family,family,no,easy,Decked up,,Groom,hint rewritten,
 IMPW-228,Groom,,Weddings and family,family,no,easy,Nervous,,Bride,kept,
 IMPW-230,Grandmother,Dadi / Nani / Paati / Ammamma / Ajji / Ba / Dida / Ammachi,Weddings and family,family,no,easy,Stories,,Grandfather,hint rewritten; other names changed,
@@ -225,13 +228,17 @@ IMPW-247,Umbrella,Chhata / Kudai,Around the house,family,no,easy,Forgotten,,Rain
 IMPW-248,Gas cylinder,LPG,Around the house,family,no,easy,Delivery,,Gas stove,new,not yet reader-checked
 IMPW-249,Aadhaar card,,Everyday moments,family,no,easy,Xerox,,PAN card,new; moved to Desi life (4 Oct),"government ID, not political; kid reader not asked; not yet reader-checked"
 IMPW-250,Mobile charger,Charger,Around the house,family,no,easy,Bedside,,TV remote,new,not yet reader-checked
+IMPW-252,Elephant,Haathi / Aana,Travel and places,family,no,easy,Safari,yes,Camel,new; retired 4 Oct,not yet reader-checked
 IMPW-253,Traffic police,,Out and about,family,no,easy,Hand signals,,Traffic signal,new,not yet reader-checked
 IMPW-254,Window seat,,Out and about,family,no,easy,Fight,,Aisle seat,new,not yet reader-checked
 IMPW-255,YouTube,,"Films, music and TV",family,no,easy,Ads,,Television,new,brand that is the common word; not yet reader-checked
 IMPW-256,Cartoon,,"Films, music and TV",family,no,easy,Channel,,Comic books,new,not yet reader-checked
 IMPW-257,Ringtone,,Everyday moments,family,no,easy,Tune,,Radio,new; audit 4 Oct,not yet reader-checked
+IMPW-258,Cricket ball,,Cricket and games,family,no,easy,Window,yes,Cricket bat,new; retired 4 Oct,not yet reader-checked
+IMPW-259,Rain,Baarish / Mazhai,School and childhood,family,no,easy,Holiday,yes,Paper boat,new; retired 4 Oct,not yet reader-checked
 IMPW-260,Crayons,,School and childhood,family,no,easy,Drawing book,,Colour pencils,new,not yet reader-checked
 IMPW-261,Banana leaf meal,Elai saapadu / Sadya,Food,family,no,easy,Rows,,Wedding buffet,new; audit 4 Oct,South wedding meal known nationally; not yet reader-checked
+IMPW-262,Baby,,Weddings and family,family,no,easy,Lullaby,yes,Toddler,new; retired 4 Oct,not yet reader-checked
 IMPW-263,Selfie,,Everyday moments,family,no,easy,Pose,,Family photo,new; audit 4 Oct,not yet reader-checked
 IMPW-301,Biscuit dipped in tea,,Food,family,no,easy,Soggy,,Rusk,new quirky; hint rewritten; audit 4 Oct,clues: soggy / sink / crumbs / chai
 IMPW-302,Last piece on the plate,,Food,family,no,medium,Politeness,,Leftovers,new quirky,everyone wants it and nobody takes it; clues: share / polite / grab
@@ -240,12 +247,14 @@ IMPW-304,Biting a green chilli,,Food,family,no,easy,Surprise,,Pickle,new quirky,
 IMPW-306,Extra chutney,,Food,family,no,easy,Refill,,Free coriander,new quirky,asking the street vendor for more; clues: dip / green / more
 IMPW-308,Diwali cleaning,,Festivals and occasions,family,no,easy,Whole house,,Spring cleaning,new quirky,clues: dust / attic / ladder / old things
 IMPW-310,Cracker that didn't go off,,Festivals and occasions,grownups,no,medium,Silence,,Crackers,new quirky; hint rewritten,the one that fizzles and everyone waits; clues: fuse / silent / careful
+IMPW-311,Sweet box given away again,,Festivals and occasions,grownups,no,medium,Passed along,yes,Mithai box,new quirky; hint rewritten; retired 4 Oct,laughs with families not at anyone; kids may miss the joke
 IMPW-312,Cake on the face,,Festivals and occasions,grownups,no,easy,Messy,,Birthday party,new quirky,birthday cake smeared on cheeks; clues: cream / cheeks / candles
 IMPW-313,New Year resolution,,Festivals and occasions,grownups,no,medium,Good intentions,,New Year's Eve,new quirky,clues: gym / promise / diet / list
 IMPW-314,Plastic bag of plastic bags,,Around the house,family,no,easy,Hoarding,,Ice cream tub full of dal,new quirky,clues: kitchen / drawer / stuffed / reuse
 IMPW-315,Ice cream tub full of dal,,Around the house,family,no,easy,Freezer,,Sewing kit in a biscuit tin,new quirky,the classic disappointment; clues: fridge / open / sad / reuse
 IMPW-316,Sewing kit in a biscuit tin,,Around the house,family,no,easy,Cupboard surprise,,Ice cream tub full of dal,new quirky; hint rewritten,the round blue tin; clues: needle / thread / buttons / lid
 IMPW-317,Remote in a plastic cover,,Around the house,family,no,easy,Protection,,TV remote,new quirky,close to TV remote (IMPW-097); don't deal both in one evening
+IMPW-318,Pressure cooker whistle,,Around the house,family,no,easy,Counting,yes,Pressure cooker,new quirky; retired 4 Oct,close to Pressure cooker (IMPW-063); don't deal both in one evening
 IMPW-320,Water tank overflow,,Around the house,grownups,no,medium,Motor,,Bucket and mug,new quirky,someone forgot to switch off the motor; clues: roof / splash / switch
 IMPW-323,Cow on the road,,Everyday moments,family,no,easy,Right of way,,Stray dog,new quirky; audit 4 Oct,the joke is the traffic waiting not the cow; check it reads kindly
 IMPW-324,Horn OK Please,,Out and about,grownups,no,medium,Painted,,Honking,new quirky,truck-back painting; check Kerala and Chennai readers know it
@@ -254,8 +263,10 @@ IMPW-327,Google Maps voice,,Out and about,grownups,no,medium,Directions,,Traffic
 IMPW-328,Hero's slow-motion entry,,"Films, music and TV",family,no,easy,Fans,,Villain's evil laugh,new quirky; hint rewritten,clues: slow / hair / music / goggles
 IMPW-329,Villain's evil laugh,,"Films, music and TV",family,no,easy,Scary sound,,Hero's slow-motion entry,new quirky; hint rewritten,clues: loud / echo / evil / den
 IMPW-330,Dramatic zoom in TV serials,,"Films, music and TV",family,no,easy,Suspense,,Villain's evil laugh,new quirky,the triple zoom with a thunder sound; laughs at the style not the viewers
+IMPW-331,Fight over the remote,,"Films, music and TV",family,no,easy,Prime time,yes,Remote in a plastic cover,new quirky; retired 4 Oct,close to TV remote (IMPW-097)
 IMPW-334,Long-lost twins,,"Films, music and TV",grownups,no,medium,Reunion,,Double role,new quirky,old film trope; kids may not know it
 IMPW-335,Lucky seat during a match,,Sports and games,family,no,medium,Superstition,,World Cup final,new quirky,don't move or India loses; clues: sofa / still / win
+IMPW-338,Ball over the wall,,Cricket and games,family,no,easy,Neighbour,yes,Cricket ball,new quirky; retired 4 Oct,gully rule: you hit it you fetch it; clues: lost / gate / out
 IMPW-339,Lemon and spoon race,,Sports and games,family,no,easy,Balance,,Sack race,new quirky,clues: mouth / drop / slow / steady
 IMPW-340,Musical chairs,,Sports and games,family,no,easy,Elimination,,Passing the parcel,new quirky,clues: music / stop / sit / push
 IMPW-343,Back bench,Last bench,School and childhood,family,no,easy,Mischief,,Class monitor,new quirky,clues: back / naughty / sleep / chat
@@ -265,13 +276,16 @@ IMPW-346,Fake tummy ache,,School and childhood,family,no,easy,Excuse,,Summer vac
 IMPW-349,Dancing uncle at the wedding,,Weddings and family,family,no,easy,Signature step,,Wedding reception,new quirky,laughs with the uncle; no drinking angle
 IMPW-350,Relative asking about marks,,Weddings and family,family,no,easy,Comparison,,Report card,new quirky,clues: percentage / cousin / exam / question
 IMPW-351,Cheek-pinching aunty,,Weddings and family,family,no,easy,Affection,,Neighbour aunty,new quirky,clues: cheeks / cute / grown / ouch
+IMPW-352,Overloaded buffet plate,,Weddings and family,family,no,easy,Tower,yes,Wedding buffet,new quirky; retired 4 Oct,close to Wedding buffet (IMPW-200)
 IMPW-353,Relative you can't recognise,,Weddings and family,family,no,medium,Awkward,,Cousins,new quirky,clues: smile / nod / who / uncle
 IMPW-354,Floor beds with cousins,,Weddings and family,family,no,medium,Crowded room,,Cousins,new quirky,the wedding-house sleepover; clues: mattress / floor / laugh / night
 IMPW-355,Pet name,,Weddings and family,family,no,medium,Embarrassing,,Cousins,new quirky,the home name like Bunty or Chinnu; clues: home / nickname / cute
 IMPW-360,Bargaining,,Everyday moments,family,no,easy,Shopkeeper,,Free coriander,new quirky,clues: price / less / walk away / market
 IMPW-362,Forwarded message,,Everyday moments,family,no,easy,Unverified,,Good morning message,new quirky,laughs with every family group; clues: phone / share / fake
+IMPW-363,Good morning message,,Desi life,family,no,easy,Daily,yes,Forwarded message,new quirky; retired 4 Oct,the flower picture with glitter; clues: flowers / sunrise / phone
 IMPW-366,Lizard on the wall,,Everyday moments,family,no,easy,Scream,,Mosquito bite,new quirky,clues: wall / tail / scream / ceiling
 IMPW-370,Ghost story,,Everyday moments,family,no,easy,Lights off,,Power cut,new quirky; hint rewritten,clues: scary / night / dark / blanket
+IMPW-373,Fake smile in photo,,Desi life,family,no,easy,Cheese,yes,Blinking in photo,new quirky; retired 4 Oct,clues: camera / smile / pose / again
 IMPW-374,Rain on washing day,,Everyday moments,family,no,easy,Terrace run,,Clothesline,new quirky,clues: clothes / rain / rush / wet
 IMPW-375,Sunday oil massage,,Everyday moments,family,no,easy,Weekend,,Haircut,new quirky,clues: oil / hair / head / sticky
 IMPW-377,Neighbour aunty,,Everyday moments,family,no,easy,Balcony,,Cheek-pinching aunty,new quirky,the one who knows everything; laughs with her; clues: gossip / window / news
@@ -285,8 +299,14 @@ IMPW-387,Phone falling on face,,Everyday moments,grownups,no,easy,Lying down,,Lo
 IMPW-389,Blinking in photo,,Everyday moments,family,no,easy,Retake,,Fake smile in photo,new quirky,close to Fake smile in photo; don't deal both in one evening
 IMPW-390,Bad network,,Everyday moments,family,no,easy,Bars,,Frozen video call,new quirky,"""can you hear me?""; clues: signal / roof / call / drop"
 IMPW-391,Loud phone call,,Everyday moments,family,no,easy,Speaker,,Honking,new quirky,the uncle on speakerphone in the bus; clues: shout / bus / hello
+IMPW-392,Frozen video call,,Desi life,family,no,easy,Buffering,yes,Video call,new quirky; retired 4 Oct,close to Video call (IMPW-221); clues: stuck / face / screen
 IMPW-393,Milk boiling over,,Everyday moments,family,no,easy,Stove,,Pressure cooker whistle,new quirky,clues: milk / gas / mess / turn away
+IMPW-395,Waiting for the plumber,,Desi life,grownups,no,medium,Leak,yes,Water tank overflow,new quirky; retired 4 Oct,"""coming in ten minutes"" all day; clues: tap / call / wait / pipe"
 IMPW-396,Mummy finding it in two seconds,,Everyday moments,family,no,easy,Searched everywhere,,Lost keys,new quirky (reviewers' suggestion),suggested and rechecked by persona reviewers
-IMPW-397,Squeezing in one more,,Everyday moments,family,no,easy,Car trip,,Crowded bus,new quirky (reviewers' suggestion); audit 4 Oct,suggested and rechecked by persona reviewers
+IMPW-397,One more on the seat,,Desi life,family,no,easy,Car trip,yes,Crowded bus,new quirky (reviewers' suggestion); retired 4 Oct,suggested and rechecked by persona reviewers
+IMPW-398,Arguing with the auto driver,,Travel and places,family,no,easy,Price fight,yes,Bargaining,new quirky (reviewers' suggestion); retired 4 Oct,suggested and rechecked by persona reviewers
 IMPW-399,"""Just one more puri""",,Weddings and family,family,no,easy,Host,,Second serving,new quirky (reviewers' suggestion),suggested and rechecked by persona reviewers
-IMPW-402,Screen time,,Everyday moments,family,no,easy,Five more minutes,,Screen time,new quirky (reviewers' suggestion); audit 4 Oct,suggested and rechecked by persona reviewers
+IMPW-401,Say hello to the relative abroad,,Weddings and family,family,no,easy,Phone handed over,yes,Video call,new quirky (reviewers' suggestion); retired 4 Oct,suggested and rechecked by persona reviewers
+IMPW-402,"Five more minutes, then phone off",,School and childhood,family,no,easy,Bargain,yes,Screen time,new quirky (reviewers' suggestion); retired 4 Oct,suggested and rechecked by persona reviewers
+IMPW-403,Squeezing in one more,,Everyday moments,family,no,easy,Car trip,,Crowded bus,"new quirky (reviewers' suggestion); audit 4 Oct; new id, replaces IMPW-397",suggested and rechecked by persona reviewers
+IMPW-404,Screen time,,Everyday moments,family,no,easy,Five more minutes,,Screen time,"new quirky (reviewers' suggestion); audit 4 Oct; new id, replaces IMPW-402",suggested and rechecked by persona reviewers

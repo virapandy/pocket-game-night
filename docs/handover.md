@@ -62,14 +62,25 @@ polish. **Tester:** add pictures of the thin sleep line after "Got it" and of N1
   in the corner; "Has Zoya got their ticket?" wording; polish (empty "Last", prizes step and payouts at 360, landscape
   "Which prize?" and claim QR "Done", lighter Called/Undo bar).
 
-### Impostor: two fixes from the owner's play (4 October), before any release
-1. **C3 content:** rebuild `content/impostor/words.json` from `docs/games/impostor/words.csv` (now 308 words: category
-   "Cricket and games" renamed "Sports and games"; Elephant removed; Rain and Aadhaar card moved to "Desi life"; hint
-   of Hero's slow-motion entry is "Fans"). Scenario lines naming the categories (IMP-007, IMP-097 area) are updated.
-2. **C1 wording, IMP-033 (and IMP-091, the canonical strings table):** the caught line two is now exactly "Last chance,
-   <Name>! Guess the word out loud. Get it right and you steal the round." and the main button "<Name> guessed. Show the
-   word". Tests that look for "one guess" or "Show the word" change with it.
-Tester copies the changed scenario lines into `specs/impostor/` first; then one coder lane; quick verify.
+### Impostor round 4 (owner approved 4 October): do this next, before any Impostor release
+After the owner's play and the UX designer's review of the first build. **Binding: `docs/games/impostor/scenarios.md`
+v3.5** (passed the coder and tester reads per `docs/spec-rules.md`); every changed scenario is marked
+"2026-10-04". In plain words:
+1. **The round ends on one result screen** right after "Reveal <name>": "✓ Caught!" or "✗ Escaped!", who the impostor
+   was, the word and its category, then "Next round". The last guess becomes an optional setting, off by default.
+2. **How to play only on request** (button on the choices screen and in the menu); its text follows the settings.
+3. **Pass the phone:** "Player 2 of 4", "Everyone else, look away!", a full-width pad that reads "Let go to hide",
+   nothing moves after the first hold, "New word for everyone?" confirmation.
+4. **UX fixes F1–F12** (`ux.md`, last section): one-page result and summary screens, room-sized reveal, landscape
+   layouts, clue wording, tie buttons, summary winner line, "1 more minute", polish. Guidelines 45a and 46a.
+5. **C3, word list and saved evenings:** rebuild `content/impostor/words.json` from `docs/games/impostor/words.csv`
+   (311 rows: 291 active, 20 `retired`; new category names "Sports and games", "Out and about", "Everyday moments");
+   each deal records its word id and draws from per-deal seeds; old evenings without `lastGuess` read as on; evenings
+   from earlier preview builds that don't replay are hidden; regenerate the format fixture with word ids.
+Classes: 5 is C3 (tests first, mutation on the changed rules lines); 1–3 are C2; 4 is C1/C2. Tester first copies the
+changed scenarios into `specs/impostor/` and lists the tests to update or retire (the tester read of 4 October already
+names them by file). Lanes: A deal and privacy; B result, summary, picker, timer; C setup, choices, how to play;
+C3 in its own lane. Then quick verify, the owner tries the preview, then "release Impostor".
 
 ### Impostor build, product owner answers (4 October)
 All open Impostor questions in `docs/test-questions.md` are answered in `docs/decisions.md` I21 and written into
