@@ -18,7 +18,7 @@
 //         session SessionStart - wire up the git hook and tell Claude which role it has
 //         commit  git pre-commit - block commits that cross the line
 import { execSync } from 'node:child_process';
-import { existsSync, readFileSync, realpathSync, unlinkSync, writeFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, realpathSync, unlinkSync, writeFileSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -38,6 +38,21 @@ const SELF = real(path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..
 const BASE = SELF.replace(/-(testing|product)$/, '');
 const FOLDER = { build: BASE, test: `${BASE}-testing`, product: `${BASE}-product` };
 const WORKSPACE = path.dirname(FOLDER.build);
+// Lanes: extra working copies of the Build clone (git worktrees) named <build folder>-lane-<letter>, one per
+// parallel coder (docs/proposals/parallel-coders.md). They count as the Build clone everywhere.
+const LANES = (() => {
+  const prefix = `${path.basename(FOLDER.build)}-lane-`;
+  try {
+    return readdirSync(WORKSPACE)
+      .filter((n) => n.startsWith(prefix) && /^[a-z]$/.test(n.slice(prefix.length)))
+      .map((n) => path.join(WORKSPACE, n));
+  } catch { return []; }
+})();
+// Every working copy the guard knows: [key, root, clone].
+const ROOTS = [
+  ...Object.entries(FOLDER).map(([clone, root]) => [clone, root, clone]),
+  ...LANES.map((root) => [path.basename(root), root, 'build']),
+];
 
 const entry = process.env.CLAUDE_CODE_ENTRYPOINT;
 const projectDir = real(process.env.CLAUDE_PROJECT_DIR || process.cwd());
@@ -59,7 +74,7 @@ function locate(p) {
   let rest = '';
   while (!existsSync(dir)) { rest = path.join(path.basename(dir), rest); dir = path.dirname(dir); }
   const full = path.join(real(dir), rest);
-  for (const [clone, root] of Object.entries(FOLDER)) {
+  for (const [, root, clone] of ROOTS) {
     if (full === root || full.startsWith(root + path.sep)) {
       return { clone, rel: path.relative(root, full).split(path.sep).join('/') };
     }
@@ -121,7 +136,7 @@ function pre(input) {
         : 'Only the Test role runs tests. Type-check instead, push, and read reports/latest.md for results.');
     }
     if (input.tool_use_id) {
-      const snap = Object.fromEntries(Object.entries(FOLDER).map(([clone, root]) => [clone, changedFiles(root)]));
+      const snap = Object.fromEntries(ROOTS.map(([key, root]) => [key, changedFiles(root)]));
       try { writeFileSync(snapshotFile(input), JSON.stringify(snap)); } catch { /* post falls back */ }
     }
     process.exit(0);
@@ -179,17 +194,18 @@ function post(input) {
   try { before = JSON.parse(readFileSync(snapshotFile(input), 'utf8')); unlinkSync(snapshotFile(input)); } catch { /* none */ }
   const own = role === 'test' ? 'test' : role === 'product' ? 'product' : 'build';
   const stray = [];
-  for (const [clone, root] of Object.entries(FOLDER)) {
-    // The product owner works in parallel with the others, so each side checks only its own world:
-    // the product owner its own clone, everyone else the Build and Test clones.
-    if ((role === 'product') !== (clone === 'product')) continue;
+  for (const [key, root, clone] of ROOTS) {
+    // Several agents work at once (product owner, tester, coders in lanes), so each checks only its own
+    // working copies; another agent's work landing meanwhile is not this command's doing. The orchestrator
+    // checks the Build and Test clones and the lanes.
+    if (role === 'orchestrator' ? clone === 'product' : clone !== own) continue;
     const now = changedFiles(root);
     // Without a snapshot, check the role's own clone fully and skip the other one.
-    const was = new Set(before ? before[clone] : clone === own ? [] : now);
+    const was = new Set(before ? before[key] ?? [] : clone === own ? [] : now);
     for (const line of now) {
       if (was.has(line)) continue;
       const rel = line.slice(3).split(' -> ').pop().replace(/^"|"$/g, '');
-      if (!allowed(clone, ownerOf(rel))) stray.push(`${base(clone)}/${rel}`);
+      if (!allowed(clone, ownerOf(rel))) stray.push(`${path.basename(root)}/${rel}`);
     }
   }
   if (stray.length) {

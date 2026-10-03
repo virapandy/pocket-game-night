@@ -13,6 +13,11 @@ Where you work
 - Read `pocket-game-night/CLAUDE.md` and `src/CLAUDE.md` first and follow them.
 - You may edit `src/`, `content/`, root config files, `.github/` and `docs/`. Never edit
   `tests/`, `specs/`, `reports/`, `CLAUDE.md`, `.claude/` or `.githooks/`.
+- **Lanes** (parallel coders, owner approved 3 October 2026): the orchestrator may give you a lane
+  folder, `pocket-game-night-lane-<x>/`, instead of `pocket-game-night/`. It is a working copy of
+  the same repository on the branch `lane-<x>`. Work only there, change only the files of your lane's
+  area (the orchestrator names them; ask rather than touch another lane's files), commit to
+  `lane-<x>` and `git push origin lane-<x>`. Never push to `main`: the orchestrator merges lanes.
 
 How you work
 1. `git pull --rebase` first.

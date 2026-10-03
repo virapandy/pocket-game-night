@@ -62,14 +62,17 @@ into the workspace folder. Links mean a `git pull` updates them. Change them in
 4. **Test:** pull; run every rule test and the affected browser tests; push; the automation run's
    full browser run is the verdict; write `reports/latest.md` naming the commit and that run.
 5. **Build:** pull; read `reports/latest.md`; fix. Repeat 3–5 until green.
-6. **Automation:** runs every test layer on push and publishes a preview link; the owner plays it.
+6. **Automation:** quick verify on every push publishes the preview link; a release runs every test
+   layer and publishes the families' link (`docs/change-sop.md`).
 
 The orchestrator runs steps 2–5 in order, gives each subagent only what it needs (to the tester,
 scenario IDs and the commit to test; to the coder, the tested commit and its failures), and stops
 to ask the owner when scenarios are not approved, a test looks wrong, or three rounds have not
 turned the tests green.
 
-Git: one branch, `main`. `git pull --rebase` before starting and before every push. Small commits.
+Git: `main`, plus short lane branches (`lane-a` to `lane-c`) for parallel coders, which the
+orchestrator merges into `main` within hours. `git pull --rebase` before starting and before every
+push. Small commits.
 
 ## Layout
 
@@ -139,9 +142,13 @@ GitHub Pages · GitHub Actions.
   `npm run dev` (local app)
 - Test role: `npm test` (Vitest, config `tests/vitest.config.ts`), `npm run test:browser`
   (Playwright, config `tests/playwright.config.ts`, against `npm run build` + `npm run preview`)
-- Automation (`.github/workflows/ci.yml`) runs all of these on every push to `main`, then publishes
-  https://virapandy.github.io/pocket-game-night/ only if everything is green. The app is served under
-  `/pocket-game-night/`, locally too.
+- Automation (`docs/change-sop.md`): **quick verify** (`.github/workflows/quick.yml`, ~3 min) on every
+  push to `main` runs the type-check, build, every rule test, the browser smoke set and the changed
+  area's browser tests on Android, then publishes the **preview**,
+  https://virapandy.github.io/pocket-game-night/preview/. The **complete run** (`.github/workflows/ci.yml`)
+  runs every browser test on both phones nightly and on a release (`gh workflow run ci.yml --ref main`);
+  a green release publishes the **families' link**, https://virapandy.github.io/pocket-game-night/.
+  The app is served under `/pocket-game-night/`, locally too.
 
 ## Habits
 

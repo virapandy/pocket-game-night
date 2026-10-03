@@ -60,8 +60,14 @@ a dependency or paid service is needed, or three build-and-test rounds have not 
 - **To the coder:** scenario IDs, the tested commit, and the failures from `reports/latest.md`.
   Never write or suggest test changes.
 - Run one subagent at a time. Each pushes before handing back, so the next one pulls finished work.
-  When the owner asks for parallel work, one coder and one tester may run at once on independent
-  work, each in its own clone; never two testers or two coders (they share a clone).
+  **Parallel work** (owner approved 3 October 2026, `docs/proposals/parallel-coders.md`): up to three
+  coders in **lanes** plus one tester. A lane is a git worktree of the Build clone on its own branch:
+  `git -C pocket-game-night worktree add ../pocket-game-night-lane-a -b lane-a origin/main`. Give each
+  lane one area of screens; files needed by two changes go to the same lane; C3 changes are never split.
+  Merge each finished lane into `main` in turn (rebase on the latest `main`, fast-forward, push), so
+  quick verify runs after each merge; remove the worktree and branch once merged. Never two testers.
+  The owner uses this Mac meanwhile: the tester's local browser runs use at most 3 workers under
+  `caffeinate -i taskpolicy -b`; heavy runs belong on GitHub.
 - Keep replies short. Pass on summaries, not logs.
 
 ## Other ways to work
