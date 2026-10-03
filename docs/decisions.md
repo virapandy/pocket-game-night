@@ -126,6 +126,7 @@
 | 2026-10-03 | Faster loop: automation splits browser tests into parallel jobs and caches browsers; report-only pushes don't restart automation; long checks (mutation, mass simulation, emulator) stay weekly and never block a round. | Owner |
 | 2026-10-03 | The app honours the phone's "reduce motion" setting: no number animation and the next call is ready at once; browser tests run with it on. Phones without the setting are unchanged. | Owner |
 | 2026-10-03 | The tester runs the affected browser tests plus every rule test locally, then reads automation's full run, which is the verdict; a full local browser run only to reproduce an automation failure. | Owner |
+| 2026-10-03 | Speed first, by `docs/change-sop.md`: every change is sorted into C0 Docs, C1 Look, C2 Screen behaviour or C3 Core and follows that class's recipe; only C3 (rules, money, claims, saved data, ticket/QR format, privacy, dependencies, build) gets tests first; quick verify on every push; the complete test only before a release; a preview link for the owner and a families' link updated only by releases; up to 3 coders in parallel in separate working copies, split by area; new UX rows and extended testing paused until UX rows 1–25 are released. Replaces the 3 October "full run is the verdict every round" rule. | Owner |
 
 "Convention" means the established Tambola rule in `docs/games/tambola/guide.md`, chosen because the owner asked
 Claude to follow game conventions. Every Tambola rule above is also a host setting with this default.

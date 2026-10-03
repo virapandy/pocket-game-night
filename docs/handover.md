@@ -1,9 +1,35 @@
 # Handover: start here
 
-## Now: status and what's next (product owner, updated 2 October 2026, after the full UX review)
+## Now: status and what's next (product owner, updated 3 October 2026: speed first)
 A new orchestrator session starts here: read this section, then work through **"Next, in order"** from the
-top, one item at a time, reporting to the owner after each. The product owner keeps this section
+top, reporting to the owner after each. The product owner keeps this section
 current; instructions live here, not in chat. History from Phase 0 and 1a is further down.
+
+### SPEED FIRST (owner, 3 October): read before anything else
+The owner: the loop has run for days on simple changes; progress must be much faster. No app change has landed since
+1 October afternoon. **New way of working: `docs/change-sop.md`** (owner approved). In short: sort every change into
+C0 Docs, C1 Look, C2 Screen behaviour or C3 Core; only C3 gets tests first; quick verify (~3 min) on every push; the
+complete test only before a release; up to 3 coders in parallel, each on its own area.
+
+**Do now, in this order:**
+1. **Set up (one short round, coder and tester in parallel):** coder splits automation into quick verify on push
+   (publishes the preview) and the complete run on release and nightly (publishes the families' link); proposes the
+   rule edits for parallel coders in worktrees for the owner's one-time OK. Tester tags the smoke set and writes the
+   map from app area to browser test files. Until parallel coders are approved, one coder does lanes A, B, C in turn.
+2. **Build UX rows 1–25 (2b below) in three parallel lanes, no tests first** (the tester updates broken tests and
+   writes C2 tests alongside):
+   | Lane | Area | Rows (class) |
+   |---|---|---|
+   | A | Player's phone: tickets, cue, claim | 1 (C1), 2 (C1), 3 (C1), 12 (C2), 13 (C1), 17 (C1), 19 player parts (C1) |
+   | B | Host: calling, claims, payouts, settings, summary | 4 (C2), 5 (C1/C2), 14 (C1), 16 (C1), 18 (C1), 22 (C2), 24 (C2), 25 (C1), 19 host parts (C1) |
+   | C | Host: setup and hand-out | 7 (C2), 8 (C2), 9 (C2), 10 (C1), 11 (C1) |
+3. **C3 rows, tests first, at the same time as step 2:** tester writes tests for 6, 20, 21 and 23 (row 15 already
+   has TAM-214); then one coder builds 6, 15, 20, 21, 23 as one batch after lanes A–C are merged.
+4. **Release:** complete run, UX designer re-check of rows 1–25, owner tries the preview, then the families' link.
+- **Paused until rows 1–25 are released:** new UX rows and reviews (product owner), mutation, emulator, simulation and
+  Jev work (weekly unattended run only).
+- C1/C2 questions don't stop work (pick by the UX guidelines, note it); C3 questions go to the owner in one list.
+- Stuck after 3 rounds or half a day: tell the owner. One progress line at the top of `reports/latest.md` per step.
 
 ### Status (2 October, product owner with the UX designer, on app 5c5030d)
 | Item | State |
