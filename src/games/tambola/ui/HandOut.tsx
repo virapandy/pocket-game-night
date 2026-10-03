@@ -114,7 +114,11 @@ export function HandOut({
                     onClick={() => {
                       const why = onAssign(number, p.id);
                       setError(why);
-                      if (!why) setPicking(false);
+                      if (!why) {
+                        setPicking(false);
+                        // A new owner hasn't been asked about yet (row 7).
+                        setAskedFor(null);
+                      }
                     }}
                   >
                     {p.name}
