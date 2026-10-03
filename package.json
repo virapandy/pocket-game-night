@@ -15,7 +15,8 @@
     "test:mutation:summary": "node tests/mutation/summary.mjs",
     "test:extended": "vitest run --config tests/vitest.extended.config.ts",
     "test:android": "playwright test --config tests/playwright.android.config.ts",
-    "build:rhymes": "node scripts/build-rhymes.mjs"
+    "build:rhymes": "node scripts/build-rhymes.mjs",
+    "build:words": "node scripts/build-words.mjs"
   },
   "dependencies": {
     "jsqr": "^1.4.0",
