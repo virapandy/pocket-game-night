@@ -608,6 +608,14 @@ button, [role="button"], a { touch-action: manipulation; }
   .land-right .play-bottom { margin-top: auto; }
   /* A tall verdict (a phone ticket's) scrolls inside its card, so the buttons below always stay on screen. */
   .land-right .result-card { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+  /* Point b (C1): in landscape the card is short, so the verdict is smaller, the proof line always keeps two lines of
+     room (the ticket picture below it scrolls), and "Undo claim" / "Done" show whole at the card's bottom. */
+  .land-right .result-card { gap: 6px; padding: 8px 12px; }
+  .land-right .result-card > .verdict { font-size: 1.1rem; }
+  .land-right .result-body { gap: 6px; min-height: 2.6rem; }
+  .land-right .result-card .claim-proof { font-size: 0.9rem; line-height: 1.4; }
+  .land-right .result-actions { flex-wrap: nowrap; }
+  .land-right .result-actions .button { min-height: 44px; }
   .land-right .next-number { height: 72px; }
 }
 
