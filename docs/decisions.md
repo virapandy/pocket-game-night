@@ -143,6 +143,16 @@ Claude to follow game conventions. Every Tambola rule above is also a host setti
 - Before wider public release: replace the "Report a problem" stub with a real destination (PLT-208)
 - Approval of Phase 2, 2.5, 6 and 7 scenarios (when those phases come up)
 
+## Impostor: owner's answers (3 October 2026), to be confirmed after forum research
+- I1: **Easy mode**: the impostor sees the category and a hint; **Hard mode**: nothing but "You are the impostor".
+- I2: Starter random; in Hard mode never the impostor; in Easy mode the impostor may start.
+- I3: Points as recommended, but check whether points are wanted at all ("sometimes it's just fun with no points").
+- I4, I5, I7, I8, I9: as recommended.
+- I6: Two ways to discuss, asked at the start: **Timer** or **Free flow**.
+- I11: Draft the Multicultural list; persona reviewers (simulated players from different regions) evaluate it first, then the owner.
+- I12: Not needed. (The owner had meant a team-gives-the-word mode like Dumb Charades; with no host it doesn't fit.)
+- Owner: research real game play on forums extensively before deciding.
+
 ## Impostor: open questions (3 October 2026; design in `docs/games/impostor/`)
 | # | Question | Options (norm = convention) | Recommendation |
 |---|---|---|---|
