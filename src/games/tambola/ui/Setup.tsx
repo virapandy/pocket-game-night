@@ -236,7 +236,7 @@ export function Setup({
 
   const prev = back[step];
   return (
-    <main className="screen setup-screen">
+    <main className={step === 'mode' ? 'screen setup-screen ticket-type-step' : 'screen setup-screen'}>
       <header className="top-bar">
         <button type="button" className="button button-quiet" onClick={() => (prev ? go(prev) : onCancel())}>
           ← {prev ? 'Back' : 'Cancel'}
