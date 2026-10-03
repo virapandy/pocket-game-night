@@ -16,6 +16,12 @@ walk the core journeys end to end. About 51 s on Android with one worker (measur
 npm run build && npm run test:browser -- --project=android --grep @smoke
 npm run test:browser -- --project=android --grep @smoke --workers=1   # the CI timing
 ```
+**On the owner's Mac (owner, 3 October):** every local browser run uses at most 3 workers and runs at low
+priority on the efficiency cores, because the owner uses the Mac meanwhile:
+```
+caffeinate -i taskpolicy -b npm run test:browser -- --project=android --grep @smoke --workers=3
+```
+Heavy or complete runs belong on GitHub, not on the Mac.
 | Journey | Test |
 |---|---|
 | Open the app, Home | `app-shell.spec.ts` "the home screen opens and lists Tambola" |
