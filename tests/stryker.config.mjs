@@ -9,11 +9,22 @@ export default {
     'src/games/tambola/rules/codes.ts',
     'src/games/tambola/rules/prizes.ts',
     'src/games/tambola/rules/rules.ts',
-    'src/games/tambola/rules/tickets.ts',
+    // Stryker 10 cannot mutate `x!++` / `x!--` (a TypeScript non-null mark on ++ or --): it stops the whole run with
+    // "UpdateExpression expected ... TSNonNullExpression". Only those three lines (92, 93, 121) are left out; every
+    // other line of tickets.ts is still mutated. Tool limit, not a test or app fault. Re-check if the lines move.
+    'src/games/tambola/rules/tickets.ts:1-91',
+    'src/games/tambola/rules/tickets.ts:94-120',
+    'src/games/tambola/rules/tickets.ts:122-9999',
     'src/engine/money.ts',
     'src/engine/tally.ts',
   ],
-  testRunner: 'vitest',
+  // Stryker's own Vitest runner, wrapped for Vitest 5's test names (tests/mutation/vitest-runner-v5.mjs explains).
+  plugins: ['@stryker-mutator/vitest-runner', './tests/mutation/vitest-runner-v5.mjs'],
+  testRunner: 'vitest-v5',
+  // Stryker rewrites tsconfig paths for its sandbox with an older TypeScript API that TypeScript 7 no longer has
+  // ("ts.parseConfigFileTextToJson is not a function"). Our tsconfig has no paths outside the repo to rewrite, and
+  // Vitest does not type-check, so that step is turned off by naming a file that does not exist. Tool limit only.
+  tsconfigFile: 'tests/stryker-no-tsconfig-rewrite.json',
   vitest: { configFile: 'tests/vitest.mutation.config.ts' },
   coverageAnalysis: 'perTest',
   reporters: ['clear-text', 'progress', 'html', 'json'],
