@@ -16,6 +16,9 @@ complete test only before a release; up to 3 coders in parallel, each on its own
    (publishes the preview) and the complete run on release and nightly (publishes the families' link); proposes the
    rule edits for parallel coders in worktrees for the owner's one-time OK. Tester tags the smoke set and writes the
    map from app area to browser test files. Until parallel coders are approved, one coder does lanes A, B, C in turn.
+   Also in setup (SOP "Added 3 October"): screenshot comparison with reference pictures for the screens in rows 1–25
+   (tester); per-copy ports (coder); the read-only AI reviewer helper (coder, with its role in the guard); the
+   "Quarantined" section in the report (tester).
 2. **Build UX rows 1–25 (2b below) in three parallel lanes, no tests first** (the tester updates broken tests and
    writes C2 tests alongside):
    | Lane | Area | Rows (class) |
@@ -25,7 +28,8 @@ complete test only before a release; up to 3 coders in parallel, each on its own
    | C | Host: setup and hand-out | 7 (C2), 8 (C2), 9 (C2), 10 (C1), 11 (C1) |
 3. **C3 rows, tests first, at the same time as step 2:** tester writes tests for 6, 20, 21 and 23 (row 15 already
    has TAM-214); then one coder builds 6, 15, 20, 21, 23 as one batch after lanes A–C are merged.
-4. **Release:** complete run, UX designer re-check of rows 1–25, owner tries the preview, then the families' link.
+4. **Release:** freeze `main` as the release candidate; complete run once; UX designer re-check of rows 1–25; release
+   notes; owner tries it, then the families' link. Each row is its own commit and passes the AI reviewer before merge.
 - **Paused until rows 1–25 are released:** new UX rows and reviews (product owner), mutation, emulator, simulation and
   Jev work (weekly unattended run only). Exception: the C3 batch (step 3) gets mutation **only on the rules and money
   lines it changed** (owner, 3 October); setting that up is part of the tester's setup round.

@@ -59,6 +59,31 @@ updated only by a release. (Build to set up; until then the single link updates 
 - This changes project rules (`.claude/`, root `CLAUDE.md`, the role guard): the orchestrator proposes the exact
   edits and the owner approves them once.
 
+## Added 3 October (owner approved all seven)
+1. **Release package (release train).** At release time, everything merged since the last release is frozen as one
+   release candidate (a tag on `main`). After the freeze only fixes for that candidate go in; new work waits for the
+   next package. The complete run happens once, on the candidate. Release notes list every change with its class and
+   UX row. The owner tries it, then it goes to the families' link and gets a version number.
+2. **Screenshot comparison for C1.** Each C1 change produces before and after screenshots of its screen at 360 × 640,
+   390 × 844 and 812 × 375 (Playwright's built-in comparison, free). The product owner or UX designer approves the new
+   pictures; the approved pictures become the new reference, saved with the change. Written layout tests are only
+   needed where a picture can't show the rule (for example "no sideways scrolling").
+3. **One small change at a time.** Inside a lane, each UX row (or part of one) is its own commit and is merged on its
+   own, so a failure points at one change.
+4. **Parallel coders, runtime rules.** Each working copy runs the app on its own port with its own settings file;
+   never `git stash` in shared working copies; quick verify after **every** merge, because changes that merge cleanly
+   can still break each other.
+5. **AI reviewer before merge.** A read-only reviewer helper checks each change against its UX row, the UX guidelines
+   and the class rules before it merges; findings go back to that coder. It edits nothing and runs no tests. (Build to
+   add the helper and its role in the guard; project-rule change already approved by the owner.)
+6. **Flaky test quarantine (standing owner approval).** A test that fails and then passes with no change is moved out
+   of the gate for at most 2 days, listed in `reports/latest.md` under "Quarantined", and fixed by the tester. Never
+   deleted or weakened. A test that blocks a release can't be quarantined without asking the owner.
+7. **Speed numbers, weekly.** The orchestrator tells the owner: average time from a handover row to the preview, and
+   the share of changes that needed a fix after merging.
+
+Not now: hidden feature switches; paid screenshot-review services ($0 rule).
+
 ## Questions
 - C1 and C2: the coder or tester picks the option closest to `docs/ux-guidelines.md`, notes it in the report, and
   keeps going. The product owner reviews the notes afterwards.
