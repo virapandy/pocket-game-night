@@ -7,6 +7,8 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { HOST, play, undo, type MoveRecord, type Preferences, type ReportSubject, type SavedGameStore } from '../../../engine';
 import {
   checkNumbers,
+  decodeClaim,
+  gameCode,
   NEEDS,
   PATTERN_NAMES,
   readClaim,
@@ -1055,6 +1057,7 @@ export function Play({
       {sheet?.kind === 'scan' && (
         <ClaimScanner
           view={view}
+          pastGame={(code) => pastGameNote(store, saved.id, code)}
           onCheck={(ticket, pattern, proof) => {
             const r = move({ type: 'check-claim', ticket, pattern });
             if (!r.ok) return r.reason;
@@ -1907,6 +1910,28 @@ function PhoneResult({
   );
 }
 
+/** "9:15 pm", as a player's ticket shows its game's start time (TAM-170). */
+const clockTime = (t: number) => {
+  const d = new Date(t);
+  return `${d.getHours() % 12 || 12}:${String(d.getMinutes()).padStart(2, '0')} ${d.getHours() < 12 ? 'am' : 'pm'}`;
+};
+
+/**
+ * UX list row 23 (TAM-179): a claim QR from another game, looked up in this phone's History. A phone-ticket game that
+ * ended here: "That game has ended (game 7K3P, 9:15 pm). This claim doesn't count."; discarded: "That game was
+ * discarded (game 7K3P). …". Anything else (never run here, deleted, still unfinished): null, and the usual words.
+ */
+function pastGameNote(store: SavedGameStore, currentId: string, code: string): string | null {
+  for (const g of store.list()) {
+    if (g.id === currentId || g.gameType !== 'tambola') continue;
+    const setup = (g as TambolaSaved).setup;
+    if (setup?.config?.ticketMode !== 'phone' || typeof setup.gameId !== 'string' || gameCode(setup.gameId) !== code) continue;
+    if (g.status === 'ended') return `That game has ended (game ${code}, ${clockTime(g.createdAt)}). This claim doesn't count.`;
+    if (g.status === 'abandoned') return `That game was discarded (game ${code}). This claim doesn't count.`;
+  }
+  return null;
+}
+
 /** How a phone claim was checked (UX list row 24): its QR compared with this phone's copy, or typed by number. */
 type ClaimProof = 'qr' | 'typed';
 
@@ -1920,10 +1945,13 @@ const NO_READ_MS = 10_000;
  */
 function ClaimScanner({
   view,
+  pastGame,
   onCheck,
   onClose,
 }: {
   view: TambolaView;
+  /** UX list row 23 (TAM-179): what this phone's History says about another game's code, if anything. */
+  pastGame: (code: string) => string | null;
   /** Checks the claim; returns why it was refused, or null once it is recorded. `proof` is for the screen only. */
   onCheck: (ticket: number, pattern: Pattern, proof: ClaimProof) => string | null;
   onClose: () => void;
@@ -1932,13 +1960,19 @@ function ClaimScanner({
   const [typed, setTyped] = useState(false);
   const [failed, setFailed] = useState<CameraFailure | null>(null);
   const [timedOut, setTimedOut] = useState(false);
-  const [refused, setRefused] = useState<{ reason: string; checkByNumber?: number } | null>(null);
+  const [refused, setRefused] = useState<{ reason: string; checkByNumber?: number; info?: boolean } | null>(null);
   const [number, setNumber] = useState('');
   const [pattern, setPattern] = useState<Pattern | null>(null);
   const [attempt, setAttempt] = useState(0);
   const onRead = useRef<(text: string) => void>(() => {});
   onRead.current = (text: string) => {
     const r = readClaim(view, text);
+    const d = r.ok ? null : decodeClaim(text);
+    if (d?.ok && d.claim.game !== view.code) {
+      // UX list row 23 (TAM-179): another game's claim, looked up in this phone's History; calm, never a bogey.
+      setRefused({ reason: pastGame(d.claim.game) ?? (r.ok ? '' : r.reason), info: true });
+      return;
+    }
     if (!r.ok) {
       setRefused(r.checkByNumber !== undefined ? { reason: r.reason, checkByNumber: r.checkByNumber } : { reason: r.reason });
       return;
@@ -1985,7 +2019,14 @@ function ClaimScanner({
         <h2 className="section-title">Scan a claim</h2>
         {refused ? (
           <div className="claim-refused stack-tight" data-testid="claim-refused" role="status">
-            <p className="lead">{refused.reason}</p>
+            <p className="lead">
+              {refused.info && (
+                <span className="claim-info" aria-hidden="true">
+                  ⓘ{' '}
+                </span>
+              )}
+              {refused.reason}
+            </p>
             <div className="row">
               <button type="button" className="button" onClick={onClose}>
                 Close

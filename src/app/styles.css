@@ -825,6 +825,8 @@ button.tcell { cursor: pointer; }
 
 /* TAM-214: "This phone already holds 3 tickets". */
 .phone-notice { flex: none; padding: 8px 10px; background: var(--bad-bg); border-radius: 10px; }
+.phone-cleared { flex: none; margin: 0; padding: 4px 12px; }
+.claim-info { font-weight: 400; }
 
 /* "Which ticket?" (TAM-190): each choice shows a small picture of its ticket. */
 .ticket-choices { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }

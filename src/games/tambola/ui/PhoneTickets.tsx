@@ -177,6 +177,8 @@ export function PhoneTickets({
   const [linkError, setLinkError] = useState<string | null>(null);
   /** TAM-214: a 4th ticket was refused ("This phone already holds 3 tickets"). */
   const [notice, setNotice] = useState<string | null>(null);
+  /** TAM-171 (UX list row 23): a new game's ticket replaced these: "Your tickets from game 7K3P were cleared." */
+  const [cleared, setCleared] = useState<string | null>(null);
   const { w, h } = useViewport();
   const [ticketsRef, given] = useGivenHeight();
 
@@ -204,6 +206,7 @@ export function PhoneTickets({
       return;
     }
     setNotice(null);
+    setCleared(held && held.game !== t.game ? held.game : null);
     const next = addTicket(
       held,
       {
@@ -267,6 +270,8 @@ export function PhoneTickets({
         return setScreen({ name: 'enter', text: s.text, error: PHONE_FULL, typing: true });
       }
       setNotice(null);
+      const before = loadPhoneGame(prefs);
+      setCleared(before && before.game !== d.ticket.game ? before.game : null);
       prefs.set(AWAY_KEY, false);
       // PLT-300: a typed code carries no start time, so the phone keeps when it was added.
       save(addTicket(loadPhoneGame(prefs), { game: d.ticket.game, ticket: d.ticket.ticket, rows: d.ticket.rows }, Date.now()));
@@ -683,6 +688,11 @@ export function PhoneTickets({
       {notice && (
         <p className="error phone-notice" role="alert">
           {notice}
+        </p>
+      )}
+      {cleared && !notice && (
+        <p className="note phone-cleared" role="status">
+          Your tickets from game {cleared} were cleared.
         </p>
       )}
       {showOne && (
