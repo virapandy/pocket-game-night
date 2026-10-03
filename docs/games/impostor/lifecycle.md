@@ -73,7 +73,7 @@ Impostor card to the first deal (card → "Next" → "Start round").
 | First round, newcomers present | Optional **practice round** ("Practice round first" in "How to play" opened from the choices screen): played normally, with a "Practice" chip, no points, not counted (IMP-071) |
 | During the deal | The hold screen says what to do, in five lines for every role (IMP-011): crew "Your secret · **Samosa** · Category: Food · Give one-word clues. Don't say it!"; impostor "Your secret · **You're the impostor** · Category: Food · Hint: Tea time · Listen, blend in, guess the word." |
 | During clues | "How to play" in the menu, never showing anyone's word |
-| After the reveal | One result screen says why: "Caught! ARJUN was the impostor." or "Meena was crew." and "ARJUN was the impostor and escaped!", then "The word was Samosa." and its category |
+| After the reveal | One result screen says why: "✓ Caught!" or "✗ Escaped!", "ARJUN was the impostor", then "The word was" "Samosa" and its category |
 
 ## Stage 4. Play
 **The deal (pass the phone), one player at a time:**
@@ -106,9 +106,9 @@ Impostor card to the first deal (card → "Next" → "Start round").
   players → one re-vote → "Still a tie", the impostor escapes.
 
 **Reveal:** after "Reveal Arjun" (pick, then confirm), a 1.5-second build-up with no colour change, then one result
-screen: "**Caught! ARJUN was the impostor.**" or "**Meena was crew.** ARJUN was the impostor and escaped!", with the
+screen: "**✓ Caught!** ARJUN was the impostor" or "**✗ Escaped!** Meena was crew. ARJUN was the impostor", with the
 word, its category and the outcome.
-**Last-chance guess** (optional, off by default; only if caught): "Last chance, Arjun! Guess the word out loud. Get it right and you steal the round." **before** the word is shown; then "Arjun guessed. Show the word",
+**Last guess for a caught impostor** (optional, off by default; only if caught): "Last chance, Arjun! Guess the word out loud. Get it right and you steal the round." **before** the word is shown; then "Arjun guessed. Show the word",
 and the room decides: "Guessed right" / "Wrong guess".
 
 **Moments every game must handle**
@@ -172,4 +172,4 @@ Play 3 rounds with 5+ family members, one person as the dealer (sits out this on
   change (reduce motion respected).
 - Landscape and 320 px: the deal screens are one name and one button, so they fit anywhere; check the scoreboard
   with 10 players at 360 × 640.
-- Tone: a caught impostor gets a laugh ("Caught! ARJUN was the impostor."), never a put-down.
+- Tone: a caught impostor gets a laugh ("✓ Caught!"), never a put-down.

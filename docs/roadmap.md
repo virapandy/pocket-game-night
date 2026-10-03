@@ -26,6 +26,7 @@ row). The owner has Android only, so iPhone is covered by automated checks, not 
 | 6 | **6 Connected mode** | Calls and claims over the internet | **only if** play-tests show it's wanted | |
 | 7 | **Simulations and extended testing** | Nothing visible: the generic simulated player (Jev), mass simulations, mutation testing, Android emulator runs, so bugs are caught before families see them | Tambola complete | |
 | — | **Impostor** (next game; owner, 3 October): design done and scenarios approved (3 October) in `docs/games/impostor/` by the lifecycle process (`docs/proposals/next-game-lifecycle.md`); scenarios go to the tester only after the Tambola release. New games must replace a box, cards or a moderator (`docs/decisions.md`, 3 October); Mafia and a Codenames-style game are next candidates | | owner approves the design | design and paper play-test |
+| — | **Ishaara** (Codenames-style word game, working name; owner, 4 October): research, rule book, theme and draft scenarios in `docs/games/ishaara/`; decisions K1–K18 in `docs/decisions.md` wait for the owner; then the two-reader check, the paper play-test and approval. Built after Impostor's release | | owner decides K1–K18 | word list review, paper play-test |
 
 Step 7 uses the Phase 2.5 scenarios for the simulated player (PLT-110 to PLT-113) and the testing
 layers from the architecture proposal; the rest of Phase 2.5 (shared blocks, the new-game template)

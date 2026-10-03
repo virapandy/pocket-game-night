@@ -6,7 +6,7 @@ Exact screens, wording and rules for the build are in `scenarios.md`; where this
 Everyone gets the same secret word, except one player: the **impostor**, who gets no word. Going round the
 circle, each player says **one word** linked to the secret word. Say too much and the impostor learns it; say
 too little and you look like the impostor. Then everyone votes on who the impostor is, and the phone shows who it was and the word. Optionally (the
-"Last-chance guess" setting, off by default), a caught impostor gets one guess at the word to steal the round.
+"Last guess for a caught impostor" setting, off by default), a caught impostor gets one guess at the word to steal the round.
 
 - **Other names:** Imposter, Undercover (a variant), Who is the Spy; close cousins: The Chameleon, Spyfall.
 - **Players:** 3 to 20; best with 4 to 8 (one impostor gets too easy to hide in big groups). **Time:** about 4 minutes a round; an evening is 5 to 8 rounds.
@@ -26,7 +26,7 @@ app: one phone.** Nobody sits out, the word is fair and new every round, and the
 5. **Discuss**: who sounded unsure? (Free flow until someone taps "Vote now", or a 2-minute timer.)
 6. **Vote:** on "3, 2, 1, point!" everyone points at once. The player with the most fingers on them is accused.
 7. **Reveal:** the phone shows, on one screen, whether they were the impostor, who the impostor was, and the word.
-8. **Last-chance guess (optional, off by default):** when it is on, a caught impostor says one guess aloud before
+8. **Last guess for a caught impostor (optional, off by default):** when it is on, a caught impostor says one guess aloud before
    the word is shown; then the phone shows the word and the room judges. Right: they steal the round.
 9. Next round (with points, if you chose to keep score) with a new word, a new impostor and the next starter.
 
@@ -49,7 +49,7 @@ app: one phone.** Nobody sits out, the word is fair and new every round, and the
 | 6 | Discussion as chosen at the start (free flow or 2-minute timer) | | Owner |
 | 7 | Vote by pointing together on "3, 2, 1, point!"; the host enters who was accused | The Chameleon; most popular on BGG | |
 | 8 | Tie: one re-vote between the tied players; still tied, the impostor escapes | imposter.online; BGG house rules | |
-| 9 | Optional, off by default ("Last-chance guess" in More options): a caught impostor gets one guess, said aloud, **before the word is shown** and without the clues being repeated; then the phone shows the word and the room judges (other names count). When off, the word is shown with the result at once | imposter.online; BGG house rule | Room judges: ours |
+| 9 | Optional, off by default ("Last guess for a caught impostor" in More options): a caught impostor gets one guess, said aloud, **before the word is shown** and without the clues being repeated; then the phone shows the word and the room judges (other names count). When off, the word is shown with the result at once | imposter.online; BGG house rule | Room judges: ours |
 | 10 | Picking the impostor: random, but never the same player 3 rounds in a row | Players complain about streaks (BGG, app reviews) | Ours |
 | 11 | Non-veg food words are off unless the host turns them on | Veg/non-veg is a real divide at Indian tables (research) | Ours |
 

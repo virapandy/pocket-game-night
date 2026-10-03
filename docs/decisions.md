@@ -175,3 +175,26 @@ Claude to follow game conventions. Every Tambola rule above is also a host setti
 | I21 | After the first build (4 October), product owner: the "left halfway" screen keeps the menu as built (no "Change how we play"; Players only "Change players after this round."), choices change on the next result; reopening after "Vote now" always reruns the countdown, then the picker; an unfinished Tambola setup opens as saved, tonight's names fill only a new one; on screen B at 320 and 360 px wide a long name may shrink to 20 px on one line; the orchestrator's other calls (summary over 3 hours opens on the summary, "← Back" keeps the players list, no session question) match the approved scenarios. Build-side picks in test-questions (rows of 3 October: IMP-002 guest line on the first Join view only, `eveningTotals` export for the IMP-042 property, the two refusals, Larger text on Impostor screens only, IMP-070 "← Back" rewrites the same evening, IMP-094 History row, IMP-001 "Start new" whenever another evening is unfinished) accepted as built | Product owner |
 | I22 | Owner's play (4 October): the category "Cricket and games" is renamed **"Sports and games"** (Badminton, Hockey, Chess under "Cricket" made no sense); Elephant dropped (no fitting category), Rain and Aadhaar card moved to Desi life; one duplicate hint fixed (308 words). The last-guess step now says what is at stake: "Last chance, Arjun! Guess the word out loud. Get it right and you steal the round." with main "Arjun guessed. Show the word" (the owner read the old step as the game carrying on after a correct catch) | Owner's play-test; product owner |
 | I15 | Later, rarely: twist rounds (no impostor; everyone an impostor) | Players love them used sparingly (BGG) — later |
+
+## Ishaara (Codenames-style word game): decisions to make (4 October 2026; evidence in `docs/games/ishaara/research.md`)
+Status: **proposed** by the product owner; the owner decides or says "follow the recommendation". Norm = the Codenames convention.
+| # | Question | Options | Recommendation |
+|---|---|---|---|
+| K1 | Name | **Ishaara** ("hint", known across India) · Word Detectives · Mango vs Peacock | Ishaara (never "Codenames") |
+| K2 | Theme | Spy noir (norm, too close to Codenames) · flat minimal red/blue · **flat board with Team Mango and Team Peacock and a friendly Bhoot** | Mango v Peacock + Bhoot (`ux.md` §1); red stays for the main button |
+| K3 | How clue givers see the map | **Both in the first release**: "Pass this phone" (hold to see) and "Clue givers' own phones" (QR or code, offline); two equal cards, no default | Both; the code makes own phones work offline |
+| K4 | Teams | Shuffled into equal teams the first time; tap to move; last teams after | As recommended |
+| K5 | Board | **Full 25** (norm, default) · Family 16 | Both, Full default |
+| K6 | Family board | 6 / 5 / 5, **no Bhoot** (Disney easy mode has no assassin) | As recommended |
+| K7 | A clue that breaks a rule | Norm: the other clue giver covers a word of their choice · **the phone turns over a random word of the other team** | Random (keeps the map off the room screen) |
+| K8 | Timer | Norm: sand timer, rarely used · **none by default, a 90-second "Hurry up" anyone can start, never automatic** | As recommended |
+| K9 | Scoring | **Tonight's tally of games won** by Mango and Peacock, fun lines at the end; no points or target | As recommended |
+| K10 | Words | Our own list, 400 words, 3–8 letters, India-centric and fair to every region; Whole family default, + Grown-ups option; non-veg words included (they are only words on a board) | As recommended; persona and real-reader checks as Impostor's |
+| K11 | Clue numbers | 0–9 and ∞ (norm's expert clues included) | As recommended |
+| K12 | Players | 4–20, at least 2 per team; 2–3 players later (co-op) | As recommended |
+| K13 | Clue language | Norm: English plus words used in an English sentence (chai, jugaad); groups may agree on more | As norm |
+| K14 | Two-word names as clues (Taj Mahal, Sholay) | Allowed by default (norm: group choice) | Allowed |
+| K15 | The clue word | **Only the number is tapped**; the clue is said aloud, not typed | As recommended (typing slows every turn) |
+| K16 | Undo | No undo of a reveal (pick, then confirm); "Oops, keep guessing" after "End our turn"; undo for team moves | As recommended |
+| K17 | Clue giver rotation | Fewest games as clue giver tonight, ties to the earliest in the team list | As recommended |
+| K18 | Resume | Within 12 hours at the same step; the map screen always returns to "Pass the phone to…" | As recommended |

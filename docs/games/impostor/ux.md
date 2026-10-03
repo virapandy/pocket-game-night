@@ -85,17 +85,14 @@ Categories: all 9 ›
 ```
 Other lines: Hard "The impostor gets nothing and never starts." · Timer "Two minutes to talk, then a chime." ·
 Yes "Points every round, totals for the night." · + Grown-ups "Adds words kids or elders may not know."
-Categories sheet: 9 switches and "Include non-veg food" (off). More options sheet: "Last-chance guess" (off), "A caught
-impostor can guess the word to steal the round." 10 s.
+Categories sheet: 9 switches and "Include non-veg food" (off). More options sheet: "Last guess for a caught impostor"
+with "Off ✓" / "On" and "A caught impostor can steal the round by guessing the word." "More options ›" and "How to
+play" share one row. "Same as last time" under the heading when choices were carried over. 10 s.
 
 ### 4. How to play (on request only: "How to play" on the choices screen, or the menu)
-Heading "How to play", then "Read this aloud":
-1. "Everyone gets the same secret word, except the impostor."
-2. "Take turns to say one word about it. Don't say the word!"
-3. "Then talk, and all point at who you think the impostor is."
-4. "Impostor: blend in. Caught? Guess the word to steal the round." (last-chance guess on) / "Impostor: blend in.
-   Don't get caught!" (off)
-then the rules (IMP-072). Main "Done"; quiet "Practice round first" only when opened from a new evening's choices
+Heading "How to play", then "Read this aloud": the 4 lines, the mode line, the last-guess line (only when on) and the
+rules list, exactly as in IMP-070 and IMP-072 (decided 4 October, F7).
+Main "Done"; quiet "Practice round first" only when opened from a new evening's choices
 screen (a "Practice" chip on every room screen; no points).
 
 ### 5. The deal
@@ -111,14 +108,16 @@ A                          B (not held)               B (held)
 │ [  I'm Riya   ]  │   │ └──────────────┘ │   │ │  (holding)   │ │
 └──────────────────┘   │ Tap instead      │   └──────────────────┘
                        └──────────────────┘
-After the first let-go following a hold of at least 0.5 s, B adds: [ Done, pass to Arjun ] (main) and the quiet
-"Don't know this word?"
+After the first let-go following a hold of at least 0.5 s, B shows, in space reserved from the start (nothing
+moves, guideline 45a): [ Done, pass to Arjun ] (main) and the text button "Don't know this word?" under the name,
+which asks "New word for everyone?" ("New word" / "Back")
 ```
 - A: name 48 px, shrinking to 32 px to fit. Never the previous word.
-- A and B: "Player 2 of 4" small line top left (15 px); A also "Everyone else, look away!" (17 px) under the
-  name (owner, 4 October; IMP-019). Not shown in "See my word again" (the look-away line is).
-- B: hold pad at least 200 × 160 px in the lower half; **the word shows above the pad, never under the finger**;
-  only while held; letting go hides it at once. "Done…" appears for every role on the first let-go after a hold of
+- A and B: "Player 2 of 4" (17 px) above "Pass the phone to" and above the name on B; A also "Everyone else, look
+  away!" (20 px) under the name (owner, 4 October; IMP-019). No progress line in "See my word again".
+- B: full-width hold pad, at least 160 px tall (288 × 160 at 320 px), "Tap instead" under it; while held it reads
+  "Let go to hide"; **the word shows above the pad, never under the finger**, on a layer over the top of the screen;
+  only while held; letting go hides it at once. The word area is a fixed 2 lines tall for every role. "Done…" appears for every role on the first let-go after a hold of
   at least 0.5 s.
 - What each role sees while holding (always five lines; line 5 is "Also called …" or empty, always empty for the
   impostor; exact text in IMP-011):
@@ -132,8 +131,8 @@ After the first let-go following a hold of at least 0.5 s, B adds: [ Done, pass 
 | (Also called … or empty) | (empty) | (Also called … or empty) | (empty) |
 
 - Other names in a small line: "Also called Golgappa / Puchka" (Pani puri); "Also called Payesh" (Kheer / Payasam).
-- "Don't know this word?" → "No problem! New word coming." and "Pass the phone back to RIYA" with main "I'm Riya";
-  same place for every role.
+- "Don't know this word?" → "New word for everyone?" → "New word" → "No problem! New word coming." and "Pass the
+  phone back to RIYA" with main "I'm Riya"; same place for every role.
 - 8–10 s per player.
 
 ### 6. Clues (merged with "everyone has seen")
@@ -142,49 +141,53 @@ After the first let-go following a hold of at least 0.5 s, B adds: [ Done, pass 
   Phone in the middle, face up.
       MEENA
       starts
-then clockwise: Meena → Kabir → Zoya → Riya → Arjun
-[ Talk it over ]   (Timer: [ Start the 2-minute timer ])
- Another round of clues        (3–5 players only)
+Each say one word about your secret:
+Meena → Kabir → Zoya → Riya → Arjun
+[ Clues done, talk it over ]   (Timer: [ Clues done, start the 2-minute timer ])
+ One more round of clues        (3–5 players only)
 ```
-Starter name at least 56 px.
+Starter name 56 px. Landscape: starter name left; order and buttons right.
 
 ### 7. Talking
 - Free flow: "Talk it over" (56 px), "Who sounded unsure?", main "Vote now".
-- Timer: starts at "2:00", 120 px (112 px at 320 px wide); main "Vote now"; quiet "Pause" / "Carry on". At 0:00 the
-  `chime` (no louder than the tick), "Time's up!", main "Get ready to point". It never moves on by itself.
+- Timer: label "Talk it over" (28 px) above the timer, which starts at "2:00", 120 px (112 px at 320 px wide); main
+  "Vote now"; quiet "Pause" / "Carry on". At 0:00 the `chime` (no louder than the tick), "Time's up!", main "Get
+  ready to point", quiet "1 more minute". It never moves on by itself.
 
 ### 8. Countdown
-"Get ready to point…" 1 s; "3", "2", "1" 200 px (160 px in landscape), 1 s each; "Point!" holds 2 s, then the picker
+"Get ready to point…" (40 px) 1 s; "3", "2", "1" 200 px (160 px in landscape), 1 s each; "Point!" holds 2 s, then the picker
 opens by itself. A tick per number, a ding on "Point!"; voice only if the phone voice is on. Reduce motion: numbers swap without scaling. Screen readers:
 each number announced. Interrupted: back to "Get ready to point".
 
 ### 9. Who got the most fingers?
 Two columns of name buttons (56 px); tapping selects (outline, ✓, tint); main **"Reveal Arjun"**, shown as a disabled
-"Reveal" until a name is picked; quiet "It's a tie" and "Count again". Tie: pick the tied names → main "Point again: Arjun or Meena" →
+"Reveal" until a name is picked; 24 px below the names, "Not sure?" with the text buttons "It's a tie" and "Count
+again". Tie: pick the tied names → main "Point again: Arjun or Meena" →
 countdown → only those names plus "Still a tie" (the impostor escapes).
 
 ### 10. Result (one screen, owner 4 October)
 - Build-up 1.5 s: "Arjun was…", the drumroll sound, no colour change; then everything at once (exact order in
   IMP-033, IMP-034, IMP-038).
-- **Caught:** "Caught! ARJUN was the impostor." · "The crew wins!" · "The word was School trip." · "Also called
-  Excursion" · chip "School and childhood".
-- **Wrong person:** "Meena was crew." · "ARJUN was the impostor and escaped!" · "Arjun escaped!" · the word and chip.
-- **Still a tie:** "Still a tie! ARJUN was the impostor and escaped!" · "Arjun escaped!" · the word and chip (no
-  build-up).
-- **Last-chance guess (optional, off by default):** caught → "Caught! ARJUN was the impostor." · "Last chance, Arjun!
+- **Caught:** "✓ Caught!" (56 px) · "ARJUN was the impostor" (32 px) · "The word was" "School trip" (44 px) ·
+  "Also called Excursion" · chip "School and childhood" (17 px) · "The crew wins!".
+- **Wrong person:** "✗ Escaped!" · "Meena was crew." · "ARJUN was the impostor" · the word and chip · "Arjun escaped!".
+- **Still a tie:** "✗ Escaped!" · "Still a tie." · "ARJUN was the impostor" · the word and chip · "Arjun escaped!"
+  (no build-up).
+- The screen scrolls as one page; only "Next round" is pinned (guideline 46a). No "Undo" with the last guess off.
+- **Last guess for a caught impostor (optional, off by default):** caught → "✓ Caught!" · "ARJUN was the impostor" · "Last chance, Arjun!
   Guess the word out loud. Get it right and you steal the round." · main "Arjun guessed. Show the word" → the word,
   chip and two equal buttons "Guessed right" / "Wrong guess" → "The crew wins!" / "Arjun steals the round!" (IMP-039).
 
 ### 11. Round result (on the same screen)
 Outcome: "The crew wins!" / "Arjun steals the round!" / "Arjun escaped!". Without scores: "Tonight: impostor caught 3
 · escaped 2". With scores: this round's points, then the night's scoreboard (36 px rows, highest first, ties share a
-place (1-2-2-4), leavers greyed; two columns from 7 players). Main "Next round"; quiet "Undo" (the guess verdict
+place (1-2-2-4), leavers greyed; one column up to 360 px wide, two columns of 50% from 390 px; caption "Scores since round 4"). Main "Next round"; quiet "Undo" (the guess verdict
 only, last-chance guess on) and "This word didn't work".
 
 ### 12. End of the evening
-"That's the night!", up to 3 true fun lines, the final scoreboard or "7 rounds · impostor caught 4 · escaped 3".
-Main "Back to Home"; quiet, in order: "Oops, keep playing", "Play something else", "Share", "History", "Discard this
-evening". Confirmations: "End the evening?" ("End the evening" / "Keep playing"); mid-round "End now? This round
+"That's the night!", the lead line ("Arjun wins the night with 2 points!", or "Crew 4 · Impostors 3"), up to 2 fun
+lines, the final scoreboard. Main "Back to Home"; quiet "Oops, keep playing", "Play something else", "More ›" (Share,
+History, then after a divider "Discard this evening"). Scrolls as one page. Confirmations: "End the evening?" ("End the evening" / "Keep playing"); mid-round "End now? This round
 won't count." ("End now" / "Keep playing"); "Discard this evening? Its rounds and scores will be lost." ("Discard" /
 "Keep it").
 
@@ -217,15 +220,15 @@ the build-up. Over 3 hours: "This round was left halfway. Start a fresh round?" 
 ## Layout by size (predicted)
 | Screen | 320 × 568 | 360 × 640 | 390 × 844 | 812 × 375 | Larger text |
 |---|---|---|---|---|---|
-| Deal | Fits; pad 120 px | Fits | Fits | Word left, pad and Done right | Word wraps to 3 lines |
-| Longest word (33 characters) | At most 3 lines, 30–36 px | At most 3 lines | At most 3 lines | At most 3 lines | 30 px floor |
+| Deal | Fits; pad 288 × 160 | Fits; pad 328 × 160 | Fits; pad 358 × 160 | Word left, pad 374 × 160 and Done right | Fits (IMP-010 arithmetic) |
+| Longest word (31 characters) | 2 lines, 30–36 px | 2 lines | 2 lines | 2 lines | 30 px floor |
 | Choices | One-row form only | Fits | Fits | 2 × 2 grid, button right (17b) | Scrolls, button fixed (setup) |
 | Who got the most fingers? (12) | 2 columns; scrolls inside with Larger text | 2 columns | 2 columns, no scroll (names ≤ 8 characters) | 2 columns, scrolls inside | Inside scroll |
-| Scoreboard (12) | 2 columns, scrolls inside | 2 columns, scrolls inside | 2 columns, no scroll (names ≤ 8 characters) | 2 columns, scrolls inside | Inside scroll |
+| Result and scoreboard (12) | 1 column, page scrolls | 1 column, page scrolls | 2 columns, no scroll (IMP-033 arithmetic) | Outcome left, scoreboard right, page scrolls | Page scrolls |
 Names up to 16 characters shrink to 32 px on room screens and wrap to 2 lines in two-column lists.
 
 ## Tone (Indian English, plain)
-Use: "Caught! ARJUN was the impostor.", "Arjun steals the round!", "Arjun escaped!", "Meena was crew.", "The crew wins!",
+Use: "✓ Caught!", "Arjun steals the round!", "Arjun escaped!", "Meena was crew.", "The crew wins!",
 "No problem! New word coming." Never: liar, loser, fooled, "bad clue", anything about
 a player's intelligence.
 
