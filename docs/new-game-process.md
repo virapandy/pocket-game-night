@@ -137,7 +137,7 @@ ask the owner to approve. Approved scenarios become tests; then the Build role s
 | Impostor | IMP | `impostor` |
 | Dumb Charades | CHA | `charades` |
 | Scoreboard / Rummy scorekeeper | SCO | `scoreboard` |
-| Ishaara (Codenames-style, working name) | ISH | `ishaara` |
+| Ishaara (Codenames-style) | ISH | `ishaara` |
 
 ## Definition of done (design)
 - [ ] Fit check passed

@@ -1,7 +1,7 @@
-# Ishaara (working name): research (4 October 2026)
+# Ishaara: research (4 October 2026)
 
-Product owner, for the owner. **Ishaara** is the working name of our Codenames-style team word game (the owner
-picks the final name; `guide.md`, decision K1). We follow the conventions of Codenames but use **our own name, our
+Product owner, for the owner. **Ishaara** ("a hint") is our Codenames-style team word game (name decided by the owner, 4 October,
+decision K1). We follow the conventions of Codenames but use **our own name, our
 own words and our own look**, never theirs.
 
 Three research passes ran in parallel on 4 October 2026: the official rules, existing apps and their reviews, and

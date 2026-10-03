@@ -176,8 +176,8 @@ Claude to follow game conventions. Every Tambola rule above is also a host setti
 | I22 | Owner's play (4 October): the category "Cricket and games" is renamed **"Sports and games"** (Badminton, Hockey, Chess under "Cricket" made no sense); Elephant dropped (no fitting category), Rain and Aadhaar card moved to Desi life; one duplicate hint fixed (308 words). The last-guess step now says what is at stake: "Last chance, Arjun! Guess the word out loud. Get it right and you steal the round." with main "Arjun guessed. Show the word" (the owner read the old step as the game carrying on after a correct catch) | Owner's play-test; product owner |
 | I15 | Later, rarely: twist rounds (no impostor; everyone an impostor) | Players love them used sparingly (BGG) — later |
 
-## Ishaara (Codenames-style word game): decisions to make (4 October 2026; evidence in `docs/games/ishaara/research.md`)
-Status: **proposed** by the product owner; the owner decides or says "follow the recommendation". Norm = the Codenames convention.
+## Ishaara (Codenames-style word game): decisions (4 October 2026; evidence in `docs/games/ishaara/research.md`)
+Status: **decided: owner, 4 October 2026, "follow the recommendation"** for K1–K18 (the Recommendation column is the decision), including festival names as board words. Norm = the Codenames convention.
 | # | Question | Options | Recommendation |
 |---|---|---|---|
 | K1 | Name | **Ishaara** ("hint", known across India) · Word Detectives · Mango vs Peacock | Ishaara (never "Codenames") |

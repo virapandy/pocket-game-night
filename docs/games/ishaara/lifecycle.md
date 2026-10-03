@@ -1,4 +1,4 @@
-# Ishaara (working name): the whole evening, stage by stage (draft, 4 October 2026)
+# Ishaara: the whole evening, stage by stage (draft, 4 October 2026)
 
 **Binding details are in scenarios.md; where this file differs, scenarios.md wins.**
 Designed against the five stages in `docs/proposals/next-game-lifecycle.md`, before any build. Rules: `guide.md`.

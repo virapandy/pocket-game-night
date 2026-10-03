@@ -1,4 +1,4 @@
-# Ishaara (working name): the word list (draft v1, 4 October 2026)
+# Ishaara: the word list (draft v1, 4 October 2026)
 
 The list is `words.csv` (edition 1, 400 words). It is our own list, never Codenames'. Decision K10.
 

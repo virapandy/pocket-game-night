@@ -1,7 +1,7 @@
-# Ishaara (working name): scenarios (version 1, draft, 4 October 2026)
+# Ishaara: scenarios (version 1, draft, 4 October 2026)
 
-Status: **draft, waiting for the owner's decisions K1–K18 and approval.** Written to `docs/spec-rules.md`. The two-reader
-check (rule 12) runs once the owner has answered the decisions; results go into version 2.
+Status: **draft; decisions K1–K18 decided by the owner (4 October).** Written to `docs/spec-rules.md`. The two-reader
+check (rule 12) is running; its results go into version 2, which goes to the owner for approval.
 After approval the tester copies these into `specs/ishaara/` (file names in each section heading) and writes tests.
 Hand-over follows the roadmap (`docs/roadmap.md`): after Impostor's release.
 

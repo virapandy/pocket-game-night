@@ -1,4 +1,4 @@
-# Ishaara (working name): the rule book (draft, 4 October 2026)
+# Ishaara: the rule book (draft, 4 October 2026)
 
 Exact screens, wording and numbers for the build are in `scenarios.md`; where this file differs, `scenarios.md` wins.
 Evidence: `research.md`. Look and screens: `ux.md`. The whole evening: `lifecycle.md`. Decisions: K1–K18 in

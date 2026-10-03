@@ -1,4 +1,4 @@
-# Ishaara (working name): theme and screens (draft, 4 October 2026)
+# Ishaara: theme and screens (draft, 4 October 2026)
 
 **Binding details are in scenarios.md; where this file differs, scenarios.md wins.**
 Product owner, from the app research in `research.md` §3 and the lessons of Tambola and Impostor. To be reviewed with
@@ -178,7 +178,7 @@ Landscape (recommended when the phone lies in the middle):
 "Tonight: Mango 3 · Peacock 2"; fun lines ("Riya's clues won 2 games", "The Bhoot woke up once"); "Play something
 else"; "Back to Home".
 
-## 3. Lasting rule proposed for `docs/ux-guidelines.md`
+## 3. Lasting rule added to `docs/ux-guidelines.md`
 49. **Word boards on a shared phone.** A board of many words can't meet the 56 px table-text rule (46). Instead: landscape
 first, one font size for the whole board (the largest that fits, never below 12 px), words of at most 8 letters, a
 smaller board option (16 words) and a "turn sideways" message where even 12 px can't fit. Guessers lean in, as they
