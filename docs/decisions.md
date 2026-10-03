@@ -130,6 +130,10 @@
 | 2026-10-03 | Added to the change SOP: release packages (freeze, one complete run, release notes); screenshot comparison approved by the product owner or UX designer for C1 changes; one commit and merge per change; per-copy ports and a quick verify after every merge for parallel coders; a read-only AI reviewer before each merge; flaky tests quarantined for at most 2 days, listed and fixed, never deleted (standing approval, not for release-blocking tests); weekly speed numbers. | Owner |
 | 2026-10-03 | Mutation runs only where a change touched code: a C3 change gets mutation on the rules and money lines it changed; a release covers every such line changed since the last release; the full mutation run stays weekly and never blocks. | Owner |
 
+| 2026-10-03 | C3 rows 6, 20, 21, 23 follow the tester's recommendations: row 6 "Add another winner" in phone games offers paper players by name or another claim scan (scanner opens at once with no paper players); row 20 the clear question lists each ticket, held ones by holder; row 21 tickets more than 6 hours old open on Home with Open and Clear; row 23 an old game's claim gets a calm note, never ✗ or "Bogey". | Owner |
+| 2026-10-03 | Row 8: "plays on paper" can be undone until the first number is called ("Kabir plays on paper · Undo"); after the first call it is final. | Owner |
+| 2026-10-03 | The preview link keeps its own saved games and settings, separate from the families' link on the same phone. | Owner |
+
 "Convention" means the established Tambola rule in `docs/games/tambola/guide.md`, chosen because the owner asked
 Claude to follow game conventions. Every Tambola rule above is also a host setting with this default.
 
