@@ -576,13 +576,16 @@ function PrizesStep({
 
   return (
     <>
-      <section className="stack setup-body">
+      {/* RC fix (C1): the title and pot line stay put above the prize list (in landscape, beside "Back"). */}
+      <div className="step-head">
         <h1 className="step-title">Prizes</h1>
         <p className="lead">
           {money && result.plan
             ? `Pot ${rupees(result.plan.pot)} from ${plural(tickets, 'ticket')}. The prizes always add up to the pot.`
             : `${plural(tickets, 'ticket')} in play. Prizes are optional: type a treat for each, or leave them blank.`}
         </p>
+      </div>
+      <section className="stack setup-body">
         <ul className="tier-list">
           {patterns.map((p) => (
             <li key={p} className="tier-row">
