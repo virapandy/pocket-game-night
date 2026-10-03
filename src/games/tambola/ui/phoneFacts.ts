@@ -14,13 +14,21 @@ export type Fact =
 export interface PhoneTicketCopy {
   readonly number: number;
   readonly rows: Rows;
+  /**
+   * TAM-214: who holds this ticket, from its QR (a phone may hold another player's ticket); null for a typed code,
+   * which carries no name. Missing on tickets saved before 2 October 2026: those take the game's name.
+   */
+  readonly name?: string | null;
 }
 
 /** The game on this phone: its tickets and every fact about it. */
 export interface PhoneGameFacts {
   readonly v: 1;
   readonly game: string;
-  /** From the ticket QR; unknown if the ticket was typed in (the typed code carries only the ticket). */
+  /**
+   * The phone's own player: the name on the first ticket QR scanned for this game; unknown if the tickets were typed
+   * in (the typed code carries only the ticket).
+   */
   readonly name: string | null;
   readonly startedAt: number | null;
   readonly tiers: readonly Pattern[] | null;
@@ -65,22 +73,40 @@ export function savePhoneGame(prefs: Preferences, game: PhoneGameFacts | null) {
   prefs.set(GAME_KEY, game);
 }
 
+/** TAM-214, TAM-045: a phone holds at most 3 tickets of a game, its own and any it holds for others. */
+export const PHONE_TICKET_LIMIT = 3;
+export const PHONE_FULL = 'This phone already holds 3 tickets. Give this ticket to another phone.';
+
+/**
+ * TAM-214: adding this ticket would be a 4th of the same game. Scanning one already held is not a new one, and a
+ * ticket of a new game replaces the old game's (TAM-171).
+ */
+export function phoneIsFull(current: PhoneGameFacts | null, game: string, ticket: number): boolean {
+  if (!current || current.game !== game) return false;
+  return !current.tickets.some((t) => t.number === ticket) && current.tickets.length >= PHONE_TICKET_LIMIT;
+}
+
+/** TAM-214: the name of the person who holds this ticket (null: a typed code, no name known). */
+export const holderOf = (game: PhoneGameFacts, t: PhoneTicketCopy): string | null => (t.name === undefined ? game.name : t.name);
+
 /**
  * Adds a scanned or typed ticket. A ticket of the same game joins the others; a ticket of a new game replaces
- * the old game's tickets, marks and all (TAM-171).
+ * the old game's tickets, marks and all (TAM-171). Check `phoneIsFull` first (TAM-214).
  */
 export function addTicket(
   current: PhoneGameFacts | null,
   t: { game: string; ticket: number; rows: Rows; name?: string; startedAt?: number; tiers?: readonly Pattern[]; cue?: boolean },
 ): PhoneGameFacts {
   const same = current && current.game === t.game ? current : null;
-  const tickets = [...(same?.tickets ?? []).filter((x) => x.number !== t.ticket), { number: t.ticket, rows: t.rows }].sort(
-    (a, b) => a.number - b.number,
-  );
+  const tickets = [
+    ...(same?.tickets ?? []).filter((x) => x.number !== t.ticket),
+    { number: t.ticket, rows: t.rows, name: t.name ?? null },
+  ].sort((a, b) => a.number - b.number);
   return {
     v: 1,
     game: t.game,
-    name: t.name ?? same?.name ?? null,
+    // The phone's own player is the first name it was given; a held ticket (TAM-214) keeps its own name.
+    name: same?.name ?? t.name ?? null,
     startedAt: t.startedAt ?? same?.startedAt ?? null,
     tiers: t.tiers ?? same?.tiers ?? null,
     // A scanned QR says whether the host turned the cue on; a typed code says nothing, so it stays as it was (off
@@ -211,21 +237,40 @@ export function patternCue(game: PhoneGameFacts): { fills: CueFill[]; cells: Map
 }
 
 /** "Tickets 1 and 3", "Tickets 1, 2 and 3". */
-function ticketList(numbers: readonly number[]): string {
-  if (numbers.length === 1) return `Ticket ${numbers[0]}`;
-  return `Tickets ${numbers.slice(0, -1).join(', ')} and ${numbers[numbers.length - 1]}`;
+function ticketList(numbers: readonly number[], word = 'Ticket'): string {
+  if (numbers.length === 1) return `${word} ${numbers[0]}`;
+  return `${word}s ${numbers.slice(0, -1).join(', ')} and ${numbers[numbers.length - 1]}`;
+}
+
+/** TAM-195 (UX list row 11): Early Five is said once, however many tickets have 5 marks: "Early Five filled on ticket 1". */
+function earlyFive(fills: readonly CueFill[]): string | null {
+  const on = fills.filter((f) => f.pattern === 'early-five').map((f) => f.ticket);
+  return on.length ? `${CUE_WORDS['early-five']} on ${ticketList(on, 'ticket')}` : null;
+}
+
+/** The tickets the cue's line names, in the order it names them (TAM-190: "Which ticket?" lists the first one first). */
+export function cueTickets(fills: readonly CueFill[]): number[] {
+  const lines = fills.filter((f) => f.pattern !== 'early-five');
+  return [...new Set((lines.length ? lines : fills).map((f) => f.ticket))];
 }
 
 /**
  * The cue's one line (TAM-195, row 1a): "Ticket 3: top row filled. Shout if it's right!", or with fills on several
- * tickets "Tickets 1 and 3: patterns filled. Shout if it's right!". `more` is true when there is more to say.
+ * tickets "Tickets 1 and 3: patterns filled. Shout if it's right!"; only 5 marks: "Early Five filled on ticket 1.
+ * Shout if it's right!". `more` is true when there is more to say (Early Five, said once, is then under "More").
  */
 export function cueLine(fills: readonly CueFill[]): { line: string; more: boolean } | null {
   if (fills.length === 0) return null;
-  const tickets = [...new Set(fills.map((f) => f.ticket))];
-  const what = tickets.length === 1 ? CUE_WORDS[fills[0]!.pattern] : 'patterns filled';
+  const lines = fills.filter((f) => f.pattern !== 'early-five');
+  if (lines.length === 0) return { line: `${earlyFive(fills)}. Shout if it's right!`, more: false };
+  const tickets = cueTickets(fills);
+  const what = tickets.length === 1 ? CUE_WORDS[lines[0]!.pattern] : 'patterns filled';
   return { line: `${ticketList(tickets)}: ${what}. Shout if it's right!`, more: fills.length > 1 };
 }
 
-/** Each fill in full, for "More": "Ticket 1: top row filled". */
-export const cueDetail = (f: CueFill) => `Ticket ${f.ticket}: ${CUE_WORDS[f.pattern]}`;
+/** Each fill in full, for "More": "Ticket 1: top row filled", then Early Five once: "Early Five filled on tickets 1 and 2". */
+export function cueDetails(fills: readonly CueFill[]): string[] {
+  const out = fills.filter((f) => f.pattern !== 'early-five').map((f) => `Ticket ${f.ticket}: ${CUE_WORDS[f.pattern]}`);
+  const five = earlyFive(fills);
+  return five ? [...out, five] : out;
+}

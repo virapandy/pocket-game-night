@@ -189,7 +189,7 @@ export function TambolaScreen({
       );
     default:
       return (
-        <main className="screen">
+        <main className="screen start-screen">
           <header className="top-bar">
             <button type="button" className="button button-quiet" onClick={onExit}>
               ← Home
@@ -198,6 +198,15 @@ export function TambolaScreen({
           <section className="centre">
             <h1 className="game-title">Tambola</h1>
             <p className="lead">Housie on paper or on phones. This phone draws the numbers with rhymes, keeps the board, records every win and works out the payouts.</p>
+            <button type="button" className="button button-quiet" onClick={() => setRoute({ name: 'how' })}>
+              How to play
+            </button>
+            <button type="button" className="button button-quiet" onClick={() => setRoute({ name: 'settings' })}>
+              Settings
+            </button>
+          </section>
+          {/* TAM-181 (UX list row 15): "New game" at the bottom, like every step. */}
+          <div className="bottom-action">
             <button
               type="button"
               className="button button-big"
@@ -209,13 +218,7 @@ export function TambolaScreen({
             >
               New game
             </button>
-            <button type="button" className="button button-quiet" onClick={() => setRoute({ name: 'how' })}>
-              How to play
-            </button>
-            <button type="button" className="button button-quiet" onClick={() => setRoute({ name: 'settings' })}>
-              Settings
-            </button>
-          </section>
+          </div>
         </main>
       );
   }

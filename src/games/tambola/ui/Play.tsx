@@ -1797,23 +1797,25 @@ function ClaimScanner({
                     autoComplete="off"
                     value={number}
                     onChange={(e) => setNumber(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && check()}
+                    onKeyDown={(e) => e.key === 'Enter' && number.trim() !== '' && pattern !== null && check()}
                   />
                 </label>
                 <div className="choice-grid">
                   {claimable.map((p) => (
+                    // PLT-301, TAM-178: the chosen prize shows an outline, a ✓ and a tint, never the look of "Check".
                     <button
                       key={p}
                       type="button"
-                      className={p === pattern ? 'button pick picked' : 'button button-quiet pick'}
+                      className={p === pattern ? 'button button-quiet pick pick-on' : 'button button-quiet pick'}
                       aria-pressed={p === pattern}
                       onClick={() => setPattern(p)}
                     >
-                      {PATTERN_NAMES[p]}
+                      {p === pattern ? `✓ ${PATTERN_NAMES[p]}` : PATTERN_NAMES[p]}
                     </button>
                   ))}
                 </div>
-                <button type="button" className="button" onClick={check}>
+                {/* TAM-178: "Check" works only once a ticket number and a prize are filled in. */}
+                <button type="button" className="button" disabled={number.trim() === '' || !pattern} onClick={check}>
                   Check
                 </button>
               </>
@@ -1822,7 +1824,7 @@ function ClaimScanner({
         )}
         {!refused && (
           <div className="row">
-            {!typed && (
+            {!showTyped && (
               <button type="button" className="button button-quiet" onClick={() => setTyped(true)}>
                 Enter ticket number
               </button>

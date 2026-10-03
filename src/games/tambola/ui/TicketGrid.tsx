@@ -52,6 +52,8 @@ export function TicketGrid({
           const content = (
             <>
               <span className="tcell-n">{n}</span>
+              {/* TAM-195 (UX list row 11): a corner mark as well as the outline, so the cue never relies on colour alone. */}
+              {marks.cue?.has(n) && <span className="tcell-cue-mark" data-testid="cue-mark" aria-hidden="true" />}
               {marked && (
                 <span className="tcell-tick" aria-hidden="true">
                   ✓

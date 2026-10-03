@@ -10,14 +10,18 @@ import {
   addTicket,
   AWAY_KEY,
   crossedOut,
-  cueDetail,
+  cueDetails,
   cueLine,
+  cueTickets,
+  holderOf,
   LARGE_TEXT_KEY,
   LAYOUT_KEY,
   loadPhoneGame,
   marksOn,
   patternCells,
   patternCue,
+  PHONE_FULL,
+  phoneIsFull,
   prizesOf,
   quickMark,
   savePhoneGame,
@@ -97,6 +101,8 @@ export function PhoneTickets({
   const [large, setLarge] = useState(() => prefs.get<boolean>(LARGE_TEXT_KEY, false) === true);
   const [popup, setPopup] = useState<'menu' | 'prizes' | 'cue' | null>(null);
   const [linkError, setLinkError] = useState<string | null>(null);
+  /** TAM-214: a 4th ticket was refused ("This phone already holds 3 tickets"). */
+  const [notice, setNotice] = useState<string | null>(null);
   const { w, h } = useViewport();
 
   const save = (next: PhoneGameFacts | null) => {
@@ -115,7 +121,15 @@ export function PhoneTickets({
     setLinkError(null);
     prefs.set(AWAY_KEY, false);
     const t = d.ticket;
-    const next = addTicket(loadPhoneGame(prefs), {
+    const held = loadPhoneGame(prefs);
+    if (phoneIsFull(held, t.game, t.ticket)) {
+      setNotice(PHONE_FULL);
+      setScreen({ name: 'tickets' });
+      setPopup(null);
+      return;
+    }
+    setNotice(null);
+    const next = addTicket(held, {
       game: t.game,
       ticket: t.ticket,
       rows: t.rows,
@@ -163,6 +177,10 @@ export function PhoneTickets({
     const open = () => {
       const d = decodeTypedCode(s.text);
       if (!d.ok) return setScreen({ name: 'enter', text: s.text, error: d.reason, typing: true });
+      if (phoneIsFull(loadPhoneGame(prefs), d.ticket.game, d.ticket.ticket)) {
+        return setScreen({ name: 'enter', text: s.text, error: PHONE_FULL, typing: true });
+      }
+      setNotice(null);
       prefs.set(AWAY_KEY, false);
       save(addTicket(loadPhoneGame(prefs), { game: d.ticket.game, ticket: d.ticket.ticket, rows: d.ticket.rows }));
       setSelected(d.ticket.ticket);
@@ -220,6 +238,12 @@ export function PhoneTickets({
   const current = tickets.find((t) => t.number === selected) ?? tickets[0]!;
   const cue = patternCue(game);
   const cueSays = cueLine(cue.fills);
+  // TAM-214: when the phone holds tickets of more than one person, each ticket names its holder.
+  const mixed = new Set(tickets.map((t) => holderOf(game, t))).size > 1;
+  const labelOf = (t: (typeof tickets)[number]) => {
+    const who = mixed ? holderOf(game, t) : null;
+    return who ? `${who} · Ticket ${t.number}` : `Ticket ${t.number}`;
+  };
   const crossed = crossedOut(game);
   const prizes = prizesOf(game);
   const mark = (ticket: number) => (n: number) => save(toggleMark(game, ticket, n));
@@ -242,11 +266,11 @@ export function PhoneTickets({
       Math.floor((h - chrome - ticketRows * (caption + 8)) / (3 * ticketRows)),
     ),
   );
-  // Portrait one at a time (owner decision 2026-09-30): the ticket spans the full screen width with no border,
-  // so cells are the width / 9, at least 42 px (42 px on a 390 px phone), and nothing slides sideways.
+  // Portrait one at a time (owner decision 2026-10-01, replacing the full-width 42 px cells): the ticket keeps a
+  // 12 px margin each side, with no border, and the cells fill the width between (40 px on a 390 px phone, 39 on 375).
   const oneCell = landscape
     ? Math.max(44, Math.min(80, Math.floor((w - 16 - side) / 9), Math.floor((h - chrome - 60) / 3)))
-    : Math.max(42, Math.min(80, Math.floor(w / 9), Math.floor((h - chrome - 60) / 3)));
+    : Math.max(24, Math.min(80, Math.floor((w - 24) / 9), Math.floor((h - chrome - 60) / 3)));
 
   const header = (onBack?: () => void) => (
     <header className="phone-bar">
@@ -307,8 +331,8 @@ export function PhoneTickets({
         <Popup label="Patterns filled" onClose={() => setPopup(null)}>
           <div data-testid="pattern-cue-more" className="stack-tight">
             <ul className="cue-list">
-              {cue.fills.map((f) => (
-                <li key={`${f.ticket}-${f.pattern}`}>{cueDetail(f)}</li>
+              {cueDetails(cue.fills).map((line) => (
+                <li key={line}>{line}</li>
               ))}
             </ul>
             <p className="note">Shout if it's right! Only the host's check decides.</p>
@@ -333,7 +357,7 @@ export function PhoneTickets({
               <span>Larger text</span>
             </label>
             <button type="button" role="menuitem" className="menu-item" onClick={() => (setPopup(null), setScreen({ name: 'enter', text: '', error: null, typing: true }))}>
-              Enter a ticket code
+              Add a ticket by code
             </button>
             {onReport && (
               <button
@@ -384,7 +408,7 @@ export function PhoneTickets({
 
   const ticketBox = (t: (typeof tickets)[number], cell: number, extra?: { outlined?: ReadonlySet<number>; noTap?: boolean }) => (
     <section key={t.number} className={landscape ? 'phone-ticket phone-ticket-side' : 'phone-ticket'} data-testid="phone-ticket" data-ticket={t.number}>
-      <p className="phone-ticket-caption">Ticket {t.number}</p>
+      <p className="phone-ticket-caption">{labelOf(t)}</p>
       <TicketGrid
         rows={t.rows}
         cell={cell}
@@ -482,15 +506,30 @@ export function PhoneTickets({
 
   // ---------- Showing a claim (TAM-177, TAM-190, TAM-193) ----------
   if (screen.name === 'claim-ticket' || screen.name === 'claim-prize') {
+    const named = cueTickets(cue.fills);
+    const filled = new Set(cue.fills.map((f) => f.ticket));
+    const first = named[0];
+    const choiceOrder = first === undefined ? tickets : [...tickets.filter((t) => t.number === first), ...tickets.filter((t) => t.number !== first)];
+    // The pictures stay small (at most half a full ticket's cells) so every choice fits on one screen.
+    const pictureCell = Math.max(10, Math.min(22, Math.floor(allCell / 2), Math.floor((h - 220) / (tickets.length * 3 + tickets.length * 2))));
     return (
       <main className={`screen ${rootClass}`}>
         {screen.name === 'claim-ticket' ? (
           <>
             <h1 className="step-title">Which ticket?</h1>
-            <div className="choice-grid">
-              {tickets.map((t) => (
-                <button key={t.number} type="button" className="button button-quiet button-big" onClick={() => setScreen({ name: 'claim-prize', ticket: t.number })}>
-                  Ticket {t.number}
+            <div className="ticket-choices">
+              {choiceOrder.map((t) => (
+                // TAM-190 (UX list row 10): a small picture of each ticket with her marks; with the cue on, the
+                // ticket its line names first comes first, marked "Pattern filled".
+                <button key={t.number} type="button" className="button button-quiet ticket-choice" onClick={() => setScreen({ name: 'claim-prize', ticket: t.number })}>
+                  <span className="ticket-choice-name">
+                    Ticket {t.number}
+                    {mixed && holderOf(game, t) ? ` · ${holderOf(game, t)}` : ''}
+                    {filled.has(t.number) && <span className="ticket-choice-tag"> · Pattern filled</span>}
+                  </span>
+                  <span className="ticket-picture" data-testid="ticket-picture" data-ticket={t.number} aria-hidden="true">
+                    <TicketGrid rows={t.rows} cell={pictureCell} marks={marksFor(t.number)} className="ticket-thumb" />
+                  </span>
                 </button>
               ))}
             </div>
@@ -517,7 +556,8 @@ export function PhoneTickets({
             </div>
           </>
         )}
-        <button type="button" className="button button-quiet" onClick={() => setScreen({ name: 'tickets' })}>
+        {/* TAM-177 (UX list row 14): "Cancel" is a link, so it never looks like a prize. */}
+        <button type="button" className="text-button link-button" onClick={() => setScreen({ name: 'tickets' })}>
           Cancel
         </button>
       </main>
@@ -530,14 +570,15 @@ export function PhoneTickets({
     const qrSize = Math.max(160, Math.min(landscape ? h - 150 : w - 48, 320));
     return (
       <main className={`${rootClass} claim-screen`} data-testid="claim-screen">
-        <p className="claim-title">{[PATTERN_NAMES[screen.pattern], `Ticket ${t.number}`, game.name].filter(Boolean).join(' · ')}</p>
+        <p className="claim-title">{[PATTERN_NAMES[screen.pattern], `Ticket ${t.number}`, holderOf(game, t)].filter(Boolean).join(' · ')}</p>
         <div className="claim-body">
           <QrCode text={payload} testId="claim-qr" size={qrSize} label="Claim QR code" />
           <p className="lead">Show this to the host</p>
           {ticketBox(t, Math.min(allCell, 44), { outlined: new Set(patternCells(t.rows, screen.pattern)), noTap: true })}
         </div>
         <div className="phone-actions">
-          <button type="button" className="button button-big" onClick={() => setScreen({ name: 'tickets' })}>
+          {/* TAM-193: "Done" is outlined, so the QR stands out. */}
+          <button type="button" className="button button-quiet button-big" onClick={() => setScreen({ name: 'tickets' })}>
             Done
           </button>
         </div>
@@ -551,6 +592,11 @@ export function PhoneTickets({
   return (
     <main className={rootClass}>
       {header()}
+      {notice && (
+        <p className="error phone-notice" role="alert">
+          {notice}
+        </p>
+      )}
       {showOne && (
         <div className="ticket-tabs" role="tablist" aria-label="Your tickets">
           {tickets.map((t) => {

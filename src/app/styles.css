@@ -19,9 +19,9 @@
   --bad-bg: #fbe4e2;
   /* A chosen option (PLT-301, guideline 17a): a light tint with an outline and a ✓, never the main look. */
   --chosen-bg: #fbe9e6;
-  --toast-bg: #1c1b1a;
-  --toast-text: #ffffff;
-  --toast-button: #ffd9d4;
+  --toast-bg: #ffffff;
+  --toast-text: #1c1b1a;
+  --toast-button: #b3261e;
   --radius: 16px;
   color-scheme: light;
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
@@ -52,9 +52,9 @@
   --ok-bg: #1f3321;
   --bad-bg: #3b1f1c;
   --chosen-bg: #3a2422;
-  --toast-bg: #33302d;
-  --toast-text: #ffffff;
-  --toast-button: #ffd9d4;
+  --toast-bg: #2c2a27;
+  --toast-text: #f3efe9;
+  --toast-button: #ff8a80;
   color-scheme: dark;
 }
 
@@ -190,6 +190,8 @@ body { -webkit-tap-highlight-color: transparent; }
 .setup-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; margin: 0 -4px; padding: 0 4px 12px; }
 .bottom-action { flex: none; padding: 8px 0 max(16px, env(safe-area-inset-bottom)); background: var(--bg); }
 .bottom-action .button { display: block; width: 100%; }
+/* The Tambola start screen (TAM-181): "New game" at the bottom edge. */
+.start-screen { padding-bottom: 0; }
 /* PLT-029: which session the game joins, one line above "Confirm prizes". */
 .session-line { display: flex; align-items: center; gap: 2px; margin: 0 0 6px; min-height: 44px; max-height: 56px; font-weight: 700; color: var(--muted); }
 .session-line-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -225,7 +227,7 @@ body { -webkit-tap-highlight-color: transparent; }
   border-radius: 10px;
 }
 .tier-label { width: 140px; font-weight: 400; }
-.tier-remove { flex: none; min-height: 44px; min-width: 44px; padding: 0 10px; font-size: 0.95rem; }
+.tier-remove { flex: none; min-height: 44px; min-width: 44px; padding: 0 10px; font-size: 0.95rem; color: var(--muted); }
 .tier-remove-space { flex: none; width: 96px; }
 .tier-add { min-height: 44px; padding: 0 12px; font-size: 0.95rem; }
 .visually-hidden {
@@ -339,15 +341,13 @@ button, [role="button"], a { touch-action: manipulation; }
   width: 100%;
   min-height: 48px;
   display: flex;
-  flex-wrap: nowrap;
+  /* TAM-126 (owner 2026-10-01): the chips wrap onto a second line rather than run off the side. */
+  flex-wrap: wrap;
   gap: 6px;
-  overflow-x: auto;
-  overflow-y: hidden;
-  scrollbar-width: none;
 }
-.prize-chips::-webkit-scrollbar { display: none; }
 .prize-chip {
   flex: none;
+  max-width: 100%;
   min-height: 44px;
   display: flex;
   align-items: center;
@@ -360,6 +360,7 @@ button, [role="button"], a { touch-action: manipulation; }
   border: 2px solid var(--border);
   border-radius: 999px;
 }
+.prize-chip > span { min-width: 0; white-space: normal; overflow-wrap: anywhere; }
 .chip-won { border-color: var(--ok); color: var(--ok); padding-right: 2px; }
 .chip-closed { color: var(--closed-text); background: var(--closed-bg); border-color: var(--closed-bg); }
 .chip-close {
@@ -427,15 +428,17 @@ button, [role="button"], a { touch-action: manipulation; }
 .next-number { width: 100%; height: 76px; font-size: 1.5rem; }
 /* The undo toast has its own place just above the bottom buttons and under the prize chips, so it moves
    nothing and covers nothing when it comes and goes (TAM-125). */
-.toast-slot { flex: none; width: 100%; height: 48px; }
+/* TAM-119, TAM-125 (UX list row 13): a light bar, not a solid one, with at least 16 px above the button below it. */
+.toast-slot { flex: none; width: 100%; height: 52px; }
 .toast {
   margin: 0;
-  height: 48px;
+  height: 44px;
+  border: 2px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 4px;
-  padding: 2px 12px;
+  padding: 0 12px;
   font-weight: 700;
   color: var(--toast-text);
   background: var(--toast-bg);
@@ -515,6 +518,8 @@ button, [role="button"], a { touch-action: manipulation; }
 .choice-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
 .pick { min-height: 52px; padding: 0 10px; overflow-wrap: anywhere; }
 .picked { color: var(--accent-text); background: var(--accent); border: 2px solid var(--accent); }
+/* A chosen option (PLT-301): outline, ✓ and a light tint, never the main look. */
+.pick-on { color: var(--accent); background: var(--chosen-bg); border-color: var(--accent); }
 .menu-backdrop { position: fixed; inset: 0; z-index: 25; }
 .menu {
   position: absolute;
@@ -658,7 +663,12 @@ button, [role="button"], a { touch-action: manipulation; }
 .bar-code { display: block; font-size: 0.8rem; line-height: 1.1; }
 
 /* The host hands out tickets (TAM-132, TAM-172). */
-.hand-out { gap: 12px; }
+/* TAM-181: one screen; the body scrolls inside itself and the main button stays full width at the bottom. */
+.hand-out { gap: 12px; height: 100dvh; min-height: 0; padding-bottom: 0; }
+.hand-out > .top-bar { flex: none; }
+.hand-out-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; gap: 12px; }
+.hand-out-actions { display: flex; flex-direction: column; gap: 4px; }
+.hand-out-paper { align-self: center; text-decoration: underline; }
 .hand-out .top-bar { align-items: center; gap: 8px; }
 .hand-out .bar-progress { flex: 1; }
 .game-code { flex: none; font-weight: 800; letter-spacing: 0.05em; }
@@ -695,7 +705,12 @@ button.tcell { cursor: pointer; }
 .tcell-blank { background: var(--closed-bg); }
 .tcell-marked { color: var(--accent-text); background: var(--accent); }
 .tcell-tick { position: absolute; top: 1px; right: 2px; font-size: calc(var(--cell) * 0.24); line-height: 1; }
-.tcell-cue { box-shadow: inset 0 0 0 3px var(--ok); }
+/* TAM-195 (UX list row 11): a 4 px outline plus a corner mark, not colour alone. */
+.tcell-cue { box-shadow: inset 0 0 0 4px var(--ok); }
+.tcell-cue-mark {
+  position: absolute; top: 0; left: 0; width: max(6px, calc(var(--cell) * 0.32)); height: max(6px, calc(var(--cell) * 0.32));
+  background: var(--ok); clip-path: polygon(0 0, 100% 0, 0 100%); pointer-events: none;
+}
 .tcell-outlined { box-shadow: inset 0 0 0 3px var(--ok); }
 .tcell-called { color: var(--accent-text); background: var(--ok); }
 .ticket-small .tcell { font-size: calc(var(--cell) * 0.5); }
@@ -720,8 +735,10 @@ button.tcell { cursor: pointer; }
 .tickets { display: flex; flex-direction: column; gap: 8px; align-items: center; }
 .tickets-two { display: grid; grid-template-columns: repeat(2, max-content); justify-content: center; gap: 8px 12px; }
 .tickets-one { overflow-x: auto; margin: 0 -8px; padding: 0; align-items: flex-start; }
+/* TAM-122, TAM-191 (owner 2026-10-01): in portrait one at a time keeps a 12 px margin each side (8 px + 4 px). */
+.phone:not(.phone-landscape) .tickets-one { margin: 0; padding: 0 4px; align-items: center; }
 .phone-ticket { display: flex; flex-direction: column; gap: 2px; margin: 0; }
-.phone-ticket-caption { margin: 0; font-size: 0.85rem; font-weight: 700; line-height: 18px; height: 18px; color: var(--muted); }
+.phone-ticket-caption { margin: 0; font-size: 0.85rem; font-weight: 700; line-height: 18px; height: 18px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .phone-ticket-side { flex-direction: row; align-items: center; gap: 2px; }
 .phone-ticket-side > .phone-ticket-caption { width: 18px; height: auto; writing-mode: vertical-rl; transform: rotate(180deg); font-size: 0.75rem; }
 .phone-actions { flex: none; display: flex; flex-direction: column; gap: 6px; margin-top: auto; }
@@ -766,6 +783,21 @@ button.tcell { cursor: pointer; }
 .thumbs { flex: none; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
 .thumb { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 2px; font: inherit; color: var(--muted); background: transparent; border: 0; cursor: pointer; }
 .thumb-caption { font-size: 0.8rem; font-weight: 700; line-height: 1.2; }
+
+/* TAM-214: "This phone already holds 3 tickets". */
+.phone-notice { flex: none; padding: 8px 10px; background: var(--bad-bg); border-radius: 10px; }
+
+/* "Which ticket?" (TAM-190): each choice shows a small picture of its ticket. */
+.ticket-choices { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.ticket-choice {
+  flex: 1 1 220px; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 12px;
+  color: var(--text);
+}
+.ticket-choice-name { font-size: 1.1rem; font-weight: 800; color: var(--accent); }
+.ticket-choice-tag { color: var(--ok); }
+.ticket-picture { display: block; pointer-events: none; }
+/* A link, not a button (TAM-177): no fill, no border. */
+.link-button { align-self: center; text-decoration: underline; }
 
 /* The claim screen (TAM-177, TAM-193): the claim QR above the claimed ticket. */
 .claim-screen { align-items: center; text-align: center; }
