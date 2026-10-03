@@ -113,7 +113,8 @@ export function ImpostorSettings({ prefs }: { prefs: Preferences }) {
           setTap(on);
         }}
       />
-      <p className="imp-small">Your screen reader will say the word out loud. Use earphones or turn the volume down.</p>
+      {/* IMP-014: the note shows only while "Tap to show" is on. */}
+      {tap && <p className="imp-small">Your screen reader will say the word out loud. Use earphones or turn the volume down.</p>}
       {shown.length > 0 && (
         <>
           <h2 className="imp-subtitle">Skipped words ({shown.length})</h2>

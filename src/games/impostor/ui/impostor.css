@@ -182,8 +182,10 @@
 .imp-switch:disabled { opacity: 0.5; cursor: default; }
 .imp-switch-track { flex: none; position: relative; width: 48px; height: 28px; background: var(--disabled-bg); border-radius: 14px; }
 .imp-switch-thumb { position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; background: var(--surface); border-radius: 50%; }
-.imp-switch-on { background: var(--accent); }
-.imp-switch-on .imp-switch-thumb { left: 23px; }
+/* IMP-007, F12: a switch that is on is deep blue (the marks' colour, not the main buttons' red; guideline 17a), with
+   a white thumb. */
+.imp-switch-on { background: #1e3a5f; }
+.imp-switch-on .imp-switch-thumb { left: 23px; background: #ffffff; }
 .imp-switches { display: flex; flex-direction: column; }
 .imp-settings { display: flex; flex-direction: column; gap: 8px; }
 .imp-skipped { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 8px; }
@@ -327,6 +329,8 @@
 /* The choices heading sits on its own line under "← Back"; on short phones it shares the bar's row (below). */
 .imp-bar-title { flex-wrap: wrap; row-gap: 12px; }
 .imp-bar-title .imp-title { flex: 1 0 100%; }
+/* IMP-009: "Same as last time", directly under the heading. */
+.imp-same { flex: none; margin-top: -6px; }
 @media (max-height: 640px) and (orientation: portrait) {
   .imp-setup .imp-title { font-size: 1.35rem; }
   .imp-setup .imp-scroll { gap: 8px; }

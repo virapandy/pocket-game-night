@@ -232,6 +232,7 @@ export function HowToPlayChoices({
   onPractice,
   lastGuess,
   onLastGuess,
+  sameAsLast = false,
 }: {
   choices: Choices;
   onChange: (next: Choices) => void;
@@ -245,6 +246,8 @@ export function HowToPlayChoices({
    */
   lastGuess?: boolean;
   onLastGuess?: (on: boolean) => void;
+  /** IMP-009: the choices were carried over and nothing has changed yet: "Same as last time". */
+  sameAsLast?: boolean;
 }) {
   const [sheet, setSheet] = useState<'categories' | 'howTo' | 'more' | null>(null);
   const n = choices.categories.length;
@@ -257,6 +260,7 @@ export function HowToPlayChoices({
           <QuietButton onClick={onBack}>← Back</QuietButton>
           <h1 className="imp-title">How do you want to play?</h1>
         </header>
+        {sameAsLast && <p className="imp-small imp-same">Same as last time</p>}
         <div className="imp-scroll imp-choices-scroll">
           <div className="imp-groups">
             {GROUPS.map((g) => {
@@ -335,8 +339,14 @@ function CategoriesSheet({ choices, onDone }: { choices: Choices; onDone: (next:
   const [on, setOn] = useState<string[]>(() => [...choices.categories]);
   const [nonveg, setNonveg] = useState(choices.nonveg);
   const one = on.length === 1;
+  const done = () => {
+    const categories = CATEGORIES.filter((c) => on.includes(c));
+    const same = nonveg === choices.nonveg && categories.length === choices.categories.length && categories.every((c, i) => c === choices.categories[i]);
+    // Nothing changed: the choices stay as they were ("Same as last time" stays, IMP-009).
+    onDone(same ? choices : { ...choices, categories, nonveg });
+  };
   return (
-    <Sheet title="Categories" onDone={() => onDone({ ...choices, categories: CATEGORIES.filter((c) => on.includes(c)), nonveg })}>
+    <Sheet title="Categories" onDone={done}>
       <div className="imp-switches">
         {CATEGORIES.map((c) => (
           <Switch
