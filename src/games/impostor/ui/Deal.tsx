@@ -1,10 +1,10 @@
 // The deal (IMP-010 to IMP-018, IMP-083, IMP-086, IMP-090): one player's turn. Screen A "Pass the phone to", screen
 // B with the hold pad, and the private block, which is in the page only while held (or tapped open).
-import { useEffect, useLayoutEffect, useRef, useState, type PointerEvent as PointerEv, type RefObject } from 'react';
+import { useContext, useEffect, useLayoutEffect, useRef, useState, type PointerEvent as PointerEv, type RefObject } from 'react';
 import { flushSync } from 'react-dom';
 import type { ImpostorWord } from '../rules';
 import { buzz } from './device';
-import { Caps, MainButton } from './parts';
+import { Caps, Dialog, HideMainButton, MainButton, QuietButton } from './parts';
 
 /** What one player may see: the round's word for the crew; for the impostor only what their mode allows. */
 export type Secret = { readonly role: 'crew' | 'impostor'; readonly word: ImpostorWord; readonly mode: 'easy' | 'hard' };
@@ -235,6 +235,16 @@ function ScreenB({
   const padText = tapMode ? (shown ? 'Tap to hide' : 'Tap to see your word') : shown ? 'Let go to hide' : 'Hold here to see your word';
   const canDontKnow = ready && !seeAgain && !!onDontKnow;
 
+  // IMP-015, F3: "Don't know this word?" asks first; "Back" (or the browser's or phone's Back) records nothing.
+  const [asking, setAsking] = useState(false);
+  const hideMain = useContext(HideMainButton) || asking;
+  useEffect(() => {
+    if (!asking) return;
+    const back = () => setAsking(false);
+    window.addEventListener('popstate', back);
+    return () => window.removeEventListener('popstate', back);
+  }, [asking]);
+
   const holdHandlers = {
     onPointerDown: (e: PointerEv<HTMLButtonElement>) => {
       if (pointer.current !== null) return; // only the first finger counts
@@ -283,7 +293,7 @@ function ScreenB({
         <button
           type="button"
           className={canDontKnow ? 'imp-deal-text' : 'imp-deal-text imp-reserved'}
-          onClick={canDontKnow ? onDontKnow : undefined}
+          onClick={canDontKnow ? () => setAsking(true) : undefined}
         >
           Don't know this word?
         </button>
@@ -331,7 +341,24 @@ function ScreenB({
       <div className="imp-sr" data-testid="private-live" aria-live="assertive">
         {shown ? lines.filter(Boolean).join(' ') : ''}
       </div>
-      {ready && <MainButton onClick={onDone}>{next === null || seeAgain ? "Done, everyone's seen" : `Done, pass to ${next}`}</MainButton>}
+      <HideMainButton.Provider value={hideMain}>
+        {ready && <MainButton onClick={onDone}>{next === null || seeAgain ? "Done, everyone's seen" : `Done, pass to ${next}`}</MainButton>}
+      </HideMainButton.Provider>
+      {asking && onDontKnow && (
+        <Dialog text="New word for everyone?">
+          <QuietButton
+            onClick={() => {
+              setAsking(false);
+              onDontKnow();
+            }}
+          >
+            New word
+          </QuietButton>
+          <MainButton inline onClick={() => setAsking(false)}>
+            Back
+          </MainButton>
+        </Dialog>
+      )}
     </>
   );
 }
