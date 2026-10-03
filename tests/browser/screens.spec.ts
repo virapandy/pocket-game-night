@@ -114,7 +114,7 @@ for (const size of SIZES) {
 
     // ---------------------------------------------------------------- Host phone
 
-    test('host setup: ticket type (rows 11, 1), prizes with the session line (rows 9, 19), hand-out (rows 10, 19, 25), the "hasn\'t got their ticket" question (row 7), "plays on paper · Undo" (row 8)', async ({ page }) => {
+    test('host setup: ticket type (rows 11, 1), prizes with the session line (rows 9, 19), hand-out (rows 10, 19, 25), the "Has Dad got their ticket?" question (row 7, N5), "plays on paper · Undo" (row 8)', async ({ page }) => {
       await steady(page);
       await openTambola(page);
       await page.getByRole('button', { name: 'New game' }).click();

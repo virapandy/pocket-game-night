@@ -9,7 +9,7 @@ import {
   allTickets, cellBoxes, cellsWith, closePhones, cornersOf, currentHandOut, confirmHandOut, gameCodeOf, gridOf,
   handOutAll, handOutScreen, LANDSCAPE, markedOn, newPhone, notOn, numbersOf, oneAtATime, openHostTickets, openPrizes,
   openQuickMark, padKey, padTap, pageFits, patternCue, phoneGame, phoneTicket, playerMenu, playerWith, PORTRAIT, prizeItem,
-  allCueText, quickMarkMessage, quickMarkPad, readDrawnQr, rowOf, scanTicket, setUpPhoneGame, shownTickets, tapCell, thumbnail, ticketTab,
+  allCueText, cueMore, quickMarkMessage, quickMarkPad, readDrawnQr, rowOf, scanTicket, setUpPhoneGame, shownTickets, tapCell, thumbnail, ticketTab,
 } from './phone';
 
 test.afterEach(closePhones);
@@ -515,17 +515,17 @@ test.describe('Quick mark', () => {
 test.describe('The "your marks fill a pattern" cue, with the host\'s switch on (TAM-195, owner 2026-10-01)', () => {
   // The cue is off by default since 1 October 2026; these games turn it on at setup. Off, old QRs, typed codes and
   // the one-line layout: pattern-cue.spec.ts.
-  test('TAM-195: marks covering the top row outline it and the line says "Ticket 1: Early Five and Top Line filled. Shout if it\'s right!"; unmarking removes it', async ({ page, browser }, testInfo) => {
+  test('TAM-195: marks covering the top row outline it and the line says "Ticket 1: Early Five, Top Line. Shout!"; unmarking removes it', async ({ page, browser }, testInfo) => {
     const handOuts = await phoneGame(page, THREE, 50, { cue: true });
     const riya = await playerWith(browser, testInfo, handOuts, 'Riya', PORTRAIT);
     const top = rowOf(riya.grids.get(1)!, 0);
     for (const n of top.slice(0, 4)) await tapCell(riya.page, 1, n);
     await expect(patternCue(riya.page)).toHaveCount(0);
     await tapCell(riya.page, 1, top[4]!);
-    // One line naming the ticket and both prizes these 5 marks fill, in prize order, with "More" when it doesn't fit
-    // (product owner's answer 2, 2 October 2026, docs/handover.md step 3; UX list row 1).
-    await expect(patternCue(riya.page)).toContainText(/Ticket 1\b/);
-    expect(await allCueText(riya.page)).toMatch(/Ticket 1: Early Five and Top Line filled\. Shout if it['’]s right!/i);
+    // The line names the ticket and both prizes these 5 marks fill, in prize order, in the short words of point a
+    // (1.1.0 release review, decided 2026-10-03): it fits in two lines on this phone, so there is no "More".
+    await expect(patternCue(riya.page)).toContainText(/Ticket 1: Early Five, Top Line\. Shout!/);
+    await expect(cueMore(riya.page), 'no "More": the short words fit').toHaveCount(0);
     expect(await cellsWith(phoneTicket(riya.page, 1), 'data-cue')).toEqual(expect.arrayContaining([...top]));
     // Never a verdict, never a claim.
     await expect(riya.page.getByText(/accepted|you won|winner|correct|valid claim/i)).toHaveCount(0);
@@ -552,11 +552,14 @@ test.describe('The "your marks fill a pattern" cue, with the host\'s switch on (
     // A fifth mark, off the top row: Early Five.
     const fifth = rowOf(grid, 1)[2]!;
     await tapCell(riya.page, 1, fifth);
-    await expect(patternCue(riya.page)).toContainText(/ticket 1\b/i);
-    await expect(patternCue(riya.page)).toContainText(/Shout if it['’]s right!/);
-    // The words may be on the line or, when it is too wide, behind "More" (UX list row 1, 3 October 2026).
+    // Point a (1.1.0 release review, decided 2026-10-03): a ticket with only Early Five reads "Ticket 1: Early Five",
+    // in the short words, on the line itself ("More" only when the line would need a third line).
+    const cue = patternCue(riya.page);
+    await expect(cue).toContainText(/Ticket 1: Early Five(?![,\w])/);
+    await expect(cue).toContainText(/Shout!/);
+    await expect(cue).not.toContainText(/filled/i);
+    await expect(cueMore(riya.page), 'no "More": the short words fit').toHaveCount(0);
     const all = await allCueText(riya.page);
-    expect(all).toMatch(/Early Five filled on ticket 1\b/i);
     expect(all).not.toMatch(/corner|row/i);
     await expect(riya.page.getByText(/accepted|you won|winner|correct/i)).toHaveCount(0);
   });
@@ -568,8 +571,10 @@ test.describe('The "your marks fill a pattern" cue, with the host\'s switch on (
     const four = cornersOf(riya.grids.get(t)!);
     for (const n of four) await tapCell(riya.page, t, n);
     await expect(patternCue(riya.page)).toContainText(new RegExp(`ticket ${t}\\b`, 'i'));
-    // The words may be on the line or, when it is too wide, behind "More" (UX list row 1, 3 October 2026).
-    expect(await allCueText(riya.page)).toMatch(new RegExp(`Ticket ${t}: Four Corners filled`, 'i'));
+    // Point a (1.1.0 release review, decided 2026-10-03): the short words, on the line, with no "More".
+    await expect(patternCue(riya.page)).toContainText(new RegExp(`Ticket ${t}: Four Corners(?![,\\w])`));
+    await expect(patternCue(riya.page)).toContainText(/Shout!/);
+    await expect(cueMore(riya.page), 'no "More": the short words fit').toHaveCount(0);
     expect(await cellsWith(phoneTicket(riya.page, t), 'data-cue')).toEqual([...four].sort((a, b) => a - b));
   });
 });

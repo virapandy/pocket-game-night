@@ -377,7 +377,7 @@ read it with jsQR (`readDrawnQr` in `phone.ts`): what is drawn must read back ex
   alone (as `One at a time`: cells at least 42 px, no sideways sliding); `Back` returns to quick mark, and `Back` in quick mark returns to
   the tickets.
 - `pattern-cue` (TAM-195): only when the host turned the cue on (off by default since 1 October 2026; see "UX list of 1
-  October 2026"). One slim line, such as "Ticket 3: Top Line filled. Shout if it's right!". It exists only while the
+  October 2026"). A slim line of at most two lines, such as "Ticket 3: Top Line. Shout!" (point a, 3 October). It exists only while the
   player's marks fill a prize in this game; never a verdict ("accepted", "correct", "winner"), never a claim.
 - `Show claim` (TAM-177, TAM-190, TAM-193): with several tickets, "Which ticket?" and buttons `Ticket 3` …; then one
   button per prize in this game (`Early Five`, `Top Line` …; a crossed-out prize is disabled or not offered). Then
@@ -523,20 +523,24 @@ TAM-213), `report-problem.spec.ts` (PLT-200). Rule side: `tests/games/tambola/ph
   change (`tests/fixtures/ticket-qr-v1.json`, real links `#t=T1.…` from the app at d3aa874) still opens, with the cue
   off. A ticket opened by typed code has the cue off. The player's menu has no cue switch.
 - **Cue off**: no `pattern-cue`, no cell with `data-cue="true"` (tickets and quick-mark thumbnails), no text "Shout if
-  it's right", "top row filled", "Top Line filled", "patterns filled" or "Pattern filled" anywhere, also on "Which ticket?". The claim
+  it's right", "Shout!", "top row filled", "Top Line filled", "patterns filled" or "Pattern filled" anywhere, also on "Which ticket?". The claim
   screen still outlines the picked prize (`data-outlined`, TAM-193).
-- **Cue on**: `pattern-cue` is one line (all its text at one height) such as "Ticket 3: Top Line filled. Shout if
-  it's right!": each ticket names its prizes by their names, in prize order ("Ticket 1: Early Five and Top Line
-  filled", product owner's answer 2). With fills on two tickets it reads "Tickets 1 and 3: patterns filled" and has a
-  `More` button (or link) inside `pattern-cue`. One ticket whose line is too wide for the screen reads "Ticket 1:
-  patterns filled. Shout if it's right!" ("pattern filled" for one prize) with `More`, the full words only behind
-  `More` (row 1, 3 October). `More` opens `pattern-cue-more`, holding each fill in full, such as "Ticket 1: Early Five
-  and Top Line filled" and "Ticket 3: Top Line filled" (closed with a button starting `Close`, `Done`, `Back` or `OK`,
-  or Escape). Early Five's line names the ticket and "Early Five", no row or
-  corners; Four Corners' names the ticket and "corners".
-- **One slim line** (row 1a): on 375 × 812 and 812 × 375, Larger text off and on, with 1, 2 and 3 tickets, and the page
-  scrolled to the top: `pattern-cue`'s box overlaps no shown `phone-ticket` box; `One at a time` (when there is one),
-  `Quick mark` and `Show claim` are each wholly on the screen and topmost at their centre.
+- **Cue on** (point a of the 1.1.0 release review, decided 3 October 2026; it was one line): `pattern-cue` takes at
+  most **two lines** (its text at no more than two heights) and uses short words: "Ticket 1: Early Five, Top Line.
+  Shout!" (each ticket's prizes by name, in prize order); several tickets "Ticket 1: Early Five, Top Line. Ticket 3: Top
+  Line. Shout!"; Early Five said once, for the first ticket that has it; a ticket with only Early Five "Ticket 1: Early
+  Five"; Four Corners "Ticket 1: Four Corners". No "filled" in the short words. On 375 × 812, and with one ticket also
+  at 360 × 640 and 320 × 568, there is no `More`.
+- `More` (a button or link inside `pattern-cue`) only when even the short words need a third line; then the line reads
+  "Tickets 1 and 3: patterns filled. Shout!" ("Ticket 1: …" for one ticket) and names no prize. The tests expect this
+  with Riya's tickets 1 and 3 filled at 320 × 568 with Larger text on. `More` opens `pattern-cue-more`, which keeps the
+  full words, such as "Ticket 1: Early Five and Top Line filled", "Ticket 3: Top Line filled", "Early Five filled on
+  ticket 1" (closed with a button starting `Close`, `Done`, `Back` or `OK`, or Escape). The line and `More` together
+  name Early Five once. Never a row or corners in a game without that prize.
+- **Slim** (row 1a): on 375 × 812 and 812 × 375, Larger text off and on, with 1, 2 and 3 tickets, and the page
+  scrolled to the top: `pattern-cue` takes at most two lines, its box overlaps no shown `phone-ticket` box (in
+  landscape it may sit beside the last ticket); `One at a time` (when there is one), `Quick mark` and `Show claim` are
+  each wholly on the screen and topmost at their centre.
 
 ### Quick mark (TAM-192)
 - Each pad key is a button named by its number; once marked, its name may also carry a "✓" before or after the number
@@ -636,8 +640,8 @@ margin replaces "cells at least 42 px"), `layout.spec.ts` (TAM-126: chips wrap, 
 
 ## Product owner's answers to questions 1 to 6 (2 October 2026, `docs/handover.md` step 3): no more "either answer"
 - 1: the unfinished game's row says exactly "Tap to resume" (`home-and-buttons.spec.ts`).
-- 2: one ticket filling two prizes: the cue (line plus `More`) says "Ticket 1: Early Five and Top Line filled. Shout if
-  it's right!" (prize order). With fills on two tickets, `More` names each ticket's prizes, such as "Ticket 1: Early Five
+- 2: one ticket filling two prizes: the cue names both, in prize order; since point a of the 1.1.0 release review
+  (3 October) in short words, "Ticket 1: Early Five, Top Line. Shout!", the full words only behind `More`. With fills on two tickets, `More` names each ticket's prizes, such as "Ticket 1: Early Five
   and Top Line filled" or "Ticket 1: Top Line filled", Early Five said at most once (`phone-tickets.spec.ts`,
   `pattern-cue.spec.ts`; UX list row 1).
 - 3: "You're ready for game night" on the first visit only (`home-and-buttons.spec.ts`).
@@ -692,7 +696,7 @@ C2 rows written alongside the build, and the C1 rules a screenshot can't show. R
 | Test id or name | Where | Row, scenario |
 |---|---|---|
 | `announcer` | host screen: one polite live region (`aria-live="polite"` or `role="status"`), screen-reader only (clipped to nothing). After a call: exactly "25. Christmas Day" (the number, a dot, the rhyme shown); after "Another rhyme" the new rhyme; after a verdict its first line ("Top Line: ✓ Riya", "Early Five: ✓ Accepted, ₹60 to Riya", "Top Line: ✗ Bogey…"), never the proof line | 4, PLT-302 |
-| dialog named "Dad hasn't got their ticket" | hand-out, after "Start calling" while a ticket waits (the one on screen counts): "Ticket 3 is still waiting…", buttons "Hand it out now", "Give a paper ticket", "Start anyway". Asked once: after "Hand it out now", the next "Start calling" on that ticket starts calling with no question; if the host then gives the ticket to someone else (the name button), "Start calling" asks again, naming the new owner | 7, TAM-132 |
+| dialog named "Has Dad got their ticket?" (N5 of the 1.1.0 release review, decided 3 October; the name starts with "Has") | hand-out, after "Start calling" while a ticket waits (the one on screen counts): "Ticket 3 is the last one to hand out.", buttons "Yes, start calling" (the main look; calling starts and the ticket stays Dad's phone ticket), "Not yet, hand it out" (back to that ticket and its QR), "Give a paper ticket"; no "Start anyway". Asked once: after "Not yet, hand it out", the next "Start calling" on that ticket starts calling with no question; if the host then gives the ticket to someone else (the name button), "Start calling" asks again, naming the new owner | 7, TAM-132 |
 | `game-over` | top of the host's summary. After End with phone tickets "✓ Game over · Players: phones away. Tap Done with this game."; with paper tickets "✓ Game over"; after Discard "Game over · Discarded · Nobody wins. Everyone gets their contribution back." Above `payout-summary` | 22, TAM-140, PLT-005 |
 | `claim-proof` | inside `claim-result`, under the verdict, smaller: "Ticket 1 · game 7K3P · same numbers as your copy" (scanned, accepted or bogey); "… · checked from your copy" (typed ticket number); none for a paper win | 24, TAM-174 |
 | `game-code` | hand-out: "Game 7K3P" above `ticket-qr`; calling screen, inside `top-bar`: "Tambola · Game 7K3P", text, not a control | 25, TAM-172, TAM-107 |
@@ -700,7 +704,22 @@ C2 rows written alongside the build, and the C1 rules a screenshot can't show. R
 | hand-out instruction | "Scan with your camera to get your ticket. Check it says Game 7K3P." | 25, TAM-172 |
 | tickets at 320 × 640 and 375 × 667 | "All tickets" and "One at a time": no sideways sliding, every cell on screen, cells at least 24 px and at least (width − 40) / 9 wide | 2, TAM-122 |
 | History, one past game | "Delete the past game from this phone?…" with "Delete" and "Keep"; in an unsettled tally also "It's in an unsettled tally, and will be taken out of it." (never "1 of them") | 19, PLT-011, PLT-025 |
-| hand-out helper (`phone.ts`) | `confirmHandOut` / `startAnywayIfAsked` answer the row 7 question with "Start anyway" | 7 |
+| hand-out helper (`phone.ts`) | `confirmHandOut` / `startCallingIfAsked` answer the row 7 question with "Yes, start calling" | 7 |
+
+## N1: a claim for a ticket that plays on paper (TAM-058, TAM-198; `phone-claims.spec.ts`)
+From the 1.1.0 release review (decided 3 October 2026, C2). Dad's ticket 3 is switched to paper after the first call
+(menu → Tickets → `Switch to paper…`).
+- A typed ticket number (`Check`) or a scanned claim QR for ticket 3: `claim-refused` holds "Ticket 3 plays on paper:
+  pick Dad by name if the anchor agrees." and never the words "Record a win"; no `claim-result`. Its button `Pick the
+  winner by name` has the main look.
+- Tapping it opens the paper name list (as in Record a win and Add another winner, TAM-039): a button per paper
+  player by name (`Dad`), then `Confirm`. While a won prize waits to be closed the list shows the text "Another Early
+  Five winner". The result: "Early Five: ✓ Dad", or "Shared" next to Riya's accepted win; `main-button` reads `Close
+  Early Five` until closed.
+- Only for that refusal. A claim QR that doesn't match the host's copy (the test swaps one number, made with
+  `encodeClaim` / `decodeClaim`) still shows "This claim doesn't match ticket 3" with `Check ticket 3 by number`, and
+  no `Pick the winner by name`. When Dad already won that prize, `claim-refused` gives a plain reason, without "Record a
+  win", the paper sentence or `Pick the winner by name`; it is left with `Close`, `OK`, `Done` or `Cancel`.
 
 ## Screenshot comparison (`screens.spec.ts`, tag `@screens`; docs/change-sop.md, "Added 3 October", item 2)
 Reference pictures of the screens UX list rows 1–25 touched, on the Android phone at 360 × 640, 390 × 844 and
@@ -724,7 +743,7 @@ the approved pictures once the product owner or UX designer has checked them at 
 | `host-ticket-type` | ticket-type step, "Phone tickets" chosen, cue switch on with its warning | 11, 1 |
 | `host-prizes` | prizes step with the session line above "Confirm prizes" (phone game, 3 players, ₹50) | 9, 19 |
 | `host-hand-out` | hand-out of ticket 1: game code, QR, typed code, waiting line, link and main button | 10, 19, 25 |
-| `host-not-handed-out-question` | "Dad hasn't got their ticket" with its three answers | 7 |
+| `host-not-handed-out-question` | "Has Dad got their ticket?" with its three answers (N5: new picture needed) | 7 |
 | `host-plays-on-paper` | calling screen with "Dad plays on paper · Undo" | 8 |
 | `host-calling` | calling screen, phone tickets, after 3 calls | 11, 16, 25 |
 | `host-room-view` | Show the room after 3 calls | 25 |

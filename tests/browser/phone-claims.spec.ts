@@ -2,9 +2,10 @@
 // internet. The host's camera is replaced by the documented test hook `window.__pgnCamera` (phone.ts, fakeCamera;
 // README.md "Phase 2: phone tickets"), so no real camera is needed.
 // Scenarios: TAM-020, TAM-022, TAM-026, TAM-028, TAM-030, TAM-032, TAM-033, TAM-038, TAM-044, TAM-058, TAM-060,
-// TAM-117, TAM-174, TAM-175, TAM-177, TAM-178, TAM-179, TAM-190, TAM-193, TAM-196.
+// TAM-117, TAM-174, TAM-175, TAM-177, TAM-178, TAM-179, TAM-190, TAM-193, TAM-196; N1 of the 1.1.0 release review
+// (TAM-058, TAM-198).
 import { expect, test, type Page } from './fixtures';
-import { call, endGame, fromMenu, HOME, mainButton, nextNumber, payoutPeople, typeTicketCode } from './helpers';
+import { call, endGame, fromMenu, hasMainLook, HOME, mainButton, nextNumber, payoutPeople, typeTicketCode } from './helpers';
 import {
   callUntil, cellsWith, claimRefused, claimResult, closePhones, cornersOf, countOn, currentHandOut, enterTicketNumber,
   fakeCamera, gameCodeOf, gridOf, handOutAll, newPhone, numbersOf, openHostTickets, phoneGame, playerWith, PORTRAIT, readDrawnQr,
@@ -420,3 +421,169 @@ test.describe('TAM-145 and TAM-198 (UX list row 6): phone-ticket games, "Add ano
     await expect(page.getByTestId('prize-chip').filter({ hasText: /Early Five/ }).filter({ hasText: /Riya/ })).toBeVisible();
   });
 });
+
+// ---------------------------------------------------------------- N1: a claim for a ticket that plays on paper
+
+/**
+ * N1 of the 1.1.0 release review (docs/games/tambola/ux-review-2026-10-03-release-1.1.0.md; decided 3 October 2026,
+ * C2; TAM-058, TAM-198): in a phone-ticket game, a scanned or typed claim for a ticket that plays on paper is refused
+ * with "Ticket 3 plays on paper: pick Dad by name if the anchor agrees." and the main button "Pick the winner by name",
+ * which opens the paper name list (titled "Another Early Five winner" while a won prize waits to be closed): tap the
+ * name, Confirm. Only for that refusal: a claim QR that doesn't match the host's copy keeps its own warning and "Check
+ * ticket 3 by number"; a holder who already won that prize gets a plain reason. README.md, "N1".
+ * Riya (phone, ticket 1), Asha (phone, ticket 2), Dad (ticket 3, switched to paper after the first call, TAM-058).
+ */
+const pickByName = (host: Page) => host.getByRole('button', { name: 'Pick the winner by name', exact: true });
+const PAPER_REFUSAL = 'Ticket 3 plays on paper: pick Dad by name if the anchor agrees.';
+
+/** Menu → Tickets → "Switch to paper" on ticket 3, then back to calling. */
+async function dadToPaper(host: Page) {
+  await openHostTickets(host);
+  await hostTicket(host, 3).getByRole('button', { name: /^Switch to paper/ }).click();
+  await expect(hostTicket(host, 3).getByRole('button', { name: /^Switch to paper/ })).toHaveCount(0);
+  await host.getByRole('button', { name: /^(Close|Done|Back)$/ }).first().click();
+}
+
+/** The paper refusal for ticket 3: the sentence, "Pick the winner by name" as the main button, no "Record a win". */
+async function expectPaperRefusal(host: Page) {
+  const refused = claimRefused(host);
+  await expect(refused).toContainText(PAPER_REFUSAL, { timeout: 2000 });
+  await expect(refused, 'no dead end: never sends the host to "Record a win"').not.toContainText(/Record a win/);
+  await expect(claimResult(host)).toHaveCount(0);
+  await expect(pickByName(host)).toBeVisible();
+  expect(await hasMainLook(pickByName(host)), '"Pick the winner by name" is the main button').toBe(true);
+}
+
+/** "Pick the winner by name" → the paper name list → Dad → Confirm. */
+async function pickDad(host: Page, title?: string) {
+  await pickByName(host).click();
+  if (title) await expect(host.getByText(title, { exact: true }).first()).toBeVisible();
+  await host.getByRole('button', { name: 'Dad', exact: true }).click();
+  await host.getByRole('button', { name: 'Confirm', exact: true }).click();
+}
+
+/** Opens the claim scanner from "Add another winner" (README, row 6). */
+async function addAnotherWinnerScanner(host: Page) {
+  await addAnotherWinner(host).click();
+  const scanner = host.getByTestId('claim-scanner');
+  if (!(await scanner.isVisible())) await host.getByRole('button', { name: 'Scan a claim', exact: true }).last().click();
+  await expect(scanner).toBeVisible();
+}
+
+test.describe('N1 (TAM-058, TAM-198): a claim for a ticket that plays on paper offers the name list', () => {
+  test('a typed claim for Dad\'s paper ticket: "Ticket 3 plays on paper: pick Dad by name if the anchor agrees."; "Pick the winner by name" → Dad → Confirm records "Early Five: ✓ Dad"', async ({ page }) => {
+    await fakeCamera(page, 'denied');
+    await phoneGame(page, THREE);
+    await call(page);
+    await dadToPaper(page);
+    await enterTicketNumber(page, 3, 'Early Five');
+    await expectPaperRefusal(page);
+    await pickDad(page);
+    await expect(claimResult(page).getByText(/Early Five: ✓ Dad/)).toBeVisible();
+    await expect(mainButton(page)).toHaveAccessibleName('Close Early Five');
+  });
+
+  test('a scanned claim QR from Dad\'s phone, after his ticket went to paper: the same refusal and the same way to record him', async ({ page, browser }, testInfo) => {
+    await fakeCamera(page, 'ok');
+    const handOuts = await phoneGame(page, THREE);
+    const dad = await playerWith(browser, testInfo, handOuts, 'Dad', PORTRAIT);
+    await call(page);
+    await dadToPaper(page);
+    // Dad's phone can't know; he still shows a claim QR.
+    await scanClaim(page, await showClaim(dad.page, 'Early Five'));
+    await expectPaperRefusal(page);
+    await pickDad(page);
+    await expect(claimResult(page).getByText(/Early Five: ✓ Dad/)).toBeVisible();
+  });
+
+  test('while Riya\'s accepted Early Five waits to be closed: "Add another winner", Dad\'s ticket number → the refusal → the list titled "Another Early Five winner" → Dad shares the prize; it still waits to be closed; both are paid', async ({ page, browser }, testInfo) => {
+    test.setTimeout(150_000); // calling until 5 of a ticket's numbers are out can take 60 or more calls (TAM-101)
+    await fakeCamera(page, 'ok');
+    const handOuts = await phoneGame(page, THREE);
+    const riya = await playerWith(browser, testInfo, handOuts, 'Riya', PORTRAIT);
+    const mine = numbersOf(riya.grids.get(riya.tickets[0]!)!);
+    const called = [await call(page)];
+    await dadToPaper(page);
+    await callUntil(page, (c) => countOn(mine, c) >= 5, called);
+    await scanClaim(page, await showClaim(riya.page, 'Early Five'));
+    await expect(claimResult(page).getByText(/Early Five: ✓ Accepted, ₹\d+ to Riya/)).toBeVisible({ timeout: 2000 });
+    await expect(mainButton(page)).toHaveAccessibleName('Close Early Five');
+
+    await addAnotherWinnerScanner(page);
+    await enterTicketNumber(page, 3, 'Early Five');
+    await expectPaperRefusal(page);
+    await pickDad(page, 'Another Early Five winner');
+    await expect(claimResult(page).getByText(/Shared/)).toBeVisible();
+    await expect(mainButton(page), 'the prize still waits to be closed').toHaveAccessibleName('Close Early Five');
+    await mainButton(page).click();
+    await expect(nextNumber(page)).toBeEnabled();
+    await endGame(page);
+    const people = await payoutPeople(page);
+    expect(people.find((p: any) => p.name === 'Riya')!.won, 'Riya\'s share').toBeGreaterThan(0);
+    expect(people.find((p: any) => p.name === 'Dad')!.won, 'Dad\'s share').toBeGreaterThan(0);
+    expect(people.find((p: any) => p.name === 'Asha')!.won).toBe(0);
+  });
+
+  test('Dad already won Early Five: his ticket number again, from "Add another winner", gets a plain reason, no "Record a win" and no name list; nothing changes', async ({ page }) => {
+    await fakeCamera(page, 'denied');
+    await phoneGame(page, THREE);
+    await call(page);
+    await dadToPaper(page);
+    await enterTicketNumber(page, 3, 'Early Five');
+    await expectPaperRefusal(page);
+    await pickDad(page);
+    await expect(claimResult(page).getByText(/Early Five: ✓ Dad/)).toBeVisible();
+    await expect(mainButton(page)).toHaveAccessibleName('Close Early Five');
+
+    await addAnotherWinnerScanner(page);
+    await enterTicketNumber(page, 3, 'Early Five');
+    const refused = claimRefused(page);
+    await expect(refused).toBeVisible({ timeout: 2000 });
+    await expect(refused).not.toContainText(/Record a win/);
+    await expect(refused).not.toContainText(PAPER_REFUSAL);
+    await expect(pickByName(page)).toHaveCount(0);
+    await dismissClaim(page);
+    await expect(mainButton(page), 'Early Five still waits to be closed').toHaveAccessibleName('Close Early Five');
+    await expect(page.getByTestId('prize-chip').filter({ hasText: /Early Five/ }).filter({ hasText: /Dad/ })).toBeVisible();
+    await expect(claimResult(page).getByText(/Shared/)).toHaveCount(0);
+  });
+
+  test('a claim QR for Dad\'s paper ticket that doesn\'t match the host\'s copy keeps its own warning, "This claim doesn\'t match ticket 3", with "Check ticket 3 by number"; no name list', async ({ page, browser }, testInfo) => {
+    await fakeCamera(page, 'ok');
+    const handOuts = await phoneGame(page, THREE);
+    const dad = await playerWith(browser, testInfo, handOuts, 'Dad', PORTRAIT);
+    await call(page);
+    await dadToPaper(page);
+    const damaged = await damage(await showClaim(dad.page, 'Early Five'));
+    await scanClaim(page, damaged);
+    const refused = claimRefused(page);
+    await expect(refused).toContainText("This claim doesn't match ticket 3", { timeout: 2000 });
+    await expect(page.getByRole('button', { name: 'Check ticket 3 by number', exact: true })).toBeVisible();
+    await expect(pickByName(page)).toHaveCount(0);
+    await expect(refused).not.toContainText(PAPER_REFUSAL);
+    await expect(claimResult(page)).toHaveCount(0);
+  });
+});
+
+/**
+ * A damaged claim QR (TAM-179): the same game, ticket and prize, with one number swapped for another in the same
+ * column that isn't on the ticket. Made with the claim QR's documented codec, encodeClaim and decodeClaim
+ * (tests/games/tambola/README.md).
+ */
+async function damage(text: string): Promise<string> {
+  // Loaded only here, so a moved file fails this one test, not the whole file. (The game's index pulls in the rhymes
+  // JSON, which the browser tests' loader can't read.)
+  const { decodeClaim, encodeClaim } = await import('../../src/games/tambola/rules/codes');
+  const read = decodeClaim(text);
+  if (!read.ok) throw new Error(`the claim QR did not decode: ${read.reason}`);
+  const { game, ticket, pattern } = read.claim;
+  const rows: (number | null)[][] = read.claim.rows.map((r: (number | null)[]) => [...r]);
+  const onTicket = new Set(rows.flat().filter((n): n is number => n !== null));
+  const c = rows[0]!.findIndex((n) => n !== null);
+  const lo = c === 0 ? 1 : c * 10, hi = c === 8 ? 90 : c * 10 + 9;
+  let replacement = lo;
+  while (onTicket.has(replacement) && replacement <= hi) replacement++;
+  if (replacement > hi) throw new Error('no free number in the column');
+  rows[0]![c] = replacement;
+  return encodeClaim({ game, ticket, pattern, rows });
+}

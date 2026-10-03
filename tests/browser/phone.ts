@@ -117,25 +117,25 @@ export async function currentHandOut(page: Page): Promise<HandOut> {
 }
 
 /**
- * The question "Start calling" asks while a ticket still waits (TAM-132, UX list row 7, owner 2026-10-03):
- * "Asha hasn't got their ticket", with "Hand it out now", "Give a paper ticket" and "Start anyway".
+ * The question "Start calling" asks while a ticket still waits (TAM-132, UX list row 7, owner 2026-10-03; wording N5 of
+ * the 1.1.0 release review): "Has Asha got their ticket?", with "Yes, start calling" (the main button),
+ * "Not yet, hand it out" and "Give a paper ticket".
  */
-export const notHandedOutQuestion = (page: Page) => page.getByRole('dialog', { name: /hasn['’]t got (their|her|his) tickets?/ });
+export const notHandedOutQuestion = (page: Page) => page.getByRole('dialog', { name: /^Has .+ got their ticket\?/ });
 
 /**
- * Taps "Next ticket", or "Start calling" after the last ticket. Returns true when calling has started.
- * The last ticket is on screen when "Start calling" shows, so it still counts as waiting and the row 7 question
- * comes up; the player has scanned it in these tests, so the host answers "Start anyway" (the row 7 tests in
- * phone-tickets.spec.ts check the question itself).
+ * After "Start calling" or "Back to calling": answers the row 7 question with "Yes, start calling" if it comes up.
+ * The last ticket is on screen when "Start calling" shows, so it still counts as waiting and the question comes up;
+ * the player has scanned it in these tests (the row 7 tests in ux-rows-3-oct.spec.ts check the question itself).
  */
-/** After "Start calling" or "Back to calling": answers the row 7 question with "Start anyway" if it comes up. */
-export async function startAnywayIfAsked(page: Page): Promise<void> {
+export async function startCallingIfAsked(page: Page): Promise<void> {
   await expect(nextNumber(page).or(notHandedOutQuestion(page)).or(page.getByRole('dialog')).first()).toBeVisible();
   if (await notHandedOutQuestion(page).isVisible()) {
-    await notHandedOutQuestion(page).getByRole('button', { name: 'Start anyway', exact: true }).click();
+    await notHandedOutQuestion(page).getByRole('button', { name: 'Yes, start calling', exact: true }).click();
   }
 }
 
+/** Taps "Next ticket", or "Start calling" after the last ticket. Returns true when calling has started. */
 export async function confirmHandOut(page: Page): Promise<boolean> {
   const next = page.getByRole('button', { name: 'Next ticket', exact: true });
   if (await next.isVisible()) {
@@ -143,7 +143,7 @@ export async function confirmHandOut(page: Page): Promise<boolean> {
     return false;
   }
   await page.getByRole('button', { name: 'Start calling', exact: true }).click();
-  await startAnywayIfAsked(page);
+  await startCallingIfAsked(page);
   await expect(nextNumber(page)).toBeVisible();
   return true;
 }

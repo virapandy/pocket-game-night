@@ -80,7 +80,7 @@ Then their ticket appears and they can mark it
 And nothing is fetched from a server: everything the ticket needs is inside the QR link
 
 ## TAM-058: Paper and phone tickets can be mixed in one game
-Status: approved, owner, 2026-10-03 (UX list row 8, docs/decisions.md 2026-10-03: "plays on paper" can be undone until the first number is called); was approved, owner, 2026-09-29 (Phase 2 sign-off, with the product owner's verdict of 2026-09-28)
+Status: decided, product owner, 2026-10-03 (N1 of the 1.1.0 release review, docs/games/tambola/ux-review-2026-10-03-release-1.1.0.md, C2: a claim for a paper ticket offers the name list); approved, owner, 2026-10-03 (UX list row 8, docs/decisions.md 2026-10-03: "plays on paper" can be undone until the first number is called); was approved, owner, 2026-09-29 (Phase 2 sign-off, with the product owner's verdict of 2026-09-28)
 Phase: Phase 2 (phone tickets)
 Given 6 players use phone tickets and 2 use paper tickets from a book
 When claims are made
@@ -90,6 +90,15 @@ And a player can switch from phone to paper mid-game
 And (UX list row 8, approved, owner, 2026-10-03) "Can't scan? Give a paper ticket" confirms with "Kabir plays on paper ·
 Undo"; until the first number is called the switch can be undone and Kabir's phone ticket is back in play; after the
 first call the switch is final
+When (N1, decided 2026-10-03) the host scans a claim QR or types a ticket number for Kabir's ticket 4, which plays
+on paper
+Then it is refused, never a bogey: "Ticket 4 plays on paper: pick Kabir by name if the anchor agrees.", never a pointer
+to "Record a win", with the main button "Pick the winner by name"
+When the host taps it
+Then the paper name list opens (titled "Another Top Line winner" while a won Top Line waits to be closed, TAM-145);
+the host taps Kabir, then Confirm, and Kabir's win is recorded (shared with a waiting winner, TAM-041)
+But a claim QR that doesn't match the host's copy keeps its own warning and "Check ticket 4 by number" (TAM-179), and
+if Kabir already won that prize the refusal gives a plain reason, with no name list
 (Changed by the tester on 2026-09-28 to fit the change request: paper claims were checked by the numbers read out.)
 
 ## TAM-213: Paper or phone tickets: two equal choices, neither chosen in advance
@@ -119,7 +128,7 @@ And (UX list row 3, approved, owner, 2026-10-03; guideline 17a: red is for actio
 fill (#1E3A5F), a white number and a ✓ of at least 14 CSS px, never red; Quick mark's marked keys look the same (TAM-192)
 
 ## TAM-132: The host sees which tickets have been handed out
-Status: approved, owner, 2026-10-03 (the question before calling starts with a ticket waiting, UX list row 7, docs/handover.md 2b); approved, owner, 2026-10-01 (waiting line wording, UX list row 15, docs/games/tambola/ux-review-2026-10-01-action-hierarchy.md); was approved, owner, 2026-09-29 (Phase 2 sign-off, with the product owner's verdict of 2026-09-28)
+Status: decided, product owner, 2026-10-03 (N5 of the 1.1.0 release review, docs/games/tambola/ux-review-2026-10-03-release-1.1.0.md, C2: the host can't know whether the player scanned, so the question asks "Has Dad got their ticket?" and "Yes, start calling" is the main answer; "Start anyway" goes); approved, owner, 2026-10-03 (the question before calling starts with a ticket waiting, UX list row 7, docs/handover.md 2b); approved, owner, 2026-10-01 (waiting line wording, UX list row 15, docs/games/tambola/ux-review-2026-10-01-action-hierarchy.md); was approved, owner, 2026-09-29 (Phase 2 sign-off, with the product owner's verdict of 2026-09-28)
 Phase: Phase 2 (phone tickets)
 While handing out phone tickets
 When a player has scanned and the host taps "Next ticket"
@@ -129,9 +138,12 @@ And the waiting line names each player with the number of tickets they are still
 (With no internet, the host phone cannot know that a scan worked, so the host confirms each hand-out.)
 When the host taps "Start calling" while a ticket is still waiting (UX list row 7, approved, owner, 2026-10-03; the
 ticket on the hand-out screen counts as waiting until it is confirmed, so this includes the last one)
-Then nothing is called yet, and a question asks "Dad hasn't got their ticket" ("Ticket 3 is still waiting to be
-handed out.") with "Hand it out now", "Give a paper ticket" and "Start anyway"
-When the host taps "Hand it out now"
+Then nothing is called yet, and a question asks "Has Dad got their ticket?" ("Ticket 3 is the last one to hand
+out.") with "Yes, start calling" (the main button), "Not yet, hand it out" and "Give a paper ticket" (N5)
+When the host taps "Yes, start calling"
+Then calling starts, and the ticket stays in the game as that player's phone ticket (the pot already counts it,
+TAM-176 does not apply)
+When the host taps "Not yet, hand it out"
 Then the hand-out screen shows that ticket and its QR again, and calling has not started
 And (row 7, asked once, C2 choice built by lane C on 3 October 2026) the next "Start calling" on that ticket starts
 calling without asking again, and the ticket stays that player's
@@ -139,8 +151,6 @@ But if the host first gives that ticket to someone else (tapping the name), "Sta
 owner
 When the host taps "Give a paper ticket"
 Then that player plays on paper (TAM-058: "Dad plays on paper · Undo") and calling starts
-When the host taps "Start anyway"
-Then calling starts, and the ticket stays in the game as that player's (the pot already counts it, TAM-176 does not apply)
 
 ## TAM-133: A player's phone can show the last calls
 Status: draft (moved to Phase 6 by the product owner, 2026-09-28: offline, a player's phone cannot know the calls; not reviewed for approval)
@@ -345,7 +355,7 @@ Then her tickets span two sheets (5 and 6 on the first, 7 on the next); no ticke
 And quick mark (TAM-192) marks every one of her tickets that has the number
 
 ## TAM-195: The phone points out when the player's own marks fill a pattern, only if the host turned it on
-Status: approved, owner, 2026-10-01 (UX list rows 1 and 1a: a host option, off by default, and one slim line;
+Status: decided, product owner, 2026-10-03 (point a of the 1.1.0 release review, docs/games/tambola/ux-review-2026-10-03-release-1.1.0.md, C1: up to two lines, shorter words, "More" only when even that needs a third line); approved, owner, 2026-10-01 (UX list rows 1 and 1a: a host option, off by default, and one slim line;
 docs/decisions.md 2026-10-01, docs/games/tambola/ux-review-2026-10-01-several-tickets.md); was approved, owner,
 2026-09-29 (new with the Phase 2 sign-off: docs/games/tambola/changes-2026-09-29-phone-tickets.md; the cue was always on)
 Phase: Phase 2 (phone tickets)
@@ -371,13 +381,15 @@ she picked it
 With the cue on
 Given the game's prizes include Top Line
 When Riya's marks cover every number in ticket 3's top row
-Then that row is outlined on her tickets (on the ticket screen and under the quick-mark pad), and one slim line
-says "Ticket 3: Top Line filled. Shout if it's right!" (each prize by its name, product owner's answer 2, 2 October 2026)
+Then that row is outlined on her tickets (on the ticket screen and under the quick-mark pad), and a slim line
+says "Ticket 3: Top Line. Shout!" (each prize by its name, product owner's answer 2, 2 October 2026; short words,
+point a, 3 October 2026)
 And the same for any prize in this game: 5 marks on a ticket (Early Five), a full row (a Line), the four
 corners (Four Corners), every number (Full House)
-And with fills on several tickets the line names them all, such as "Tickets 1 and 3: patterns filled · More";
-"More" shows each one in full
-And the line is always one line at the bottom of the tickets: it never covers any part of a ticket, and never
+And with fills on several tickets the line names each with its prizes: "Ticket 1: Early Five, Top Line. Ticket 3:
+Top Line. Shout!" (point a)
+And the line takes at most two lines at the bottom of the tickets (point a; it was one line; in landscape it may sit
+beside the last ticket): it never covers any part of a ticket, and never
 pushes "One at a time", "Quick mark" or "Show claim" off the screen, on a 375 × 812 phone in portrait or
 landscape, with Larger text on or off, with 1, 2 or 3 tickets
 And the cue is based only on her own marks: it never says the claim is right, never claims for her, and
@@ -385,13 +397,14 @@ goes away if she unmarks a number
 And it never mentions a prize this game doesn't have
 And (UX list row 11, approved, owner, 2026-10-01) the outline does not rely on colour alone: it is a thicker line
 than the 3 CSS px line of 1 October (at least 4 CSS px), and every outlined cell also gets a corner mark that a marked cell outside the pattern doesn't have
-And Early Five is said once, however many of her tickets have 5 marks, for the first ticket that has them: "Early
-Five filled on ticket 1", or with that ticket's line, "Ticket 1: Early Five and Top Line filled" (line and "More"
-together mention Early Five once)
+And Early Five is said once, however many of her tickets have 5 marks, for the first ticket that has them: a ticket
+with only Early Five reads "Ticket 1: Early Five", or with that ticket's other prizes, "Ticket 1: Early Five, Top
+Line" (line and "More" together mention Early Five once)
 And (product owner's answers 2 and 6, 2 October 2026, docs/handover.md step 3; UX list row 1) when one ticket fills
-two prizes at once, the line names both, in prize order: "Ticket 1: Early Five and Top Line filled. Shout if it's
-right!"; when that is too wide for the screen, the line reads "Ticket 1: patterns filled. Shout if it's right!"
-("pattern filled" for one prize) with "More", and the full words are only behind "More" (UX list row 1, 3 October 2026)
+two prizes at once, the line names both, in prize order: "Ticket 1: Early Five, Top Line. Shout!" (point a)
+And (point a, 3 October 2026) only when even the short words would need a third line (such as two tickets with three
+prizes at 320 px) the line reads "Tickets 1 and 3: patterns filled. Shout!" with "More"; "More" keeps the full words,
+such as "Ticket 1: Early Five and Top Line filled", "Ticket 3: Top Line filled", "Early Five filled on ticket 1"
 And on an 812 × 375 phone in landscape with 3 tickets and Larger text on, all three tickets fit with no scrolling
 
 ## TAM-196: Players can cross out prizes that are gone; the host's scan catches the rest

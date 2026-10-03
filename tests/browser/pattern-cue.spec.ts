@@ -1,9 +1,11 @@
 // TAM-195 (owner, 1 October 2026; UX list rows 1 and 1a in docs/handover.md): the "your marks fill a pattern" cue
 // on players' phones is a host option, off by default, set on the ticket-type step once "Phone tickets" is chosen,
 // with a warning when turned on. It travels in the ticket QR (TAM-053, format version 2); older QRs and typed codes
-// have it off. With it on, the message is one slim line that never covers a ticket and never pushes "One at a
-// time", "Quick mark" or "Show claim" off a 375 × 812 screen, portrait or landscape, Larger text on or off, 1 to 3
-// tickets. Names and test ids: README.md, "UX list of 1 October 2026".
+// have it off. With it on, the message is a slim line of at most two lines (point a of the 1.1.0 release review,
+// decided 2026-10-03; it was one line) that never covers a ticket and never pushes "One at a time", "Quick mark" or
+// "Show claim" off a 375 × 812 screen, portrait or landscape, Larger text on or off, 1 to 3 tickets. Short words:
+// "Ticket 1: Early Five, Top Line. Shout!"; "More" only when even that needs a third line.
+// Names and test ids: README.md, "UX list of 1 October 2026".
 
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -34,7 +36,7 @@ async function fillTopRow(player: Page, ticket: number): Promise<number[]> {
 /** Nothing on the phone points out a filled pattern (TAM-195 with the cue off). */
 async function expectNoCue(player: Page, tickets: number[]) {
   await expect(patternCue(player)).toHaveCount(0);
-  await expect(player.getByText(/Shout if it['’]s right|top row filled|Top Line filled|patterns? filled|Pattern filled/i)).toHaveCount(0);
+  await expect(player.getByText(/Shout if it['’]s right|Shout!|top row filled|Top Line filled|patterns? filled|Pattern filled/i)).toHaveCount(0);
   for (const t of tickets) expect(await cellsWith(phoneTicket(player, t), 'data-cue'), `cue outline on ticket ${t}`).toEqual([]);
 }
 
@@ -131,9 +133,9 @@ test.describe('TAM-195: with the cue off (the default), nothing points out a fil
   });
 });
 
-// ---------------------------------------------------------------- With the cue on: one slim line
+// ---------------------------------------------------------------- With the cue on: a slim line, at most two lines
 
-/** The cue's text runs on one line: every piece of its text sits at the same height. */
+/** How many lines the cue's text runs on: the distinct heights its pieces of text sit at. */
 async function lineCount(player: Page): Promise<number> {
   return patternCue(player).evaluate((el) => {
     const tops: number[] = [];
@@ -153,14 +155,14 @@ async function lineCount(player: Page): Promise<number> {
 }
 
 /**
- * TAM-195 (row 1a): the cue is one line; it covers no part of any ticket shown; "One at a time" (when shown),
+ * TAM-195 (row 1a; point a of the 1.1.0 release review): the cue takes at most two lines; it covers no part of any ticket shown; "One at a time" (when shown),
  * "Quick mark" and "Show claim" are wholly on the screen as it first appears and not covered.
  */
 async function expectSlimCue(player: Page, where: string) {
   await player.evaluate(() => window.scrollTo(0, 0));
   const cue = patternCue(player);
   await expect(cue, `${where}: the cue line`).toBeVisible();
-  expect(await lineCount(player), `${where}: the cue takes one line`).toBe(1);
+  expect(await lineCount(player), `${where}: the cue takes at most two lines`).toBeLessThanOrEqual(2);
   const c = (await cue.boundingBox())!;
   const tickets = shownTickets(player);
   for (let i = 0; i < (await tickets.count()); i++) {
@@ -215,7 +217,7 @@ async function expectSlimEverywhere(player: Page, tickets: number) {
   }
 }
 
-test.describe('TAM-195 (row 1a): with the cue on, the message is one slim line that never covers a ticket or pushes the buttons off', () => {
+test.describe('TAM-195 (row 1a, point a): with the cue on, the message is a slim line of at most two lines that never covers a ticket or pushes the buttons off', () => {
   // Riya 3 tickets (1–3), Asha 2 (4–5), Dad 1 (6). Each fills the top row of their last ticket, the one lowest on screen.
   const PLAYERS = [{ name: 'Riya', tickets: 3 }, { name: 'Asha', tickets: 2 }, { name: 'Dad' }];
 
@@ -227,46 +229,61 @@ test.describe('TAM-195 (row 1a): with the cue on, the message is one slim line t
       expect(player.tickets.length).toBe(count);
       await fillTopRow(player.page, last);
       await expect(patternCue(player.page)).toContainText(new RegExp(`Ticket ${last}\\b`));
-      // A full top row is also 5 marks: the line names both prizes, in prize order (product owner's answer 2, 2 October 2026).
-      expect(await allCueText(player.page)).toMatch(new RegExp(`Ticket ${last}: Early Five and Top Line filled\\. Shout if it['’]s right!`, 'i'));
+      // A full top row is also 5 marks: the line names both prizes, in prize order (product owner's answer 2, 2 October
+      // 2026), in the short words of point a (1.1.0 release review, decided 2026-10-03), with no "More".
+      await expect(patternCue(player.page)).toContainText(new RegExp(`Ticket ${last}: Early Five, Top Line\\. Shout!`));
+      await expect(cueMore(player.page), 'no "More": the short words fit in two lines').toHaveCount(0);
       await expectSlimEverywhere(player.page, count);
     });
   }
 
-  test('fills on two tickets: one line, "Tickets 1 and 3: patterns filled · More"; "More" shows each one', async ({ page, browser }, testInfo) => {
+  test('fills on two tickets (375 × 812): "Ticket 1: Early Five, Top Line. Ticket 3: Top Line. Shout!", at most two lines, no "More"; Early Five once, for the first ticket', async ({ page, browser }, testInfo) => {
     const handOuts = await phoneGame(page, PLAYERS, 50, { cue: true });
     const riya = await playerWith(browser, testInfo, handOuts, 'Riya', SMALL_PORTRAIT);
     await fillTopRow(riya.page, 1);
     await fillTopRow(riya.page, 3);
-    await expect(patternCue(riya.page)).toContainText(/Tickets 1 and 3\b/);
-    await expect(patternCue(riya.page)).toContainText(/patterns filled/i);
-    await expect(cueMore(riya.page)).toBeVisible();
+    const cue = patternCue(riya.page);
+    // Point a (1.1.0 release review, decided 2026-10-03): each ticket by its prizes, in short words; both full top rows
+    // are also 5 marks, so ticket 1 gets Early Five and ticket 3 doesn't (rows 11 and 3).
+    await expect(cue).toContainText(/Ticket 1: Early Five, Top Line\. Ticket 3: Top Line\. Shout!/);
+    await expect(cueMore(riya.page), 'no "More": the short words fit in two lines').toHaveCount(0);
     await expectSlimCue(riya.page, '3 tickets, two with fills');
     const all = await allCueText(riya.page);
-    // Each ticket names its prizes (product owner's answer 2, 2 October 2026); Early Five is said once, for the first
-    // ticket (rows 11 and 3): both full top rows are also 5 marks, so ticket 1 gets it and ticket 3 doesn't.
-    expect(all).toMatch(/Ticket 1: Early Five and Top Line filled/i);
-    expect(all).toMatch(/Ticket 3: Top Line filled/i);
     expect(all).not.toMatch(/top row filled/i);
     expect((all.match(/Early Five/gi) ?? []).length, `Early Five is said once in "${all}"`).toBe(1);
     // Never a verdict, never a claim.
     await expect(riya.page.getByText(/accepted|you won|winner|correct|valid claim/i)).toHaveCount(0);
   });
 
-  test('row 1 (3 October): one ticket whose line is too wide reads "Ticket 6: patterns filled. Shout if it\'s right!" with More; the full words only behind More', async ({ page, browser }, testInfo) => {
+  for (const size of [{ width: 360, height: 640 }, { width: 320, height: 568 }]) {
+    test(`point a: one ticket at ${size.width} × ${size.height} fits in two lines, "Ticket 6: Early Five, Top Line. Shout!", with no "More"`, async ({ page, browser }, testInfo) => {
+      const handOuts = await phoneGame(page, PLAYERS, 50, { cue: true });
+      const dad = await playerWith(browser, testInfo, handOuts, 'Dad', size);
+      await fillTopRow(dad.page, 6);
+      const cue = patternCue(dad.page);
+      await expect(cue).toContainText(/Ticket 6: Early Five, Top Line\. Shout!/);
+      await expect(cueMore(dad.page), 'no "More": the short words fit in two lines').toHaveCount(0);
+      expect(await lineCount(dad.page), 'the cue takes at most two lines').toBeLessThanOrEqual(2);
+    });
+  }
+
+  test('point a: when even the short words need a third line (two tickets, 320 × 568, Larger text), the line reads "Tickets 1 and 3: patterns filled. Shout!" with "More"; "More" keeps the full words', async ({ page, browser }, testInfo) => {
     const handOuts = await phoneGame(page, PLAYERS, 50, { cue: true });
-    // 360 px wide: "Ticket 6: Early Five and Top Line filled. Shout if it's right!" can't fit on one line beside "More".
-    const dad = await playerWith(browser, testInfo, handOuts, 'Dad', { width: 360, height: 640 });
-    await fillTopRow(dad.page, 6);
-    const cue = patternCue(dad.page);
-    await expect(cue).toContainText(/Ticket 6: patterns filled\. Shout if it['’]s right!/);
+    const riya = await playerWith(browser, testInfo, handOuts, 'Riya', { width: 320, height: 568 });
+    await playerMenu(riya.page, 'Larger text');
+    await riya.page.keyboard.press('Escape').catch(() => {});
+    await fillTopRow(riya.page, 1);
+    await fillTopRow(riya.page, 3);
+    const cue = patternCue(riya.page);
+    await expect(cue).toContainText(/Tickets 1 and 3: patterns filled\. Shout!/);
     await expect(cue).not.toContainText(/Early Five|Top Line/);
-    await expect(cueMore(dad.page)).toBeVisible();
-    expect(await lineCount(dad.page), 'the cue takes one line').toBe(1);
-    await cueMore(dad.page).click();
-    const full = dad.page.getByTestId('pattern-cue-more');
+    await expect(cueMore(riya.page)).toBeVisible();
+    expect(await lineCount(riya.page), 'the cue takes at most two lines').toBeLessThanOrEqual(2);
+    await cueMore(riya.page).click();
+    const full = riya.page.getByTestId('pattern-cue-more');
     await expect(full).toBeVisible();
-    await expect(full).toContainText(/Ticket 6: Early Five and Top Line filled/);
+    await expect(full).toContainText(/Ticket 1: Early Five and Top Line filled/);
+    await expect(full).toContainText(/Ticket 3: Top Line filled/);
     // Said once: the line and More together name Early Five once.
     const all = `${await cue.textContent()} | ${await full.textContent()}`;
     expect((all.match(/Early Five/gi) ?? []).length, `Early Five is said once in "${all}"`).toBe(1);

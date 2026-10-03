@@ -63,6 +63,9 @@ Then "Add another winner" is shown and works, exactly as in a paper game, while 
 When the host taps it
 Then the host can add the next winner either way: scan another claim QR (TAM-177), or record a paper player's win
 by picking Kabir (TAM-039)
+And (N1 of the 1.1.0 release review, decided 2026-10-03) typing or scanning Kabir's paper ticket there is refused with
+"Ticket 4 plays on paper: pick Kabir by name if the anchor agrees." and "Pick the winner by name", which opens the
+name list titled "Another Top Line winner" (TAM-058)
 And a second winner who completed on the same number shares the prize with Riya (TAM-041, TAM-087)
 And Top Line still waits to be closed: the main button is still "Close Top Line" (TAM-198)
 Wrong input: a scanned claim QR that isn't a win (a number not called, or complete on an earlier number) is a bogey

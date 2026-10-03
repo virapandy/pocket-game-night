@@ -305,20 +305,24 @@ test.describe('TAM-195 (UX list row 11): with the cue on, the outline is not col
     for (const c of plain) await expect(c.getByTestId('cue-mark'), 'a cell outside the pattern has a corner mark').toHaveCount(0);
   });
 
-  test('Early Five on two tickets is said once: "Early Five filled on ticket 1"', async ({ page, browser }, testInfo) => {
+  test('Early Five on two tickets is said once, for the first ticket: "Ticket 1: Early Five" on the line ("Early Five filled on ticket 1" behind More)', async ({ page, browser }, testInfo) => {
     const handOuts = await phoneGame(page, RIYA_THREE, 50, { cue: true }); // Early Five, Top Line, Full House: no middle line
     const riya = await playerWith(browser, testInfo, handOuts, 'Riya', PORTRAIT);
     const [t1, t2] = riya.tickets as [number, number];
+    // Point a (1.1.0 release review, decided 2026-10-03): the line says it in short words, "Ticket 1: Early Five";
+    // behind "More" (only when the line would need a third line) the full words, "Early Five filled on ticket 1".
+    const firstTicket = new RegExp(`Ticket ${t1}: Early Five(?![,\\w])|Early Five filled on ticket ${t1}\\b`, 'i');
     for (const n of rowOf(riya.grids.get(t1)!, 1)) await tapCell(riya.page, t1, n); // 5 marks, no prize row
     let all = await allCueText(riya.page);
-    expect(all).toMatch(new RegExp(`Early Five filled on ticket ${t1}\\b`, 'i'));
+    expect(all).toMatch(firstTicket);
     expect(all.match(/Early Five/gi) ?? [], `Early Five is said once in "${all}"`).toHaveLength(1);
     for (const n of rowOf(riya.grids.get(t2)!, 1)) await tapCell(riya.page, t2, n);
     all = await allCueText(riya.page);
     expect(all.match(/Early Five/gi) ?? [], `Early Five is said once, with 5 marks on two tickets, in "${all}"`).toHaveLength(1);
-    expect(all).toMatch(new RegExp(`Early Five filled on ticket ${t1}\\b`, 'i')); // the first ticket only, never "on tickets 1 and 2"
-    expect(all).not.toMatch(/on tickets\b/i);
+    expect(all).toMatch(firstTicket); // the first ticket only, never "on tickets 1 and 2"
+    expect(all).not.toMatch(new RegExp(`Ticket ${t2}: Early Five|on tickets\\b`, 'i'));
   });
+
 });
 
 // ---------------------------------------------------------------- Row 13: the undo toast (TAM-125, TAM-119)
