@@ -1996,13 +1996,43 @@ function ClaimScanner({
   const [timedOut, setTimedOut] = useState(false);
   const [refused, setRefused] = useState<{ reason: string; checkByNumber?: number; info?: boolean; byName?: Pattern } | null>(null);
   // N1: a refused claim for a paper ticket whose player can still win offers the name list instead of a dead end.
+  // Only the rules' "plays on paper" refusal does this; every other refusal (a claim that doesn't match its ticket,
+  // a prize already won, a ticket that is out) keeps its own words and offers.
   const refuse = (reason: string, ticket?: number, claimed?: Pattern, checkByNumber?: number) => {
-    const name = ticket !== undefined && claimed !== undefined ? paperWinner(ticket, claimed) : null;
-    if (name !== null && claimed !== undefined) {
+    // The rules give no code for this refusal, so the text is matched exactly. It depends on the string
+    // "Ticket N plays on paper now: record the anchor's decision with Record a win." in rules/codes.ts (readClaim)
+    // and rules/rules.ts (checkClaim); if that wording changes, change it here too.
+    const paperRefusal =
+      ticket !== undefined &&
+      claimed !== undefined &&
+      checkByNumber === undefined &&
+      reason === `Ticket ${ticket} plays on paper now: record the anchor's decision with Record a win.`;
+    if (!paperRefusal) {
+      setRefused(checkByNumber !== undefined ? { reason, checkByNumber } : { reason });
+      return;
+    }
+    // A QR claim's check (readClaim) does not know Second Full House waits for Full House; say so plainly.
+    if (claimed === 'second-full-house' && view.openPatterns.includes('full-house')) {
+      setRefused({ reason: 'Second Full House can be won once Full House is closed.' });
+      return;
+    }
+    const name = paperWinner(ticket, claimed);
+    if (name !== null) {
       setRefused({ reason: `Ticket ${ticket} plays on paper: pick ${name} by name if the anchor agrees.`, byName: claimed });
       return;
     }
-    setRefused(checkByNumber !== undefined ? { reason, checkByNumber } : { reason });
+    // While a won prize waits to be closed, Record a win is hidden, so the rules' words would point nowhere.
+    if (view.awaitingClose.length > 0) {
+      const holder = view.players.find((p) => p.id === view.tickets.find((t) => t.number === ticket)?.playerId);
+      const won = holder !== undefined && view.claims.some((c) => c.pattern === claimed && c.verdict === 'accepted' && c.playerId === holder.id);
+      setRefused({
+        reason: won
+          ? `${holder.name} has already won ${PATTERN_NAMES[claimed]}.`
+          : `Ticket ${ticket} plays on paper and can't win ${PATTERN_NAMES[claimed]} now.`,
+      });
+      return;
+    }
+    setRefused({ reason });
   };
   const [number, setNumber] = useState('');
   const [pattern, setPattern] = useState<Pattern | null>(null);
