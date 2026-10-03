@@ -616,6 +616,12 @@ export function Play({
     const onPaper = new Set(view.tickets.filter((t) => t.status === 'paper' && t.playerId !== undefined).map((t) => t.playerId!));
     return view.players.filter((p) => onPaper.has(p.id) && !already.has(p.id));
   };
+  // Release fix C1 (UX review 2026-10-03): while a won prize waits to be closed in a phone-ticket game,
+  // "Record a win" is hidden, so a paper ticket's refusal names the way that is on screen: Undo win.
+  const paperWinnerNote = (ticket: number, reason: string) =>
+    phone && dimmed && view.tickets.some((t) => t.number === ticket && t.status === 'paper') && /plays on paper/.test(reason)
+      ? `Ticket ${ticket} plays on paper. To add a paper winner: tap Undo win, then Record a win and pick both names.`
+      : reason;
   const addAnother = (pattern: Pattern) => {
     pauseAuto();
     if (phone && paperPlayers(pattern).length === 0) {
@@ -1059,9 +1065,10 @@ export function Play({
         <ClaimScanner
           view={view}
           pastGame={(code) => pastGameNote(store, saved.id, code)}
+          paperNote={paperWinnerNote}
           onCheck={(ticket, pattern, proof) => {
             const r = move({ type: 'check-claim', ticket, pattern });
-            if (!r.ok) return r.reason;
+            if (!r.ok) return paperWinnerNote(ticket, r.reason);
             const rec = r.value.records[r.value.records.length - 1];
             setResultSeq(rec ? rec.seq : null);
             setResultProof(proof);
@@ -1950,10 +1957,13 @@ const NO_READ_MS = 10_000;
 function ClaimScanner({
   view,
   pastGame,
+  paperNote,
   onCheck,
   onClose,
 }: {
   view: TambolaView;
+  /** Release fix C1: rewords a paper ticket's refusal when "Record a win" is not on screen. */
+  paperNote: (ticket: number, reason: string) => string;
   /** UX list row 23 (TAM-179): what this phone's History says about another game's code, if anything. */
   pastGame: (code: string) => string | null;
   /** Checks the claim; returns why it was refused, or null once it is recorded. `proof` is for the screen only. */
@@ -1978,7 +1988,8 @@ function ClaimScanner({
       return;
     }
     if (!r.ok) {
-      setRefused(r.checkByNumber !== undefined ? { reason: r.reason, checkByNumber: r.checkByNumber } : { reason: r.reason });
+      const reason = d?.ok ? paperNote(d.claim.ticket, r.reason) : r.reason;
+      setRefused(r.checkByNumber !== undefined ? { reason, checkByNumber: r.checkByNumber } : { reason });
       return;
     }
     const why = onCheck(r.ticket, r.pattern, 'qr');
