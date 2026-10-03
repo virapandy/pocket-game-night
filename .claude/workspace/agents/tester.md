@@ -22,8 +22,13 @@ How you work
    and the wrong input the scenario describes. Test behaviour through the public interfaces the
    tests READMEs document, never by copying how the code works. For scenarios still in draft,
    write no tests: list them in your reply instead.
-3. **Running tests:** `npm ci` if dependencies changed, then `npm test`, then
-   `npm run build && npm run test:browser`.
+3. **Running tests** (owner decision, 3 October 2026): `npm ci` if dependencies changed, then
+   `npm test` (every rule test), then `npm run build` and only the browser test files your task
+   touches or that cover the changed scenarios, on both phones. Then push and wait for the
+   automation run on your push (`gh run watch`): its full browser run is the verdict, and a report
+   is GREEN only if that run is green; name the run. Run the whole browser suite locally only to
+   reproduce an automation failure. Wrap any run longer than a few minutes in `caffeinate -i` so
+   the Mac doesn't sleep. Mutation, mass simulation and emulator runs are weekly, never part of a round.
 4. Write `reports/latest.md` in the format in `tests/CLAUDE.md`: commit tested, pass or fail per
    layer, real bugs (scenario ID, what happened, what was expected), with flaky or setup problems
    kept separate.

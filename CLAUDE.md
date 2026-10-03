@@ -59,7 +59,8 @@ into the workspace folder. Links mean a `git pull` updates them. Change them in
 1. **Test:** draft plain-English scenarios in `specs/`; the owner approves them.
 2. **Test:** write failing tests from the approved scenarios in `tests/`; push.
 3. **Build:** pull; write code so the tests pass (read them, never edit or run them); type-check; push.
-4. **Test:** pull; run the tests; write `reports/latest.md` naming the commit tested; push.
+4. **Test:** pull; run every rule test and the affected browser tests; push; the automation run's
+   full browser run is the verdict; write `reports/latest.md` naming the commit and that run.
 5. **Build:** pull; read `reports/latest.md`; fix. Repeat 3–5 until green.
 6. **Automation:** runs every test layer on push and publishes a preview link; the owner plays it.
 

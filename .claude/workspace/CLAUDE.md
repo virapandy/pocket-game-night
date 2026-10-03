@@ -42,9 +42,13 @@ turn approved drafts into `specs/<game>/`, then run the loop as usual.
    ask the tester to draft them, show the owner in plain English, and wait for approval.
 2. **Tester writes failing tests** from those scenario IDs, then pushes.
 3. **Coder builds** against the pushed tests, then type-checks, builds and pushes.
-4. **Tester pulls and runs everything**, writes `reports/latest.md` naming the commit, then pushes.
+4. **Tester pulls, runs every rule test and the affected browser tests, pushes, and reads the
+   automation run**, whose full browser run is the verdict; `reports/latest.md` names the commit and the run.
 5. **Green:** tell the owner what changed and what to try in the preview link once automation
    publishes it. **Red:** give the coder the failing scenario IDs and the report, then go back to step 3.
+
+Collect every open question for a round into one list and ask the owner once, before the coder
+builds, so rounds don't stop for single questions.
 
 Stop and ask the owner when a scenario is unclear, a test looks wrong (`docs/test-questions.md`),
 a dependency or paid service is needed, or three build-and-test rounds have not turned the tests green.
@@ -56,6 +60,8 @@ a dependency or paid service is needed, or three build-and-test rounds have not 
 - **To the coder:** scenario IDs, the tested commit, and the failures from `reports/latest.md`.
   Never write or suggest test changes.
 - Run one subagent at a time. Each pushes before handing back, so the next one pulls finished work.
+  When the owner asks for parallel work, one coder and one tester may run at once on independent
+  work, each in its own clone; never two testers or two coders (they share a clone).
 - Keep replies short. Pass on summaries, not logs.
 
 ## Other ways to work
