@@ -135,6 +135,9 @@
 | 2026-10-03 | Row 8: "plays on paper" can be undone until the first number is called ("Kabir plays on paper · Undo"); after the first call it is final. | Owner |
 | 2026-10-03 | The preview link keeps its own saved games and settings, separate from the families' link on the same phone. | Owner |
 
+| 2026-10-03 | While another game is half-built on `main`, a Tambola release is cut on a release branch (`release/<version>`) from `main` with the unfinished game's app commits reverted and its tests left out; the complete run and the release run on that branch's tag. `main` is untouched. | Owner |
+| 2026-10-03 | Tests written first for a feature not yet built are marked "expected to fail" (Playwright `test.fail`, Vitest `test.fails`) so quick verify stays green and the preview keeps updating; each flips to a normal test when its feature works. A test that passes while marked expected-to-fail is a finding. | Owner |
+
 "Convention" means the established Tambola rule in `docs/games/tambola/guide.md`, chosen because the owner asked
 Claude to follow game conventions. Every Tambola rule above is also a host setting with this default.
 | 2026-10-03 | **What makes us different:** one app for the whole fun night, in the room, with games the phone makes possible that normally need a box, cards, tokens or a moderator who sits out. New games must pass this "replaces the box" test; games that need nothing (Dumb Charades, Antakshari) are out. Shortlist: Impostor, Mafia, a Codenames-style word game (own name and words, never a copy). Lessons and lifecycle in `docs/proposals/next-game-lifecycle.md` approved. | Owner |
