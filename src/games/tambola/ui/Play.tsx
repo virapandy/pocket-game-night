@@ -788,48 +788,49 @@ export function Play({
           <p className="current-rhyme" data-testid="current-rhyme">
             {view.current?.rhyme?.text ?? ''}
           </p>
-          <div className="rhyme-actions">
-            <button
-              type="button"
-              className="text-button"
-              disabled={!view.current}
-              onClick={() => {
-                setFlash((f) => f + 1);
-                if (view.current) say(view.current.number, view.current.rhyme);
-              }}
-            >
-              Repeat
-            </button>
-            <span aria-hidden="true">·</span>
-            <button
-              type="button"
-              className="text-button"
-              disabled={!view.current}
-              onClick={() => {
-                const r = move({ type: 'another-rhyme' });
-                const current = r.ok ? tambolaRules.view(r.value.state, { kind: 'host' }).current : null;
-                if (current) say(current.number, current.rhyme);
-              }}
-            >
-              Another rhyme
-            </button>
-            {canSpeak && (voiceOn || autoOn) && (
-              <>
-                <span aria-hidden="true">·</span>
-                <button
-                  type="button"
-                  className="text-button"
-                  onClick={() => {
-                    if (!muted) hush();
-                    setMuted(!muted);
-                  }}
-                >
-                  {muted ? 'Unmute voice' : 'Mute voice'}
-                </button>
-              </>
-            )}
-          </div>
-          <LastCalls numbers={view.lastCalls} />
+          {/* UX review 2026-10-03 polish: before the first call there is nothing to repeat and no last calls to show. */}
+          {view.current && (
+            <div className="rhyme-actions">
+              <button
+                type="button"
+                className="text-button"
+                onClick={() => {
+                  setFlash((f) => f + 1);
+                  if (view.current) say(view.current.number, view.current.rhyme);
+                }}
+              >
+                Repeat
+              </button>
+              <span aria-hidden="true">·</span>
+              <button
+                type="button"
+                className="text-button"
+                onClick={() => {
+                  const r = move({ type: 'another-rhyme' });
+                  const current = r.ok ? tambolaRules.view(r.value.state, { kind: 'host' }).current : null;
+                  if (current) say(current.number, current.rhyme);
+                }}
+              >
+                Another rhyme
+              </button>
+              {canSpeak && (voiceOn || autoOn) && (
+                <>
+                  <span aria-hidden="true">·</span>
+                  <button
+                    type="button"
+                    className="text-button"
+                    onClick={() => {
+                      if (!muted) hush();
+                      setMuted(!muted);
+                    }}
+                  >
+                    {muted ? 'Unmute voice' : 'Mute voice'}
+                  </button>
+                </>
+              )}
+            </div>
+          )}
+          {view.current && <LastCalls numbers={view.lastCalls} />}
         </>
       )}
     </>
