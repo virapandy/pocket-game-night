@@ -1,3 +1,5 @@
+// Expected to fail (not built yet): tests marked `it.fails` wait for src/games/impostor (owner decision 2026-10-03).
+// A marked test that starts passing turns red: then remove its `.fails` mark. What each test checks is unchanged.
 // Saved evenings (specs/impostor/10-lifecycle.md, C3): IMP-096, the rules side. The fixture
 // tests/fixtures/impostor-saved-evenings.json is a SavedGame of exactly IMP-096's shape; it must always open.
 // The app side (it opens on the phone, and the app saves this shape at every move) is in
@@ -27,7 +29,7 @@ describe('IMP-096: saved evenings carry a format version', () => {
     }
   });
 
-  it('readImpostorEvening gives the starting players, choices, excluded words, seeds, moves and status', () => {
+  it.fails('readImpostorEvening gives the starting players, choices, excluded words, seeds, moves and status', () => {
     for (const g of [fixture.ended, fixture.inProgress]) {
       expect(readImpostorEvening(g)).toEqual({
         players: g.setup.config.players,
@@ -40,7 +42,7 @@ describe('IMP-096: saved evenings carry a format version', () => {
     }
   });
 
-  it('the fixture replays with the rules, using its forced deals exactly as live', () => {
+  it.fails('the fixture replays with the rules, using its forced deals exactly as live', () => {
     const r = replay(rules(), fixture.ended.setup, fixture.ended.records);
     expect(r.ok, !r.ok ? r.reason : '').toBe(true);
     if (r.ok) expect(rules().isOver(r.value.state)).toBe(true);
@@ -56,7 +58,7 @@ describe('IMP-096: saved evenings carry a format version', () => {
     });
   });
 
-  it('the evening in progress replays to round 3\'s deal, with Riya and Arjun done', () => {
+  it.fails('the evening in progress replays to round 3\'s deal, with Riya and Arjun done', () => {
     const r = replay(rules(), fixture.inProgress.setup, fixture.inProgress.records);
     expect(r.ok).toBe(true);
     if (!r.ok) return;
@@ -67,7 +69,7 @@ describe('IMP-096: saved evenings carry a format version', () => {
     expect(P4).toContain(e.host().starter);
   });
 
-  it('later moves (setPlayers, setChoices) are moves, never changes to the saved setup', () => {
+  it.fails('later moves (setPlayers, setChoices) are moves, never changes to the saved setup', () => {
     // Up to round 2's result (its reveal of Riya, record 18): between rounds.
     const r = replay(rules(), fixture.ended.setup, fixture.ended.records.slice(0, 18));
     expect(r.ok).toBe(true);

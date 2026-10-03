@@ -7,9 +7,11 @@ import { contractSuite } from './suite';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 let impostorRules: any = null;
-try { impostorRules = need('impostorRules'); } catch (e) {
-  it('Impostor registers its rules for the contract suite (impostorRules)', () => { throw e; });
-}
+let notBuilt: unknown = null;
+try { impostorRules = need('impostorRules'); } catch (e) { notBuilt = e; }
+// Expected to fail (not built yet; owner decision 2026-10-03). This check is registered every time, so once
+// impostorRules exists it passes and the `.fails` mark turns it red: then remove the mark.
+it.fails('Impostor registers its rules for the contract suite (impostorRules)', () => { if (notBuilt) throw notBuilt; });
 
 /** Where the evening is, worked out from its records (and, after a reveal, from the host view). */
 function where(match: Match<any, any, any>) {

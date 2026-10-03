@@ -1,3 +1,5 @@
+// Expected to fail (not built yet): tests marked `it.fails` wait for src/games/impostor (owner decision 2026-10-03).
+// A marked test that starts passing turns red: then remove its `.fails` mark. What each test checks is unchanged.
 // The vote, the reveal, the last guess and its undo (specs/impostor/04-vote-and-reveal.md): IMP-031 to IMP-035,
 // IMP-037, IMP-038. Screens and timings are checked in the browser tests; here, the moves and views.
 import { describe, expect, it } from 'vitest';
@@ -11,7 +13,7 @@ const atVote = (seed = 'vote', players = P4) => {
 };
 
 describe('IMP-031: recording who got the most fingers: pick, then reveal', () => {
-  it('"Reveal <Name>" is accepted for any player once the vote has started, and records `reveal {player}`', () => {
+  it.fails('"Reveal <Name>" is accepted for any player once the vote has started, and records `reveal {player}`', () => {
     for (const p of P4) {
       const e = atVote(`reveal-${p}`);
       e.must({ type: 'reveal', player: p });
@@ -19,7 +21,7 @@ describe('IMP-031: recording who got the most fingers: pick, then reveal', () =>
     }
   });
 
-  it('no reveal before "Vote now", and never of someone not playing', () => {
+  it.fails('no reveal before "Vote now", and never of someone not playing', () => {
     const e = new Evening({ seed: 'early' });
     e.startDeal();
     expect(e.refuses({ type: 'reveal', player: 'Riya' }), 'during the deal').toBe(true);
@@ -31,7 +33,7 @@ describe('IMP-031: recording who got the most fingers: pick, then reveal', () =>
     expect(e.refuses({ type: 'reveal', player: 'Zoya' }), 'Zoya is not playing').toBe(true);
   });
 
-  it('a reveal is never repeated in a round', () => {
+  it.fails('a reveal is never repeated in a round', () => {
     const e = atVote('twice');
     e.must({ type: 'reveal', player: e.crew()[0] });
     expect(e.refuses({ type: 'reveal', player: e.impostor() })).toBe(true);
@@ -39,7 +41,7 @@ describe('IMP-031: recording who got the most fingers: pick, then reveal', () =>
 });
 
 describe('IMP-032: a tie gets one re-vote', () => {
-  it('"Point again" needs 2 or more different players; every player may be ticked', () => {
+  it.fails('"Point again" needs 2 or more different players; every player may be ticked', () => {
     const e = atVote('tie');
     expect(e.refuses({ type: 'tie', players: [] })).toBe(true);
     expect(e.refuses({ type: 'tie', players: ['Arjun'] })).toBe(true);
@@ -48,7 +50,7 @@ describe('IMP-032: a tie gets one re-vote', () => {
     expect(e.try({ type: 'tie', players: [...P4] })).toBe(true);
   });
 
-  it('the re-vote picks one of the tied players, or "Still a tie"; there is never a second re-vote', () => {
+  it.fails('the re-vote picks one of the tied players, or "Still a tie"; there is never a second re-vote', () => {
     const e = atVote('revote');
     e.must({ type: 'tie', players: ['Arjun', 'Meena'] });
     expect(e.refuses({ type: 'tie', players: ['Arjun', 'Meena'] }), 'no second re-vote').toBe(true);
@@ -59,14 +61,14 @@ describe('IMP-032: a tie gets one re-vote', () => {
     expect(f.try({ type: 'stillTie' })).toBe(true);
   });
 
-  it('"Still a tie" only after a tie', () => {
+  it.fails('"Still a tie" only after a tie', () => {
     const e = atVote('still-early');
     expect(e.refuses({ type: 'stillTie' })).toBe(true);
   });
 });
 
 describe('IMP-033: caught: the guess comes before the word is shown', () => {
-  it('after the impostor is revealed: "Show the word", then a verdict; no verdict before the word, and no next round before a verdict', () => {
+  it.fails('after the impostor is revealed: "Show the word", then a verdict; no verdict before the word, and no next round before a verdict', () => {
     for (const s of seedList(20, 'caught')) {
       const e = atVote(s);
       const imp = e.impostor();
@@ -82,7 +84,7 @@ describe('IMP-033: caught: the guess comes before the word is shown', () => {
     }
   });
 
-  it('the host and room views gain the impostor and the word id at the reveal, not before', () => {
+  it.fails('the host and room views gain the impostor and the word id at the reveal, not before', () => {
     const e = atVote('views');
     const imp = e.impostor();
     const word = e.wordId();
@@ -96,7 +98,7 @@ describe('IMP-033: caught: the guess comes before the word is shown', () => {
 });
 
 describe('IMP-034: the reveal when the crew got it wrong', () => {
-  it('revealing a crew member ends the round as escaped: no last guess, no "Show the word", straight to the next round', () => {
+  it.fails('revealing a crew member ends the round as escaped: no last guess, no "Show the word", straight to the next round', () => {
     for (const s of seedList(20, 'escaped')) {
       const e = atVote(s);
       const imp = e.impostor();
@@ -112,7 +114,7 @@ describe('IMP-034: the reveal when the crew got it wrong', () => {
 });
 
 describe('IMP-035: the room judges the last guess', () => {
-  it('both verdicts are accepted and recorded exactly as tapped', () => {
+  it.fails('both verdicts are accepted and recorded exactly as tapped', () => {
     for (const right of [true, false]) {
       const e = atVote(`judge-${right}`);
       e.must({ type: 'reveal', player: e.impostor() }).must({ type: 'showWord' }).must({ type: 'verdict', right });
@@ -133,7 +135,7 @@ describe('IMP-037: undo the verdict only, before the next round', () => {
     return e.rules.canUndo(e.state, { record, by: HOST, now: e.at + 1 });
   };
 
-  it('undoing the verdict is the engine\'s undo of that record: the verdict buttons come back, and the round has no result until a verdict is tapped again', () => {
+  it.fails('undoing the verdict is the engine\'s undo of that record: the verdict buttons come back, and the round has no result until a verdict is tapped again', () => {
     const e = caughtRound('undo');
     const seq = lastSeq(e, 'verdict');
     expect(canUndo(e, seq)).toBe(true);
@@ -148,7 +150,7 @@ describe('IMP-037: undo the verdict only, before the next round', () => {
     after.must({ type: 'verdict', right: true }).must({ type: 'nextRound' });
   });
 
-  it('"This word didn\'t work" tapped meanwhile does not end the window, and stays after the undo', () => {
+  it.fails('"This word didn\'t work" tapped meanwhile does not end the window, and stays after the undo', () => {
     const e = caughtRound('wdw');
     const seq = lastSeq(e, 'verdict');
     e.must({ type: 'wordDidntWork', blocked: true });
@@ -165,7 +167,7 @@ describe('IMP-037: undo the verdict only, before the next round', () => {
     ['the end of the evening', (e) => { e.must({ type: 'endEvening' }); }],
   ];
   for (const [what, end] of enders) {
-    it(`no undo after ${what}`, () => {
+    it.fails(`no undo after ${what}`, () => {
       const e = caughtRound(`end-${what}`);
       const seq = lastSeq(e, 'verdict');
       end(e);
@@ -174,7 +176,7 @@ describe('IMP-037: undo the verdict only, before the next round', () => {
     });
   }
 
-  it('only the round\'s latest verdict: an earlier round\'s verdict can never be undone', () => {
+  it.fails('only the round\'s latest verdict: an earlier round\'s verdict can never be undone', () => {
     const e = caughtRound('older');
     const first = lastSeq(e, 'verdict');
     e.nextRound().dealAll().toVote();
@@ -183,7 +185,7 @@ describe('IMP-037: undo the verdict only, before the next round', () => {
     expect(canUndo(e, lastSeq(e, 'verdict'))).toBe(true);
   });
 
-  it('a reveal, a deal or any other move is never undone', () => {
+  it.fails('a reveal, a deal or any other move is never undone', () => {
     const e = caughtRound('others');
     for (const r of e.match.records) {
       if (r.move.type === 'verdict') continue;
@@ -191,7 +193,7 @@ describe('IMP-037: undo the verdict only, before the next round', () => {
     }
   });
 
-  it('an escaped or "Still a tie" round has nothing to undo', () => {
+  it.fails('an escaped or "Still a tie" round has nothing to undo', () => {
     const e = atVote('esc');
     e.must({ type: 'reveal', player: e.crew()[0]! });
     for (const r of e.match.records) expect(canUndo(e, r.seq)).toBe(false);
@@ -202,7 +204,7 @@ describe('IMP-037: undo the verdict only, before the next round', () => {
 });
 
 describe('IMP-038: "Still a tie": the impostor escapes', () => {
-  it('ends the round with no last guess: no "Show the word", no verdict; the views gain the impostor and the word id', () => {
+  it.fails('ends the round with no last guess: no "Show the word", no verdict; the views gain the impostor and the word id', () => {
     for (const s of seedList(20, 'stilltie')) {
       const e = atVote(s, P5);
       const imp = e.impostor();
@@ -217,7 +219,7 @@ describe('IMP-038: "Still a tie": the impostor escapes', () => {
     }
   });
 
-  it('works with a tie of every player, up to 20', () => {
+  it.fails('works with a tie of every player, up to 20', () => {
     const players = NAMES.slice(0, 20);
     const e = atVote('twenty', players);
     e.must({ type: 'tie', players }).must({ type: 'stillTie' }).must({ type: 'nextRound' });

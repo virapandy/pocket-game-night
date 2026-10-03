@@ -1,10 +1,12 @@
+// Expected to fail (not built yet): tests marked `it.fails` wait for src/games/impostor (owner decision 2026-10-03).
+// A marked test that starts passing turns red: then remove its `.fails` mark. What each test checks is unchanged.
 // Who starts the clues (specs/impostor/03-clues-and-talk.md): IMP-020 and IMP-021.
 import { describe, expect, it } from 'vitest';
 import { createRng } from '../../../src/engine';
 import { Evening, NAMES, P4, P5, pickStarter, randomOutcome, seedList } from './helpers';
 
 describe('IMP-020: who starts', () => {
-  it('in Hard mode the starter is never the round\'s impostor; in Easy mode the impostor may start', () => {
+  it.fails('in Hard mode the starter is never the round\'s impostor; in Easy mode the impostor may start', () => {
     let impostorStartedEasy = 0;
     for (const s of seedList(400, 'who')) {
       for (const mode of ['easy', 'hard'] as const) {
@@ -19,7 +21,7 @@ describe('IMP-020: who starts', () => {
     expect(impostorStartedEasy, 'in Easy the impostor starts some rounds').toBeGreaterThan(0);
   });
 
-  it('the host and room views name the starter once picked, and nothing about the impostor or the word', () => {
+  it.fails('the host and room views name the starter once picked, and nothing about the impostor or the word', () => {
     const e = new Evening({ seed: 'views', players: P5 });
     e.startDeal().dealAll();
     for (const v of [e.host(), e.room()]) {
@@ -30,7 +32,7 @@ describe('IMP-020: who starts', () => {
 });
 
 describe('IMP-021: the starter moves round, without repeats', () => {
-  it('pickStarter picks among players not started this cycle and not skipped, uniformly; newCycle false', () => {
+  it.fails('pickStarter picks among players not started this cycle and not skipped, uniformly; newCycle false', () => {
     const count: Record<string, number> = {};
     const N = 12_000;
     for (let i = 0; i < N; i++) {
@@ -42,7 +44,7 @@ describe('IMP-021: the starter moves round, without repeats', () => {
     for (const p of ['Arjun', 'Kabir']) expect(Math.abs(count[p]! / N - 0.5)).toBeLessThanOrEqual(0.02);
   });
 
-  it('example (Hard, 4 players): Riya, Arjun and Meena have started and Kabir is the impostor, so a new cycle starts and each of the three has one third', () => {
+  it.fails('example (Hard, 4 players): Riya, Arjun and Meena have started and Kabir is the impostor, so a new cycle starts and each of the three has one third', () => {
     const count: Record<string, number> = {};
     const N = 12_000;
     for (let i = 0; i < N; i++) {
@@ -54,7 +56,7 @@ describe('IMP-021: the starter moves round, without repeats', () => {
     for (const p of ['Riya', 'Arjun', 'Meena']) expect(Math.abs(count[p]! / N - 1 / 3), p).toBeLessThanOrEqual(0.02);
   });
 
-  it('when everyone has started (Easy, no skip), a new cycle starts and anyone may start', () => {
+  it.fails('when everyone has started (Easy, no skip), a new cycle starts and anyone may start', () => {
     const seen = new Set<string>();
     for (let i = 0; i < 400; i++) {
       const r = pickStarter(P4, P4, null, createRng(`all-${i}`));
@@ -64,7 +66,7 @@ describe('IMP-021: the starter moves round, without repeats', () => {
     expect([...seen].sort()).toEqual([...P4].sort());
   });
 
-  it('the same seed gives the same starter', () => {
+  it.fails('the same seed gives the same starter', () => {
     for (const s of seedList(30, 'same')) {
       expect(pickStarter(P5, ['Arjun'], null, createRng(s))).toEqual(pickStarter(P5, ['Arjun'], null, createRng(s)));
     }
@@ -73,7 +75,7 @@ describe('IMP-021: the starter moves round, without repeats', () => {
   // Forced starters (Test hooks item 3) set the first rounds; the next starter must then follow the cycle.
   const forced = (starters: string[]) => starters.map((starter) => ({ starter }));
 
-  it('after Riya, Arjun and Meena started, the next starter is Kabir (Easy, 4 players)', () => {
+  it.fails('after Riya, Arjun and Meena started, the next starter is Kabir (Easy, 4 players)', () => {
     for (const s of seedList(20, 'kabir')) {
       const e = new Evening({ seed: s, testDeals: forced(['Riya', 'Arjun', 'Meena']) });
       e.startDeal();
@@ -83,7 +85,7 @@ describe('IMP-021: the starter moves round, without repeats', () => {
     }
   });
 
-  it('the practice round counts for the cycle', () => {
+  it.fails('the practice round counts for the cycle', () => {
     for (const s of seedList(20, 'practice')) {
       const e = new Evening({ seed: s, testDeals: forced(['Riya', 'Arjun', 'Meena']) });
       e.startDeal(true);
@@ -93,7 +95,7 @@ describe('IMP-021: the starter moves round, without repeats', () => {
     }
   });
 
-  it('a round dealt again after its clues screen showed still counts; one dealt again before it does not', () => {
+  it.fails('a round dealt again after its clues screen showed still counts; one dealt again before it does not', () => {
     for (const s of seedList(20, 'redeal')) {
       // Riya and Arjun start rounds 1 and 2; round 3's clues show with Meena, then "Deal again": Meena counted.
       const e = new Evening({ seed: s, testDeals: forced(['Riya', 'Arjun', 'Meena']) });
@@ -116,7 +118,7 @@ describe('IMP-021: the starter moves round, without repeats', () => {
     }
   });
 
-  it('a removed player leaves the cycle; a player who joins enters it as not yet started', () => {
+  it.fails('a removed player leaves the cycle; a player who joins enters it as not yet started', () => {
     for (const s of seedList(20, 'join')) {
       const e = new Evening({ seed: s, testDeals: forced(['Riya', 'Arjun', 'Meena']) });
       e.startDeal();
@@ -144,7 +146,7 @@ describe('IMP-021: the starter moves round, without repeats', () => {
     expect([...starters].sort()).toEqual(['Arjun', 'Meena', 'Riya']);
   });
 
-  it('property (1,000 seeded evenings of 20 rounds, 3 to 12 players, Easy and Hard): within one cycle nobody starts twice; in Hard the starter is never the impostor; tolerance 0', () => {
+  it.fails('property (1,000 seeded evenings of 20 rounds, 3 to 12 players, Easy and Hard): within one cycle nobody starts twice; in Hard the starter is never the impostor; tolerance 0', () => {
     for (let i = 0; i < 1000; i++) {
       const rng = createRng(`imp021-${i}`);
       const n = 3 + rng.int(10);
