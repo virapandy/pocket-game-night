@@ -123,6 +123,11 @@ and the room decides: "Guessed right" / "Wrong guess".
 | End the evening | Fun lines for the night ("Best impostor: Arjun, escaped 3 times"), and the final scoreboard if keeping score; "Play something else" back to Home |
 | Words afterwards | The history shows each round's word and impostor (fun to look back on). Words used in the last 3 evenings are avoided when possible |
 | Play again tomorrow | A new evening; the player list is offered again |
+| Ended by mistake | "Oops, keep playing" on the summary; "Carry on this evening" in History within 3 hours (IMP-101) |
+| Something else tonight | "Play something else" keeps the players; the evening sits in tonight's session, outside any money tally (IMP-102) |
+| Left open | Ends by itself after 12 hours, kept in History (IMP-104) |
+| Share the night | A plain-text recap through the phone's share sheet, only on tap (IMP-106) |
+| A word that flopped | "This word didn't work" skips it on this phone for good; Settings can bring it back (IMP-107) |
 | Clearing secrets | One phone: nothing to clear (the word is hidden until the reveal). Own phones (later): "Game over, phones away" as Tambola rows 20–22 |
 
 ## Lifecycle questions (process step 4b)

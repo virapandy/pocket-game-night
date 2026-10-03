@@ -38,8 +38,8 @@ complete test only before a release; up to 3 coders in parallel, each on its own
 
 ### Queued: Impostor, the next game (product owner, 3 October): start only after the Tambola release
 Design done (owner-approved direction; scenarios await the owner's approval): `docs/games/impostor/` (guide,
-lifecycle, **ux.md** every screen, words.csv 309 words, scenarios.md IMP-001 to IMP-096 and later IMP-200+), decisions
-I1–I20, guidelines 45–48. When Tambola is released and the owner has approved the scenarios:
+lifecycle, **ux.md** every screen, words.csv 309 words, scenarios.md: IMP-001 to IMP-096 **approved by the owner 3 October**, IMP-100 to IMP-108 after the game awaiting a quick OK,
+IMP-200+ later), decisions I1–I20, guidelines 45–48. When Tambola is released:
 1. Tester: copy `scenarios.md` into `specs/impostor/` (file per heading), status as approved by the owner; write tests
    first for the C3 parts (rules, secrets and seeds, scoring, words list format, saved evenings: IMP-010–017,
    020–021, 025, 031–037, 040–043, 050–054, 060–063, 090–096); C1/C2 screen tests alongside the build.
