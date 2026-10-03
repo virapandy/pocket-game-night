@@ -712,7 +712,7 @@ the approved pictures once the product owner or UX designer has checked them at 
   `sessionStorage` key `__screens_seed`), so games, tickets and game codes repeat; every phone's clock starts at
   3 October 2026, 7:00 pm India time and runs on (a clock that never moves stalled the app); animations and the caret
   off; QR codes (a pink box) and the counting-down "Called 24 · Undo (5s)" bar (`undo-toast`, words made
-  see-through) covered, as they change with the clock; the covers are painted in the page (`style`, not `mask`), so a
+  see-through) covered, as they change with the clock; the covers are painted in the page (`screens-cover.css`, not `mask`), so a
   pop-up lying on top keeps its words; each picture waits 0.8 s for
   short timed states (the half-second rest of "Next number").
 - Fonts differ between computers, so each platform has its own references (Playwright's default). Where a platform has
