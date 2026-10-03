@@ -80,8 +80,7 @@ Score    [ No ✓   ][ Yes    ]
 Words  [Whole family✓][+Grown-ups]
  Words kids and grandparents know.
 Categories: all 9 ›
-More options ›
-How to play
+[ More options › ][ How to play  ]
 [          Start round          ]
 ```
 Other lines: Hard "The impostor gets nothing and never starts." · Timer "Two minutes to talk, then a chime." ·
