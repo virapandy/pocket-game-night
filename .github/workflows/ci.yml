@@ -40,7 +40,9 @@ jobs:
       # Test configs are written by the Test workspace; each layer runs once its config exists.
       - name: Rule, contract and property tests
         if: hashFiles('tests/vitest.config.ts') != ''
-        run: npm test
+        # Release 1.2 branch only (docs/decisions.md 2026-10-03, "Release 1.2.0 only", Owner explicit):
+        # Impostor is not in this release, so its rule and contract tests are left out. Not for main.
+        run: npm test -- --exclude 'tests/games/impostor/**' --exclude 'tests/contract/impostor.test.ts'
 
   browser:
     name: browser (${{ matrix.project }} ${{ matrix.shard }}/2)
@@ -85,7 +87,9 @@ jobs:
       - name: Browser tests
         id: browser
         if: hashFiles('tests/playwright.config.ts') != ''
-        run: npm run test:browser -- --project=${{ matrix.project }} --shard=${{ matrix.shard }}/2
+        # Release 1.2 branch only (docs/decisions.md 2026-10-03, "Release 1.2.0 only", Owner explicit):
+        # leaves out Impostor's browser tests and the @screens screenshot comparison. Not for main.
+        run: npm run test:browser -- --project=${{ matrix.project }} --shard=${{ matrix.shard }}/2 --grep-invert '@screens|IMP-|impostor-[a-z-]+\.spec\.ts'
       # When the browser step fails, keep its traces and screenshots so the Test workspace can see why.
       - name: Keep browser results
         if: failure() && steps.browser.outcome == 'failure'
