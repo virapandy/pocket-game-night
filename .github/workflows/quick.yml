@@ -64,6 +64,7 @@ jobs:
         if: hashFiles('tests/playwright.config.ts') != ''
         run: npm run test:browser -- --project=android --grep @smoke
       # Area tests: spec files mapped from the changed paths. No map, or no match: the smoke set alone.
+      # __ALL__ (an area mapped to "*", such as package.json): every browser spec on Android.
       - name: Browser tests for the changed areas
         id: areas
         if: hashFiles('tests/playwright.config.ts') != '' && (success() || steps.smoke.outcome == 'failure')
@@ -73,6 +74,11 @@ jobs:
         run: |
           specs=$(node scripts/browser-areas.mjs "$BEFORE" "$AFTER")
           if [ -z "$specs" ]; then echo "No area tests mapped for this push; smoke set only."; exit 0; fi
+          if [ "$specs" = "__ALL__" ]; then
+            echo "This push touches shared set-up: every browser test on Android."
+            npm run test:browser -- --project=android
+            exit $?
+          fi
           echo "Area tests:"; echo "$specs"
           # shellcheck disable=SC2086
           npm run test:browser -- --project=android $(echo "$specs" | tr '\n' ' ')
