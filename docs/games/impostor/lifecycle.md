@@ -107,7 +107,7 @@ from the Impostor card to the first deal (3 when the read-aloud card was already
 
 **Reveal:** after "Reveal Arjun" (pick, then confirm), a 2.5-second build-up with no colour change, then "**Caught red-handed! ARJUN was
 the impostor.**" or "**Meena was crew!** The impostor was ARJUN. Escaped!" (then the word).
-**Last guess** (only if caught): "Arjun, one guess. Say it out loud!" **before** the word is shown; then "Show the word",
+**Last guess** (only if caught): "Last chance, Arjun! Guess the word out loud. Get it right and you steal the round." **before** the word is shown; then "Arjun guessed. Show the word",
 and the room decides: "Guessed right" / "Wrong guess".
 
 **Moments every game must handle**

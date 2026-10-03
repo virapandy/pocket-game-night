@@ -62,6 +62,15 @@ polish. **Tester:** add pictures of the thin sleep line after "Got it" and of N1
   in the corner; "Has Zoya got their ticket?" wording; polish (empty "Last", prizes step and payouts at 360, landscape
   "Which prize?" and claim QR "Done", lighter Called/Undo bar).
 
+### Impostor: two fixes from the owner's play (4 October), before any release
+1. **C3 content:** rebuild `content/impostor/words.json` from `docs/games/impostor/words.csv` (now 308 words: category
+   "Cricket and games" renamed "Sports and games"; Elephant removed; Rain and Aadhaar card moved to "Desi life"; hint
+   of Hero's slow-motion entry is "Fans"). Scenario lines naming the categories (IMP-007, IMP-097 area) are updated.
+2. **C1 wording, IMP-033 (and IMP-091, the canonical strings table):** the caught line two is now exactly "Last chance,
+   <Name>! Guess the word out loud. Get it right and you steal the round." and the main button "<Name> guessed. Show the
+   word". Tests that look for "one guess" or "Show the word" change with it.
+Tester copies the changed scenario lines into `specs/impostor/` first; then one coder lane; quick verify.
+
 ### Impostor build, product owner answers (4 October)
 All open Impostor questions in `docs/test-questions.md` are answered in `docs/decisions.md` I21 and written into
 `docs/games/impostor/scenarios.md` (IMP-075, IMP-091, IMP-073 `pass-name`, IMP-102). **No app change needed:** the

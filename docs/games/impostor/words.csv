@@ -137,34 +137,34 @@ IMPW-147,Tabla,,"Films, music and TV",family,no,easy,Pair,Dholak,kept,
 IMPW-148,Veena,,"Films, music and TV",grownups,no,medium,Strings,Sitar,grownups,
 IMPW-149,Sitar,,"Films, music and TV",grownups,no,easy,Concert,Veena,grownups,
 IMPW-150,Harmonium,,"Films, music and TV",grownups,no,medium,Music class,Keyboard,grownups,
-IMPW-151,Sachin Tendulkar,,Cricket and games,family,no,easy,Legend,Virat Kohli,kept,same hint as Amitabh; fine across categories
-IMPW-152,Virat Kohli,,Cricket and games,family,no,easy,Modern,Rohit Sharma,kept,
-IMPW-153,M. S. Dhoni,Dhoni / MSD,Cricket and games,family,no,easy,Captain,Virat Kohli,other names changed,Thala removed: North readers did not know it
-IMPW-154,Kapil Dev,,Cricket and games,grownups,no,medium,Old era,Sunil Gavaskar,grownups,kids may not know him
-IMPW-155,World Cup final,,Cricket and games,family,no,easy,Trophy,IPL final,grownups,football fans may think of the football World Cup first
-IMPW-156,IPL,,Cricket and games,family,no,easy,Auction,World Cup,hint rewritten,
-IMPW-157,Gully cricket,Street cricket,Cricket and games,family,no,easy,Tennis ball,Test match,hint rewritten,
-IMPW-158,Test match,,Cricket and games,grownups,no,medium,Whites,T20,hint rewritten; grownups,
-IMPW-159,Sixer,Six,Cricket and games,family,no,easy,Rooftop,Four,hint rewritten,
-IMPW-161,Umpire,,Cricket and games,grownups,no,easy,Decision,Third umpire,hint rewritten; grownups,
-IMPW-162,Wicketkeeper,,Cricket and games,grownups,no,medium,Gloves,Slip,hint rewritten; grownups,
-IMPW-163,Carrom,,Cricket and games,family,no,easy,Rainy afternoon,Ludo,kept,
-IMPW-164,Ludo,,Cricket and games,family,no,easy,Family fight,Snakes and ladders,kept,
-IMPW-165,Snakes and ladders,,Cricket and games,family,no,easy,Board,Ludo,kept,
-IMPW-166,Chess,,Cricket and games,family,no,easy,Quiet,Carrom,kept,
-IMPW-167,Kabaddi,,Cricket and games,family,no,easy,Mat,Kho-kho,hint rewritten,
-IMPW-168,Kho-kho,,Cricket and games,family,no,easy,Playground,Kabaddi,kept,
-IMPW-169,Hide and seek,Lukka chuppi / Chhupan chhupai / Kanna moochi,Cricket and games,family,no,easy,Evening,Tag,other names changed,
-IMPW-171,Marbles,Kanche / Goli,Cricket and games,grownups,no,easy,Pocket,Spinning top,grownups,
-IMPW-172,Spinning top,Lattu / Pambaram,Cricket and games,grownups,no,medium,String,Marbles,grownups,
-IMPW-173,Badminton,,Cricket and games,family,no,easy,Colony,Tennis,kept,
-IMPW-174,Dumb charades,,Cricket and games,grownups,no,easy,Party,Pictionary,grownups,
-IMPW-175,Stumps,Wickets,Cricket and games,grownups,no,easy,Wood,Bails,grownups,
-IMPW-176,Cricket bat,,Cricket and games,family,no,easy,Kit,Hockey stick,kept,
-IMPW-177,Hockey,,Cricket and games,family,no,easy,Team sport,Football,kept,
-IMPW-178,P. V. Sindhu,,Cricket and games,grownups,no,medium,Medal,Saina Nehwal,grownups,
-IMPW-179,Neeraj Chopra,,Cricket and games,grownups,no,medium,Olympics,Milkha Singh,grownups,
-IMPW-180,Football,,Cricket and games,family,no,easy,Penalty,Hockey,hint rewritten,
+IMPW-151,Sachin Tendulkar,,Sports and games,family,no,easy,Legend,Virat Kohli,kept,same hint as Amitabh; fine across categories
+IMPW-152,Virat Kohli,,Sports and games,family,no,easy,Modern,Rohit Sharma,kept,
+IMPW-153,M. S. Dhoni,Dhoni / MSD,Sports and games,family,no,easy,Captain,Virat Kohli,other names changed,Thala removed: North readers did not know it
+IMPW-154,Kapil Dev,,Sports and games,grownups,no,medium,Old era,Sunil Gavaskar,grownups,kids may not know him
+IMPW-155,World Cup final,,Sports and games,family,no,easy,Trophy,IPL final,grownups,football fans may think of the football World Cup first
+IMPW-156,IPL,,Sports and games,family,no,easy,Auction,World Cup,hint rewritten,
+IMPW-157,Gully cricket,Street cricket,Sports and games,family,no,easy,Tennis ball,Test match,hint rewritten,
+IMPW-158,Test match,,Sports and games,grownups,no,medium,Whites,T20,hint rewritten; grownups,
+IMPW-159,Sixer,Six,Sports and games,family,no,easy,Rooftop,Four,hint rewritten,
+IMPW-161,Umpire,,Sports and games,grownups,no,easy,Decision,Third umpire,hint rewritten; grownups,
+IMPW-162,Wicketkeeper,,Sports and games,grownups,no,medium,Gloves,Slip,hint rewritten; grownups,
+IMPW-163,Carrom,,Sports and games,family,no,easy,Rainy afternoon,Ludo,kept,
+IMPW-164,Ludo,,Sports and games,family,no,easy,Family fight,Snakes and ladders,kept,
+IMPW-165,Snakes and ladders,,Sports and games,family,no,easy,Board,Ludo,kept,
+IMPW-166,Chess,,Sports and games,family,no,easy,Quiet,Carrom,kept,
+IMPW-167,Kabaddi,,Sports and games,family,no,easy,Mat,Kho-kho,hint rewritten,
+IMPW-168,Kho-kho,,Sports and games,family,no,easy,Playground,Kabaddi,kept,
+IMPW-169,Hide and seek,Lukka chuppi / Chhupan chhupai / Kanna moochi,Sports and games,family,no,easy,Evening,Tag,other names changed,
+IMPW-171,Marbles,Kanche / Goli,Sports and games,grownups,no,easy,Pocket,Spinning top,grownups,
+IMPW-172,Spinning top,Lattu / Pambaram,Sports and games,grownups,no,medium,String,Marbles,grownups,
+IMPW-173,Badminton,,Sports and games,family,no,easy,Colony,Tennis,kept,
+IMPW-174,Dumb charades,,Sports and games,grownups,no,easy,Party,Pictionary,grownups,
+IMPW-175,Stumps,Wickets,Sports and games,grownups,no,easy,Wood,Bails,grownups,
+IMPW-176,Cricket bat,,Sports and games,family,no,easy,Kit,Hockey stick,kept,
+IMPW-177,Hockey,,Sports and games,family,no,easy,Team sport,Football,kept,
+IMPW-178,P. V. Sindhu,,Sports and games,grownups,no,medium,Medal,Saina Nehwal,grownups,
+IMPW-179,Neeraj Chopra,,Sports and games,grownups,no,medium,Olympics,Milkha Singh,grownups,
+IMPW-180,Football,,Sports and games,family,no,easy,Penalty,Hockey,hint rewritten,
 IMPW-181,Board exam,,School and childhood,family,no,easy,Revision,Unit test,hint rewritten,
 IMPW-182,Report card,Progress report,School and childhood,family,no,easy,Term end,Board exam,kept,
 IMPW-183,School uniform,,School and childhood,family,no,easy,Monday,Tie,kept,
@@ -226,16 +226,15 @@ IMPW-245,Banana,Kela / Vazhaipazham,Food,family,no,easy,Bunch,Mango,new,not yet 
 IMPW-246,Lemon,Nimbu,Food,family,no,easy,Soda,Orange,new,not yet reader-checked
 IMPW-247,Umbrella,Chhata / Kudai,Around the house,family,no,easy,Forgotten,Raincoat,new,not yet reader-checked
 IMPW-248,Gas cylinder,LPG,Around the house,family,no,easy,Delivery,Gas stove,new,not yet reader-checked
-IMPW-249,Aadhaar card,,Around the house,family,no,easy,Xerox,PAN card,new,"government ID, not political; kid reader not asked; not yet reader-checked"
+IMPW-249,Aadhaar card,,Desi life,family,no,easy,Xerox,PAN card,new; moved to Desi life (4 Oct),"government ID, not political; kid reader not asked; not yet reader-checked"
 IMPW-250,Mobile charger,Charger,Around the house,family,no,easy,Bedside,TV remote,new,not yet reader-checked
-IMPW-252,Elephant,Haathi / Aana,Travel and places,family,no,easy,Safari,Camel,new,not yet reader-checked
 IMPW-253,Traffic police,,Travel and places,family,no,easy,Hand signals,Traffic signal,new,not yet reader-checked
 IMPW-254,Window seat,,Travel and places,family,no,easy,Fight,Aisle seat,new,not yet reader-checked
 IMPW-255,YouTube,,"Films, music and TV",family,no,easy,Ads,Television,new,brand that is the common word; not yet reader-checked
 IMPW-256,Cartoon,,"Films, music and TV",family,no,easy,Channel,Comic books,new,not yet reader-checked
 IMPW-257,Ringtone,,"Films, music and TV",family,no,easy,Tune,Radio,new,not yet reader-checked
-IMPW-258,Cricket ball,,Cricket and games,family,no,easy,Window,Cricket bat,new,not yet reader-checked
-IMPW-259,Rain,Baarish / Mazhai,School and childhood,family,no,easy,Holiday,Paper boat,new,not yet reader-checked
+IMPW-258,Cricket ball,,Sports and games,family,no,easy,Window,Cricket bat,new,not yet reader-checked
+IMPW-259,Rain,Baarish / Mazhai,Desi life,family,no,easy,Holiday,Paper boat,new; moved to Desi life (4 Oct),not yet reader-checked
 IMPW-260,Crayons,,School and childhood,family,no,easy,Drawing book,Colour pencils,new,not yet reader-checked
 IMPW-261,Banana leaf meal,Elai saapadu / Sadya,Weddings and family,family,no,easy,Rows,Wedding buffet,new,South wedding meal known nationally; not yet reader-checked
 IMPW-262,Baby,,Weddings and family,family,no,easy,Lullaby,Toddler,new,not yet reader-checked
@@ -260,15 +259,15 @@ IMPW-323,Cow on the road,,Travel and places,family,no,easy,Right of way,Stray do
 IMPW-324,Horn OK Please,,Travel and places,grownups,no,medium,Painted,Honking,new quirky,truck-back painting; check Kerala and Chennai readers know it
 IMPW-325,Train tea seller,,Travel and places,family,no,easy,Platform,Chai,new quirky,clues: kettle / call / cups / window
 IMPW-327,Google Maps voice,,Travel and places,grownups,no,medium,Directions,Traffic police,new quirky,brand that is the common word; clues: turn / wrong / phone / lady
-IMPW-328,Hero's slow-motion entry,,"Films, music and TV",family,no,easy,Whistles,Villain's evil laugh,new quirky; hint rewritten,clues: slow / hair / music / goggles
+IMPW-328,Hero's slow-motion entry,,"Films, music and TV",family,no,easy,Fans,Villain's evil laugh,new quirky; hint rewritten,clues: slow / hair / music / goggles
 IMPW-329,Villain's evil laugh,,"Films, music and TV",family,no,easy,Scary sound,Hero's slow-motion entry,new quirky; hint rewritten,clues: loud / echo / evil / den
 IMPW-330,Dramatic zoom in TV serials,,"Films, music and TV",family,no,easy,Suspense,Villain's evil laugh,new quirky,the triple zoom with a thunder sound; laughs at the style not the viewers
 IMPW-331,Fight over the remote,,"Films, music and TV",family,no,easy,Prime time,Remote in a plastic cover,new quirky,close to TV remote (IMPW-097)
 IMPW-334,Long-lost twins,,"Films, music and TV",grownups,no,medium,Reunion,Double role,new quirky,old film trope; kids may not know it
-IMPW-335,Lucky seat during a match,,Cricket and games,family,no,medium,Superstition,World Cup final,new quirky,don't move or India loses; clues: sofa / still / win
-IMPW-338,Ball over the wall,,Cricket and games,family,no,easy,Neighbour,Cricket ball,new quirky,gully rule: you hit it you fetch it; clues: lost / gate / out
-IMPW-339,Lemon and spoon race,,Cricket and games,family,no,easy,Balance,Sack race,new quirky,clues: mouth / drop / slow / steady
-IMPW-340,Musical chairs,,Cricket and games,family,no,easy,Elimination,Passing the parcel,new quirky,clues: music / stop / sit / push
+IMPW-335,Lucky seat during a match,,Sports and games,family,no,medium,Superstition,World Cup final,new quirky,don't move or India loses; clues: sofa / still / win
+IMPW-338,Ball over the wall,,Sports and games,family,no,easy,Neighbour,Cricket ball,new quirky,gully rule: you hit it you fetch it; clues: lost / gate / out
+IMPW-339,Lemon and spoon race,,Sports and games,family,no,easy,Balance,Sack race,new quirky,clues: mouth / drop / slow / steady
+IMPW-340,Musical chairs,,Sports and games,family,no,easy,Elimination,Passing the parcel,new quirky,clues: music / stop / sit / push
 IMPW-343,Back bench,Last bench,School and childhood,family,no,easy,Mischief,Class monitor,new quirky,clues: back / naughty / sleep / chat
 IMPW-344,Brown paper book cover,,School and childhood,family,no,easy,New term,Comic books,new quirky,with the name sticker; clues: wrap / tape / label
 IMPW-345,Parent-teacher meeting,PTM,School and childhood,grownups,no,easy,Complaints,Report card,new quirky,clues: parents / teacher / fear / marks

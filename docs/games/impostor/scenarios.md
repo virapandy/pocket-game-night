@@ -114,7 +114,7 @@ U+2192; "✓" is U+2713; "›" is U+203A; "–" in "3–20" is U+2013; apostroph
 | Picker | heading "Who got the most fingers?"; one button per name; quiet "It's a tie", "Count again"; main "Reveal" (disabled) / "Reveal <Name>" | h1; buttons with `aria-pressed` | IMP-031 |
 | Tie | main "Point again" (disabled) / "Point again: Arjun or Meena" / "Point again: Arjun, Meena or Kabir"; re-vote quiet "Still a tie" | main button; quiet button | IMP-032 |
 | Build-up | "<Name> was" with `build-up-dots` "." → ".." → "..." | `reveal-line`; span | IMP-033 |
-| Caught | "Caught red-handed! <NAME> was the impostor." · "<Name>, one guess. Say it out loud! (No repeating the clues.)" · main "Show the word" · "The word was Samosa." · small line "Also called Golgappa / Puchka" · "Guessed right" / "Wrong guess" | `reveal-line` each, except the small line: `also-called` (not a reveal line, not announced); two quiet buttons | IMP-033 |
+| Caught | "Caught red-handed! <NAME> was the impostor." · "Last chance, <Name>! Guess the word out loud. Get it right and you steal the round." · main "<Name> guessed. Show the word" · "The word was Samosa." · small line "Also called Golgappa / Puchka" · "Guessed right" / "Wrong guess" | `reveal-line` each, except the small line: `also-called` (not a reveal line, not announced); two quiet buttons | IMP-033 |
 | Escaped | "Meena was crew!" · "The impostor was <NAME>. Escaped!" · "The word was Samosa." | `reveal-line` each | IMP-034 |
 | Still a tie | "Still a tie! The impostor was <NAME>. Escaped!" · "The word was Samosa." | `reveal-line` each | IMP-038 |
 | Result headline | "The crew wins!" · "<Name> steals the round!" · "<Name> escaped!" | h2 `round-outcome` | IMP-035, 034 |
@@ -183,7 +183,7 @@ A test may set exactly these; the build must honour them.
      | "Point again: …" | `tie {players}` |
      | "Reveal <Name>" | `reveal {player}` |
      | "Still a tie" | `stillTie` |
-     | "Show the word" | `showWord` |
+     | "<Name> guessed. Show the word" | `showWord` |
      | "Guessed right" / "Wrong guess" | `verdict {right: true / false}` |
      | "Undo" (verdict) | engine `undo` of the `verdict` record |
      | "Next round" (result, or "left halfway" screen) | `nextRound` alone on a result (the next deal starts with it); `dealAgain` on the "left halfway" screen |
@@ -377,7 +377,7 @@ Status: approved, owner, 2026-10-03
 Phase: Impostor 1
 When the host taps "Categories: all 9 ›"
 Then a sheet "Categories" shows 9 switches, named and ordered exactly: "Food", "Festivals and occasions",
-"Around the house", "Travel and places", "Films, music and TV", "Cricket and games", "School and childhood",
+"Around the house", "Travel and places", "Films, music and TV", "Sports and games", "School and childhood",
 "Weddings and family", "Desi life"; on the first ever evening all are on
 And below them the switch "Include non-veg food", off on the first ever evening
 And when only one category switch is on, that switch is disabled and "Keep at least one category." shows
@@ -733,10 +733,10 @@ Then one reveal screen shows, whose lines (`reveal-line`, in order) stay on scre
   `drumroll` once at t = 0 (if sound on); `body`'s background colour does not change
 - t = 2.5 s: the build-up line's element is replaced by "Caught red-handed! ARJUN was the impostor." (so the
   number of `reveal-line`s is 1 at t = 0, 1 at t = 2.5 s, 2 at t = 4.0 s)
-- t = 4.0 s: "Arjun, one guess. Say it out loud! (No repeating the clues.)" and the main button "Show the word"
-And the word is not in the page (IMP-013) until "Show the word" is tapped
+- t = 4.0 s: "Last chance, Arjun! Guess the word out loud. Get it right and you steal the round." and the main button "Arjun guessed. Show the word"
+And the word is not in the page (IMP-013) until "Arjun guessed. Show the word" is tapped
 When it is tapped
-Then "Show the word" goes, the `reveal-line` "The word was Pani puri." and, under it, the small line
+Then that button goes, the `reveal-line` "The word was Pani puri." and, under it, the small line
 "Also called Golgappa / Puchka" (`also-called`, not a reveal line, not announced; only when the word has other
 names) appear, and two quiet buttons of equal size, "Guessed right" and
 "Wrong guess", appear side by side; neither has the main look (IMP-080)
@@ -1111,7 +1111,7 @@ Then every Impostor screen has at most one element with the main look, `data-tes
 next step (guideline 17a)
 And exactly these have none: "What shall we play?" (cards), screen B until "Done…" appears (hold mode, tap mode and
 "See my word again"), the countdown,
-the reveal before "Show the word" or before the result block appears, and the verdict step ("Guessed right" /
+the reveal before "<Name> guessed. Show the word" or before the result block appears, and the verdict step ("Guessed right" /
 "Wrong guess" look equal)
 And a destructive choice ("End now", "End the evening", "Discard", "Deal again") is never the main button
 
@@ -1227,8 +1227,8 @@ Then: clues and Free-flow talk show the same screen; Timer talk shows the timer 
 reopened after "Vote now" (or after a tie's "Point again"), the countdown always runs again from "Get ready to
 point…" and then the picker opens with nothing selected (tie mode and ticks cleared, a re-vote stays a re-vote)
 (product owner, 4 October)
-And a reveal reopened before "Show the word" was tapped shows every line up to "Arjun, one guess…" and the main
-button "Show the word", with the word not in the page
+And a reveal reopened before "Arjun guessed. Show the word" was tapped shows every line up to "Last chance, Arjun!…" and the main
+button "Arjun guessed. Show the word", with the word not in the page
 And a reveal reopened after that shows its lines with no build-up and no timing: the word and the verdict buttons,
 or, after a verdict, the result block with "Undo" (IMP-037); an escaped or "Still a tie" reveal shows all its lines and its result block
 And a return from hidden (without a reload) during a reveal does the same as a reopen
@@ -1306,7 +1306,7 @@ Then every evening is saved, at every move, as one engine `SavedGame` at the eng
              "config": { "players": ["Riya", "Arjun", "Meena", "Kabir"],
                          "choices": { "mode": "easy", "talking": "free", "score": false, "words": "family",
                                       "categories": ["Food", "Festivals and occasions", "Around the house",
-                                                     "Travel and places", "Films, music and TV", "Cricket and games",
+                                                     "Travel and places", "Films, music and TV", "Sports and games",
                                                      "School and childhood", "Weddings and family", "Desi life"],
                                       "nonveg": false },
                          "excludedWords": { "dealtTonight": ["IMPW-002"], "recent": ["IMPW-003"],

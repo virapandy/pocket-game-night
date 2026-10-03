@@ -40,7 +40,7 @@ mixed-region fairness, every word free and offline, no repeats.
 
 ## Categories
 Nine, named exactly as in `words.csv`: Food · Festivals and occasions · Around the house · Travel and places ·
-Films, music and TV · Cricket and games · School and childhood · Weddings and family · **Desi life** (funny everyday
+Films, music and TV · Sports and games · School and childhood · Weddings and family · **Desi life** (funny everyday
 moments). Each word is marked **family** (dealt by default) or **grown-ups** (dealt with "+ Grown-ups"); nothing about
 politics, religion as a joke, caste, or real people other than well-loved film and sports names.
 The host can switch categories off (for example no Films for grandparents).

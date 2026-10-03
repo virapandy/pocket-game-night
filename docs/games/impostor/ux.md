@@ -160,8 +160,8 @@ countdown → only those names plus "Still a tie" (the impostor escapes).
 - Build-up 2.5 s: "Arjun was" and three dots appearing one every 0.6 s, the drumroll sound, no colour change (reduce
   motion: the same, with no animation). Lines then appear 1.5 s apart and all stay (timings in IMP-033, IMP-034,
   IMP-038).
-- **Caught:** "Caught red-handed! ARJUN was the impostor." → "Arjun, one guess. Say it out loud! (No repeating the
-  clues.)" → main **"Show the word"** → the word, its other names, and two equal buttons "Guessed right" / "Wrong
+- **Caught:** "Caught red-handed! ARJUN was the impostor." → "Last chance, Arjun! Guess the word out loud. Get it right and you steal the round." → main **"Arjun guessed.
+  Show the word"** (wording changed 4 October after the owner's play) → the word, its other names, and two equal buttons "Guessed right" / "Wrong
   guess" (equal, neither is the main look). Other names count as right.
 - **Escaped:** "Meena was crew!" → "The impostor was ARJUN. Escaped!" → "The word was Samosa."
 - **Still a tie:** "Still a tie! The impostor was ARJUN. Escaped!" → "The word was Samosa." (no build-up).
