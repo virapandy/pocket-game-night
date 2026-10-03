@@ -1,9 +1,10 @@
 # Test report
-Progress (2026-10-03, tester, Impostor tests marked expected to fail, on main at f5085cc): owner decision of
-3 October (docs/decisions.md). Every Impostor test from c8ab011 that fails today is marked expected to fail (Vitest
-`it.fails`, Playwright `test.fail`); nothing skipped, no check changed. Rule tests: 527 pass, 94 expected fail (621).
-Browser, local, Android + iPhone, the three Impostor files: 132 of 132 fail as expected. Quick verify on this push is
-named in the hand-back. See "Expected to fail (not built yet)" below.
+Progress (2026-10-03, tester, Impostor core rules on main at 381b514; tests at f595a30 plus this round): the
+expected-to-fail marks went on in f595a30 (owner decision of 3 October). On 381b514 every marked rule and contract
+test passed (they turned red, as intended), so all 94 marks are off. Rule tests (`npm test`): 627 of 627 pass, Tambola
+included; the contract suite now runs for Impostor (6 tests, all pass). One test fault fixed (below, IMP-062). Browser,
+local, Android + iPhone, the three Impostor files: still 132 of 132 fail as expected (the screens are not built), so
+their marks stay. Quick verify on this push is named in the hand-back.
 
 Progress (2026-10-03, tester, next UX list after 1.1.0, on main at 0f54b99 with tests e5fb4a7): quick verify on
 0f54b99 (run 37116779688) red only because it ran the previous tests (old hand-out question); on e5fb4a7 (run
@@ -45,27 +46,28 @@ Impostor files in this clone (untracked, another chat's work) were left out of e
 | Screenshots, Mac (`--update-snapshots=changed`) | 24 tests, 57 pictures | 24 | 24 pictures changed, references replaced |
 
 ## Expected to fail (not built yet)
-Owner decision, 3 October 2026: tests written first for Impostor, not built yet, are marked expected to fail so quick
-verify stays green and the preview keeps updating. Each mark comes off as its part of the build lands: a marked test
-that starts passing turns red on purpose (that is a finding, not a fault); then the tester removes its mark. The 7
-Impostor rule tests that already pass (IMP-053, IMP-054, IMP-055 word list; IMP-096 fixture format) are not marked.
+Owner decision, 3 October 2026: tests written first for a part not built yet are marked expected to fail (Vitest
+`it.fails`, Playwright `test.fail`) so quick verify stays green. A marked test that starts passing turns red on
+purpose; then the tester removes its mark. Rule and contract marks: all removed on 381b514 (94 tests now pass:
+IMP-010, 011, 015, 016, 020, 021, 025, 031–035, 037, 038, 041, 042, 050–052, 060–064, 096 and the contract suite).
+Still marked (the Impostor screens are not built):
 | File | Marked | Scenario IDs |
 |---|---|---|
-| tests/contract/impostor.test.ts | 1 ("Impostor registers its rules"; once impostorRules exists the full contract suite runs unmarked) | contract suite, IMP-062 |
-| tests/games/impostor/deal.test.ts | 18 | IMP-010, IMP-011, IMP-015, IMP-016, IMP-025, IMP-063 |
-| tests/games/impostor/starter.test.ts | 11 | IMP-020, IMP-021 |
-| tests/games/impostor/vote-and-reveal.test.ts | 21 | IMP-031, IMP-032, IMP-033, IMP-034, IMP-035, IMP-037, IMP-038 |
-| tests/games/impostor/scoring.test.ts | 6 | IMP-041, IMP-042 |
-| tests/games/impostor/secrets-and-seeds.test.ts | 21 | IMP-060, IMP-061, IMP-062, IMP-064 |
-| tests/games/impostor/words.test.ts | 12 of 17 | IMP-050, IMP-051, IMP-052 |
-| tests/games/impostor/saved-evening.test.ts | 4 of 6 | IMP-096 (readImpostorEvening and replay) |
 | tests/browser/impostor-privacy.spec.ts | 26 per phone | IMP-010, IMP-011, IMP-012, IMP-013, IMP-014, IMP-015, IMP-016, IMP-017, IMP-020, IMP-031, IMP-033, IMP-053, IMP-060, IMP-062, IMP-064 |
 | tests/browser/impostor-saved-evenings.spec.ts | 26 per phone | IMP-037, IMP-090, IMP-091, IMP-092, IMP-093, IMP-094, IMP-095, IMP-096, IMP-097, IMP-098, IMP-099 |
 | tests/browser/impostor-scoring.spec.ts | 14 per phone | IMP-035, IMP-040, IMP-041, IMP-042, IMP-043, IMP-044 |
-Totals: 94 rule and contract tests, 66 browser tests per phone (132 on both phones).
+Totals: 66 browser tests per phone (132 on both phones).
 Still open for the product owner (tests accept either behaviour until answered): IMP-091 reopen after "Vote now",
-IMP-099 summary left over 3 hours. IMP-042: the coder will expose `eveningTotals(saved)`; a rule test for the totals
-follows once it is in the Test hooks.
+IMP-099 summary left over 3 hours. IMP-042: `eveningTotals(saved)` now exists; a rule property for the totals will be
+added once it is listed in the Test hooks of `specs/impostor/README.md` (totals stay checked on screen meanwhile).
+
+## Tests changed this round (test fault; no assertion loosened)
+- `secrets-and-seeds.test.ts`, IMP-062 "before the reveal, the host and room views hold only { round, practice,
+  players, starter }": it searched the view's JSON text, key names included, for every secret. Water purifier's other
+  name "RO" matched the key "round", so a correct view failed. It now searches the view's values (the keys are already
+  checked to be exactly those four); the same secrets, the same 200 evenings.
+- `tests/contract/impostor.test.ts`: "Impostor registers its rules" is now always registered (it fails only if
+  `impostorRules` is missing), so it could carry the mark and show when the rules arrived. Same check.
 
 ## Failing (real bugs only)
 No scenario test fails. Three screen problems seen in the pictures (polish rows of the next UX list; no test covers

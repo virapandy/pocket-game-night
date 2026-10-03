@@ -1,5 +1,3 @@
-// Expected to fail (not built yet): tests marked `it.fails` wait for src/games/impostor (owner decision 2026-10-03).
-// A marked test that starts passing turns red: then remove its `.fails` mark. What each test checks is unchanged.
 // Impostor deal rules (specs/impostor/02-deal.md, 03-clues-and-talk.md IMP-025, 07-secrets-and-seeds.md IMP-063).
 // What the screens show is checked in tests/browser/impostor-privacy.spec.ts; here, the moves and views behind them.
 import { describe, expect, it } from 'vitest';
@@ -9,7 +7,7 @@ import { Evening, FAMILY_VEG, NAMES, P3, P4, P5, WORDS, seedList } from './helpe
 const ids = new Set(WORDS.map((w) => w.id));
 
 describe('IMP-010: each player sees their role privately, in seat order', () => {
-  it.fails('a round\'s deal is one "seen" per player in seat order; the starter is picked only after the last one', () => {
+  it('a round\'s deal is one "seen" per player in seat order; the starter is picked only after the last one', () => {
     for (const players of [P3, P4, P5]) {
       const e = new Evening({ players, seed: `deal-${players.length}` });
       e.startDeal();
@@ -25,7 +23,7 @@ describe('IMP-010: each player sees their role privately, in seat order', () => 
     }
   });
 
-  it.fails('every move is recorded by the host', () => {
+  it('every move is recorded by the host', () => {
     const e = new Evening();
     e.startDeal();
     e.playRound({ kind: 'caught', right: false });
@@ -35,7 +33,7 @@ describe('IMP-010: each player sees their role privately, in seat order', () => 
     ]);
   });
 
-  it.fails('"Start the deal" is the first move; nothing else is accepted before it, and it is accepted once', () => {
+  it('"Start the deal" is the first move; nothing else is accepted before it, and it is accepted once', () => {
     const e = new Evening();
     for (const m of [{ type: 'seen' }, { type: 'startTalk' }, { type: 'voteNow' }, { type: 'nextRound' }]) expect(e.refuses(m), m.type).toBe(true);
     e.startDeal();
@@ -44,7 +42,7 @@ describe('IMP-010: each player sees their role privately, in seat order', () => 
 });
 
 describe('IMP-011: what each role sees (the views behind the private block)', () => {
-  it.fails('the impostor\'s view is exactly { role: "impostor" }; a crew member\'s is exactly { role: "crew", wordId } with a word of the list', () => {
+  it('the impostor\'s view is exactly { role: "impostor" }; a crew member\'s is exactly { role: "crew", wordId } with a word of the list', () => {
     for (const mode of ['easy', 'hard'] as const) {
       for (const s of seedList(30, `views-${mode}`)) {
         const e = new Evening({ seed: s, choices: { mode } });
@@ -61,7 +59,7 @@ describe('IMP-011: what each role sees (the views behind the private block)', ()
     }
   });
 
-  it.fails('the views stay the same through the deal, the clues and the vote of that round', () => {
+  it('the views stay the same through the deal, the clues and the vote of that round', () => {
     const e = new Evening({ seed: 'stable' });
     e.startDeal();
     const before = Object.fromEntries(P4.map((p) => [p, e.player(p)]));
@@ -71,7 +69,7 @@ describe('IMP-011: what each role sees (the views behind the private block)', ()
 });
 
 describe('IMP-015: "Don\'t know this word?" redeals without giving anything away', () => {
-  it.fails('draws a new word and a new impostor, same players, same round number, and the deal runs again from the first player', () => {
+  it('draws a new word and a new impostor, same players, same round number, and the deal runs again from the first player', () => {
     let sameImpostor = 0, otherImpostor = 0;
     for (const s of seedList(200, 'dontknow')) {
       const e = new Evening({ seed: s });
@@ -93,7 +91,7 @@ describe('IMP-015: "Don\'t know this word?" redeals without giving anything away
     expect(otherImpostor).toBeGreaterThan(0);
   });
 
-  it.fails('works the same in a practice round and on the impostor\'s own turn (any player, any moment of the deal)', () => {
+  it('works the same in a practice round and on the impostor\'s own turn (any player, any moment of the deal)', () => {
     for (let k = 0; k < 4; k++) {
       const e = new Evening({ seed: `turn-${k}` });
       e.startDeal(true);
@@ -103,7 +101,7 @@ describe('IMP-015: "Don\'t know this word?" redeals without giving anything away
     }
   });
 
-  it.fails('can be used any number of times in a round', () => {
+  it('can be used any number of times in a round', () => {
     const e = new Evening({ seed: 'many' });
     e.startDeal();
     const words = [e.wordId()];
@@ -112,7 +110,7 @@ describe('IMP-015: "Don\'t know this word?" redeals without giving anything away
     expect(e.host().round).toBe(1);
   });
 
-  it.fails('the given-up word is not dealt again in the evening, even after "Allow repeats"', () => {
+  it('the given-up word is not dealt again in the evening, even after "Allow repeats"', () => {
     const [a, b] = FAMILY_VEG;
     const blocked = FAMILY_VEG.slice(2); // only a and b can be dealt
     const e = new Evening({ seed: 'given-up', excludedWords: { blocked }, testDeals: [{ wordId: a! }] });
@@ -132,14 +130,14 @@ describe('IMP-015: "Don\'t know this word?" redeals without giving anything away
 });
 
 describe('IMP-016: after the last player, straight to the clues', () => {
-  it.fails('the last "seen" ends the deal: the starter is set and the clues can start', () => {
+  it('the last "seen" ends the deal: the starter is set and the clues can start', () => {
     const e = new Evening({ seed: 'clues' });
     e.startDeal().dealAll();
     expect(P4).toContain(e.host().starter);
     expect(e.try({ type: 'startTalk' })).toBe(true);
   });
 
-  it.fails('"Another round of clues" is accepted once, only with 3 to 5 players, before the talk', () => {
+  it('"Another round of clues" is accepted once, only with 3 to 5 players, before the talk', () => {
     for (const players of [P3, P4, P5]) {
       const e = new Evening({ players, seed: `again-${players.length}` });
       e.startDeal().dealAll();
@@ -163,7 +161,7 @@ describe('IMP-025: deal again with a new word', () => {
     ['on the picker', (e) => { e.dealAll().toVote(); }],
   ];
   for (const [where, reach] of stages) {
-    it.fails(`${where}: a new word and a new impostor, the same players and round number, the deal from the first player`, () => {
+    it(`${where}: a new word and a new impostor, the same players and round number, the deal from the first player`, () => {
       let changedImpostor = 0;
       for (const s of seedList(60, `again-${where}`)) {
         const e = new Evening({ seed: s });
@@ -182,7 +180,7 @@ describe('IMP-025: deal again with a new word', () => {
     });
   }
 
-  it.fails('the dealt-again word stays used for the rest of the evening', () => {
+  it('the dealt-again word stays used for the rest of the evening', () => {
     for (const s of seedList(30, 'again-used')) {
       const e = new Evening({ seed: s });
       e.startDeal();
@@ -196,7 +194,7 @@ describe('IMP-025: deal again with a new word', () => {
     }
   });
 
-  it.fails('a round dealt again in round 3 keeps the number 3 and the next round is 4', () => {
+  it('a round dealt again in round 3 keeps the number 3 and the next round is 4', () => {
     const e = new Evening({ seed: 'numbers' });
     e.startDeal();
     e.playRound({ kind: 'escaped' }); e.nextRound();
@@ -210,7 +208,7 @@ describe('IMP-025: deal again with a new word', () => {
 });
 
 describe('IMP-063: every crew member has the same word, every round one impostor', () => {
-  it.fails('property (1,000 seeded dealt rounds, 3 to 20 players): exactly one player\'s view says impostor; every other has the same word id; tolerance 0', () => {
+  it('property (1,000 seeded dealt rounds, 3 to 20 players): exactly one player\'s view says impostor; every other has the same word id; tolerance 0', () => {
     const rng = createRng('imp063');
     for (let i = 0; i < 1000; i++) {
       const n = 3 + rng.int(18);

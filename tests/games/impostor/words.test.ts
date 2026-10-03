@@ -1,5 +1,3 @@
-// Expected to fail (not built yet): tests marked `it.fails` wait for src/games/impostor (owner decision 2026-10-03).
-// A marked test that starts passing turns red: then remove its `.fails` mark. What each test checks is unchanged.
 // Impostor words (specs/impostor/06-words.md, C3): IMP-050 to IMP-055.
 // The list rules are checked on docs/games/impostor/words.csv and on the shipped content/impostor/words.json;
 // the picking rules through `pickWord` (Test hooks item 1) and through whole evenings on the engine.
@@ -35,7 +33,7 @@ const filterArb = fc.record({
 }));
 
 describe('IMP-050: words come from the list with the chosen audience', () => {
-  it.fails('Whole family deals only family words; + Grown-ups deals family or grown-ups words', () => {
+  it('Whole family deals only family words; + Grown-ups deals family or grown-ups words', () => {
     for (let i = 0; i < 300; i++) {
       const fam = pickWord(WORDS, filter({ words: 'family' }), createRng(`fam-${i}`));
       expect(fam).not.toBeNull();
@@ -50,7 +48,7 @@ describe('IMP-050: words come from the list with the chosen audience', () => {
     expect([...seen].sort(), '+ Grown-ups also deals grown-ups words').toEqual(['family', 'grownups']);
   });
 
-  it.fails('only from categories switched on, and non-veg words only with "Include non-veg food" on', () => {
+  it('only from categories switched on, and non-veg words only with "Include non-veg food" on', () => {
     for (let i = 0; i < 300; i++) {
       const w = pickWord(WORDS, filter({ categories: ['Cricket and games'] }), createRng(`cat-${i}`));
       expect(w!.category).toBe('Cricket and games');
@@ -66,7 +64,7 @@ describe('IMP-050: words come from the list with the chosen audience', () => {
     expect(nonvegIds).toContain(w!.id);
   });
 
-  it.fails('property (10,000 seeded picks over random filters): every picked word passes the filter; tolerance 0', () => {
+  it('property (10,000 seeded picks over random filters): every picked word passes the filter; tolerance 0', () => {
     fc.assert(
       fc.property(filterArb, ({ seed, f }) => {
         const w = pickWord(WORDS, f, createRng(seed));
@@ -78,14 +76,14 @@ describe('IMP-050: words come from the list with the chosen audience', () => {
     );
   });
 
-  it.fails('a picked word is the list entry itself, whole (id, word, other names, category, hint)', () => {
+  it('a picked word is the list entry itself, whole (id, word, other names, category, hint)', () => {
     const w = pickWord(WORDS, filter(), createRng('whole'));
     expect(WORDS).toContainEqual(w);
   });
 });
 
 describe('IMP-052: tonight\'s and recent evenings\' words are avoided', () => {
-  it.fails('property: each pick comes from the first non-empty group (not tonight, not recent; then not tonight but recent), never blocked; null when both are empty', () => {
+  it('property: each pick comes from the first non-empty group (not tonight, not recent; then not tonight but recent), never blocked; null when both are empty', () => {
     fc.assert(
       fc.property(filterArb, ({ seed, f }) => {
         const group = expectedGroup(WORDS, f);
@@ -100,7 +98,7 @@ describe('IMP-052: tonight\'s and recent evenings\' words are avoided', () => {
     );
   });
 
-  it.fails('a word dealt in the last 3 evenings is dealt only when every other allowed word was dealt tonight or recently', () => {
+  it('a word dealt in the last 3 evenings is dealt only when every other allowed word was dealt tonight or recently', () => {
     const food = WORDS.filter((w) => passesChoices(w, { ...DEFAULT_CHOICES, categories: ['Food'] })).map((w) => w.id);
     const [a, b, ...rest] = food;
     // Group 1 is {a}: everything else was dealt tonight or recently.
@@ -113,7 +111,7 @@ describe('IMP-052: tonight\'s and recent evenings\' words are avoided', () => {
     expect([...picked].every((id) => id === b || rest.slice(10).includes(id))).toBe(true);
   });
 
-  it.fails('picks uniformly by the seed within the group (3 words, 9,000 seeds: each 33.3% ± 2%)', () => {
+  it('picks uniformly by the seed within the group (3 words, 9,000 seeds: each 33.3% ± 2%)', () => {
     const three = FAMILY_VEG.slice(0, 3);
     const f = filter({ blocked: new Set(FAMILY_VEG.slice(3)), words: 'family' });
     expect(expectedGroup(WORDS, f).sort()).toEqual([...three].sort());
@@ -123,13 +121,13 @@ describe('IMP-052: tonight\'s and recent evenings\' words are avoided', () => {
     for (const id of three) expect(Math.abs((count[id] ?? 0) / N - 1 / 3), `${id} share`).toBeLessThanOrEqual(0.02);
   });
 
-  it.fails('the same seed always picks the same word', () => {
+  it('the same seed always picks the same word', () => {
     for (const s of seedList(50, 'same')) {
       expect(pickWord(WORDS, filter(), createRng(s))).toEqual(pickWord(WORDS, filter(), createRng(s)));
     }
   });
 
-  it.fails('"Allow repeats": every allowed word that is not blocked may be dealt again, picked uniformly', () => {
+  it('"Allow repeats": every allowed word that is not blocked may be dealt again, picked uniformly', () => {
     const three = FAMILY_VEG.slice(0, 3);
     const blocked = new Set(FAMILY_VEG.slice(3));
     // All three dealt tonight and recently: without "Allow repeats" no word is left.
@@ -146,7 +144,7 @@ describe('IMP-052: tonight\'s and recent evenings\' words are avoided', () => {
     expect(pickWord(WORDS, { ...f, allowRepeats: true, blocked: new Set(FAMILY_VEG) }, createRng('rep-x'))).toBeNull();
   });
 
-  it.fails('an evening never deals a word from its frozen excluded sets while others are left (dealt tonight, recent, blocked)', () => {
+  it('an evening never deals a word from its frozen excluded sets while others are left (dealt tonight, recent, blocked)', () => {
     const dealtTonight = FAMILY_VEG.slice(0, 60);
     const recent = FAMILY_VEG.slice(60, 120);
     const blocked = FAMILY_VEG.slice(120, 180);
@@ -164,7 +162,7 @@ describe('IMP-052: tonight\'s and recent evenings\' words are avoided', () => {
 });
 
 describe('IMP-051: no word repeats in an evening', () => {
-  it.fails('property (1,000 seeded evenings of 30 dealt rounds, random filters, no "Allow repeats"): no word id appears twice; tolerance 0', () => {
+  it('property (1,000 seeded evenings of 30 dealt rounds, random filters, no "Allow repeats"): no word id appears twice; tolerance 0', () => {
     let evenings = 0;
     for (let i = 0; evenings < 1000; i++) {
       const rng = createRng(`imp051-${i}`);
@@ -190,7 +188,7 @@ describe('IMP-051: no word repeats in an evening', () => {
     }
   });
 
-  it.fails('given-up, dealt-again and practice words count as dealt (the next deal never brings them back)', () => {
+  it('given-up, dealt-again and practice words count as dealt (the next deal never brings them back)', () => {
     for (const s of seedList(30, 'counted')) {
       const e = new Evening({ seed: s });
       e.startDeal(true);

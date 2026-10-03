@@ -1,5 +1,3 @@
-// Expected to fail (not built yet): tests marked `it.fails` wait for src/games/impostor (owner decision 2026-10-03).
-// A marked test that starts passing turns red: then remove its `.fails` mark. What each test checks is unchanged.
 // Impostor scoring (specs/impostor/05-scoring.md, C3): IMP-041 and IMP-042 through `scoreRound` (Test hooks item 1).
 // What the result block shows (IMP-040, IMP-043, IMP-044) is checked in tests/browser/impostor-scoring.spec.ts.
 import { describe, expect, it } from 'vitest';
@@ -8,16 +6,16 @@ import { createRng, undo } from '../../../src/engine';
 import { Evening, NAMES, P4, expectedPoints, randomOutcome, scoreRound, type RoundFacts } from './helpers';
 
 describe('IMP-041: points when keeping score', () => {
-  it.fails('escaped (wrong person or "Still a tie"): the impostor +2, nobody else', () => {
+  it('escaped (wrong person or "Still a tie"): the impostor +2, nobody else', () => {
     expect(scoreRound({ impostor: 'Arjun', caught: false, guessedRight: null }, P4)).toEqual({ Riya: 0, Arjun: 2, Meena: 0, Kabir: 0 });
   });
-  it.fails('caught and "Guessed right": the impostor +1, nobody else', () => {
+  it('caught and "Guessed right": the impostor +1, nobody else', () => {
     expect(scoreRound({ impostor: 'Arjun', caught: true, guessedRight: true }, P4)).toEqual({ Riya: 0, Arjun: 1, Meena: 0, Kabir: 0 });
   });
-  it.fails('caught and "Wrong guess": every crew member of that round +1, the impostor 0', () => {
+  it('caught and "Wrong guess": every crew member of that round +1, the impostor 0', () => {
     expect(scoreRound({ impostor: 'Arjun', caught: true, guessedRight: false }, P4)).toEqual({ Riya: 1, Arjun: 0, Meena: 1, Kabir: 1 });
   });
-  it.fails('every player of the round is listed, with 0 when they got no points', () => {
+  it('every player of the round is listed, with 0 when they got no points', () => {
     const players = NAMES.slice(0, 12);
     const r = scoreRound({ impostor: 'Dev', caught: false, guessedRight: null }, players);
     expect(Object.keys(r).sort()).toEqual([...players].sort());
@@ -25,7 +23,7 @@ describe('IMP-041: points when keeping score', () => {
 });
 
 describe('IMP-042: points always add up', () => {
-  it.fails('property: scoreRound gives exactly IMP-041\'s points for every outcome and every group of 3 to 20 players', () => {
+  it('property: scoreRound gives exactly IMP-041\'s points for every outcome and every group of 3 to 20 players', () => {
     fc.assert(
       fc.property(
         fc.integer({ min: 3, max: 20 }), fc.nat(), fc.constantFrom('escaped', 'right', 'wrong'),
@@ -42,7 +40,7 @@ describe('IMP-042: points always add up', () => {
     );
   });
 
-  it.fails('property (1,000 seeded evenings of 1 to 30 rounds, 3 to 12 players, random outcomes, verdicts, undos, joins and leaves): each round\'s points equal scoreRound for its outcome (the evening totals are checked on screen: see tests/games/impostor/README.md)', () => {
+  it('property (1,000 seeded evenings of 1 to 30 rounds, 3 to 12 players, random outcomes, verdicts, undos, joins and leaves): each round\'s points equal scoreRound for its outcome (the evening totals are checked on screen: see tests/games/impostor/README.md)', () => {
     for (let i = 0; i < 1000; i++) {
       const rng = createRng(`imp042-${i}`);
       const n = 3 + rng.int(10);
