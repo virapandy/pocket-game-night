@@ -1,10 +1,10 @@
 # Complete run (docs/change-sop.md): every rule test and every browser test on both phones.
-# Runs nightly (report only, publishes nothing) and when a release is called by hand:
-#   gh workflow run ci.yml --ref main
-# A release that is all green publishes the families' link, https://virapandy.github.io/pocket-game-night/,
-# together with the newest preview (both halves always go up together; see build-site.yml).
-# Everyday pushes run "Quick verify" (quick.yml) instead. The file keeps its name, ci.yml, so the
-# families' half can find the last commit the old automation published until the first release here.
+# Report only: it never publishes anything. It runs nightly on main, and once on each release candidate
+# (a tag on main), started by hand:
+#   gh workflow run ci.yml --ref rc-2026-10-03
+# After the owner tries the candidate and says yes, "Publish release" (release.yml) puts it on the
+# families' link; it refuses a tag whose commit has no successful Complete run.
+# Everyday pushes run "Quick verify" (quick.yml) instead.
 # The browser tests run in four parallel jobs (android and iphone, each split in two halves) to keep a round short.
 name: Complete run
 
@@ -16,7 +16,7 @@ on:
 permissions:
   contents: read
 
-# A nightly run never cancels a release, and a release never cancels another: they queue.
+# A nightly run never cancels a candidate's run, and candidate runs never cancel each other: they queue.
 concurrency:
   group: complete-run-${{ github.ref }}-${{ github.event_name }}
   cancel-in-progress: false
@@ -95,53 +95,3 @@ jobs:
           path: test-results/browser/
           retention-days: 14
           if-no-files-found: ignore
-
-  # Release only: build both halves (the families' half from this commit) and publish them together.
-  families-site:
-    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
-    uses: ./.github/workflows/build-site.yml
-    permissions:
-      contents: read
-      actions: read
-    with:
-      site: families
-      sha: ${{ github.sha }}
-
-  preview-site:
-    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
-    uses: ./.github/workflows/build-site.yml
-    permissions:
-      contents: read
-      actions: read
-    with:
-      site: preview
-      fallback_sha: ${{ github.sha }}
-
-  publish:
-    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
-    needs: [check, browser, families-site, preview-site]
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    permissions:
-      pages: write
-      id-token: write
-    concurrency:
-      group: pages-publish
-      cancel-in-progress: false
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: site-families
-          path: site
-      - uses: actions/download-artifact@v4
-        with:
-          name: site-preview
-          path: site/preview
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: site
-      - id: deployment
-        uses: actions/deploy-pages@v4

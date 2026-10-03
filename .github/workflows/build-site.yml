@@ -1,11 +1,13 @@
-# Builds one half of the published site, for "Quick verify" (quick.yml) and "Complete run" (ci.yml).
+# Builds one half of the published site, for "Quick verify" (quick.yml) and "Publish release" (release.yml).
 # GitHub Pages holds one site, so every publish uploads both halves together:
 #   families: the last released commit, at https://virapandy.github.io/pocket-game-night/
 #   preview:  the newest checked commit, at https://virapandy.github.io/pocket-game-night/preview/
 # Each half is rebuilt from its commit, so nothing has to be stored between runs.
 # When no commit is given, the right one is looked up from earlier successful runs:
-#   families: the newest successful "Complete run" started by hand (a release). Before the first release
-#             under this scheme, the newest successful push run of ci.yml (what the old automation published).
+#   families: the tag named by the newest successful "Publish release" run (release.yml; its run name is
+#             "Publish release <tag>"). Before the first such release, the commit the old automation last
+#             published: the newest successful ci.yml run on main started by push or by hand before
+#             3 October 2026 07:30 UTC (after that, ci.yml publishes nothing).
 #   preview:  the newest successful "Quick verify" push run.
 name: Build site half
 
@@ -47,8 +49,15 @@ jobs:
         run: |
           if [ -z "$SHA" ]; then
             if [ "$SITE" = families ]; then
-              SHA=$(gh run list -R "$REPO" --workflow ci.yml --branch main --status success --limit 100 \
-                --json headSha,event -q '[.[] | select(.event == "workflow_dispatch" or .event == "push")][0].headSha // empty')
+              TAG=$(gh run list -R "$REPO" --workflow release.yml --status success --limit 1 \
+                --json displayTitle -q '.[0].displayTitle // empty' | sed -n 's/^Publish release //p')
+              if [ -n "$TAG" ]; then
+                SHA=$(gh api "repos/$REPO/commits/$TAG" --jq .sha)
+                echo "Last release: $TAG"
+              else
+                SHA=$(gh run list -R "$REPO" --workflow ci.yml --branch main --status success --limit 100 \
+                  --json headSha,event,createdAt -q '[.[] | select((.event == "workflow_dispatch" or .event == "push") and .createdAt < "2026-10-03T07:30:00Z")][0].headSha // empty')
+              fi
             else
               SHA=$(gh run list -R "$REPO" --workflow quick.yml --branch main --event push --status success --limit 1 \
                 --json headSha -q '.[0].headSha // empty')

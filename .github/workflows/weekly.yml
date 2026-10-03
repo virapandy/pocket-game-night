@@ -1,6 +1,6 @@
 # Once a week (and on request): the long, report-only checks (PLT-118).
 # Mass simulation with an optional Jev smoke run, mutation testing, and the Android phone emulator.
-# Separate from "Check and publish" (ci.yml): it never blocks, cancels or waits on it, and never publishes.
+# Separate from "Complete run" (ci.yml): it never blocks, cancels or waits on it, and never publishes.
 # Every job is report-only: a failure here shows in the results but fails nothing else.
 name: Weekly extended checks
 

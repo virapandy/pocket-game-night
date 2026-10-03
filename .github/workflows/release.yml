@@ -1,0 +1,141 @@
+# Publish release (docs/change-sop.md, Release steps 1-4): the only way the families' link changes.
+# Run it only after the release candidate tag has had a green Complete run (ci.yml), the UX re-check
+# and release notes are done, and the owner has tried it and said yes:
+#   gh workflow run release.yml --ref main -f tag=rc-2026-10-03
+# It:
+#   1. refuses unless a Complete run on the tag's commit succeeded;
+#   2. builds the families' half from the tag's commit and the preview half from the newest green
+#      Quick verify commit (build-site.yml), and publishes both together;
+#   3. creates the GitHub release v<package.json version> on that commit, with docs/releases/<tag>.md
+#      as its notes when that file exists.
+# The run name records the tag, so build-site.yml finds the families' commit from the last successful run.
+name: Publish release
+run-name: Publish release ${{ inputs.tag }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: release candidate tag, for example rc-2026-10-03
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-release
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      actions: read
+    outputs:
+      sha: ${{ steps.check.outputs.sha }}
+      version: ${{ steps.check.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: refs/tags/${{ inputs.tag }}
+      - name: Check the tag had a green Complete run
+        id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          SHA=$(git rev-parse HEAD)
+          echo "Tag $TAG is commit $SHA"
+          RUN=$(gh run list -R "$REPO" --workflow ci.yml --commit "$SHA" --status success --limit 1 \
+            --json databaseId,url -q '.[0].url // empty')
+          if [ -z "$RUN" ]; then
+            echo "::error::No successful Complete run on $TAG ($SHA). Run 'gh workflow run ci.yml --ref $TAG', wait for it to pass, then try again. Nothing published."
+            exit 1
+          fi
+          echo "Green Complete run: $RUN"
+          VERSION="v$(node -p "require('./package.json').version")"
+          if gh api "repos/$REPO/git/ref/tags/$VERSION" >/dev/null 2>&1; then
+            echo "::error::Version $VERSION already exists. Raise the version in package.json, tag a new candidate, and try again. Nothing published."
+            exit 1
+          fi
+          echo "Will release $VERSION"
+          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+  families-site:
+    needs: check
+    uses: ./.github/workflows/build-site.yml
+    permissions:
+      contents: read
+      actions: read
+    with:
+      site: families
+      sha: ${{ needs.check.outputs.sha }}
+
+  preview-site:
+    needs: check
+    uses: ./.github/workflows/build-site.yml
+    permissions:
+      contents: read
+      actions: read
+    with:
+      site: preview
+      fallback_sha: ${{ needs.check.outputs.sha }}
+
+  publish:
+    needs: [check, families-site, preview-site]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    concurrency:
+      group: pages-publish
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: site-families
+          path: site
+      - uses: actions/download-artifact@v4
+        with:
+          name: site-preview
+          path: site/preview
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deployment
+        uses: actions/deploy-pages@v4
+
+  github-release:
+    needs: [check, publish]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.check.outputs.sha }}
+      - name: Create the version and its release notes
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          TAG: ${{ inputs.tag }}
+          SHA: ${{ needs.check.outputs.sha }}
+          VERSION: ${{ needs.check.outputs.version }}
+        run: |
+          NOTES="docs/releases/$TAG.md"
+          if [ -f "$NOTES" ]; then
+            gh release create "$VERSION" -R "$REPO" --target "$SHA" --title "$VERSION ($TAG)" --notes-file "$NOTES"
+          else
+            gh release create "$VERSION" -R "$REPO" --target "$SHA" --title "$VERSION ($TAG)" \
+              --notes "Release candidate $TAG, published to the families' link."
+          fi
