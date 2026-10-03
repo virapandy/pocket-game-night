@@ -962,6 +962,23 @@ button.tcell { cursor: pointer; }
 /* UX row 22 (TAM-140, PLT-005): the "Game over" banner above the host's payouts. */
 .game-over { margin-bottom: 12px; }
 .game-over p { margin: 0; }
+/* RC fix (C1), payouts in landscape (812 × 375): "Session tally" and "Play again" stand on the right, one above the
+   other, so the payouts get the screen's full height on the left instead of a sliver above the buttons. */
+@media (orientation: landscape) and (max-height: 600px) {
+  .over-screen {
+    max-width: 760px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 200px;
+    grid-template-rows: auto minmax(0, 1fr);
+    column-gap: 16px;
+    row-gap: 8px;
+    padding-top: max(8px, env(safe-area-inset-top));
+  }
+  .over-screen > .top-bar { grid-column: 1 / -1; }
+  .over-screen > .setup-body { grid-column: 1; grid-row: 2; }
+  .over-screen > .bottom-action { grid-column: 2; grid-row: 2; align-self: end; flex-direction: column; padding-top: 0; }
+  .over-screen > .bottom-actions .button { flex: none; }
+}
 /* UX row 24 (TAM-174, TAM-177, TAM-179): a scanned verdict's proof, a second smaller line in ordinary text colour. */
 .claim-proof { margin: 0; font-size: 0.95rem; font-weight: 600; color: var(--text); overflow-wrap: anywhere; }
 /* UX row 25 (TAM-107, TAM-172): the game code. Calling screen: quiet text under the progress; room view: small,

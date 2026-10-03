@@ -325,7 +325,7 @@ export function Play({
   if (over) {
     return (
       // TAM-181, TAM-197: the payouts scroll; "Play again" and "Session tally" stay fixed at the bottom.
-      <main className="screen setup-screen">
+      <main className="screen setup-screen over-screen">
         <header className="top-bar">
           <button type="button" className="button button-quiet" onClick={onHome}>
             ← Home
