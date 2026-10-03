@@ -12,6 +12,8 @@
 //                      and may work in parallel with the others because it never writes to their clones
 //         ux           the ux-designer subagent the product owner calls: reads every clone, changes
 //                      nothing, runs no commands
+//         review       the reviewer subagent the orchestrator calls before merging a lane: reads every
+//                      clone, runs only git diff/log/show/status, changes nothing
 //
 // Modes:  pre     PreToolUse   - block edits and reads outside the role, and test runs outside Test
 //         post    PostToolUse  - catch shell commands that changed files the role must not touch
@@ -30,7 +32,9 @@ const TEST_RUNNERS =
   /\b(vitest|playwright|stryker|jest|mocha|appium)\b|\b(npm|pnpm|yarn|bun)\s+(run\s+)?(test|e2e|sim|mutation)\b|\bnpm\s+t\b/;
 const WEAKENING = /\.(skip|only|todo)\s*\(|\bx(it|describe|test)\s*\(/;
 const READ_TOOLS = ['Read', 'Grep', 'Glob'];
-const AGENT_ROLE = { coder: 'build', tester: 'test', 'ux-designer': 'ux' };
+const AGENT_ROLE = { coder: 'build', tester: 'test', 'ux-designer': 'ux', reviewer: 'review' };
+// The reviewer may only look at changes: git diff, log, show, status (optionally after `cd <folder> &&`).
+const READ_ONLY_GIT = /^\s*(cd\s+("[^"]*"|'[^']*'|[^\s;&|]+)\s*&&\s*)?git\s+(diff|log|show|status)\b[^;&|`$<>]*$/;
 
 // This file lives in every clone; the clones sit side by side in the workspace folder.
 const real = (p) => { try { return realpathSync(p); } catch { return path.resolve(p); } };
@@ -62,7 +66,7 @@ let role = entry === 'claude-desktop'
   ? (inside(projectDir, FOLDER.test) ? 'test' : 'product')
   : projectDir === WORKSPACE ? 'orchestrator' : 'build';
 let agent = null; // 'coder', 'tester' or 'ux-designer' when a subagent is acting
-const NAME = { build: 'Build role', test: 'Test role', orchestrator: 'orchestrator', product: 'product owner', ux: 'UX designer' };
+const NAME = { build: 'Build role', test: 'Test role', orchestrator: 'orchestrator', product: 'product owner', ux: 'UX designer', review: 'reviewer' };
 const who = () => (agent ? `${agent} subagent` : NAME[role]);
 
 const git = (args, cwd) => execSync(`git ${args}`, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
@@ -119,6 +123,13 @@ function pre(input) {
   const tool = input.tool_name;
   const ti = input.tool_input || {};
   const cwd = input.cwd || projectDir;
+
+  // The reviewer reads anything and runs read-only git, nothing else.
+  if (role === 'review') {
+    if (READ_TOOLS.includes(tool)) process.exit(0);
+    if (tool === 'Bash' && READ_ONLY_GIT.test(ti.command || '')) process.exit(0);
+    decide('deny', 'The reviewer changes nothing and runs only git diff, log, show or status. Put the finding in your reply.');
+  }
 
   // The UX designer reads anything and uses the browser, but changes nothing and runs nothing.
   if (role === 'ux') {
