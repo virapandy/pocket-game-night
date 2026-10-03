@@ -616,12 +616,20 @@ export function Play({
     const onPaper = new Set(view.tickets.filter((t) => t.status === 'paper' && t.playerId !== undefined).map((t) => t.playerId!));
     return view.players.filter((p) => onPaper.has(p.id) && !already.has(p.id));
   };
-  // Release fix C1 (UX review 2026-10-03): while a won prize waits to be closed in a phone-ticket game,
-  // "Record a win" is hidden, so a paper ticket's refusal names the way that is on screen: Undo win.
-  const paperWinnerNote = (ticket: number, reason: string) =>
-    phone && dimmed && view.tickets.some((t) => t.number === ticket && t.status === 'paper') && /plays on paper/.test(reason)
-      ? `Ticket ${ticket} plays on paper. To add a paper winner: tap Undo win, then Record a win and pick both names.`
-      : reason;
+  // UX review 2026-10-03 N1: a claim for a ticket that plays on paper is not a dead end. When its player can still win
+  // that prize, the scanner offers the name list, as in paper games (also while a won prize waits to be closed).
+  const paperWinner = (ticket: number, pattern: Pattern): string | null => {
+    const t = view.tickets.find((x) => x.number === ticket);
+    if (!t || t.status !== 'paper' || t.playerId === undefined || !view.openPatterns.includes(pattern)) return null;
+    return paperPlayers(pattern).find((p) => p.id === t.playerId)?.name ?? null;
+  };
+  const pickByName = (pattern: Pattern) => {
+    pauseAuto();
+    setSheet({
+      kind: 'record',
+      sheet: { step: 'players', pattern, picked: [], adding: view.awaitingClose.includes(pattern), paperOnly: true },
+    });
+  };
   const addAnother = (pattern: Pattern) => {
     pauseAuto();
     if (phone && paperPlayers(pattern).length === 0) {
@@ -1065,10 +1073,11 @@ export function Play({
         <ClaimScanner
           view={view}
           pastGame={(code) => pastGameNote(store, saved.id, code)}
-          paperNote={paperWinnerNote}
+          paperWinner={paperWinner}
+          onPickByName={pickByName}
           onCheck={(ticket, pattern, proof) => {
             const r = move({ type: 'check-claim', ticket, pattern });
-            if (!r.ok) return paperWinnerNote(ticket, r.reason);
+            if (!r.ok) return r.reason;
             const rec = r.value.records[r.value.records.length - 1];
             setResultSeq(rec ? rec.seq : null);
             setResultProof(proof);
@@ -1957,13 +1966,16 @@ const NO_READ_MS = 10_000;
 function ClaimScanner({
   view,
   pastGame,
-  paperNote,
+  paperWinner,
+  onPickByName,
   onCheck,
   onClose,
 }: {
   view: TambolaView;
-  /** Release fix C1: rewords a paper ticket's refusal when "Record a win" is not on screen. */
-  paperNote: (ticket: number, reason: string) => string;
+  /** N1: the name of the paper player who holds this ticket and can still win this prize, or null. */
+  paperWinner: (ticket: number, pattern: Pattern) => string | null;
+  /** N1: opens the name list for this prize, as in paper games. */
+  onPickByName: (pattern: Pattern) => void;
   /** UX list row 23 (TAM-179): what this phone's History says about another game's code, if anything. */
   pastGame: (code: string) => string | null;
   /** Checks the claim; returns why it was refused, or null once it is recorded. `proof` is for the screen only. */
@@ -1974,7 +1986,16 @@ function ClaimScanner({
   const [typed, setTyped] = useState(false);
   const [failed, setFailed] = useState<CameraFailure | null>(null);
   const [timedOut, setTimedOut] = useState(false);
-  const [refused, setRefused] = useState<{ reason: string; checkByNumber?: number; info?: boolean } | null>(null);
+  const [refused, setRefused] = useState<{ reason: string; checkByNumber?: number; info?: boolean; byName?: Pattern } | null>(null);
+  // N1: a refused claim for a paper ticket whose player can still win offers the name list instead of a dead end.
+  const refuse = (reason: string, ticket?: number, claimed?: Pattern, checkByNumber?: number) => {
+    const name = ticket !== undefined && claimed !== undefined ? paperWinner(ticket, claimed) : null;
+    if (name !== null && claimed !== undefined) {
+      setRefused({ reason: `Ticket ${ticket} plays on paper: pick ${name} by name if the anchor agrees.`, byName: claimed });
+      return;
+    }
+    setRefused(checkByNumber !== undefined ? { reason, checkByNumber } : { reason });
+  };
   const [number, setNumber] = useState('');
   const [pattern, setPattern] = useState<Pattern | null>(null);
   const [attempt, setAttempt] = useState(0);
@@ -1988,12 +2009,12 @@ function ClaimScanner({
       return;
     }
     if (!r.ok) {
-      const reason = d?.ok ? paperNote(d.claim.ticket, r.reason) : r.reason;
-      setRefused(r.checkByNumber !== undefined ? { reason, checkByNumber: r.checkByNumber } : { reason });
+      if (d?.ok) refuse(r.reason, d.claim.ticket, d.claim.pattern, r.checkByNumber);
+      else refuse(r.reason, undefined, undefined, r.checkByNumber);
       return;
     }
     const why = onCheck(r.ticket, r.pattern, 'qr');
-    if (why) setRefused({ reason: why });
+    if (why) refuse(why, r.ticket, r.pattern);
   };
   useEscape(onClose);
 
@@ -2025,7 +2046,7 @@ function ClaimScanner({
     if (number.trim() === '' || !Number.isFinite(n)) return setRefused({ reason: 'Type the ticket number.' });
     if (!pattern) return setRefused({ reason: 'Pick the prize.' });
     const why = onCheck(n, pattern, 'typed');
-    if (why) setRefused({ reason: why });
+    if (why) refuse(why, n, pattern);
   };
 
   return (
@@ -2043,7 +2064,12 @@ function ClaimScanner({
               {refused.reason}
             </p>
             <div className="row">
-              <button type="button" className="button" onClick={onClose}>
+              {refused.byName !== undefined && (
+                <button type="button" className="button" onClick={() => onPickByName(refused.byName!)}>
+                  Pick the winner by name
+                </button>
+              )}
+              <button type="button" className={refused.byName !== undefined ? 'button button-quiet' : 'button'} onClick={onClose}>
                 Close
               </button>
               {refused.checkByNumber !== undefined && (
