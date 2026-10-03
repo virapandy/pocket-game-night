@@ -183,8 +183,12 @@ export function unfinishedEvening(store: SavedGameStore): { saved: Evening; matc
   return null;
 }
 
-/** "8:40 pm", in Tambola's row format (IMP-001). */
-export const clock = (t: number) => new Date(t).toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit', hour12: true });
+/** "8:40 pm", in Tambola's row format (IMP-001): made here, so every browser writes "pm" the same way. */
+export function clock(t: number): string {
+  const d = new Date(t);
+  const h = d.getHours();
+  return `${h % 12 === 0 ? 12 : h % 12}:${String(d.getMinutes()).padStart(2, '0')} ${h < 12 ? 'am' : 'pm'}`;
+}
 
 /** Home's unfinished row (IMP-001): "Impostor, 8:40 pm, round 4". */
 export function unfinishedLine(saved: SavedGame): string {

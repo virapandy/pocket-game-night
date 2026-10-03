@@ -120,7 +120,12 @@ function useBackGuard(active: boolean) {
   }, [active]);
 }
 
-const time = (t: number) => new Date(t).toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit', hour12: true });
+/** "8:40 pm" (IMP-001), made here so every browser writes "pm" the same way (Safari on a Mac wrote "PM"). */
+function time(t: number): string {
+  const d = new Date(t);
+  const h = d.getHours();
+  return `${h % 12 === 0 ? 12 : h % 12}:${String(d.getMinutes()).padStart(2, '0')} ${h < 12 ? 'am' : 'pm'}`;
+}
 
 /** Home's unfinished row: "Tambola, 8:40 pm, 12 numbers called" or "Impostor, 8:40 pm, round 4" (IMP-001). */
 function unfinishedText(g: SavedGame): string {
