@@ -1,41 +1,47 @@
 # Test report
-Progress (2026-10-03, tester, release-candidate fix round 2): pulled main at 9cb6133 (the coder's round-2 fixes for
-the 5 screenshot problems, plus the quick-verify "No tests found" fix). New Linux reference pictures from Screenshots
-run 37109849856 on main (green); Mac pictures regenerated locally. 4 of the 5 problems are fixed; quick mark at
-360 × 640 is better but still cuts "Show claim". No test needed changing.
+Progress (2026-10-03, tester, release-candidate fix round 3, last check before the release freeze): pulled main at
+e6fc91a (85b9cc1, "quick mark thumbnails stay on one row at 360", plus a docs-only Impostor commit on top). New Linux
+reference from Screenshots run 37111322622 on main (green); the Mac picture regenerated locally. The quick mark problem
+at 360 × 640 is fixed: "Show claim" is wholly on screen. No test needed changing.
 
-Commit tested: 9cb6133   Date: 2026-10-03
-Automation run: see "Quick verify on the tester's push" below.
-Result: GREEN (every test); one screenshot finding below is a layout problem for the coder, not a failing test.
+Commit tested: 85b9cc1 (main at e6fc91a; the later commit changes only docs)   Date: 2026-10-03
+Automation run: Screenshots run 37111322622 on e6fc91a, green (all 24 screenshot tests, 57 pictures per machine).
+Quick verify on this report's own push is named in the tester's hand-back to the orchestrator (one push per round, so
+it cannot be written into this file). Last complete-layer runs: round 2 below.
+Result: GREEN (every test run this round passed; no layout problem left in the pictures).
 
-## Layers (owner's Mac: `caffeinate -i taskpolicy -b`, at most 3 workers)
+## Layers this round (owner's Mac: `caffeinate -i taskpolicy -b`, at most 3 workers)
 | Layer | Tests run | Passing | Failing |
 |---|---|---|---|
-| Rule tests (`npm test`) | 520 | 520 | 0 |
-| Browser, Android: layout, setup-layout, setup, usability, ux-rows-3-oct, ux-rows-8-15, payouts-and-tally, after-the-game, phone-tickets, pattern-cue, late-joiners, phone-late-joiners, calling, held-tickets, home-and-buttons, dark-mode | 208 | 207 | 0 (1 skipped, as before) |
-| Browser, iPhone: layout, setup-layout, ux-rows-3-oct, ux-rows-8-15, payouts-and-tally, phone-tickets, home-and-buttons | 132 | 131 | 0 (1 skipped, as before) |
-| Screenshots, Linux (Screenshots run 37109849856 on 9cb6133, new references) | 24 tests, 57 pictures | 24 | 0 (13 pictures changed) |
-| Screenshots, Mac (regenerated, `SCREENS_NEW=1 --update-snapshots`) | 24 tests, 57 pictures | 24 | 0 (the same 13 changed) |
+| Browser, Android + iPhone: phone-tickets, TAM-192 (quick mark) | 10 | 10 | 0 |
+| Screenshots, Linux (Screenshots run 37111322622 on e6fc91a) | 24 tests, 57 pictures | 24 | 0 (1 picture changed: player-quick-mark-360x640) |
+| Screenshots, Mac (player test only, `SCREENS_NEW=1 --update-snapshots`) | 3 tests (one per size), 18 pictures | 3 | 0 (the same 1 picture changed) |
+
+Rule tests were not rerun locally this round (the only code change is one screen file); quick verify runs all of them
+on the push. Round 2 (9cb6133): rule tests 520 of 520; Android 207 of 208 and iPhone 131 of 132 (1 skipped each, as
+before), all passing.
 
 ## Failing (real bugs only)
-- None among the tests. Layout problem still seen in the pictures (for the coder):
-  1. `player-quick-mark-360x640` (row 3; slows play): better but still wrong. The cue line is now on screen, but the
-     three ticket pictures under the pad wrap onto two rows (Ticket 3 alone on the second), which pushes "Show claim"
-     down so only its top 20 px or so show at the bottom edge. Same on Mac and Linux. Expected: the whole "Show claim"
-     button on a 360 × 640 screen without scrolling (for example the three ticket pictures on one row, as at 390).
+- None.
+- Fixed this round: `player-quick-mark-360x640` (row 3). On Linux and Mac the three ticket pictures sit on one row
+  under the pad, and "Show claim" is whole on screen (button from about 584 to 631 px of 640). Keys measure about
+  30 × 32 px (at least 28). The other 56 Linux pictures are byte-for-byte unchanged. The screenshot set has no
+  375 × 812 portrait size (only 360 × 640, 390 × 844 and 812 × 375 landscape), so 375 is covered by the TAM-192 test
+  only (keys at least 44 px tall on 375 × 812 and 390 × 844, passing on both phones).
 
 ## Tests changed
-- None. Only the reference pictures (13 Linux, 13 Mac) were replaced with the pictures of 9cb6133.
+- None. Only the reference picture `player-quick-mark-360x640` (Linux and Mac) was replaced with the picture of 85b9cc1.
+  (Round 2: 13 Linux and 13 Mac pictures replaced with those of 9cb6133.)
 
 ## Screenshot comparison (`tests/browser/screens.spec.ts`, tag `@screens`)
 Android phone, 360 × 640, 390 × 844 and 812 × 375; 19 screens, 57 pictures per machine. References: Linux
-(`-android-linux.png`, from Screenshots run 37109849856, what the complete run compares against) and Mac
-(`-android-darwin.png`, regenerated today). Both unapproved until the product owner or UX designer checks them.
+(`-android-linux.png`, from Screenshots run 37111322622 on e6fc91a, what the complete run compares against) and Mac
+(`-android-darwin.png`, regenerated locally). Both unapproved until the product owner or UX designer checks them.
 
-## Screenshots to approve (rc-2026-10-03, pictures of 9cb6133)
+## Screenshots to approve (rc-2026-10-03, pictures of 85b9cc1)
 Folder: `tests/browser/screens.spec.ts-snapshots/`, names `<screen>-<size>-android-linux.png` (Mac: `-darwin`).
 Pink boxes are the test's covers over QR codes; the Undo bar after a call shows as an empty bar. "Before" is the
-tester's first look at 882fb03; "Now" is 9cb6133 (round 2).
+tester's first look at 882fb03; "Now" is 85b9cc1 (round 3; only quick mark at 360 changed since round 2's 9cb6133).
 
 | Screen | Rows | Before | Now | Approve / Flag |
 |---|---|---|---|---|
@@ -52,7 +58,7 @@ tester's first look at 882fb03; "Now" is 9cb6133 (round 2).
 | host-settings-in-game | 18 | fine | Unchanged | |
 | history-clear-one | 5, 19 | fine | Unchanged | |
 | player-tickets-cue | 1, 2, 3 | fine; landscape line cut with "…" + More (question for the product owner) | Unchanged. At 360 and 390 on Linux even the short line is cut: "Ticket 1: patterns filled. S… More" (360), "…Shou… More" (390). Product owner question, row 1 | |
-| player-quick-mark | 3 | 360, 390: header a tall thin column; 360: rows 71–90 and "Show claim" off screen | 360: better, still wrong. Keys smaller (about 29 px), pad and cue line on screen, but the ticket pictures wrap to two rows and only the top edge of "Show claim" shows. 390 fine | Flag |
+| player-quick-mark | 3 | 360, 390: header a tall thin column; 360: rows 71–90 and "Show claim" off screen | Fixed (round 3). 360: keys about 30 × 32 px, pad and cue line on screen, the three ticket pictures on one row, "Show claim" whole. Polish: at 360 on Linux the header line ends "Game Z9QB ·" (time cut), on Mac it fits. 390 and 812 unchanged | |
 | player-which-ticket | 12 | 812: ticket pictures very small | Fixed (round 1), unchanged | |
 | player-which-prize | 17 | fine | Unchanged | |
 | player-claim-qr | 13, 19 | fine | Unchanged | |
@@ -67,21 +73,17 @@ listed here with its date, and fixed by the tester; never deleted or weakened.
 | (none) | | | |
 
 ## Flaky or setup problems (not for the Build workspace)
-- None this round: every local run passed first time (rule tests 520 of 520; no retries in the browser runs).
-- Last round's notes (a slow first rule-test run under load; a 4-pixel difference between two Linux pictures; the
-  cancelled quick verify 37101188825 at the 15-minute limit) did not recur.
+- None this round: every local run passed first time, no retries.
 
 ## Requests for the Build workspace
-- Layout item 1 under "Failing" (quick mark at 360 × 640: "Show claim" whole on screen).
-- (Done since the last report: quick verify's area and shard steps pass when only @screens tests changed; layout
-  items 2 to 5 fixed.)
+- None. (Done since the last report: quick mark at 360 × 640, "Show claim" whole on screen.)
 
 ## Notes for the owner (plain English)
 - The second round of layout fixes worked for four of the five problems: on a small phone the hand-out screen shows the
   whole typed code, the payouts list no longer has a stray dot and shows a whole row, and the calling screen's header
   stays clear of the big number; in landscape the Prizes screen shows every button whole.
-- Still to fix: on a small 360 × 640 phone the player's "Quick mark" screen shows only the top edge of "Show claim"
-  (the player has to scroll to claim). It is closer than before.
+- Now fixed too: on a small 360 × 640 phone the player's "Quick mark" screen shows the whole "Show claim" button, with
+  the three ticket pictures on one row. All five layout problems from the first look are fixed.
 - Still open from before: the cue line on the player's tickets is cut with "…" plus "More" on narrower phones and in
   landscape (a question for the product owner); before the first call the calling screen shows "Repeat · Another
   rhyme" and an empty "Last" (polish).
