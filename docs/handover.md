@@ -62,6 +62,12 @@ polish. **Tester:** add pictures of the thin sleep line after "Got it" and of N1
   in the corner; "Has Zoya got their ticket?" wording; polish (empty "Last", prizes step and payouts at 360, landscape
   "Which prize?" and claim QR "Done", lighter Called/Undo bar).
 
+### Impostor build, product owner answers (4 October)
+All open Impostor questions in `docs/test-questions.md` are answered in `docs/decisions.md` I21 and written into
+`docs/games/impostor/scenarios.md` (IMP-075, IMP-091, IMP-073 `pass-name`, IMP-102). **No app change needed:** the
+build already does all of it. Tester: copy the changed scenario lines into `specs/impostor/` and remove the IMP-075
+mark (the "left halfway" menu as built is now the spec). Then Impostor waits for the owner's "release Impostor".
+
 ### Queued: Impostor, the next game (product owner, 3 October): start only after the Tambola release
 Design done (owner-approved direction; scenarios await the owner's approval): `docs/games/impostor/` (guide,
 lifecycle, **ux.md** every screen, words.csv 309 words, scenarios.md: IMP-001 to IMP-096 **approved by the owner 3 October**, IMP-100 to IMP-108 after the game approved too,

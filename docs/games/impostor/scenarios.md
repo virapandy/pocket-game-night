@@ -1051,7 +1051,7 @@ Then at every size, these sizes hold (guideline 46):
 |---|---|---|---|
 | `starter-name` | 56 px | name over 8 characters, 320 px wide, or 812 × 375 | 32 px (may wrap onto 2 lines) |
 | `talk-heading` | 56 px | 320 px wide | 32 px |
-| `pass-name` | 48 px | name would not fit in 1 line at 48 px | 32 px (may wrap onto 2 lines) |
+| `pass-name` | 48 px | name would not fit in 1 line at 48 px | 32 px (may wrap onto 2 lines); on screen B at 320 × 568 and 360 × 640, 20 px on one line (product owner, 4 October) |
 | `timer` | 120 px | 320 px wide: exactly 112 px | 112 px |
 | `countdown-number` "3" "2" "1" | 200 px portrait | 812 × 375: exactly 160 px | 160 px |
 | `countdown-number` "Point!" | 96 px | 320 px wide: exactly 72 px | 72 px |
@@ -1091,7 +1091,8 @@ Then "··· Menu" (top right) has exactly these items, in this order (the item 
 |---|---|
 | Deal (screens A, B, "No problem!", "Welcome back.") | Rules · Players · Deal again with a new word · Settings · End the evening |
 | Clues, talk (Free flow or Timer), picker | Rules · Players · See my word again · Deal again with a new word · Settings · End the evening |
-| Round result (between rounds), "left halfway" screen, no-words screen (IMP-052) | Rules · Players · Change how we play · Settings · History · End the evening |
+| Round result (between rounds), no-words screen (IMP-052) | Rules · Players · Change how we play · Settings · History · End the evening |
+| "left halfway" screen (IMP-091) | Rules · Players · Settings · History · End the evening ("Players" shows only "Change players after this round." and "OK"; product owner, 4 October) |
 
 And there is no menu button on the read-aloud card, the countdown screen, during "See my word again", on the
 summary, nor on the reveal screen from "Reveal …" (or "Still a tie") until its result block appears
@@ -1223,8 +1224,9 @@ Given the app was closed (or reloaded) during the deal, clues, talk, countdown, 
 hours: IMP-090)
 When it is reopened no more than 3 hours after the round's last move
 Then: clues and Free-flow talk show the same screen; Timer talk shows the timer paused at its saved value (IMP-027);
-the countdown starts again from "Get ready to point…"; the picker shows with nothing selected (tie mode and ticks
-cleared, a re-vote stays a re-vote)
+reopened after "Vote now" (or after a tie's "Point again"), the countdown always runs again from "Get ready to
+point…" and then the picker opens with nothing selected (tie mode and ticks cleared, a re-vote stays a re-vote)
+(product owner, 4 October)
 And a reveal reopened before "Show the word" was tapped shows every line up to "Arjun, one guess…" and the main
 button "Show the word", with the word not in the page
 And a reveal reopened after that shows its lines with no build-up and no timing: the word and the verdict buttons,
@@ -1233,7 +1235,8 @@ And a return from hidden (without a reload) during a reveal does the same as a r
 When it is reopened more than 3 hours after the round's last move
 Then the screen shows "This round was left halfway. Start a fresh round?" with the main button "Next round"
 And "Next round" deals that round again with a new word and impostor under the same round number (recorded as
-`dealAgain`); the menu (between-rounds items) is also available
+`dealAgain`); the menu is as IMP-075 lists for the "left halfway" screen (no "Change how we play"; choices can be
+changed on the next round result)
 
 ## IMP-092: Ending and discarding the evening
 Status: approved, owner, 2026-10-03
@@ -1395,6 +1398,8 @@ When the host taps "Play something else" on the summary
 Then "What shall we play?" opens, and the next game's players arrive filled in (IMP-004, PLT-024)
 And the Impostor evening belongs to tonight's session (PLT-016) and stays out of any money tally (PLT-023); the
 session screen lists it as one `session-game` reading "Impostor · 7 rounds"
+And when Tambola is picked and Tambola has an unfinished setup (PLT-006), that setup opens exactly as it was saved
+(its own names); tonight's names fill only a new Tambola setup (product owner, 4 October)
 
 ## IMP-103: Play again another day
 Status: approved, owner, 2026-10-03
