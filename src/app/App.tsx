@@ -472,6 +472,10 @@ function Home({
           <span aria-hidden="true">›</span>
         </button>
       )}
+      {/* PLT-300 (UX list row 21): tickets more than 6 hours old wait here, with Open and Clear. */}
+      {games.map((g) => (
+        <g.phone.SavedTickets key={g.info.id} prefs={preferences} onOpen={() => onTickets(false)} />
+      ))}
 
       {unfinished.length > 0 && (
         <section aria-labelledby="unfinished-title" className="stack-tight">

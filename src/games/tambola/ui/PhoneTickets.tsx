@@ -25,8 +25,11 @@ import {
   prizesOf,
   quickMark,
   savePhoneGame,
+  ticketsAreOld,
+  ticketsTime,
   toggleCrossed,
   toggleMark,
+  whenWords,
   type PhoneGameFacts,
 } from './phoneFacts';
 import { TicketGrid } from './TicketGrid';
@@ -44,11 +47,63 @@ type Screen =
   | { name: 'enter'; text: string; error: string | null; typing: boolean };
 
 /**
- * Whether this phone holds tickets: `open` means the player hasn't gone back home from them, so the app
- * opens straight on the tickets (a reload keeps them on screen, TAM-171).
+ * Whether this phone holds tickets less than 6 hours old (PLT-300; older ones wait on Home's row, `SavedTickets`):
+ * `open` means the player hasn't gone back home from them, so the app opens straight on the tickets (a reload
+ * keeps them on screen, TAM-171).
  */
 export function hasPhoneTickets(prefs: Preferences, open = true): boolean {
-  return loadPhoneGame(prefs) !== null && (!open || prefs.get<boolean>(AWAY_KEY, false) !== true);
+  const game = loadPhoneGame(prefs);
+  if (!game || ticketsAreOld(game, Date.now())) return false;
+  return !open || prefs.get<boolean>(AWAY_KEY, false) !== true;
+}
+
+/**
+ * PLT-300, TAM-171 (UX list row 21): tickets more than 6 hours old open on Home with one row below the two choices,
+ * "Your tickets from 9:15 am / yesterday, 9:15 pm / Sat 26 Sep", and two quiet buttons: "Open" and "Clear" (which
+ * asks as "Done with this game…" does, TAM-215). Shows nothing otherwise.
+ */
+export function SavedTickets({ prefs, onOpen }: { prefs: Preferences; onOpen: () => void }) {
+  const [now] = useState(() => Date.now());
+  const [game, setGame] = useState<PhoneGameFacts | null>(() => {
+    const g = loadPhoneGame(prefs);
+    return g && ticketsAreOld(g, now) ? g : null;
+  });
+  const [asking, setAsking] = useState(false);
+  if (!game) return null;
+  const t = ticketsTime(game);
+  return (
+    <div className="home-row saved-tickets" data-testid="saved-tickets">
+      <span className="saved-tickets-text">{t === null ? 'Your tickets from an earlier game' : `Your tickets from ${whenWords(t, now)}`}</span>
+      <span className="saved-tickets-buttons">
+        <button
+          type="button"
+          className="button button-quiet"
+          onClick={() => {
+            savePhoneGame(prefs, { ...game, openedAt: Date.now() });
+            prefs.set(AWAY_KEY, false);
+            onOpen();
+          }}
+        >
+          Open
+        </button>
+        <button type="button" className="button button-quiet" onClick={() => setAsking(true)}>
+          Clear
+        </button>
+      </span>
+      {asking && (
+        <ClearTickets
+          game={game}
+          onKeep={() => setAsking(false)}
+          onClear={() => {
+            savePhoneGame(prefs, null);
+            prefs.set(AWAY_KEY, false);
+            setAsking(false);
+            setGame(null);
+          }}
+        />
+      )}
+    </div>
+  );
 }
 
 function useViewport() {
@@ -149,15 +204,19 @@ export function PhoneTickets({
       return;
     }
     setNotice(null);
-    const next = addTicket(held, {
-      game: t.game,
-      ticket: t.ticket,
-      rows: t.rows,
-      name: t.name,
-      startedAt: t.startedAt,
-      tiers: t.tiers,
-      cue: t.cue,
-    });
+    const next = addTicket(
+      held,
+      {
+        game: t.game,
+        ticket: t.ticket,
+        rows: t.rows,
+        name: t.name,
+        startedAt: t.startedAt,
+        tiers: t.tiers,
+        cue: t.cue,
+      },
+      Date.now(),
+    );
     save(next);
     setSelected(t.ticket);
     setScreen({ name: 'tickets' });
@@ -209,7 +268,8 @@ export function PhoneTickets({
       }
       setNotice(null);
       prefs.set(AWAY_KEY, false);
-      save(addTicket(loadPhoneGame(prefs), { game: d.ticket.game, ticket: d.ticket.ticket, rows: d.ticket.rows }));
+      // PLT-300: a typed code carries no start time, so the phone keeps when it was added.
+      save(addTicket(loadPhoneGame(prefs), { game: d.ticket.game, ticket: d.ticket.ticket, rows: d.ticket.rows }, Date.now()));
       setSelected(d.ticket.ticket);
       setScreen({ name: 'tickets' });
     };

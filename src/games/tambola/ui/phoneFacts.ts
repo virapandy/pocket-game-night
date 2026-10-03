@@ -31,6 +31,13 @@ export interface PhoneGameFacts {
    */
   readonly name: string | null;
   readonly startedAt: number | null;
+  /**
+   * PLT-300, TAM-171 (UX list row 21): when this game's first ticket was added to this phone, the time of a ticket
+   * added by typed code (which carries no start time). Missing on tickets saved before 3 October 2026.
+   */
+  readonly addedAt: number | null;
+  /** PLT-300: when the player last tapped "Open" on Home's row of old tickets; they then open as usual for 6 hours. */
+  readonly openedAt: number | null;
   readonly tiers: readonly Pattern[] | null;
   /**
    * TAM-195: the host turned the pattern cue on (from a format-2 ticket QR). Off for older QRs, typed codes and
@@ -62,6 +69,8 @@ export function loadPhoneGame(prefs: Preferences): PhoneGameFacts | null {
     game: g.game,
     name: typeof g.name === 'string' ? g.name : null,
     startedAt: typeof g.startedAt === 'number' ? g.startedAt : null,
+    addedAt: typeof g.addedAt === 'number' ? g.addedAt : null,
+    openedAt: typeof g.openedAt === 'number' ? g.openedAt : null,
     tiers: Array.isArray(g.tiers) ? g.tiers.filter(isPattern) : null,
     cue: g.cue === true,
     tickets,
@@ -96,6 +105,8 @@ export const holderOf = (game: PhoneGameFacts, t: PhoneTicketCopy): string | nul
 export function addTicket(
   current: PhoneGameFacts | null,
   t: { game: string; ticket: number; rows: Rows; name?: string; startedAt?: number; tiers?: readonly Pattern[]; cue?: boolean },
+  /** When it is added to this phone (PLT-300: a typed-code ticket's time). */
+  now: number | null = null,
 ): PhoneGameFacts {
   const same = current && current.game === t.game ? current : null;
   const tickets = [
@@ -108,6 +119,8 @@ export function addTicket(
     // The phone's own player is the first name it was given; a held ticket (TAM-214) keeps its own name.
     name: same?.name ?? t.name ?? null,
     startedAt: t.startedAt ?? same?.startedAt ?? null,
+    addedAt: same?.addedAt ?? now,
+    openedAt: same?.openedAt ?? null,
     tiers: t.tiers ?? same?.tiers ?? null,
     // A scanned QR says whether the host turned the cue on; a typed code says nothing, so it stays as it was (off
     // for a new game).
@@ -115,6 +128,35 @@ export function addTicket(
     tickets,
     facts: same?.facts ?? [],
   };
+}
+
+/** PLT-300 (UX list row 21): tickets older than this open on Home, with "Open" and "Clear", instead of by themselves. */
+export const OLD_TICKETS_MS = 6 * 3600_000;
+
+/** The tickets' time (TAM-171): the game's start time from its QR, or when a typed-code ticket was added. */
+export const ticketsTime = (game: PhoneGameFacts): number | null => game.startedAt ?? game.addedAt;
+
+/**
+ * PLT-300: the tickets' time is more than 6 hours ago (and they weren't opened from Home since). Saved tickets with
+ * neither time, kept from before this change, count as old too.
+ */
+export function ticketsAreOld(game: PhoneGameFacts, now: number): boolean {
+  const t = ticketsTime(game);
+  if (t === null && game.openedAt === null) return true;
+  return now - Math.max(t ?? 0, game.openedAt ?? 0) > OLD_TICKETS_MS;
+}
+
+/** "9:15 am" (the same day), "yesterday, 9:15 pm" or "Sat 26 Sep" (earlier), in this phone's time (PLT-300). */
+export function whenWords(t: number, now: number): string {
+  const d = new Date(t);
+  const clock = `${d.getHours() % 12 || 12}:${String(d.getMinutes()).padStart(2, '0')} ${d.getHours() < 12 ? 'am' : 'pm'}`;
+  const today = new Date(now);
+  if (d.toDateString() === today.toDateString()) return clock;
+  const yesterday = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1);
+  if (d.toDateString() === yesterday.toDateString()) return `yesterday, ${clock}`;
+  const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  return `${DAYS[d.getDay()]} ${d.getDate()} ${MONTHS[d.getMonth()]}`;
 }
 
 /** The numbers marked on a ticket. */

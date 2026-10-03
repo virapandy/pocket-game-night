@@ -914,6 +914,11 @@ button.tcell { cursor: pointer; }
   display: flex; align-items: center; justify-content: space-between; min-height: 48px; padding: 0 4px;
   font: inherit; font-weight: 700; color: var(--text); background: transparent; border: 0; border-bottom: 1px solid var(--border); cursor: pointer; text-align: left;
 }
+/* PLT-300 (UX list row 21): tickets more than 6 hours old wait here, with two quiet buttons. */
+.saved-tickets { flex-wrap: wrap; gap: 8px; padding: 6px 4px; cursor: default; }
+.saved-tickets-text { flex: 1 1 12em; }
+.saved-tickets-buttons { display: flex; gap: 8px; }
+.saved-tickets-buttons > .button { min-height: 44px; padding: 0 16px; }
 
 /* The host's pattern-cue switch on the ticket-type step (TAM-195). */
 .cue-setting { display: flex; flex-direction: column; gap: 8px; }

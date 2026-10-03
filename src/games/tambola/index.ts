@@ -1,7 +1,7 @@
 // Tambola's registration: the only file other code may import from this game.
 import type { GameInfo } from '../../engine';
 import { tambolaRules } from './rules';
-import { hasPhoneTickets, PhoneTickets } from './ui/PhoneTickets';
+import { hasPhoneTickets, PhoneTickets, SavedTickets } from './ui/PhoneTickets';
 import { describeGame } from './ui/saved';
 import { TambolaPastGame, TambolaScreen } from './ui/TambolaScreen';
 
@@ -59,7 +59,8 @@ export const tambola = {
   rules: tambolaRules,
   /**
    * Phase 2: a player's phone. The ticket QR is a link to the app with `#t=` and the ticket after it (TAM-117);
-   * the app opens `Screen` with that text, or with `enter` to type a ticket code.
+   * the app opens `Screen` with that text, or with `enter` to type a ticket code. `SavedTickets` is Home's row of
+   * tickets more than 6 hours old (PLT-300).
    */
-  phone: { linkKey: 't', Screen: PhoneTickets, hasTickets: hasPhoneTickets },
+  phone: { linkKey: 't', Screen: PhoneTickets, hasTickets: hasPhoneTickets, SavedTickets },
 };
