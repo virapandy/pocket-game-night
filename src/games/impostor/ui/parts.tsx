@@ -1,6 +1,12 @@
 // Impostor's shared pieces (specs/impostor/README.md, Terms): the main button, quiet buttons, selected options,
 // switches, toasts, dialogs, sheets and the "··· Menu". The next screens reuse these.
-import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useId, useRef, useState, type ReactNode } from 'react';
+
+/**
+ * IMP-080: at most one main button on screen. While a dialog, sheet or the summary covers a screen, that screen's
+ * main button is left out of the page (the screen keeps its place underneath).
+ */
+export const HideMainButton = createContext(false);
 
 /** Main button: the one solid button, 60 px, fixed at the bottom (bottom right in landscape). At most one on screen. */
 export function MainButton({
@@ -15,6 +21,8 @@ export function MainButton({
   /** Inside a dialog: in the dialog's own flow instead of fixed at the bottom. */
   inline?: boolean;
 }) {
+  const hide = useContext(HideMainButton);
+  if (hide && !inline) return null;
   return (
     <button
       type="button"

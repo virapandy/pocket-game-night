@@ -1,9 +1,11 @@
-// The sheets over a round: Rules (IMP-072) and Settings (IMP-014, IMP-107, IMP-109). Neither shows a word or a role.
+// The sheets over a round: Rules (IMP-072), Settings (IMP-014, IMP-107, IMP-109) and Players between rounds
+// (IMP-074). None shows a word or a role.
 import { useState } from 'react';
 import type { Preferences } from '../../../engine';
 import { wordById } from '../rules';
 import { PREF } from './evening';
-import { Sheet, Switch } from './parts';
+import { Sheet, Switch, Toast, useToast } from './parts';
+import { PlayerList } from './Setup';
 
 /** IMP-072: "How to play", for the evening's mode. */
 export function RulesSheet({ mode, onDone }: { mode: 'easy' | 'hard'; onDone: () => void }) {
@@ -94,6 +96,58 @@ export function SettingsSheet({ prefs, onDone }: { prefs: Preferences; onDone: (
   return (
     <Sheet title="Settings" onDone={onDone}>
       <ImpostorSettings prefs={prefs} />
+    </Sheet>
+  );
+}
+
+/**
+ * IMP-074: "Players" between rounds: the list of IMP-003; ✕ removes at once with an undo toast inside the sheet
+ * ("Kabir left · Points kept · Undo" when keeping score); never below 3. "Done" hands back the final list.
+ */
+export function PlayersSheet({
+  players: start,
+  past,
+  keepingScore,
+  onDone,
+}: {
+  players: readonly string[];
+  past: readonly string[];
+  keepingScore: boolean;
+  onDone: (players: string[]) => void;
+}) {
+  const [players, setPlayers] = useState<string[]>(() => [...start]);
+  const [tooFew, setTooFew] = useState(false);
+  const [toast, showToast, clearToast] = useToast();
+  return (
+    <Sheet title="Players" onDone={() => onDone(players)}>
+      <PlayerList
+        players={players}
+        past={past}
+        onChange={(next) => {
+          setTooFew(false);
+          setPlayers(next);
+        }}
+        onRemove={(i) => {
+          if (players.length <= 3) {
+            setTooFew(true);
+            return;
+          }
+          const name = players[i]!;
+          setPlayers(players.filter((_, k) => k !== i));
+          // "Undo" puts them back in the same seat.
+          const back = () =>
+            setPlayers((cur) =>
+              cur.some((p) => p.toLowerCase() === name.toLowerCase()) ? cur : [...cur.slice(0, i), name, ...cur.slice(i)],
+            );
+          showToast(keepingScore ? `${name} left · Points kept` : `${name} left`, back);
+        }}
+      />
+      {tooFew && (
+        <p role="alert" className="imp-alert">
+          Keep at least 3 players.
+        </p>
+      )}
+      <Toast toast={toast} onDone={clearToast} />
     </Sheet>
   );
 }

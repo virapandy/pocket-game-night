@@ -372,6 +372,72 @@
 .imp-starts { font-size: 1.35rem; font-weight: 700; }
 .imp-clue-order { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
 
+/* ----- Talk and the timer (IMP-023, IMP-024, IMP-027, IMP-073) ----- */
+.imp-talk-heading { font-size: 56px; font-weight: 800; line-height: 1.1; overflow-wrap: anywhere; }
+.imp-timer { font-size: 120px; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
+@media (max-width: 340px) {
+  .imp-timer { font-size: 112px; }
+}
+
+/* ----- The countdown (IMP-030): numbers swap with no transform or transition ----- */
+.imp-countdown { gap: 8px; }
+.imp-count { font-size: 200px; font-weight: 800; line-height: 1; }
+.imp-count-point { font-size: 96px; }
+@media (max-width: 340px) {
+  .imp-count-point { font-size: 72px; }
+}
+
+/* ----- Who got the most fingers? (IMP-031, IMP-082): two columns, scrolling inside when long ----- */
+.imp-picker { gap: 10px; }
+.imp-pick-list {
+  flex: 0 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-auto-rows: 56px;
+  gap: 8px;
+}
+.imp-pick-list .imp-option { min-height: 56px; height: 56px; overflow: hidden; }
+.imp-pick-quiet { flex: none; display: flex; flex-wrap: wrap; gap: 8px; }
+.imp-pick-quiet .imp-quiet { flex: 1 1 0; }
+
+/* ----- The reveal and the round result (IMP-033 to IMP-044, IMP-081) ----- */
+.imp-reveal { gap: 10px; }
+.imp-reveal-lines {
+  flex: 0 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.imp-reveal-line { font-size: 20px; font-weight: 700; line-height: 1.3; overflow-wrap: anywhere; }
+.imp-reveal-big { font-size: 28px; font-weight: 800; line-height: 1.2; }
+.imp-verdict { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.imp-result { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; gap: 8px; }
+.imp-outcome { flex: none; font-size: 28px; font-weight: 800; line-height: 1.2; overflow-wrap: anywhere; }
+.imp-result-quiet { flex: none; display: flex; flex-wrap: wrap; gap: 8px; }
+.imp-result-quiet .imp-quiet { flex: 1 1 auto; }
+
+/* ----- The scoreboard (IMP-044): 36 px rows; two columns from 7 players; leavers greyed ----- */
+.imp-scoreboard { flex: 0 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; display: flex; flex-direction: column; gap: 4px; }
+.imp-score-list { list-style: none; padding: 0; display: grid; grid-auto-rows: 36px; column-gap: 16px; }
+.imp-score-two { grid-auto-flow: column; grid-template-columns: 1fr 1fr; }
+.imp-score-row { height: 36px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border); font-size: var(--imp-body); }
+.imp-score-left { opacity: 0.5; }
+.imp-score-rank { flex: none; width: 1.6em; font-weight: 800; color: var(--muted); }
+.imp-score-name { flex: 1; min-width: 0; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.imp-score-points { flex: none; font-weight: 800; font-variant-numeric: tabular-nums; }
+
+/* ----- The summary and the look back (IMP-092, IMP-095, IMP-105) ----- */
+.imp-fun { font-weight: 700; }
+.imp-summary-quiet { display: flex; flex-direction: column; gap: 8px; }
+.imp-look-rounds { padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.imp-look-line { display: block; }
+
 /* ----- Landscape (812 × 375): the main button bottom right, 358 px wide; block left, pad right (IMP-010, IMP-081) ----- */
 @media (orientation: landscape) and (max-height: 600px) {
   .imp-screen { max-width: none; padding-top: 8px; gap: 6px; }
@@ -385,4 +451,11 @@
   .imp-pad { flex: 1 1 auto; min-height: 64px; }
   .imp-turn-name { font-size: 1.35rem; text-align: left; }
   .imp-starter { font-size: 40px; }
+  .imp-count { font-size: 160px; }
+  .imp-count-point { font-size: 96px; }
+  .imp-talk-heading { font-size: 48px; }
+  /* IMP-081: the reveal lines on the left, the result block on the right. */
+  .imp-reveal { flex-direction: row; gap: 16px; }
+  .imp-reveal-lines { flex: 1 1 0; max-height: 100%; }
+  .imp-result { flex: 1 1 0; }
 }
