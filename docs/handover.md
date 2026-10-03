@@ -27,7 +27,8 @@ complete test only before a release; up to 3 coders in parallel, each on its own
    has TAM-214); then one coder builds 6, 15, 20, 21, 23 as one batch after lanes A–C are merged.
 4. **Release:** complete run, UX designer re-check of rows 1–25, owner tries the preview, then the families' link.
 - **Paused until rows 1–25 are released:** new UX rows and reviews (product owner), mutation, emulator, simulation and
-  Jev work (weekly unattended run only).
+  Jev work (weekly unattended run only). Exception: the C3 batch (step 3) gets mutation **only on the rules and money
+  lines it changed** (owner, 3 October); setting that up is part of the tester's setup round.
 - C1/C2 questions don't stop work (pick by the UX guidelines, note it); C3 questions go to the owner in one list.
 - Stuck after 3 rounds or half a day: tell the owner. One progress line at the top of `reports/latest.md` per step.
 

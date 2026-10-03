@@ -33,6 +33,7 @@ When unsure between two classes, take the higher one.
 | Tests | none | none first; the tester updates any test the change breaks | the tester writes or updates tests **at the same time** as the coder builds | tests **first**, then the build |
 | Checks before push (coder, ~10 s) | none | type-check, boundaries, build | same | same |
 | Quick verify (automatic on push, ~3 min) | none | rule tests, smoke set, that screen's tests, screenshots at 360, 390 and 812 × 375 | same, plus that area's browser tests | same, plus that area's tests on both phones |
+| Mutation (deliberate mistakes to check the tests catch them) | none | none | none | only on the lines this change touched in rules and money files (Stryker's changed-files or incremental mode), run by the tester; minutes, not hours |
 | Can be batched with others | yes | yes, freely | yes | in a batch of its own, or last in a batch |
 | Goes to the preview | n/a | after quick verify | after quick verify | after quick verify |
 
@@ -43,6 +44,8 @@ When unsure between two classes, take the higher one.
 3. Red: rerun the failing tests on each change in the batch to find the one that broke it; fix it first.
 4. Green: the owner tries the preview and says yes; then the release goes to the families' link.
 5. Nightly and weekly runs (complete run nightly; mutation, simulation, emulator, Jev weekly) never block anyone.
+   The full mutation run stays weekly; changes in between get mutation only where they touched code (C3 above).
+   A release includes mutation on every rules or money line changed since the last release.
 
 **Two links:** a **preview** link for the owner, updated after every quick verify, and the **families'** link,
 updated only by a release. (Build to set up; until then the single link updates on releases only.)
