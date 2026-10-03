@@ -1,10 +1,10 @@
 // Impostor's screens: "Who's playing?", "How do you want to play?", then the evening (Game). Also a past evening.
 import { useRef, useState, type ReactNode } from 'react';
-import type { Preferences, SavedGame, SavedGameStore, Session, SessionPicker } from '../../../engine';
+import type { Preferences, SavedGame, SavedGameStore, SessionPicker } from '../../../engine';
 import type { Choices } from '../rules';
 import {
   cardDue, clearUi, clock, createEvening, describeEvening, endEvening, lastChoices, loadEvening, pastNames, PREF, record,
-  sessionToAsk, suggestedSessionName, tonightsNames, unfinishedEvening, type Evening, type EveningMatch,
+  tonightsNames, unfinishedEvening, type Evening, type EveningMatch,
 } from './evening';
 import { Game } from './Game';
 import { Dialog, HideMainButton, MainButton, QuietButton } from './parts';
@@ -77,21 +77,9 @@ export function ImpostorScreen({
   const nextSeq = () => ++seqRef.current;
   /** IMP-001: another unfinished evening is ended (or carried on) before a new one starts. */
   const [asking, setAsking] = useState<{ saved: Evening; match: EveningMatch } | null>(null);
-  /** PLT-016: "Continue '…' or start a new session?" when the last game was more than 3 hours ago. */
-  const [askSession, setAskSession] = useState<Session | null>(null);
-  const begin = (sessionId?: string) => {
+  const begin = () => {
     const reuse = created && store.get(created.id)?.records.length === 0 ? created : null;
-    if (!reuse && sessionId === undefined) {
-      const old = sessionToAsk(sessions, Date.now());
-      if (old) {
-        setAskSession(old);
-        return;
-      }
-    }
-    const ev = createEvening({
-      store, prefs, sessions, players, choices, testSeedsRaw: testSeedsRaw(), release, reuse,
-      ...(sessionId !== undefined ? { sessionId } : {}),
-    });
+    const ev = createEvening({ store, prefs, sessions, players, choices, testSeedsRaw: testSeedsRaw(), release, reuse });
     setCreated(ev.saved);
     if (cardDue(prefs, ev.saved)) {
       setRoute({ name: 'game', ...ev, resumed: false, seq: nextSeq() });
@@ -150,29 +138,7 @@ export function ImpostorScreen({
   }
   return (
     <div className={larger ? 'imp imp-larger' : 'imp'}>
-      <HideMainButton.Provider value={asking !== null || askSession !== null}>{screen}</HideMainButton.Provider>
-      {askSession && (
-        <Dialog text={`Continue '${askSession.name}' or start a new session?`}>
-          <QuietButton
-            onClick={() => {
-              setAskSession(null);
-              begin(sessions.create(suggestedSessionName(Date.now()), Date.now()).id);
-            }}
-          >
-            New session
-          </QuietButton>
-          <MainButton
-            inline
-            onClick={() => {
-              const s = askSession;
-              setAskSession(null);
-              begin(s.id);
-            }}
-          >
-            Continue '{askSession.name}'
-          </MainButton>
-        </Dialog>
-      )}
+      <HideMainButton.Provider value={asking !== null}>{screen}</HideMainButton.Provider>
       {asking && (
         <Dialog text={`Start a new evening? The evening from ${clock(asking.saved.createdAt)} will be ended.`}>
           <QuietButton

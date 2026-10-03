@@ -277,19 +277,13 @@ export function freshSeed(bytes = 16): string {
 }
 
 /**
- * PLT-016: tonight's session. Joined while the last game was within 3 hours; with none at all, a new one with the
- * suggested name ("Sunday 4 Oct"). Longer than 3 hours, the host is asked first (`sessionToAsk`), as in Tambola.
+ * IMP-008, IMP-009: tonight's session by PLT-016's rules, with no question: joined while the last game was within 3
+ * hours; otherwise a new one with the suggested day name ("Sunday 4 Oct").
  */
 function sessionFor(sessions: SessionPicker, now: number): Session {
   const q = sessions.question(now);
-  if (q.kind === 'join' || q.kind === 'continue') return q.session;
+  if (q.kind === 'join') return q.session;
   return sessions.create(suggestedSessionName(now), now);
-}
-
-/** PLT-016 (orchestrator answer, 3 October): the session to offer "Continue …" for, when the last game was long ago. */
-export function sessionToAsk(sessions: SessionPicker, now: number): Session | null {
-  const q = sessions.question(now);
-  return q.kind === 'continue' ? q.session : null;
 }
 
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -337,13 +331,11 @@ export function createEvening(opts: {
   release: boolean;
   /** An evening created before with no move yet (back from the read-aloud card): it is rewritten, not doubled. */
   reuse?: Evening | null;
-  /** PLT-016: the session the host chose ("Continue …" or "New session"), when the question was asked. */
-  sessionId?: string;
 }): { saved: Evening; match: EveningMatch } {
   const now = Date.now();
   const { store, prefs } = opts;
   const reuse = opts.reuse && opts.reuse.records.length === 0 ? opts.reuse : null;
-  const sessionId = reuse?.sessionId ?? opts.sessionId ?? sessionFor(opts.sessions, now).id;
+  const sessionId = reuse?.sessionId ?? sessionFor(opts.sessions, now).id;
   let seeds: { word: string; starter: string };
   let testDeals: ImpostorConfig['testDeals'];
   if (reuse) {
