@@ -703,15 +703,20 @@ button, [role="button"], a { touch-action: manipulation; }
 }
 button.tcell { cursor: pointer; }
 .tcell-blank { background: var(--closed-bg); }
-.tcell-marked { color: var(--accent-text); background: var(--accent); }
-.tcell-tick { position: absolute; top: 1px; right: 2px; font-size: calc(var(--cell) * 0.24); line-height: 1; }
-/* TAM-195 (UX list row 11): a 4 px outline plus a corner mark, not colour alone. */
-.tcell-cue { box-shadow: inset 0 0 0 4px var(--ok); }
+/* Player marks, UX list row 3 (guideline 17a: red is for actions only): a deep blue fill, a white number (11.5:1)
+   and a ✓ of at least 14 px; the same on Quick mark's marked keys. The cue outline (and the claim screen's chosen
+   pattern) is orange with a thin white line inside, plus a corner mark for the cue (TAM-195: not colour alone). */
+.ticket-grid, .quick-pad { --mark-bg: #1e3a5f; --mark-text: #ffffff; --mark-line: #d97706; }
+:root[data-theme='dark'] .ticket-grid, :root[data-theme='dark'] .quick-pad { --mark-bg: #2f5a8f; }
+.tcell-marked { color: var(--mark-text); background: var(--mark-bg); }
+.tcell-tick { position: absolute; top: 0; right: 1px; font-size: max(14px, calc(var(--cell) * 0.3)); line-height: 1; }
+.ticket-thumb .tcell-tick { font-size: calc(var(--cell) * 0.5); }
+.tcell-cue { box-shadow: inset 0 0 0 4px var(--mark-line), inset 0 0 0 5px #ffffff; }
 .tcell-cue-mark {
   position: absolute; top: 0; left: 0; width: max(6px, calc(var(--cell) * 0.32)); height: max(6px, calc(var(--cell) * 0.32));
-  background: var(--ok); clip-path: polygon(0 0, 100% 0, 0 100%); pointer-events: none;
+  background: var(--mark-line); clip-path: polygon(0 0, 100% 0, 0 100%); pointer-events: none;
 }
-.tcell-outlined { box-shadow: inset 0 0 0 3px var(--ok); }
+.tcell-outlined { box-shadow: inset 0 0 0 4px var(--mark-line), inset 0 0 0 5px #ffffff; }
 .tcell-called { color: var(--accent-text); background: var(--ok); }
 .ticket-small .tcell { font-size: calc(var(--cell) * 0.5); }
 .ticket-thumb .tcell { font-size: calc(var(--cell) * 0.55); font-weight: 600; }
@@ -785,9 +790,9 @@ button.tcell { cursor: pointer; }
 .quick-message { flex: none; margin: 0; min-height: 1.5em; font-weight: 800; text-align: center; }
 .quick-pad { flex: none; display: grid; grid-template-columns: repeat(10, 1fr); gap: 3px; }
 .quick-key { position: relative; min-height: 44px; padding: 0; font: inherit; font-weight: 700; color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; touch-action: manipulation; }
-/* A marked number: a tint, an outline and a ✓, so it never relies on colour alone (owner 2026-10-01). */
-.quick-key-on { color: var(--accent); background: var(--chosen-bg); border: 2px solid var(--accent); }
-.quick-tick { position: absolute; top: 1px; right: 3px; font-size: 0.7rem; line-height: 1; }
+/* A marked number: the marks' deep blue fill and a ✓, so it never relies on colour alone (owner 2026-10-01, UX list row 3). */
+.quick-key-on { color: var(--mark-text); background: var(--mark-bg); border: 2px solid var(--mark-bg); }
+.quick-tick { position: absolute; top: 1px; right: 3px; font-size: 14px; line-height: 1; }
 .thumbs { flex: none; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
 .thumb { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 2px; font: inherit; color: var(--muted); background: transparent; border: 0; cursor: pointer; }
 .thumb-caption { font-size: 0.8rem; font-weight: 700; line-height: 1.2; }
