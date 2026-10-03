@@ -372,7 +372,8 @@ function GameLine({ g }: { g: SavedGame }) {
           {d && <span>{d.result}</span>}
         </>
       )}
-      <span className="history-result">{status}</span>
+      {/* An Impostor evening in progress already reads "Impostor · In progress". */}
+      {d?.result !== status && <span className="history-result">{status}</span>}
     </div>
   );
 }
