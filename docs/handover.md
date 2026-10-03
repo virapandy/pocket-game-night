@@ -36,6 +36,23 @@ complete test only before a release; up to 3 coders in parallel, each on its own
 - C1/C2 questions don't stop work (pick by the UX guidelines, note it); C3 questions go to the owner in one list.
 - Stuck after 3 rounds or half a day: tell the owner. One progress line at the top of `reports/latest.md` per step.
 
+### Release review of rc-2026-10-03b (1.1.0): product owner with UX designer, 3 October
+**Verdict: GO, after one small text fix** (`docs/games/tambola/ux-review-2026-10-03-release-1.1.0.md`).
+- **Fix before release (C1, one line):** in a phone-ticket game, after a recorded win, "Add another winner" with a
+  paper ticket number currently says to use "Record a win", which is hidden until the prize is closed. New message:
+  "Ticket 4 plays on paper. To add a paper winner: tap Undo win, then Record a win and pick both names." Refreeze,
+  complete run, then the owner's try-out.
+- **Rows 1–25:** 20 done; 1, 6, 15, 16 partly (accepted for 1.1.0, listed below); 23 not confirmed: **tester**, please
+  confirm the "Your tickets from game … were cleared" line and the old-game claim note.
+- **Screenshots:** 16 of 19 approved; host-verdict-proof, player-tickets-cue and player-quick-mark flagged as
+  next-list items, not blockers. Please record these verdicts in the report's table.
+- **Open point a (cue line "…" + More):** accepted for 1.1.0; next: two lines, shorter wording.
+- **Open point b (verdict card scrolls on small phones):** accepted for 1.1.0; next: pin "Undo claim" and "Done".
+- **Next UX list, after the release** (details in the review doc): N1 full fix ("Add another winner" offers names);
+  cue line two lines; verdict buttons pinned; "Screen may sleep" badge out of the header; Quick mark landscape keys and ✓
+  in the corner; "Has Zoya got their ticket?" wording; polish (empty "Last", prizes step and payouts at 360, landscape
+  "Which prize?" and claim QR "Done", lighter Called/Undo bar).
+
 ### Queued: Impostor, the next game (product owner, 3 October): start only after the Tambola release
 Design done (owner-approved direction; scenarios await the owner's approval): `docs/games/impostor/` (guide,
 lifecycle, **ux.md** every screen, words.csv 309 words, scenarios.md: IMP-001 to IMP-096 **approved by the owner 3 October**, IMP-100 to IMP-108 after the game approved too,
