@@ -148,16 +148,17 @@ Claude to follow game conventions. Every Tambola rule above is also a host setti
 |---|---|---|
 | I1 | **Easy mode**: the impostor sees the category and a hint word. **Hard mode**: only "You are the impostor" | Owner; the hint as a difficulty dial (app reviews) |
 | I2 | Starter random; in Hard mode never the impostor; in Easy mode the impostor may start | Owner; "playing blind" when first with nothing (BGG) |
-| I3 | "Keep score?" asked at the start, **default No**; if Yes: escape +2, caught but guessed +1, caught crew +1 each; no target | Owner asked to check; most groups play without points, targets cause ganging up (BGG) — to confirm |
+| I3 | "Keep score?" asked at the start, **default No**; if Yes: escape +2, caught but guessed +1, caught crew +1 each; no target | Owner confirmed 3 October; most groups play without points (BGG) |
 | I4 | Tie after one re-vote: the impostor escapes | Owner |
 | I5 | Impostor random, never the same player 3 rounds running | Owner; streak complaints (BGG, reviews) |
-| I6 | "Talking": **Free flow** (default, "Vote now" button) or **Timer** (2 min), asked at the start | Owner; groups prefer momentum, long timers drag (BGG) — default to confirm |
+| I6 | "Talking": **Free flow** (default, "Vote now" button) or **Timer** (2 min), asked at the start | Owner confirmed 3 October; groups prefer momentum (BGG) |
 | I7 | "See my word again" allowed | Owner |
 | I8 | One phone first; own phones with connected mode | Owner |
 | I9 | No repeats in an evening; avoid the last 3 evenings | Owner |
 | I10 | First release: Multicultural theme only, English letters | Owner |
 | I11 | Word list `words.csv` v2 checked by 9 persona reviewers; real readers (North, South, East, a grandparent, a child) before release | Owner asked for persona review first |
 | I12 | No team-gives-the-word mode | Owner |
-| I13 | Words: **Whole family** (default) or "+ Grown-ups"; non-veg food off unless switched on | Persona review: age splits more than region; veg/non-veg divide (research) — to confirm |
-| I14 | Repeating someone's clue is allowed (it looks suspicious); saying the word restarts the round | Convention (BGG, Spyfall publisher) — changes the earlier draft |
+| I13 | Words: **Whole family** (default) or "+ Grown-ups"; non-veg food off unless switched on | Owner confirmed 3 October; persona review; veg/non-veg divide |
+| I14 | Repeating someone's clue is allowed (it looks suspicious); saying the word restarts the round | Owner confirmed 3 October; convention (BGG, Spyfall publisher) |
+| I16 | **Add quirky, funny words** to the list (owner, 3 October); same fairness and persona checks | Owner |
 | I15 | Later, rarely: twist rounds (no impostor; everyone an impostor) | Players love them used sparingly (BGG) — later |
