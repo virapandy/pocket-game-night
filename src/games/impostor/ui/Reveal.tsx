@@ -41,6 +41,7 @@ export function Reveal({
   result,
   prefs,
   announce,
+  heard,
   onShowWord,
   onVerdict,
   onDone,
@@ -54,7 +55,10 @@ export function Reveal({
   result: ResultInfo | null;
   prefs: Preferences;
   announce: (text: string) => void;
-  onShowWord: () => void;
+  /** This round's lines already announced (IMP-083), kept across redraws of the reveal. */
+  heard: Set<string>;
+  /** Records "Show the word"; true when it was recorded. */
+  onShowWord: () => boolean;
   onVerdict: (right: boolean) => void;
   /** The timed reveal reached its result block. */
   onDone: () => void;
@@ -158,17 +162,21 @@ export function Reveal({
     }
   }
 
-  // IMP-083: each line announced as it appears (the build-up once, as "Arjun was"); nothing on a reopen.
-  const announced = useRef<string[]>(live ? [] : lines.map((l) => l.key));
+  // IMP-083: each line announced as it appears (the build-up once, as "Arjun was"); nothing on a reopen. What was
+  // said is kept by the evening's screen (`heard`), so drawing this screen again never loses or repeats a line.
+  useState(() => {
+    if (!live && heard.size === 0) for (const l of lines) heard.add(l.key);
+    return true;
+  });
   const keys = lines.map((l) => l.key).join('|');
   useEffect(() => {
-    const fresh = lines.filter((l) => !announced.current.includes(l.key));
+    const fresh = lines.filter((l) => !heard.has(l.key));
     if (fresh.length === 0) return;
-    announced.current = [...announced.current, ...fresh.map((l) => l.key)];
+    for (const l of fresh) heard.add(l.key);
     announce(fresh.map((l) => l.said).join(' '));
     // `keys` stands for the lines.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [keys, announce]);
+  }, [keys, announce, heard]);
 
   // IMP-081: the lines scroll inside their own box, kept at the newest line.
   const box = useRef<HTMLDivElement>(null);
@@ -201,7 +209,19 @@ export function Reveal({
         </div>
         {resultReady && result && <ResultBlock result={result} practice={round.practice} onUndo={onUndo} onSkipWord={onSkipWord} />}
       </section>
-      {showWordButton && <MainButton onClick={onShowWord}>Show the word</MainButton>}
+      {showWordButton && (
+        <MainButton
+          onClick={() => {
+            // IMP-083: the word line is announced with the tap itself.
+            if (onShowWord() && !heard.has(wordLine.key)) {
+              heard.add(wordLine.key);
+              announce(wordLine.said);
+            }
+          }}
+        >
+          Show the word
+        </MainButton>
+      )}
       {resultReady && result && <MainButton onClick={onNext}>Next round</MainButton>}
     </>
   );

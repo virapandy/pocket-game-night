@@ -93,6 +93,13 @@ export function Game({
   /** The round whose reveal was just tapped (timed); otherwise the reveal shows at once (IMP-091). */
   const [revealLive, setRevealLive] = useState<number | null>(null);
   const [revealDone, setRevealDone] = useState<number | null>(null);
+  /** IMP-083: each round's reveal lines already announced, kept while the reveal is drawn again. */
+  const heard = useRef(new Map<number, Set<string>>());
+  const heardFor = (round: number) => {
+    let set = heard.current.get(round);
+    if (!set) heard.current.set(round, (set = new Set()));
+    return set;
+  };
   /** The round whose timer the host just started (it runs; otherwise it shows paused, IMP-027). */
   const [talkRun, setTalkRun] = useState<number | null>(null);
   const [draft, setDraft] = useState<Choices>(state.choices);
@@ -429,7 +436,8 @@ export function Game({
         result={result}
         prefs={prefs}
         announce={announce}
-        onShowWord={() => act({ type: 'showWord' })}
+        heard={heardFor(roundKey)}
+        onShowWord={() => act({ type: 'showWord' }) !== null}
         onVerdict={(right) => act({ type: 'verdict', right })}
         onDone={() => setRevealDone(roundKey)}
         onNext={() => {
