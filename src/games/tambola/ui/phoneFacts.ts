@@ -231,17 +231,6 @@ export function patternCells(rows: Rows, pattern: Pattern): number[] {
   }
 }
 
-/** How the cue line names each prize (TAM-195, owner 2026-10-01): "Ticket 3: top row filled". */
-export const CUE_WORDS: Readonly<Record<Pattern, string>> = {
-  'early-five': 'Early Five filled',
-  'top-line': 'top row filled',
-  'middle-line': 'middle row filled',
-  'bottom-line': 'bottom row filled',
-  'four-corners': 'four corners filled',
-  'full-house': 'Full House filled',
-  'second-full-house': 'Full House filled',
-};
-
 export interface CueFill {
   readonly ticket: number;
   readonly pattern: Pattern;
@@ -289,7 +278,7 @@ function andList(words: readonly string[]): string {
 
 /**
  * The cue's parts (TAM-195, UX list row 1): one per ticket, in ticket order, naming its prizes in prize order: one
- * prize "Ticket 3: top row filled", several "Ticket 1: Early Five and Top Line filled". Early Five is said once
+ * prize "Ticket 3: Top Line filled", several "Ticket 1: Early Five and Top Line filled" (product owner's answer 2). Early Five is said once
  * (row 11): on the ticket it shares with another prize when it is on just that one ticket, otherwise once at the
  * end: "Early Five filled on tickets 1 and 2".
  */
@@ -300,10 +289,9 @@ export function cueParts(fills: readonly CueFill[]): string[] {
   const parts: string[] = [];
   for (const t of lineTickets) {
     const prizes = fills.filter((f) => f.ticket === t && (f.pattern !== 'early-five' || fold)).map((f) => f.pattern);
-    const what = prizes.length === 1 ? CUE_WORDS[prizes[0]!] : `${andList(prizes.map((p) => PATTERN_NAMES[p]))} filled`;
-    parts.push(`Ticket ${t}: ${what}`);
+    parts.push(`Ticket ${t}: ${andList(prizes.map((p) => PATTERN_NAMES[p]))} filled`);
   }
-  if (five.length && !fold) parts.push(`${CUE_WORDS['early-five']} on ${ticketList(five, 'ticket')}`);
+  if (five.length && !fold) parts.push(`Early Five filled on ${ticketList(five, 'ticket')}`);
   return parts;
 }
 
