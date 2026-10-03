@@ -95,7 +95,7 @@ test.describe('TAM-134: dark mode is an option, not the default', () => {
     expect(await pageLightness(page)).toBeGreaterThan(0.7);
   });
 
-  test('the host can switch to dark mode during a game, and text stays exactly as large', async ({ page }) => {
+  test('the host can switch to dark mode during a game, and text stays exactly as large', { tag: '@smoke' }, async ({ page }) => {
     await setUpPaperGame(page);
     await callMany(page, 3);
     const light = await sizes(page);

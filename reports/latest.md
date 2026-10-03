@@ -1,4 +1,6 @@
 # Test report
+Progress (2026-10-03 local, tester): SPEED FIRST step 1 (tester part) done: smoke set tagged (16 tests, `@smoke`, 51 s on Android with one worker, all passing on app b223754) and the area map `tests/browser/areas.json`, both documented in `tests/browser/README.md`. Next: the coder's quick-verify automation uses them; then lanes A, B, C (UX rows 1-25). Rows done: 0 of 25.
+
 Commit tested: 5c5030d (app; tests at the commit carrying this report)   Date: 2026-10-02
 Result: RED (expected: tests written first for UX list rows 8 to 15; the app has not been built for them yet)
 

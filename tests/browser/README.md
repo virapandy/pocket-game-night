@@ -6,6 +6,51 @@ a field's label, or (where there are no words to use) a `data-testid`. Names com
 
 The shared steps live in `helpers.ts`.
 
+## Quick verify: the smoke set and the area map (change SOP, 3 October 2026)
+`docs/change-sop.md` runs the complete browser suite only before a release. On every push the automation runs
+the **smoke set** plus the specs for the **area** the change touched.
+
+**Smoke set:** 16 tests tagged with Playwright's tag option (`test('…', { tag: '@smoke' }, async …)`). Together they
+walk the core journeys end to end. About 51 s on Android with one worker (measured 3 October on app b223754).
+```
+npm run build && npm run test:browser -- --project=android --grep @smoke
+npm run test:browser -- --project=android --grep @smoke --workers=1   # the CI timing
+```
+| Journey | Test |
+|---|---|
+| Open the app, Home | `app-shell.spec.ts` "the home screen opens and lists Tambola" |
+| Offline reopen (Android) | `app-shell.spec.ts` "after one visit, the app opens with no internet" |
+| Host a paper game to the first call | `calling.spec.ts` TAM-010 |
+| Record a win and close it | `claims.spec.ts` TAM-145 "after Close Top Line the win goes away by itself" |
+| End game and payouts | `payouts-and-tally.spec.ts` TAM-088/089 "one row per person with paid, won and net" |
+| Settle tab | `payouts-and-tally.spec.ts` TAM-088/089 "Settle with host" |
+| Sessions and tally | `sessions.spec.ts` PLT-017/019/020/027/028 "two ended games and one in progress" |
+| Hand out a phone ticket | `phone-tickets.spec.ts` TAM-172/132 |
+| Open it on a player's phone | `phone-tickets.spec.ts` TAM-055/056 |
+| Quick mark | `phone-tickets.spec.ts` TAM-192 "tap the number heard" |
+| Typed-code fallback | `phone-tickets.spec.ts` TAM-117/057 "typing the code on a phone opens the same ticket" |
+| Show claim | `phone-claims.spec.ts` TAM-177/193 |
+| Scan a claim: accepted | `phone-claims.spec.ts` TAM-177/174/020/033 |
+| Scan a claim: bogey | `phone-claims.spec.ts` TAM-177/022/023 |
+| Report a problem | `report-problem.spec.ts` PLT-200/201/208 "from the payout screen" |
+| Dark mode | `dark-mode.spec.ts` TAM-134 "the host can switch to dark mode during a game" |
+
+The tag changes only which tests are picked, never what they check. Adding or removing a smoke test is the
+Test role's job; keep the set near 15 tests and under about 2 minutes on Android with one worker.
+
+**Area map:** `tests/browser/areas.json` maps app paths (globs: `**` any depth, `*` within one folder) to the
+spec files that cover them. For each changed path, every area whose `paths` match adds its `specs`; the smoke set
+always runs too. A path no area matches runs the smoke set only (`default`). `specs: ["*"]` (build, dependencies,
+shared test helpers) means every spec; a changed spec file runs itself. Each area names its lane:
+**A** player's phone (`PhoneTickets.tsx`, `TicketGrid.tsx`, `phoneFacts.ts`, `qr.tsx`), **B** host calling,
+claims, payouts, settings and summary (`Play.tsx`, `scanner.ts`, `Settings.tsx`, `voice.ts`, `Summary.tsx`,
+`format.ts`, `theme.ts`), **C** host setup and hand-out (`Setup.tsx`, `SessionQuestion.tsx`, `HandOut.tsx`), or
+`shared` (app shell, engine, rules, content, storage: a change there reaches several lanes). Example, to run
+lane A's specs by hand:
+```
+npm run test:browser -- --project=android phone-tickets phone-claims pattern-cue held-tickets
+```
+
 ## Buttons (accessible name)
 | Where | Buttons |
 |---|---|

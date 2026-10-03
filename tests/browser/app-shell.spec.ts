@@ -24,7 +24,7 @@ async function visitOnceThenGoOffline(page: Page) {
 const WEBKIT_OFFLINE_REASON =
   'Playwright WebKit cannot reload offline under a service worker (microsoft/playwright#42775); owner decision 2026-09-28 in docs/decisions.md, iPhone checked by hand';
 
-test('the home screen opens and lists Tambola', async ({ page }) => {
+test('the home screen opens and lists Tambola', { tag: '@smoke' }, async ({ page }) => {
   await page.goto(HOME);
   await expect(page.getByRole('heading', { name: 'Pocket Game Night' })).toBeVisible();
   await openTambola(page);
@@ -40,7 +40,7 @@ test('the app is installable: it has a manifest with icons', async ({ page }) =>
   expect(manifest.icons.length).toBeGreaterThan(0);
 });
 
-test('after one visit, the app opens with no internet', async ({ page, browserName }) => {
+test('after one visit, the app opens with no internet', { tag: '@smoke' }, async ({ page, browserName }) => {
   test.skip(browserName === 'webkit', WEBKIT_OFFLINE_REASON);
   await visitOnceThenGoOffline(page);
   await page.reload();

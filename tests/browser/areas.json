@@ -1,0 +1,288 @@
+{
+  "$comment": [
+    "Which browser spec files to run for a change (docs/change-sop.md, quick verify). Owned by the Test role.",
+    "How to read it: take every changed path; for each, every area whose 'paths' glob matches adds its 'specs'.",
+    "The smoke set (tests tagged @smoke) always runs as well. A path no area matches adds nothing: smoke only (see 'default').",
+    "Globs: '**' any depth, '*' within one folder. Spec names are files in tests/browser/. 'specs': ['*'] means every spec file.",
+    "Lanes (handover, UX rows 1-25): A player's phone (tickets, cue, claim); B host calling, claims, payouts, settings, summary; C host setup and hand-out. 'shared' areas belong to no lane: a change there reaches several lanes."
+  ],
+  "smokeTag": "@smoke",
+  "default": { "specs": [], "smoke": true },
+  "lanes": {
+    "A": "Player's phone: tickets, cue, claim",
+    "B": "Host: calling, claims, payouts, settings, summary",
+    "C": "Host: setup and hand-out"
+  },
+  "areas": [
+    {
+      "name": "Player's tickets screen, quick mark, cue, show claim",
+      "lane": "A",
+      "paths": [
+        "src/games/tambola/ui/PhoneTickets.tsx",
+        "src/games/tambola/ui/TicketGrid.tsx",
+        "src/games/tambola/ui/phoneFacts.ts"
+      ],
+      "specs": [
+        "phone-tickets.spec.ts",
+        "phone-claims.spec.ts",
+        "pattern-cue.spec.ts",
+        "held-tickets.spec.ts",
+        "home-and-buttons.spec.ts",
+        "report-problem.spec.ts",
+        "phone-late-joiners.spec.ts"
+      ]
+    },
+    {
+      "name": "QR codes (ticket and claim QRs, drawn and read back)",
+      "lane": "A",
+      "paths": ["src/games/tambola/ui/qr.tsx"],
+      "specs": [
+        "phone-tickets.spec.ts",
+        "phone-claims.spec.ts",
+        "phone-late-joiners.spec.ts",
+        "held-tickets.spec.ts",
+        "pattern-cue.spec.ts"
+      ]
+    },
+    {
+      "name": "Calling screen, record a win, close a prize, menu, room view",
+      "lane": "B",
+      "paths": ["src/games/tambola/ui/Play.tsx"],
+      "specs": [
+        "calling.spec.ts",
+        "claims.spec.ts",
+        "close-prize.spec.ts",
+        "layout.spec.ts",
+        "auto-call.spec.ts",
+        "voice.spec.ts",
+        "late-joiners.spec.ts",
+        "phone-late-joiners.spec.ts",
+        "phone-claims.spec.ts",
+        "ux-rows-8-15.spec.ts",
+        "usability.spec.ts",
+        "dark-mode.spec.ts",
+        "report-problem.spec.ts",
+        "home-and-buttons.spec.ts",
+        "lifecycle.spec.ts"
+      ]
+    },
+    {
+      "name": "Host scans a claim (camera, typed ticket number)",
+      "lane": "B",
+      "paths": ["src/games/tambola/ui/scanner.ts"],
+      "specs": ["phone-claims.spec.ts", "ux-rows-8-15.spec.ts"]
+    },
+    {
+      "name": "Settings (game and start screen): voice, auto-call, late joining, cue switch, dark mode, house rules",
+      "lane": "B",
+      "paths": ["src/games/tambola/ui/Settings.tsx", "src/games/tambola/ui/voice.ts"],
+      "specs": [
+        "auto-call.spec.ts",
+        "voice.spec.ts",
+        "setup.spec.ts",
+        "late-joiners.spec.ts",
+        "pattern-cue.spec.ts",
+        "dark-mode.spec.ts",
+        "rhymes.spec.ts",
+        "usability.spec.ts"
+      ]
+    },
+    {
+      "name": "End of game: payouts, settle tabs, Play again, Session tally",
+      "lane": "B",
+      "paths": ["src/games/tambola/ui/Summary.tsx", "src/games/tambola/ui/format.ts"],
+      "specs": [
+        "payouts-and-tally.spec.ts",
+        "lifecycle.spec.ts",
+        "claims.spec.ts",
+        "close-prize.spec.ts",
+        "late-joiners.spec.ts",
+        "report-problem.spec.ts",
+        "home-and-buttons.spec.ts",
+        "sessions.spec.ts"
+      ]
+    },
+    {
+      "name": "Theme (colours, dark mode)",
+      "lane": "B",
+      "paths": ["src/games/tambola/ui/theme.ts"],
+      "specs": ["dark-mode.spec.ts", "usability.spec.ts", "close-prize.spec.ts", "layout.spec.ts"]
+    },
+    {
+      "name": "Setup steps: ticket type, players, contribution, prizes, session line",
+      "lane": "C",
+      "paths": ["src/games/tambola/ui/Setup.tsx", "src/games/tambola/ui/SessionQuestion.tsx"],
+      "specs": [
+        "setup.spec.ts",
+        "setup-layout.spec.ts",
+        "session-line.spec.ts",
+        "sessions.spec.ts",
+        "home-and-buttons.spec.ts",
+        "history.spec.ts",
+        "pattern-cue.spec.ts",
+        "phone-tickets.spec.ts",
+        "usability.spec.ts"
+      ]
+    },
+    {
+      "name": "Hand-out: ticket QR and code per player, paper fallback, who is waiting",
+      "lane": "C",
+      "paths": ["src/games/tambola/ui/HandOut.tsx"],
+      "specs": [
+        "phone-tickets.spec.ts",
+        "phone-late-joiners.spec.ts",
+        "ux-rows-8-15.spec.ts",
+        "held-tickets.spec.ts",
+        "phone-claims.spec.ts"
+      ]
+    },
+    {
+      "name": "Tambola start screen and screen switching, How to play",
+      "lane": "shared",
+      "paths": [
+        "src/games/tambola/ui/TambolaScreen.tsx",
+        "src/games/tambola/ui/HowToPlay.tsx",
+        "src/games/tambola/index.ts"
+      ],
+      "specs": [
+        "app-shell.spec.ts",
+        "home-and-buttons.spec.ts",
+        "setup.spec.ts",
+        "lifecycle.spec.ts",
+        "ux-rows-8-15.spec.ts",
+        "late-joiners.spec.ts",
+        "rhymes.spec.ts"
+      ]
+    },
+    {
+      "name": "Saving and resuming a Tambola game; phone behaviour (wake lock, vibration)",
+      "lane": "shared",
+      "paths": ["src/games/tambola/ui/saved.ts", "src/games/tambola/ui/device.ts"],
+      "specs": [
+        "lifecycle.spec.ts",
+        "format-1.spec.ts",
+        "history.spec.ts",
+        "phone-tickets.spec.ts",
+        "usability.spec.ts",
+        "auto-call.spec.ts"
+      ]
+    },
+    {
+      "name": "Tambola rules: draw, tickets, codes, prizes, claim checking",
+      "lane": "shared",
+      "paths": ["src/games/tambola/rules/**"],
+      "specs": [
+        "calling.spec.ts",
+        "claims.spec.ts",
+        "close-prize.spec.ts",
+        "phone-tickets.spec.ts",
+        "phone-claims.spec.ts",
+        "held-tickets.spec.ts",
+        "pattern-cue.spec.ts",
+        "payouts-and-tally.spec.ts",
+        "setup.spec.ts",
+        "late-joiners.spec.ts",
+        "phone-late-joiners.spec.ts",
+        "format-1.spec.ts"
+      ]
+    },
+    {
+      "name": "Rhymes and calls (content and the rhyme picker)",
+      "lane": "shared",
+      "paths": ["content/**", "src/games/tambola/rules/rhymes.ts"],
+      "specs": ["rhymes.spec.ts", "calling.spec.ts", "voice.spec.ts", "layout.spec.ts"]
+    },
+    {
+      "name": "App shell: Home, menu, install, offline, styles",
+      "lane": "shared",
+      "paths": [
+        "src/app/App.tsx",
+        "src/app/main.tsx",
+        "src/app/games.ts",
+        "src/app/styles.css",
+        "src/app/version.d.ts",
+        "index.html",
+        "public/**"
+      ],
+      "specs": [
+        "app-shell.spec.ts",
+        "home-and-buttons.spec.ts",
+        "lifecycle.spec.ts",
+        "usability.spec.ts",
+        "dark-mode.spec.ts",
+        "layout.spec.ts",
+        "setup-layout.spec.ts"
+      ]
+    },
+    {
+      "name": "History",
+      "lane": "shared",
+      "paths": ["src/app/History.tsx"],
+      "specs": ["history.spec.ts", "lifecycle.spec.ts", "format-1.spec.ts"]
+    },
+    {
+      "name": "Sessions and tally screens",
+      "lane": "shared",
+      "paths": ["src/app/Sessions.tsx"],
+      "specs": ["sessions.spec.ts", "payouts-and-tally.spec.ts", "session-line.spec.ts", "history.spec.ts"]
+    },
+    {
+      "name": "Report a problem (host and player)",
+      "lane": "shared",
+      "paths": ["src/app/Report.tsx", "src/app/reports.ts", "src/engine/reports.ts"],
+      "specs": ["report-problem.spec.ts"]
+    },
+    {
+      "name": "Saved data on the phone (app storage, saved-game format)",
+      "lane": "shared",
+      "paths": ["src/app/storage.ts", "src/engine/storage.ts", "src/engine/saved-game.ts"],
+      "specs": ["lifecycle.spec.ts", "history.spec.ts", "format-1.spec.ts", "sessions.spec.ts", "phone-tickets.spec.ts", "held-tickets.spec.ts"]
+    },
+    {
+      "name": "Money, sessions and tally rules",
+      "lane": "shared",
+      "paths": ["src/engine/money.ts", "src/engine/tally.ts", "src/engine/session.ts"],
+      "specs": ["payouts-and-tally.spec.ts", "sessions.spec.ts", "session-line.spec.ts", "setup.spec.ts", "late-joiners.spec.ts", "claims.spec.ts"]
+    },
+    {
+      "name": "Game contract, referee, moves, seeds, undo",
+      "lane": "shared",
+      "paths": [
+        "src/engine/contract.ts",
+        "src/engine/events.ts",
+        "src/engine/index.ts",
+        "src/engine/moves.ts",
+        "src/engine/random.ts",
+        "src/engine/referee.ts"
+      ],
+      "specs": ["calling.spec.ts", "claims.spec.ts", "close-prize.spec.ts", "phone-claims.spec.ts", "lifecycle.spec.ts", "format-1.spec.ts"]
+    },
+    {
+      "name": "Any other engine file",
+      "lane": "shared",
+      "paths": ["src/engine/**"],
+      "specs": ["lifecycle.spec.ts", "claims.spec.ts", "payouts-and-tally.spec.ts"]
+    },
+    {
+      "name": "Build, dependencies and test set-up: everything",
+      "lane": "shared",
+      "paths": [
+        "package.json",
+        "package-lock.json",
+        "vite.config.ts",
+        "tsconfig*.json",
+        "tests/playwright.config.ts",
+        "tests/browser/helpers.ts",
+        "tests/browser/fixtures.ts",
+        "tests/browser/phone.ts"
+      ],
+      "specs": ["*"]
+    },
+    {
+      "name": "A changed browser spec runs itself (matched by the automation by file name)",
+      "lane": "shared",
+      "paths": ["tests/browser/*.spec.ts"],
+      "specs": ["<the changed file>"]
+    }
+  ]
+}

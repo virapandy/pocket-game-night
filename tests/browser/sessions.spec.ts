@@ -127,7 +127,7 @@ test.describe('PLT-016: every game belongs to a named session', () => {
 test.describe('PLT-017, PLT-019, PLT-020, PLT-027, PLT-028: tally, settle up, mark as settled', () => {
   test.setTimeout(120_000);
 
-  test('two ended games and one in progress: the tally, who pays whom, settling, undo, and the settled record', async ({ page }) => {
+  test('two ended games and one in progress: the tally, who pays whom, settling, undo, and the settled record', { tag: '@smoke' }, async ({ page }) => {
     await page.clock.install({ time: T0 });
     // Game 1: Riya wins every prize. Riya +100, Asha −50, Dad −50.
     await setUpPaperGame(page, { players: FAMILY, session: { name: DIWALI } });

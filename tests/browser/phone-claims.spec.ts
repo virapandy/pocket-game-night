@@ -23,7 +23,7 @@ async function dismissClaim(host: Page) {
 }
 
 test.describe('The claim QR on the player\'s phone', () => {
-  test('TAM-177 and TAM-193: "Show claim" → prize → the claim QR above the ticket, "EARLY FIVE · Ticket 1 · Riya", "Show this to the host"', async ({ page, browser }, testInfo) => {
+  test('TAM-177 and TAM-193: "Show claim" → prize → the claim QR above the ticket, "EARLY FIVE · Ticket 1 · Riya", "Show this to the host"', { tag: '@smoke' }, async ({ page, browser }, testInfo) => {
     const handOuts = await phoneGame(page, THREE);
     const riya = await playerWith(browser, testInfo, handOuts, 'Riya', PORTRAIT);
     // Only this game's prizes are offered (TAM-031): no Four Corners with 3 tickets.
@@ -90,7 +90,7 @@ test.describe('The host scans the claim', () => {
     await fakeCamera(page, 'ok');
   });
 
-  test('TAM-177, TAM-174, TAM-020, TAM-033: a right claim is accepted within 2 seconds, with no internet: "Early Five: ✓ Accepted, ₹… to Riya", credited to Riya', async ({ page, browser }, testInfo) => {
+  test('TAM-177, TAM-174, TAM-020, TAM-033: a right claim is accepted within 2 seconds, with no internet: "Early Five: ✓ Accepted, ₹… to Riya", credited to Riya', { tag: '@smoke' }, async ({ page, browser }, testInfo) => {
     test.setTimeout(90_000); // Calling until 5 of a ticket's numbers are out can take 60 or more calls at about 1 second each (TAM-101), as in calling.spec.ts.
     const handOuts = await phoneGame(page, THREE);
     const riya = await playerWith(browser, testInfo, handOuts, 'Riya', PORTRAIT);
@@ -118,7 +118,7 @@ test.describe('The host scans the claim', () => {
     expect(people.find((p: any) => p.name === 'Riya')!.won).toBe(prize);
   });
 
-  test('TAM-177 and TAM-022/TAM-023: a claim with a number not called is a bogey: "Top Line: ✗ Bogey: 72 not called"', async ({ page, browser }, testInfo) => {
+  test('TAM-177 and TAM-022/TAM-023: a claim with a number not called is a bogey: "Top Line: ✗ Bogey: 72 not called"', { tag: '@smoke' }, async ({ page, browser }, testInfo) => {
     const handOuts = await phoneGame(page, THREE);
     const riya = await playerWith(browser, testInfo, handOuts, 'Riya', PORTRAIT);
     const top = rowOf(riya.grids.get(1)!, 0);

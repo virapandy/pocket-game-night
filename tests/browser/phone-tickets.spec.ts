@@ -21,7 +21,7 @@ const TWELVE = [{ name: 'Riya', tickets: 3 }, { name: 'Asha', tickets: 3 }, { na
 // ---------------------------------------------------------------- Host: handing out
 
 test.describe('Host: handing out tickets', () => {
-  test('TAM-172 and TAM-132: each ticket is pre-assigned "Ticket 1 → Riya (1 of 2)"; the host confirms each hand-out and sees who is still waiting', async ({ page }) => {
+  test('TAM-172 and TAM-132: each ticket is pre-assigned "Ticket 1 → Riya (1 of 2)"; the host confirms each hand-out and sees who is still waiting', { tag: '@smoke' }, async ({ page }) => {
     await setUpPhoneGame(page, [{ name: 'Riya', tickets: 2 }, { name: 'Asha' }, { name: 'Dad' }]);
     const screen = handOutScreen(page);
     await expect(screen.getByTestId('hand-out-ticket')).toHaveText(/Ticket 1\s*→\s*Riya \(1 of 2\)/);
@@ -115,7 +115,7 @@ test.describe('Host: handing out tickets', () => {
 // ---------------------------------------------------------------- Player: the ticket
 
 test.describe('Player: the ticket on the phone', () => {
-  test('TAM-055 and TAM-056: the ticket on the phone is identical to the host\'s copy; the host sees every ticket and its owner', async ({ page, browser }, testInfo) => {
+  test('TAM-055 and TAM-056: the ticket on the phone is identical to the host\'s copy; the host sees every ticket and its owner', { tag: '@smoke' }, async ({ page, browser }, testInfo) => {
     const handOuts = await phoneGame(page, [{ name: 'Riya', tickets: 2 }, { name: 'Asha' }, { name: 'Dad' }]);
     const riya = await playerWith(browser, testInfo, handOuts, 'Riya');
     await openHostTickets(page);
@@ -377,7 +377,7 @@ test.describe('Several tickets on one phone', () => {
 // ---------------------------------------------------------------- Quick mark
 
 test.describe('Quick mark', () => {
-  test('TAM-192: tap the number heard: "✓ 36 marked on ticket 3"; a number on no ticket: "37: not on your tickets"; tap again to unmark', async ({ page, browser }, testInfo) => {
+  test('TAM-192: tap the number heard: "✓ 36 marked on ticket 3"; a number on no ticket: "37: not on your tickets"; tap again to unmark', { tag: '@smoke' }, async ({ page, browser }, testInfo) => {
     const handOuts = await phoneGame(page, TWELVE);
     const riya = await playerWith(browser, testInfo, handOuts, 'Riya', PORTRAIT);
     const t = riya.tickets[1]!;
@@ -593,7 +593,7 @@ test('TAM-196: the player crosses out a prize announced as won (tap again to und
 
 // ---------------------------------------------------------------- Typed code, and no internet
 
-test('TAM-117 and TAM-057: typing the code on a phone opens the same ticket, with the same numbers', async ({ page, browser }, testInfo) => {
+test('TAM-117 and TAM-057: typing the code on a phone opens the same ticket, with the same numbers', { tag: '@smoke' }, async ({ page, browser }, testInfo) => {
   await setUpPhoneGame(page, THREE);
   const h = await currentHandOut(page);
   const scanned = await newPhone(browser, testInfo, PORTRAIT);

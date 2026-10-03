@@ -99,7 +99,7 @@ test.describe('with six named players', () => {
   });
 
   // Owner decision 2026-09-29 (review finding 4): after the host closes a tier, its result goes away by itself.
-  test('TAM-145: after "Close Top Line" the win goes away by itself; no Done is needed', async ({ page }) => {
+  test('TAM-145: after "Close Top Line" the win goes away by itself; no Done is needed', { tag: '@smoke' }, async ({ page }) => {
     await callMany(page, 3);
     await recordWin(page, 'Top Line', ['Riya']);
     await expect(result(page)).toBeVisible();

@@ -10,7 +10,7 @@ test.beforeEach(async ({ page }) => {
   await setUpPaperGame(page);
 });
 
-test('TAM-010: "Next number" shows one new number, large, with its rhyme', async ({ page }) => {
+test('TAM-010: "Next number" shows one new number, large, with its rhyme', { tag: '@smoke' }, async ({ page }) => {
   const n = await call(page);
   expect(n).toBeGreaterThanOrEqual(1);
   expect(n).toBeLessThanOrEqual(90);

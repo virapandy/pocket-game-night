@@ -172,7 +172,7 @@ async function paperGameWithAWin(page: Page) {
 // =====================================================================================================
 
 test.describe('PLT-200, PLT-201, PLT-208: the host reports a problem after a game', () => {
-  test('from the payout screen: the host sees exactly what will be sent; no names or session name; the money numbers are in; kept on this phone, nothing leaves', async ({ page, context }, testInfo) => {
+  test('from the payout screen: the host sees exactly what will be sent; no names or session name; the money numbers are in; kept on this phone, nothing leaves', { tag: '@smoke' }, async ({ page, context }, testInfo) => {
     test.setTimeout(60_000);
     const requests = await watchNetwork(context);
     await paperGameWithAWin(page);

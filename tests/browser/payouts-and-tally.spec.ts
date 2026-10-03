@@ -49,7 +49,7 @@ async function earlyFiveThenEnd(page: Page, player: string) {
 }
 
 test.describe('TAM-088 and TAM-089: each person\'s row shows paid, won and net; "Settle with host" shows what the host gives', () => {
-  test('one row per person with paid, won and net; the nets add up to ₹0', async ({ page }) => {
+  test('one row per person with paid, won and net; the nets add up to ₹0', { tag: '@smoke' }, async ({ page }) => {
     await setUpPaperGame(page, { players: SIX });
     await earlyFiveThenEnd(page, 'Riya');
     // Each tier with its winner and amount, or "not won" (TAM-088).
@@ -87,7 +87,7 @@ test.describe('TAM-088 and TAM-089: each person\'s row shows paid, won and net; 
     await expect(settleWithPlayers(page)).toBeVisible();
   });
 
-  test('"Settle with host": "Host gives Riya ₹…" per person (prize plus money back); the host gives out exactly the pot', async ({ page }) => {
+  test('"Settle with host": "Host gives Riya ₹…" per person (prize plus money back); the host gives out exactly the pot', { tag: '@smoke' }, async ({ page }) => {
     await setUpPaperGame(page, { players: SIX });
     await earlyFiveThenEnd(page, 'Riya');
     const people = await payoutPeople(page);
