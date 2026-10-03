@@ -621,7 +621,7 @@ export function PhoneTickets({
       ? Math.max(10, Math.min(24, Math.floor((w - 32 - (n - 1) * 8 - n * 28) / (9 * n)), Math.floor((h - 170) / 3)))
       : Math.max(10, Math.min(22, Math.floor(allCell / 2), Math.floor((h - 220) / (n * 3 + n * 2))));
     return (
-      <main className={`screen ${rootClass}`}>
+      <main className={`screen ${rootClass}${screen.name === 'claim-prize' ? ' which-prize' : ''}`}>
         {screen.name === 'claim-ticket' ? (
           <>
             <h1 className="step-title">Which ticket?</h1>
@@ -675,14 +675,19 @@ export function PhoneTickets({
   if (screen.name === 'claim') {
     const t = tickets.find((x) => x.number === screen.ticket) ?? current;
     const payload = encodeClaim({ game: game.game, ticket: t.number, pattern: screen.pattern, rows: t.rows });
-    const qrSize = Math.max(160, Math.min(landscape ? h - 150 : w - 48, 320));
+    // Polish (3 October): in landscape the QR takes the left, full height, and the title, words, ticket and "Done" a
+    // column beside it, so "Done" is on screen.
+    const qrSize = Math.max(160, Math.min(landscape ? Math.min(h - 32, Math.floor((w - 56) / 2)) : w - 48, 320));
+    const claimCell = landscape
+      ? Math.max(24, Math.min(44, Math.floor((w - 56 - qrSize - side) / 9), Math.floor((h - 162) / 3)))
+      : Math.min(allCell, 44);
     return (
       <main className={`${rootClass} claim-screen`} data-testid="claim-screen">
         <p className="claim-title">{[PATTERN_NAMES[screen.pattern], `Ticket ${t.number}`, holderOf(game, t)].filter(Boolean).join(' · ')}</p>
         <div className="claim-body">
           <QrCode text={payload} testId="claim-qr" size={qrSize} label="Claim QR code" />
           <p className="lead">Show this to the host</p>
-          {ticketBox(t, Math.min(allCell, 44), { outlined: new Set(patternCells(t.rows, screen.pattern)), noTap: true })}
+          {ticketBox(t, claimCell, { outlined: new Set(patternCells(t.rows, screen.pattern)), noTap: true })}
         </div>
         <div className="phone-actions">
           {/* TAM-193: "Done" is outlined, so the QR stands out. */}
