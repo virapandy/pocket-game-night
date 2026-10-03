@@ -197,8 +197,8 @@ function post(input) {
   for (const [key, root, clone] of ROOTS) {
     // Several agents work at once (product owner, tester, coders in lanes), so each checks only its own
     // working copies; another agent's work landing meanwhile is not this command's doing. The orchestrator
-    // checks the Build and Test clones and the lanes.
-    if (role === 'orchestrator' ? clone === 'product' : clone !== own) continue;
+    // (which edits only docs/ in the Build clone) checks the Build clone and the lanes.
+    if (clone !== own) continue;
     const now = changedFiles(root);
     // Without a snapshot, check the role's own clone fully and skip the other one.
     const was = new Set(before ? before[key] ?? [] : clone === own ? [] : now);
