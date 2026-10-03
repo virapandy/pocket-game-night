@@ -90,7 +90,9 @@ export function HandOut({
           <button type="button" className="text-button hand-out-name" aria-expanded={picking} onClick={() => setPicking(!picking)}>
             {nameOf(owner)}
           </button>{' '}
-          ({mine.indexOf(number) + 1} of {mine.length})
+          <span className="hand-out-count">
+            ({mine.indexOf(number) + 1} of {mine.length})
+          </span>
         </p>
         {picking ? (
           <div className="stack-tight">

@@ -227,7 +227,9 @@ body { -webkit-tap-highlight-color: transparent; }
   border-radius: 10px;
 }
 .tier-label { width: 140px; font-weight: 400; }
-.tier-remove { flex: none; min-height: 44px; min-width: 44px; padding: 0 10px; font-size: 0.95rem; color: var(--muted); }
+/* UX list row 19: "Remove" in neutral grey, and the same width as Full House's empty space, so every amount
+   field lines up, Full House's included. */
+.tier-row .tier-remove { flex: none; width: 96px; min-height: 44px; min-width: 44px; padding: 0 6px; font-size: 0.95rem; color: var(--muted); white-space: nowrap; }
 .tier-remove-space { flex: none; width: 96px; }
 .tier-add { min-height: 44px; padding: 0 12px; font-size: 0.95rem; }
 /* Setup in landscape (UX list row 11, guideline 17b): the two ticket-type cards side by side, and the step
@@ -689,7 +691,9 @@ button, [role="button"], a { touch-action: manipulation; }
 .hand-out .bar-progress { flex: 1; }
 .game-code { flex: none; font-weight: 800; letter-spacing: 0.05em; }
 .hand-out-ticket { margin: 0; font-size: 1.4rem; font-weight: 800; text-align: center; }
-.hand-out-name { font-size: 1.4rem; font-weight: 800; text-decoration: underline; }
+.hand-out-name { font-size: 1.4rem; font-weight: 800; text-decoration: underline; overflow-wrap: anywhere; }
+/* UX list row 19: a long name wraps on its own; "(1 of 1)" never breaks. */
+.hand-out-count { white-space: nowrap; }
 .hand-out-qr { display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; }
 .hand-out-code { margin: 0; font-size: 1.15rem; }
 .ticket-code { font-size: 1.15rem; letter-spacing: 0.04em; white-space: nowrap; font-variant-numeric: tabular-nums; }
