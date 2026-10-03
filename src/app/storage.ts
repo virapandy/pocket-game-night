@@ -163,3 +163,41 @@ export const sessionPicker: SessionPicker = {
     return recentUnsettledSessions(sessionStore.list(), gameStore.list(), now, limit);
   },
 };
+
+/** A small keyed store under one prefix of this app's keys. */
+function keyed(prefix: string): Preferences {
+  return {
+    get<T>(key: string, fallback: T): T {
+      try {
+        const raw = storage()?.getItem(prefix + key);
+        return raw == null ? fallback : (JSON.parse(raw) as T);
+      } catch {
+        return fallback;
+      }
+    },
+    set(key, value) {
+      try {
+        storage()?.setItem(prefix + key, JSON.stringify(value));
+      } catch {
+        // Storage full or blocked: screen state is a convenience only.
+      }
+    },
+  };
+}
+
+/** Impostor's screen state that is not a move (the paused timer, when the summary was shown): `pgn.impostor-ui.<id>`. */
+export const impostorUi: Preferences = keyed(`${KEY_ROOT}impostor-ui.`);
+
+/**
+ * IMP-064, Test hooks item 3: `localStorage['pgn.test.seeds']`, read only at a new Impostor evening's first "Start
+ * round". The release build (`npm run build -- --mode release`, the families' link) never uses it.
+ */
+export const IS_RELEASE = import.meta.env.MODE === 'release';
+export function testSeedsRaw(): string | null {
+  if (IS_RELEASE) return null;
+  try {
+    return storage()?.getItem('pgn.test.seeds') ?? null;
+  } catch {
+    return null;
+  }
+}

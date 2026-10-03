@@ -80,8 +80,13 @@ jobs:
           SITE: ${{ inputs.site }}
           SHA: ${{ steps.pick.outputs.sha }}
         run: |
-          if [ "$SITE" = preview ]; then export APP_BASE=/pocket-game-night/preview/; fi
-          GITHUB_SHA="$SHA" npm run build
+          # The families' site is the release build: it ignores Impostor's test seeds (IMP-064, Test hooks item 3).
+          if [ "$SITE" = preview ]; then
+            export APP_BASE=/pocket-game-night/preview/
+            GITHUB_SHA="$SHA" npm run build
+          else
+            GITHUB_SHA="$SHA" npm run build -- --mode release
+          fi
       - uses: actions/upload-artifact@v4
         with:
           name: site-${{ inputs.site }}

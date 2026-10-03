@@ -119,13 +119,14 @@ export function History({
             return (
               <li key={g.id}>
                 <button type="button" className="history-row" data-testid="history-game" onClick={() => onOpen(g.id)}>
-                  <span className="history-title">{game.info.title}</span>
+                  <span className="history-title">{'rounds' in d ? `${game.info.title} · ${d.result}` : game.info.title}</span>
                   <span>
                     {dateTime(g.createdAt)}
                     {session ? ` · ${session}` : ''}
                   </span>
                   <span>
-                    {d.players} {d.players === 1 ? 'player' : 'players'} · {d.calls} {d.calls === 1 ? 'number' : 'numbers'} called
+                    {d.players} {d.players === 1 ? 'player' : 'players'}
+                    {'calls' in d ? ` · ${d.calls} ${d.calls === 1 ? 'number' : 'numbers'} called` : ''}
                   </span>
                   <span className="history-result">
                     {d.result}

@@ -1,12 +1,12 @@
-import { useCallback, useEffect, useRef, useState, type RefObject } from 'react';
+import { useCallback, useEffect, useRef, useState, type ReactNode, type RefObject } from 'react';
 import { useRegisterSW } from 'virtual:pwa-register/react';
 import { makePlayerReport, makeReport, type Report, type ReportSubject, type SavedGame } from '../engine';
-import { games, hostGames, impostor, type GameId, type HostGameId } from './games';
+import { games, hostGames, impostor, phoneGames, tambola, type GameId, type HostGameId, type PhoneGameId } from './games';
 import { History, isPast, unsettledSessionName, type Deleted } from './History';
 import { CrashNotice, ReportForm, ReportToast, WaitingReports } from './Report';
 import { APP_VERSION, hasRealDestination, phoneType, queueReport, startReportSender } from './reports';
 import { Dialog, SessionList, SessionScreen } from './Sessions';
-import { gameStore, preferences, sessionPicker } from './storage';
+import { gameStore, impostorUi, IS_RELEASE, preferences, sessionPicker, testSeedsRaw } from './storage';
 
 const TWELVE_HOURS = 12 * 3600_000;
 const TIP_KEY = 'install-tip.seen';
@@ -18,24 +18,24 @@ type Route =
   | { name: 'home' }
   /** "What shall we play?" (IMP-001), after Home's "Host a game". */
   | { name: 'pick' }
-  | { name: 'impostor' }
   | { name: 'history' }
   | { name: 'past'; id: string }
   | { name: 'sessions' }
   | { name: 'session'; id: string }
   | { name: 'game'; gameId: GameId; open?: { id: string; action: OpenAction }; startAt?: 'settings' }
   /** A player's phone (Phase 2): tickets opened from a ticket QR's link, or typed in. */
-  | { name: 'phone'; gameId: GameId; link: string | null; enter: boolean | 'join'; nonce: number };
+  | { name: 'phone'; gameId: PhoneGameId; link: string | null; enter: boolean | 'join'; nonce: number };
 
 const gameOf = (type: string) => games.find((g) => g.info.id === type);
+const phoneGameOf = (type: string) => phoneGames.find((g) => g.info.id === type);
 
 /** A ticket QR opens the app with "#t=<ticket>" (TAM-117). Read raw: the ticket text is decoded by the game. */
 function phoneLink(): Extract<Route, { name: 'phone' }> | null {
   if (typeof location === 'undefined') return null;
-  for (const g of games) {
+  for (const g of phoneGames) {
     const prefix = `#${g.phone.linkKey}=`;
     if (location.hash.startsWith(prefix)) {
-      return { name: 'phone', gameId: g.info.id as GameId, link: location.hash.slice(prefix.length), enter: false, nonce: Date.now() };
+      return { name: 'phone', gameId: g.info.id as PhoneGameId, link: location.hash.slice(prefix.length), enter: false, nonce: Date.now() };
     }
   }
   return null;
@@ -47,8 +47,8 @@ function firstRoute(): Route {
   if (link) return link;
   const route = routeFromAddress();
   if (route.name !== 'home') return route;
-  const holder = games.find((g) => g.phone.hasTickets(preferences));
-  return holder ? { name: 'phone', gameId: holder.info.id as GameId, link: null, enter: false, nonce: 0 } : route;
+  const holder = phoneGames.find((g) => g.phone.hasTickets(preferences));
+  return holder ? { name: 'phone', gameId: holder.info.id as PhoneGameId, link: null, enter: false, nonce: 0 } : route;
 }
 
 /** History, Sessions and past games keep their place in the address, so a reload stays there (PLT-010). */
@@ -110,6 +110,15 @@ function useBackGuard(active: boolean) {
 }
 
 const time = (t: number) => new Date(t).toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit', hour12: true });
+
+/** Home's unfinished row: "Tambola, 8:40 pm, 12 numbers called" or "Impostor, 8:40 pm, round 4" (IMP-001). */
+function unfinishedText(g: SavedGame): string {
+  if (g.gameType === impostor.info.id) return impostor.unfinishedLine(g);
+  const game = gameOf(g.gameType);
+  const d = game?.describe(g);
+  const calls = d && 'calls' in d ? d.calls : 0;
+  return `${game?.info.title ?? g.gameType}, ${time(g.createdAt)}, ${calls} ${calls === 1 ? 'number' : 'numbers'} called`;
+}
 
 type Crash = { message: string; stack?: string };
 const TOAST_MS = 6_000;
@@ -236,7 +245,7 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
     if (decodeURIComponent(location.hash.slice(1)) === want) return;
     history.replaceState(history.state, '', want ? `#${encodeURIComponent(want).replace(/%2F/g, '/')}` : `${location.pathname}${location.search}`);
   }, [route]);
-  useBackGuard(route.name === 'game' || route.name === 'impostor');
+  useBackGuard(route.name === 'game');
   const home = () => setRoute({ name: 'home' });
   const expire = useCallback(() => setDeleted(null), []);
 
@@ -247,35 +256,54 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
     return () => clearTimeout(t);
   }, [deleted, expire]);
 
-  if (route.name === 'game') {
-    const game = gameOf(route.gameId);
-    if (game) {
-      return (
-        <game.Screen
-          onExit={home}
-          store={gameStore}
-          prefs={preferences}
-          sessions={sessionPicker}
-          onSession={(id) => setRoute({ name: 'session', id })}
-          onReport={onReport}
-          settingsExtra={<WaitingReports />}
-          {...(route.open ? { open: route.open } : {})}
-          {...(route.startAt ? { startAt: route.startAt } : {})}
-        />
-      );
-    }
+  if (route.name === 'game' && route.gameId === 'impostor') {
+    const open = route.open;
+    return (
+      <impostor.Screen
+        onExit={home}
+        onBack={() => setRoute({ name: 'pick' })}
+        onHistory={() => setRoute({ name: 'history' })}
+        store={gameStore}
+        prefs={preferences}
+        ui={impostorUi}
+        sessions={sessionPicker}
+        testSeedsRaw={testSeedsRaw}
+        release={IS_RELEASE}
+        {...(open && (open.action === 'resume' || open.action === 'reuse') ? { open: { id: open.id, action: open.action } } : {})}
+      />
+    );
   }
-  if (route.name === 'impostor') return <impostor.Screen onExit={home} />;
+  if (route.name === 'game' && route.gameId === tambola.info.id) {
+    return (
+      <tambola.Screen
+        onExit={home}
+        store={gameStore}
+        prefs={preferences}
+        sessions={sessionPicker}
+        onSession={(id) => setRoute({ name: 'session', id })}
+        onReport={onReport}
+        settingsExtra={
+          <>
+            <impostor.Settings prefs={preferences} />
+            <WaitingReports />
+          </>
+        }
+        {...(route.open ? { open: route.open } : {})}
+        {...(route.startAt ? { startAt: route.startAt } : {})}
+      />
+    );
+  }
   if (route.name === 'pick') {
     return (
       <PickGame
         onBack={home}
-        onPick={(id) => setRoute(id === 'impostor' ? { name: 'impostor' } : { name: 'game', gameId: id })}
+        onPick={(id) => setRoute({ name: 'game', gameId: id })}
+        onResume={(id) => setRoute({ name: 'game', gameId: 'impostor', open: { id, action: 'resume' } })}
       />
     );
   }
   if (route.name === 'phone') {
-    const game = gameOf(route.gameId);
+    const game = phoneGameOf(route.gameId);
     if (game) {
       return (
         <game.phone.Screen
@@ -309,8 +337,9 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
     const saved = gameStore.get(route.id);
     const game = saved && gameOf(saved.gameType);
     if (saved && game) {
+      const PastGame = game.PastGame as (p: { saved: SavedGame; onBack: () => void; actions?: ReactNode }) => ReactNode;
       return (
-        <game.PastGame
+        <PastGame
           saved={saved}
           onBack={() => setRoute({ name: 'history' })}
           actions={
@@ -337,7 +366,7 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
       onGame={(gameId, open) => setRoute(open ? { name: 'game', gameId, open } : { name: 'game', gameId })}
       onHistory={() => setRoute({ name: 'history' })}
       onSessions={() => setRoute({ name: 'sessions' })}
-      onTickets={(enter) => setRoute({ name: 'phone', gameId: games[0].info.id as GameId, link: null, enter, nonce: Date.now() })}
+      onTickets={(enter) => setRoute({ name: 'phone', gameId: phoneGames[0].info.id, link: null, enter, nonce: Date.now() })}
       onSettings={() => setRoute({ name: 'game', gameId: games[0].info.id as GameId, startAt: 'settings' })}
       onReport={() => onReport(null)}
     />
@@ -415,7 +444,7 @@ function Home({
   onTickets: (enter: boolean | 'join') => void;
   onSettings: () => void;
 }) {
-  const [holdsTickets] = useState(() => games.some((g) => g.phone.hasTickets(preferences, false)));
+  const [holdsTickets] = useState(() => phoneGames.some((g) => g.phone.hasTickets(preferences, false)));
   const [firstVisit] = useState(() => preferences.get<boolean>(SEEN_KEY, false) !== true);
   useEffect(() => {
     if (firstVisit) preferences.set(SEEN_KEY, true);
@@ -427,12 +456,14 @@ function Home({
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
   }, [menu]);
-  const [unfinished] = useState<SavedGame[]>(() =>
-    gameStore
+  const [unfinished] = useState<SavedGame[]>(() => {
+    // IMP-104: an Impostor evening left more than 12 hours ends by itself before the list is made.
+    impostor.sweep(gameStore, impostorUi);
+    return gameStore
       .list()
       .filter((g) => (g.status === 'in-progress' || g.status === 'paused') && gameOf(g.gameType))
-      .sort((a, b) => b.updatedAt - a.updatedAt),
-  );
+      .sort((a, b) => b.updatedAt - a.updatedAt);
+  });
   const [now] = useState(() => Date.now());
   const pick = (run: () => void) => () => {
     setMenu(false);
@@ -498,7 +529,7 @@ function Home({
         </button>
       )}
       {/* PLT-300 (UX list row 21): tickets more than 6 hours old wait here, with Open and Clear. */}
-      {games.map((g) => (
+      {phoneGames.map((g) => (
         <g.phone.SavedTickets key={g.info.id} prefs={preferences} onOpen={() => onTickets(false)} />
       ))}
 
@@ -510,14 +541,12 @@ function Home({
           <ul className="unfinished" data-testid="unfinished-games">
             {unfinished.map((g) => {
               const game = gameOf(g.gameType)!;
-              const d = game.describe(g);
               const id = game.info.id as GameId;
-              const stale = now - g.updatedAt > TWELVE_HOURS;
+              // IMP-001: an Impostor evening is never "stale" here; IMP-104 ends it after 12 hours instead.
+              const stale = id !== 'impostor' && now - g.updatedAt > TWELVE_HOURS;
               return (
                 <li key={g.id} className="unfinished-row">
-                  <p className="unfinished-line">
-                    {game.info.title}, {time(g.createdAt)}, {d.calls} {d.calls === 1 ? 'number' : 'numbers'} called
-                  </p>
+                  <p className="unfinished-line">{unfinishedText(g)}</p>
                   {stale ? (
                     <>
                       <p className="note">Left more than 12 hours ago. What should happen to it?</p>
@@ -550,9 +579,23 @@ function Home({
 
 /**
  * IMP-001: "What shall we play?": one equal card per game, none with the main look and no main button; a tap
- * opens that game's setup at once. "← Back" returns to Home.
+ * opens that game's setup at once. "← Back" returns to Home. An unfinished Impostor evening shows above the cards
+ * ("Impostor · round 4 · Tap to resume"); the Impostor card then asks before starting a new evening.
  */
-function PickGame({ onBack, onPick }: { onBack: () => void; onPick: (id: HostGameId) => void }) {
+function PickGame({
+  onBack,
+  onPick,
+  onResume,
+}: {
+  onBack: () => void;
+  onPick: (id: HostGameId) => void;
+  onResume: (id: string) => void;
+}) {
+  const [unfinished] = useState(() => {
+    impostor.sweep(gameStore, impostorUi);
+    return impostor.unfinished(gameStore);
+  });
+  const [asking, setAsking] = useState(false);
   return (
     <main className="screen">
       <header className="top-bar">
@@ -561,14 +604,48 @@ function PickGame({ onBack, onPick }: { onBack: () => void; onPick: (id: HostGam
         </button>
       </header>
       <h1 className="step-title">What shall we play?</h1>
+      {unfinished && (
+        <button type="button" className="choice-card" data-testid="resume-card" onClick={() => onResume(unfinished.id)}>
+          Impostor · round {unfinished.round} · Tap to resume
+        </button>
+      )}
       <div className="home-choices">
         {hostGames.map((g) => (
-          <button key={g.info.id} type="button" className="choice-card" onClick={() => onPick(g.info.id)}>
+          <button
+            key={g.info.id}
+            type="button"
+            className="choice-card"
+            onClick={() => (g.info.id === impostor.info.id && unfinished ? setAsking(true) : onPick(g.info.id))}
+          >
             <span className="choice-card-title">{g.info.title}</span>
             <span className="choice-card-text">{g.info.tagline}</span>
           </button>
         ))}
       </div>
+      {asking && unfinished && (
+        <div className="backdrop">
+          <div className="dialog" role="dialog" aria-modal="true" aria-labelledby="start-new-text">
+            <p id="start-new-text" className="lead">
+              Start a new evening? The evening from {unfinished.startedAt} will be ended.
+            </p>
+            <div className="row">
+              <button
+                type="button"
+                className="button button-quiet"
+                onClick={() => {
+                  impostor.endNow(gameStore, unfinished.id);
+                  onPick(impostor.info.id);
+                }}
+              >
+                Start new
+              </button>
+              <button type="button" className="button" onClick={() => onResume(unfinished.id)}>
+                Carry on that evening
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
