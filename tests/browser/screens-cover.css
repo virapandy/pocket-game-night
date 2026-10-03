@@ -1,0 +1,5 @@
+/* Covers for the screenshot comparison (screens.spec.ts): things that change with the running clock. Painted in the
+   page, in the covered thing's own layer, so a pop-up lying on top still shows its words. */
+[data-testid="ticket-qr"], [data-testid="claim-qr"] { background: #ff00ff !important; }
+[data-testid="ticket-qr"] *, [data-testid="claim-qr"] * { visibility: hidden !important; }
+[data-screens-cover], [data-screens-cover] * { color: transparent !important; text-decoration-color: transparent !important; }

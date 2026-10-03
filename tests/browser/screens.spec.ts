@@ -12,6 +12,7 @@
 // The references are per platform (Playwright adds "-android-darwin" or "-android-linux" to each name): fonts differ.
 // The list of screens: README.md, "Screenshot comparison".
 import { existsSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { expect, test, type Browser, type Page, type TestInfo } from './fixtures';
 import { callMany, endGame, fillPlayers, fromMenu, HOME, openHistory, openTambola, recordWin, setUpPaperGame, ticketCard, turnCueOn } from './helpers';
 import {
@@ -101,16 +102,11 @@ async function shot(page: Page, screen: string, size: string) {
   await page.getByTestId('undo-toast').filter({ hasText: /Undo \(\d+s\)/ }).evaluateAll((els) => {
     for (const el of els) el.setAttribute('data-screens-cover', '');
   });
-  await expect(page).toHaveScreenshot(name, { animations: 'disabled', caret: 'hide', scale: 'css', style: COVER });
+  await expect(page).toHaveScreenshot(name, { animations: 'disabled', caret: 'hide', scale: 'css', stylePath: COVER });
 }
 
-/** The covers: a pink box where a QR code is, and the counting-down bar with its words see-through. */
-const COVER = `
-  [data-testid="ticket-qr"], [data-testid="claim-qr"] { background: #ff00ff !important; }
-  [data-testid="ticket-qr"] *, [data-testid="claim-qr"] * { visibility: hidden !important; }
-  [data-screens-cover], [data-screens-cover] * { color: transparent !important; }
-`;
-
+/** The covers (screens-cover.css): a pink box where a QR code is, and the counting-down bar with its words see-through. */
+const COVER = fileURLToPath(new URL('./screens-cover.css', import.meta.url));
 for (const size of SIZES) {
   test.describe(`Screens at ${size.width} × ${size.height}`, { tag: '@screens' }, () => {
     test.use({ viewport: { width: size.width, height: size.height } });
