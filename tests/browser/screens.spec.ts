@@ -7,7 +7,8 @@
 // Tagged @screens: part of the complete run (release, nightly), never of quick verify. Steady pictures: the app's
 // randomness (crypto.getRandomValues, Math.random) comes from a fixed seed, so games, tickets, game codes and QR codes
 // are the same every run; the clock starts at 7:00 pm India time, 3 October 2026; animations and the text caret are off;
-// QR codes and the counting-down "Called 24 · Undo (5s)" bar are covered, as they change with the running clock.
+// QR codes (a pink box) and the counting-down "Called 24 · Undo (5s)" bar (words see-through) are covered, as they
+// change with the running clock; the covers sit under any pop-up, never on top of it.
 // The references are per platform (Playwright adds "-android-darwin" or "-android-linux" to each name): fonts differ.
 // The list of screens: README.md, "Screenshot comparison".
 import { existsSync } from 'node:fs';
@@ -95,9 +96,20 @@ async function shot(page: Page, screen: string, size: string) {
   await page.evaluate(() => new Promise<void>((r) => requestAnimationFrame(() => requestAnimationFrame(() => r()))));
   // Covered, as they change with the running clock: QR codes (a ticket QR holds the game's start time to the
   // millisecond) and the "Called 24 · Undo (5s)" bar, whose seconds count down (its place and size still show).
-  const mask = [page.getByTestId('ticket-qr'), page.getByTestId('claim-qr'), page.getByTestId('undo-toast').filter({ hasText: /Undo \(\d+s\)/ })];
-  await expect(page).toHaveScreenshot(name, { animations: 'disabled', caret: 'hide', scale: 'css', mask });
+  // The cover is painted in the page itself, in the covered thing's own layer, so a pop-up or a bar lying on top of
+  // it still shows its words (Playwright's `mask` paints over everything, pop-ups included).
+  await page.getByTestId('undo-toast').filter({ hasText: /Undo \(\d+s\)/ }).evaluateAll((els) => {
+    for (const el of els) el.setAttribute('data-screens-cover', '');
+  });
+  await expect(page).toHaveScreenshot(name, { animations: 'disabled', caret: 'hide', scale: 'css', style: COVER });
 }
+
+/** The covers: a pink box where a QR code is, and the counting-down bar with its words see-through. */
+const COVER = `
+  [data-testid="ticket-qr"], [data-testid="claim-qr"] { background: #ff00ff !important; }
+  [data-testid="ticket-qr"] *, [data-testid="claim-qr"] * { visibility: hidden !important; }
+  [data-screens-cover], [data-screens-cover] * { color: transparent !important; }
+`;
 
 for (const size of SIZES) {
   test.describe(`Screens at ${size.width} × ${size.height}`, { tag: '@screens' }, () => {
