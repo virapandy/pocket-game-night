@@ -603,8 +603,13 @@ export function PhoneTickets({
     // UX list row 12: only the ticket the cue's line names first says "Pattern filled" (product owner, 3 October).
     const first = cueTickets(cue.fills)[0];
     const choiceOrder = first === undefined ? tickets : [...tickets.filter((t) => t.number === first), ...tickets.filter((t) => t.number !== first)];
-    // The pictures stay small (at most half a full ticket's cells) so every choice fits on one screen.
-    const pictureCell = Math.max(10, Math.min(22, Math.floor(allCell / 2), Math.floor((h - 220) / (tickets.length * 3 + tickets.length * 2))));
+    // The pictures stay small (at most half a full ticket's cells) so every choice fits on one screen. In landscape
+    // the choices sit side by side, so each picture takes its choice's width (up to 24 px cells) to stay readable
+    // (RC fix C1).
+    const n = tickets.length;
+    const pictureCell = landscape
+      ? Math.max(10, Math.min(24, Math.floor((w - 32 - (n - 1) * 8 - n * 28) / (9 * n)), Math.floor((h - 170) / 3)))
+      : Math.max(10, Math.min(22, Math.floor(allCell / 2), Math.floor((h - 220) / (n * 3 + n * 2))));
     return (
       <main className={`screen ${rootClass}`}>
         {screen.name === 'claim-ticket' ? (
