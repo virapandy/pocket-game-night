@@ -149,7 +149,11 @@ export function History({
           </p>
           {unsettled > 0 && (
             <p className="note">
-              {unsettled} of them {unsettled === 1 ? 'is' : 'are'} in unsettled tallies, and will be taken out of them.
+              {past.length === 1
+                ? "It's in an unsettled tally, and will be taken out of it."
+                : unsettled === 1
+                  ? '1 of them is in an unsettled tally, and will be taken out of it.'
+                  : `${unsettled} of them are in unsettled tallies, and will be taken out of them.`}
             </p>
           )}
           <p className="note">Games in progress are kept.</p>
