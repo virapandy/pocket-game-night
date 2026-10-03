@@ -928,3 +928,6 @@ button.tcell { cursor: pointer; }
 .settle-lines { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
 .settle-lines > li { padding: 8px 2px; font-size: 1.1rem; font-weight: 700; border-bottom: 1px solid var(--border); }
 .settle-lines > li:last-child { border-bottom: 0; }
+/* UX row 22 (TAM-140, PLT-005): the "Game over" banner above the host's payouts. */
+.game-over { margin-bottom: 12px; }
+.game-over p { margin: 0; }

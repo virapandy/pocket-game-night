@@ -322,6 +322,7 @@ export function Play({
           )}
         </header>
         <div className="setup-body">
+          <GameOver discarded={view.summary?.result === 'discarded'} phone={phone} money={money} />
           <Summary view={view} />
         </div>
         <div className="bottom-action bottom-actions">
@@ -1033,6 +1034,24 @@ export function Play({
         />
       )}
     </main>
+  );
+}
+
+/**
+ * TAM-140, PLT-005 (UX list row 22): right after End or Discard, a "Game over" banner at the top of the host's
+ * summary, with the payouts still below it. It stays until the host leaves the screen; nothing timed.
+ */
+function GameOver({ discarded, phone, money }: { discarded: boolean; phone: boolean; money: boolean }) {
+  return (
+    <div className="banner game-over" role="status" data-testid="game-over">
+      {discarded ? (
+        <p>
+          Game over · Discarded · Nobody wins.{money ? ' Everyone gets their contribution back.' : ''}
+        </p>
+      ) : (
+        <p>✓ Game over{phone ? ' · Players: phones away. Tap Done with this game.' : ''}</p>
+      )}
+    </div>
   );
 }
 
