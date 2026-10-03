@@ -735,6 +735,42 @@ button, [role="button"], a { touch-action: manipulation; }
 .hand-out-count { white-space: nowrap; }
 .hand-out-qr { display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; }
 .hand-out-code { margin: 0; font-size: 1.15rem; }
+/* RC fix (C1): the words under the QR, and the progress and waiting lines, in one block. */
+.hand-out-info { display: flex; flex-direction: column; gap: 12px; }
+.hand-out-scan { display: flex; flex-direction: column; gap: 6px; text-align: center; }
+.hand-out-status { display: flex; flex-direction: column; gap: 12px; }
+/* RC fix (C1): on short phones everything shows without scrolling: tighter spacing, and the QR shrinks to the room
+   left (never below a size a camera reads easily). */
+@media (max-height: 700px) {
+  .hand-out { gap: 8px; padding-top: max(12px, env(safe-area-inset-top)); }
+  .hand-out-body, .hand-out-info { gap: 6px; }
+  .hand-out-ticket, .hand-out-name { font-size: 1.05rem; }
+  /* "0 of 3 handed out · Waiting: …" run on as one paragraph. */
+  .hand-out-status { display: block; }
+  .hand-out-status > p { display: inline; }
+  .hand-out-status > p + p::before { content: " · "; }
+  .hand-out-code { font-size: 1.05rem; }
+  .hand-out-info .note { font-size: 0.95rem; }
+  .hand-out .qr { width: clamp(170px, calc(100dvh - 450px), 240px) !important; height: clamp(170px, calc(100dvh - 450px), 240px) !important; }
+  .hand-out-actions { padding: 6px 0 max(12px, env(safe-area-inset-bottom)); }
+  .hand-out-actions .button-big { min-height: 52px; }
+}
+/* RC fix (C1): in landscape the QR takes the left column, full height, and the ticket, words and buttons the
+   right one, so nothing overlaps. */
+@media (orientation: landscape) and (max-height: 600px) {
+  .hand-out:has(> .hand-out-body > .hand-out-info) {
+    max-width: 760px; padding-top: max(8px, env(safe-area-inset-top));
+    display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-rows: auto auto minmax(0, 1fr) auto; gap: 6px 20px;
+  }
+  .hand-out:has(> .hand-out-body > .hand-out-info) > .hand-out-body { display: contents; }
+  .hand-out > .top-bar { grid-column: 2; grid-row: 1; }
+  .hand-out .hand-out-ticket { grid-column: 2; grid-row: 2; text-align: left; }
+  .hand-out .hand-out-qr { grid-column: 1; grid-row: 1 / -1; align-self: center; padding-bottom: max(8px, env(safe-area-inset-bottom)); }
+  .hand-out .hand-out-info { grid-column: 2; grid-row: 3; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+  .hand-out .hand-out-scan { text-align: left; }
+  .hand-out .hand-out-actions { grid-column: 2; grid-row: 4; padding: 0 0 max(8px, env(safe-area-inset-bottom)); }
+  .hand-out .qr { width: clamp(160px, calc(100dvh - 72px), 280px) !important; height: clamp(160px, calc(100dvh - 72px), 280px) !important; }
+}
 .ticket-code { font-size: 1.15rem; letter-spacing: 0.04em; white-space: nowrap; font-variant-numeric: tabular-nums; }
 
 /* A ticket: 3 rows of 9 square cells, --cell pixels each, no gaps (so cells never overlap, TAM-121). */
