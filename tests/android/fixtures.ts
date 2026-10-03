@@ -1,6 +1,7 @@
 // The Android emulator fixture: Chrome for Android on the first adb device, the app served from this computer
 // through `adb reverse`, and the screen set to the size a test asks for. The browser tests' helpers
 // (tests/browser/helpers.ts) work unchanged on the page this gives.
+import { execFileSync } from 'node:child_process';
 import { _android, test as base, expect, type AndroidDevice, type BrowserContext, type Page } from '@playwright/test';
 
 export { expect };
@@ -19,7 +20,13 @@ export const test = base.extend<Fixtures, Workers>({
     const devices = await _android.devices();
     if (!devices.length) throw new Error('No Android emulator is running (setup problem, PLT-122): see tests/android/README.md');
     const device = devices[0]!;
-    await device.shell(`reverse tcp:${PORT} tcp:${PORT}`).catch(() => undefined);
+    // `adb reverse` is a command for adb on this computer, not a shell command on the phone: the app server on this
+    // computer's port becomes the emulator's localhost. Without it every page load is refused (setup problem, PLT-122).
+    try {
+      execFileSync('adb', ['-s', device.serial(), 'reverse', `tcp:${PORT}`, `tcp:${PORT}`], { stdio: 'ignore' });
+    } catch {
+      throw new Error(`Could not forward port ${PORT} to the emulator with adb reverse (setup problem, PLT-122)`);
+    }
     // Chrome's first-run screens would sit in front of the page.
     await device.shell('echo "chrome --disable-fre --no-default-browser-check --no-first-run" > /data/local/tmp/chrome-command-line');
     await device.shell('am set-debug-app --persistent com.android.chrome');
