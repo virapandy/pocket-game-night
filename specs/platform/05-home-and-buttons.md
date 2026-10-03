@@ -62,3 +62,19 @@ And choices between equals look equal: "Host a game" and "Join with my ticket" (
 "Phone tickets" (TAM-213)
 And a destructive action ("End game", "Discard…") is never the main button
 And "Play again" on the payout screen is outlined (TAM-197)
+
+## PLT-302: Screen readers hear what the room hears
+Status: approved, owner, 2026-10-03 (UX list row 4, docs/handover.md 2b; UX guideline 26a; docs/games/tambola/ux-review-2026-10-02-full.md)
+Phase: Phase 2 (phone tickets)
+Given the host phone has a screen reader on
+When the host calls 25
+Then the screen reader hears the number and its rhyme, "25. Christmas Day", from a polite live region (WCAG 4.1.3):
+it waits for the reader to finish, and never moves the focus
+When the host taps "Another rhyme"
+Then it hears the new rhyme with the number
+When a verdict is shown, from "Record a win", a scanned claim or a typed ticket number
+Then it hears the verdict's first line, such as "Top Line: ✓ Riya" or "Early Five: ✓ Accepted, ₹60 to Riya" or
+"Top Line: ✗ Bogey: 72 not called"; not the proof line under it (TAM-174)
+And the live region is never seen: it takes no space, covers nothing and sits above nothing on the calling screen
+(TAM-123)
+

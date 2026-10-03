@@ -679,3 +679,20 @@ margin replaces "cells at least 42 px"), `layout.spec.ts` (TAM-126: chips wrap, 
   `Close` has the main look and closes it, back to the calling screen.
 - A player's phone adding a ticket of a new game (QR link, or the menu's `Add a ticket by code`) shows only the new
   ticket and the text "Your tickets from game 7K3P were cleared." (7K3P the old game's code).
+
+## UX list rows of 3 October 2026 (lanes A to C; the rows are the owner's approval; `ux-rows-3-oct.spec.ts`)
+C2 rows written alongside the build, and the C1 rules a screenshot can't show. Row 9 is in `sessions.spec.ts` and
+`session-line.spec.ts`; the C3 rows (6, 8, 20, 21, 23) in `after-the-game.spec.ts`, `phone-claims.spec.ts` and the rule tests.
+
+| Test id or name | Where | Row, scenario |
+|---|---|---|
+| `announcer` | host screen: one polite live region (`aria-live="polite"` or `role="status"`), screen-reader only (clipped to nothing). After a call: exactly "25. Christmas Day" (the number, a dot, the rhyme shown); after "Another rhyme" the new rhyme; after a verdict its first line ("Top Line: ✓ Riya", "Early Five: ✓ Accepted, ₹60 to Riya", "Top Line: ✗ Bogey…"), never the proof line | 4, PLT-302 |
+| dialog named "Dad hasn't got their ticket" | hand-out, after "Start calling" while a ticket waits (the one on screen counts): "Ticket 3 is still waiting…", buttons "Hand it out now", "Give a paper ticket", "Start anyway" | 7, TAM-132 |
+| `game-over` | top of the host's summary. After End with phone tickets "✓ Game over · Players: phones away. Tap Done with this game."; with paper tickets "✓ Game over"; after Discard "Game over · Discarded · Nobody wins. Everyone gets their contribution back." Above `payout-summary` | 22, TAM-140, PLT-005 |
+| `claim-proof` | inside `claim-result`, under the verdict, smaller: "Ticket 1 · game 7K3P · same numbers as your copy" (scanned, accepted or bogey); "… · checked from your copy" (typed ticket number); none for a paper win | 24, TAM-174 |
+| `game-code` | hand-out: "Game 7K3P" above `ticket-qr`; calling screen, inside `top-bar`: "Tambola · Game 7K3P", text, not a control | 25, TAM-172, TAM-107 |
+| `room-game-code` | inside `room-view`: "Game 7K3P", bottom-left, at least 8 px in from the edges, below `current-number` and `last-calls`, under a quarter of the number's font size | 25, TAM-107 |
+| hand-out instruction | "Scan with your camera to get your ticket. Check it says Game 7K3P." | 25, TAM-172 |
+| tickets at 320 × 640 and 375 × 667 | "All tickets" and "One at a time": no sideways sliding, every cell on screen, cells at least 24 px and at least (width − 40) / 9 wide | 2, TAM-122 |
+| History, one past game | "Delete the past game from this phone?…" with "Delete" and "Keep" | 19, PLT-011 |
+| hand-out helper (`phone.ts`) | `confirmHandOut` / `startAnywayIfAsked` answer the row 7 question with "Start anyway" | 7 |

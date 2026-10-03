@@ -108,16 +108,19 @@ And nothing carries over to another game
 (Per ticket confirmed by the owner on 2026-09-28.)
 
 ## TAM-089: The payout screen: each person's row, and "Settle with host"
-Status: approved, owner, 2026-10-01 (both settle buttons reachable without scrolling, TAM-181; UX list row 5); approved, owner, 2026-09-30 (docs/decisions.md 2026-09-30: two settle buttons on the payout screen; was approved, owner, 2026-09-29, docs/games/tambola/changes-2026-09-29-money-and-1b.md: "Host gives Riya ₹77" on each person; was "The payout summary balances", approved, owner, 2026-09-28)
+Status: approved, owner, 2026-10-03 (UX list row 14: the sign stays with the amount; "Host gives" rows are plain text); approved, owner, 2026-10-01 (both settle buttons reachable without scrolling, TAM-181; UX list row 5); approved, owner, 2026-09-30 (docs/decisions.md 2026-09-30: two settle buttons on the payout screen; was approved, owner, 2026-09-29, docs/games/tambola/changes-2026-09-29-money-and-1b.md: "Host gives Riya ₹77" on each person; was "The payout summary balances", approved, owner, 2026-09-28)
 Phase: Phase 1a
 When a game ends
 Then the summary lists each tier with its winner(s) and amount (or "not won") (TAM-088)
 And each person has one row: paid, won, and net (TAM-088)
+And (UX list row 14, approved, owner, 2026-10-03) the net says which way the money goes, in words that stay with the
+amount: "net: gets ₹35" or "net: pays ₹12", never "net –" with "₹12" on another line
 And below the rows are two buttons: "Settle with host" and "Settle with players" (TAM-199)
 And until a settle tab is opened, "Settle with host" has the main look, the screen's one (PLT-301; product owner's
 answer 5, 2 October 2026, docs/handover.md step 3; UX list row 5)
 When the host taps "Settle with host"
 Then it shows what the host, as the bank, gives each person: "Host gives Riya ₹77" (prize won plus money handed back)
+And those rows are plain text, not button-like (UX list row 14, approved, owner, 2026-10-03)
 And the total the host gives out equals the pot, to the rupee
 Edge: with "No money" (TAM-090) nothing is handed over: no "Host gives" and no ₹ anywhere on the screen
 (The session tally keeps its own "Settle up", PLT-028, unchanged.)
@@ -125,7 +128,7 @@ Edge: with "No money" (TAM-090) nothing is handed over: no "Host gives" and no �
 ## TAM-199: "Settle with players": who pays whom for this game
 Status: approved, owner, 2026-09-30 (docs/decisions.md 2026-09-30: two settle buttons on the payout screen)
 Phase: Phase 1a
-Given a game that ended with Riya net +₹100, Asha −₹50 and Dad −₹50
+Given a game that ended with Riya getting ₹100 overall (net), and Asha and Dad each paying ₹50 overall
 When the host taps "Settle with players" on the payout screen
 Then it lists who pays whom for this game only, in the fewest hand-overs: "Asha pays Riya ₹50 · Dad pays Riya ₹50"
 And after those hand-overs everyone is at ₹0: each person's hand-overs add up exactly to their net amount

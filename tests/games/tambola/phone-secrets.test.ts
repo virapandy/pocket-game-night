@@ -155,6 +155,16 @@ describe('TAM-195 and TAM-053 (owner 2026-10-01): the host\'s pattern-cue settin
     }
   });
 
+  it('the host\'s view and each player\'s view say whether the cue is on (settings.patternCue), and off by default', () => {
+    for (const on of [true, false]) {
+      const g = game({ settings: { patternCue: on }, players: [{ id: 'p1', name: 'Riya', tickets: 2 }, { id: 'p2', name: 'Asha', tickets: 1 }] });
+      expect(g.host.patternCue, `host view, cue ${on ? 'on' : 'off'}`).toBe(on);
+      for (const id of ['p1', 'p2']) expect(g.view({ kind: 'player', playerId: id }).patternCue, `player ${id}, cue ${on ? 'on' : 'off'}`).toBe(on);
+    }
+    const plain = game({ players: [{ id: 'p1', name: 'Riya', tickets: 1 }] });
+    expect(plain.view({ kind: 'player', playerId: 'p1' }).patternCue, 'default').toBe(false);
+  });
+
   it('the setting changes nothing else in the QR: same ticket, number, game, name, start time and prizes', () => {
     const on = game({ settings: { patternCue: true } });
     const off = game({ settings: { patternCue: false } });

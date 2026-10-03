@@ -30,7 +30,8 @@
         "home-and-buttons.spec.ts",
         "report-problem.spec.ts",
         "phone-late-joiners.spec.ts",
-        "after-the-game.spec.ts"
+        "after-the-game.spec.ts",
+        "ux-rows-3-oct.spec.ts"
       ]
     },
     {
@@ -66,14 +67,15 @@
         "report-problem.spec.ts",
         "home-and-buttons.spec.ts",
         "lifecycle.spec.ts",
-        "after-the-game.spec.ts"
+        "after-the-game.spec.ts",
+        "ux-rows-3-oct.spec.ts"
       ]
     },
     {
       "name": "Host scans a claim (camera, typed ticket number)",
       "lane": "B",
       "paths": ["src/games/tambola/ui/scanner.ts"],
-      "specs": ["phone-claims.spec.ts", "ux-rows-8-15.spec.ts", "after-the-game.spec.ts"]
+      "specs": ["phone-claims.spec.ts", "ux-rows-8-15.spec.ts", "after-the-game.spec.ts", "ux-rows-3-oct.spec.ts"]
     },
     {
       "name": "Settings (game and start screen): voice, auto-call, late joining, cue switch, dark mode, house rules",
@@ -102,14 +104,15 @@
         "late-joiners.spec.ts",
         "report-problem.spec.ts",
         "home-and-buttons.spec.ts",
-        "sessions.spec.ts"
+        "sessions.spec.ts",
+        "ux-rows-3-oct.spec.ts"
       ]
     },
     {
       "name": "Theme (colours, dark mode)",
       "lane": "B",
       "paths": ["src/games/tambola/ui/theme.ts"],
-      "specs": ["dark-mode.spec.ts", "usability.spec.ts", "close-prize.spec.ts", "layout.spec.ts"]
+      "specs": ["dark-mode.spec.ts", "usability.spec.ts", "close-prize.spec.ts", "layout.spec.ts", "ux-rows-3-oct.spec.ts"]
     },
     {
       "name": "Setup steps: ticket type, players, contribution, prizes, session line",
@@ -136,7 +139,8 @@
         "phone-late-joiners.spec.ts",
         "ux-rows-8-15.spec.ts",
         "held-tickets.spec.ts",
-        "phone-claims.spec.ts"
+        "phone-claims.spec.ts",
+        "ux-rows-3-oct.spec.ts"
       ]
     },
     {

@@ -356,7 +356,8 @@ test.describe('TAM-179: a claim from an old game is looked up in History, and re
     await page.goto(HOME);
     await fromHome(page, 'History');
     await page.getByRole('button', { name: 'Clear all history' }).click();
-    await page.getByRole('dialog').getByRole('button', { name: 'Delete all', exact: true }).click();
+    // One past game: "Delete the past game from this phone?" with "Delete" (PLT-011, UX list row 19).
+    await page.getByRole('dialog').getByRole('button', { name: 'Delete', exact: true }).click();
     await nextGame(page);
     await scanClaim(page, old.claim);
     await expectCalmRefusal(page, `This claim is for another game (code ${old.code})`);

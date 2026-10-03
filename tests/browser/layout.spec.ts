@@ -72,6 +72,8 @@ async function thingsAboveTheNumber(page: Page): Promise<string[]> {
       const r = el.getBoundingClientRect();
       const s = getComputedStyle(el);
       if (r.width === 0 || r.height === 0 || s.visibility === 'hidden' || Number(s.opacity) === 0) continue;
+      // A screen-reader-only live region (UX list row 4, guideline 26a) is clipped to nothing: no one sees it.
+      if (s.clip === 'rect(0px, 0px, 0px, 0px)' || (r.width <= 1 && r.height <= 1 && s.overflow === 'hidden')) continue;
       const ownText = Array.from(el.childNodes).some((n) => n.nodeType === 3 && n.textContent!.trim());
       const control = el.matches('button, a[href], input, select, [role="button"]');
       if ((ownText || control) && r.bottom <= top + 1) out.push(`"${(el.innerText || el.tagName).trim().slice(0, 30)}"`);
@@ -477,21 +479,28 @@ test.describe('TAM-128: the screen-sleep hint is a one-time tip, not a permanent
 });
 
 test.describe('TAM-129: landscape, the phone on a stand facing the room', () => {
-  test('number on the left half, rhyme and last calls on the right, buttons along the bottom; no scrolling; back to portrait unchanged', async ({ page }) => {
+  test('number on the left half, rhyme and last calls on the right, buttons at the bottom ("Next number" 72 px tall, "Record a win" above it, never beside it); no scrolling; back to portrait unchanged', async ({ page }) => {
     await setUpPaperGame(page);
     const calls = await callMany(page, 4);
     const portraitDigits = await digitHeight(currentNumber(page));
     await page.setViewportSize({ width: 844, height: 390 });
     await expect(currentNumber(page)).toHaveText(String(calls[3]));
+    // Turning the phone re-lays the screen; on iPhone (WebKit) the number is 0 px tall for a frame first (measured
+    // 3 October, under 300 ms). Wait at most 1 second for the turn to finish, as for the tickets (phone-tickets.spec.ts).
+    await expect.poll(async () => (await currentNumber(page).boundingBox())?.height ?? 0, { message: 'the number after turning', timeout: 1_000 }).toBeGreaterThan(0);
     const vp = { width: 844, height: 390 };
     const num = await box(currentNumber(page));
     expect(num.x).toBeGreaterThanOrEqual(0);
     expect(num.x + num.width).toBeLessThanOrEqual(vp.width / 2 + 1);
     for (const l of [currentRhyme(page), lastCalls(page)]) expect((await box(l)).x).toBeGreaterThanOrEqual(vp.width / 2 - 1);
-    for (const l of [nextNumber(page), recordAWin(page)]) {
-      const b = await box(l);
-      expect(vp.height - (b.y + b.height)).toBeLessThanOrEqual(40);
-    }
+    // UX list row 11 (owner 2026-10-03): "Next number" at the bottom, 72 px tall; "Record a win" sits just above it,
+    // never beside it.
+    const next = await box(nextNumber(page));
+    const win = await box(recordAWin(page));
+    expect(vp.height - (next.y + next.height), '"Next number" is at the bottom').toBeLessThanOrEqual(40);
+    expect(next.height, '"Next number" is 72 px tall').toBeGreaterThanOrEqual(71.5);
+    expect(win.y + win.height, '"Record a win" is above "Next number", never beside it').toBeLessThanOrEqual(next.y + 0.5);
+    expect(next.y - (win.y + win.height), '"Record a win" sits just above "Next number"').toBeLessThanOrEqual(24);
     expect(await pageScrolls(page)).toBe(false);
     for (const l of [currentNumber(page), currentRhyme(page), nextNumber(page), recordAWin(page)]) expect(await fullyVisible(page, l)).toBe(true);
     // At least as readable as in portrait (owner decision 2026-09-29): digits at least 160 CSS px, never smaller than portrait.

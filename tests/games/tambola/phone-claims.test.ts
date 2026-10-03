@@ -455,6 +455,33 @@ describe('TAM-058: paper and phone tickets can be mixed; a player can switch to 
     expect(g.try({ type: 'to-paper', playerId: 'ghost' }).ok).toBe(false);
   });
 
+  it('UX list row 8 (owner 2026-10-03): "plays on paper" can be undone until the first number is called, then it is final', () => {
+    const g = new PhoneGame({ seed: 'paper-undo' });
+    g.do({ type: 'to-paper', playerId: 'p4' });
+    const rec = g.lastRecordOf('to-paper');
+    expect(g.ticket(4).status).toBe('paper');
+    // Before the first call: undo puts the phone ticket back in play, and its claims work again.
+    const r = g.undo(rec.seq, g.clock + 60_000);
+    expect(r.ok, 'undo of "to-paper" before the first call').toBe(true);
+    expect(g.ticket(4).status).toBe('in-play');
+    expect(PhoneGame.of(g.replayed()).ticket(4).status, 'the undo replays').toBe('in-play');
+    // Again, then a number is called: from then on the switch is final.
+    g.do({ type: 'to-paper', playerId: 'p4' });
+    const again = g.lastRecordOf('to-paper');
+    g.call();
+    const late = g.undo(again.seq, g.clock + 1_000);
+    expect(late.ok, 'undo of "to-paper" after the first call').toBe(false);
+    expect(g.ticket(4).status).toBe('paper');
+  });
+
+  it('UX list row 8: a switch to paper made after the first call can never be undone', () => {
+    const g = new PhoneGame({ seed: 'paper-undo-late' }).call(1);
+    g.do({ type: 'to-paper', playerId: 'p2' });
+    const rec = g.lastRecordOf('to-paper');
+    expect(g.undo(rec.seq, rec.at + 1).ok).toBe(false);
+    expect(g.ticket(2).status).toBe('paper');
+  });
+
   it('a mixed game ends with money that adds up, and replays exactly', () => {
     const g = new PhoneGame({ seed: 'mixed-end' });
     g.do({ type: 'to-paper', playerId: 'p6' });

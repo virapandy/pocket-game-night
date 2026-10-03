@@ -52,11 +52,14 @@ Then all text has contrast of at least 4.5:1 (3:1 for large text and for state i
 And the called number on the room screen has contrast of at least 7:1
 
 ## TAM-107: The called number is readable across the room
-Status: approved, owner, 2026-09-28
+Status: approved, owner, 2026-10-03 (the game code visible to the room, UX list row 25); was approved, owner, 2026-09-28
 Phase: Phase 1a
 When a number is called
 Then its digits are at least 25 mm tall on a typical phone (about 160 CSS px)
 And the last 3 calls are visible on the same screen
+And (UX list row 25, approved, owner, 2026-10-03; phone-ticket games, where the game has a code) the calling
+screen's top bar shows "Tambola · Game 7K3P" as quiet text, not a control, and the room view shows a small
+"Game 7K3P" in its bottom-left corner, kept in from the edge, below the number and the last 3 calls
 
 ## TAM-108: "Show the room" hides the controls
 Status: approved, owner, 2026-09-28
@@ -158,7 +161,7 @@ Then that number goes back into the draw and the previous number is shown again
 And after 5 seconds the option disappears and TAM-071 applies
 
 ## TAM-120: Auto-call mode
-Status: decided 2026-09-28 (owner)
+Status: approved, owner, 2026-10-03 (Settings opened during a game has "← Back" at the top, UX list row 18); was decided 2026-09-28 (owner)
 Phase: Phase 1b
 Given auto-call is off by default
 When the host turns it on (with a one-time warning)
@@ -167,6 +170,8 @@ And the host can change the timer at any time during the game, taking effect fro
 And the host can pause and resume with one tap, always in the same place
 And if the app goes to the background, auto-call pauses and shows "Paused: tap to resume" on return
 And pausing or changing the timer never skips or repeats a number
+And (UX list row 18, approved, owner, 2026-10-03) Settings opened during a game has "← Back" at the top, on the
+screen as it first appears, which returns to the game where it was
 
 ## TAM-121: Players can make text larger
 Status: approved, owner, 2026-09-29 (Phase 2 sign-off, with the product owner's verdict of 2026-09-28)
@@ -175,11 +180,15 @@ When a player turns on "Larger text" on their phone ticket
 Then the ticket and all text grow, and nothing is cut off or overlaps
 
 ## TAM-122: Tickets work in both orientations
-Status: approved, owner, 2026-10-01 (12 px margin in "One at a time", UX list row 15); approved, owner, 2026-09-30 (reworded on the owner's decision of 2026-09-30, docs/decisions.md: 42 px cells in "One at a time" so the ticket fits a 390 px portrait screen; was approved 2026-09-29 with "at least 44 CSS px in One at a time")
+Status: approved, owner, 2026-10-03 (UX list row 2, docs/handover.md 2b: tickets fit the width down to 320 px); approved, owner, 2026-10-01 (12 px margin in "One at a time", UX list row 15); approved, owner, 2026-09-30 (reworded on the owner's decision of 2026-09-30, docs/decisions.md: 42 px cells in "One at a time" so the ticket fits a 390 px portrait screen; was approved 2026-09-29 with "at least 44 CSS px in One at a time")
 Phase: Phase 2 (phone tickets)
 When a player opens their phone tickets
 Then they follow the phone's orientation (TAM-173); nothing forces landscape
-And ticket cells are at least 40 CSS px with all tickets shown, and at least 42 CSS px in "One at a time"
+And on a 390 px or wider portrait screen, ticket cells are at least 40 CSS px with all tickets shown (UX list row 2,
+approved, owner, 2026-10-03: was "at least 40 CSS px" on every screen, and "at least 42 CSS px in One at a time")
+And (UX list row 2) on narrower screens, down to 320 px, the cells shrink so the tickets fit the width, in "All
+tickets" and "One at a time": about 32 CSS px at 320 px, never below 24 CSS px (TAM-104, guideline 41), with no
+sideways sliding and every cell on the screen
 And in "One at a time" on a 390 px portrait screen the whole ticket fits, with no sideways sliding (TAM-191)
 And (UX list row 15, approved, owner, 2026-10-01) in "One at a time" the ticket keeps a margin of at least 12 CSS px
 on each side, so its cells are the width between the margins (about 40 CSS px at 390 px, 39 at 375 px) instead of
@@ -291,10 +300,12 @@ And no permanent line of text takes space on the calling screen
 And when the phone does keep the screen awake, neither the tip nor the icon appears
 
 ## TAM-129: Landscape: the phone on a stand, facing the room
-Status: approved, owner, 2026-09-28 (scenario review outcome: product owner verdict, owner sign-off for Phase 1a.1); was draft (new, tester, 2026-09-28, from the redesign). "At least as readable" decided 2026-09-29 (docs/decisions.md)
+Status: approved, owner, 2026-10-03 (UX list row 11, docs/handover.md 2b: "Next number" 72 px tall, "Record a win" never beside it; guideline 17b); approved, owner, 2026-09-28 (scenario review outcome: product owner verdict, owner sign-off for Phase 1a.1); was draft (new, tester, 2026-09-28, from the redesign). "At least as readable" decided 2026-09-29 (docs/decisions.md)
 Phase: Phase 1a
 Given the host turns the phone to landscape during a game (844 × 390)
-Then the number fills the left half, the rhyme and the last calls sit on the right, and the buttons run along the bottom
+Then the number fills the left half, the rhyme and the last calls sit on the right, and the buttons are at the bottom
+And (UX list row 11, approved, owner, 2026-10-03) "Next number" is at the very bottom and 72 CSS px tall, and "Record
+a win" sits just above it, never beside it
 And nothing needs scrolling, and the number is at least as readable as in portrait:
 its digits are at least 160 CSS px tall (TAM-107) and never smaller than in portrait
 And turning back to portrait keeps the game exactly where it was

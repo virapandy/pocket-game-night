@@ -6,7 +6,7 @@ import { expect, test, type Page } from './fixtures';
 import { calledCount, callMany, dismiss, fromMenu, HOME, nextNumber, typeTicketCode } from './helpers';
 import {
   closePhones, currentHandOut, handOutScreen, newPhone, openHostTickets, phoneGame, phoneTicket,
-  PORTRAIT, scanTicket,
+  PORTRAIT, scanTicket, startAnywayIfAsked,
 } from './phone';
 
 test.afterEach(closePhones);
@@ -53,6 +53,7 @@ test('TAM-212: after the first sheet, Kabir joins with 2 tickets and is handed t
   await expect(page.getByTestId('hand-out-ticket')).toHaveText(/Ticket 8\s*→\s*Kabir \(2 of 2\)/);
   // After his last ticket, back to calling: the numbers already called are kept.
   await page.getByRole('button', { name: /^(Back to calling|Start calling)$/ }).click();
+  await startAnywayIfAsked(page); // UX list row 7: the last ticket on screen still counts as waiting
   await closePrizeUpdate(page);
   await expect(nextNumber(page)).toBeVisible();
   expect(await calledCount(page)).toBe(4);
@@ -75,6 +76,7 @@ test('TAM-212: the late joiner\'s typed code opens his ticket on a phone', async
   await typeTicketCode(phone, h.code);
   await expect(phoneTicket(phone, 7)).toBeVisible();
   await page.getByRole('button', { name: /^(Back to calling|Start calling)$/ }).click();
+  await startAnywayIfAsked(page); // UX list row 7: the last ticket on screen still counts as waiting
   await closePrizeUpdate(page);
   await expect(nextNumber(page)).toBeVisible();
 });

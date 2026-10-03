@@ -99,6 +99,8 @@ A bogey is **not** `ok: false`: it is `ok: true` with the verdict in the state.
 - A recorded win or bogey: any time; later calls stay (TAM-070, TAM-072). Undoing a win reopens its tier.
 - A call: only the latest call, and only if `now - record.at <= 5000` (TAM-119, TAM-071).
 - `end` and `discard`: never.
+- `to-paper` (phone tickets): only while no number has been called; the ticket goes back to `'in-play'` (TAM-058, UX
+  list row 8, owner 2026-10-03). After the first call, never.
 
 ### Game over
 Only after `end` or `discard`. Accepting or closing a Full House never ends the game by itself (TAM-075, TAM-145).
@@ -258,6 +260,7 @@ refused `add-player` adds no tickets.
 - Host view adds `code` (the game code: 4 characters from `2-9 A-H J K M N P-Z`, different between games; worked
   out from the setup, for example `gameId`, **never** from a seed) and
   `tickets: { number, sheet, rows, playerId, status: 'in-play' | 'out' | 'paper' }[]`: every ticket in the game (TAM-056).
+- Host view and player view also carry `patternCue: boolean`, the game's `settings.patternCue` (TAM-195).
 - Room view: no tickets (`tickets` missing or `[]`).
 - Player view (`{ kind: 'player', playerId }`): `tickets: { number, rows }[]`, that player's own tickets only, and
   no called numbers: no number 1–90 in any list in the view except their own tickets' numbers (TAM-050, TAM-051).

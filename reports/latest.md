@@ -1,104 +1,98 @@
 # Test report
-Progress (2026-10-03 09:35 local, tester): SPEED FIRST step 3 (tester part) done: C3 rows 6, 20, 21 and 23 have approved scenarios and failing tests, pushed; the product owner's answers 1-6 applied (no "either answer" left); scoped mutation set up and proved once (one file, 410 s). Next: lanes A, B, C (step 2), then one coder builds the C3 batch (rows 6, 15, 20, 21, 23) against these tests. Rows done: 0 of 25 built; tests ready for rows 6, 15, 20, 21, 23.
+Progress (2026-10-03 10:40 local, tester): lanes A, B, C (C1/C2) and the C3 batch tested on dccc48e; tests the lanes
+broke updated to the approved rows; C2 tests written for rows 4, 7, 22, 24 (row 9 in the session tests); C3 tests pass;
+scoped mutation for the C3 batch 100%. Next: the coder fixes the 3 pattern-cue bugs below (lane A, TAM-195), then a
+release candidate. Rows built: 25 of 25 merged (1-25 in lanes and C3); rows with all their tests green: 22 of 25 (rows 1
+and 3 wait on the cue fixes; row 11's "Early Five once" too).
 
-Commit tested: d0cdd8c (app; no app change since; tests at the commit carrying this report)   Date: 2026-10-03
-Result: RED (expected: tests written first for the C3 rows; the app has not been built for them yet)
+Commit tested: dccc48e (app; lanes A-C at 92a84f9 plus the C3 batch)   Date: 2026-10-03
+Automation run: see "Automation" below (filled in after the push)
+Result: RED (3 real bugs in 4 tests, all in the player's pattern cue, TAM-195; everything else green locally)
 
-Task: `docs/handover.md` SPEED FIRST step 3, C3 rows tests first (`docs/change-sop.md`), and handover items 3 and 3b.
-Scenarios (all `approved, owner, 2026-10-03`, the owner-approved UX list rows):
-- Row 6: TAM-145 and TAM-198 (phone-ticket games: "Add another winner" while a win waits to close).
-- Row 20: TAM-215, new ("Done with this game…").
-- Row 21: PLT-300 (tickets more than 6 hours old open on Home) and TAM-171 (tickets keep their time; stay until cleared).
-- Row 23: TAM-179 (a claim from an ended, discarded or unknown game) and TAM-171 ("Your tickets from game 7K3P were cleared.").
-- Answers 1-6 written into TAM-057 (first visit only), TAM-195 (both prizes named; 3 tickets fit at 812 × 375), TAM-089
-  ("Settle with host" the main look until a tab is opened).
-Names and test ids for the Build workspace: `tests/browser/README.md`, the last two sections.
+Task: `docs/change-sop.md`, the tester's part of C1/C2 lanes A, B, C and the C3 batch (rows 6, 8, 20, 21, 23).
+Scenarios: the UX list rows of `docs/handover.md` 2b, approved, owner, 2026-10-03.
 
-Run locally on the owner's Mac (`caffeinate -i taskpolicy -b`, 3 workers), only the new and changed tests; no full suite.
-Rule tests (`npm test`) not run: no rule test or rules code changed.
-
+## Layers (run on the owner's Mac: `caffeinate -i taskpolicy -b`, at most 3 workers, Android first)
 | Layer | Tests run | Passing | Failing |
 |---|---|---|---|
-| Browser, Android: `after-the-game.spec.ts` (new) | 14 | 2 | 12 (all new, waiting for the build) |
-| Browser, Android: changed tests in `phone-claims`, `pattern-cue`, `home-and-buttons`, `phone-tickets` | 21 | 13 | 8 (2 new for row 6; 6 that now expect the answered behaviour) |
-| Browser, iPhone: the new C3 tests (after-the-game and row 6) | 16 | 2 | 14 (same failures as Android) |
+| Rule tests (`npm test`) | 520 | 520 | 0 |
+| Browser, Android: every spec the lanes broke or I changed (phone-claims, phone-tickets, after-the-game, held-tickets, phone-late-joiners, sessions, session-line, layout, history, ux-rows-3-oct (new), pattern-cue, ux-rows-8-15, home-and-buttons, report-problem) | 206 | 202 | 4 (3 real bugs; one of them in 2 tests) |
+| Browser, iPhone: specs touching layout (layout, phone-tickets, ux-rows-3-oct) | 83 | 82 | 0 (1 skipped, as before) |
+| Scoped mutation, C3 batch (`40717a7..dccc48e`, `rules.ts:875-877`, canUndo "to-paper") | 5 mistakes | 5 caught (100%) | 0 |
+The automation run on 92a84f9 (quick verify 37095588430, Android, 292 tests) was red with 60 failures; all but the 3
+below came from tests needing the approved new behaviour (mostly one shared hand-out step, row 7).
 
-The 2 passing new tests are the "as before" cases (a claim from a game the host phone never ran, or one removed from
-History, still says "This claim is for another game (code …)"). The changed tests that pass: first visit only (TAM-057),
-"Tap to resume", and the cue tests that don't fill two prizes.
+## Failing (real bugs only)
+All three are lane A, the pattern cue with the host's switch on (TAM-195, UX list rows 1 and 11):
+- `pattern-cue.spec.ts` "2 ticket(s)" and "3 ticket(s) on a 375 × 812 phone" (TAM-195, row 1): at 812 × 375 landscape,
+  Larger text off, the line "Ticket 5: Early Five and Top Line filled. Shout if it's right!" wraps onto 2 lines;
+  expected one line, with "More" when it doesn't fit.
+- `pattern-cue.spec.ts` "fills on two tickets…" (TAM-195, product owner's answer 2, row 1): "More" lists "Ticket 1: top
+  row filled", "Ticket 3: top row filled"; expected each ticket to name its prizes: "Ticket 1: Top Line filled" (the
+  line itself, "Tickets 1 and 3: patterns filled · More", is right).
+- `ux-rows-8-15.spec.ts` "Early Five on two tickets is said once" (TAM-195, row 11, and row 3's "Early Five named
+  once"): the line says "Early Five filled on tickets 1 and 2" and "More" says it again; expected Early Five mentioned
+  once across the line and "More", naming the first ticket: "Early Five filled on ticket 1".
 
-## Failing (real bugs only): new tests waiting for the build, each failing for the right reason
-Files: `after-the-game.spec.ts` (G), `phone-claims.spec.ts` (C), `pattern-cue.spec.ts` (P), `phone-tickets.spec.ts` (T),
-`home-and-buttons.spec.ts` (H).
-- TAM-145/TAM-198, row 6 (C, 2 tests): after a phone claim is accepted there is no "Add another winner" at all (only
-  "Close Early Five"); expected it above the main button, working, so a paper player's tie can be added.
-- TAM-215, row 20 (G, 3 tests): the player's menu has Larger text, Add a ticket by code, Report a problem, Home; no
-  "Done with this game…".
-- PLT-300/TAM-171, row 21 (G, 5 tests): tickets 6 h 10 min old (and yesterday's, and last Saturday's) open straight
-  away; expected Home with "Your tickets from 9:15 am" / "yesterday, 9:15 pm" / "Sat 26 Sep", Open and Clear. A
-  typed-code ticket 6 h 10 min after it was added also opens straight away. (Under 6 hours opening as before passes.)
-- TAM-179, row 23 (G, 2 tests): a claim from a game this phone ended, or discarded, says "This claim is for another
-  game (code P7CR)."; expected "That game has ended (game P7CR, 9:20 am). This claim doesn't count." and "That game
-  was discarded (game PTWU). This claim doesn't count."
-- TAM-171, row 23 (G, 2 tests): a new game's ticket (scanned or typed) replaces the old ones but shows no "Your tickets
-  from game CF6T were cleared."
-- TAM-195, answer 2 (T 1 test, P 4 tests): the cue says "Ticket 1: top row filled. Shout if it's right!" and, under
-  More, "Early Five filled on ticket 1"; expected "Ticket 1: Early Five and Top Line filled. Shout if it's right!"
-  (with two tickets, More says "Ticket 1: top row filled"; expected the prize, "Top Line filled"). UX list row 1.
-  The answer-6 check (3 tickets fit at 812 × 375 with Larger text) sits in the 3-ticket test after the wording check,
-  so it runs once the wording is fixed.
-- TAM-089/TAM-197, answer 5 (H): no control on the payout screen has the main look; expected "Settle with host". UX list row 5.
+## Tests updated (the approved rows; nothing unrelated loosened)
+- Lane A: `phone-tickets.spec.ts` landscape test now waits, within its existing 1 second, for the tickets to re-lay
+  after turning (see flaky section). Row 2 (fit to 320 px) added as a new test; the 390 px "at least 40 px" checks stay.
+- Lane B: `layout.spec.ts` "nothing above the number" skips only screen-reader-only elements (the row 4 live region is
+  1 × 1 px and clipped; nothing visible is excused); TAM-129 landscape now checks row 11: "Next number" at the bottom and
+  72 px tall, "Record a win" just above it, never beside it (was: both within 40 px of the bottom); the iPhone turn gets
+  the same 1-second settle. `after-the-game.spec.ts`: one past game is deleted with "Delete" ("Delete the past game",
+  row 19).
+- Lane C: `phone.ts` hand-out step answers the row 7 question with "Start anyway" (`startAnywayIfAsked`, also in
+  `phone-late-joiners.spec.ts`); `phone-tickets.spec.ts` hand-out instruction is row 25's "Scan with your camera to get
+  your ticket. Check it says Game 7K3P."; `sessions.spec.ts` and `session-line.spec.ts` PLT-016: the first game names its
+  session on the session line, no naming screen (row 9; stricter: no question may follow).
+- Shared: `enterTicketNumber` taps "Enter ticket number" only while the form is still closed (with no camera the form
+  now opens by itself while the test was tapping).
+- Specs reworded to the rows: TAM-122 (row 2), TAM-131/TAM-193 (rows 3, 13), PLT-302 new (row 4), TAM-132 (row 7),
+  TAM-058 (row 8), PLT-016 (row 9), TAM-129 (row 11), TAM-089/TAM-199 "gets ₹100 overall" (row 14), TAM-120 (row 18),
+  PLT-011 (rows 5, 19), TAM-140/PLT-005 (row 22), TAM-174 (row 24), TAM-107/TAM-172 (row 25).
 
-## Test changes (the product owner's answers 1-6; each makes a test stricter, none looser)
-- `home-and-buttons.spec.ts`: the unfinished game's row must say exactly "Tap to resume" (was "Tap to resume" or
-  "Resume"); new test "You're ready for game night" on the first visit only; the payout test now also requires
-  "Settle with host" to be the one main button before a tab is opened.
-- `phone-tickets.spec.ts` and `pattern-cue.spec.ts` (TAM-195): the line must name both prizes in prize order (was "top
-  row filled" on the line or under More); with two tickets each names its prizes, Early Five at most once; the
-  3-ticket landscape test with Larger text now also requires all three tickets on screen with no scrolling.
-- `phone.ts`: `newPhone` takes an optional time zone (used only by the new tests). `areas.json`: the new spec added to
-  the areas it reaches.
+## New tests
+- `ux-rows-3-oct.spec.ts` (18 tests, all pass on Android; layout ones on iPhone): row 4 announcer (call and rhyme,
+  "Another rhyme", recorded win, scanned accepted and bogey, never the proof line, never seen); row 7 (the question and
+  its three answers; after "Start anyway" the last ticket is still the player's and his claim is judged as usual); row 22
+  (banner after End with phone tickets, after End with paper, after Discard; above the payouts; nothing timed); row 24
+  (proof line scanned accepted, bogey, by number; none for a paper win); row 25 (game code on hand-out, top bar, room
+  view); row 2 (320 × 640 and 375 × 667).
+- Rule tests: row 8 "to-paper" undo before the first call, never after (`phone-claims.test.ts`); the host's and each
+  player's view carry the cue setting (`phone-secrets.test.ts`), the gap the last scoped mutation found at `rules.ts:766`.
+- C3 tests written first (after-the-game, phone-claims row 6, held-tickets): all pass on dccc48e.
 
-## Scoped mutation (set up this round; owner decision 3 October)
-- `tests/mutation/scoped.mjs` takes a git range, picks the changed lines in `src/games/*/rules/**` and
-  `src/engine/{money,tally,session}.ts`, and runs Stryker on just those (`--whole-files` for a release). Nothing to mutate:
-  "Green", exit 0. Documented in `tests/mutation/README.md`.
-- Proved once, low priority, concurrency 2: 3 changed lines of `rules.ts` (`ae4b7f1~1..ae4b7f1`), 9 mistakes, **410 s**;
-  5 caught (56%). The 4 missed are all on `rules.ts:766` (`patternCue: state.config.settings.patternCue === true`): no
-  rule test checks the player's view for the cue setting (browser tests do). A test gap for me, not an app bug; I'll
-  add a rule test with the C3 batch. Summary: `reports/mutation-scoped.md`.
+## Quarantined
+SOP item 6 (standing owner approval): a test that fails and then passes with no change is set aside for at most 2 days,
+listed here with its date, and fixed by the tester; never deleted or weakened. A test that blocks a release is not
+quarantined without asking the owner.
+| Test | Set aside on | Why | Back by |
+|---|---|---|---|
+| (none) | | | |
 
 ## Flaky or setup problems (not for the Build workspace)
-- None in these runs.
+- Two turn-the-phone tests read the screen one frame too early after the lane B/A layout changes (Android tickets: still
+  stacked at the first frame; iPhone calling screen: the number 0 px tall for a frame). Fixed in the tests by waiting at
+  most 1 second for the turn, the allowance already used for the tickets; not quarantined, since the cause is known.
+- `enterTicketNumber` race (see above): fixed in the helper.
 
-## Requests for the Build workspace (dependencies, scripts, test hooks in the app)
-- New test id: `saved-tickets` (the Home row of tickets more than 6 hours old). Everything else is found by words.
-- Optional script in `package.json`: `"test:mutation:scoped": "node tests/mutation/scoped.mjs"` (the Test role runs it
-  with a range; the C3 batch's quick verify could call it on the batch's range).
-
-## Questions (C3: one list for the owner; the tests use my recommendation for now)
-1. Row 6: after "Add another winner" in a phone-ticket game, what does the host see? Recommended (tested): the paper
-   players as buttons by name, then Confirm (as in paper games), plus scanning another claim QR (the scanner opening
-   at once, or a "Scan a claim" button). If there are no paper players, opening the scanner at once.
-2. Row 20: the question's exact text with held tickets. Recommended (tested in parts): "Tickets 1 · 2 and Grandma's
-   ticket 3 · Game 7K3P. Your marks go too. …"; the tests check "Tickets 1 · 2", "Grandma's ticket 3" and "Game 7K3P"
-   separately. With one ticket: "Ticket 1 · Game 7K3P" (not tested).
-3. Row 21: is 6 hours exactly the line? Recommended: more than 6 hours opens Home (tested at 5 h 50 min and 6 h 10 min,
-   so either reading of "exactly 6 hours" passes).
-4. Row 21: "Older saved tickets with neither time still get the row" can't be set up from the screen without knowing
-   how the app stores tickets. Recommended: the coder adds it; I test it only if the owner wants a stored-ticket
-   fixture (as `format-1.spec.ts` does for saved games).
-5. Row 23: the ⓘ symbol is not checked (an icon may be drawn rather than typed); the tests check no "✗", no "Bogey",
-   and "Close" as the main button. Recommended: keep it that way.
-6. Answer 2 together with row 11 ("Early Five said once"): with two tickets both filling Early Five and Top Line, what
-   does More say? Recommended (tested loosely): each ticket names "Top Line filled", and Early Five appears once, e.g.
-   "Ticket 1: Early Five and Top Line filled · Ticket 3: Top Line filled".
+## Requests for the Build workspace
+- None. The new names (`announcer`, `game-over`, `claim-proof`, `room-game-code`, `game-code` in the top bar) are as
+  built; listed in `tests/browser/README.md`, last section.
 
 ## Notes for the owner (plain English)
-- I wrote the checks for the four "core" rows before any building, as the new way of working asks: "Add another winner"
-  in phone games (row 6), "Done with this game" on players' phones (row 20), old tickets waiting on Home instead of
-  opening by themselves (row 21), and clear messages for claims from an old game (row 23). They fail today only
-  because the app hasn't been changed yet.
-- The six earlier "either answer" checks now follow your product owner's answers, so the app must match them exactly.
-- Mutation checking for core changes now runs only on the lines a change touched; on your Mac a small change takes
-  about 7 minutes at low priority.
+- Row 7 works as built, but asks at the end of every phone-ticket hand-out: the last ticket is on screen when "Start
+  calling" appears, so it always counts as "waiting", even when the player has scanned. "Hand it out now" goes back to
+  the same ticket, and "Start calling" asks again; only "Start anyway" or "Give a paper ticket" get past it. The
+  tests accept this (it matches the row), but the product owner may want "Start calling" on the last ticket to count it
+  as handed out, or a "Yes, they have it" answer. A C2 choice; not a bug.
+- Row 22: in a paper-ticket game the banner says just "✓ Game over" (no "phones away" line, since nobody has a phone
+  ticket). I took that as the sensible reading and wrote it into TAM-140; the product owner can say otherwise.
+- With one past game in unsettled tallies, the History question says "1 of them is in unsettled tallies": slightly odd
+  English with only one game (polish, not tested).
+- The ticket list's "Switch to paper (Dad)" button contains the word "paper", so the older TAM-058 browser check "the
+  ticket says paper" would pass even before switching; the new row 7 test checks the button is gone instead. I'll
+  tighten the older check next round (it doesn't loosen anything).
+- The C3 batch (rows 6, 8, 20, 21, 23): every test written first now passes; mutation caught all 5 deliberate mistakes in
+  the one rules change. Row 8's "Undo" coming back after undoing the first call is accepted (reviewer note).

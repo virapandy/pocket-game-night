@@ -4,13 +4,19 @@ The shared lifecycle rules are in `specs/platform/01-lifecycle.md` (PLT-001 to P
 These scenarios cover what is special to Tambola: the prize pool.
 
 ## TAM-140: Ending versus discarding a game with money
-Status: approved, owner, 2026-09-28 (decided: owner)
+Status: approved, owner, 2026-10-03 (the "Game over" banner, UX list row 22, docs/games/tambola/ux-review-2026-10-03-after-the-game.md item 3); was approved, owner, 2026-09-28 (decided: owner)
 Phase: Phase 1a
 When the host taps "End game" (TAM-066)
 Then prizes already won are paid, and unclaimed tiers follow TAM-088
 When the host taps "Discard game" instead (PLT-005)
 Then the game is void: nobody is paid, and the summary shows each player's contribution to hand back
 And if prizes had already been accepted, the confirmation says so: "2 prizes were already won. Discard anyway?"
+And (UX list row 22, approved, owner, 2026-10-03) the host's summary starts with a banner at the top, with the payouts
+still visible below it:
+- after End: "✓ Game over · Players: phones away. Tap Done with this game." (with paper tickets only, nobody has a
+  phone ticket to put away: "✓ Game over"; the tester's reading of the row, C2, noted in reports/latest.md)
+- after Discard: "Game over · Discarded · Nobody wins. Everyone gets their contribution back."
+And the banner stays until the host leaves the screen; nothing timed takes it away
 
 ## TAM-141: A game shows only its own winnings; the tally is separate
 Status: approved, owner, 2026-09-28 (decided: owner)

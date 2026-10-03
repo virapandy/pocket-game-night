@@ -164,9 +164,8 @@ test.describe('PLT-029: the session is shown, and can be changed, before the gam
     const confirm = (await confirmButton(page).boundingBox())!;
     expect(line.y + line.height, 'above "Confirm prizes"').toBeLessThanOrEqual(confirm.y + 0.5);
     expect(line.height, 'one line').toBeLessThanOrEqual(56);
-    await confirmButton(page).click();
-    await answerSession(page); // keeps the suggested name, if a question still follows (PLT-016)
-    await expect(nextNumber(page)).toBeVisible();
+    // UX list row 9 (owner 2026-10-03): no separate naming screen follows; the line was enough (PLT-016).
+    await confirmWithoutQuestion(page);
     await call(page);
     await endGame(page);
     await openSessions(page);

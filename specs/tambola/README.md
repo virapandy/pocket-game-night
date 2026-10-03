@@ -42,7 +42,7 @@ Every scenario has a **Phase** line.
 |---|---|---|---|
 | **1a: one great game** | Paper tickets on one host phone: calling, rhymes, board, recording wins, undo, the prize pool for a single game, resume, history view, key UX rules; 1a.1 feedback fixes (calling screen and setup redesign); play-test fix: closing a prize is the main action (TAM-198); settle with players (TAM-199) | 102 | 11 |
 | **1b: the evening** | Sessions, tally and settle, reusing a setup, deleting history, late joiners, phone voice and auto-call, dark mode; payouts to the session tally (TAM-197), the session shown before the game (PLT-029) | 12 | 17 |
-| **2: phone tickets** | Tickets made by the app and scanned onto players' phones; claims checked by the host phone, by claim QR; several tickets on one phone | 58 (54 approved, owner, 2026-09-29; TAM-212 added and TAM-053, TAM-117, TAM-194 reworded, approved, owner, 2026-09-30; TAM-213 added and TAM-053, TAM-057, TAM-192, TAM-195 changed, approved, owner, 2026-10-01; TAM-214 added, UX list row 12, approved, owner, 2026-10-01; TAM-215 added and TAM-171, TAM-179 changed, UX list rows 20, 21 and 23, approved, owner, 2026-10-03) | 2 (PLT-300, PLT-301) |
+| **2: phone tickets** | Tickets made by the app and scanned onto players' phones; claims checked by the host phone, by claim QR; several tickets on one phone | 58 (54 approved, owner, 2026-09-29; TAM-212 added and TAM-053, TAM-117, TAM-194 reworded, approved, owner, 2026-09-30; TAM-213 added and TAM-053, TAM-057, TAM-192, TAM-195 changed, approved, owner, 2026-10-01; TAM-214 added, UX list row 12, approved, owner, 2026-10-01; TAM-215 added and TAM-171, TAM-179 changed, UX list rows 20, 21 and 23, approved, owner, 2026-10-03) | 3 (PLT-300 to PLT-302) |
 | **2.5: new-game kit** | The contract suite every game must pass; the generic simulated player | | 14 |
 | **6: connected mode** | Calls, claims and verdicts over the network, only if play-tests justify it | 13 (TAM-133, TAM-200 – TAM-211) | |
 | **7: feedback** | Problem reports, crash reports, sorting | | 10 |
@@ -75,6 +75,15 @@ hold another player's ticket under their name, at most 3 tickets per phone); TAM
 space (TAM-119); TAM-177 "Cancel" as a link; polish: TAM-122/TAM-191 12 px margin in "One at a time" (replaces "cells at
 least 42 px"), TAM-126 chips wrap (replaces sideways scrolling; the UX list names TAM-183), TAM-117 code hint and "Add a
 ticket by code", TAM-193 "Done" outlined, TAM-132 "Waiting: Riya (2 tickets)", TAM-183 "Remove" in grey.
+
+**3 October 2026:** UX list rows 1 to 25 built in lanes A to C (`docs/change-sop.md`; the rows are the owner's approval):
+TAM-122 tickets fit down to 320 px (row 2); TAM-131/TAM-193 blue marks and an orange outline of the chosen prize only
+(rows 3, 13); PLT-302 (new: screen readers hear calls and verdicts, row 4); TAM-132 the question before calling starts
+with a ticket waiting (row 7); TAM-058 "plays on paper · Undo" before the first call (row 8, C3); PLT-016 no separate
+naming screen on the first game (row 9); TAM-129 landscape buttons (row 11); TAM-089/TAM-199 "net: gets ₹35" and plain
+"Host gives" rows (row 14); TAM-120 Settings "← Back" (row 18); PLT-011 "Delete the past game" and the outlined
+"Delete all" (rows 5, 19); TAM-140/PLT-005 the "Game over" banner (row 22); TAM-174 the proof line under each verdict
+(row 24); TAM-107/TAM-172 the game code visible to the room (row 25).
 
 Why this split: 1b adds features on top of 1a without changing how a game is played or stored,
 so 1a can go to family play-tests first, and play-tests decide how much of 1b is needed.

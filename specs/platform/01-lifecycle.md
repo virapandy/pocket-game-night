@@ -47,11 +47,13 @@ Then the app asks: "Resume", "End it (with payouts so far)" or "Discard it"
 And the app never ends or discards a game on its own
 
 ## PLT-005: Discarding a game
-Status: approved, owner, 2026-09-28
+Status: approved, owner, 2026-10-03 (the "Game over" banner, UX list row 22); was approved, owner, 2026-09-28
 Phase: Phase 1a
 When the host taps "Discard game" and confirms ("Discard this game? Nobody wins and it can't be resumed.")
 Then the game is marked Abandoned in history, with everything that happened up to then
 And for games with money, the game's own rule applies (Tambola: TAM-140)
+And the summary that follows starts with a "Game over" banner saying the game was discarded (Tambola: TAM-140, UX list
+row 22, approved, owner, 2026-10-03)
 
 ## PLT-006: An unfinished setup is remembered
 Status: approved, owner, 2026-09-28
@@ -91,11 +93,14 @@ And after that it is gone for good
 And a game in progress or paused cannot be deleted: it must be ended or discarded first
 
 ## PLT-011: Clearing all history
-Status: approved, owner, 2026-09-28
+Status: approved, owner, 2026-10-03 (UX list rows 5 and 19, docs/handover.md 2b: "Delete all" outlined, "Keep" the main look; "Delete the past game" for one); was approved, owner, 2026-09-28
 Phase: Phase 1b
 When the host taps "Clear all history"
 Then a confirmation asks "Delete all 23 past games from this phone? This can't be undone."
 with buttons "Delete all" and "Keep"
+And with only one past game it asks "Delete the past game from this phone? This can't be undone.", with "Delete"
+and "Keep" (UX list row 19, approved, owner, 2026-10-03)
+And "Delete all" (or "Delete") is outlined and "Keep" has the main look (UX list row 5, approved, owner, 2026-10-03; PLT-301)
 And a game in progress is not affected
 
 ## PLT-012: No limit on history, but no surprises either
@@ -130,10 +135,12 @@ Then there is no way to type that game into Tambola history
 (Manual score entry belongs to the Scoreboard game, game four.)
 
 ## PLT-016: Every game belongs to a named session
-Status: decided 2026-09-28 (owner)
+Status: approved, owner, 2026-10-03 (UX list row 9, docs/handover.md 2b: the first game of all has no separate naming screen; reworded to match PLT-029); was decided 2026-09-28 (owner)
 Phase: Phase 1b
-When the host starts the first game of a gathering
-Then the app asks for a session name, suggesting one ("Sunday 28 Sep")
+When the host sets up the first game of all
+Then the session line above "Confirm prizes" (PLT-029) shows a new session with a suggested name: "Session: Sunday
+28 Sep (new) · Change", and "Change" can rename it
+And "Confirm prizes" starts the game in that session: no separate "Session name" screen and no "Start" follow
 And every game started after that joins the same session by default
 When the host starts a game more than 3 hours after the last game in that session ended
 Then the app asks: "Continue 'Diwali at Nani's' or start a new session?"

@@ -71,7 +71,9 @@ test.describe('Host: handing out tickets', () => {
     expect(h.payload).toMatch(/^https?:\/\/[^/]+\/pocket-game-night\//);
     // Owner decision 2026-09-30: 20 characters in 5 groups of 4, such as K7QM-2XPA-9RTD-4HWC-B3NF.
     expect(h.code).toMatch(/^[2-9A-HJKMNP-Z]{4}(-[2-9A-HJKMNP-Z]{4}){4}$/);
-    await expect(handOutScreen(page).getByText(/Scan with your phone's camera/i)).toBeVisible();
+    // UX list row 25 (owner 2026-10-03): "Scan with your camera to get your ticket. Check it says Game 7K3P."
+    const code = await gameCodeOf(page);
+    await expect(handOutScreen(page).getByText(new RegExp(`Scan with your camera to get your ticket\\. Check it says Game ${code}\\.`))).toBeVisible();
   });
 
   test('TAM-117 and TAM-053: each ticket QR as drawn on screen reads back, with jsQR, exactly as its link', async ({ page }) => {
@@ -319,6 +321,10 @@ test.describe('Several tickets on one phone', () => {
     // Turning the phone re-lays the page on the next frame; Android's emulated rotation returns before that frame
     // (measured: under 20 ms). Wait at most 1 second for the turn to finish, then it must fit.
     await expect.poll(() => pageFits(riya.page), { message: 'the page scrolls in landscape', timeout: 1_000 }).toBe(true);
+    // Since 3 October the old layout no longer makes the page scroll for that one frame (measured: tickets still
+    // stacked at the first frame, side by side from the next), so also wait, within the same second, for the turn.
+    await expect.poll(async () => { const [x, y] = await ticketBoxes(riya.page); return Math.abs(x!.y - y!.y); }, { message: 'the turn re-lays the tickets', timeout: 1_000 }).toBeLessThanOrEqual(2);
+    expect(await pageFits(riya.page), 'the page scrolls in landscape').toBe(true);
     const [a, b, c] = await ticketBoxes(riya.page);
     expect(Math.abs(a!.y - b!.y), 'the first two sit side by side').toBeLessThanOrEqual(2);
     expect(b!.x).toBeGreaterThanOrEqual(a!.x + a!.w - 1);

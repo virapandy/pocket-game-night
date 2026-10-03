@@ -80,13 +80,16 @@ Then their ticket appears and they can mark it
 And nothing is fetched from a server: everything the ticket needs is inside the QR link
 
 ## TAM-058: Paper and phone tickets can be mixed in one game
-Status: approved, owner, 2026-09-29 (Phase 2 sign-off, with the product owner's verdict of 2026-09-28)
+Status: approved, owner, 2026-10-03 (UX list row 8, docs/decisions.md 2026-10-03: "plays on paper" can be undone until the first number is called); was approved, owner, 2026-09-29 (Phase 2 sign-off, with the product owner's verdict of 2026-09-28)
 Phase: Phase 2 (phone tickets)
 Given 6 players use phone tickets and 2 use paper tickets from a book
 When claims are made
 Then phone-ticket claims are checked by the host phone, by scanning the claim QR (TAM-177) or entering the ticket number (TAM-174)
 And paper-ticket wins are checked by the anchor and recorded by the host (TAM-037)
 And a player can switch from phone to paper mid-game
+And (UX list row 8, approved, owner, 2026-10-03) "Can't scan? Give a paper ticket" confirms with "Kabir plays on paper ·
+Undo"; until the first number is called the switch can be undone and Kabir's phone ticket is back in play; after the
+first call the switch is final
 (Changed by the tester on 2026-09-28 to fit the change request: paper claims were checked by the numbers read out.)
 
 ## TAM-213: Paper or phone tickets: two equal choices, neither chosen in advance
@@ -107,14 +110,16 @@ Then the choice moves to it; only one is ever chosen
 Wrong input: tapping "Next" before choosing either card does not move on
 
 ## TAM-131: Players mark their own phone ticket, and can unmark
-Status: approved, owner, 2026-09-29 (Phase 2 sign-off, with the product owner's verdict of 2026-09-28)
+Status: approved, owner, 2026-10-03 (UX list row 3, docs/handover.md 2b: marks are deep blue, not red); was approved, owner, 2026-09-29 (Phase 2 sign-off, with the product owner's verdict of 2026-09-28)
 Phase: Phase 2 (phone tickets)
 When a player taps a number on their phone ticket
 Then it shows as marked (fill and mark); tapping again unmarks it; nothing asks for confirmation
 And marks stay on the player's phone and never affect claim checks (TAM-035)
+And (UX list row 3, approved, owner, 2026-10-03; guideline 17a: red is for actions only) a marked cell has a deep blue
+fill (#1E3A5F), a white number and a ✓ of at least 14 CSS px, never red; Quick mark's marked keys look the same (TAM-192)
 
 ## TAM-132: The host sees which tickets have been handed out
-Status: approved, owner, 2026-10-01 (waiting line wording, UX list row 15, docs/games/tambola/ux-review-2026-10-01-action-hierarchy.md); was approved, owner, 2026-09-29 (Phase 2 sign-off, with the product owner's verdict of 2026-09-28)
+Status: approved, owner, 2026-10-03 (the question before calling starts with a ticket waiting, UX list row 7, docs/handover.md 2b); approved, owner, 2026-10-01 (waiting line wording, UX list row 15, docs/games/tambola/ux-review-2026-10-01-action-hierarchy.md); was approved, owner, 2026-09-29 (Phase 2 sign-off, with the product owner's verdict of 2026-09-28)
 Phase: Phase 2 (phone tickets)
 While handing out phone tickets
 When a player has scanned and the host taps "Next ticket"
@@ -122,6 +127,16 @@ Then the host screen shows "7 of 10 handed out" and which tickets are still wait
 And the waiting line names each player with the number of tickets they are still waiting for, in words:
 "Waiting: Riya (2 tickets), Asha (1 ticket), Dad (1 ticket)"; after Riya's first ticket it reads "Riya (1 ticket)"
 (With no internet, the host phone cannot know that a scan worked, so the host confirms each hand-out.)
+When the host taps "Start calling" while a ticket is still waiting (UX list row 7, approved, owner, 2026-10-03; the
+ticket on the hand-out screen counts as waiting until it is confirmed, so this includes the last one)
+Then nothing is called yet, and a question asks "Dad hasn't got their ticket" ("Ticket 3 is still waiting to be
+handed out.") with "Hand it out now", "Give a paper ticket" and "Start anyway"
+When the host taps "Hand it out now"
+Then the hand-out screen shows that ticket and its QR again, and calling has not started
+When the host taps "Give a paper ticket"
+Then that player plays on paper (TAM-058: "Dad plays on paper · Undo") and calling starts
+When the host taps "Start anyway"
+Then calling starts, and the ticket stays in the game as that player's (the pot already counts it, TAM-176 does not apply)
 
 ## TAM-133: A player's phone can show the last calls
 Status: draft (moved to Phase 6 by the product owner, 2026-09-28: offline, a player's phone cannot know the calls; not reviewed for approval)
@@ -154,7 +169,7 @@ Then it replaces the old game's tickets, marks and all, without asking (also tic
 And the new ticket shows one quiet line: "Your tickets from game 7K3P were cleared." (7K3P being the old game's code)
 
 ## TAM-172: Each phone ticket is handed to a named player
-Status: approved, owner, 2026-09-28
+Status: approved, owner, 2026-10-03 (the game code above the QR, UX list row 25); was approved, owner, 2026-09-28
 Phase: Phase 2 (phone tickets)
 Given the players and their tickets per player were set at setup (PLT-024, TAM-045)
 When the host hands out tickets
@@ -162,6 +177,8 @@ Then the host screen shows the next ticket already assigned: "Ticket 3 → Riya 
 And the host can pick a different player from the list before showing the QR
 And the QR carries that player's name, so their phone shows "Riya, ticket 3"
 And the host phone keeps the record of which ticket belongs to whom; it is the only record
+And (UX list rows 19 and 25, approved, owner, 2026-10-03) "Game 7K3P" shows above the QR, with the line "Scan with
+your camera to get your ticket. Check it says Game 7K3P."; a long name never breaks "(1 of 1)" across lines
 
 ## TAM-173: All of a player's tickets are visible together
 Status: approved, owner, 2026-09-29 (Phase 2 sign-off; replaced by docs/games/tambola/changes-2026-09-29-phone-tickets.md; was approved 2026-09-28 as "A player with several tickets keeps them on one phone")
@@ -172,11 +189,16 @@ And in landscape, two sit side by side and the third below, with no scrolling
 And turning the phone keeps every mark
 
 ## TAM-174: A phone-ticket claim credits the ticket's owner automatically
-Status: approved, owner, 2026-09-28 (changed by the change request: entering the number is the fallback to scanning)
+Status: approved, owner, 2026-10-03 (the proof line, UX list row 24, docs/games/tambola/ux-review-2026-10-03-after-the-game.md "Follow-up"); was approved, owner, 2026-09-28 (changed by the change request: entering the number is the fallback to scanning)
 Phase: Phase 2 (phone tickets)
 When the host checks a claim by scanning the claim QR (TAM-177), or, when scanning fails, by entering ticket 3 by hand
 Then the verdict shows the owner ("Top Line: ✓ Accepted, ₹60 to Riya")
 And the prize is credited to Riya, with no need to pick the player (unlike paper tickets, TAM-039)
+And (UX list row 24, approved, owner, 2026-10-03) every verdict shows its proof on a second, smaller line in ordinary
+text colour:
+- from a scanned claim QR, accepted or bogey: "Ticket 3 · game 7K3P · same numbers as your copy"
+- after entering the ticket number ("Check by number", TAM-178): "Ticket 3 · game 7K3P · checked from your copy"
+And screen readers hear the first line, the verdict (PLT-302)
 
 ## TAM-175: The host can correct who holds a ticket
 Status: approved, owner, 2026-09-30 (refusal added on the owner's decision of 2026-09-30, docs/decisions.md; was approved 2026-09-28)
@@ -303,6 +325,8 @@ Then the claim QR is shown above ticket 3, and ticket 3's top row is outlined
 (Four Corners outlines the four corner numbers; Full House the whole ticket; Early Five nothing)
 And the outline is a visual aid only: the phone never says whether the claim is right (the host's scan does, TAM-177)
 And "Done" under the QR is outlined, never the main look, so the QR stands out (UX list row 15, approved, owner, 2026-10-01)
+And (UX list rows 3 and 13, approved, owner, 2026-10-03) the claim screen outlines only the chosen prize's pattern,
+in orange (#D97706), never another prize's, even with the pattern cue on (TAM-195)
 
 ## TAM-194: A player's tickets come from one sheet where possible
 Status: approved, owner, 2026-09-30 (clarified on the owner's decision of 2026-09-30, docs/decisions.md: strictly in order; was approved 2026-09-29)

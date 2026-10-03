@@ -44,15 +44,21 @@ async function playAgain(page: Page) {
 const sessionRows = (page: Page) => page.getByTestId('session');
 
 test.describe('PLT-016: every game belongs to a named session', () => {
-  test('the first game asks for a session name, suggesting the day ("Sunday 4 Oct"); later games join it without asking', async ({ page }) => {
+  test('the first game names its session on the session line, suggesting the day ("Sunday 4 Oct"), with no separate naming screen; later games join it without asking', async ({ page }) => {
     await page.clock.install({ time: T0 });
     await setUpUntilConfirm(page);
-    await page.getByRole('button', { name: 'Confirm prizes' }).click();
-    await expect(sessionNameField(page)).toBeVisible();
+    // UX list row 9 (owner 2026-10-03): the line above "Confirm prizes" is the only place the first session is named.
+    const line = page.getByTestId('session-line');
+    await expect(line).toContainText('Session: Sunday 4 Oct (new)');
+    await line.getByRole('button', { name: /^Change/ }).click();
+    await page.getByRole('button', { name: 'New session', exact: true }).click();
     await expect(sessionNameField(page)).toHaveValue('Sunday 4 Oct');
-    await expect(nextNumber(page).filter({ visible: true })).toHaveCount(0);
     await sessionNameField(page).fill(DIWALI);
-    await page.getByRole('button', { name: 'Start', exact: true }).click();
+    await page.getByRole('button', { name: 'Save', exact: true }).click();
+    await expect(line).toContainText(`Session: ${DIWALI}`);
+    await page.getByRole('button', { name: 'Confirm prizes' }).click();
+    await expectNoSessionQuestion(page);
+    await expect(page.getByRole('button', { name: 'Start', exact: true })).toHaveCount(0);
     await expect(nextNumber(page)).toBeVisible();
     await call(page);
     await endGame(page);

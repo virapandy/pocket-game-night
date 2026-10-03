@@ -116,7 +116,26 @@ export async function currentHandOut(page: Page): Promise<HandOut> {
   return { ticket: Number(m[1]), player: m[2]!.trim(), payload, code };
 }
 
-/** Taps "Next ticket", or "Start calling" after the last ticket. Returns true when calling has started. */
+/**
+ * The question "Start calling" asks while a ticket still waits (TAM-132, UX list row 7, owner 2026-10-03):
+ * "Asha hasn't got their ticket", with "Hand it out now", "Give a paper ticket" and "Start anyway".
+ */
+export const notHandedOutQuestion = (page: Page) => page.getByRole('dialog', { name: /hasn['’]t got (their|her|his) tickets?/ });
+
+/**
+ * Taps "Next ticket", or "Start calling" after the last ticket. Returns true when calling has started.
+ * The last ticket is on screen when "Start calling" shows, so it still counts as waiting and the row 7 question
+ * comes up; the player has scanned it in these tests, so the host answers "Start anyway" (the row 7 tests in
+ * phone-tickets.spec.ts check the question itself).
+ */
+/** After "Start calling" or "Back to calling": answers the row 7 question with "Start anyway" if it comes up. */
+export async function startAnywayIfAsked(page: Page): Promise<void> {
+  await expect(nextNumber(page).or(notHandedOutQuestion(page)).or(page.getByRole('dialog')).first()).toBeVisible();
+  if (await notHandedOutQuestion(page).isVisible()) {
+    await notHandedOutQuestion(page).getByRole('button', { name: 'Start anyway', exact: true }).click();
+  }
+}
+
 export async function confirmHandOut(page: Page): Promise<boolean> {
   const next = page.getByRole('button', { name: 'Next ticket', exact: true });
   if (await next.isVisible()) {
@@ -124,6 +143,7 @@ export async function confirmHandOut(page: Page): Promise<boolean> {
     return false;
   }
   await page.getByRole('button', { name: 'Start calling', exact: true }).click();
+  await startAnywayIfAsked(page);
   await expect(nextNumber(page)).toBeVisible();
   return true;
 }
@@ -246,7 +266,14 @@ export async function enterTicketNumber(host: Page, ticket: number, prize: strin
   const field = host.getByLabel('Ticket number', { exact: true });
   if (!(await field.isVisible())) {
     if (!(await host.getByTestId('claim-scanner').isVisible())) await scanClaimButton(host).click();
-    await host.getByRole('button', { name: 'Enter ticket number', exact: true }).click();
+    // With no camera the form opens by itself, and "Enter ticket number" goes as it does (TAM-178, row 8): tap it
+    // only while the form is still closed.
+    const enter = host.getByRole('button', { name: 'Enter ticket number', exact: true });
+    await expect(async () => {
+      if (await field.isVisible()) return;
+      await enter.click({ timeout: 1000 });
+      await expect(field).toBeVisible({ timeout: 1000 });
+    }).toPass({ timeout: 15_000 });
   }
   await field.fill(String(ticket));
   const prizeButton = host.getByRole('button', { name: prize, exact: true });
