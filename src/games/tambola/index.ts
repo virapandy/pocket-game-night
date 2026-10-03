@@ -48,8 +48,7 @@ export type {
 export const tambolaInfo: GameInfo = {
   id: 'tambola',
   title: 'Tambola',
-  // IMP-001: the card's line on "What shall we play?".
-  tagline: 'Housie on paper or phones · 2 hrs',
+  tagline: 'Housie for the whole room. The anchor calls, everyone shouts.',
 };
 
 export const tambola = {

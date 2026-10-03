@@ -156,7 +156,6 @@ export function PhoneTickets({
   nonce,
   onHome,
   onReport,
-  joinNote,
 }: {
   prefs: Preferences;
   link: string | null;
@@ -166,8 +165,6 @@ export function PhoneTickets({
   onHome: () => void;
   /** Phase 7: "Report a problem" with only this phone's own tickets and marks (PLT-207). */
   onReport?: (subject: ReportSubject) => void;
-  /** IMP-002: the app's last line on "Join with my ticket" for games played on the host's phone alone. */
-  joinNote?: string;
 }) {
   const [game, setGame] = useState<PhoneGameFacts | null>(() => loadPhoneGame(prefs));
   const [screen, setScreen] = useState<Screen>(() =>
@@ -297,7 +294,6 @@ export function PhoneTickets({
             <button type="button" className="button button-quiet button-big" onClick={() => setScreen({ name: 'enter', text: s.text, error: null, typing: true })}>
               Type the code
             </button>
-            {joinNote && <p className="note">{joinNote}</p>}
           </>
         ) : (
           <>

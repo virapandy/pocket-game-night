@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type RefObject } from 'react';
 import { useRegisterSW } from 'virtual:pwa-register/react';
 import { makePlayerReport, makeReport, type Report, type ReportSubject, type SavedGame } from '../engine';
-import { games, hostGames, impostor, type GameId, type HostGameId } from './games';
+import { games, type GameId } from './games';
 import { History, isPast, unsettledSessionName, type Deleted } from './History';
 import { CrashNotice, ReportForm, ReportToast, WaitingReports } from './Report';
 import { APP_VERSION, hasRealDestination, phoneType, queueReport, startReportSender } from './reports';
@@ -16,9 +16,6 @@ type OpenAction = 'resume' | 'end' | 'discard' | 'reuse';
 
 type Route =
   | { name: 'home' }
-  /** "What shall we play?" (IMP-001), after Home's "Host a game". */
-  | { name: 'pick' }
-  | { name: 'impostor' }
   | { name: 'history' }
   | { name: 'past'; id: string }
   | { name: 'sessions' }
@@ -236,7 +233,7 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
     if (decodeURIComponent(location.hash.slice(1)) === want) return;
     history.replaceState(history.state, '', want ? `#${encodeURIComponent(want).replace(/%2F/g, '/')}` : `${location.pathname}${location.search}`);
   }, [route]);
-  useBackGuard(route.name === 'game' || route.name === 'impostor');
+  useBackGuard(route.name === 'game');
   const home = () => setRoute({ name: 'home' });
   const expire = useCallback(() => setDeleted(null), []);
 
@@ -265,29 +262,10 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
       );
     }
   }
-  if (route.name === 'impostor') return <impostor.Screen onExit={home} />;
-  if (route.name === 'pick') {
-    return (
-      <PickGame
-        onBack={home}
-        onPick={(id) => setRoute(id === 'impostor' ? { name: 'impostor' } : { name: 'game', gameId: id })}
-      />
-    );
-  }
   if (route.name === 'phone') {
     const game = gameOf(route.gameId);
     if (game) {
-      return (
-        <game.phone.Screen
-          prefs={preferences}
-          link={route.link}
-          enter={route.enter}
-          nonce={route.nonce}
-          onHome={home}
-          onReport={onReport}
-          joinNote={impostor.joinNote}
-        />
-      );
+      return <game.phone.Screen prefs={preferences} link={route.link} enter={route.enter} nonce={route.nonce} onHome={home} onReport={onReport} />;
     }
   }
   if (route.name === 'history') {
@@ -333,7 +311,6 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
     <Home
       needRefresh={needRefresh}
       onUpdate={() => void updateServiceWorker(true)}
-      onHost={() => setRoute({ name: 'pick' })}
       onGame={(gameId, open) => setRoute(open ? { name: 'game', gameId, open } : { name: 'game', gameId })}
       onHistory={() => setRoute({ name: 'history' })}
       onSessions={() => setRoute({ name: 'sessions' })}
@@ -394,7 +371,6 @@ const SEEN_KEY = 'home.seen';
 function Home({
   needRefresh,
   onUpdate,
-  onHost,
   onGame,
   onHistory,
   onSessions,
@@ -406,8 +382,6 @@ function Home({
   /** Phase 7: "Report a problem" (PLT-200). */
   onReport: () => void;
   onUpdate: () => void;
-  /** "Host a game": "What shall we play?" (IMP-001). */
-  onHost: () => void;
   onGame: (gameId: GameId, open?: { id: string; action: OpenAction }) => void;
   onHistory: () => void;
   onSessions: () => void;
@@ -434,6 +408,7 @@ function Home({
       .sort((a, b) => b.updatedAt - a.updatedAt),
   );
   const [now] = useState(() => Date.now());
+  const host = games[0];
   const pick = (run: () => void) => () => {
     setMenu(false);
     run();
@@ -481,9 +456,9 @@ function Home({
       {firstVisit && <p className="ready">✓ You're ready for game night</p>}
 
       <div className="home-choices">
-        <button type="button" className="choice-card home-card" onClick={onHost}>
+        <button type="button" className="choice-card home-card" onClick={() => onGame(host.info.id as GameId)}>
           <span className="choice-card-title">Host a game</span>
-          <span className="choice-card-text">{hostGames.map((g) => g.info.title).join(' or ')} on this phone</span>
+          <span className="choice-card-text">Run {host.info.title} on this phone</span>
         </button>
         <button type="button" className="choice-card home-card" onClick={() => onTickets('join')}>
           <span className="choice-card-title">Join with my ticket</span>
@@ -544,31 +519,6 @@ function Home({
           </ul>
         </section>
       )}
-    </main>
-  );
-}
-
-/**
- * IMP-001: "What shall we play?": one equal card per game, none with the main look and no main button; a tap
- * opens that game's setup at once. "← Back" returns to Home.
- */
-function PickGame({ onBack, onPick }: { onBack: () => void; onPick: (id: HostGameId) => void }) {
-  return (
-    <main className="screen">
-      <header className="top-bar">
-        <button type="button" className="button button-quiet" onClick={onBack}>
-          ← Back
-        </button>
-      </header>
-      <h1 className="step-title">What shall we play?</h1>
-      <div className="home-choices">
-        {hostGames.map((g) => (
-          <button key={g.info.id} type="button" className="choice-card" onClick={() => onPick(g.info.id)}>
-            <span className="choice-card-title">{g.info.title}</span>
-            <span className="choice-card-text">{g.info.tagline}</span>
-          </button>
-        ))}
-      </div>
     </main>
   );
 }
