@@ -1201,10 +1201,12 @@ function PickPlayers({
           <button
             key={p.id}
             type="button"
-            className={sheet.picked.includes(p.id) ? 'button pick picked' : 'button button-quiet pick'}
+            // PLT-301, guideline 17a: a chosen winner shows an outline, a ✓ and a tint, never the look of "Confirm".
+            className={sheet.picked.includes(p.id) ? 'button button-quiet pick pick-on' : 'button button-quiet pick'}
             aria-pressed={sheet.picked.includes(p.id)}
             onClick={() => toggle(p.id)}
           >
+            {sheet.picked.includes(p.id) && <span aria-hidden="true">✓ </span>}
             {p.name}
           </button>
         ))}
@@ -1269,10 +1271,11 @@ function CheckNumbers({
           <button
             key={p}
             type="button"
-            className={p === pattern ? 'button pick picked' : 'button button-quiet pick'}
+            className={p === pattern ? 'button button-quiet pick pick-on' : 'button button-quiet pick'}
             aria-pressed={p === pattern}
             onClick={() => onChange({ pattern: p, text: state.text })}
           >
+            {p === pattern && <span aria-hidden="true">✓ </span>}
             {PATTERN_NAMES[p]}
           </button>
         ))}

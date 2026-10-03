@@ -153,11 +153,12 @@ export function History({
             </p>
           )}
           <p className="note">Games in progress are kept.</p>
+          {/* PLT-301: a destructive action is never the main button; "Keep" is. */}
           <div className="row">
-            <button type="button" className="button" onClick={clearAll}>
+            <button type="button" className="button button-quiet" onClick={clearAll}>
               Delete all
             </button>
-            <button type="button" className="button button-quiet" onClick={() => setClearing(false)}>
+            <button type="button" className="button" onClick={() => setClearing(false)}>
               Keep
             </button>
           </div>

@@ -106,21 +106,25 @@ function Settle({ payouts }: { payouts: readonly Payout[] }) {
   const handOvers = shown === 'players' ? settleUp(payouts.map((p) => ({ name: p.name, net: p.net }))) : [];
   return (
     <div className="stack-tight">
+      {/* PLT-301, guideline 17a: "Settle with host" has the main look until a tab is opened; an opened tab shows an
+          outline, a ✓ and a tint, never the main look. */}
       <div className="row">
         <button
           type="button"
-          className={shown === 'host' ? 'button grow' : 'button button-quiet grow'}
+          className={shown === null ? 'button grow' : shown === 'host' ? 'button button-quiet grow pick-on' : 'button button-quiet grow'}
           aria-pressed={shown === 'host'}
           onClick={() => setShown(shown === 'host' ? null : 'host')}
         >
+          {shown === 'host' && <span aria-hidden="true">✓ </span>}
           Settle with host
         </button>
         <button
           type="button"
-          className={shown === 'players' ? 'button grow' : 'button button-quiet grow'}
+          className={shown === 'players' ? 'button button-quiet grow pick-on' : 'button button-quiet grow'}
           aria-pressed={shown === 'players'}
           onClick={() => setShown(shown === 'players' ? null : 'players')}
         >
+          {shown === 'players' && <span aria-hidden="true">✓ </span>}
           Settle with players
         </button>
       </div>
