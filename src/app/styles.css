@@ -482,19 +482,24 @@ button, [role="button"], a { touch-action: manipulation; }
 .record-row { display: flex; gap: 8px; }
 .record-row > .button { flex: 1 1 0; min-width: 0; min-height: 52px; padding: 0 8px; }
 
-/* Landscape, the phone on a stand facing the room (TAM-129): number left, the rest right, buttons along the bottom. */
+/* Landscape, the phone on a stand facing the room (TAM-129). UX list row 11: the number fills the left half with the
+   prize chips, notes and the undo toast under it; the rhyme and last calls sit on the right; "Next number" is 72 px tall
+   at the bottom right, with "Record a win" above it, never beside it. The notes sit in the flow, so they never cover the
+   opening hint or the number. Play.tsx switches to this layout with the same media test. */
 @media (orientation: landscape) and (max-height: 600px) {
   .play { max-width: none; padding-bottom: max(8px, env(safe-area-inset-bottom)); }
   .play-bar { min-height: 48px; }
-  .stage { flex-direction: row; gap: 16px; }
-  .current-number { flex: 1 1 0; min-width: 0; min-height: 0; font-size: min(232px, calc(100dvh - 130px)); }
-  .stage-side { flex: 1 1 0; justify-content: center; }
-  /* In landscape the number has the left half to itself; notes float over the top of the right half. */
-  .sleep-tip, .voice-note { position: absolute; top: 0; left: calc(50% + 8px); right: 0; z-index: 5; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15); }
-  .play-bottom { flex-direction: row; }
-  .record-win { flex: 1 1 0; min-height: 56px; }
-  .next-number { flex: 1.4 1 0; height: 56px; }
-  .record-row { flex: 1 1 0; }
+  .land { flex: 1 1 0; min-height: 0; display: flex; gap: 16px; }
+  .land-left, .land-right { flex: 1 1 0; min-width: 0; min-height: 0; display: flex; flex-direction: column; gap: 6px; }
+  .land-left .current-number { flex: 1 1 0; min-height: 0; font-size: min(232px, calc(100dvh - 130px)); }
+  .land-left .sleep-tip, .land-left .voice-note { box-shadow: none; }
+  .land-left .toast-slot { height: 44px; }
+  .land-right { align-items: stretch; text-align: center; }
+  .land-right .current-rhyme { min-height: 0; }
+  .land-right .play-bottom { margin-top: auto; }
+  /* A tall verdict (a phone ticket's) scrolls inside its card, so the buttons below always stay on screen. */
+  .land-right .result-card { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+  .land-right .next-number { height: 72px; }
 }
 
 .checks { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }

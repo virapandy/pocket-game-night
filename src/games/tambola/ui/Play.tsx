@@ -195,6 +195,13 @@ export function Play({
   // Settings or the room view (TAM-134): leaving this screen marks the current number as already shown.
   const popKey = `${flash}:${view.called.length}`;
   const quietKey = useRef(popKey);
+  // Turning the phone rebuilds the layout (UX list row 11); the number must not pop again just for that.
+  const landscape = useLandscape();
+  const lastLandscape = useRef(landscape);
+  if (lastLandscape.current !== landscape) {
+    lastLandscape.current = landscape;
+    quietKey.current = popKey;
+  }
   useEffect(() => {
     if (settingsOpen || room) quietKey.current = popKey;
   }, [settingsOpen, room, popKey]);
@@ -649,6 +656,157 @@ export function Play({
     recordButton
   );
 
+  const numberEl = (
+    <>
+      <div
+        className="current-number raise"
+        data-testid="current-number"
+        onPointerDown={startPress}
+        onPointerUp={endPress}
+        onPointerLeave={endPress}
+        onPointerCancel={endPress}
+        onContextMenu={(e) => e.preventDefault()}
+      >
+        <span key={popKey} className={popKey === quietKey.current ? undefined : 'flash'}>
+          {view.current ? view.current.number : ''}
+        </span>
+      </div>
+    </>
+  );
+  const tipEl = (
+    <>
+      {showTip && (
+        <div className="sleep-tip" role="status">
+          <p>Keep your screen on: this phone may let the screen sleep during the game.</p>
+          <button
+            type="button"
+            className="button button-quiet"
+            onClick={() => {
+              prefs.set(SLEEP_TIP_KEY, true);
+              setTipSeen(true);
+            }}
+          >
+            Got it
+          </button>
+        </div>
+      )}
+    </>
+  );
+  const noteEl = (
+    <>
+      {voiceNote && (
+        <p className="voice-note" role="status">
+          The phone's voice isn't working; the anchor calls.
+        </p>
+      )}
+    </>
+  );
+  const sideEl = (
+    <>
+      {result && showCard ? (
+        <ResultCard
+          record={result}
+          claimIndex={resultClaimIndex}
+          proof={resultProof}
+          view={view}
+          money={money}
+          nameOf={nameOf}
+          onUndo={() => setDialog({ kind: 'undo-record', seq: result.seq })}
+          onDone={() => setResultSeq(null)}
+        />
+      ) : (
+        <>
+          {!view.current && <p className="note first-hint">Tap Next number to call the first number.</p>}
+          <p className="current-rhyme" data-testid="current-rhyme">
+            {view.current?.rhyme?.text ?? ''}
+          </p>
+          <div className="rhyme-actions">
+            <button
+              type="button"
+              className="text-button"
+              disabled={!view.current}
+              onClick={() => {
+                setFlash((f) => f + 1);
+                if (view.current) say(view.current.number, view.current.rhyme);
+              }}
+            >
+              Repeat
+            </button>
+            <span aria-hidden="true">·</span>
+            <button
+              type="button"
+              className="text-button"
+              disabled={!view.current}
+              onClick={() => {
+                const r = move({ type: 'another-rhyme' });
+                const current = r.ok ? tambolaRules.view(r.value.state, { kind: 'host' }).current : null;
+                if (current) say(current.number, current.rhyme);
+              }}
+            >
+              Another rhyme
+            </button>
+            {canSpeak && (voiceOn || autoOn) && (
+              <>
+                <span aria-hidden="true">·</span>
+                <button
+                  type="button"
+                  className="text-button"
+                  onClick={() => {
+                    if (!muted) hush();
+                    setMuted(!muted);
+                  }}
+                >
+                  {muted ? 'Unmute voice' : 'Mute voice'}
+                </button>
+              </>
+            )}
+          </div>
+          <LastCalls numbers={view.lastCalls} />
+        </>
+      )}
+    </>
+  );
+  const toastEl = (
+    <>
+      {!showCard && (
+        <div className="toast-slot">
+          {toastLeft >= 0 && lastRecord && view.current && (
+            <div className="toast" data-testid="undo-toast">
+              Called {view.current.number} ·{' '}
+              <button
+                type="button"
+                className="toast-button"
+                onClick={() => {
+                  if (undoRecord(lastRecord.seq)) {
+                    setToastSeq(null);
+                    pauseAuto();
+                  }
+                }}
+              >
+                Undo ({Math.max(1, Math.ceil(toastLeft / 1000))}s)
+              </button>
+            </div>
+          )}
+          {showResumed && toastLeft < 0 && (
+            <p className="toast" role="status">
+              Game resumed
+            </p>
+          )}
+        </div>
+      )}
+    </>
+  );
+  const autoEl = (
+    <>
+      {autoOn && (
+        <button type="button" className="button button-quiet auto-call" onClick={() => setAutoPaused(!autoPaused)}>
+          {autoPaused ? 'Paused: tap to resume' : 'Pause auto-call'}
+        </button>
+      )}
+    </>
+  );
+  const chipsEl = <PrizeChips view={view} names={nameOf} onClose={closeTier} />;
+
   return (
     <main className={dimmed ? 'play dimmed' : 'play'}>
       {dimmed && <div className="dim-layer" aria-hidden="true" onClick={pulse} />}
@@ -680,143 +838,46 @@ export function Play({
         </button>
       </header>
 
-      <section className="stage" aria-label="Current number">
-        <div
-          className="current-number raise"
-          data-testid="current-number"
-          onPointerDown={startPress}
-          onPointerUp={endPress}
-          onPointerLeave={endPress}
-          onPointerCancel={endPress}
-          onContextMenu={(e) => e.preventDefault()}
-        >
-          <span key={popKey} className={popKey === quietKey.current ? undefined : 'flash'}>
-            {view.current ? view.current.number : ''}
-          </span>
-        </div>
-        {showTip && (
-          <div className="sleep-tip" role="status">
-            <p>Keep your screen on: this phone may let the screen sleep during the game.</p>
-            <button
-              type="button"
-              className="button button-quiet"
-              onClick={() => {
-                prefs.set(SLEEP_TIP_KEY, true);
-                setTipSeen(true);
-              }}
-            >
-              Got it
-            </button>
-          </div>
-        )}
-
-        {voiceNote && (
-          <p className="voice-note" role="status">
-            The phone's voice isn't working; the anchor calls.
-          </p>
-        )}
-
-        <div className="stage-side">
-          {result && showCard ? (
-            <ResultCard
-              record={result}
-              claimIndex={resultClaimIndex}
-              proof={resultProof}
-              view={view}
-              money={money}
-              nameOf={nameOf}
-              onUndo={() => setDialog({ kind: 'undo-record', seq: result.seq })}
-              onDone={() => setResultSeq(null)}
-            />
-          ) : (
-            <>
-              {!view.current && <p className="note first-hint">Tap Next number to call the first number.</p>}
-              <p className="current-rhyme" data-testid="current-rhyme">
-                {view.current?.rhyme?.text ?? ''}
-              </p>
-              <div className="rhyme-actions">
-                <button
-                  type="button"
-                  className="text-button"
-                  disabled={!view.current}
-                  onClick={() => {
-                    setFlash((f) => f + 1);
-                    if (view.current) say(view.current.number, view.current.rhyme);
-                  }}
-                >
-                  Repeat
-                </button>
-                <span aria-hidden="true">·</span>
-                <button
-                  type="button"
-                  className="text-button"
-                  disabled={!view.current}
-                  onClick={() => {
-                    const r = move({ type: 'another-rhyme' });
-                    const current = r.ok ? tambolaRules.view(r.value.state, { kind: 'host' }).current : null;
-                    if (current) say(current.number, current.rhyme);
-                  }}
-                >
-                  Another rhyme
-                </button>
-                {canSpeak && (voiceOn || autoOn) && (
-                  <>
-                    <span aria-hidden="true">·</span>
-                    <button
-                      type="button"
-                      className="text-button"
-                      onClick={() => {
-                        if (!muted) hush();
-                        setMuted(!muted);
-                      }}
-                    >
-                      {muted ? 'Unmute voice' : 'Mute voice'}
-                    </button>
-                  </>
-                )}
-              </div>
-              <LastCalls numbers={view.lastCalls} />
-            </>
-          )}
-          <PrizeChips view={view} names={nameOf} onClose={closeTier} />
-          {!showCard && (
-            <div className="toast-slot">
-              {toastLeft >= 0 && lastRecord && view.current && (
-                <div className="toast" data-testid="undo-toast">
-                  Called {view.current.number} ·{' '}
-                  <button
-                    type="button"
-                    className="toast-button"
-                    onClick={() => {
-                      if (undoRecord(lastRecord.seq)) {
-                        setToastSeq(null);
-                        pauseAuto();
-                      }
-                    }}
-                  >
-                    Undo ({Math.max(1, Math.ceil(toastLeft / 1000))}s)
-                  </button>
-                </div>
-              )}
-              {showResumed && toastLeft < 0 && (
-                <p className="toast" role="status">
-                  Game resumed
-                </p>
-              )}
+      {landscape ? (
+        // UX list row 11 (TAM-107, TAM-129, TAM-138): in landscape the number fills the left half, with the prize
+        // chips, notes and the undo toast under it; the rhyme and last calls sit on the right, and "Next number"
+        // (72 px tall) has the bottom right to itself, with "Record a win" above it, never beside it.
+        <div className="land">
+          <section className="land-left" aria-label="Current number">
+            {numberEl}
+            {chipsEl}
+            {tipEl}
+            {noteEl}
+            {autoEl}
+            {toastEl}
+          </section>
+          <div className="land-right">
+            {sideEl}
+            <div className="play-bottom">
+              {claimRow}
+              {main}
             </div>
-          )}
+          </div>
         </div>
-      </section>
-
-      <div className="play-bottom">
-        {autoOn && (
-          <button type="button" className="button button-quiet auto-call" onClick={() => setAutoPaused(!autoPaused)}>
-            {autoPaused ? 'Paused: tap to resume' : 'Pause auto-call'}
-          </button>
-        )}
-        {claimRow}
-        {main}
-      </div>
+      ) : (
+        <>
+          <section className="stage" aria-label="Current number">
+            {numberEl}
+            {tipEl}
+            {noteEl}
+            <div className="stage-side">
+              {sideEl}
+              {chipsEl}
+              {toastEl}
+            </div>
+          </section>
+          <div className="play-bottom">
+            {autoEl}
+            {claimRow}
+            {main}
+          </div>
+        </>
+      )}
 
       {sheet?.kind === 'menu' && (
         <MenuSheet
@@ -1066,6 +1127,22 @@ function GameOver({ discarded, phone, money }: { discarded: boolean; phone: bool
       )}
     </div>
   );
+}
+
+/** The calling screen's landscape layout (TAM-129): the same test as the landscape block in styles.css. */
+const LANDSCAPE_QUERY = '(orientation: landscape) and (max-height: 600px)';
+
+function useLandscape(): boolean {
+  const [on, setOn] = useState(() => typeof matchMedia === 'function' && matchMedia(LANDSCAPE_QUERY).matches);
+  useEffect(() => {
+    if (typeof matchMedia !== 'function') return;
+    const m = matchMedia(LANDSCAPE_QUERY);
+    const update = () => setOn(m.matches);
+    update();
+    m.addEventListener('change', update);
+    return () => m.removeEventListener('change', update);
+  }, []);
+  return on;
 }
 
 /** A menu item: its words, what it does, and whether it is greyed out. */
