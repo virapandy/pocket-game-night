@@ -46,6 +46,8 @@ export function HandOut({
   const [error, setError] = useState<string | null>(null);
   /** UX list row 7 (TAM-132): "Start calling" while a ticket still waits asks first. */
   const [asking, setAsking] = useState(false);
+  /** Row 7 (C2): the ticket the host chose "Hand it out now" for; the next "Start calling" for it doesn't ask again. */
+  const [askedFor, setAskedFor] = useState<number | null>(null);
   const number = queue[Math.min(index, queue.length - 1)];
   const ticket = view.tickets.find((t) => t.number === number);
   const nameOf = (id: string | undefined) => view.players.find((p) => p.id === id)?.name ?? '';
@@ -161,7 +163,8 @@ export function HandOut({
             if (!last) return onNext();
             // UX list row 7: the last ticket's player isn't confirmed yet, so starting asks first (no one is charged
             // for a ticket they never got).
-            if (doneLabel === 'Start calling' && waiting.size > 0) return setAsking(true);
+            // Asked once: after "Hand it out now" the host has had the chance, so the next tap starts calling.
+            if (doneLabel === 'Start calling' && waiting.size > 0 && askedFor !== number) return setAsking(true);
             onDone();
           }}
         >
@@ -176,7 +179,14 @@ export function HandOut({
             </h2>
             <p className="note">Ticket {number} is still waiting to be handed out.</p>
             <div className="stack-tight">
-              <button type="button" className="button" onClick={() => setAsking(false)}>
+              <button
+                type="button"
+                className="button"
+                onClick={() => {
+                  setAsking(false);
+                  setAskedFor(number);
+                }}
+              >
                 Hand it out now
               </button>
               <button
