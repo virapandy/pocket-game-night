@@ -330,3 +330,63 @@ export async function reveal(page: Page, name: string, ms = 4000) {
 }
 
 export const textOf = (l: Locator) => l.evaluateAll((els) => els.map((e) => (e.textContent ?? '').replace(/\s+/g, ' ').trim()));
+
+/**
+ * Things drawn over each other on screen (the reviewer's layout check for IMP-081 and IMP-088, 3 October 2026): pairs
+ * of visible controls and text that overlap by more than 1 px. Controls count by their boxes, text by the boxes of its
+ * letters; each is clipped by the boxes it scrolls in. An element and what it contains are never a pair. A toast only
+ * counts against controls (it is a bar that may lie over text for its few seconds, but never over a button).
+ */
+export const overlapping = (page: Page): Promise<string[]> => page.evaluate(() => {
+  for (const a of document.getAnimations()) { try { a.finish(); } catch { /* endless, such as the build-up dots */ } }
+  const SKIP = ['announcer', 'private-live'];
+  const CONTROL = 'button, input, [role="button"], [role="switch"], [role="checkbox"]';
+  const BOXY = `${CONTROL}, [data-testid="practice-chip"], [data-testid="undo-toast"], [data-testid="toast"]`;
+  const TOAST = '[data-testid="undo-toast"], [data-testid="toast"]';
+  type R = { l: number; t: number; r: number; b: number };
+  const clip = (el: Element, x: R): R | null => {
+    let { l, t, r, b } = x;
+    for (let a = el.parentElement; a && a !== document.documentElement; a = a.parentElement) {
+      const cs = getComputedStyle(a);
+      if (cs.overflowX === 'visible' && cs.overflowY === 'visible') continue;
+      const c = a.getBoundingClientRect();
+      l = Math.max(l, c.left); t = Math.max(t, c.top); r = Math.min(r, c.right); b = Math.min(b, c.bottom);
+    }
+    l = Math.max(l, 0); t = Math.max(t, 0); r = Math.min(r, window.innerWidth); b = Math.min(b, window.innerHeight);
+    return r - l > 1 && b - t > 1 ? { l, t, r, b } : null;
+  };
+  const items: { el: Element; name: string; rects: R[]; control: boolean; toast: boolean }[] = [];
+  for (const el of Array.from(document.querySelectorAll(`${BOXY}, h1, h2, h3, p, li, [data-testid]`))) {
+    const id = el.getAttribute('data-testid') ?? '';
+    if (SKIP.includes(id) || SKIP.some((s) => el.closest(`[data-testid="${s}"]`))) continue;
+    if (!(el as any).checkVisibility?.({ opacityProperty: true, visibilityProperty: true })) continue;
+    if (el.closest('[aria-hidden="true"]')) continue;
+    let raw: R[];
+    if (el.matches(BOXY)) {
+      const b = el.getBoundingClientRect();
+      raw = [{ l: b.left, t: b.top, r: b.right, b: b.bottom }];
+    } else {
+      raw = [];
+      const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+      for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+        if (!(n.textContent ?? '').trim()) continue;
+        const range = document.createRange();
+        range.selectNodeContents(n);
+        for (const b of Array.from(range.getClientRects())) raw.push({ l: b.left, t: b.top, r: b.right, b: b.bottom });
+      }
+    }
+    const rects = raw.map((x) => clip(el, x)).filter((x): x is R => !!x);
+    if (!rects.length) continue;
+    const text = (el.textContent ?? '').replace(/\s+/g, ' ').trim().slice(0, 28);
+    items.push({ el, name: `${id ? `[${id}] ` : `${el.tagName.toLowerCase()} `}"${text}"`, rects, control: el.matches(CONTROL), toast: el.matches(TOAST) });
+  }
+  const out: string[] = [];
+  for (let i = 0; i < items.length; i++) for (let j = i + 1; j < items.length; j++) {
+    const a = items[i]!, b = items[j]!;
+    if (a.el.contains(b.el) || b.el.contains(a.el)) continue;
+    if ((a.toast && !b.control) || (b.toast && !a.control)) continue;
+    const hit = a.rects.some((x) => b.rects.some((y) => Math.min(x.r, y.r) - Math.max(x.l, y.l) > 1 && Math.min(x.b, y.b) - Math.max(x.t, y.t) > 1));
+    if (hit) out.push(`${a.name} × ${b.name}`);
+  }
+  return out;
+});

@@ -6,7 +6,7 @@ import { expect, test, type Locator, type Page } from './fixtures';
 import { HOME, expectOneMainButton, hasMainLook, hostAGame, isOutlined } from './helpers';
 import {
   CATEGORIES, P4, SAMOSA, TZ, T0, addPlayers, dealAll, doneButton, exact, hold, holdPad, imButton, impostorCard,
-  mainButton, menuButton, onlyEvening, option, passName, phoneWith, playerField, reveal, roundMoves, savedEvening,
+  mainButton, menuButton, onlyEvening, option, overlapping, passName, phoneWith, playerField, reveal, roundMoves, savedEvening,
   startEvening, toPicker, freezeClock, type Move,
 } from './impostor';
 
@@ -207,6 +207,38 @@ test.describe('IMP-003: players are added in seat order, without dragging', () =
     await impostorCard(page).click();
     await expect(whoHeading(page)).toBeVisible();
     await expectList(page, ['Riya', 'Arjun']);
+  });
+
+  test('320 × 568, Larger text off and on: "Who\'s playing?" with four 16-character names: rows in full, 44 × 44 row buttons, nothing drawn over anything else, no sideways scrolling', async ({ page }) => {
+    // The reviewer's layout check, 3 October 2026 (IMP-003 rows; IMP-081's "nothing over anything else" on setup).
+    const LONG = ['Alexandrapetrova', 'Bhagyashreemani', 'Chandrashekharan', 'Dhananjayapillai'];
+    for (const larger of [false, true]) {
+      const where = larger ? 'Larger text' : 'Larger text off';
+      await page.setViewportSize({ width: 320, height: 568 });
+      await phoneWith(page, [], { now: T0, storage: larger ? { 'pgn.pref.largerText': true } : {} });
+      await toWhosPlaying(page);
+      await addPlayers(page, LONG);
+      await playerField(page).fill('Ekaterinavolkova');
+      expect(await page.evaluate(() => document.scrollingElement!.scrollWidth <= window.innerWidth), `${where}: no sideways scrolling`).toBe(true);
+      await expectList(page, LONG);
+      for (const n of LONG) {
+        for (const name of [`Move ${n} up`, `Move ${n} down`, `Remove ${n}`]) {
+          const b = (await page.getByRole('button', { name, exact: true }).boundingBox())!;
+          expect(Math.min(b.width, b.height), `${where}: "${name}" at least 44 × 44`).toBeGreaterThanOrEqual(44);
+        }
+        const shown = await page.getByText(n, { exact: true }).first().evaluate((el) => el.scrollWidth <= el.clientWidth + 1);
+        expect(shown, `${where}: ${n} shown in full`).toBe(true);
+      }
+      for (const l of [playerField(page), addButton(page), nextButton(page)]) {
+        await l.scrollIntoViewIfNeeded();
+        const b = (await l.boundingBox())!;
+        expect(b.x >= -1 && b.x + b.width <= 321, `${where}: within the screen's width (${JSON.stringify(b)})`).toBe(true);
+      }
+      await page.evaluate(() => window.scrollTo(0, 0));
+      expect(await overlapping(page), `${where}: nothing drawn over anything else (top)`).toEqual([]);
+      await page.evaluate(() => window.scrollTo(0, 1e6));
+      expect(await overlapping(page), `${where}: nothing drawn over anything else (bottom)`).toEqual([]);
+    }
   });
 
   test('past names: the last 8 distinct names, newest game first, in seat order, case-insensitive; listed names are not offered', async ({ page }) => {

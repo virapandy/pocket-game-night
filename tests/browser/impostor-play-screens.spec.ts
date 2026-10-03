@@ -5,11 +5,13 @@
 // screen readers (IMP-083), no flashing (IMP-084), kind words (IMP-085), a slipped finger (IMP-086), sounds (IMP-089),
 // after the round (IMP-100 to IMP-108). Every text, name and test id is the one in specs/impostor/README.md.
 import { expect, test, type Locator, type Page } from './fixtures';
-import { HOME, backgroundAndReturn, expectOneMainButton, fromHome, hasMainLook, isOutlined } from './helpers';
+import {
+  HOME, backgroundAndReturn, chooseTicketType, expectOneMainButton, fillPlayers, fromHome, hasMainLook, isOutlined, openTambola, ticketCard, toggle,
+} from './helpers';
 import {
   CATEGORIES, LONGEST, P4, PANI_PURI, SAMOSA, TZ, T0, WORDS, dealAll, exact, expectNoSecrets, freezeClock, fromMenu,
   hold, holdPad, imButton, mainButton, menuButton, onlyEvening, passName, phoneWith, pickerName, press, privateBlock,
-  release, revealLines, roundMoves, savedEvening, savedEvenings, secretTerms, startEvening, textOf, word, type Move, type StartOptions,
+  overlapping, release, revealLines, roundMoves, savedEvening, savedEvenings, secretTerms, startEvening, textOf, word, type Move, type StartOptions,
 } from './impostor';
 
 test.use({ timezoneId: TZ, viewport: { width: 390, height: 844 } });
@@ -634,6 +636,56 @@ test.describe('IMP-081: nothing scrolls during a round, at every size', () => {
   }
 });
 
+test.describe('IMP-081: the room screens at 320 × 568 and 360 × 640: nothing drawn over anything else', () => {
+  const NAME = 'Alexandrapetrova';
+  for (const [width, height] of [[320, 568], [360, 640]] as const) {
+    for (const larger of [false, true]) {
+      test(`${width} × ${height}${larger ? ', Larger text' : ''}: deal, clues, talk, countdown, picker, reveal, result and its toast, practice chip and 16-character names`, async ({ page }) => {
+        test.setTimeout(60_000);
+        await page.setViewportSize({ width, height });
+        const players = [NAME, 'Arjun', 'Meena', 'Kabir', 'Zoya'];
+        await startEvening(page, { players, talking: 'timer', practice: true, storage: larger ? { 'pgn.pref.largerText': true } : {}, seeds: { deals: [{ wordId: LONGEST, impostor: 'Arjun', starter: NAME }] } });
+        const check = async (where: string) => {
+          expect(await noPageScroll(page), `${where}: no page scrolling`).toBe(true);
+          if (await mainButton(page).count()) await expect(mainButton(page), `${where}: main button wholly on screen`).toBeInViewport({ ratio: 1 });
+          await expect(page.getByTestId('practice-chip'), `${where}: the practice chip`).toBeVisible();
+          expect(await overlapping(page), `${where}: nothing drawn over anything else`).toEqual([]);
+        };
+        await check('deal, screen A');
+        await dealAll(page, players);
+        await check('clues');
+        await toTalk(page);
+        await check('talk, timer');
+        await mainButton(page).filter({ hasText: 'Vote now' }).click();
+        await page.clock.runFor(1000);
+        await check('countdown');
+        await page.clock.runFor(5000);
+        await check('picker');
+        await pickerName(page, 'Arjun').click();
+        await check('picker, one picked');
+        await mainButton(page).click();
+        await page.clock.runFor(2600);
+        await check('reveal, caught');
+        await page.clock.runFor(1900);
+        await check('reveal, the guess');
+        await mainButton(page).filter({ hasText: 'Show the word' }).click();
+        await check('reveal, verdict step');
+        await quiet(page, 'Wrong guess').click();
+        await expect(outcome(page)).toBeVisible();
+        await check('result');
+        await quiet(page, "This word didn't work").click();
+        const toast = page.getByTestId('undo-toast');
+        await expect(toast).toBeVisible();
+        await check('result with its toast');
+        const t = (await toast.boundingBox())!;
+        const m = (await mainButton(page).boundingBox())!;
+        expect(t.y >= -1 && t.x >= -1 && t.y + t.height <= height + 1 && t.x + t.width <= width + 1, `the toast wholly on screen (${JSON.stringify(t)})`).toBe(true);
+        expect(t.y + t.height, 'the toast is a bar above the main button').toBeLessThanOrEqual(m.y + 1);
+      });
+    }
+  }
+});
+
 test.describe('IMP-082: lists of 12 to 20 players', () => {
   const twelve = ['Riya', 'Arjun', 'Meena', 'Kabir', 'Zoya', 'Dev', 'Asha', 'Neel', 'Tara', 'Om', 'Isha', 'Ravi'];
   test('390 × 844: 12 names of up to 8 characters in two columns with no scrolling at all', async ({ page }) => {
@@ -796,6 +848,27 @@ test.describe('IMP-085, IMP-086, IMP-089: kind words, a slipped finger, sounds',
     const tick = s[0]!.gain;
     for (const x of s) if (x.name === 'drumroll' || x.name === 'chime') expect(x.gain).toBeLessThanOrEqual(tick);
   });
+
+  test('IMP-089 sound off (Home → "⋯ Menu" → Settings → "This phone" → "Sound" unticked): no sound at all through the deal, countdown and reveal', async ({ page }) => {
+    await phoneWith(page, [], { now: T0 });
+    await fromHome(page, 'Settings');
+    const thisPhone = page.getByRole('tab', { name: 'This phone', exact: true }).or(page.getByRole('button', { name: 'This phone', exact: true })).first();
+    if (await thisPhone.isVisible()) await thisPhone.click();
+    const sound = toggle(page, 'Sound');
+    await expect(sound).toBeVisible();
+    if (await sound.isChecked()) await sound.click();
+    await expect(sound).not.toBeChecked();
+    const settings = await page.evaluate(() => JSON.parse(localStorage.getItem('pgn.pref.tambola.settings') ?? 'null'));
+    expect(settings?.sound, 'the phone\'s sound setting is saved as off').toBe(false);
+    // The same phone, sound still off, plays a round.
+    await toClues(page, { storage: { 'pgn.pref.tambola.settings': settings } });
+    await toTalk(page);
+    await toPickerFromTalk(page);
+    await pickerName(page, 'Arjun').click();
+    await mainButton(page).click();
+    await page.clock.runFor(4500);
+    expect(await sounds(page), 'no sound with sound off').toEqual([]);
+  });
 });
 
 test.describe('IMP-100 to IMP-108: after the round', () => {
@@ -839,6 +912,37 @@ test.describe('IMP-100 to IMP-108: after the round', () => {
     await fromHome(page, 'Sessions');
     await page.getByTestId('session').first().click();
     await expect(page.getByTestId('session-game').filter({ hasText: 'Impostor · 1 round' })).toHaveCount(1);
+  });
+
+  test('IMP-102 and PLT-024: on a phone with no game tonight, Tambola started from Home still has empty name boxes', async ({ page }) => {
+    await phoneWith(page, [], { now: T0 });
+    await openTambola(page);
+    await page.getByRole('button', { name: 'New game' }).click();
+    await chooseTicketType(page, 'paper');
+    await page.getByLabel('Number of players').fill('4');
+    for (const i of [1, 2, 3, 4]) await expect(page.getByLabel(`Name of player ${i}`, { exact: true })).toHaveValue('');
+  });
+
+  test('IMP-102 and PLT-006: an unfinished Tambola setup still comes first after "Play something else"', async ({ page }) => {
+    await atResult(page);
+    await openTambola(page);
+    await page.getByRole('button', { name: 'New game' }).click();
+    await chooseTicketType(page, 'paper');
+    await fillPlayers(page, ['Zoya', 'Farhan', 'Ira']);
+    await page.getByRole('button', { name: 'Next', exact: true }).click();
+    // The host leaves Tambola's setup unconfirmed and goes back to the Impostor evening.
+    await page.goto(HOME);
+    await openEvening(page);
+    await expect(outcome(page)).toHaveText(exact('The crew wins!'));
+    await fromMenu(page, 'End the evening');
+    await page.getByRole('dialog').getByRole('button', { name: 'End the evening', exact: true }).click();
+    await quiet(page, 'Play something else').click();
+    await expect(page.getByRole('heading', { name: 'What shall we play?' })).toBeVisible();
+    await page.getByRole('button', { name: /^Tambola/ }).click();
+    await page.getByRole('button', { name: 'New game' }).click();
+    if (await ticketCard(page, 'paper').isVisible()) await chooseTicketType(page, 'paper');
+    await expect(page.getByLabel('Number of players')).toHaveValue('3');
+    for (const [i, n] of ['Zoya', 'Farhan', 'Ira'].entries()) await expect(page.getByLabel(`Name of player ${i + 1}`, { exact: true })).toHaveValue(n);
   });
 
   test('IMP-103 and IMP-105: History shows "Impostor · 1 round" and "Round 1 · Samosa · Arjun caught, wrong guess"; "Play again" brings the players and choices', async ({ page }) => {
