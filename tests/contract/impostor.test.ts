@@ -2,7 +2,7 @@
 // The driver taps through evenings as a host would, following the "Tap → move" table in specs/impostor/README.md.
 import { expect, it } from 'vitest';
 import { createRng, type Match, type Rng } from '../../src/engine';
-import { need, setupInput, NAMES } from '../games/impostor/helpers';
+import { need, setupInput, withWordId, NAMES } from '../games/impostor/helpers';
 import { contractSuite } from './suite';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -41,6 +41,18 @@ function where(match: Match<any, any, any>) {
   return { phase, n, seen, results, tied, wordDidntWork };
 }
 
+/** Moves that must always be refused. */
+const JUNK: any[] = [
+      { type: 'nonsense' },
+      { type: 'reveal', player: 'Ghost' },
+      { type: 'tie', players: ['Riya'] },
+      { type: 'tie', players: ['Ghost', 'Spirit'] },
+      { type: 'setPlayers', players: ['Riya', 'Arjun'] },
+      { type: 'setPlayers', players: ['Riya', 'Arjun', 'riya'] },
+      { type: 'setPlayers', players: NAMES.concat(['Extra']) },
+      { type: 'startDeal', practice: false },
+    ] as any[];
+
 if (impostorRules) {
   contractSuite('Impostor', {
     rules: impostorRules,
@@ -53,6 +65,16 @@ if (impostorRules) {
     },
     viewers: (setup) => [{ kind: 'room' }, ...setup.config.players.map((p: string) => ({ kind: 'player' as const, playerId: p }))],
     chooseMove(match, rng: Rng) {
+      const move = choose(match, rng);
+      // v3.5: a word-dealing move carries the dealt word's id, as the rules list it (Test hooks item 1).
+      return move && withWordId(impostorRules, match.state, move);
+    },
+    junkMoves: JUNK,
+    maxMoves: 600,
+  });
+}
+
+function choose(match: Match<any, any, any>, rng: Rng): any {
       const w = where(match);
       const players: string[] = impostorRules.view(match.state, { kind: 'host' }).players;
       const any = () => players[rng.int(players.length)]!;
@@ -87,20 +109,9 @@ if (impostorRules) {
         }
         default: return null;
       }
-    },
-    junkMoves: [
-      { type: 'nonsense' },
-      { type: 'reveal', player: 'Ghost' },
-      { type: 'tie', players: ['Riya'] },
-      { type: 'tie', players: ['Ghost', 'Spirit'] },
-      { type: 'setPlayers', players: ['Riya', 'Arjun'] },
-      { type: 'setPlayers', players: ['Riya', 'Arjun', 'riya'] },
-      { type: 'setPlayers', players: NAMES.concat(['Extra']) },
-      { type: 'startDeal', practice: false },
-    ] as any[],
-    maxMoves: 600,
-  });
+}
 
+if (impostorRules) {
   it('impostorRules has the id "impostor" (Test hooks item 1)', () => {
     expect(impostorRules.id).toBe('impostor');
   });

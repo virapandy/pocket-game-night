@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import fc from 'fast-check';
 import { createRng, HOST, replay, undo, type Rng } from '../../../src/engine';
 import {
-  CATEGORIES, DEFAULT_CHOICES, Evening, NAMES, P4, WORDS, pickImpostor, randomOutcome, readTestSeeds, seedList, wordById,
+  CATEGORIES, Evening, changedChoices, NAMES, P4, WORDS, pickImpostor, randomOutcome, readTestSeeds, seedList, wordById,
 } from './helpers';
 
 /**
@@ -30,7 +30,7 @@ function randomEvening(seed: string, rng: Rng, rounds = 1 + rng.int(12)) {
     const roll = rng.int(8);
     if (roll === 0 && players.length < 12) { players = [...players, NAMES[12 + r % 8]!].filter((p, k, a) => a.indexOf(p) === k); e.must({ type: 'setPlayers', players }); }
     if (roll === 1 && players.length > 3) { players = players.slice(1); e.must({ type: 'setPlayers', players }); }
-    if (roll === 2) e.must({ type: 'setChoices', choices: { ...DEFAULT_CHOICES, mode: rng.int(2) ? 'hard' : 'easy', score: rng.int(2) === 0 } });
+    if (roll === 2) e.must({ type: 'setChoices', choices: changedChoices({ mode: rng.int(2) ? 'hard' : 'easy', score: rng.int(2) === 0 }) });
     if (r < rounds - 1) e.nextRound();
   }
   if (rng.int(2) === 0) e.must({ type: 'endEvening' });
@@ -101,7 +101,7 @@ describe('IMP-060: the word and the impostor come from their own seed', () => {
     const e = new Evening({ seed: 'fixed' });
     const setup = e.match.setup;
     e.startDeal().playRound({ kind: 'escaped' });
-    e.must({ type: 'setChoices', choices: { ...DEFAULT_CHOICES, mode: 'hard' } }).nextRound();
+    e.must({ type: 'setChoices', choices: changedChoices({ mode: 'hard' }) }).nextRound();
     expect(e.match.setup).toBe(setup);
     expect(e.match.setup.seeds).toEqual({ word: 'fixed', starter: 'starter-of-fixed' });
   });

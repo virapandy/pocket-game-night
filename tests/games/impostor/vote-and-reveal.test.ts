@@ -1,8 +1,10 @@
 // The vote, the reveal, the last guess and its undo (specs/impostor/04-vote-and-reveal.md): IMP-031 to IMP-035,
-// IMP-037, IMP-038. Screens and timings are checked in the browser tests; here, the moves and views.
+// IMP-037, IMP-038, IMP-039. Screens and timings are checked in the browser tests; here, the moves and views.
+// These evenings play with the last-chance guess on (helpers DEFAULT_CHOICES, lastGuess: true; IMP-039, v3.5). The
+// rounds with the guess off (IMP-033, IMP-076) are in last-guess.test.ts.
 import { describe, expect, it } from 'vitest';
 import { HOST, replay, undo } from '../../../src/engine';
-import { DEFAULT_CHOICES, Evening, NAMES, P4, P5, seedList } from './helpers';
+import { Evening, NAMES, P4, P5, changedChoices, seedList } from './helpers';
 
 const atVote = (seed = 'vote', players = P4) => {
   const e = new Evening({ seed, players });
@@ -65,7 +67,7 @@ describe('IMP-032: a tie gets one re-vote', () => {
   });
 });
 
-describe('IMP-033: caught: the guess comes before the word is shown', () => {
+describe('IMP-039 (was IMP-033 in v2.2): with the last-chance guess on, the guess comes before the word is shown', () => {
   it('after the impostor is revealed: "Show the word", then a verdict; no verdict before the word, and no next round before a verdict', () => {
     for (const s of seedList(20, 'caught')) {
       const e = atVote(s);
@@ -111,7 +113,7 @@ describe('IMP-034: the reveal when the crew got it wrong', () => {
   });
 });
 
-describe('IMP-035: the room judges the last guess', () => {
+describe('IMP-035: the room judges the last-chance guess (guess on)', () => {
   it('both verdicts are accepted and recorded exactly as tapped', () => {
     for (const right of [true, false]) {
       const e = atVote(`judge-${right}`);
@@ -161,7 +163,7 @@ describe('IMP-037: undo the verdict only, before the next round', () => {
   const enders: [string, (e: Evening) => void][] = [
     ['"Next round"', (e) => { e.nextRound(); }],
     ['a change of players', (e) => { e.must({ type: 'setPlayers', players: [...P4, 'Zoya'] }); }],
-    ['a change of choices', (e) => { e.must({ type: 'setChoices', choices: { ...DEFAULT_CHOICES, score: true } }); }],
+    ['a change of choices', (e) => { e.must({ type: 'setChoices', choices: changedChoices({ score: true }) }); }],
     ['the end of the evening', (e) => { e.must({ type: 'endEvening' }); }],
   ];
   for (const [what, end] of enders) {

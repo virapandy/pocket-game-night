@@ -1,6 +1,6 @@
 # 06-words.md (C3)
 
-Copied unchanged from `docs/games/impostor/scenarios.md` (version 2.2, 3 October 2026), the binding contract. Terms, Canonical strings and Test hooks: [README.md](README.md).
+Copied unchanged from `docs/games/impostor/scenarios.md` (version 3.5, 4 October 2026), the binding contract. Terms, Canonical strings and Test hooks: [README.md](README.md).
 
 ## IMP-050: Words come from the list with the chosen audience
 Status: approved, owner, 2026-10-03
@@ -45,27 +45,35 @@ And when even "Allow repeats" would find no word (every allowed word blocked), "
 "Change categories" is the main button
 
 ## IMP-053: Both names are shown where a thing has two
-Status: approved, owner, 2026-10-03
+Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
 Given the word is "Kheer / Payasam"
-Then the crew's `private-word` reads exactly "Kheer / Payasam", line 5 reads "Also called Payesh", and the reveal
-reads "The word was Kheer / Payasam."
+Then the crew's `private-word` reads exactly "Kheer / Payasam", line 5 reads "Also called Payesh", and the result
+screen shows `word-label` "The word was" and `result-word` "Kheer / Payasam" (IMP-033)
 
 ## IMP-054: Every word in the list is valid
-Status: approved, owner, 2026-10-03
+Status: approved, owner, 2026-10-04 (changed: the 4 October list)
 Phase: Impostor 1
 Then every row of `words.csv` (parsed as CSV, quoted fields allowed) and of `words.json` has: an id "IMPW-" plus
-3 digits, unique; a non-empty word; a category that is one of the 9 (IMP-007); audience "family" or "grownups";
+3 digits, unique; a non-empty word; a category that is one of the 9 (IMP-007), except retired rows, which may carry
+a retired category name ("Travel and places", "Cricket and games", "Desi life"); audience "family" or "grownups";
 nonveg "yes" or "no" (`true`/`false` in JSON); a non-empty hint that is not, ignoring case, the word, one of its
 names (split on " / "), or one of its other names
-And no two rows have the same word, ignoring case
-And `words.json` has exactly the rows of `words.csv`, in the same order (309 rows on 3 October 2026)
+And rows are never deleted from `words.csv`: a word taken out gets "yes" in a column `retired` (empty otherwise); a
+retired word is never dealt (IMP-050, IMP-052) but still resolves for replay and History (IMP-096, IMP-105)
+And no two rows (active or retired) have the same word, ignoring case; a renamed word gets a new id and its old row
+is retired with its old word (IMPW-397 → IMPW-403 "Squeezing in one more", IMPW-402 → IMPW-404 "Screen time")
+And `words.json` has exactly the rows of `words.csv`, in the same order, with `retired` as `true`/`false`: the
+shipped list is `words.csv` as of 4 October 2026: 311 rows, 291 active (in the 9 categories of IMP-007) and 20
+retired (`retired` = "yes")
 
 ## IMP-055: The shipped word list file
 Status: approved, owner, 2026-10-03 (detail of IMP-054)
 Phase: Impostor 1
 Then the app ships `content/impostor/words.json`, built from `docs/games/impostor/words.csv` with a real CSV parser
 And each entry is `{ "id": "IMPW-004", "word": "Samosa", "other_names": "", "category": "Food", "audience": "family",
-"nonveg": false, "hint": "Tea time" }`: `other_names` is the CSV text exactly ("" when empty, "Golgappa / Puchka"
+"nonveg": false, "hint": "Tea time", "retired": false }`: `other_names` is the CSV text exactly ("" when empty, "Golgappa / Puchka"
 otherwise)
 And the CSV columns `difficulty`, `close_cousin`, `change` and `notes` are not in the file and not used by the app
+
+---

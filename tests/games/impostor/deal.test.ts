@@ -112,7 +112,7 @@ describe('IMP-015: "Don\'t know this word?" redeals without giving anything away
 
   it('the given-up word is not dealt again in the evening, even after "Allow repeats"', () => {
     const [a, b] = FAMILY_VEG;
-    const blocked = FAMILY_VEG.slice(2); // only a and b can be dealt
+    const blocked = WORDS.map((w) => w.id).filter((id) => id !== a && id !== b); // only a and b can be dealt
     const e = new Evening({ seed: 'given-up', excludedWords: { blocked }, testDeals: [{ wordId: a! }] });
     e.startDeal();
     expect(e.wordId()).toBe(a);

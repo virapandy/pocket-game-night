@@ -1,4 +1,4 @@
-# Impostor: scenarios (version 2.2, 3 October 2026)
+# Impostor: scenarios (version 3.5, 4 October 2026)
 
 Status: **IMP-001 to IMP-108 approved by the owner, 3 October 2026.** Version 2 (same day) makes every approved
 scenario exact, from two independent readers (a coder-reader and a tester-reader, `docs/spec-rules.md` rule 12) and
@@ -7,6 +7,21 @@ only make approved behaviour exact. Version 2.2 adds the last engine-fit details
 `wordDidntWork` is legal, "Start new", the unfinished summary). Version 2.1 (same day) fits the existing engine (`SavedGame`, setup, views, move
 records) after a second coder read and tester read; the one behaviour change is IMP-101 (owner informed).
 IMP-200+ are approved as direction, built later.
+**Version 3 (owner-approved change, 4 October 2026):** one result screen right after the reveal (a 1.5 s build-up,
+then everything at once, the word always shown); the last guess becomes the optional "Last-chance guess" (off by
+default); "How to play" opens only on request (choices screen and menu) and holds the rules; the deal shows
+"Player 2 of 4" and "Everyone else, look away!". Changed IDs carry "Status: approved, owner, 2026-10-04 (changed)".
+**Version 3.5 (same day):** final fixes from a tester read and a coder read; `words.csv` now has 311 rows (291
+active, 20 retired).
+**Version 3.4 (same day):** the "How to play" text (F7), the category switch colour, and the hold layer's exact
+bounds (IMP-010, IMP-070, IMP-072, IMP-007).
+**Version 3.3 (same day):** the UX designer's review of the first build, decided by the product owner (`ux.md`,
+"Review of the first build", F1–F12; guidelines 45a and 46a): a room-sized result screen that scrolls as one page,
+a deal screen whose controls never move, a full-width hold pad, "New word for everyone?", new clue wording, a
+quieter picker for "It's a tie", a summary with a lead line and "More ›", and the setting "Last guess for a caught
+impostor".
+**Version 3.1 (same day):** fixes from a fresh coder read and tester read; dealt word ids are recorded in the moves
+(IMP-096), and old choices read safely (IMP-009, IMP-096).
 After approval the tester copies these into `specs/impostor/` (file names in each section heading) and writes tests.
 **Hand-over only after the Tambola release** (`docs/roadmap.md`). Template: `specs/README.md`.
 
@@ -18,6 +33,36 @@ designed now, built later.
 Change classes (`docs/change-sop.md`): rules, secrets and seeds, saved evenings and the word list format = **C3**
 (tests first; sections 05, 06, 07 and IMP-096); screens = C1/C2.
 
+### What version 3.3 rewords or retires (rule 11)
+- Retired in 3.3: "Caught! <NAME> was the impostor.", "<NAME> was the impostor and escaped!", "Still a tie! <NAME> was
+  the impostor and escaped!", "The word was School trip." as one line, `reveal-line`, "then clockwise: …", the clues
+  main buttons "Talk it over" and "Start the 2-minute timer", "Another round of clues", the switch "Last-chance
+  guess" and its line, "Scores from round 4", `summary-line` "7 rounds · impostor caught 4 · escaped 3", fun line
+  "Rounds played: 7", the summary's separate "Share", "History" and "Discard this evening" buttons, inner scroll
+  areas on the result screen, the scoreboard's "6 rows per column" rule, hold-pad sizes 200 × 160 / 200 × 120,
+  `deal-progress` at 15 px top left, "Everyone else, look away!" at 17 px, `private-word` "fits in 3 lines".
+- New strings in 3.3: "✓ Caught!", "✗ Escaped!", "<NAME> was the impostor", "Still a tie.", "The word was",
+  "Let go to hide", "New word for everyone?" / "New word" / "Back", "Each say one word about your secret:",
+  "Clues done, talk it over", "Clues done, start the 2-minute timer", "One more round of clues", "Not sure?",
+  "1 more minute", "Last guess for a caught impostor" / "Off" / "On", "A caught impostor can steal the round by
+  guessing the word.", "Same as last time", "Scores since round 4", "Arjun wins the night with 2 points!",
+  "Crew 4 · Impostors 3", "More ›".
+- Changed in 3.3: IMP-001, 007, 009, 010, 012, 014, 015, 016, 019, 020, 022, 024, 030, 031, 032, 033, 034, 037, 038,
+  039, 043, 044, 073, 076, 080, 081, 082, 083, 088, 092, 095, 097, 098, 101, 105, 109.
+
+### What version 3 rewords or retires (rule 11)
+- Retired in 3: "Caught red-handed! <NAME> was the impostor.", "Meena was crew!", "The impostor was <NAME>. Escaped!",
+  "Still a tie! The impostor was <NAME>. Escaped!", the dots of the build-up (`build-up-dots`), the timed reveal
+  steps (2.5 s, 4.0 s, 5.5 s, 7.0 s), the automatic "Read this aloud" card ("once per session"), "Start the deal",
+  the menu item "Rules" (now "How to play").
+- New strings in 3: "Caught! <NAME> was the impostor.", "Meena was crew.", "<NAME> was the impostor and escaped!",
+  "Still a tie! <NAME> was the impostor and escaped!", "More options ›", "Last-chance guess", "Player 2 of 4",
+  "Everyone else, look away!", "How to play" (button and menu item).
+- Changed in 3: IMP-005, 007, 008, 010, 011, 012, 013, 017, 031, 033, 034, 035, 037, 038, 041, 044, 070, 071, 072, 075, 080, 081,
+  054, 083, 084, 087, 088, 091, 094, 096, 099, 100, 105. Reworded only, no change in behaviour: IMP-027, 040, 062, 089, 107, 109.
+  New in 3: IMP-019 (detail of IMP-010), IMP-039 (detail of IMP-033), IMP-076
+  (detail of IMP-005).
+
 ### What version 2 rewords or retires (rule 11)
 - Retired wordings: "Caught!" (IMP-085), "Sorry, Meena!", "Who was accused?", "Got it, deal", "We know it",
   "Hold to see your word" as the pad's name (IMP-083), "Sharpest eyes" (IMP-095), "Discard the evening" (IMP-092),
@@ -27,7 +72,7 @@ Change classes (`docs/change-sop.md`): rules, secrets and seeds, saved evenings 
 - Reworded: IMP-001, 003, 006, 008, 010–017, 020–025, 030–035, 037, 040–043, 050–054, 060–063, 070–074, 080–088,
   090–096, 101–107. New detail IDs: IMP-009, 018, 027, 038, 044, 055, 064, 075, 089, 097, 098, 099, 109.
 
-In this folder: copied unchanged from `docs/games/impostor/scenarios.md` (version 2.2) by the Test role, 3 October 2026,
+In this folder: copied unchanged from `docs/games/impostor/scenarios.md` (version 3.5) by the Test role, 4 October 2026,
 one file per section heading. The game guide, journeys and screens are in `docs/games/impostor/` (`guide.md`,
 `lifecycle.md`, `ux.md`); where they differ, these scenarios win. The words are `docs/games/impostor/words.csv`.
 
@@ -36,13 +81,13 @@ one file per section heading. The game guide, journeys and screens are in `docs/
 | File | Scenarios |
 |---|---|
 | [01-setup.md](01-setup.md) | IMP-001 – IMP-009 (9) |
-| [02-deal.md](02-deal.md) | IMP-010 – IMP-018 (9) |
+| [02-deal.md](02-deal.md) | IMP-010 – IMP-019 (10) |
 | [03-clues-and-talk.md](03-clues-and-talk.md) | IMP-020 – IMP-027 (7) |
-| [04-vote-and-reveal.md](04-vote-and-reveal.md) | IMP-030 – IMP-038 (9) |
+| [04-vote-and-reveal.md](04-vote-and-reveal.md) | IMP-030 – IMP-039 (10) |
 | [05-scoring.md](05-scoring.md) | IMP-040 – IMP-044 (5) |
 | [06-words.md](06-words.md) | IMP-050 – IMP-055 (6) |
 | [07-secrets-and-seeds.md](07-secrets-and-seeds.md) | IMP-060 – IMP-064 (5) |
-| [08-room-host-and-teach.md](08-room-host-and-teach.md) | IMP-070 – IMP-075 (6) |
+| [08-room-host-and-teach.md](08-room-host-and-teach.md) | IMP-070 – IMP-076 (7) |
 | [09-usability.md](09-usability.md) | IMP-080 – IMP-089 (10) |
 | [10-lifecycle.md](10-lifecycle.md) | IMP-090 – IMP-099 (10) |
 | [11-after-the-game.md](11-after-the-game.md) | IMP-100 – IMP-109 (10) |
@@ -70,10 +115,13 @@ Every scenario uses these words with exactly these meanings.
 | **Size of an element** | The computed `font-size` of the named `data-testid` element, in CSS px. |
 | **Fits in N lines** | The element's height ≤ N × its computed `line-height`, with `scrollWidth ≤ clientWidth` (nothing cut off, no ellipsis). |
 | **No page scrolling** | `document.scrollingElement.scrollHeight ≤ window.innerHeight` and no horizontal scroll. A box that "scrolls inside" has `overflow-y: auto` and its own height limit; the page itself still does not scroll. |
-| **Room screens** | The screens meant for the whole table: "Pass the phone to…", "No problem! New word coming.", "Welcome back.", clues, talk, countdown, picker, reveal and round result. The **hold screen** (screen B of the deal) is private. |
+| **Room screens** | The screens meant for the whole table: "Pass the phone to…", "No problem! New word coming.", "Welcome back.", clues, talk, countdown, picker and the result screen (with its build-up and, with the last-chance guess, its guess and verdict steps). The **hold screen** (screen B of the deal) is private. |
 | **Round** | From the round's first "Pass the phone to…" screen to its result. A **redeal** ("Don't know this word?", "Deal again", "Start a fresh round") replaces the round in progress with a new deal under the same round number. |
-| **Completed round** | A round that reached a result: escaped, or caught plus a verdict. Practice rounds included. Redealt rounds and rounds dropped by the end of the evening are not completed. |
+| **Completed round** | A round that reached its result: escaped (`reveal` of a crew member, or `stillTie`); caught with the last-chance guess off (`reveal` of the impostor); caught with it on, once a verdict is tapped (`verdict`). Practice rounds included. Redealt rounds and rounds dropped by the end of the evening are not completed. |
 | **Counted round** | A completed round that is not the practice round. **Round numbers** count only counted rounds: round 1 is the first counted round; the round in progress is number (counted rounds so far + 1); the practice round has no number. |
+| **Last-chance guess** | The choice `lastGuess` (IMP-076), shown to the host as "Last guess for a caught impostor" (Off / On), off by default: when on, a caught impostor may guess the word before it is shown (IMP-039). |
+| **Text button** | A button with no outline and no fill, its text 17 px (21 px with Larger text), its tap area at least 48 px tall and 44 px wide. |
+| **Page scrolls as one** | On the result screen and the summary (guideline 46a): only the page scrolls; no element inside has its own scroll area; only the main button stays pinned. |
 | **Caught / escaped** | **Caught**: the vote revealed the impostor (whatever the guess). **Escaped**: the vote revealed a crew member, or the re-vote ended "Still a tie". The practice round counts as neither. |
 | **Evening** | One Impostor game: from the first "Start round" to ended or discarded. One saved game (engine `SavedGame`) per evening. "Change how we play" never starts a new evening. |
 | **Tonight / tonight's session** | The session (PLT-016) the evening belongs to. "Tonight's" counts on the result screen count this evening's counted rounds only. |
@@ -87,8 +135,11 @@ Every scenario uses these words with exactly these meanings.
 Example players used throughout, in seat order: **Riya, Arjun, Meena, Kabir** (and **Zoya** where five are needed).
 Example words, all real rows of `words.csv`: **Samosa** (IMPW-004, Food, family, hint "Tea time", no other names);
 **Pani puri** (IMPW-005, Food, other names "Golgappa / Puchka", hint "Street corner"); **Kheer / Payasam** (IMPW-007,
-Food, other names "Payesh", hint "Cardamom"); **Five more minutes, then phone off** (IMPW-402, School and childhood,
-the longest word, 33 characters).
+Food, other names "Payesh", hint "Cardamom"); **School trip** (IMPW-203, School and childhood, other names
+"Excursion", hint "Headcount"); **Mummy finding it in two seconds** (the longest word, 31 characters).
+`words.csv` has 311 rows (4 October 2026): 291 active rows in 9 categories and 20 retired rows (`retired` = "yes").
+The 9 categories: Food, Festivals and occasions, Around the house, Out and
+about, Films, music and TV, Sports and games, School and childhood, Weddings and family, Everyday moments.
 
 ---
 
@@ -103,7 +154,7 @@ U+2192; "✓" is U+2713; "›" is U+203A; "–" in "3–20" is U+2013; apostroph
 | Home, unfinished row | "Impostor, 8:40 pm, round 4" and "Tap to resume" | inside `unfinished-games` | IMP-001 |
 | What shall we play? | heading "What shall we play?" | h1 | IMP-001 |
 | Tambola card | "Tambola" · "Housie on paper or phones · 2 hrs" | button, name starts "Tambola" | IMP-001 |
-| Impostor card | "Impostor" · "Find who doesn't know the word · 3–20 players · about 4 min a round" | button, name starts "Impostor" | IMP-001 |
+| Impostor card | "Impostor" · "Find who doesn't know the word · 3–20 players · about 4 min a round" ("3–20 players" never breaks across lines) | button, name starts "Impostor" | IMP-001 |
 | Resume card | "Impostor · round 4 · Tap to resume" | button `resume-card` | IMP-001 |
 | Join with my ticket, last line | "Playing Impostor? It's all on the host's phone. Nothing to join, just play along!" | paragraph | IMP-002 |
 | Who's playing? | heading "Who's playing?"; line "Sit in a circle. This is the passing and clue order." | h1; paragraph | IMP-003 |
@@ -111,51 +162,55 @@ U+2192; "✓" is U+2713; "›" is U+203A; "–" in "3–20" is U+2013; apostroph
 | Row buttons | "Move Riya up" (▲), "Move Riya down" (▼), "Remove Riya" (✕) | buttons, accessible names | IMP-003 |
 | Messages | "Riya is already playing. Add an initial, like Riya S." · "Add at least 3 players." · "20 players is the most." | `role="alert"` paragraph | IMP-003 |
 | Filled-in list | quiet "Clear list"; toast "List cleared · Undo" | button; `undo-toast` | IMP-004 |
-| Choices | heading "How do you want to play?"; groups "Mode", "Talking", "Score", "Words" | h1; `role="group"` named by its label | IMP-005 |
+| Choices | heading "How do you want to play?"; small line "Same as last time" when the choices were carried over (IMP-009); groups "Mode", "Talking", "Score", "Words" | h1; `role="group"` named by its label | IMP-005 |
 | Options | "Easy" / "Hard"; "Free flow" / "Timer"; "No" / "Yes"; "Whole family" / "+ Grown-ups" | buttons with `aria-pressed` | IMP-005 |
 | Option lines | Easy "The impostor gets the category and a hint." · Hard "The impostor gets nothing and never starts." · Free flow "Talk as long as you like, then tap Vote now." · Timer "Two minutes to talk, then a chime." · No "Just play. We count catches and escapes." · Yes "Points every round, totals for the night." · Whole family "Words kids and grandparents know." · + Grown-ups "Adds words kids or elders may not know." | small line under the group | IMP-005 |
 | Categories row | "Categories: all 9 ›" / "Categories: 7 of 9 ›" | button | IMP-007 |
 | Categories sheet | heading "Categories"; 9 switches named exactly as the categories; switch "Include non-veg food"; message "Keep at least one category."; main "Done" | `role="switch"` each | IMP-007 |
+| More options | quiet "More options ›"; sheet heading "More options"; group "Last guess for a caught impostor" with options "Off" / "On"; small line "A caught impostor can steal the round by guessing the word."; main "Done" | button; `role="group"` with buttons with `aria-pressed` | IMP-076 |
+| Choices, How to play | quiet "How to play" (right half of the row directly above "Start round"; "More options ›" on the left) | button | IMP-070 |
 | Choices main | "Start round" | main button | IMP-005 |
-| Read-aloud card (no menu) | heading "Read this aloud"; 4 lines (IMP-070); main "Start the deal"; quiet "Practice round first" | h1; `ol` with 4 `li` | IMP-070 |
+| How to play (no menu) | heading "How to play"; heading "Read this aloud" and 4 lines (IMP-070); the rules (IMP-072); main "Done"; quiet "Practice round first" (only from the choices screen of a new evening) | h1; h2 and `ol` with 4 `li`; paragraphs | IMP-070, 071, 072 |
 | No words left | heading "You've played every word in these categories tonight!"; line "Turn on more categories or + Grown-ups."; main "Allow repeats"; quiet "Change categories" | h1; paragraph | IMP-052 |
-| Deal, screen A | "Pass the phone to" and `<NAME>`; main "I'm <Name>" | paragraph; `pass-name`; main button | IMP-010 |
+| Deal, screen A | "Player 2 of 4"; "Pass the phone to" and `<NAME>`; "Everyone else, look away!"; main "I'm <Name>" | `deal-progress`; paragraph; `pass-name`; paragraph `look-away`; main button | IMP-010, 019 |
 | Deal, after a return | "Welcome back." above screen A | paragraph | IMP-090 |
-| Deal, screen B | `<NAME>` at the top; pad "Hold here to see your word"; quiet "Tap instead" | heading; button `hold-pad`, accessible name = its visible text | IMP-010, 083 |
-| Deal, after the first hold | main "Done, pass to <Name>" (last player: "Done, everyone's seen"); quiet "Don't know this word?" | main button; quiet button | IMP-010, 015 |
+| Deal, screen B | "Player 2 of 4"; `<NAME>`; pad "Hold here to see your word", while held "Let go to hide"; quiet "Tap instead" | `deal-progress`; heading `pass-name`; button `hold-pad`, accessible name = its visible text; button | IMP-010, 083 |
+| Deal, after the first hold | text button "Don't know this word?" under the name; main "Done, pass to <Name>" (last player: "Done, everyone's seen") | text button; main button | IMP-010, 015 |
+| New word | dialog "New word for everyone?" with "New word" / "Back" (main) | dialog | IMP-015 |
 | Tap mode | "Tap to see your word" / "Tap to hide" | button `hold-pad` | IMP-014 |
 | Private block | IMP-011 table | `private-block`, 5 children | IMP-011 |
 | Redeal | "No problem! New word coming." · "Pass the phone back to <NAME>"; main "I'm <Name>" | h1; paragraph | IMP-015 |
-| Clues | "✓ Everyone has seen their word." · "Phone in the middle, face up." · `<NAME>` · "starts" · "then clockwise: Meena → Kabir → Zoya → Riya → Arjun" | paragraphs; `starter-name`; paragraph; `clue-order` | IMP-016, 020 |
-| Clues main | "Talk it over" (Free flow) / "Start the 2-minute timer" (Timer) | main button | IMP-016 |
-| Second round | quiet "Another round of clues"; then line "Second round: <NAME> starts again" | button; paragraph | IMP-022 |
+| Clues | "✓ Everyone has seen their word." · "Phone in the middle, face up." · `<NAME>` · "starts" · "Each say one word about your secret:" · "Meena → Kabir → Zoya → Riya → Arjun" | paragraphs; `starter-name`; paragraphs; `clue-order` | IMP-016, 020 |
+| Clues main | "Clues done, talk it over" (Free flow) / "Clues done, start the 2-minute timer" (Timer) | main button | IMP-016 |
+| Second round | quiet "One more round of clues"; then line "Second round: <NAME> starts again" | button; paragraph | IMP-022 |
 | Talk, Free flow | heading "Talk it over"; "Who sounded unsure?"; main "Vote now" | h1 `talk-heading`; paragraph | IMP-023 |
-| Talk, Timer | `timer` "2:00"…"0:00" (no `talk-heading`); main "Vote now"; quiet "Pause" / "Carry on"; small line "Paused · Tap to carry on"; heading "Time's up!"; main "Get ready to point" | `timer`; buttons; small line; h1 | IMP-024, 027 |
-| Countdown | "Get ready to point…" then "3", "2", "1", "Point!" | h1 then `countdown-number` | IMP-030 |
-| Picker | heading "Who got the most fingers?"; one button per name; quiet "It's a tie", "Count again"; main "Reveal" (disabled) / "Reveal <Name>" | h1; buttons with `aria-pressed` | IMP-031 |
-| Tie | main "Point again" (disabled) / "Point again: Arjun or Meena" / "Point again: Arjun, Meena or Kabir"; re-vote quiet "Still a tie" | main button; quiet button | IMP-032 |
-| Build-up | "<Name> was" with `build-up-dots` "." → ".." → "..." | `reveal-line`; span | IMP-033 |
-| Caught | "Caught red-handed! <NAME> was the impostor." · "<Name>, one guess. Say it out loud! (No repeating the clues.)" · main "Show the word" · "The word was Samosa." · small line "Also called Golgappa / Puchka" · "Guessed right" / "Wrong guess" | `reveal-line` each, except the small line: `also-called` (not a reveal line, not announced); two quiet buttons | IMP-033 |
-| Escaped | "Meena was crew!" · "The impostor was <NAME>. Escaped!" · "The word was Samosa." | `reveal-line` each | IMP-034 |
-| Still a tie | "Still a tie! The impostor was <NAME>. Escaped!" · "The word was Samosa." | `reveal-line` each | IMP-038 |
-| Result headline | "The crew wins!" · "<Name> steals the round!" · "<Name> escaped!" | h2 `round-outcome` | IMP-035, 034 |
+| Talk, Timer | label "Talk it over" above `timer` "2:00"…"0:00"; main "Vote now"; quiet "Pause" / "Carry on"; small line "Paused · Tap to carry on"; heading "Time's up!"; main "Get ready to point"; quiet "1 more minute" | `timer-label`; `timer`; buttons; small line; h1 | IMP-024, 027 |
+| Countdown | "Get ready to point…" then "3", "2", "1", "Point!" | h1 `countdown-heading` then `countdown-number` | IMP-030 |
+| Picker | heading "Who got the most fingers?"; one button per name; label "Not sure?"; text buttons "It's a tie", "Count again"; main "Reveal" (disabled) / "Reveal <Name>" | h1; buttons with `aria-pressed`; paragraph; text buttons | IMP-031 |
+| Tie | main "Point again" (disabled) / "Point again: Arjun or Meena" / "Point again: Arjun, Meena or Kabir"; re-vote text button "Still a tie" | main button; text button | IMP-032 |
+| Build-up | "<Name> was…" | `build-up` | IMP-033 |
+| Result headline | "✓ Caught!" / "✗ Escaped!" | h1 `result-headline` | IMP-033, 034, 038 |
+| Result note | "Meena was crew." (wrong person) / "Still a tie." | paragraph `result-note` | IMP-034, 038 |
+| Impostor line | "<NAME> was the impostor" | paragraph `result-impostor` | IMP-033 |
+| Word | "The word was" · "School trip" · small line "Also called Excursion" · chip "School and childhood" | `word-label`; `result-word`; `also-called`; `word-category` | IMP-033 |
+| Last-chance guess | "Last chance, <Name>! Guess the word out loud. Get it right and you steal the round." · main "<Name> guessed. Show the word" · "Guessed right" / "Wrong guess" | `guess-line`; main button; two quiet buttons | IMP-039 |
+| Round outcome | "The crew wins!" · "<Name> steals the round!" · "<Name> escaped!" | h2 `round-outcome` | IMP-035, 034, 085 |
 | Result, Score No | "Tonight: impostor caught 3 · escaped 2" | paragraph `evening-line` | IMP-040 |
-| Result, Score Yes | "+2 Arjun" · "+1 Arjun" · "+1 each: Riya, Meena, Kabir"; caption "Scores from round 4" | `round-points`; small line in `scoreboard` | IMP-044, 043 |
-| Result buttons | main "Next round"; quiet "Undo" (after a verdict); quiet "This word didn't work"; toast "Samosa won't come up again · Undo" | buttons; `undo-toast` | IMP-037, 107 |
+| Result, Score Yes | "+2 Arjun" · "+1 Arjun" · "+1 each: Riya, Meena, Kabir"; caption "Scores since round 4" | `round-points`; small line in `scoreboard` | IMP-044, 043 |
+| Result buttons | main "Next round"; quiet "Undo" (after a verdict, last-chance guess only; never with it off); quiet "This word didn't work"; toast "Samosa won't come up again · Undo" | buttons; `undo-toast` | IMP-037, 107 |
 | Players sheet | heading "Players"; main "Done"; toast "Kabir left · Undo" / "Kabir left · Points kept · Undo"; message "Keep at least 3 players." | h1; `undo-toast`; `role="alert"` | IMP-074 |
 | Players, mid-round | "Change players after this round." with main "OK" | dialog | IMP-074 |
 | Menu button | "··· Menu" | button, name contains "Menu" | IMP-075 |
-| Menu items | "Rules" · "Players" · "See my word again" · "Deal again with a new word" · "Change how we play" · "Settings" · "History" · "End the evening" | `role="menuitem"` | IMP-075 |
+| Menu items | "How to play" · "Players" · "See my word again" · "Deal again with a new word" · "Change how we play" · "Settings" · "History" · "End the evening" | `role="menuitem"` | IMP-075 |
 | See my word again | heading "Whose word?"; one button per name; quiet "Cancel" | dialog | IMP-017 |
 | Deal again | dialog "Deal again? This round won't count. For when someone said the word or saw a screen." with "Deal again" / "Keep playing" (main) | dialog | IMP-025 |
 | End between rounds | dialog "End the evening?" with "End the evening" / "Keep playing" (main) | dialog | IMP-092 |
 | Start new | dialog "Start a new evening? The evening from 8:40 pm will be ended." with "Start new" / "Carry on that evening" (main) | dialog | IMP-001 |
 | End mid-round | dialog "End now? This round won't count." with "End now" / "Keep playing" (main) | dialog | IMP-093 |
-| Rules | IMP-072 text; main "Done" | sheet, h1 "How to play" | IMP-072 |
 | Left over 3 hours | "This round was left halfway. Start a fresh round?" with main "Next round" | h1 | IMP-091 |
-| Summary (no menu) | heading "That's the night!"; `fun-line` ×0–3; "7 rounds · impostor caught 4 · escaped 3" (Score No); main "Back to Home"; quiet, in this order: "Oops, keep playing", "Play something else", "Share", "History", "Discard this evening" | h1; paragraphs; `summary-line`; buttons | IMP-092, 095, 101 |
+| Summary (no menu) | heading "That's the night!"; lead line "Arjun wins the night with 2 points!" / "Arjun and Meena share the night with 2 points!" / "Crew 4 · Impostors 3"; `fun-line` ×0–2; main "Back to Home"; quiet, in this order: "Oops, keep playing", "Play something else", "More ›"; "More ›" menu: "Share", "History", divider, "Discard this evening" | h1; `summary-line`; paragraphs; buttons; `role="menu"` with `role="menuitem"` and `role="separator"` | IMP-092, 095, 101 |
 | Discard | dialog "Discard this evening? Its rounds and scores will be lost." with "Discard" / "Keep it" (main) | dialog | IMP-092 |
-| Fun lines | "Best impostor: Arjun, escaped 2 times" · "Most suspected: Meena, picked 3 times while crew" · "Rounds played: 7" | `fun-line` | IMP-095 |
+| Fun lines | "Best impostor: Arjun, escaped 2 times" · "Most suspected: Meena, picked 3 times while crew" | `fun-line` | IMP-095 |
 | Share fallback | toast "Copied. Paste it into any chat." | `toast` | IMP-106 |
 | History, in progress | "In progress" | inside `history-game` | IMP-094 |
 | History rows | "Impostor · 7 rounds"; round rows (IMP-105); "Play again"; "← Back" when opened between rounds | `history-game`; `history-round`; buttons | IMP-103, 105, 092 |
@@ -174,13 +229,28 @@ A test may set exactly these; the build must honour them.
      (seat order), choices, excludedWords: { dealtTonight: string[], recent: string[], blocked: string[] },
      testDeals?: { wordId?: string; impostor?: string; starter?: string }[] } }` (`testDeals`: Test hooks item 3).
      `choices = { mode: 'easy' | 'hard', talking: 'free' | 'timer', score: boolean, words: 'family' | 'grownups',
-     categories: string[] (exact CSV names), nonveg: boolean }`. Seeds are made only by a new evening's first
+     categories: string[] (exact CSV names), nonveg: boolean, lastGuess: boolean }` (`lastGuess` false for a new evening
+     unless chosen; new evenings always write it; a saved evening whose `choices` has no `lastGuess` reads as `true`,
+     since every evening before version 3 had the guess). Seeds are made only by a new evening's first
      "Start round" (IMP-060).
    - Moves, all recorded as `MoveRecord`s with `by: 'host'` (`type`, extra fields): `startDeal {practice: boolean}` ·
      `seen` · `dontKnow` · `startTalk` · `anotherRoundOfClues` · `voteNow` · `reveal {player}` ·
      `tie {players: string[]}` · `stillTie` · `showWord` · `verdict {right: boolean}` · `nextRound` · `dealAgain` ·
      `allowRepeats` · `wordDidntWork {blocked: boolean}` · `setPlayers {players: string[]}` · `setChoices {choices}` ·
      `endEvening`. `isOver` is true after `endEvening`.
+   - Every move that deals a word carries the dealt word's id as `wordId`: `startDeal`, `nextRound`, `dealAgain`,
+     `dontKnow`, `allowRepeats`, and `setChoices` when it redeals the same round from the no-words screen (IMP-052).
+     `nextRound` that finds no word left carries `wordId: null` (the no-words screen shows). Live, `play` accepts only
+     the id that `pickWord` gives for deal n (or that deal's `testDeals` entry); replay accepts any recorded id that
+     exists in the shipped list (retired words included, IMP-054), so later edits to `words.csv` never change a past
+     evening (IMP-096). A word-dealing move without `wordId` makes the evening unreplayable (hidden by IMP-096).
+   - Random draws are per dealt round: the n-th deal of the evening (every move that deals a word counts, redeals included, from 1; a `nextRound`
+     with `wordId: null` does not)
+     picks its word with ``createRng(`${seeds.word}:word:${n}`)``, its impostor with
+     ``createRng(`${seeds.word}:impostor:${n}`)`` and its starter with ``createRng(`${seeds.starter}:${n}`)``, so a
+     recorded word id never shifts the impostor or starter draws.
+   - `showWord` and `verdict` are legal only in a round where the impostor was revealed and `lastGuess` is true;
+     with `lastGuess` false the `reveal` of the impostor completes the round.
    - Undo of a verdict is the engine's `undo` of that `verdict` record: `canUndo` is true only for the round's latest
      `verdict` while no `nextRound`, `setPlayers`, `setChoices` or `endEvening` has been recorded after it
      (`wordDidntWork` after it does not end the window).
@@ -192,20 +262,22 @@ A test may set exactly these; the build must honour them.
 
      | Tap | Records |
      |---|---|
-     | "Start round" (a new evening) | nothing (the evening is created; the read-aloud card or the deal follows) |
-     | "Start the deal" / "Practice round first" (or "Start round" when the card is skipped) | `startDeal {practice: false / true}` |
+     | "Start round" (a new evening) | the evening is created, then `startDeal {practice: false}` |
+     | "Practice round first" (How to play, opened from a new evening's choices screen) | the evening is created, then `startDeal {practice: true}` |
+     | "How to play", its "Done", "More options ›", "Off" / "On" and "Done" | nothing ("Done" changes the choices on screen) |
      | "I'm <Name>", holds, "Tap instead", "Tap to see your word", "Tap to hide" | nothing |
      | "Done, pass to …" / "Done, everyone's seen" | `seen` |
-     | "Don't know this word?" | `dontKnow` (the new word and impostor are drawn now) |
-     | "Talk it over" / "Start the 2-minute timer" (clues screen) | `startTalk` |
-     | "Another round of clues" | `anotherRoundOfClues` |
+     | "Don't know this word?", and "Back" in its dialog | nothing |
+     | "New word" (dialog "New word for everyone?") | `dontKnow` (the new word and impostor are drawn now) |
+     | "Clues done, talk it over" / "Clues done, start the 2-minute timer" | `startTalk` |
+     | "One more round of clues" | `anotherRoundOfClues` |
      | "Vote now" / "Get ready to point" | `voteNow` |
-     | "Pause", "Carry on", "Count again", "It's a tie", ticking names, the countdown | nothing |
+     | "Pause", "Carry on", "1 more minute", "Count again", "It's a tie", ticking names, the countdown | nothing |
      | "Point again: …" | `tie {players}` |
      | "Reveal <Name>" | `reveal {player}` |
      | "Still a tie" | `stillTie` |
-     | "Show the word" | `showWord` |
-     | "Guessed right" / "Wrong guess" | `verdict {right: true / false}` |
+     | "<Name> guessed. Show the word" (last-chance guess on) | `showWord` |
+     | "Guessed right" / "Wrong guess" (last-chance guess on) | `verdict {right: true / false}` |
      | "Undo" (verdict) | engine `undo` of the `verdict` record |
      | "Next round" (result, or "left halfway" screen) | `nextRound` alone on a result (the next deal starts with it); `dealAgain` on the "left halfway" screen |
      | "Deal again" (dialog) | `dealAgain` |
@@ -228,7 +300,8 @@ A test may set exactly these; the build must honour them.
      nonveg: boolean; usedTonight: ReadonlySet<string>; recent: ReadonlySet<string>; blocked: ReadonlySet<string>;
      allowRepeats: boolean }, rng: Rng): ImpostorWord | null` (sets hold word ids; `null` = no word left; IMP-052).
    - `scoreRound(outcome: { impostor: string; caught: boolean; guessedRight: boolean | null }, players: readonly
-     string[]): Record<string, number>` (every player present, 0 when no points; IMP-041).
+     string[]): Record<string, number>` (every player present, 0 when no points; `guessedRight` is `null` when the
+     impostor escaped or the last-chance guess was off; IMP-041).
    - `readImpostorEvening(saved: SavedGame): { players, choices, excludedWords, seeds, moves, status }`: the
      evening's starting players, choices and excluded words, its seeds, its moves (the `move` of each record, in
      order) and the `SavedGame` status (IMP-096).
@@ -237,7 +310,8 @@ A test may set exactly these; the build must honour them.
      `null` when `release` is true, when `raw` is `null`, or when it is not valid JSON of that shape (IMP-064).
    - `Rng` is the engine's `createRng(seed)`.
 2. **Word list** at `content/impostor/words.json` (IMP-055): an array of
-   `{ id, word, other_names, category, audience, nonveg, hint }`, built from `docs/games/impostor/words.csv`.
+   `{ id, word, other_names, category, audience, nonveg, hint, retired }`, built from `docs/games/impostor/words.csv`;
+   a word with `retired: true` is never dealt but still resolves for replay and History (IMP-054).
 3. **Browser seeds and forced deals**, honoured only in development and preview builds (IMP-064). "Preview builds"
    = every build except the release build published to the families' link: `npm run dev`, a local `npm run build`
    served by `npm run preview` (what the browser tests use), and the preview link. The release build ignores them.
@@ -245,15 +319,15 @@ A test may set exactly these; the build must honour them.
    `{ "word": "<seed>", "starter": "<seed>", "deals": [ { "wordId": "IMPW-004", "impostor": "Arjun", "starter": "Meena" } ] }`.
    `word` and `starter` become the next evening's `seeds.word` and `seeds.starter`; `deals` is copied into that
    evening's setup as `config.testDeals` (set only in development and preview builds; absent otherwise), so replay
-   and reload use the same forced deals (IMP-060, IMP-090, IMP-091). Each dealt round of that evening (redeals
-   included) takes the next `testDeals` entry in order; a missing field, or no entries left, falls back to the
+   and reload use the same forced deals (IMP-060, IMP-090, IMP-091). Deal n of the evening takes `testDeals[n-1]`
+   (every deal counts, `dontKnow` and `dealAgain` redeals included); a missing field, or no entries left, falls back to the
    seeded pick. An entry that breaks a rule (a starter who is the impostor in Hard, a word outside the filters) is a
    test error; the build need not check it. The key is read once, at a new evening's first "Start round", through
    `readTestSeeds(raw, release)`. The release build is made with `npm run build -- --mode release`
    (`import.meta.env.MODE === 'release'`), and only that build passes `release: true`.
 4. **Hold input** uses Pointer Events only (`pointerdown`, `pointerup`, `pointercancel`, `pointerleave`), so
    `page.mouse.down/up` and dispatched events work. Only the first pointer on the pad counts; others are ignored.
-5. **Clock.** Every timer (500 ms hold, 8 s tap-mode hide, 2-minute timer, countdown, reveal steps, toasts, 3 h, 12 h)
+5. **Clock.** Every timer (500 ms hold, 8 s tap-mode hide, 2-minute timer, countdown, 1.5 s build-up, toasts, 3 h, 12 h)
    uses `setTimeout`/`setInterval` and `Date.now()`, so Playwright's `clock.install` / `runFor` drive them; no step
    waits on `requestAnimationFrame` alone.
 6. **Visibility.** The app reads `document.visibilityState` and listens to `visibilitychange` and `pagehide`
@@ -267,7 +341,9 @@ A test may set exactly these; the build must honour them.
    only where it exists. Both can be stubbed.
 9. **Test ids** (`data-testid`): `main-button`, `resume-card`, `unfinished-games` (existing), `pass-name`,
    `hold-pad`, `private-block`, `private-word`, `private-live`, `starter-name`, `clue-order`, `talk-heading`, `timer`,
-   `countdown-number`, `reveal-line` (one per reveal line, in order), `build-up-dots`, `also-called`, `round-outcome`,
+   `countdown-heading`, `countdown-number`, `timer-label`, `build-up`, `result-headline`, `result-note`,
+   `result-impostor`, `word-label`, `result-word`, `also-called`, `word-category`, `guess-line`, `round-outcome`,
+   `deal-progress`, `look-away`,
    `evening-line`,
    `round-points`, `scoreboard`, `score-row` (with `data-name`, `data-points`, `data-rank`), `practice-chip`,
    `privacy-cover`, `fun-line`, `summary-line`, `history-game` (existing), `history-round`, `announcer`, `undo-toast`
@@ -287,3 +363,5 @@ A test may set exactly these; the build must honour them.
     - `pgn.impostor-ui.<id>` = `{ "timerMs": 90000, "summaryShownAt": 1791043200000 }`: screen state that is not a
       move and not in the saved record: the paused timer's remaining time (IMP-027) and when the summary was first
       shown (IMP-101). The app writes it at every change; a missing key means "timer full" and "no summary shown".
+
+---

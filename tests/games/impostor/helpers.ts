@@ -1,5 +1,5 @@
 // Shared helpers for the Impostor rule tests. The names and shapes are the "Test hooks the build provides",
-// item 1 and item 2, in specs/impostor/README.md (scenarios v2.2), listed for the Build role in
+// item 1 and item 2, in specs/impostor/README.md (scenarios v3.5, 4 October 2026), listed for the Build role in
 // tests/games/impostor/README.md. Everything is imported from src/games/impostor/index.ts only.
 //
 // The module is loaded with a dynamic import, so that until the game is built every test fails on its own with
@@ -7,6 +7,23 @@
 import { readFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { createRng, HOST, play, startMatch, type Match, type Rng } from '../../../src/engine';
+
+/** The moves that deal a word and so carry its `wordId` (Test hooks item 1, scenarios v3.5). */
+export const DEALING = ['startDeal', 'nextRound', 'dealAgain', 'dontKnow', 'allowRepeats', 'setChoices'] as const;
+
+/**
+ * Test hooks item 1 (v3.5): live, `play` accepts a word-dealing move only with the id the rules give for that deal.
+ * The rules list complete moves (the game contract's `legalMoves`), so a move the test writes without `wordId` takes
+ * the `wordId` of the legal move of the same type and fields. When the legal moves carry no `wordId` (the build before
+ * v3.5), the move is played as written.
+ */
+export function withWordId(rules: any, state: any, move: any): any {
+  if (!move || !(DEALING as readonly string[]).includes(move.type) || 'wordId' in move) return move;
+  const legal: any[] = rules.legalMoves(state, HOST) ?? [];
+  const same = legal.find((m) => m.type === move.type && 'wordId' in m &&
+    Object.keys(move).every((k) => k === 'choices' || JSON.stringify(m[k]) === JSON.stringify(move[k])));
+  return same ? { ...move, wordId: same.wordId } : move;
+}
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const loaded: any = await import('../../../src/games/impostor').catch((e: unknown) => ({ __loadError: e }));
@@ -68,12 +85,16 @@ export const CSV_ROWS: Record<string, string>[] = csv.slice(1).map((r) => Object
 
 export interface ImpostorWord {
   id: string; word: string; other_names: string; category: string; audience: 'family' | 'grownups'; nonveg: boolean; hint: string;
+  retired: boolean;
 }
-/** The words as the app's `words.json` must hold them (IMP-055), built here straight from the CSV. */
+/** The words as the app's `words.json` must hold them (IMP-055, v3.5: with `retired`), built here straight from the CSV. */
 export const WORDS: ImpostorWord[] = CSV_ROWS.map((r) => ({
   id: r.id!, word: r.word!, other_names: r.other_names!, category: r.category!,
-  audience: r.audience as 'family' | 'grownups', nonveg: r.nonveg === 'yes', hint: r.hint!,
+  audience: r.audience as 'family' | 'grownups', nonveg: r.nonveg === 'yes', hint: r.hint!, retired: r.retired === 'yes',
 }));
+/** The words that may be dealt (IMP-054: a retired word is never dealt). `pickWord` tests pass this list. */
+export const ACTIVE: ImpostorWord[] = WORDS.filter((w) => !w.retired);
+export const RETIRED_IDS: string[] = WORDS.filter((w) => w.retired).map((w) => w.id);
 export const wordById = (id: string): ImpostorWord => {
   const w = WORDS.find((x) => x.id === id);
   if (!w) throw new Error(`no word ${id} in words.csv`);
@@ -86,10 +107,19 @@ export function shippedWords(): any[] {
   return JSON.parse(readFileSync(JSON_PATH, 'utf8'));
 }
 
-/** The 9 categories, named and ordered exactly as IMP-007. */
+/** The 9 categories, named and ordered exactly as IMP-007 (v3.5, 4 October 2026). */
 export const CATEGORIES = [
-  'Food', 'Festivals and occasions', 'Around the house', 'Travel and places', 'Films, music and TV',
-  'Cricket and games', 'School and childhood', 'Weddings and family', 'Desi life',
+  'Food', 'Festivals and occasions', 'Around the house', 'Out and about', 'Films, music and TV',
+  'Sports and games', 'School and childhood', 'Weddings and family', 'Everyday moments',
+] as const;
+/** The 3 category names retired rows may still carry (IMP-054). */
+export const RETIRED_CATEGORIES = ['Travel and places', 'Cricket and games', 'Desi life'] as const;
+/**
+ * The 6 category names that are the same before and after the 4 October rename. Tests of other rules use them where
+ * the category does not matter (a `setChoices` that changes Mode or Score), so they read the same on either word list.
+ */
+export const COMMON_CATEGORIES = [
+  'Food', 'Festivals and occasions', 'Around the house', 'Films, music and TV', 'School and childhood', 'Weddings and family',
 ] as const;
 
 export interface WordFilter {
@@ -102,7 +132,7 @@ export interface WordFilter {
   allowRepeats: boolean;
 }
 
-/** IMP-050: does this word pass the audience, category and non-veg choices? */
+/** IMP-050: does this word pass the audience, category and non-veg choices? (Retired words: `ACTIVE`.) */
 export const passesChoices = (w: ImpostorWord, f: { words: 'family' | 'grownups'; categories: readonly string[]; nonveg: boolean }) =>
   (f.words === 'grownups' ? w.audience === 'family' || w.audience === 'grownups' : w.audience === 'family') &&
   f.categories.includes(w.category) && (f.nonveg || !w.nonveg);
@@ -129,12 +159,20 @@ export const NAMES = [
 
 export interface Choices {
   mode: 'easy' | 'hard'; talking: 'free' | 'timer'; score: boolean; words: 'family' | 'grownups';
-  categories: string[]; nonveg: boolean;
+  categories: string[]; nonveg: boolean; lastGuess?: boolean;
 }
-/** IMP-005 and IMP-007: the first-ever defaults. */
-export const DEFAULT_CHOICES: Choices = {
-  mode: 'easy', talking: 'free', score: false, words: 'family', categories: [...CATEGORIES], nonveg: false,
+/** IMP-005, IMP-007 and IMP-076: a new evening's first-ever choices (the last-chance guess off). */
+export const NEW_EVENING_CHOICES: Choices = {
+  mode: 'easy', talking: 'free', score: false, words: 'family', categories: [...CATEGORIES], nonveg: false, lastGuess: false,
 };
+/**
+ * The choices the rule tests play with unless a test says otherwise: the first-ever defaults with the last-chance
+ * guess ON (IMP-039), so the tests written for v2.2, whose caught rounds have "Show the word" and a verdict, keep
+ * checking the same rules. Tests of a round with the guess off pass `lastGuess: false` (IMP-033, IMP-076).
+ */
+export const DEFAULT_CHOICES: Choices = { ...NEW_EVENING_CHOICES, lastGuess: true };
+/** Choices for a `setChoices` move in a test of another rule (categories valid on either word list). */
+export const changedChoices = (over: Partial<Choices> = {}): Choices => ({ ...DEFAULT_CHOICES, categories: [...COMMON_CATEGORIES], ...over });
 export const T0 = 1_791_043_200_000; // 3 October 2026, as in IMP-096's example
 
 export interface EveningOptions {
@@ -188,7 +226,7 @@ export class Evening {
 
   /** Plays a move; returns whether the referee accepted it (a refused move changes nothing). */
   try(move: any, gap = 1000): boolean {
-    const r = play(this.rules, this.match, move, { by: HOST, at: this.at + gap });
+    const r = play(this.rules, this.match, withWordId(this.rules, this.state, move), { by: HOST, at: this.at + gap });
     if (!r.ok) return false;
     this.at += gap;
     this.match = r.value;
@@ -197,7 +235,7 @@ export class Evening {
 
   /** Plays a move that must be accepted. */
   must(move: any, gap = 1000): this {
-    const r = play(this.rules, this.match, move, { by: HOST, at: this.at + gap });
+    const r = play(this.rules, this.match, withWordId(this.rules, this.state, move), { by: HOST, at: this.at + gap });
     if (!r.ok) throw new Error(`${JSON.stringify(move)} was refused: ${r.reason}`);
     this.at += gap;
     this.match = r.value;
@@ -207,7 +245,7 @@ export class Evening {
   /** True when the referee refuses the move, and the evening is unchanged afterwards. */
   refuses(move: any): boolean {
     const before = this.match;
-    const r = play(this.rules, this.match, move, { by: HOST, at: this.at + 1000 });
+    const r = play(this.rules, this.match, withWordId(this.rules, this.state, move), { by: HOST, at: this.at + 1000 });
     return !r.ok && this.match === before;
   }
 
@@ -240,7 +278,8 @@ export class Evening {
 
   /**
    * Plays the round being dealt to its result. Returns what happened, read from the views.
-   * caught: the vote reveals the impostor and the guess is right or wrong; escaped: the vote reveals a crew member;
+   * caught: the vote reveals the impostor and the guess is right or wrong (`right: null`: the last-chance guess is off,
+   * so the reveal completes the round); escaped: the vote reveals a crew member;
    * stillTie: a re-vote between the impostor and a crew member ends "Still a tie".
    */
   playRound(outcome: Outcome): RoundFacts {
@@ -252,7 +291,8 @@ export class Evening {
     this.toVote();
     let revealed: string | null = null;
     if (outcome.kind === 'caught') {
-      this.must({ type: 'reveal', player: impostor }).must({ type: 'showWord' }).must({ type: 'verdict', right: outcome.right });
+      this.must({ type: 'reveal', player: impostor });
+      if (outcome.right !== null) this.must({ type: 'showWord' }).must({ type: 'verdict', right: outcome.right });
       revealed = impostor;
     } else if (outcome.kind === 'escaped') {
       revealed = crew[(outcome.pick ?? 0) % crew.length]!;
@@ -264,7 +304,7 @@ export class Evening {
   }
 }
 
-export type Outcome = { kind: 'caught'; right: boolean } | { kind: 'escaped'; pick?: number } | { kind: 'stillTie' };
+export type Outcome = { kind: 'caught'; right: boolean | null } | { kind: 'escaped'; pick?: number } | { kind: 'stillTie' };
 export interface RoundFacts { impostor: string; wordId: string; starter: string; crew: string[]; revealed: string | null; outcome: Outcome }
 
 /** A random outcome for a round, from the test's own choices generator. */
@@ -280,7 +320,7 @@ export function randomOutcome(rng: Rng): Outcome {
 export function expectedPoints(f: RoundFacts, players: readonly string[]): Record<string, number> {
   const pts: Record<string, number> = Object.fromEntries(players.map((p) => [p, 0]));
   if (f.outcome.kind === 'caught') {
-    if (f.outcome.right) pts[f.impostor] = 1;
+    if (f.outcome.right === true) pts[f.impostor] = 1;
     else for (const c of f.crew) pts[c] = 1;
   } else pts[f.impostor] = 2;
   return pts;
@@ -289,5 +329,7 @@ export function expectedPoints(f: RoundFacts, players: readonly string[]): Recor
 export const seeded = (s: string) => createRng(s);
 export const seedList = (n: number, prefix: string) => Array.from({ length: n }, (_, i) => `${prefix}-${i}`);
 
-/** Word ids that are family, not non-veg (always allowed by the default choices). */
-export const FAMILY_VEG = WORDS.filter((w) => w.audience === 'family' && !w.nonveg).map((w) => w.id);
+/** Word ids that may be dealt, are family and not non-veg (always allowed by the default choices). */
+export const FAMILY_VEG = ACTIVE.filter((w) => w.audience === 'family' && !w.nonveg).map((w) => w.id);
+/** The same, in the 6 categories named alike before and after 4 October. */
+export const FAMILY_VEG_COMMON = ACTIVE.filter((w) => w.audience === 'family' && !w.nonveg && (COMMON_CATEGORIES as readonly string[]).includes(w.category)).map((w) => w.id);

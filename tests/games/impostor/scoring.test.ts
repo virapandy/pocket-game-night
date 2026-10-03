@@ -3,7 +3,7 @@
 import { describe, expect, it } from 'vitest';
 import fc from 'fast-check';
 import { createRng, undo } from '../../../src/engine';
-import { Evening, NAMES, P4, expectedPoints, randomOutcome, scoreRound, type RoundFacts } from './helpers';
+import { Evening, NAMES, P4, changedChoices, expectedPoints, randomOutcome, scoreRound, type RoundFacts } from './helpers';
 
 describe('IMP-041: points when keeping score', () => {
   it('escaped (wrong person or "Still a tie"): the impostor +2, nobody else', () => {
@@ -85,7 +85,7 @@ describe('IMP-042: points always add up', () => {
           e.must({ type: 'setPlayers', players });
         } else if (roll === 2) {
           score = !score;
-          e.must({ type: 'setChoices', choices: { ...e.match.setup.config.choices, score } });
+          e.must({ type: 'setChoices', choices: changedChoices({ score }) });
         }
         if (r < rounds - 1) e.nextRound();
       }

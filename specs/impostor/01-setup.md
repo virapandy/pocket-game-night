@@ -1,9 +1,9 @@
 # 01-setup.md: getting to the first deal
 
-Copied unchanged from `docs/games/impostor/scenarios.md` (version 2.2, 3 October 2026), the binding contract. Terms, Canonical strings and Test hooks: [README.md](README.md).
+Copied unchanged from `docs/games/impostor/scenarios.md` (version 3.5, 4 October 2026), the binding contract. Terms, Canonical strings and Test hooks: [README.md](README.md).
 
 ## IMP-001: "Host a game" offers Tambola and Impostor
-Status: approved, owner, 2026-10-03
+Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
 Given Home (PLT-300: still "Host a game" and "Join with my ticket")
 Then the "Host a game" button's second line reads exactly "Tambola or Impostor on this phone"
@@ -12,6 +12,7 @@ Then "What shall we play?" shows two cards of equal size and look (neither has t
 "Tambola" with "Housie on paper or phones · 2 hrs", and "Impostor" with
 "Find who doesn't know the word · 3–20 players · about 4 min a round"
 And there is no main button on this screen; tapping a card opens that game's setup at once
+And "3–20 players" is never split across two lines (it sits in a `white-space: nowrap` span) at every size
 Given an Impostor evening is unfinished (not ended, not discarded, not auto-ended by IMP-104)
 Then "What shall we play?" shows, above the two cards, the button "Impostor · round 4 · Tap to resume"
 (`resume-card`), and Home's `unfinished-games` shows a row "Impostor, 8:40 pm, round 4" with "Tap to resume"
@@ -77,7 +78,7 @@ Given no session tonight
 Then the list starts empty and "Clear list" is not shown until a name is added
 
 ## IMP-005: The four choices, with these defaults
-Status: approved, owner, 2026-10-03
+Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
 When the host taps "Next" on "Who's playing?"
 Then "How do you want to play?" shows four groups, each with two option buttons:
@@ -86,8 +87,10 @@ And on this phone's first ever evening the selected options are Easy, Free flow,
 And exactly one option per group is selected (outline, ✓, tint, `aria-pressed="true"`), never the main look
 (guideline 17a); tapping the other option moves the selection; tapping the selected one changes nothing
 And under each group only the selected option's line shows (Option lines in Canonical strings)
-And below the groups the button "Categories: all 9 ›" (IMP-007)
-And "Start round" is the one main button; tapping it starts the evening (IMP-070, IMP-008)
+And below the groups: the button "Categories: all 9 ›" (IMP-007), then, on one row directly above "Start round",
+two quiet buttons of equal width, "More options ›" (IMP-076) on the left and "How to play" (IMP-070) on the right
+And "Start round" is the one main button; tapping it creates the evening and starts the first deal at once (records
+`startDeal {practice: false}`; IMP-008)
 And "← Back" returns to "Who's playing?" with the list unchanged
 
 ## IMP-006: Choices stay for the evening and change only between rounds
@@ -104,13 +107,15 @@ And the evening stays the same evening (same seeds, same round numbering)
 And "Change how we play" is not in the menu during a round (IMP-075)
 
 ## IMP-007: Categories, non-veg and one impostor
-Status: approved, owner, 2026-10-03
+Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
 When the host taps "Categories: all 9 ›"
 Then a sheet "Categories" shows 9 switches, named and ordered exactly: "Food", "Festivals and occasions",
-"Around the house", "Travel and places", "Films, music and TV", "Cricket and games", "School and childhood",
-"Weddings and family", "Desi life"; on the first ever evening all are on
+"Around the house", "Out and about", "Films, music and TV", "Sports and games", "School and childhood",
+"Weddings and family", "Everyday moments"; on the first ever evening all are on
 And below them the switch "Include non-veg food", off on the first ever evening
+And a switch that is on has the track colour #1E3A5F (the deep blue already used for marks, not the main-button
+colour; guideline 17a) and a white (#FFFFFF) thumb, a contrast of at least 3:1 between thumb and track
 And when only one category switch is on, that switch is disabled and "Keep at least one category." shows
 When the host switches off two categories and taps "Done"
 Then the button reads "Categories: 7 of 9 ›"
@@ -118,27 +123,38 @@ And "Include non-veg food" does not change that button's text
 And every round has exactly one impostor (two impostors are later, IMP-036)
 
 ## IMP-008: Taps to the first deal
-Status: approved, owner, 2026-10-03
+Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
 Given tonight's names are filled in (IMP-004) and the choices are as wanted
-Then from tapping the Impostor card, the first "Pass the phone to…" screen comes after at most 4 taps on the first
-Impostor evening of tonight's session: card → "Next" → "Start round" → "Start the deal"
-And after at most 3 taps on any later Impostor evening of the same session (the read-aloud card is skipped, IMP-070)
+Then from tapping the Impostor card, the first "Pass the phone to…" screen comes after exactly 3 taps:
+card → "Next" → "Start round", on every evening (no card shows by itself, IMP-070)
 And no session-name question is asked (IMP-009)
 (Time is a usability target, not a test: 30 s for a group that played tonight; under 90 s when typing names.)
 
 ## IMP-009: Choices start from last time; the evening joins tonight's session silently
-Status: approved, owner, 2026-10-03 (detail of IMP-005, IMP-006, IMP-008)
+Status: approved, owner, 2026-10-04 (changed; detail of IMP-005, IMP-006, IMP-008)
 Phase: Impostor 1
 Given `pgn.pref.impostor.lastChoices` (written at every first "Start round" and every `setChoices`: the most
 recently started evening's latest choices, whether ended or discarded) holds Hard, Timer, Yes, + Grown-ups,
-7 categories and non-veg on
+7 categories, non-veg on and the last-chance guess on
 When the host starts a new evening from the Impostor card
-Then "How do you want to play?" opens with exactly those 6 choices selected
-And on a phone that has never played, the IMP-005 defaults apply
-And "Play again" (IMP-103) uses the choices of the evening it was tapped on instead
+Then "How do you want to play?" opens with exactly those 7 choices selected (the 4 groups, the categories, non-veg,
+and the last-chance guess in "More options", IMP-076), and the small line "Same as last time" directly under the
+heading
+And "Same as last time" shows whenever the choices were carried over (from `lastChoices`, or "Play again"); it is
+not shown on a phone that has never played, nor in "Change how we play"; it goes as soon as any choice is changed
+And a stored `lastChoices` without `lastGuess` reads as the last-chance guess off
+And stored category names from before 4 October are mapped: "Travel and places" → "Out and about",
+"Cricket and games" → "Sports and games", "Desi life" → "Everyday moments"; any other name not among the 9 is
+dropped; when no category is left, all 9 are on
+And on a phone that has never played, the IMP-005 defaults apply (last-chance guess off)
+And "Play again" (IMP-103) uses the choices of the evening it was tapped on instead; the category name mapping
+applies only to the stored `lastChoices`; a category name in a past evening's choices that is not among the 9 is
+dropped (all 9 when none is left)
 When "Start round" is tapped
 Then the evening joins tonight's session by PLT-016's rules with no question (no "Session name" field, no
 "Continue … or start a new session?")
 And when PLT-016 would start a new session, it is created with the name PLT-016 suggests (the day, as
 "Sunday 4 Oct"), without asking
+
+---
