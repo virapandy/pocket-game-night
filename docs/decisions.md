@@ -136,6 +136,7 @@
 
 "Convention" means the established Tambola rule in `docs/games/tambola/guide.md`, chosen because the owner asked
 Claude to follow game conventions. Every Tambola rule above is also a host setting with this default.
+| 2026-10-03 | **What makes us different:** one app for the whole fun night, in the room, with games the phone makes possible that normally need a box, cards, tokens or a moderator who sits out. New games must pass this "replaces the box" test; games that need nothing (Dumb Charades, Antakshari) are out. Shortlist: Impostor, Mafia, a Codenames-style word game (own name and words, never a copy). Lessons and lifecycle in `docs/proposals/next-game-lifecycle.md` approved. | Owner |
 
 ## Open
 - iPhone check by hand, later (owner has only Android for now): open the preview once, turn on Airplane Mode, reopen, and check Tambola opens. The automated iPhone offline tests are skipped until Playwright issue #42775 is fixed.
