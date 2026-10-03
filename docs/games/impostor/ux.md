@@ -238,3 +238,27 @@ after a resume; the picker with 12 players at 320 × 568 with Larger text.
 Readable across the table (56 px name, 120 px timer)? Does the far side need the upside-down "table view"? Does anyone
 notice how long the impostor holds the phone? Do fingers slip, and is "Done" obvious? Does the room point in sync on
 ticks alone? Do kids get "Show the word" before judging? Is 2 minutes too long?
+
+## Review of the first build (UX designer, 4 October 2026) and product owner decisions
+Live preview, 390 × 844, 360 × 640, 320 × 568, 812 × 375; Easy/Hard, Free flow/Timer, scores on/off, 4 and 12 players.
+Strengths kept: 44 px+ targets, fixed main button, 3 taps to the first deal, the secret only in the page while held,
+pick-then-reveal, room sizes for starter/timer/countdown.
+
+| # | Sev | Finding (measured unless noted) | Decided (goes into scenarios v3.3) |
+|---|---|---|---|
+| F1 | 3 | Result and summary overflow: text cut off at the top at 320 × 568, scoreboard second column off-screen, scores under the buttons, scroll areas inside scroll areas; landscape shows 2 of 4 rows | Result and summary scroll **as one page** with only the main button pinned; no inner scroll areas; scoreboard one column at widths ≤ 360 px, two columns (50% each) from 390 px; landscape: outcome left, scoreboard right |
+| F2 | 3 | Reveal too small for the room (28 px, word 20 px) | Result: "✓ Caught!" / "✗ Escaped!" 56 px centred; "ARJUN was the impostor" 32 px; the word 44 px; category chip 17 px outlined below it; "Get ready to point…" 40 px |
+| F3 | 3 | "Don't know this word?" appears where "Tap instead" was after the layout jumps; one tap re-deals for everyone | Nothing on screen B moves after the first hold (space reserved); "Don't know this word?" becomes a small text button under the name; it asks "New word for everyone?" with "New word" / "Back" (main) |
+| F4 | 2 | Hold pad 112 × 96 at 320 px; shrinks in landscape | Full-width pad at every size, at least 160 px tall (288 × 160 at 320 px); "Tap instead" below it; while held the pad reads "Let go to hide" for every role |
+| F5 | 2 | Landscape clues screen hides the clockwise order | Landscape: starter name 56 px left; order and buttons right |
+| F6 | 2 | Clue wording (judgement) | "Each say one word about your secret:" then "Arjun → Meena → Kabir → Riya"; main "Clues done, talk it over"; quiet "One more round of clues" |
+| F7 | 2 | How-to-play text wrong in Hard mode and with the guess off | The card's text follows the current settings (Hard: "The impostor sees nothing and never starts"; guess line only when the setting is on); lines per the designer |
+| F8 | 2 | "It's a tie" / "Count again" look like names, too close | 24 px gap, label "Not sure?" above, text-style 48 px buttons |
+| F9 | 2 | Summary repeats itself, no winner line, five equal buttons | Lead line "Arjun wins the night with 2 points!" (no scores: "Crew 4 · Impostors 3"); drop "Rounds played"; quiet "Oops, keep playing" and "Play something else"; "More ›" holds Share, History and, last after a divider, "Discard this evening" |
+| F10 | 1 | Timer | Label "Talk it over" 28 px above the timer; "Time's up!" adds quiet "1 more minute" |
+| F11 | 2 | "You're the impostor" wraps taller than a word at 320 px (predicted) | The word area has a fixed 2-line height, centred, for every role |
+| F12 | 1 | Polish | Category switches deep blue, not the main red (17a); screen-reader note only when "Tap to show" is on; History date once; "3–20" never breaks; "Whole family" fits in 48 px; "Same as last time" line on the choices screen when choices were carried over; "Scores since round 2" |
+Also: with the last guess off the result has no "Undo" (a reveal can't be undone); "Player 2 of 4" 17 px above "Pass the
+phone to" and on the hold screen; "Everyone else, look away!" 20 px; the setting reads "Last guess for a caught
+impostor" with Off ✓ / On and "A caught impostor can steal the round by guessing the word." New guidelines 45a and 46a.
+Not now: the upside-down "table view".

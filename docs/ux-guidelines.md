@@ -124,6 +124,10 @@ speed [8]. Our users:
     120 CSS px, countdown numbers at least 200 CSS px. Remember half the table reads it upside down **[Inference]**.
 47. **A reveal can't be undone, so it is pick, then confirm.** The deciding tap names the person ("Reveal Arjun").
     Undo is only for what is still secret or still open.
+45a. **Controls on a passed phone never move after the first hold** (space is reserved), so a re-press can't hit
+    something new (Impostor review, 4 October 2026).
+46a. **Result and summary screens scroll as one page** with only the main button pinned; never a scroll area inside a
+    scroll area; lists are one column at widths of 360 px or less.
 48. **Shared screens stop at decision points.** A countdown started by a tap is fine; a timer ending never starts the
     next step by itself (extends 28).
 

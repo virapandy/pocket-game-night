@@ -1,4 +1,4 @@
-# Impostor: scenarios (version 3.1, 4 October 2026)
+# Impostor: scenarios (version 3.2, 4 October 2026)
 
 Status: **IMP-001 to IMP-108 approved by the owner, 3 October 2026.** Version 2 (same day) makes every approved
 scenario exact, from two independent readers (a coder-reader and a tester-reader, `docs/spec-rules.md` rule 12) and
@@ -189,10 +189,10 @@ A test may set exactly these; the build must honour them.
      `endEvening`. `isOver` is true after `endEvening`.
    - Every move that deals a word carries the dealt word's id as `wordId`: `startDeal`, `nextRound`, `dealAgain`,
      `dontKnow`, `allowRepeats`, and `setChoices` when it redeals the same round from the no-words screen (IMP-052).
-     `nextRound` that finds no word left carries `wordId: null` (the no-words screen shows). Live, the app puts in the
-     id that `pickWord` picks; the rules accept the move only when that id is in the shipped list, and replay uses
-     the recorded id, so later edits to `words.csv` never change a past evening (IMP-096). A move without `wordId`
-     (saved by an earlier preview build) uses the seeded pick.
+     `nextRound` that finds no word left carries `wordId: null` (the no-words screen shows). Live, `play` accepts only
+     the id that `pickWord` gives for deal n (or that deal's `testDeals` entry); replay accepts any recorded id that
+     exists in the shipped list (retired words included, IMP-054), so later edits to `words.csv` never change a past
+     evening (IMP-096). A word-dealing move without `wordId` makes the evening unreplayable (hidden by IMP-096).
    - Random draws are per dealt round: the n-th deal of the evening (every move that deals a word counts, redeals included, from 1; a `nextRound`
      with `wordId: null` does not)
      picks its word with ``createRng(`${seeds.word}:word:${n}`)``, its impostor with
@@ -258,7 +258,8 @@ A test may set exactly these; the build must honour them.
      `null` when `release` is true, when `raw` is `null`, or when it is not valid JSON of that shape (IMP-064).
    - `Rng` is the engine's `createRng(seed)`.
 2. **Word list** at `content/impostor/words.json` (IMP-055): an array of
-   `{ id, word, other_names, category, audience, nonveg, hint }`, built from `docs/games/impostor/words.csv`.
+   `{ id, word, other_names, category, audience, nonveg, hint, retired }`, built from `docs/games/impostor/words.csv`;
+   a word with `retired: true` is never dealt but still resolves for replay and History (IMP-054).
 3. **Browser seeds and forced deals**, honoured only in development and preview builds (IMP-064). "Preview builds"
    = every build except the release build published to the families' link: `npm run dev`, a local `npm run build`
    served by `npm run preview` (what the browser tests use), and the preview link. The release build ignores them.
@@ -266,8 +267,8 @@ A test may set exactly these; the build must honour them.
    `{ "word": "<seed>", "starter": "<seed>", "deals": [ { "wordId": "IMPW-004", "impostor": "Arjun", "starter": "Meena" } ] }`.
    `word` and `starter` become the next evening's `seeds.word` and `seeds.starter`; `deals` is copied into that
    evening's setup as `config.testDeals` (set only in development and preview builds; absent otherwise), so replay
-   and reload use the same forced deals (IMP-060, IMP-090, IMP-091). Each dealt round of that evening (redeals
-   included) takes the next `testDeals` entry in order; a missing field, or no entries left, falls back to the
+   and reload use the same forced deals (IMP-060, IMP-090, IMP-091). Deal n of the evening takes `testDeals[n-1]`
+   (every deal counts, `dontKnow` and `dealAgain` redeals included); a missing field, or no entries left, falls back to the
    seeded pick. An entry that breaks a rule (a starter who is the impostor in Hard, a word outside the filters) is a
    test error; the build need not check it. The key is read once, at a new evening's first "Start round", through
    `readTestSeeds(raw, release)`. The release build is made with `npm run build -- --mode release`
@@ -635,7 +636,7 @@ And a return to visible during the deal shows "Welcome back." (IMP-090)
 Status: approved, owner, 2026-10-04 (detail of IMP-010)
 Phase: Impostor 1
 Then screens A and B of the deal show `deal-progress` "Player N of M": N = the current player's position in this
-round's seat order (1 for the first), M = the number of this round's players; it is a small line (15 px; 19 px with
+round's seat order (1 for the first), M = the number of this round's players; it is 15 px text (19 px with
 Larger text) at the top left, with the player's name directly under it on both screens
 And `deal-progress` is not shown during "See my word again" (IMP-017)
 And when the practice chip shows (IMP-071), `deal-progress` sits on the same row directly to its right, 8 px from it
@@ -854,7 +855,8 @@ Then both impostors see "You're one of 2 impostors" and never who the other is
 ## IMP-037: Undo the verdict only, before the next round
 Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
-Given the last-chance guess is on, Arjun was caught, and the result shows after "Wrong guess" (IMP-039)
+Given the last-chance guess is on, Arjun was caught, and the result shows after a verdict ("Guessed right" or
+"Wrong guess") (IMP-039)
 Then the quiet buttons under the result read, in this order, "Undo" then "This word didn't work", above the main
 button "Next round"
 When "Undo" is tapped (engine `undo` of the `verdict` record)
@@ -1023,6 +1025,8 @@ Then every row of `words.csv` (parsed as CSV, quoted fields allowed) and of `wor
 nonveg "yes" or "no" (`true`/`false` in JSON); a non-empty hint that is not, ignoring case, the word, one of its
 names (split on " / "), or one of its other names
 And no two rows have the same word, ignoring case
+And rows are never deleted from `words.csv`: a word taken out gets "yes" in a column `retired` (empty otherwise); a
+retired word is never dealt (IMP-050, IMP-052) but still resolves for replay and History (IMP-096, IMP-105)
 And `words.json` has exactly the rows of `words.csv`, in the same order: the shipped list is `words.csv` as of
 4 October 2026 (291 rows, the 9 categories of IMP-007)
 
@@ -1031,7 +1035,7 @@ Status: approved, owner, 2026-10-03 (detail of IMP-054)
 Phase: Impostor 1
 Then the app ships `content/impostor/words.json`, built from `docs/games/impostor/words.csv` with a real CSV parser
 And each entry is `{ "id": "IMPW-004", "word": "Samosa", "other_names": "", "category": "Food", "audience": "family",
-"nonveg": false, "hint": "Tea time" }`: `other_names` is the CSV text exactly ("" when empty, "Golgappa / Puchka"
+"nonveg": false, "hint": "Tea time", "retired": false }`: `other_names` is the CSV text exactly ("" when empty, "Golgappa / Puchka"
 otherwise)
 And the CSV columns `difficulty`, `close_cousin`, `change` and `notes` are not in the file and not used by the app
 
@@ -1043,7 +1047,8 @@ And the CSV columns `difficulty`, `close_cousin`, `change` and `notes` are not i
 Status: approved, owner, 2026-10-03
 Phase: Impostor 1
 Then each evening's setup has `seeds.word` (draws every word and impostor of the evening) and a separate
-`seeds.starter` (draws every starter), both made fresh on the phone with `crypto.getRandomValues` when a new
+`seeds.starter` (draws every starter), used through the per-deal seed names of Test hooks item 1
+(`${seeds.word}:word:${n}`, `${seeds.word}:impostor:${n}`, `${seeds.starter}:${n}`), both made fresh on the phone with `crypto.getRandomValues` when a new
 evening's first "Start round" is tapped (except IMP-064); "Change how we play" and later rounds make no new seeds
 And replaying an evening's `SavedGame` (IMP-096: setup plus move records) with the engine's `replay` gives exactly
 the same words, impostors, starters, outcomes and points
@@ -1274,7 +1279,7 @@ Then `announcer` (`aria-live="polite"`) receives exactly these, and nothing else
 - "1 minute left" and "Time's up" (IMP-024);
 - "3", "2", "1", "Point!" (IMP-030);
 - "Arjun was…" once, at t = 0 of the build-up (IMP-033);
-- at t = 1.5 s, each `reveal-line` and `round-outcome` then on screen, in screen order (IMP-033, IMP-034, IMP-038;
+- at t = 1.5 s (at t = 0 after "Still a tie", IMP-038), each `reveal-line` and `round-outcome` then on screen, in screen order (IMP-033, IMP-034, IMP-038;
   with the last-chance guess: the two caught lines, IMP-039);
 - with the last-chance guess, after "Arjun guessed. Show the word": "The word was School trip."; after a verdict:
   `round-outcome`
@@ -1471,7 +1476,8 @@ tonight's session), `recent` (dealt in the last 3 evenings), `blocked` ("This wo
 And `readImpostorEvening(saved)` returns `{ players, choices, excludedWords, seeds, moves, status }` from it (Test
 hooks item 1)
 And a fixture `SavedGame` of this shape (in the Test clone) always opens with `readSavedGame` and the app, now and
-after every later change (PLT-001, PLT-014)
+after every later change (PLT-001, PLT-014). Note for the tester: regenerate the format fixture so every
+word-dealing move carries `wordId`; a fixture without word ids is unreplayable and hidden
 
 ## IMP-097: An evening with no counted round is not kept
 Status: approved, owner, 2026-10-03 (detail of IMP-092, IMP-094)
