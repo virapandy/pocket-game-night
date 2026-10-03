@@ -1110,7 +1110,12 @@ button.tcell { cursor: pointer; }
 .claim-proof { margin: 0; font-size: 0.95rem; font-weight: 600; color: var(--text); overflow-wrap: anywhere; }
 /* UX row 25 (TAM-107, TAM-172): the game code. Calling screen: quiet text under the progress; room view: small,
    in the bottom-left corner, kept in from the edge and well below the number and the last calls. */
-.play-bar .bar-code { font-weight: 700; color: var(--muted); }
+.play-bar .bar-code { font-weight: 700; color: var(--muted); white-space: nowrap; }
+/* RC fix 2 (C1): at 360 px "Tambola · Game Z9QB" wrapped onto a second line touching the number; narrow phones
+   show only "Game Z9QB". */
+@media (max-width: 380px) {
+  .play-bar .bar-code-game { display: none; }
+}
 .room:has(.room-code) { padding-bottom: 64px; }
 .room-code {
   position: absolute; left: max(20px, env(safe-area-inset-left)); bottom: max(20px, env(safe-area-inset-bottom)); margin: 0;

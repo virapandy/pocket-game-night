@@ -877,7 +877,8 @@ export function Play({
           {/* UX list row 25 (TAM-107, TAM-172): the game code, quiet text on its own line, for the room to read. */}
           {phone && (
             <span className="bar-code" data-testid="game-code">
-              Tambola · Game {view.code}
+              {/* RC fix 2 (C1): on a narrow phone only "Game Z9QB" shows, on one line, clear of the big number. */}
+              <span className="bar-code-game">Tambola · </span>Game {view.code}
             </span>
           )}
         </span>
