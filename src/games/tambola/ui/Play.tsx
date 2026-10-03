@@ -498,6 +498,15 @@ export function Play({
   const showTip = wakeRefused && !tipSeen;
   // The result shows in place of the rhyme and last calls, so it never covers the number (TAM-123, TAM-138).
   const showCard = !!result && isRecording(result);
+  const resultClaimIndex = result ? match.records.filter((r) => r.seq <= result.seq).reduce((n, r) => n + claimsAdded(r.move), 0) - 1 : -1;
+  // UX guideline 26a: screen readers hear the called number, its rhyme and every verdict, politely. "Repeat" adds a
+  // no-break space every other time, so the same words are read again.
+  const spoken =
+    result && showCard
+      ? spokenVerdict(result, resultClaimIndex, view, money, nameOf)
+      : view.current
+        ? `${view.current.number}${view.current.rhyme?.text ? `. ${view.current.rhyme.text}` : ''}${flash % 2 === 1 ? '\u00a0' : ''}`
+        : '';
   // Closing a tier ends its result: it goes away by itself (TAM-145, owner decision 2026-09-29).
   const closeTier = (pattern: Pattern) => {
     const r = move({ type: 'close-tier', pattern });
@@ -631,6 +640,9 @@ export function Play({
   return (
     <main className={dimmed ? 'play dimmed' : 'play'}>
       {dimmed && <div className="dim-layer" aria-hidden="true" onClick={pulse} />}
+      <p className="visually-hidden" role="status" aria-live="polite" data-testid="announcer">
+        {spoken}
+      </p>
       <header className="play-bar" data-testid="top-bar">
         <button type="button" className="bar-button" onClick={onHome}>
           ← Back
@@ -696,7 +708,7 @@ export function Play({
           {result && showCard ? (
             <ResultCard
               record={result}
-              claimIndex={match.records.filter((r) => r.seq <= result.seq).reduce((n, r) => n + claimsAdded(r.move), 0) - 1}
+              claimIndex={resultClaimIndex}
               view={view}
               money={money}
               nameOf={nameOf}
@@ -1317,6 +1329,67 @@ function CheckNumbers({
   );
 }
 
+/** What a recorded paper win or bogey says (TAM-037, TAM-039): the first line, then the shares of a tie. */
+function paperVerdict(
+  m: Extract<TambolaMove, { type: 'record-win' | 'record-bogey' }>,
+  view: TambolaView,
+  money: boolean,
+  nameOf: (id: string) => string,
+): { headline: string; detail: string | null } {
+  const pattern = m.pattern;
+  const name = PATTERN_NAMES[pattern];
+  if (m.type === 'record-bogey') return { headline: `✗ Bogey: ${nameOf(m.playerId)}, ${name}`, detail: null };
+  const winners = view.claims.filter((c) => c.pattern === pattern && c.verdict === 'accepted');
+  const names = [...new Set(winners.map((c) => nameOf(c.playerId)))];
+  const tier = view.tiers.find((t) => t.pattern === pattern);
+  if (winners.length === 1) {
+    const prize = money ? rupees(winners[0]!.prize ?? 0) : tier?.label;
+    return { headline: `${name}: ✓ ${names.join(', ')}${prize ? `, ${prize}` : ''}`, detail: null };
+  }
+  return {
+    headline: `${name}: ✓ ${names.join(', ')}`,
+    detail: money
+      ? `Shared by ${winners.length}: ${winners.map((c) => rupees(c.prize ?? 0)).join(', ')} (${rupees(tier?.amount ?? 0)} in all)`
+      : `Shared by ${winners.length}${tier?.label ? `: ${tier.label}` : ''}`,
+  };
+}
+
+/** What a phone-ticket claim's verdict says (TAM-033, TAM-038, TAM-174): the first line, and any detail. */
+function phoneVerdict(
+  c: TambolaView['claims'][number],
+  view: TambolaView,
+  money: boolean,
+  nameOf: (id: string) => string,
+): { headline: string; detail: string | null } {
+  const name = PATTERN_NAMES[c.pattern];
+  const owner = nameOf(c.playerId);
+  const tier = view.tiers.find((t) => t.pattern === c.pattern);
+  if (c.verdict === 'accepted') {
+    const headline = money
+      ? `${name}: ✓ Accepted, ${rupees(c.prize ?? 0)} to ${owner}`
+      : `${name}: ✓ Accepted for ${owner}${tier?.label ? `: ${tier.label}` : ''}`;
+    const shared = view.claims.filter((x) => x.pattern === c.pattern && x.verdict === 'accepted').length;
+    const detail = shared > 1 ? (money ? `Shared by ${shared} (${rupees(tier?.amount ?? 0)} in all)` : `Shared by ${shared}`) : null;
+    return { headline, detail };
+  }
+  if (c.reason === 'late') return { headline: `${name}: ✗ Bogey: too late`, detail: `${name} was complete at ${c.completedAt}.` };
+  if (c.missing && c.missing.length > 0) return { headline: `${name}: ✗ Bogey: ${c.missing.join(', ')} not called`, detail: null };
+  return { headline: `${name}: ✗ Bogey: ${plural(c.needed ?? 0, 'more number')} needed`, detail: null };
+}
+
+/** UX guideline 26a: the words a screen reader hears for a recorded win, bogey or checked claim. */
+function spokenVerdict(record: TambolaRecord, claimIndex: number, view: TambolaView, money: boolean, nameOf: (id: string) => string): string {
+  const m = record.move;
+  if (m.type === 'record-win' || m.type === 'record-bogey') {
+    const v = paperVerdict(m, view, money, nameOf);
+    return v.detail ? `${v.headline}. ${v.detail}` : v.headline;
+  }
+  const c = view.claims[claimIndex];
+  if (m.type !== 'check-claim' || !c) return '';
+  const v = phoneVerdict(c, view, money, nameOf);
+  return v.detail ? `${v.headline}. ${v.detail}` : v.headline;
+}
+
 function ResultCard({
   record,
   claimIndex,
@@ -1339,29 +1412,10 @@ function ResultCard({
     return <PhoneResult claimIndex={claimIndex} view={view} money={money} nameOf={nameOf} onUndo={onUndo} onDone={onDone} />;
   }
   if (m.type !== 'record-win' && m.type !== 'record-bogey') return null;
-  const pattern = m.pattern;
-  const name = PATTERN_NAMES[pattern];
-  const waiting = view.awaitingClose.includes(pattern);
-  let headline: string;
-  let detail: string | null = null;
-  if (m.type === 'record-bogey') {
-    headline = `✗ Bogey: ${nameOf(m.playerId)}, ${name}`;
-  } else {
-    const winners = view.claims.filter((c) => c.pattern === pattern && c.verdict === 'accepted');
-    const names = [...new Set(winners.map((c) => nameOf(c.playerId)))];
-    const tier = view.tiers.find((t) => t.pattern === pattern);
-    if (winners.length === 1) {
-      const prize = money ? rupees(winners[0]!.prize ?? 0) : tier?.label;
-      headline = `${name}: ✓ ${names.join(', ')}${prize ? `, ${prize}` : ''}`;
-    } else {
-      headline = `${name}: ✓ ${names.join(', ')}`;
-      detail = money
-        ? `Shared by ${winners.length}: ${winners.map((c) => rupees(c.prize ?? 0)).join(', ')} (${rupees(tier?.amount ?? 0)} in all)`
-        : `Shared by ${winners.length}${tier?.label ? `: ${tier.label}` : ''}`;
-    }
-  }
+  const waiting = view.awaitingClose.includes(m.pattern);
+  const { headline, detail } = paperVerdict(m, view, money, nameOf);
   return (
-    <section className="result-card raise" data-testid="claim-result" aria-live="polite">
+    <section className="result-card raise" data-testid="claim-result">
       <p className={m.type === 'record-win' ? 'verdict verdict-ok' : 'verdict verdict-bogey'}>{headline}</p>
       {detail && <p className="note">{detail}</p>}
       {/* TAM-198: "Add another winner" and "Close <Pattern>" sit at the bottom, as the main actions. */}
@@ -1628,30 +1682,13 @@ function PhoneResult({
 }) {
   const c = view.claims[claimIndex];
   if (!c || c.ticket === undefined) return null;
-  const name = PATTERN_NAMES[c.pattern];
   const owner = nameOf(c.playerId);
   const ticket = view.tickets.find((t) => t.number === c.ticket);
-  const tier = view.tiers.find((t) => t.pattern === c.pattern);
   const waiting = view.awaitingClose.includes(c.pattern);
-  let headline: string;
-  let detail: string | null = null;
-  if (c.verdict === 'accepted') {
-    headline = money
-      ? `${name}: ✓ Accepted, ${rupees(c.prize ?? 0)} to ${owner}`
-      : `${name}: ✓ Accepted for ${owner}${tier?.label ? `: ${tier.label}` : ''}`;
-    const shared = view.claims.filter((x) => x.pattern === c.pattern && x.verdict === 'accepted').length;
-    if (shared > 1) detail = money ? `Shared by ${shared} (${rupees(tier?.amount ?? 0)} in all)` : `Shared by ${shared}`;
-  } else if (c.reason === 'late') {
-    headline = `${name}: ✗ Bogey: too late`;
-    detail = `${name} was complete at ${c.completedAt}.`;
-  } else if (c.missing && c.missing.length > 0) {
-    headline = `${name}: ✗ Bogey: ${c.missing.join(', ')} not called`;
-  } else {
-    headline = `${name}: ✗ Bogey: ${plural(c.needed ?? 0, 'more number')} needed`;
-  }
+  const { headline, detail } = phoneVerdict(c, view, money, nameOf);
   const out = c.verdict === 'bogey' && ticket?.status === 'out';
   return (
-    <section className="result-card raise" data-testid="claim-result" aria-live="polite">
+    <section className="result-card raise" data-testid="claim-result">
       <p className={c.verdict === 'accepted' ? 'verdict verdict-ok' : 'verdict verdict-bogey'}>{headline}</p>
       <p className="note">
         Ticket {c.ticket} · {owner}
