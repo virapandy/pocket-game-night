@@ -2,9 +2,24 @@
 // a time, already named for its player ("Ticket 3 → Riya (1 of 2)"), with a large QR that opens the app on the
 // player's phone and a typed code for when scanning fails (TAM-117, TAM-132, TAM-172). The host confirms each
 // hand-out; nothing comes back from the phones (offline). Late joiners get theirs the same way (TAM-212).
-import { useState, type ReactNode } from 'react';
+import { Fragment, useState, type ReactNode } from 'react';
 import { encodeTicket, ticketInfo, typedCode, type TambolaView } from '../rules';
 import { QrCode } from './qr';
+
+/** The typed code in its groups of 4: a narrow screen may wrap it between groups (after a dash), never inside one. */
+function codeGroups(code: string): ReactNode[] {
+  const groups = code.split('-');
+  return groups.map((group, i) =>
+    i < groups.length - 1 ? (
+      <Fragment key={i}>
+        <span>{group}-</span>
+        <wbr />
+      </Fragment>
+    ) : (
+      <span key={i}>{group}</span>
+    ),
+  );
+}
 
 /** The app's own address with the ticket in it, so a phone's camera opens the app (TAM-117). */
 export function ticketLink(text: string): string {
@@ -145,7 +160,7 @@ export function HandOut({
             <div className="hand-out-scan">
               <p className="note">Scan with your camera to get your ticket. Check it says Game {view.code}.</p>
               <p className="note">
-                or type: <strong className="ticket-code" data-testid="ticket-code">{typedCode(info)}</strong>
+                or type: <strong className="ticket-code" data-testid="ticket-code">{codeGroups(typedCode(info))}</strong>
               </p>
             </div>
           )}
