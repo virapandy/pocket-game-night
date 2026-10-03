@@ -17,13 +17,20 @@ type OpenAction = 'resume' | 'end' | 'discard' | 'reuse';
 type Route =
   | { name: 'home' }
   /** "What shall we play?" (IMP-001), after Home's "Host a game". */
-  | { name: 'pick' }
+  | { name: 'pick'; impostorPlayers?: string[]; names?: string[] }
   /** `backTo`: History opened from an Impostor evening's menu, with "← Back" to that evening (IMP-075). */
   | { name: 'history'; backTo?: string }
   | { name: 'past'; id: string }
   | { name: 'sessions' }
   | { name: 'session'; id: string }
-  | { name: 'game'; gameId: GameId; open?: { id: string; action: OpenAction }; startAt?: 'settings' }
+  | {
+      name: 'game';
+      gameId: GameId;
+      open?: { id: string; action: OpenAction };
+      startAt?: 'settings';
+      /** IMP-003: Impostor's list kept in the same visit; IMP-102: tonight's names for Tambola's new setup. */
+      players?: string[];
+    }
   /** A player's phone (Phase 2): tickets opened from a ticket QR's link, or typed in. */
   | { name: 'phone'; gameId: PhoneGameId; link: string | null; enter: boolean | 'join'; nonce: number };
 
@@ -265,9 +272,9 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
     return (
       <impostor.Screen
         onExit={home}
-        onBack={() => setRoute({ name: 'pick' })}
+        onBack={(players) => setRoute({ name: 'pick', impostorPlayers: players })}
         onHistory={(backTo) => setRoute(backTo ? { name: 'history', backTo } : { name: 'history' })}
-        onSomethingElse={() => setRoute({ name: 'pick' })}
+        onSomethingElse={(names) => setRoute({ name: 'pick', names })}
         store={gameStore}
         prefs={preferences}
         ui={impostorUi}
@@ -275,6 +282,7 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
         testSeedsRaw={testSeedsRaw}
         release={IS_RELEASE}
         {...(open && (open.action === 'resume' || open.action === 'reuse') ? { open: { id: open.id, action: open.action } } : {})}
+        {...(route.players ? { players: route.players } : {})}
       />
     );
   }
@@ -298,6 +306,7 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
         }
         {...(route.open ? { open: route.open } : {})}
         {...(route.startAt ? { startAt: route.startAt } : {})}
+        {...(route.players ? { names: route.players } : {})}
       />
     );
   }
@@ -305,7 +314,11 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
     return (
       <PickGame
         onBack={home}
-        onPick={(id) => setRoute({ name: 'game', gameId: id })}
+        onPick={(id) => {
+          // IMP-003: Impostor's list comes back in the same visit; IMP-102: tonight's names go to Tambola's setup.
+          const players = id === impostor.info.id ? route.impostorPlayers : route.names;
+          setRoute(players ? { name: 'game', gameId: id, players } : { name: 'game', gameId: id });
+        }}
         onResume={(id) => setRoute({ name: 'game', gameId: 'impostor', open: { id, action: 'resume' } })}
       />
     );

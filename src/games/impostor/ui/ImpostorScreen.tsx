@@ -42,23 +42,26 @@ export function ImpostorScreen({
   ui,
   sessions,
   open,
+  players: kept,
   testSeedsRaw,
   release,
 }: {
   /** Home. */
   onExit: () => void;
-  /** "← Back" on "Who's playing?": "What shall we play?" (IMP-003). */
-  onBack: () => void;
+  /** "← Back" on "Who's playing?": "What shall we play?" (IMP-003), with the list as it is, kept for this visit. */
+  onBack: (players: string[]) => void;
   /** History; `backTo` is the evening to return to with "← Back" (opened from the between-rounds menu, IMP-075). */
   onHistory: (backTo?: string) => void;
-  /** "Play something else" on the summary: "What shall we play?" (IMP-102). */
-  onSomethingElse: () => void;
+  /** "Play something else" on the summary: "What shall we play?" (IMP-102), with the evening's players. */
+  onSomethingElse: (players: string[]) => void;
   store: SavedGameStore;
   prefs: Preferences;
   /** `pgn.impostor-ui.<id>` (Test hooks item 13). */
   ui: Preferences;
   sessions: SessionPicker;
   open?: ImpostorOpen;
+  /** IMP-003: the list kept from earlier in the same visit ("← Back", then the Impostor card again). */
+  players?: readonly string[];
   /** `localStorage['pgn.test.seeds']`, read at a new evening's first "Start round" (IMP-064). */
   testSeedsRaw: () => string | null;
   /** The release build (`--mode release`): test seeds are ignored. */
@@ -66,7 +69,7 @@ export function ImpostorScreen({
 }) {
   const [start] = useState(() => openRoute(store, open));
   const [route, setRoute] = useState<Route>(start.route);
-  const [players, setPlayers] = useState<string[]>(() => start.players ?? tonightsNames(store, sessions, Date.now()));
+  const [players, setPlayers] = useState<string[]>(() => start.players ?? (kept ? [...kept] : null) ?? tonightsNames(store, sessions, Date.now()));
   const [choices, setChoices] = useState<Choices>(() => start.choices ?? lastChoices(prefs));
   const [past] = useState(() => pastNames(store));
   /** The evening made by "Start round" with nothing recorded yet (back from the read-aloud card). */
@@ -103,7 +106,7 @@ export function ImpostorScreen({
           players={players}
           onChange={setPlayers}
           past={past}
-          onBack={onBack}
+          onBack={() => onBack(players)}
           onNext={() => setRoute({ name: 'choices' })}
         />
       );
@@ -125,7 +128,11 @@ export function ImpostorScreen({
           past={past}
           onHome={onExit}
           onHistory={(fromMenu) => onHistory(fromMenu ? route.saved.id : undefined)}
-          onSomethingElse={onSomethingElse}
+          onSomethingElse={() => {
+            const s = store.get(route.saved.id);
+            const m = s && loadEvening(s);
+            onSomethingElse(m ? [...m.state.players] : [...route.saved.setup.config.players]);
+          }}
           onBackToChoices={(saved) => {
             setCreated(saved);
             setPlayers([...saved.setup.config.players]);

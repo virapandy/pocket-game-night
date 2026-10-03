@@ -48,6 +48,13 @@ export const emptyDraft: SetupDraft = {
   patternCue: false,
 };
 
+/** A new setup with these players' names filled in (IMP-102); the plain new setup when there are none. */
+function withNames(names: readonly string[] | undefined): SetupDraft {
+  const list = (names ?? []).map((n) => n.trim()).filter((n) => n !== '').slice(0, 30);
+  if (list.length === 0) return emptyDraft;
+  return { ...emptyDraft, names: list, count: String(Math.max(2, list.length)) };
+}
+
 const NAMES_KEY = 'names.recent';
 const DRAFT_KEY = 'tambola.setup-draft';
 
@@ -168,10 +175,13 @@ export function Setup({
   onStart,
   onCancel,
   sessionLine,
+  names,
 }: {
   prefs: Preferences;
   settings: TambolaSettings;
   initial?: { draft: SetupDraft; step: SetupStep };
+  /** IMP-102, PLT-024: tonight's players from the game just played, filled in on a new setup. */
+  names?: readonly string[];
   /** Told of every change, so an unfinished setup can be remembered (PLT-006). */
   onDraft?: (draft: SetupDraft) => void;
   onStart: (config: TambolaConfig) => void;
@@ -180,7 +190,7 @@ export function Setup({
   sessionLine?: ReactNode;
 }) {
   const [step, setStep] = useState<SetupStep>(initial?.step ?? 'mode');
-  const [draft, setDraft] = useState<SetupDraft>(initial?.draft ?? emptyDraft);
+  const [draft, setDraft] = useState<SetupDraft>(() => initial?.draft ?? withNames(names));
   // TAM-213: a new setup has neither paper nor phone chosen; a setup coming back (PLT-006, Play again) keeps its choice.
   const [modeChosen, setModeChosen] = useState<boolean>(initial !== undefined);
   const [error, setError] = useState<string | null>(null);

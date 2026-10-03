@@ -67,8 +67,11 @@ export function TambolaScreen({
   onReport,
   settingsExtra,
   startAt,
+  names,
 }: {
   onExit: () => void;
+  /** IMP-102: tonight's players from the game just played ("Play something else"), for a new setup. */
+  names?: readonly string[];
   /** PLT-300: Home's menu opens Tambola's settings directly; "Done" then goes back to Home. */
   startAt?: 'settings';
   /** Phase 7: "Report a problem" on the calling screen and the payouts (PLT-200). */
@@ -151,7 +154,7 @@ export function TambolaScreen({
         <Setup
           prefs={prefs}
           settings={loadSettings(prefs)}
-          {...(route.initial ? { initial: route.initial } : {})}
+          {...(route.initial ? { initial: route.initial } : names ? { names } : {})}
           onDraft={(draft) => saveDraft(prefs, draft)}
           onStart={start}
           onCancel={() => setRoute({ name: 'start' })}
