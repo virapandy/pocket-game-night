@@ -68,6 +68,8 @@ type RecordSheet =
       pattern: Pattern;
       picked: string[];
       adding: boolean;
+      /** UX list row 6 (TAM-145): adding a winner in a phone-ticket game offers only the paper players by name. */
+      paperOnly?: boolean;
       error?: string;
     };
 
@@ -576,8 +578,21 @@ export function Play({
     for (const a of el.getAnimations()) a.cancel();
     el.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.05)' }, { transform: 'scale(1)' }], { duration: 450, iterations: 1, easing: 'ease-in-out' });
   };
-  const addAnother = (pattern: Pattern) =>
-    setSheet({ kind: 'record', sheet: { step: 'players', pattern, picked: [], adding: true } });
+  // UX list row 6 (TAM-145, TAM-198): in a phone-ticket game the next winner is a paper player, picked by name, or
+  // another claim QR; with nobody on paper the scanner opens at once.
+  const paperPlayers = (pattern: Pattern) => {
+    const already = new Set(view.claims.filter((c) => c.pattern === pattern && c.verdict === 'accepted').map((c) => c.playerId));
+    const onPaper = new Set(view.tickets.filter((t) => t.status === 'paper' && t.playerId !== undefined).map((t) => t.playerId!));
+    return view.players.filter((p) => onPaper.has(p.id) && !already.has(p.id));
+  };
+  const addAnother = (pattern: Pattern) => {
+    pauseAuto();
+    if (phone && paperPlayers(pattern).length === 0) {
+      setSheet({ kind: 'scan' });
+      return;
+    }
+    setSheet({ kind: 'record', sheet: { step: 'players', pattern, picked: [], adding: true, ...(phone ? { paperOnly: true } : {}) } });
+  };
 
   let main: ReactNode;
   if (view.readyToEnd) {
@@ -636,8 +651,18 @@ export function Play({
     </button>
   );
   const anyPaper = view.tickets.some((t) => t.status === 'paper');
+  const addWinnerButton = waiting && (
+    <button type="button" className="button button-quiet add-winner raise" onClick={() => addAnother(waiting)}>
+      Add another winner
+    </button>
+  );
   const claimRow = phone ? (
-    anyPaper ? (
+    dimmed && waiting ? (
+      <div className="record-row">
+        {scanButton}
+        {addWinnerButton}
+      </div>
+    ) : anyPaper ? (
       <div className="record-row">
         {scanButton}
         {recordButton}
@@ -648,9 +673,7 @@ export function Play({
   ) : dimmed && waiting ? (
     <div className="record-row">
       {recordButton}
-      <button type="button" className="button button-quiet add-winner raise" onClick={() => addAnother(waiting)}>
-        Add another winner
-      </button>
+      {addWinnerButton}
     </div>
   ) : (
     recordButton
@@ -951,6 +974,7 @@ export function Play({
               onCancel={() => setSheet(null)}
               onConfirm={() => confirmRecord('win')}
               onBogey={() => confirmRecord('bogey')}
+              onScan={() => setSheet({ kind: 'scan' })}
             />
           )}
         </SheetFrame>
@@ -1282,6 +1306,7 @@ function PickPlayers({
   onCancel,
   onConfirm,
   onBogey,
+  onScan,
 }: {
   sheet: Extract<RecordSheet, { step: 'players' }>;
   view: TambolaView;
@@ -1290,10 +1315,13 @@ function PickPlayers({
   onCancel: () => void;
   onConfirm: () => void;
   onBogey: () => void;
+  /** UX list row 6: in a phone-ticket game, the next winner may instead show a claim QR. */
+  onScan: () => void;
 }) {
   const name = PATTERN_NAMES[sheet.pattern];
   const already = new Set(view.claims.filter((c) => c.pattern === sheet.pattern && c.verdict === 'accepted').map((c) => c.playerId));
-  const players = view.players.filter((p) => !already.has(p.id));
+  const onPaper = new Set(view.tickets.filter((t) => t.status === 'paper').map((t) => t.playerId));
+  const players = view.players.filter((p) => !already.has(p.id) && (!sheet.paperOnly || onPaper.has(p.id)));
   const toggle = (id: string) => {
     const { error: _drop, ...rest } = sheet;
     onChange({
@@ -1304,7 +1332,11 @@ function PickPlayers({
   return (
     <>
       <h2 className="section-title">{sheet.adding ? `Another ${name} winner` : `${name}: who won?`}</h2>
-      <p className="note">Tap one name, or several for a tie. For a false claim, tap the name and then Bogey.</p>
+      <p className="note">
+        {sheet.paperOnly
+          ? 'A paper player: tap the name, or several for a tie. A phone player: scan their claim.'
+          : 'Tap one name, or several for a tie. For a false claim, tap the name and then Bogey.'}
+      </p>
       <div className="choice-grid">
         {players.map((p) => (
           <button
@@ -1333,6 +1365,11 @@ function PickPlayers({
           Bogey
         </button>
       </div>
+      {sheet.paperOnly && (
+        <button type="button" className="button button-quiet" onClick={onScan}>
+          Scan a claim
+        </button>
+      )}
       <div className="row">
         {!sheet.adding && (
           <button type="button" className="button button-quiet" onClick={onBack}>
