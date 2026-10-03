@@ -425,9 +425,9 @@ export function PhoneTickets({
           <div data-testid="pattern-cue-more" className="stack-tight">
             <ul className="cue-list">
               {cueParts(cue.fills).map((line) => (
-                <li key={line}>{line}</li>
+                <li key={line}>{line}.</li>
               ))}
-            </ul>
+            </ul>{' '}
             <p className="note">Shout if it's right! Only the host's check decides.</p>
             <button type="button" className="button button-quiet" onClick={() => setPopup(null)}>
               Close
@@ -495,7 +495,7 @@ export function PhoneTickets({
 
   // TAM-195 (rows 1a and 1): one slim line, never over a ticket and never pushing the buttons off screen; "More" when
   // it doesn't fit.
-  const cueBox = cueSays && <CueLine line={cueSays.line} always={cueSays.more} onMore={() => setPopup('cue')} />;
+  const cueBox = cueSays && <CueLine line={cueSays.line} short={cueSays.short} always={cueSays.more} onMore={() => setPopup('cue')} />;
 
   // `outlined`: the claim screen (UX list row 13) outlines only the chosen prize's pattern, never the cue's.
   const ticketBox = (t: (typeof tickets)[number], cell: number, extra?: { outlined?: ReadonlySet<number>; noTap?: boolean }) => (
@@ -746,26 +746,41 @@ export function PhoneTickets({
   );
 }
 
-/** The cue's line (TAM-195, UX list row 1), with "More" when it names several tickets or the line doesn't fit. */
-function CueLine({ line, always, onMore }: { line: string; always: boolean; onMore: () => void }) {
+/**
+ * The cue's line (TAM-195, UX list row 1), always one line: "More" when it names several tickets, or, when the full
+ * words don't fit, the short line with "More" (the full words only behind "More", so nothing is said twice: row 11).
+ */
+function CueLine({ line, short, always, onMore }: { line: string; short: string; always: boolean; onMore: () => void }) {
+  const box = useRef<HTMLDivElement>(null);
   const text = useRef<HTMLSpanElement>(null);
-  const [more, setMore] = useState(false);
+  const [tooLong, setTooLong] = useState(false);
   useLayoutEffect(() => {
-    const el = text.current;
-    if (!el) return;
-    const read = () => setMore(el.scrollWidth > el.clientWidth + 1 || el.scrollHeight > el.clientHeight + 1);
+    const el = box.current;
+    const span = text.current;
+    if (!el || !span) return;
+    const read = () => {
+      // The full line's width, measured off-screen so its words are never in the page twice.
+      const style = getComputedStyle(span);
+      const ctx = document.createElement('canvas').getContext('2d');
+      if (!ctx) return setTooLong(span.scrollWidth > span.clientWidth + 1);
+      ctx.font = `${style.fontStyle} ${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+      const pad = getComputedStyle(el);
+      const room = el.clientWidth - parseFloat(pad.paddingLeft) - parseFloat(pad.paddingRight);
+      setTooLong(Math.ceil(ctx.measureText(line).width) + 2 > room);
+    };
     read();
     if (typeof ResizeObserver === 'undefined') return;
     const ro = new ResizeObserver(read);
     ro.observe(el);
     return () => ro.disconnect();
   }, [line]);
+  const useShort = !always && tooLong;
   return (
-    <div className="pattern-cue" data-testid="pattern-cue" role="status">
+    <div className="pattern-cue" data-testid="pattern-cue" role="status" ref={box}>
       <span className="pattern-cue-text" ref={text}>
-        {line}
+        {useShort ? short : line}
       </span>
-      {(always || more) && (
+      {(always || useShort) && (
         <button type="button" className="pattern-cue-more" onClick={onMore}>
           More
         </button>

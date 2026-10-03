@@ -278,42 +278,46 @@ function andList(words: readonly string[]): string {
 
 /**
  * The cue's parts (TAM-195, UX list row 1): one per ticket, in ticket order, naming its prizes in prize order: one
- * prize "Ticket 3: Top Line filled", several "Ticket 1: Early Five and Top Line filled" (product owner's answer 2). Early Five is said once
- * (row 11): on the ticket it shares with another prize when it is on just that one ticket, otherwise once at the
- * end: "Early Five filled on tickets 1 and 2".
+ * prize "Ticket 3: Top Line filled", several "Ticket 1: Early Five and Top Line filled" (product owner's answer 2).
+ * Early Five is said once (rows 11 and 3), for the first ticket it fills: with that ticket's other prizes, or else on
+ * its own at the end, "Early Five filled on ticket 1".
  */
 export function cueParts(fills: readonly CueFill[]): string[] {
-  const five = fills.filter((f) => f.pattern === 'early-five').map((f) => f.ticket);
-  const lineTickets = new Set(fills.filter((f) => f.pattern !== 'early-five').map((f) => f.ticket));
-  const fold = five.length === 1 && lineTickets.has(five[0]!);
+  const five = fills.find((f) => f.pattern === 'early-five')?.ticket;
+  const lineTickets = [...new Set(fills.filter((f) => f.pattern !== 'early-five').map((f) => f.ticket))];
+  const fold = five !== undefined && lineTickets.includes(five);
   const parts: string[] = [];
   for (const t of lineTickets) {
-    const prizes = fills.filter((f) => f.ticket === t && (f.pattern !== 'early-five' || fold)).map((f) => f.pattern);
+    const prizes = fills.filter((f) => f.ticket === t && (f.pattern !== 'early-five' || (fold && t === five))).map((f) => f.pattern);
     parts.push(`Ticket ${t}: ${andList(prizes.map((p) => PATTERN_NAMES[p]))} filled`);
   }
-  if (five.length && !fold) parts.push(`Early Five filled on ${ticketList(five, 'ticket')}`);
+  if (five !== undefined && !fold) parts.push(`Early Five filled on ticket ${five}`);
   return parts;
 }
 
-/** The tickets the cue's line names, in the order it names them (TAM-190: "Which ticket?" lists the first one first). */
+/** The tickets the cue names, in the order it names them (TAM-190: "Which ticket?" lists the first one first). */
 export function cueTickets(fills: readonly CueFill[]): number[] {
-  const lines = fills.filter((f) => f.pattern !== 'early-five');
-  return [...new Set((lines.length ? lines : fills).map((f) => f.ticket))];
+  const lines = [...new Set(fills.filter((f) => f.pattern !== 'early-five').map((f) => f.ticket))];
+  const five = fills.find((f) => f.pattern === 'early-five')?.ticket;
+  return lines.length ? lines : five !== undefined ? [five] : [];
 }
 
+const SHOUT = "Shout if it's right!";
+
 /**
- * The cue's one line (TAM-195, UX list row 1). One ticket named: its prizes in prize order, "Ticket 1: Early Five and
- * Top Line filled. Shout if it's right!" ("More" only if it doesn't fit). Several tickets: the approved short wording,
- * "Tickets 1 and 3: patterns filled. Shout if it's right!", which fits one line even at 320 px, with "More" always
- * there for each ticket's prizes. Only Early Five: "Early Five filled on tickets 1 and 2. Shout if it's right!".
+ * The cue's one line (TAM-195, UX list row 1). One part: "Ticket 1: Early Five and Top Line filled. Shout if it's
+ * right!", or, when that doesn't fit, the short line "Ticket 1: patterns filled. Shout if it's right!" with "More"
+ * holding the full words (so nothing is said twice, row 11). Several tickets: the approved short wording, "Tickets 1
+ * and 3: patterns filled. Shout if it's right!", with "More" always there for each ticket's prizes.
  */
-export function cueLine(fills: readonly CueFill[]): { line: string; more: boolean } | null {
+export function cueLine(fills: readonly CueFill[]): { line: string; short: string; more: boolean } | null {
   if (fills.length === 0) return null;
   const parts = cueParts(fills);
-  const lines = fills.filter((f) => f.pattern !== 'early-five');
   const tickets = cueTickets(fills);
-  if (lines.length === 0 || parts.length === 1) return { line: `${parts.join('. ')}. Shout if it's right!`, more: false };
-  if (tickets.length > 1) return { line: `${ticketList(tickets)}: patterns filled. Shout if it's right!`, more: true };
-  // One ticket with lines, and Early Five said apart on other tickets: name the ticket, the rest under "More".
-  return { line: `${parts[0]}. Shout if it's right!`, more: true };
+  const many = parts.length > 1 || parts[0]!.includes(' and ');
+  const short = `${ticketList(tickets)}: ${many ? 'patterns' : 'pattern'} filled. ${SHOUT}`;
+  if (parts.length === 1) return { line: `${parts[0]}. ${SHOUT}`, short, more: false };
+  if (tickets.length > 1) return { line: short, short, more: true };
+  // One ticket with lines, and Early Five said apart on another ticket: name the ticket, the rest under "More".
+  return { line: `${parts[0]}. ${SHOUT}`, short: `${parts[0]}. ${SHOUT}`, more: true };
 }
