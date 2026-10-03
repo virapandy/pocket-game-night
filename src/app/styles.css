@@ -1049,6 +1049,14 @@ button.tcell { cursor: pointer; }
 /* UX row 22 (TAM-140, PLT-005): the "Game over" banner above the host's payouts. */
 .game-over { margin-bottom: 12px; }
 .game-over p { margin: 0; }
+/* RC fix (C1), payouts on a 360 px phone: "← Home" and "Report a problem" each stay on one line, and the screen starts
+   a little higher, so the payouts get that room back; a person's net amount sits on its own line, never split. */
+@media (max-width: 380px) {
+  .over-screen { padding-top: max(12px, env(safe-area-inset-top)); }
+  .over-screen > .top-bar { gap: 8px; }
+  .over-screen > .top-bar .button { padding: 0 12px; white-space: nowrap; }
+  .over-screen .payout-net { display: block; white-space: nowrap; }
+}
 /* RC fix (C1), payouts in landscape (812 × 375): "Session tally" and "Play again" stand on the right, one above the
    other, so the payouts get the screen's full height on the left instead of a sliver above the buttons. */
 @media (orientation: landscape) and (max-height: 600px) {
