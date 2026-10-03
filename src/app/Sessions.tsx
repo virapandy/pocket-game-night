@@ -356,10 +356,22 @@ function GameLine({ g }: { g: SavedGame }) {
   const status = g.status === 'ended' ? (g.settlementId ? 'Settled' : g.money ? 'In the tally' : 'No money') : g.status === 'abandoned' ? 'Abandoned' : g.status === 'paused' ? 'Paused' : 'In progress';
   return (
     <div className="history-row">
-      <span className="history-title">
-        {game?.info.title ?? g.gameType}, {new Date(g.createdAt).toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit', hour12: true })}
-      </span>
-      {d && <span>{d.result}</span>}
+      {d && 'rounds' in d ? (
+        <>
+          {/* IMP-102: "Impostor · 7 rounds". */}
+          <span className="history-title">
+            {game?.info.title ?? g.gameType} · {d.result}
+          </span>
+          <span>{new Date(g.createdAt).toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit', hour12: true })}</span>
+        </>
+      ) : (
+        <>
+          <span className="history-title">
+            {game?.info.title ?? g.gameType}, {new Date(g.createdAt).toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit', hour12: true })}
+          </span>
+          {d && <span>{d.result}</span>}
+        </>
+      )}
       <span className="history-result">{status}</span>
     </div>
   );

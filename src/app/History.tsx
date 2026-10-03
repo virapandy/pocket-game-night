@@ -26,11 +26,14 @@ export interface Deleted {
 
 export function History({
   onBack,
+  backLabel = '← Home',
   onOpen,
   deleted,
   onUndoDelete,
 }: {
   onBack: () => void;
+  /** "← Home", or "← Back" when opened from a game's menu (IMP-075). */
+  backLabel?: string;
   onOpen: (id: string) => void;
   deleted: Deleted | null;
   onUndoDelete: () => void;
@@ -40,6 +43,13 @@ export function History({
       .list()
       .filter((g) => isPast(g) && gameOf(g.gameType))
       .sort((a, b) => b.createdAt - a.createdAt);
+  // IMP-094: games that list an evening in progress as one row ("In progress"); never deleted from here.
+  const [inProgress] = useState<SavedGame[]>(() =>
+    gameStore
+      .list()
+      .filter((g) => g.status === 'in-progress' && (gameOf(g.gameType) as { listsInProgress?: boolean } | undefined)?.listsInProgress)
+      .sort((a, b) => b.createdAt - a.createdAt),
+  );
   const [past, setPast] = useState<SavedGame[]>(load);
   const [nearlyFull, setNearlyFull] = useState(false);
   const [clearing, setClearing] = useState(false);
@@ -71,7 +81,7 @@ export function History({
     <main className="screen">
       <header className="top-bar">
         <button type="button" className="button button-quiet" onClick={onBack}>
-          ← Home
+          {backLabel}
         </button>
       </header>
       <h1 className="step-title">History</h1>
@@ -108,11 +118,11 @@ export function History({
           </button>
         </div>
       )}
-      {past.length === 0 ? (
+      {past.length === 0 && inProgress.length === 0 ? (
         <p className="lead">No finished games yet.</p>
       ) : (
         <ul className="history-list">
-          {past.map((g) => {
+          {[...inProgress, ...past].map((g) => {
             const game = gameOf(g.gameType)!;
             const d = game.describe(g);
             const session = sessionName(g);
@@ -128,10 +138,13 @@ export function History({
                     {d.players} {d.players === 1 ? 'player' : 'players'}
                     {'calls' in d ? ` · ${d.calls} ${d.calls === 1 ? 'number' : 'numbers'} called` : ''}
                   </span>
-                  <span className="history-result">
-                    {d.result}
-                    {g.settlementId ? ' · Settled' : ''}
-                  </span>
+                  {/* Games counted in rounds already show it in the title. */}
+                  {!('rounds' in d) && (
+                    <span className="history-result">
+                      {d.result}
+                      {g.settlementId ? ' · Settled' : ''}
+                    </span>
+                  )}
                 </button>
               </li>
             );

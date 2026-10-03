@@ -2,7 +2,7 @@
 // things worked out from saved evenings: tonight's names (IMP-004), past names (IMP-003), the frozen word sets
 // (IMP-052, IMP-096), the session (IMP-009), the unfinished row (IMP-001) and the 12-hour end (IMP-099, IMP-104).
 import {
-  HOST, play, replay, SAVED_GAME_FORMAT, startMatch,
+  HOST, play, replay, SAVED_GAME_FORMAT, startMatch, undo,
   type Match, type Preferences, type SavedGame, type SavedGameStore, type Session, type SessionPicker,
 } from '../../../engine';
 import {
@@ -81,15 +81,58 @@ export function record(
 
 /**
  * `endEvening` (IMP-097, IMP-101, IMP-104, IMP-001 "Start new"): the evening is kept as ended, or deleted when it has
- * no counted round.
+ * no counted round. Returns the ended evening, or null when it was deleted (or could not be ended).
  */
-export function endEvening(store: SavedGameStore, saved: Evening, match: EveningMatch, at = Date.now()): void {
+export function endEvening(
+  store: SavedGameStore,
+  saved: Evening,
+  match: EveningMatch,
+  at = Date.now(),
+): { saved: Evening; match: EveningMatch } | null {
   const last = match.records[match.records.length - 1];
-  const r = play(impostorRules, match, { type: 'endEvening' }, { by: HOST, at: Math.max(at, last?.at ?? 0) });
-  if (!r.ok) return;
-  if (r.value.state.counted === 0) store.remove(saved.id);
-  else store.put(toSaved(saved, r.value, Math.max(at, last?.at ?? 0)));
+  const when = Math.max(at, last?.at ?? 0);
+  const r = play(impostorRules, match, { type: 'endEvening' }, { by: HOST, at: when });
+  if (!r.ok) return null;
+  if (r.value.state.counted === 0) {
+    store.remove(saved.id);
+    return null;
+  }
+  const next = toSaved(saved, r.value, when);
+  store.put(next);
+  return { saved: next, match: r.value };
 }
+
+/** IMP-037: the record of the verdict "Undo" may take back, or null. */
+export function undoableVerdict(match: EveningMatch, now = Date.now()) {
+  for (let i = match.records.length - 1; i >= 0; i--) {
+    const record = match.records[i]!;
+    if (record.move.type !== 'verdict') continue;
+    return impostorRules.canUndo(match.state, { record, by: HOST, now }) ? record : null;
+  }
+  return null;
+}
+
+/** IMP-037: the engine's undo of that verdict record, saved at once. Null when it cannot be undone. */
+export function undoVerdict(store: SavedGameStore, saved: Evening, match: EveningMatch): { saved: Evening; match: EveningMatch } | null {
+  const record = undoableVerdict(match);
+  if (!record) return null;
+  const r = undo(impostorRules, match, record.seq, { by: HOST, now: Date.now() });
+  if (!r.ok) return null;
+  const next = toSaved(saved, r.value, Math.max(Date.now(), saved.updatedAt));
+  store.put(next);
+  return { saved: next, match: r.value };
+}
+
+/** IMP-101: the evening whose summary is showing and has not been left (in progress or already ended), if any. */
+export function pendingSummary(store: SavedGameStore, ui: Preferences): string | null {
+  for (const g of store.list().sort((a, b) => b.updatedAt - a.updatedAt)) {
+    if (isImpostor(g) && ui.get<UiState>(g.id, {}).summaryShownAt !== undefined) return g.id;
+  }
+  return null;
+}
+
+/** IMP-101: the summary was left; the screen state goes with it. */
+export const clearUi = (ui: Preferences, id: string) => ui.set(id, {});
 
 // ---- Rounds, as the room counts them ----
 
@@ -156,6 +199,8 @@ export function describeEvening(saved: SavedGame): { players: number; rounds: nu
   const players = match ? match.state.players.length : (config?.players?.length ?? 0);
   if (!match) return { players, rounds: 0, result: 'Could not be opened' };
   const n = match.state.counted;
+  // IMP-094: an evening in progress shows no rounds, words or names in History.
+  if (saved.status === 'in-progress') return { players, rounds: n, result: 'In progress' };
   return { players, rounds: n, result: `${n} ${n === 1 ? 'round' : 'rounds'}` };
 }
 
@@ -231,11 +276,20 @@ export function freshSeed(bytes = 16): string {
   return Array.from(a, (b) => b.toString(16).padStart(2, '0')).join('');
 }
 
-/** IMP-009: tonight's session by PLT-016's rules, with no question; a new one gets the suggested name ("Sunday 4 Oct"). */
+/**
+ * PLT-016: tonight's session. Joined while the last game was within 3 hours; with none at all, a new one with the
+ * suggested name ("Sunday 4 Oct"). Longer than 3 hours, the host is asked first (`sessionToAsk`), as in Tambola.
+ */
 function sessionFor(sessions: SessionPicker, now: number): Session {
   const q = sessions.question(now);
-  if (q.kind === 'join') return q.session;
+  if (q.kind === 'join' || q.kind === 'continue') return q.session;
   return sessions.create(suggestedSessionName(now), now);
+}
+
+/** PLT-016 (orchestrator answer, 3 October): the session to offer "Continue …" for, when the last game was long ago. */
+export function sessionToAsk(sessions: SessionPicker, now: number): Session | null {
+  const q = sessions.question(now);
+  return q.kind === 'continue' ? q.session : null;
 }
 
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -283,11 +337,13 @@ export function createEvening(opts: {
   release: boolean;
   /** An evening created before with no move yet (back from the read-aloud card): it is rewritten, not doubled. */
   reuse?: Evening | null;
+  /** PLT-016: the session the host chose ("Continue …" or "New session"), when the question was asked. */
+  sessionId?: string;
 }): { saved: Evening; match: EveningMatch } {
   const now = Date.now();
   const { store, prefs } = opts;
   const reuse = opts.reuse && opts.reuse.records.length === 0 ? opts.reuse : null;
-  const sessionId = reuse?.sessionId ?? sessionFor(opts.sessions, now).id;
+  const sessionId = reuse?.sessionId ?? opts.sessionId ?? sessionFor(opts.sessions, now).id;
   let seeds: { word: string; starter: string };
   let testDeals: ImpostorConfig['testDeals'];
   if (reuse) {

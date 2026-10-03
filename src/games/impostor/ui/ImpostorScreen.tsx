@@ -1,13 +1,14 @@
 // Impostor's screens: "Who's playing?", "How do you want to play?", then the evening (Game). Also a past evening.
 import { useRef, useState, type ReactNode } from 'react';
-import type { Preferences, SavedGame, SavedGameStore, SessionPicker } from '../../../engine';
+import type { Preferences, SavedGame, SavedGameStore, Session, SessionPicker } from '../../../engine';
 import type { Choices } from '../rules';
 import {
-  cardDue, clock, createEvening, describeEvening, lastChoices, loadEvening, pastNames, PREF, record, tonightsNames,
-  type Evening, type EveningMatch,
+  cardDue, clearUi, clock, createEvening, describeEvening, endEvening, lastChoices, loadEvening, pastNames, PREF, record,
+  sessionToAsk, suggestedSessionName, tonightsNames, unfinishedEvening, type Evening, type EveningMatch,
 } from './evening';
 import { Game } from './Game';
-import { QuietButton } from './parts';
+import { Dialog, HideMainButton, MainButton, QuietButton } from './parts';
+import { LookBack } from './LookBack';
 import { HowToPlayChoices, WhosPlaying } from './Setup';
 import './impostor.css';
 
@@ -35,6 +36,7 @@ export function ImpostorScreen({
   onExit,
   onBack,
   onHistory,
+  onSomethingElse,
   store,
   prefs,
   ui,
@@ -47,7 +49,10 @@ export function ImpostorScreen({
   onExit: () => void;
   /** "← Back" on "Who's playing?": "What shall we play?" (IMP-003). */
   onBack: () => void;
-  onHistory: () => void;
+  /** History; `backTo` is the evening to return to with "← Back" (opened from the between-rounds menu, IMP-075). */
+  onHistory: (backTo?: string) => void;
+  /** "Play something else" on the summary: "What shall we play?" (IMP-102). */
+  onSomethingElse: () => void;
   store: SavedGameStore;
   prefs: Preferences;
   /** `pgn.impostor-ui.<id>` (Test hooks item 13). */
@@ -70,9 +75,23 @@ export function ImpostorScreen({
 
   const seqRef = useRef(0);
   const nextSeq = () => ++seqRef.current;
-  const startRound = () => {
+  /** IMP-001: another unfinished evening is ended (or carried on) before a new one starts. */
+  const [asking, setAsking] = useState<{ saved: Evening; match: EveningMatch } | null>(null);
+  /** PLT-016: "Continue '…' or start a new session?" when the last game was more than 3 hours ago. */
+  const [askSession, setAskSession] = useState<Session | null>(null);
+  const begin = (sessionId?: string) => {
     const reuse = created && store.get(created.id)?.records.length === 0 ? created : null;
-    const ev = createEvening({ store, prefs, sessions, players, choices, testSeedsRaw: testSeedsRaw(), release, reuse });
+    if (!reuse && sessionId === undefined) {
+      const old = sessionToAsk(sessions, Date.now());
+      if (old) {
+        setAskSession(old);
+        return;
+      }
+    }
+    const ev = createEvening({
+      store, prefs, sessions, players, choices, testSeedsRaw: testSeedsRaw(), release, reuse,
+      ...(sessionId !== undefined ? { sessionId } : {}),
+    });
     setCreated(ev.saved);
     if (cardDue(prefs, ev.saved)) {
       setRoute({ name: 'game', ...ev, resumed: false, seq: nextSeq() });
@@ -81,6 +100,11 @@ export function ImpostorScreen({
     // IMP-070: no card for a later evening of the session; the app records the start of the deal itself.
     const dealt = record(store, ev.saved, ev.match, { type: 'startDeal', practice: false });
     setRoute({ name: 'game', ...(dealt ?? ev), resumed: false, seq: nextSeq() });
+  };
+  const startRound = () => {
+    const other = unfinishedEvening(store);
+    if (other && other.saved.id !== created?.id) setAsking(other);
+    else begin();
   };
 
   let screen: ReactNode;
@@ -110,8 +134,10 @@ export function ImpostorScreen({
           ui={ui}
           initial={{ saved: route.saved, match: route.match }}
           resumed={route.resumed}
+          past={past}
           onHome={onExit}
-          onHistory={onHistory}
+          onHistory={(fromMenu) => onHistory(fromMenu ? route.saved.id : undefined)}
+          onSomethingElse={onSomethingElse}
           onBackToChoices={(saved) => {
             setCreated(saved);
             setPlayers([...saved.setup.config.players]);
@@ -122,13 +148,63 @@ export function ImpostorScreen({
         />
       );
   }
-  return <div className={larger ? 'imp imp-larger' : 'imp'}>{screen}</div>;
+  return (
+    <div className={larger ? 'imp imp-larger' : 'imp'}>
+      <HideMainButton.Provider value={asking !== null || askSession !== null}>{screen}</HideMainButton.Provider>
+      {askSession && (
+        <Dialog text={`Continue '${askSession.name}' or start a new session?`}>
+          <QuietButton
+            onClick={() => {
+              setAskSession(null);
+              begin(sessions.create(suggestedSessionName(Date.now()), Date.now()).id);
+            }}
+          >
+            New session
+          </QuietButton>
+          <MainButton
+            inline
+            onClick={() => {
+              const s = askSession;
+              setAskSession(null);
+              begin(s.id);
+            }}
+          >
+            Continue '{askSession.name}'
+          </MainButton>
+        </Dialog>
+      )}
+      {asking && (
+        <Dialog text={`Start a new evening? The evening from ${clock(asking.saved.createdAt)} will be ended.`}>
+          <QuietButton
+            onClick={() => {
+              endEvening(store, asking.saved, asking.match);
+              clearUi(ui, asking.saved.id);
+              setAsking(null);
+              begin();
+            }}
+          >
+            Start new
+          </QuietButton>
+          <MainButton
+            inline
+            onClick={() => {
+              const other = asking;
+              setAsking(null);
+              setRoute({ name: 'game', saved: other.saved, match: other.match, resumed: true, seq: nextSeq() });
+            }}
+          >
+            Carry on that evening
+          </MainButton>
+        </Dialog>
+      )}
+    </div>
+  );
 }
 
-/** A past evening, read-only (PLT-008). The full look back (IMP-105) is the next build's. */
+/** A past evening, read-only (PLT-008): IMP-105's look back. */
 export function ImpostorPastGame({ saved, onBack, actions }: { saved: SavedGame; onBack: () => void; actions?: ReactNode }) {
-  const d = describeEvening(saved);
   const match = loadEvening(saved);
+  const d = describeEvening(saved);
   return (
     <div className="imp">
       <main className="imp-screen imp-setup">
@@ -138,7 +214,7 @@ export function ImpostorPastGame({ saved, onBack, actions }: { saved: SavedGame;
         <div className="imp-scroll">
           <h1 className="imp-title">Impostor · {d.result}</h1>
           <p className="imp-body">Started {clock(saved.createdAt)}</p>
-          {match && <p className="imp-body">{match.state.players.join(', ')}</p>}
+          {match && <LookBack match={match} />}
           {actions}
         </div>
       </main>

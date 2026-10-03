@@ -10,12 +10,13 @@
 //   6, visibilitychange and pagehide; 8, wake lock and vibration; 9, the deal's test ids; 12, the "Larger text" and
 //   "Tap to show instead of hold" switches; 13, pgn.pref.impostor.*, pgn.pref.largerText, pgn.impostor-ui.<id> and
 //   saved evenings under pgn.game.<id>.
-//   Still to come with the next screens: 7, the four sounds and window.__sounds; 10, Share; and the test ids of the
-//   talk, vote, reveal, result and summary.
+//   7, the four sounds and window.__sounds (ui/device.ts); 10, Share (ui/Summary.tsx); and the test ids of the talk,
+//   vote, reveal, result, summary and History.
 import type { GameInfo, SavedGame, SavedGameStore, Preferences } from '../../engine';
 import { impostorRules } from './rules';
 import {
-  clock, describeEvening, endEvening, loadEvening, roundToShow, sweepEvenings, unfinishedEvening, unfinishedLine,
+  clearUi, clock, describeEvening, endEvening, loadEvening, pendingSummary, roundToShow, sweepEvenings, unfinishedEvening,
+  unfinishedLine,
 } from './ui/evening';
 import { ImpostorPastGame, ImpostorScreen } from './ui/ImpostorScreen';
 import { ImpostorSettings } from './ui/Sheets';
@@ -41,10 +42,11 @@ function unfinished(store: SavedGameStore): { id: string; round: number; started
 }
 
 /** IMP-001 "Start new": `endEvening` at once, with no summary (deleted when it has no counted round, IMP-097). */
-function endNow(store: SavedGameStore, id: string) {
+function endNow(store: SavedGameStore, ui: Preferences, id: string) {
   const saved = store.get(id);
   const match = saved && loadEvening(saved);
   if (saved && match) endEvening(store, saved as Parameters<typeof endEvening>[1], match);
+  clearUi(ui, id);
 }
 
 export const impostor = {
@@ -60,6 +62,12 @@ export const impostor = {
   endNow,
   /** IMP-104: evenings left more than 12 hours end by themselves. Run before anything lists unfinished games. */
   sweep: (store: SavedGameStore, ui: Preferences) => sweepEvenings(store, ui, Date.now()),
+  /** IMP-101: an evening whose summary was showing and was not left: the app opens on it again. */
+  pendingSummary,
+  /** IMP-094: History lists an evening in progress as one row, "In progress" (a tap resumes it). */
+  listsInProgress: true,
+  /** IMP-103: the past evening's button in History. */
+  reuseLabel: 'Play again',
   /** IMP-109: "Larger text", "Tap to show instead of hold" and "Skipped words", for the app's Settings. */
   Settings: ImpostorSettings,
   /** IMP-002: the last line of "Join with my ticket". */

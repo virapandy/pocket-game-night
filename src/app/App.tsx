@@ -18,7 +18,8 @@ type Route =
   | { name: 'home' }
   /** "What shall we play?" (IMP-001), after Home's "Host a game". */
   | { name: 'pick' }
-  | { name: 'history' }
+  /** `backTo`: History opened from an Impostor evening's menu, with "← Back" to that evening (IMP-075). */
+  | { name: 'history'; backTo?: string }
   | { name: 'past'; id: string }
   | { name: 'sessions' }
   | { name: 'session'; id: string }
@@ -47,6 +48,9 @@ function firstRoute(): Route {
   if (link) return link;
   const route = routeFromAddress();
   if (route.name !== 'home') return route;
+  // IMP-101: an Impostor summary that was showing and not left shows again.
+  const summary = impostor.pendingSummary(gameStore, impostorUi);
+  if (summary) return { name: 'game', gameId: 'impostor', open: { id: summary, action: 'resume' } };
   const holder = phoneGames.find((g) => g.phone.hasTickets(preferences));
   return holder ? { name: 'phone', gameId: holder.info.id as PhoneGameId, link: null, enter: false, nonce: 0 } : route;
 }
@@ -262,7 +266,8 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
       <impostor.Screen
         onExit={home}
         onBack={() => setRoute({ name: 'pick' })}
-        onHistory={() => setRoute({ name: 'history' })}
+        onHistory={(backTo) => setRoute(backTo ? { name: 'history', backTo } : { name: 'history' })}
+        onSomethingElse={() => setRoute({ name: 'pick' })}
         store={gameStore}
         prefs={preferences}
         ui={impostorUi}
@@ -284,7 +289,10 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
         onReport={onReport}
         settingsExtra={
           <>
-            <impostor.Settings prefs={preferences} />
+            {/* IMP-014, IMP-109: Impostor's switches, in its own sizes. */}
+            <div className="imp">
+              <impostor.Settings prefs={preferences} />
+            </div>
             <WaitingReports />
           </>
         }
@@ -319,10 +327,17 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
     }
   }
   if (route.name === 'history') {
+    const backTo = route.backTo;
     return (
       <History
-        onBack={home}
-        onOpen={(id) => setRoute({ name: 'past', id })}
+        onBack={backTo ? () => setRoute({ name: 'game', gameId: 'impostor', open: { id: backTo, action: 'resume' } }) : home}
+        backLabel={backTo ? '← Back' : '← Home'}
+        onOpen={(id) => {
+          // IMP-094: an Impostor evening in progress is resumed, never looked back at.
+          const g = gameStore.get(id);
+          if (g?.gameType === impostor.info.id && g.status === 'in-progress') setRoute({ name: 'game', gameId: 'impostor', open: { id, action: 'resume' } });
+          else setRoute({ name: 'past', id });
+        }}
         deleted={deleted}
         onUndoDelete={() => {
           for (const g of deleted?.games ?? []) gameStore.put(g);
@@ -345,6 +360,7 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
           actions={
             <PastGameActions
               saved={saved}
+              reuseLabel={game.info.id === impostor.info.id ? impostor.reuseLabel : 'Use this setup'}
               onReuse={() => setRoute({ name: 'game', gameId: game.info.id as GameId, open: { id: saved.id, action: 'reuse' } })}
               onDelete={() => {
                 gameStore.remove(saved.id);
@@ -374,12 +390,23 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
 }
 
 /** PLT-009, PLT-010, PLT-025: "Use this setup" and "Delete" on a past game. Unfinished games cannot be deleted. */
-function PastGameActions({ saved, onReuse, onDelete }: { saved: SavedGame; onReuse: () => void; onDelete: () => void }) {
+function PastGameActions({
+  saved,
+  reuseLabel,
+  onReuse,
+  onDelete,
+}: {
+  saved: SavedGame;
+  /** "Use this setup" (PLT-009); Impostor's "Play again" (IMP-103). */
+  reuseLabel: string;
+  onReuse: () => void;
+  onDelete: () => void;
+}) {
   const [asking, setAsking] = useState<string | null>(null);
   return (
     <div className="row">
       <button type="button" className="button" onClick={onReuse}>
-        Use this setup
+        {reuseLabel}
       </button>
       {isPast(saved) && (
         <button
@@ -633,7 +660,7 @@ function PickGame({
                 type="button"
                 className="button button-quiet"
                 onClick={() => {
-                  impostor.endNow(gameStore, unfinished.id);
+                  impostor.endNow(gameStore, impostorUi, unfinished.id);
                   onPick(impostor.info.id);
                 }}
               >
