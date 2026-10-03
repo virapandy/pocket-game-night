@@ -529,7 +529,7 @@ test.describe('IMP-071: practice round', () => {
     await expectChipTopLeft(page, 'clues screen');
   });
 
-  test.fail('after the practice result, "Next round" deals round 1 with no card and no chip; the practice result has no points', async ({ page }) => {
+  test('after the practice result, "Next round" deals round 1 with no card and no chip; the practice result has no points', async ({ page }) => {
     await startEvening(page, { practice: true, score: true, seeds: { deals: [{ wordId: SAMOSA, impostor: 'Arjun', starter: 'Riya' }, { wordId: 'IMPW-006', impostor: 'Meena', starter: 'Arjun' }] } });
     await dealAll(page);
     await toPicker(page);

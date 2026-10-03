@@ -218,7 +218,7 @@ test.describe('IMP-075: the menu at each moment', () => {
     expect(await menuItems(page, '"left halfway"')).toEqual(BETWEEN_MENU);
   });
 
-  test.fail('a round result has the between-rounds menu; History there has "← Back" to the same screen', async ({ page }) => {
+  test('a round result has the between-rounds menu; History there has "← Back" to the same screen', async ({ page }) => {
     await startEvening(page, { seeds: { deals: [{ wordId: SAMOSA, impostor: 'Arjun', starter: 'Riya' }] } });
     await dealAll(page);
     await toPicker(page);
@@ -303,7 +303,7 @@ test.describe('IMP-087: the screen stays awake during a round', () => {
     });
   }
 
-  test.fail('released when the round\'s result block appears', async ({ page }) => {
+  test('released when the round\'s result block appears', async ({ page }) => {
     await stubWakeLock(page, 'ok');
     await startEvening(page, { seeds: { deals: [{ wordId: SAMOSA, impostor: 'Arjun', starter: 'Riya' }] } });
     await dealAll(page);

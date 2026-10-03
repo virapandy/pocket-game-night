@@ -1,4 +1,11 @@
 # Test report
+Progress (2026-10-03, tester, the rest of Impostor on main at c857400, round 2 in progress): rule tests 627 of 627
+pass on c857400. Quick verify 37130708905 (tests d4ecd6e on app c857400, Android) ran every Impostor file: 38 marked
+tests now pass and their marks are removed in this push; 6 real failures remain (IMP-081 at 320 and 360, IMP-088,
+IMP-003). New `impostor-play-screens.spec.ts` (screens built in c857400). The owner's Mac is under heavy macOS system
+load (load average about 140), so browsers cannot start locally; this round's browser verdict comes from GitHub (quick
+verify on this push and the report-only complete run, both phones). Final counts follow in the next push.
+
 Progress (2026-10-03, tester, Impostor lane E on main at 870cd2f: setup, deal and privacy, saved evenings, first clue
 screen): rule tests 627 of 627 pass. Browser, local, Android + iPhone: the three Impostor files have 30 tests per phone
 that now pass (marks removed) and 36 per phone still marked (they need talk, vote, reveal, result, summary, History's

@@ -110,7 +110,7 @@ test.describe('IMP-011: what each role sees: always five lines', () => {
     expect(Math.abs(heights.Arjun![1]! - heights.Arjun![0]!)).toBeLessThanOrEqual(1);
   });
 
-  test.fail('IMP-053: "Kheer / Payasam" shows both names, "Also called Payesh", and the reveal reads "The word was Kheer / Payasam."', async ({ page }) => {
+  test('IMP-053: "Kheer / Payasam" shows both names, "Also called Payesh", and the reveal reads "The word was Kheer / Payasam."', async ({ page }) => {
     await startEvening(page, { seeds: { deals: [{ wordId: KHEER, impostor: 'Arjun', starter: 'Riya' }] } });
     const lines = await dealAll(page);
     expect(lines.Riya![1]).toBe('Kheer / Payasam');
@@ -204,7 +204,7 @@ test.describe('IMP-012: the impostor\'s turn looks exactly like everyone else\'s
 
 test.describe('IMP-013 and IMP-062: the word is never in the page except while held', () => {
   for (const mode of ['easy', 'hard'] as const) {
-    test.fail(`${mode}: no word, other name, hint, role${mode === 'hard' ? ' or category' : ''} on any screen of the round before the reveal`, async ({ page }) => {
+    test(`${mode}: no word, other name, hint, role${mode === 'hard' ? ' or category' : ''} on any screen of the round before the reveal`, async ({ page }) => {
       test.setTimeout(90_000);
       await startEvening(page, { mode, seeds: { deals: [{ wordId: PANI_PURI, impostor: 'Arjun', starter: 'Meena' }] } });
       const terms = secretTerms(PANI_PURI, mode);
@@ -389,7 +389,7 @@ test.describe('IMP-017: see my word again', () => {
 });
 
 test.describe('IMP-031 and IMP-033: pick, then reveal; caught, the guess before the word', () => {
-  test.fail('the picker, the build-up, "Caught red-handed!", the guess, then "Show the word" and the verdict', async ({ page }) => {
+  test('the picker, the build-up, "Caught red-handed!", the guess, then "Show the word" and the verdict', async ({ page }) => {
     await startEvening(page, { seeds: { deals: [{ wordId: PANI_PURI, impostor: 'Arjun', starter: 'Riya' }] } });
     await dealAll(page);
     await toPicker(page);
