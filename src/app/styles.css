@@ -194,7 +194,12 @@ body { -webkit-tap-highlight-color: transparent; }
 .start-screen { padding-bottom: 0; }
 /* PLT-029: which session the game joins, one line above "Confirm prizes". */
 .session-line { display: flex; align-items: center; gap: 2px; margin: 0 0 6px; min-height: 44px; max-height: 56px; font-weight: 700; color: var(--muted); }
-.session-line-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* UX review 1.1.0 polish (C1): the name may take two lines rather than be cut ("Saturday 3 O…" at 360); two lines
+   still fit the 56 px. */
+.session-line-text {
+  min-width: 0; overflow: hidden; overflow-wrap: anywhere; line-height: 1.2;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2;
+}
 .session-line .session-change { flex: none; padding: 0 8px; }
 /* Two buttons side by side, both at the bottom edge (TAM-181, TAM-197). */
 .bottom-actions { display: flex; gap: 8px; }
@@ -288,6 +293,21 @@ body { -webkit-tap-highlight-color: transparent; }
   .prizes-step .session-line { margin: 0; }
   .prizes-step .bottom-action { padding: 4px 0 max(12px, env(safe-area-inset-bottom)); }
   .prizes-step .bottom-action .button-big { min-height: 52px; }
+}
+/* UX review 1.1.0 polish (C1): on short portrait phones (360 x 640) the title "Prizes" shares the Back bar's row, as
+   in landscape, so the add-a-prize buttons and "Once you confirm…" show in full above the session line. */
+@media (orientation: portrait) and (max-height: 700px) {
+  .prizes-step {
+    display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-rows: auto auto minmax(0, 1fr) auto;
+    gap: 8px 16px;
+  }
+  .prizes-step > .top-bar { grid-column: 1; grid-row: 1; }
+  .prizes-step > .step-head { display: contents; }
+  .prizes-step > .step-head > .step-title { grid-column: 2; grid-row: 1; align-self: center; }
+  .prizes-step > .step-head > .lead { grid-column: 1 / -1; grid-row: 2; }
+  .prizes-step > .setup-body { grid-column: 1 / -1; grid-row: 3; }
+  .prizes-step > .bottom-action { grid-column: 1 / -1; grid-row: 4; }
+  .prizes-step .session-line { font-size: 0.95rem; }
 }
 /* RC fix (C1): the prizes step in landscape gives the prize list real room: the title and pot line share the Back
    bar's row, compact rows, and the prizes in two columns, so every prize and the add-a-prize buttons show without
