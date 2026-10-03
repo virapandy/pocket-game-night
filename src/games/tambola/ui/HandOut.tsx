@@ -61,7 +61,7 @@ export function HandOut({
   const [error, setError] = useState<string | null>(null);
   /** UX list row 7 (TAM-132): "Start calling" while a ticket still waits asks first. */
   const [asking, setAsking] = useState(false);
-  /** Row 7 (C2): the ticket the host chose "Hand it out now" for; the next "Start calling" for it doesn't ask again. */
+  /** Row 7 (C2): the ticket the host chose "Not yet, hand it out" for; the next "Start calling" for it doesn't ask again. */
   const [askedFor, setAskedFor] = useState<number | null>(null);
   const number = queue[Math.min(index, queue.length - 1)];
   const ticket = view.tickets.find((t) => t.number === number);
@@ -192,7 +192,7 @@ export function HandOut({
             if (!last) return onNext();
             // UX list row 7: the last ticket's player isn't confirmed yet, so starting asks first (no one is charged
             // for a ticket they never got).
-            // Asked once: after "Hand it out now" the host has had the chance, so the next tap starts calling.
+            // Asked once: after "Not yet, hand it out" the host has had the chance, so the next tap starts calling.
             if (doneLabel === 'Start calling' && waiting.size > 0 && askedFor !== number) return setAsking(true);
             onDone();
           }}
@@ -202,21 +202,33 @@ export function HandOut({
       </div>
       {asking && (
         <div className="backdrop">
+          {/* UX list row 7, N5 (C2): the host can't know whether the player scanned, so the question asks rather than
+              tells, and "Yes, start calling" is the main answer. */}
           <div className="dialog" role="dialog" aria-modal="true" aria-labelledby="start-ask-title" data-testid="start-ask">
             <h2 className="section-title" id="start-ask-title">
-              {nameOf(owner)} hasn't got their ticket
+              Has {nameOf(owner)} got their ticket?
             </h2>
-            <p className="note">Ticket {number} is still waiting to be handed out.</p>
+            <p className="note">Ticket {number} is the last one to hand out.</p>
             <div className="stack-tight">
               <button
                 type="button"
                 className="button"
                 onClick={() => {
                   setAsking(false);
+                  onDone();
+                }}
+              >
+                Yes, start calling
+              </button>
+              <button
+                type="button"
+                className="button button-quiet"
+                onClick={() => {
+                  setAsking(false);
                   setAskedFor(number);
                 }}
               >
-                Hand it out now
+                Not yet, hand it out
               </button>
               <button
                 type="button"
@@ -227,16 +239,6 @@ export function HandOut({
                 }}
               >
                 Give a paper ticket
-              </button>
-              <button
-                type="button"
-                className="button button-quiet"
-                onClick={() => {
-                  setAsking(false);
-                  onDone();
-                }}
-              >
-                Start anyway
               </button>
             </div>
           </div>
