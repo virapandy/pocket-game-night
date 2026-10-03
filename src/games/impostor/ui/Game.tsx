@@ -432,7 +432,8 @@ export function Game({
       <Reveal
         key={`reveal-${roundKey}`}
         round={r}
-        live={revealLive === roundKey}
+        // Timed only until its result shows: drawn again later (back from "Change how we play"), it shows at once.
+        live={revealLive === roundKey && !resultShown}
         result={result}
         prefs={prefs}
         announce={announce}
