@@ -120,8 +120,9 @@ jobs:
         env:
           SPECS: ${{ needs.plan.outputs.specs }}
         run: |
+          # A push that changes only screenshot tests (@screens) leaves no area test to run here: that is a pass.
           # shellcheck disable=SC2086
-          npm run test:browser -- --project=android --grep-invert @screens $SPECS
+          npm run test:browser -- --project=android --grep-invert @screens --pass-with-no-tests $SPECS
       - name: Keep browser results
         if: failure() && (steps.smoke.outcome == 'failure' || steps.areas.outcome == 'failure')
         uses: actions/upload-artifact@v4
@@ -167,7 +168,7 @@ jobs:
         if: steps.pw-cache.outputs.cache-hit == 'true'
         run: npx playwright install-deps chromium
       - name: Browser tests, shard ${{ matrix.shard }} of 2
-        run: npm run test:browser -- --project=android --grep-invert @screens --shard=${{ matrix.shard }}/2
+        run: npm run test:browser -- --project=android --grep-invert @screens --pass-with-no-tests --shard=${{ matrix.shard }}/2
       - name: Keep browser results
         if: failure()
         uses: actions/upload-artifact@v4
