@@ -497,6 +497,10 @@ button, [role="button"], a { touch-action: manipulation; }
 .stage-side:has(> .result-card) { flex: 0 1 auto; min-height: 0; }
 .stage-side:has(> .result-card) > * { flex: none; }
 .stage-side > .result-card { flex: 0 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+/* UX review 2026-10-03 point b: the verdict stays on top and "Undo claim" / "Done" stay pinned to the card's bottom;
+   only the proof line and the ticket picture between them scroll, inside the card. */
+.result-body { flex: 0 1 auto; min-height: 0; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; overscroll-behavior: contain; }
+.result-card > .verdict, .result-actions { flex: none; }
 .button-strong { border-color: var(--accent); }
 .verdict { margin: 0; font-size: 1.7rem; line-height: 1.2; font-weight: 800; overflow-wrap: anywhere; }
 .verdict-ok { color: var(--ok); }

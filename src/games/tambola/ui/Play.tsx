@@ -1618,9 +1618,13 @@ function ResultCard({
   return (
     <section className="result-card raise" data-testid="claim-result">
       <p className={m.type === 'record-win' ? 'verdict verdict-ok' : 'verdict verdict-bogey'}>{headline}</p>
-      {detail && <p className="note">{detail}</p>}
+      {detail && (
+        <div className="result-body">
+          <p className="note">{detail}</p>
+        </div>
+      )}
       {/* TAM-198: "Add another winner" and "Close <Pattern>" sit at the bottom, as the main actions. */}
-      <div className="row">
+      <div className="row result-actions">
         <button type="button" className="button button-quiet" onClick={onUndo}>
           {m.type === 'record-win' ? 'Undo win' : 'Undo bogey'}
         </button>
@@ -1904,19 +1908,22 @@ function PhoneResult({
   return (
     <section className="result-card raise" data-testid="claim-result">
       <p className={c.verdict === 'accepted' ? 'verdict verdict-ok' : 'verdict verdict-bogey'}>{headline}</p>
-      {/* UX list row 24: the proof, on its own line in ordinary text, for accepted claims and bogeys alike. */}
-      <p className="claim-proof" data-testid="claim-proof">
-        Ticket {c.ticket}
-        {view.code ? ` · game ${view.code}` : ''}
-        {proof === 'qr' ? ' · same numbers as your copy' : proof === 'typed' ? ' · checked from your copy' : ''}
-      </p>
-      <p className="note">
-        {owner}
-        {detail ? ` · ${detail}` : ''}
-        {out ? ` · Ticket ${c.ticket} is out.` : ''}
-      </p>
-      {ticket && <TicketGrid rows={ticket.rows} cell={24} marks={{ called: new Set(view.called) }} className="ticket-small" />}
-      <div className="row">
+      {/* UX review 2026-10-03 point b: on small phones the proof and the ticket scroll here; the buttons stay pinned below. */}
+      <div className="result-body">
+        {/* UX list row 24: the proof, on its own line in ordinary text, for accepted claims and bogeys alike. */}
+        <p className="claim-proof" data-testid="claim-proof">
+          Ticket {c.ticket}
+          {view.code ? ` · game ${view.code}` : ''}
+          {proof === 'qr' ? ' · same numbers as your copy' : proof === 'typed' ? ' · checked from your copy' : ''}
+        </p>
+        <p className="note">
+          {owner}
+          {detail ? ` · ${detail}` : ''}
+          {out ? ` · Ticket ${c.ticket} is out.` : ''}
+        </p>
+        {ticket && <TicketGrid rows={ticket.rows} cell={24} marks={{ called: new Set(view.called) }} className="ticket-small" />}
+      </div>
+      <div className="row result-actions">
         <button type="button" className="button button-quiet" onClick={onUndo}>
           Undo claim
         </button>
