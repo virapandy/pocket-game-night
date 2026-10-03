@@ -334,7 +334,7 @@ export const textOf = (l: Locator) => l.evaluateAll((els) => els.map((e) => (e.t
 /**
  * Things drawn over each other on screen (the reviewer's layout check for IMP-081 and IMP-088, 3 October 2026): pairs
  * of visible controls and text that overlap by more than 1 px. Controls count by their boxes, text by the boxes of its
- * letters; each is clipped by the boxes it scrolls in. An element and what it contains are never a pair. A toast only
+ * letters (see below); each is clipped by the boxes it scrolls in. An element and what it contains are never a pair. A toast only
  * counts against controls (it is a bar that may lie over text for its few seconds, but never over a button).
  */
 export const overlapping = (page: Page): Promise<string[]> => page.evaluate(() => {
@@ -372,7 +372,11 @@ export const overlapping = (page: Page): Promise<string[]> => page.evaluate(() =
         if (!(n.textContent ?? '').trim()) continue;
         const range = document.createRange();
         range.selectNodeContents(n);
-        for (const b of Array.from(range.getClientRects())) raw.push({ l: b.left, t: b.top, r: b.right, b: b.bottom });
+        // A line's box is taller than its letters (the space above capitals and below the baseline grows with the
+        // font: 200 px digits have about 40 px of empty space above them), so each line counts from 0.2 em below
+        // its top to 0.1 em above its bottom.
+        const em = parseFloat(getComputedStyle(n.parentElement!).fontSize);
+        for (const b of Array.from(range.getClientRects())) raw.push({ l: b.left, t: b.top + 0.2 * em, r: b.right, b: b.bottom - 0.1 * em });
       }
     }
     const rects = raw.map((x) => clip(el, x)).filter((x): x is R => !!x);
