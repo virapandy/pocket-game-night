@@ -527,19 +527,24 @@ button, [role="button"], a { touch-action: manipulation; }
    nothing and covers nothing when it comes and goes (TAM-125). */
 /* TAM-119, TAM-125 (UX list row 13): a light bar, not a solid one, with at least 16 px above the button below it. */
 .toast-slot { flex: none; width: 100%; height: 52px; }
+/* UX review 2026-10-03 polish (row 16): lighter than a button. No outline, a pill only as wide as its words, plain
+   weight for "Called 21"; the underlined Undo stays the one thing to tap. Same height, so the 16 px gap stays. */
 .toast {
-  margin: 0;
+  margin: 0 auto;
+  width: fit-content;
+  max-width: 100%;
   height: 44px;
-  border: 2px solid var(--border);
+  border: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 4px;
-  padding: 0 12px;
-  font-weight: 700;
+  padding: 0 14px;
+  font-weight: 500;
   color: var(--toast-text);
   background: var(--toast-bg);
-  border-radius: 12px;
+  border-radius: 22px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
 }
 .toast-button {
   min-height: 44px;
