@@ -92,6 +92,12 @@ https://virapandy.github.io/pocket-game-night/, updated only by a release.
 
 Not now: hidden feature switches; paid screenshot-review services ($0 rule).
 
+## Writing the change (all classes)
+Every handover row and scenario follows `docs/spec-rules.md`: exact on-screen words in quotes, numbers with the screen
+sizes and states they hold in, every edge case, and the scenario IDs it rewords. A C3 batch also passes the two-reader
+check before tests are written. A row that leaves the coder or tester guessing goes back to the product owner, not
+into a build.
+
 ## Questions
 - C1 and C2: the coder or tester picks the option closest to `docs/ux-guidelines.md`, notes it in the report, and
   keeps going. The product owner reviews the notes afterwards.

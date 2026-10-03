@@ -108,6 +108,9 @@ If any answer doesn't fit, flag it to the owner before scenarios are written: it
 Also note which secrets need their own seeds.
 
 ## Step 8: Test cases → `docs/games/<game>/scenarios.md` (drafts), then `specs/<game>/`
+**Every scenario follows `docs/spec-rules.md`** (exact words, numbers with where they hold, edge cases, test hooks,
+one fact in one place), and passes the two-reader check (a coder-reader and a tester-reader list every guess; all
+resolved) before it goes to the tester.
 - Use the scenario template in `specs/README.md` and the game's ID prefix (below).
 - Suggested files, following Tambola:
   `01-setup` · `02-core-play` · `03-winning-and-scoring` · `04-house-rules` · `05-secrets` ·
