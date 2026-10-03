@@ -541,7 +541,7 @@ function InstallTip() {
       <p>Games saved in Safari and in the Home Screen app are kept separate. The Home Screen app keeps them more reliably.</p>
       <button
         type="button"
-        className="button"
+        className="button button-quiet"
         onClick={() => {
           preferences.set(TIP_KEY, true);
           setShow(false);
