@@ -1766,18 +1766,21 @@ function RoomView({
       <div className="room-number" data-testid="current-number">
         {view.current ? view.current.number : ''}
       </div>
-      <p className="room-rhyme" data-testid="current-rhyme">
-        {view.current?.rhyme?.text ?? ''}
-      </p>
-      <LastCalls numbers={view.lastCalls} big />
-      {latest && (
-        <p className="room-verdict">
-          {latest.verdict === 'accepted'
-            ? `${PATTERN_NAMES[latest.pattern]}: ✓ ${names(latest.playerId)}${prize ? `, ${prize}` : ''}`
-            : `✗ Bogey: ${names(latest.playerId)}, ${PATTERN_NAMES[latest.pattern]}`}
+      {/* RC fix (C1): in landscape this column sits beside the number; in portrait it stacks under it. */}
+      <div className="room-side">
+        <p className="room-rhyme" data-testid="current-rhyme">
+          {view.current?.rhyme?.text ?? ''}
         </p>
-      )}
-      <p className="note">Tap anywhere to go back</p>
+        <LastCalls numbers={view.lastCalls} big />
+        {latest && (
+          <p className="room-verdict">
+            {latest.verdict === 'accepted'
+              ? `${PATTERN_NAMES[latest.pattern]}: ✓ ${names(latest.playerId)}${prize ? `, ${prize}` : ''}`
+              : `✗ Bogey: ${names(latest.playerId)}, ${PATTERN_NAMES[latest.pattern]}`}
+          </p>
+        )}
+        <p className="note">Tap anywhere to go back</p>
+      </div>
       {code && (
         <p className="room-code" data-testid="room-game-code">
           Game {code}
