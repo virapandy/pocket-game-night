@@ -931,3 +931,5 @@ button.tcell { cursor: pointer; }
 /* UX row 22 (TAM-140, PLT-005): the "Game over" banner above the host's payouts. */
 .game-over { margin-bottom: 12px; }
 .game-over p { margin: 0; }
+/* UX row 24 (TAM-174, TAM-177, TAM-179): a scanned verdict's proof, a second smaller line in ordinary text colour. */
+.claim-proof { margin: 0; font-size: 0.95rem; font-weight: 600; color: var(--text); overflow-wrap: anywhere; }

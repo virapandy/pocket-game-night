@@ -148,6 +148,8 @@ export function Play({
   const [dialog, setDialog] = useState<Dialog | null>(startDialog ? { kind: startDialog } : null);
   /** The recorded win or bogey shown on screen, by its move's number. */
   const [resultSeq, setResultSeq] = useState<number | null>(null);
+  /** UX list row 24: how the claim on screen was checked: its QR against this phone's copy, or by number. Display only. */
+  const [resultProof, setResultProof] = useState<ClaimProof | null>(null);
   /** The call the undo toast is for (TAM-125). */
   const [toastSeq, setToastSeq] = useState<number | null>(null);
   const [room, setRoom] = useState<false | 'menu' | 'press'>(false);
@@ -710,6 +712,7 @@ export function Play({
             <ResultCard
               record={result}
               claimIndex={resultClaimIndex}
+              proof={resultProof}
               view={view}
               money={money}
               nameOf={nameOf}
@@ -928,11 +931,12 @@ export function Play({
       {sheet?.kind === 'scan' && (
         <ClaimScanner
           view={view}
-          onCheck={(ticket, pattern) => {
+          onCheck={(ticket, pattern, proof) => {
             const r = move({ type: 'check-claim', ticket, pattern });
             if (!r.ok) return r.reason;
             const rec = r.value.records[r.value.records.length - 1];
             setResultSeq(rec ? rec.seq : null);
+            setResultProof(proof);
             setSheet(null);
             feel();
             return null;
@@ -1415,6 +1419,7 @@ function spokenVerdict(record: TambolaRecord, claimIndex: number, view: TambolaV
 function ResultCard({
   record,
   claimIndex,
+  proof,
   view,
   money,
   nameOf,
@@ -1423,6 +1428,7 @@ function ResultCard({
 }: {
   record: TambolaRecord;
   claimIndex: number;
+  proof: ClaimProof | null;
   view: TambolaView;
   money: boolean;
   nameOf: (id: string) => string;
@@ -1431,7 +1437,7 @@ function ResultCard({
 }) {
   const m = record.move;
   if (m.type === 'check-claim') {
-    return <PhoneResult claimIndex={claimIndex} view={view} money={money} nameOf={nameOf} onUndo={onUndo} onDone={onDone} />;
+    return <PhoneResult claimIndex={claimIndex} proof={proof} view={view} money={money} nameOf={nameOf} onUndo={onUndo} onDone={onDone} />;
   }
   if (m.type !== 'record-win' && m.type !== 'record-bogey') return null;
   const waiting = view.awaitingClose.includes(m.pattern);
@@ -1689,6 +1695,7 @@ function Modal({ children, onClose }: { children: ReactNode; onClose: () => void
 /** A phone-ticket claim's verdict, where a paper win shows (TAM-033, TAM-038, TAM-174): the ticket, with the calls. */
 function PhoneResult({
   claimIndex,
+  proof,
   view,
   money,
   nameOf,
@@ -1696,6 +1703,7 @@ function PhoneResult({
   onDone,
 }: {
   claimIndex: number;
+  proof: ClaimProof | null;
   view: TambolaView;
   money: boolean;
   nameOf: (id: string) => string;
@@ -1712,8 +1720,14 @@ function PhoneResult({
   return (
     <section className="result-card raise" data-testid="claim-result">
       <p className={c.verdict === 'accepted' ? 'verdict verdict-ok' : 'verdict verdict-bogey'}>{headline}</p>
+      {/* UX list row 24: the proof, on its own line in ordinary text, for accepted claims and bogeys alike. */}
+      <p className="claim-proof" data-testid="claim-proof">
+        Ticket {c.ticket}
+        {view.code ? ` · game ${view.code}` : ''}
+        {proof === 'qr' ? ' · same numbers as your copy' : proof === 'typed' ? ' · checked from your copy' : ''}
+      </p>
       <p className="note">
-        Ticket {c.ticket} · {owner}
+        {owner}
         {detail ? ` · ${detail}` : ''}
         {out ? ` · Ticket ${c.ticket} is out.` : ''}
       </p>
@@ -1732,6 +1746,9 @@ function PhoneResult({
   );
 }
 
+/** How a phone claim was checked (UX list row 24): its QR compared with this phone's copy, or typed by number. */
+type ClaimProof = 'qr' | 'typed';
+
 /** How long the camera looks for a claim QR before typing the ticket number takes over (TAM-178). */
 const NO_READ_MS = 10_000;
 
@@ -1746,8 +1763,8 @@ function ClaimScanner({
   onClose,
 }: {
   view: TambolaView;
-  /** Checks the claim; returns why it was refused, or null once it is recorded. */
-  onCheck: (ticket: number, pattern: Pattern) => string | null;
+  /** Checks the claim; returns why it was refused, or null once it is recorded. `proof` is for the screen only. */
+  onCheck: (ticket: number, pattern: Pattern, proof: ClaimProof) => string | null;
   onClose: () => void;
 }) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -1765,7 +1782,7 @@ function ClaimScanner({
       setRefused(r.checkByNumber !== undefined ? { reason: r.reason, checkByNumber: r.checkByNumber } : { reason: r.reason });
       return;
     }
-    const why = onCheck(r.ticket, r.pattern);
+    const why = onCheck(r.ticket, r.pattern, 'qr');
     if (why) setRefused({ reason: why });
   };
   useEscape(onClose);
@@ -1797,7 +1814,7 @@ function ClaimScanner({
     const n = Number(number.trim());
     if (number.trim() === '' || !Number.isFinite(n)) return setRefused({ reason: 'Type the ticket number.' });
     if (!pattern) return setRefused({ reason: 'Pick the prize.' });
-    const why = onCheck(n, pattern);
+    const why = onCheck(n, pattern, 'typed');
     if (why) setRefused({ reason: why });
   };
 
