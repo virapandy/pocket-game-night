@@ -7,7 +7,7 @@ too little and you look like the impostor. Then everyone votes on who the impost
 one last chance: guess the word and steal the round.
 
 - **Other names:** Imposter, Undercover (a variant), Who is the Spy; close cousins: The Chameleon, Spyfall.
-- **Players:** 3 to 20; best with 5 to 10. **Time:** about 4 minutes a round; an evening is 5 to 8 rounds.
+- **Players:** 3 to 20; best with 4 to 8 (one impostor gets too easy to hide in big groups). **Time:** about 4 minutes a round; an evening is 5 to 8 rounds.
 - **Suits:** families and friends, ages about 8 and up (younger players with the kids' rule below).
 
 ## What you need
@@ -15,42 +15,51 @@ Without the app: someone who sits out to write words on slips, plus a word list,
 app: one phone.** Nobody sits out, the word is fair and new every round, and the score is kept.
 
 ## How to play
-1. Pick categories (the words are Multicultural: fair to players from anywhere in India). The phone picks a secret word and, at random, the impostor.
+1. Answer four quick choices (Easy or Hard, Free flow or Timer, scores or not, Whole family or Grown-ups too).
+   The phone picks a word that players from anywhere in India know. The phone picks a secret word and, at random, the impostor.
 2. **Pass the phone round.** Each player sees the screen "Pass to Riya", takes the phone, holds to see their
    word (or "You are the impostor"), lets go, and passes it on.
-3. The phone names who starts (never the impostor), then play goes clockwise.
-4. **Clues:** each player says one word linked to the secret word. No saying the word, no repeating a clue, no
-   rhymes or "sounds like".
-5. **Discuss** for up to a minute: who sounded unsure?
+3. The phone names who starts (in Hard mode never the impostor), then play goes clockwise.
+4. **Clues:** each player says one word linked to the secret word. No saying the word, no rhymes or "sounds like".
+5. **Discuss**: who sounded unsure? (Free flow until someone taps "Vote now", or a 2-minute timer.)
 6. **Vote:** on "3, 2, 1, point!" everyone points at once. The player with the most fingers on them is accused.
 7. **Reveal:** the phone shows whether they were the impostor, and the word.
 8. **Last guess:** a caught impostor says one guess aloud. Right: they steal the round.
-9. Score, then the next round with a new word, a new impostor and the next starter.
+9. Next round (with points, if you chose to keep score) with a new word, a new impostor and the next starter.
+
+## Choices asked at the start (owner, 3 October; remembered for the evening)
+| Choice | Options (default first) | Evidence |
+|---|---|---|
+| **Mode** | **Easy**: the impostor sees the category and a hint word, and may start; kids may use short phrases · **Hard**: the impostor sees only "You are the impostor" and never starts | Hint as a difficulty dial (app reviews); impostor first with no information is "playing blind" (BGG, Chameleon family) |
+| **Discussion** | **Free flow** with a "Vote now" button · **Timer** (2 minutes, gentle chime) | Groups prefer keeping it moving over a timer; fixed timers run too long (BGG: Insider, Spyfall) |
+| **Keep score?** | **No**, just play · Yes, the night's scoreboard | Most groups have more fun without points; races to a target make players gang up on the leader (BGG: Chameleon, Insider, Fake Artist dropped scoring) |
+| **Words** | **Whole family** (known to kids, elders and every region) · Grown-ups too | Words someone doesn't know spoil the round (Opinionated Gamers; persona review, see `words.md`) |
 
 ## Rules
 | # | Rule | Convention | Ours? |
 |---|---|---|---|
-| 1 | One impostor for 3–7 players; from 8 players, the host may choose 2 | imposter.online | |
-| 2 | The impostor sees "You are the impostor" and the **category** (the room knows the category anyway) | Most phone versions show the category | |
-| 3 | Clues are one word, one round round the circle; a second round is a setting | imposter.online, impostergames.org | |
-| 4 | Banned clues: the word itself, a repeat, a rhyme, a direct translation, filler like "thing" | psycatgames, impostergames.org | Translations banned: ours, for mixed-language groups |
-| 5 | **The impostor never starts**; the starter is random among the others, then clockwise | Sources only advise rotating | **Ours**: the worst unfair round for families |
-| 6 | Discussion up to 60 seconds, visible timer, skippable; can be switched off | 15–45 s in sources; apps offer 30 s–3 min or off | 60 s: ours, slower family pace |
-| 7 | Vote by pointing together on a count of three; the host enters who was accused | The Chameleon (pointing) | |
-| 8 | Tie: one re-vote between the tied players; still tied, the impostor escapes | imposter.online; impostor-wins is a common house rule | |
-| 9 | A caught impostor gets one guess, said aloud; **the room judges** if it's right (like trusting the Tambola anchor) | imposter.online, imposter.hu | Room judges: ours |
-| 10 | Kids' rule (setting): clues of up to 3 words | impostergames.org | |
+| 1 | One impostor for 3–7 players; from 8, the host may choose 2 (off by default) | imposter.online; two impostors split opinion on BGG | |
+| 2 | What the impostor sees depends on the mode (above) | Category public in The Chameleon; hint optional in apps | Easy/Hard: owner |
+| 3 | One word per clue, one round of clues; a second round is offered for 3–5 players | imposter.online; BGG (fewer turns in big groups) | |
+| 4 | Not allowed: saying the word (the round restarts with a new word), rhymes, direct translations, filler like "thing". **Repeating a clue is allowed** (it just looks suspicious) | Spyfall publisher bans naming it; Gooseberry designer on repeats | Translations banned: ours |
+| 5 | Starter random; in Hard mode never the impostor | BGG advice to rotate | Hard-mode rule: owner |
+| 6 | Discussion as chosen at the start (free flow or 2-minute timer) | | Owner |
+| 7 | Vote by pointing together on "3, 2, 1, point!"; the host enters who was accused | The Chameleon; most popular on BGG | |
+| 8 | Tie: one re-vote between the tied players; still tied, the impostor escapes | imposter.online; BGG house rules | |
+| 9 | A caught impostor gets one guess, said aloud, **without the clues being repeated**; the room judges | imposter.online; BGG house rule | Room judges: ours |
+| 10 | Picking the impostor: random, but never the same player 3 rounds in a row | Players complain about streaks (BGG, app reviews) | Ours |
+| 11 | Non-veg food words are off unless the host turns them on | Veg/non-veg is a real divide at Indian tables (research) | Ours |
 
-## Scoring
+## Scoring (only if "Keep score?" is Yes)
 | Outcome | Points |
 |---|---|
-| The impostor escapes (not accused) | Impostor +2 |
+| The impostor escapes | Impostor +2 |
 | Caught, but guesses the word | Impostor +1 |
 | Caught, guess wrong | Every crew member +1 |
 
-Points add up across the evening on the night's scoreboard. (A simplified version of the sources' scoring:
-imposter.online uses +3/+2/+1 to 10; The Chameleon 2/1/2 to 5.) No first-to-X race by default; the evening
-ends when the host ends it.
+No race to a target: the night's scoreboard just adds up, and the evening ends when the host ends it.
+(Sources: imposter.online +3/+2/+1 to 10; The Chameleon 2/1/2 to 5; BGG players warn that targets cause
+ganging up on the leader.)
 
 ## Variants (not in the first release)
 - **Undercover:** the impostor gets a *similar* word (Idli instead of Dosa) and may not know they're the impostor;
@@ -58,11 +67,23 @@ ends when the host ends it.
 - **Mr White:** Undercover plus a player with no word.
 - **Spyfall:** questions instead of clues, with a location and roles.
 
+## What real players say (research, 3 October 2026)
+About 45 BoardGameGeek threads (The Chameleon, Spyfall, A Fake Artist, Insider), app reviews, and Indian party
+and app sources. Reddit and Quora blocked automated reading, so neither is included.
+- Most groups play **for fun, without points**; points to a target make people gang up on the leader.
+- **Keep it moving**: quick clues; a long timer drags.
+- A round **falls flat when someone doesn't know the word**; everyday words beat clever ones.
+- **The last guess keeps the crew honest**: it stops clues getting too obvious.
+- **Streaks** (the same impostor again and again) annoy players.
+- Families with kids of 6+ play it happily; first-timers dread being impostor, so a practice round helps.
+- Rounds take 3–5 minutes; groups play 5–10 rounds.
+- Later twists players love, used rarely: a round with no impostor, or everyone an impostor.
+
 ## What we do differently from other Impostor apps
 Research of the leading apps and about 800 reviews (3 October 2026): the complaints are paywalls, ads, repeated
 words, roles leaking while the phone is passed, an impostor picked suspiciously often, and no Indian content.
-Ours: India-centric words that are fair to a mixed-region group (regional themes later), every word free and
-offline, no repeats in an evening, a private deal where the impostor's turn looks identical, and the scores of
+Two small apps now sell India packs (Hinglish, Bollywood, cricket). Ours: India-centric words that are fair to a mixed-region group (regional themes later), every word free and
+offline, no repeats in an evening, words checked for every region and for kids and elders, a private deal where the impostor's turn looks identical, and the scores of
 the whole night.
 
 ## How Pocket Game Night plays it
@@ -82,6 +103,13 @@ the whole night.
 - Apps and reviews: Undercover (Play, com.yanstarstudio.joss.undercover), Imposter Who? (imposterwho.com),
   Impostor: Bluff Word Game (Play, com.phyxgames.impostor), Dronk imposter game (dronkapp.com/imposter-game)
 
+- Real play (BoardGameGeek threads): scoring 1923574, 2176540, 1759551, 3177431; timers 1381654, 2757990;
+  impostor first 1976868, 1294821; flat rounds and streaks 1424571, 3741966, 2433190; voting and ties 1284794,
+  1779047; families 1680265, 1438889, 1930258 (all at https://boardgamegeek.com/thread/<number>);
+  Opinionated Gamers, The Chameleon review: https://opinionatedgamers.com/2017/09/25/dale-yu-review-of-the-chameleon/
+- India: partie.in party games; Zee News Diwali games; India-targeted Imposter app
+  (Play, com.monstergames.imposter); WordSpy (App Store) India packs
+
 ## Contract check (for the builders)
 | Question | Impostor's answer |
 |---|---|
@@ -90,6 +118,6 @@ the whole night.
 | Apply | Pure: each move gives the next state |
 | View | Each player sees only their own role during the deal; the host screen never shows the word or the impostor until the reveal |
 | Game over | A round ends at its score; the evening ends when the host ends it |
-| Invariants | Exactly the set number of impostors; every crew member has the same word; the impostor never starts; no word repeats in an evening; points add up |
+| Invariants | Exactly the set number of impostors; every crew member has the same word; in Hard mode the impostor never starts; nobody is impostor 3 rounds running; no word repeats in an evening; points add up |
 | Undo | Undo the last recorded vote or guess before "Next round"; never undo the deal (redeal instead) |
 | Secrets | The word and impostor come from their own seed, separate from the starter |

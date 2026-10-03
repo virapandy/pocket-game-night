@@ -38,7 +38,7 @@ ask for Tamil. A few small apps have a Hindi or Malayalam pack, and none is buil
 about 800 reviews the top complaints were paywalls, ads, and **the same words repeating**. Ours: Indian themes,
 mixed-region fairness, every word free and offline, no repeats.
 
-## Categories (each theme)
+## Categories
 Food · Festivals and occasions · Around the house · Travel and places · Films and music · Cricket and games ·
 School and childhood · Weddings and family. All **family-friendly** by default; nothing about politics, religion
 as a joke, caste, or real people other than well-loved film and sports names. A "grown-ups" set can come later.
@@ -53,10 +53,31 @@ The host can switch categories off (for example no Films for grandparents).
 **No word repeats within an evening**, and recent evenings' words are avoided where possible (to decide, see
 `decisions.md`).
 
+## The list: `words.csv` (version 2, 241 words)
+Drafted 3 October, then checked by **nine simulated players** (persona reviewers, each judging every word as that
+person would): Delhi 34, Lucknow 56, Chennai 29, Hyderabad 41, Bengaluru 27, Calicut 45, Kolkata 50, a Jain
+vegetarian grandmother of 70 from Ahmedabad, and a 10-year-old in Pune. The changed rows were checked again.
+
+| What the review found | Words | Done |
+|---|---|---|
+| Not known across regions (Gilli danda, Tawa, Kadai, Matka, SPB, Kishore Kumar, Sholay, Rasam…) | 16 | Dropped, or both names shown (Poha / Aval, Janmashtami / Gokulashtami) |
+| Known to the adults but not the kid or the grandmother (old films and singers, new films, cricket terms, wedding rituals) | 56 | Marked **grown-ups** |
+| Two meanings or touchy (Duck, Duster, Thali vs thaali, Mother-in-law, Honeymoon) | 14 | Dropped or renamed (Thali meal) |
+| Hints that gave the word away ("Style" for Rajinikanth) or meant nothing (seasons differ across India) | about 40 | Rewritten; no month or season hints |
+| Words everyone suggested (Coconut, Umbrella, Rain, Banana leaf meal, Gas cylinder) | 20 | Added |
+
+**Result:** 241 words in 8 categories: **185 "whole family"**, 56 "grown-ups"; 2 non-veg (off by default).
+Films is the thinnest for families (11), because films split by age more than anything else.
+
+**Biggest lesson:** age divides a family table more than region does (56 words against 16).
+
+Columns: id, word, other names, category, audience (family / grownups), nonveg, difficulty, hint (Easy mode),
+close cousin (for a later Undercover variant), what changed, notes.
+
 ## Who checks the words
 Like the Tambola rhymes (`docs/games/tambola/rhymes.csv`), the product owner drafts each list as a sheet; the
-owner approves. For Multicultural, readers who grew up in the North, the South and the East each strike anything they
-wouldn't know. (Later, each regional theme gets a reader who grew up there.)
+owner approves. Simulated players are a first filter, not the last word. Before release, real readers who grew up in the
+North, the South and the East, plus a grandparent and a child, each strike anything they wouldn't know. (Later, each regional theme gets a reader who grew up there.)
 
 ## Behind the scenes (for the builders later)
 Each word is stored once with: the word, other names ("Payasam"), native-script spellings, its themes,

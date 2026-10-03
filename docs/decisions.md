@@ -143,29 +143,21 @@ Claude to follow game conventions. Every Tambola rule above is also a host setti
 - Before wider public release: replace the "Report a problem" stub with a real destination (PLT-208)
 - Approval of Phase 2, 2.5, 6 and 7 scenarios (when those phases come up)
 
-## Impostor: owner's answers (3 October 2026), to be confirmed after forum research
-- I1: **Easy mode**: the impostor sees the category and a hint; **Hard mode**: nothing but "You are the impostor".
-- I2: Starter random; in Hard mode never the impostor; in Easy mode the impostor may start.
-- I3: Points as recommended, but check whether points are wanted at all ("sometimes it's just fun with no points").
-- I4, I5, I7, I8, I9: as recommended.
-- I6: Two ways to discuss, asked at the start: **Timer** or **Free flow**.
-- I11: Draft the Multicultural list; persona reviewers (simulated players from different regions) evaluate it first, then the owner.
-- I12: Not needed. (The owner had meant a team-gives-the-word mode like Dumb Charades; with no host it doesn't fit.)
-- Owner: research real game play on forums extensively before deciding.
-
-## Impostor: open questions (3 October 2026; design in `docs/games/impostor/`)
-| # | Question | Options (norm = convention) | Recommendation |
-|---|---|---|---|
-| I1 | What the impostor sees | "You are the impostor" only · **plus the category (norm in phone apps)** · plus a hint word (easy mode) | Category; hint word later |
-| I2 | Who starts the clues | Random (norm) · **random, never the impostor (ours)** | Never the impostor |
-| I3 | Scoring | +3/+2/+1 to 10 (imposter.online) · **escape +2, caught but guessed +1, caught crew +1 each (simplified)** | Simplified, no race to a target |
-| I4 | A tied vote, after one re-vote | Host decides · **impostor escapes (common house rule)** · another clue round | Impostor escapes |
-| I5 | Picking the impostor | Purely random (norm; reviewers complain one person gets it often) · random, but never 3 rounds in a row | Never 3 in a row |
-| I6 | Discussion timer | Off · **60 s, visible, skippable (ours)** · 2–3 min | 60 s |
-| I7 | "See my word again" | Not allowed · **allowed, by passing the phone and holding (family trust)** | Allowed |
-| I8 | Players' own phones | First release · **one phone first; own phones with connected mode (Phase 6)** | One phone first |
-| I9 | Word repeats | Never within an evening (all agree) · also avoid the last 3 evenings | Both |
-| I10 | Themes: **first release Multicultural only, in English letters** (owner, 3 October); Full Desi, Tamil, Telugu, Malayalam, Kannada, Bengali and per-player scripts later | Decided | — |
-| I11 | Word reviewers for Multicultural | Readers who grew up in the North, the South and the East | Owner names them |
-| I12 | Family in-jokes (adding your own words) | First release · later | Later |
-
+## Impostor: decisions after research (3 October 2026; evidence in `docs/games/impostor/guide.md`)
+| # | Decision | Basis |
+|---|---|---|
+| I1 | **Easy mode**: the impostor sees the category and a hint word. **Hard mode**: only "You are the impostor" | Owner; the hint as a difficulty dial (app reviews) |
+| I2 | Starter random; in Hard mode never the impostor; in Easy mode the impostor may start | Owner; "playing blind" when first with nothing (BGG) |
+| I3 | "Keep score?" asked at the start, **default No**; if Yes: escape +2, caught but guessed +1, caught crew +1 each; no target | Owner asked to check; most groups play without points, targets cause ganging up (BGG) — to confirm |
+| I4 | Tie after one re-vote: the impostor escapes | Owner |
+| I5 | Impostor random, never the same player 3 rounds running | Owner; streak complaints (BGG, reviews) |
+| I6 | "Talking": **Free flow** (default, "Vote now" button) or **Timer** (2 min), asked at the start | Owner; groups prefer momentum, long timers drag (BGG) — default to confirm |
+| I7 | "See my word again" allowed | Owner |
+| I8 | One phone first; own phones with connected mode | Owner |
+| I9 | No repeats in an evening; avoid the last 3 evenings | Owner |
+| I10 | First release: Multicultural theme only, English letters | Owner |
+| I11 | Word list `words.csv` v2 checked by 9 persona reviewers; real readers (North, South, East, a grandparent, a child) before release | Owner asked for persona review first |
+| I12 | No team-gives-the-word mode | Owner |
+| I13 | Words: **Whole family** (default) or "+ Grown-ups"; non-veg food off unless switched on | Persona review: age splits more than region; veg/non-veg divide (research) — to confirm |
+| I14 | Repeating someone's clue is allowed (it looks suspicious); saying the word restarts the round | Convention (BGG, Spyfall publisher) — changes the earlier draft |
+| I15 | Later, rarely: twist rounds (no impostor; everyone an impostor) | Players love them used sparingly (BGG) — later |

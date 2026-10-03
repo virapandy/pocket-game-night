@@ -1,0 +1,242 @@
+id,word,other_names,category,audience,nonveg,difficulty,hint,close_cousin,change,notes
+IMPW-001,Biryani,,Food,family,yes,easy,Sunday lunch,Pulao,kept,non-veg in most homes (veg biryani exists); off by default with non-veg
+IMPW-002,Dosa,,Food,family,no,easy,Breakfast,Uttapam,kept,
+IMPW-003,Idli,,Food,family,no,easy,Light meal,Dosa,kept,
+IMPW-004,Samosa,,Food,family,no,easy,Tea time,Kachori,kept,
+IMPW-005,Pani puri,Golgappa / Puchka,Food,family,no,easy,Street corner,Bhel puri,kept,"three regional names, all widely known"
+IMPW-006,Gulab jamun,,Food,family,no,easy,Dessert,Rasgulla,kept,
+IMPW-007,Kheer / Payasam,Payesh,Food,family,no,easy,Cardamom,Halwa,hint rewritten; other names changed,
+IMPW-008,Rasgulla,Rosogolla,Food,family,no,easy,Sweet box,Gulab jamun,kept,
+IMPW-009,Jalebi,,Food,family,no,easy,Sweet shop,Laddoo,kept,
+IMPW-010,Laddoo,,Food,family,no,easy,Festival box,Barfi,kept,
+IMPW-011,Paneer,,Food,family,no,easy,Cubes,Tofu,hint rewritten,
+IMPW-012,Chapati / Roti,Phulka,Food,family,no,easy,Dinner plate,Paratha,kept,
+IMPW-013,Paratha / Parotta,,Food,family,no,easy,Layers,Naan,renamed; hint rewritten,South and Kerala readers know it as parotta (Malabar porotta); both names shown; old hint Winter morning was North-only
+IMPW-014,Dal,,Food,family,no,easy,Everyday,Sambar,kept,"regional names (Paruppu, Pappu) left out on purpose"
+IMPW-015,Sambar,,Food,family,no,easy,Side dish,Dal,cousin updated,
+IMPW-017,Curd rice,Thayir sadam / Dahi chawal,Food,grownups,no,medium,Last course,Lemon rice,hint rewritten; other names changed; grownups,check North and East readers know it
+IMPW-018,Chai,Masala chai,Food,family,no,easy,Morning,Filter coffee,kept,
+IMPW-019,Filter coffee,,Food,grownups,no,medium,Froth,Chai,hint rewritten; grownups,old hint Steel tumbler gave it away (8 reviewers)
+IMPW-020,Lassi,,Food,family,no,easy,Thick,Buttermilk,hint rewritten,
+IMPW-021,Vada pav,,Food,family,no,easy,Street food,Samosa,kept,Mumbai dish that went national
+IMPW-022,Pav bhaji,,Food,family,no,easy,Mashed,Vada pav,hint rewritten,
+IMPW-023,Momos,,Food,grownups,no,easy,Evening snack,Spring roll,grownups,veg and chicken both common; mainly urban
+IMPW-024,Mango,Aam,Food,family,no,easy,Juicy,Jackfruit,hint rewritten,
+IMPW-025,Pickle,Achaar,Food,family,no,easy,Glass jar,Chutney,kept,
+IMPW-026,Papad,Appalam / Pappadam / Happala,Food,family,no,easy,Crunch,Chips,hint rewritten; other names changed,check all three names are understood
+IMPW-027,Butter chicken,,Food,family,yes,easy,Restaurant,Chicken tikka,kept,non-veg; veg families may dislike
+IMPW-028,Kulfi,,Food,family,no,easy,Stick,Ice cream,hint rewritten; cousin updated,
+IMPW-029,Upma,,Food,grownups,no,medium,Tiffin,Poha,grownups,
+IMPW-030,Poha / Aval,Atukulu / Avalakki / Chire,Food,family,no,medium,Quick breakfast,Upma,renamed; other names changed,Chennai and Calicut know it as aval; both names shown
+IMPW-031,Diwali,Deepavali,Festivals and occasions,family,no,easy,New clothes,Dussehra / Dasara,hint rewritten,
+IMPW-032,Holi,,Festivals and occasions,family,no,easy,Stains,Diwali,hint rewritten,
+IMPW-033,Eid,,Festivals and occasions,family,no,easy,Feast,Christmas,kept,
+IMPW-034,Christmas,,Festivals and occasions,family,no,easy,Cake,New Year's Eve,hint rewritten,
+IMPW-035,Onam,,Festivals and occasions,grownups,no,easy,Flowers,Pongal / Sankranti,hint rewritten; grownups,kept by owner decision though Delhi and Lucknow were unsure; grown-ups only
+IMPW-036,Sankranti / Pongal,Makar Sankranti / Uttarayan / Poush Sankranti,Festivals and occasions,family,no,medium,Harvest,Onam,renamed; hint rewritten; other names changed,"Sankranti known everywhere, Pongal mainly South; Pongal is also a dish; overlaps Kite flying; Lohri left out"
+IMPW-037,Raksha Bandhan,Rakhi,Festivals and occasions,family,no,easy,Promise,Bhai Dooj,hint rewritten,
+IMPW-038,Navratri,,Festivals and occasions,family,no,easy,Fasting,Durga Puja,hint rewritten,"South readers think Golu, North think Garba; both fit"
+IMPW-039,Durga Puja,,Festivals and occasions,grownups,no,medium,Idol,Navratri,hint rewritten; grownups,check South readers
+IMPW-040,Ganesh Chaturthi,Vinayaka Chaturthi,Festivals and occasions,family,no,easy,Procession,Durga Puja,kept,
+IMPW-041,Janmashtami / Gokulashtami,Krishna Jayanthi / Ashtami Rohini / Krishnashtami,Festivals and occasions,family,no,medium,Midnight,Ganesh Chaturthi,renamed; hint rewritten; other names changed,
+IMPW-042,Dussehra / Dasara,Vijayadashami,Festivals and occasions,family,no,easy,Ten days,Diwali,kept,
+IMPW-043,New Year's Eve,,Festivals and occasions,family,no,easy,Party,Christmas,kept,
+IMPW-044,Birthday party,,Festivals and occasions,family,no,easy,Once a year,Wedding anniversary,kept,
+IMPW-045,Independence Day,,Festivals and occasions,family,no,easy,Flag,Republic Day,hint rewritten,"national, not political"
+IMPW-046,Republic Day,,Festivals and occasions,family,no,easy,Parade,Independence Day,hint rewritten,same hint as Pongal; fine across rounds
+IMPW-047,Children's Day,,Festivals and occasions,family,no,medium,Toffees,Teachers' Day,hint rewritten; grownups,
+IMPW-048,Teachers' Day,,Festivals and occasions,family,no,easy,Greeting card,Children's Day,hint rewritten,
+IMPW-049,Housewarming,Griha pravesh,Festivals and occasions,grownups,no,medium,New keys,Wedding,hint rewritten; grownups,
+IMPW-050,Baby shower,,Festivals and occasions,grownups,no,medium,Bangles,Naming ceremony,hint rewritten; grownups,"regional names (Godh bharai, Seemantham, Valaikaapu) not used"
+IMPW-051,Naming ceremony,Naamkaran,Festivals and occasions,grownups,no,medium,Cradle,Baby shower,hint rewritten; grownups,
+IMPW-052,Crackers,Firecrackers,Festivals and occasions,family,no,easy,Night sky,Sparkler,kept,Delhi reader: cracker ban and pollution can start an argument
+IMPW-053,Sparkler,Phuljhari,Festivals and occasions,family,no,easy,Hand,Crackers,kept,
+IMPW-054,Rangoli / Kolam,Muggu / Alpana,Festivals and occasions,family,no,easy,Dots,Mehendi,hint rewritten,
+IMPW-055,Diya,Deepam,Festivals and occasions,family,no,easy,Clay,Candle,kept,
+IMPW-056,Mithai box,Sweets box,Festivals and occasions,family,no,easy,Visiting,Dry fruit box,kept,
+IMPW-057,Garba / Dandiya,,Festivals and occasions,family,no,easy,Circle,Bhangra,kept,
+IMPW-058,Kite flying,Patang,Festivals and occasions,family,no,easy,Wind,Balloon,hint rewritten,
+IMPW-059,Iftar,,Festivals and occasions,grownups,no,medium,Sunset,Feast,hint rewritten; grownups,
+IMPW-060,Picnic,,Festivals and occasions,family,no,easy,Sunday,School trip,kept,
+IMPW-061,Pressure cooker,,Around the house,family,no,easy,Kitchen,Mixer grinder,kept,
+IMPW-062,Mixer grinder,Mixie / Mixer,Around the house,family,no,easy,Kitchen counter,Pressure cooker,other names changed,
+IMPW-063,Ceiling fan,,Around the house,family,no,easy,Overhead,Air cooler,hint rewritten,
+IMPW-064,Air cooler,Cooler,Around the house,family,no,easy,Noisy,Ceiling fan,hint rewritten,mainly North; South readers know it though few homes have one
+IMPW-065,Tiffin box,Dabba,Around the house,family,no,easy,Steel,Water bottle,kept,
+IMPW-066,Steel tumbler,Steel glass,Around the house,family,no,easy,Kitchen shelf,Coffee mug,other names changed; cousin updated; grownups,
+IMPW-067,Thali meal,Meals,Food,family,no,easy,Small bowls,Banana leaf meal,renamed; hint rewritten; other names changed; moved to Food,renamed so it no longer clashes with Thaali (Mangalsutra); moved from Around the house to Food
+IMPW-068,Rolling pin,Belan,Around the house,family,no,easy,Wooden,Ladle,cousin updated; grownups,
+IMPW-071,Broom,Jhadu,Around the house,family,no,easy,Corner,Mop,kept,
+IMPW-072,Mop,Pochha,Around the house,family,no,easy,Wet,Broom,kept,
+IMPW-073,Bucket and mug,,Around the house,family,no,easy,Bathroom,Geyser,kept,
+IMPW-074,Geyser,Water heater,Around the house,family,no,easy,Switch,Immersion rod,hint rewritten,
+IMPW-075,Inverter,,Around the house,grownups,no,medium,Battery,Generator,hint rewritten; grownups,
+IMPW-076,Water purifier,RO,Around the house,family,no,easy,Kitchen wall,Water can,cousin updated,
+IMPW-078,Fridge,,Around the house,family,no,easy,Humming,Microwave,cousin updated,
+IMPW-079,TV remote,Remote,Around the house,family,no,easy,Sofa,Mobile charger,kept,
+IMPW-080,Doormat,,Around the house,family,no,easy,Entrance,Shoe rack,kept,
+IMPW-081,Shoe rack,,Around the house,family,no,easy,Door,Doormat,kept,
+IMPW-082,Mosquito net,,Around the house,family,no,easy,Bedtime,Mosquito coil,kept,
+IMPW-083,Mosquito racket,,Around the house,family,no,easy,Evening,Mosquito net,kept,Grandmother reader: killing insects goes against Jain ahimsa; host can switch the category off
+IMPW-084,Terrace,Roof,Around the house,family,no,easy,Upstairs,Balcony,kept,
+IMPW-085,Clothesline,Dori,Around the house,family,no,easy,Sunny,Iron box,other names changed; grownups,
+IMPW-086,Iron box,Press / Istri / Iron,Around the house,family,no,easy,Creases,Clothesline,hint rewritten; other names changed,
+IMPW-087,Sofa set,,Around the house,family,no,easy,Guests,Diwan,kept,
+IMPW-088,Almirah,Steel cupboard / Bureau / Beeruva,Around the house,grownups,no,easy,Bedroom,Suitcase,other names changed; grownups,
+IMPW-089,Calendar,,Around the house,family,no,easy,Wall,Clock,kept,
+IMPW-090,Landline phone,,Around the house,grownups,no,medium,Old days,Mobile phone,grownups,kids may not know it
+IMPW-091,Auto-rickshaw,Auto,Travel and places,family,no,easy,Short ride,Taxi,kept,
+IMPW-092,Sleeper class,,Travel and places,grownups,no,medium,Overnight,AC coach,grownups,
+IMPW-093,Railway station,,Travel and places,family,no,easy,Waiting,Bus stand,kept,
+IMPW-094,Bus stand,,Travel and places,family,no,easy,Crowd,Railway station,kept,
+IMPW-095,Airport,,Travel and places,family,no,easy,Early morning,Railway station,kept,
+IMPW-096,Taj Mahal,,Travel and places,family,no,easy,Marble,Qutub Minar,hint rewritten,
+IMPW-097,Qutub Minar,,Travel and places,grownups,no,medium,Tower,Charminar,hint rewritten; grownups,
+IMPW-098,Charminar,,Travel and places,grownups,no,medium,Old city,Gateway of India,grownups,
+IMPW-099,Gateway of India,,Travel and places,family,no,easy,Postcard,Charminar,cousin updated,India Gate dropped: readers mix the two up
+IMPW-101,Howrah Bridge,,Travel and places,grownups,no,medium,River,Sea Link,hint rewritten; grownups,
+IMPW-102,Goa,,Travel and places,family,no,easy,Holiday,Andaman,kept,
+IMPW-103,Houseboat,,Travel and places,grownups,no,easy,Slow,Shikara,grownups,
+IMPW-104,Hill station,,Travel and places,family,no,easy,Fog,Beach,hint rewritten,
+IMPW-105,Toy train,,Travel and places,grownups,no,medium,Hills,Metro,grownups,
+IMPW-106,Metro,,Travel and places,family,no,easy,City,Local train,kept,mainly urban
+IMPW-107,Mumbai local,Local train,Travel and places,family,no,medium,Footboard,Metro,hint rewritten,Bus stand also has hint Crowd
+IMPW-108,Beach,,Travel and places,family,no,easy,Weekend,Hill station,kept,
+IMPW-109,Kanyakumari,,Travel and places,grownups,no,medium,Sunrise,Rameswaram,hint rewritten; grownups,
+IMPW-110,Himalayas,,Travel and places,family,no,easy,Cold,Mount Everest,kept,
+IMPW-112,Dhaba,Highway dhaba,Travel and places,family,no,easy,Road trip,Food court,kept,
+IMPW-113,Toll plaza,,Travel and places,grownups,no,easy,Highway,Petrol pump,grownups,
+IMPW-114,Petrol pump,Petrol bunk,Travel and places,family,no,easy,Car,Toll plaza,other names changed,
+IMPW-115,Traffic jam,,Travel and places,family,no,easy,Office time,Traffic signal,kept,
+IMPW-116,Zoo,,Travel and places,family,no,easy,School trip,Museum,kept,
+IMPW-117,Museum,,Travel and places,family,no,easy,Sunday outing,Zoo,kept,
+IMPW-118,Shopping mall,Mall,Travel and places,family,no,easy,Air-conditioned,Market,kept,mainly urban
+IMPW-119,Vegetable market,Sabzi mandi,Travel and places,family,no,easy,Bag,Shopping mall,kept,
+IMPW-120,Suitcase,,Travel and places,family,no,easy,Trip,Backpack,kept,
+IMPW-121,Rajinikanth,,"Films, music and TV",family,no,easy,Sunglasses,Kamal Haasan,hint rewritten,old hint Style is his trademark word
+IMPW-122,Shah Rukh Khan,SRK,"Films, music and TV",family,no,easy,Romance,Aamir Khan,hint rewritten,
+IMPW-123,Amitabh Bachchan,Big B,"Films, music and TV",family,no,easy,Deep voice,Rajinikanth,hint rewritten,
+IMPW-124,A. R. Rahman,,"Films, music and TV",grownups,no,easy,Oscar,Ilaiyaraaja,hint rewritten; grownups,
+IMPW-125,Lata Mangeshkar,,"Films, music and TV",grownups,no,easy,Old songs,Asha Bhosle,grownups,
+IMPW-128,Baahubali,,"Films, music and TV",grownups,no,easy,Epic,RRR,grownups,
+IMPW-129,RRR,,"Films, music and TV",grownups,no,easy,Dance,Baahubali,hint rewritten; grownups,
+IMPW-131,3 Idiots,,"Films, music and TV",grownups,no,easy,Comedy,Taare Zameen Par,grownups,
+IMPW-132,Dangal,,"Films, music and TV",grownups,no,easy,Wrestling,Chak De! India,grownups,
+IMPW-133,Chak De! India,,"Films, music and TV",grownups,no,easy,Team,Dangal,grownups,
+IMPW-136,Pushpa,,"Films, music and TV",grownups,no,easy,Swagger,RRR,hint rewritten; cousin updated; grownups,
+IMPW-137,Cinema interval,Interval,"Films, music and TV",family,no,easy,Snacks,Trailer,hint rewritten,
+IMPW-138,First day first show,FDFS,"Films, music and TV",grownups,no,easy,Whistles,Premiere,hint rewritten; grownups,FDFS mainly South term; phrase is clear
+IMPW-139,Antakshari,,"Films, music and TV",grownups,no,easy,Road trip,Dumb charades,grownups,
+IMPW-140,Kaun Banega Crorepati,KBC,"Films, music and TV",family,no,easy,TV night,Indian Idol,kept,
+IMPW-141,Indian Idol,,"Films, music and TV",grownups,no,easy,Sunday TV,Kaun Banega Crorepati,grownups,
+IMPW-142,Doordarshan,DD,"Films, music and TV",grownups,no,medium,Antenna,All India Radio,hint rewritten; grownups,kids may not know it
+IMPW-144,Shaktimaan,,"Films, music and TV",grownups,no,medium,90s,Krrish,cousin updated; grownups,kids may not know it
+IMPW-145,Radio,,"Films, music and TV",family,no,easy,Car,Television,kept,
+IMPW-146,Bharatanatyam,,"Films, music and TV",family,no,easy,Classical,Kathak,kept,
+IMPW-147,Tabla,,"Films, music and TV",family,no,easy,Pair,Dholak,kept,
+IMPW-148,Veena,,"Films, music and TV",grownups,no,medium,Strings,Sitar,grownups,
+IMPW-149,Sitar,,"Films, music and TV",grownups,no,easy,Concert,Veena,grownups,
+IMPW-150,Harmonium,,"Films, music and TV",grownups,no,medium,Music class,Keyboard,grownups,
+IMPW-151,Sachin Tendulkar,,Cricket and games,family,no,easy,Legend,Virat Kohli,kept,same hint as Amitabh; fine across categories
+IMPW-152,Virat Kohli,,Cricket and games,family,no,easy,Modern,Rohit Sharma,kept,
+IMPW-153,M. S. Dhoni,Dhoni / MSD,Cricket and games,family,no,easy,Captain,Virat Kohli,other names changed,Thala removed: North readers did not know it
+IMPW-154,Kapil Dev,,Cricket and games,grownups,no,medium,Old era,Sunil Gavaskar,grownups,kids may not know him
+IMPW-155,World Cup final,,Cricket and games,family,no,easy,Trophy,IPL final,grownups,football fans may think of the football World Cup first
+IMPW-156,IPL,,Cricket and games,family,no,easy,Auction,World Cup,hint rewritten,
+IMPW-157,Gully cricket,Street cricket,Cricket and games,family,no,easy,Tennis ball,Test match,hint rewritten,
+IMPW-158,Test match,,Cricket and games,grownups,no,medium,Whites,T20,hint rewritten; grownups,
+IMPW-159,Sixer,Six,Cricket and games,family,no,easy,Rooftop,Four,hint rewritten,
+IMPW-161,Umpire,,Cricket and games,grownups,no,easy,Decision,Third umpire,hint rewritten; grownups,
+IMPW-162,Wicketkeeper,,Cricket and games,grownups,no,medium,Gloves,Slip,hint rewritten; grownups,
+IMPW-163,Carrom,,Cricket and games,family,no,easy,Rainy afternoon,Ludo,kept,
+IMPW-164,Ludo,,Cricket and games,family,no,easy,Family fight,Snakes and ladders,kept,
+IMPW-165,Snakes and ladders,,Cricket and games,family,no,easy,Board,Ludo,kept,
+IMPW-166,Chess,,Cricket and games,family,no,easy,Quiet,Carrom,kept,
+IMPW-167,Kabaddi,,Cricket and games,family,no,easy,Mat,Kho-kho,hint rewritten,
+IMPW-168,Kho-kho,,Cricket and games,family,no,easy,Playground,Kabaddi,kept,
+IMPW-169,Hide and seek,Lukka chuppi / Chhupan chhupai / Kanna moochi,Cricket and games,family,no,easy,Evening,Tag,other names changed,
+IMPW-171,Marbles,Kanche / Goli,Cricket and games,grownups,no,easy,Pocket,Spinning top,grownups,
+IMPW-172,Spinning top,Lattu / Pambaram,Cricket and games,grownups,no,medium,String,Marbles,grownups,
+IMPW-173,Badminton,,Cricket and games,family,no,easy,Colony,Tennis,kept,
+IMPW-174,Dumb charades,,Cricket and games,grownups,no,easy,Party,Pictionary,grownups,
+IMPW-175,Stumps,Wickets,Cricket and games,grownups,no,easy,Wood,Bails,grownups,
+IMPW-176,Cricket bat,,Cricket and games,family,no,easy,Kit,Hockey stick,kept,
+IMPW-177,Hockey,,Cricket and games,family,no,easy,Team sport,Football,kept,
+IMPW-178,P. V. Sindhu,,Cricket and games,grownups,no,medium,Medal,Saina Nehwal,grownups,
+IMPW-179,Neeraj Chopra,,Cricket and games,grownups,no,medium,Olympics,Milkha Singh,grownups,
+IMPW-180,Football,,Cricket and games,family,no,easy,Penalty,Hockey,hint rewritten,
+IMPW-181,Board exam,,School and childhood,family,no,easy,Revision,Unit test,hint rewritten,
+IMPW-182,Report card,Progress report,School and childhood,family,no,easy,Term end,Board exam,kept,
+IMPW-183,School uniform,,School and childhood,family,no,easy,Monday,Tie,kept,
+IMPW-184,School bus,,School and childhood,family,no,easy,Morning,School van,kept,
+IMPW-185,Morning assembly,Prayer,School and childhood,family,no,easy,Ground,PT period,grownups,
+IMPW-186,PT period,Games period,School and childhood,family,no,easy,Whistle,Drawing class,hint rewritten,
+IMPW-187,Homework,,School and childhood,family,no,easy,Night before,Project,kept,
+IMPW-188,Summer vacation,Summer holidays,School and childhood,family,no,easy,Long break,Winter vacation,hint rewritten,
+IMPW-189,Tuition,Tuition class,School and childhood,family,no,easy,After school,Homework,kept,
+IMPW-190,Blackboard,,School and childhood,family,no,easy,Classroom,Whiteboard,kept,
+IMPW-191,Chalk,,School and childhood,family,no,easy,Dust,Blackboard,hint rewritten; cousin updated,
+IMPW-193,Geometry box,Compass box,School and childhood,family,no,easy,Exam day,Pencil box,kept,
+IMPW-194,Pencil sharpener,Sharpener,School and childhood,family,no,easy,Desk,Eraser,kept,
+IMPW-195,Eraser,Rubber,School and childhood,family,no,easy,Bag,Pencil sharpener,kept,
+IMPW-196,Ink pen,Fountain pen,School and childhood,grownups,no,medium,Blots,Ball pen,hint rewritten; grownups,
+IMPW-197,Water bottle,,School and childhood,family,no,easy,Strap,Tiffin box,kept,
+IMPW-198,Lunch break,Recess / Interval,School and childhood,family,no,easy,Midday,Short break,kept,
+IMPW-199,School bell,,School and childhood,family,no,easy,Last period,Lunch break,kept,
+IMPW-200,Annual day,Annual function,School and childhood,family,no,easy,Parents,Sports day,other names changed; grownups,
+IMPW-201,Sports day,,School and childhood,family,no,easy,Race,Annual day,hint rewritten,same hint as Birthday party
+IMPW-202,Science exhibition,Science fair,School and childhood,grownups,no,medium,Models,Project,grownups,
+IMPW-203,School trip,Excursion,School and childhood,family,no,easy,Headcount,Picnic,hint rewritten,
+IMPW-204,Class monitor,,School and childhood,family,no,easy,Duty,Class teacher,kept,
+IMPW-205,Comic books,Tinkle / Amar Chitra Katha,School and childhood,grownups,no,easy,Holidays,Story book,grownups,brand names in other_names
+IMPW-206,Cycle,Bicycle,School and childhood,family,no,easy,Learning,Scooter,kept,
+IMPW-207,Swing,Jhoola / Oonjal,School and childhood,family,no,easy,Garden,Slide,kept,
+IMPW-208,See-saw,,School and childhood,grownups,no,easy,Playground,Swing,grownups,
+IMPW-210,Paper boat,,School and childhood,family,no,easy,Puddle,Paper plane,hint rewritten,
+IMPW-211,Mehendi,Henna,Weddings and family,family,no,easy,Night before,Haldi,kept,
+IMPW-212,Haldi ceremony,,Weddings and family,grownups,no,easy,Morning,Mehendi,grownups,more North; went national via films; check South readers
+IMPW-214,Wedding reception,Reception,Weddings and family,family,no,easy,Stage,Engagement,kept,
+IMPW-215,Engagement,Ring ceremony,Weddings and family,family,no,easy,Fixed,Wedding reception,hint rewritten,
+IMPW-216,Mangalsutra,Mangalasutram / Thaali,Weddings and family,grownups,no,medium,Jewellery,Wedding ring,other names changed; grownups,Thaali removed from other names (clashed with the Thali card)
+IMPW-217,Saree,Sari,Weddings and family,family,no,easy,Wardrobe,Lehenga,kept,
+IMPW-218,Lehenga,,Weddings and family,family,no,easy,Shopping,Saree,kept,
+IMPW-219,Sherwani,,Weddings and family,grownups,no,easy,Outfit,Kurta,grownups,
+IMPW-221,Wedding buffet,Buffet,Weddings and family,family,no,easy,Queue,Banana leaf meal,kept,
+IMPW-222,Wedding card,Invitation card,Weddings and family,family,no,easy,Post,Return gift,kept,
+IMPW-223,Return gift,,Weddings and family,family,no,easy,Leaving,Gift envelope,kept,
+IMPW-224,Gift envelope,Shagun envelope / Cover,Weddings and family,family,no,easy,Pocket,Return gift,other names changed,cash gift; regional names (Moi) left out
+IMPW-225,Wedding photographer,,Weddings and family,family,no,easy,Flash,Wedding album,hint rewritten,
+IMPW-226,Wedding album,,Weddings and family,grownups,no,medium,Shelf,Family photo,grownups,
+IMPW-227,Bride,,Weddings and family,family,no,easy,Decked up,Groom,hint rewritten,
+IMPW-228,Groom,,Weddings and family,family,no,easy,Nervous,Bride,kept,
+IMPW-230,Grandmother,Dadi / Nani / Paati / Ammamma / Ajji / Ba / Dida / Ammachi,Weddings and family,family,no,easy,Stories,Grandfather,hint rewritten; other names changed,
+IMPW-231,Grandfather,Dadaji / Nanaji / Thatha,Weddings and family,family,no,easy,Morning walk,Grandmother,kept,
+IMPW-232,Cousins,,Weddings and family,family,no,easy,Holidays,Siblings,kept,same hint as Comic books
+IMPW-233,Joint family,,Weddings and family,family,no,easy,Big house,Family reunion,kept,
+IMPW-234,Family WhatsApp group,,Weddings and family,family,no,easy,Forwards,Video call,hint rewritten,elders and kids both know it
+IMPW-235,Video call,,Weddings and family,family,no,easy,Abroad,Phone call,kept,
+IMPW-236,Family photo,,Weddings and family,family,no,easy,Wall,Wedding album,kept,
+IMPW-237,Wedding hall,Marriage hall / Kalyana mandapam / Banquet hall,Weddings and family,family,no,easy,Booking,Pandal,other names changed,
+IMPW-238,Pandal,Shamiyana,Weddings and family,family,no,easy,Outdoors,Wedding hall,kept,Bengali players think of Durga Puja pandals first
+IMPW-239,Garland exchange,Jaimala / Varmala,Weddings and family,grownups,no,medium,Lifting,Ring exchange,hint rewritten; grownups,
+IMPW-241,Coconut,Nariyal / Thengai,Food,family,no,easy,Chutney,Jackfruit,new,not yet reader-checked
+IMPW-242,Ice cream,,Food,family,no,easy,Cup,Kulfi,new,not yet reader-checked
+IMPW-243,Maggi,,Food,family,no,easy,Hostel,Upma,new,brand that is the common word; not yet reader-checked
+IMPW-245,Banana,Kela / Vazhaipazham,Food,family,no,easy,Bunch,Mango,new,not yet reader-checked
+IMPW-246,Lemon,Nimbu,Food,family,no,easy,Soda,Orange,new,not yet reader-checked
+IMPW-247,Umbrella,Chhata / Kudai,Around the house,family,no,easy,Forgotten,Raincoat,new,not yet reader-checked
+IMPW-248,Gas cylinder,LPG,Around the house,family,no,easy,Delivery,Gas stove,new,not yet reader-checked
+IMPW-249,Aadhaar card,,Around the house,family,no,easy,Xerox,PAN card,new,"government ID, not political; kid reader not asked; not yet reader-checked"
+IMPW-250,Mobile charger,Charger,Around the house,family,no,easy,Bedside,TV remote,new,not yet reader-checked
+IMPW-252,Elephant,Haathi / Aana,Travel and places,family,no,easy,Safari,Camel,new,not yet reader-checked
+IMPW-253,Traffic police,,Travel and places,family,no,easy,Hand signals,Traffic signal,new,not yet reader-checked
+IMPW-254,Window seat,,Travel and places,family,no,easy,Fight,Aisle seat,new,not yet reader-checked
+IMPW-255,YouTube,,"Films, music and TV",family,no,easy,Ads,Television,new,brand that is the common word; not yet reader-checked
+IMPW-256,Cartoon,,"Films, music and TV",family,no,easy,Channel,Comic books,new,not yet reader-checked
+IMPW-257,Ringtone,,"Films, music and TV",family,no,easy,Tune,Radio,new,not yet reader-checked
+IMPW-258,Cricket ball,,Cricket and games,family,no,easy,Window,Cricket bat,new,not yet reader-checked
+IMPW-259,Rain,Baarish / Mazhai,School and childhood,family,no,easy,Holiday,Paper boat,new,not yet reader-checked
+IMPW-260,Crayons,,School and childhood,family,no,easy,Drawing book,Colour pencils,new,not yet reader-checked
+IMPW-261,Banana leaf meal,Elai saapadu / Sadya,Weddings and family,family,no,easy,Rows,Wedding buffet,new,South wedding meal known nationally; not yet reader-checked
+IMPW-262,Baby,,Weddings and family,family,no,easy,Lullaby,Toddler,new,not yet reader-checked
+IMPW-263,Selfie,,Weddings and family,family,no,easy,Pose,Family photo,new,not yet reader-checked
