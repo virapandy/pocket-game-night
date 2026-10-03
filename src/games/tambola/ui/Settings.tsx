@@ -53,6 +53,15 @@ export function SettingsPanel({
   const set = (patch: Partial<TambolaSettings>) => onChange({ ...settings, ...patch });
   return (
     <section className="stack" aria-labelledby="settings-title">
+      {/* TAM-120 (UX list row 18): during a game, the way back to the calling screen is at the top, not only at the
+          bottom of a long page. */}
+      {inGame && (
+        <header className="top-bar">
+          <button type="button" className="button button-quiet" onClick={onDone}>
+            ← Back
+          </button>
+        </header>
+      )}
       <h1 id="settings-title" className="step-title">Settings</h1>
 
       {gameControls}
