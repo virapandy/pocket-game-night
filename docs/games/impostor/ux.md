@@ -10,7 +10,7 @@ measured on the first build. Rules: `guide.md`. Stages: `lifecycle.md`. Scenario
 ## Product owner decisions on the designer's findings
 | ID | Sev | Finding | Decided |
 |---|---|---|---|
-| R1 | 4 | The word was shown before the last guess | **Hide the word until the guess is said aloud**; then "Show the word" and the room judges |
+| R1 | 4 | The word was shown before the last guess | **Hide the word until the guess is said aloud**; then "Show the word" and the room judges. Since 4 October the guess is optional ("Last-chance guess", off by default) |
 | R2 | 4 | One mis-tap on a name reveals the impostor | **Pick a name, then "Reveal Arjun"**; Undo covers only the guess verdict |
 | R3 | 3 | Letting go passed the phone, so a slip skipped a player | **Letting go only hides**; "Done, pass to Arjun" appears after the first hold |
 | R4 | 3 | Phone long-press menus can leak the word | **No text selection, callout, magnifier, context menu or drag** on the pad and word; checked on Android and iPhone |
@@ -80,18 +80,24 @@ Score    [ No ✓   ][ Yes    ]
 Words  [Whole family✓][+Grown-ups]
  Words kids and grandparents know.
 Categories: all 9 ›
+More options ›
+How to play
 [          Start round          ]
 ```
 Other lines: Hard "The impostor gets nothing and never starts." · Timer "Two minutes to talk, then a chime." ·
 Yes "Points every round, totals for the night." · + Grown-ups "Adds words kids or elders may not know."
-Categories sheet: 9 switches and "Include non-veg food" (off). 10 s.
+Categories sheet: 9 switches and "Include non-veg food" (off). More options sheet: "Last-chance guess" (off), "A caught
+impostor can guess the word to steal the round." 10 s.
 
-### 4. Read this aloud (first Impostor evening of tonight's session, once)
+### 4. How to play (on request only: "How to play" on the choices screen, or the menu)
+Heading "How to play", then "Read this aloud":
 1. "Everyone gets the same secret word, except the impostor."
 2. "Take turns to say one word about it. Don't say the word!"
 3. "Then talk, and all point at who you think the impostor is."
-4. "Impostor: blend in. Caught? Guess the word to steal the round."
-Main "Start the deal"; quiet "Practice round first" (a "Practice" chip on every room screen; no points).
+4. "Impostor: blend in. Caught? Guess the word to steal the round." (last-chance guess on) / "Impostor: blend in.
+   Don't get caught!" (off)
+then the rules (IMP-072). Main "Done"; quiet "Practice round first" only when opened from a new evening's choices
+screen (a "Practice" chip on every room screen; no points).
 
 ### 5. The deal
 ```
@@ -110,6 +116,8 @@ After the first let-go following a hold of at least 0.5 s, B adds: [ Done, pass 
 "Don't know this word?"
 ```
 - A: name 48 px, shrinking to 32 px to fit. Never the previous word.
+- A and B: "Player 2 of 4" small line top left (15 px); A also "Everyone else, look away!" (17 px) under the
+  name (owner, 4 October; IMP-019). Not shown in "See my word again" (the look-away line is).
 - B: hold pad at least 200 × 160 px in the lower half; **the word shows above the pad, never under the finger**;
   only while held; letting go hides it at once. "Done…" appears for every role on the first let-go after a hold of
   at least 0.5 s.
@@ -121,7 +129,7 @@ After the first let-go following a hold of at least 0.5 s, B adds: [ Done, pass 
 | Your secret | Your secret | Your secret | Your secret |
 | **Samosa** | **You're the impostor** | **Samosa** | **You're the impostor** |
 | Category: Food | Category: Food · Hint: Tea time | Give one-word clues. | Listen and blend in. |
-| Give one-word clues. Don't say it! | Listen, blend in, guess the word. | Don't say it! | Guess the word if caught. |
+| Give one-word clues. Don't say it! | Listen, blend in, guess the word. (guess off: "Listen and blend in. Don't get caught!") | Don't say it! | Guess the word if caught. (guess off: "Don't get caught!") |
 | (Also called … or empty) | (empty) | (Also called … or empty) | (empty) |
 
 - Other names in a small line: "Also called Golgappa / Puchka" (Pani puri); "Also called Payesh" (Kheer / Payasam).
@@ -156,21 +164,23 @@ Two columns of name buttons (56 px); tapping selects (outline, ✓, tint); main 
 "Reveal" until a name is picked; quiet "It's a tie" and "Count again". Tie: pick the tied names → main "Point again: Arjun or Meena" →
 countdown → only those names plus "Still a tie" (the impostor escapes).
 
-### 10. Reveal and last guess
-- Build-up 2.5 s: "Arjun was" and three dots appearing one every 0.6 s, the drumroll sound, no colour change (reduce
-  motion: the same, with no animation). Lines then appear 1.5 s apart and all stay (timings in IMP-033, IMP-034,
-  IMP-038).
-- **Caught:** "Caught red-handed! ARJUN was the impostor." → "Last chance, Arjun! Guess the word out loud. Get it right and you steal the round." → main **"Arjun guessed.
-  Show the word"** (wording changed 4 October after the owner's play) → the word, its other names, and two equal buttons "Guessed right" / "Wrong
-  guess" (equal, neither is the main look). Other names count as right.
-- **Escaped:** "Meena was crew!" → "The impostor was ARJUN. Escaped!" → "The word was Samosa."
-- **Still a tie:** "Still a tie! The impostor was ARJUN. Escaped!" → "The word was Samosa." (no build-up).
+### 10. Result (one screen, owner 4 October)
+- Build-up 1.5 s: "Arjun was…", the drumroll sound, no colour change; then everything at once (exact order in
+  IMP-033, IMP-034, IMP-038).
+- **Caught:** "Caught! ARJUN was the impostor." · "The crew wins!" · "The word was School trip." · "Also called
+  Excursion" · chip "School and childhood".
+- **Wrong person:** "Meena was crew." · "ARJUN was the impostor and escaped!" · "Arjun escaped!" · the word and chip.
+- **Still a tie:** "Still a tie! ARJUN was the impostor and escaped!" · "Arjun escaped!" · the word and chip (no
+  build-up).
+- **Last-chance guess (optional, off by default):** caught → "Caught! ARJUN was the impostor." · "Last chance, Arjun!
+  Guess the word out loud. Get it right and you steal the round." · main "Arjun guessed. Show the word" → the word,
+  chip and two equal buttons "Guessed right" / "Wrong guess" → "The crew wins!" / "Arjun steals the round!" (IMP-039).
 
-### 11. Round result
+### 11. Round result (on the same screen)
 Outcome: "The crew wins!" / "Arjun steals the round!" / "Arjun escaped!". Without scores: "Tonight: impostor caught 3
 · escaped 2". With scores: this round's points, then the night's scoreboard (36 px rows, highest first, ties share a
 place (1-2-2-4), leavers greyed; two columns from 7 players). Main "Next round"; quiet "Undo" (the guess verdict
-only) and "This word didn't work".
+only, last-chance guess on) and "This word didn't work".
 
 ### 12. End of the evening
 "That's the night!", up to 3 true fun lines, the final scoreboard or "7 rounds · impostor caught 4 · escaped 3".
@@ -182,15 +192,15 @@ won't count." ("End now" / "Keep playing"); "Discard this evening? Its rounds an
 ### 13. Menu (destructive items last)
 | Moment | Items |
 |---|---|
-| Deal | Rules · Players · Deal again with a new word · Settings · End the evening |
-| Clues, talk, vote | Rules · Players · See my word again · Deal again with a new word · Settings · End the evening |
-| Between rounds | Rules · Players · Change how we play · Settings · History · End the evening |
+| Deal | How to play · Players · Deal again with a new word · Settings · End the evening |
+| Clues, talk, vote | How to play · Players · See my word again · Deal again with a new word · Settings · End the evening |
+| Between rounds | How to play · Players · Change how we play · Settings · History · End the evening |
 No menu on the countdown or during the reveal. "Deal again with a new word" confirms: "Deal again? This round won't count. For when someone said the word or saw a
 screen." ("Deal again" / "Keep playing").
 
 ### 14. Interruptions
 Deal: "Welcome back. Pass the phone to ARJUN" (the player who hasn't tapped Done), never a word. Clues or talk: same
-screen, timer "Paused · Tap to carry on". Countdown: back to "Get ready to point". After "Reveal": the outcome without
+screen, timer "Paused · Tap to carry on". Countdown: back to "Get ready to point". After "Reveal": the result without
 the build-up. Over 3 hours: "This round was left halfway. Start a fresh round?" Storage gone: "Start a new evening".
 
 ## Privacy on a passed phone (guideline 45)
@@ -216,7 +226,7 @@ the build-up. Over 3 hours: "This round was left halfway. Start a fresh round?" 
 Names up to 16 characters shrink to 32 px on room screens and wrap to 2 lines in two-column lists.
 
 ## Tone (Indian English, plain)
-Use: "Caught red-handed!", "Arjun steals the round!", "Arjun escaped!", "Meena was crew!", "The crew wins!",
+Use: "Caught! ARJUN was the impostor.", "Arjun steals the round!", "Arjun escaped!", "Meena was crew.", "The crew wins!",
 "No problem! New word coming." Never: liar, loser, fooled, "bad clue", anything about
 a player's intelligence.
 

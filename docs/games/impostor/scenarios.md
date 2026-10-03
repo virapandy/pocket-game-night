@@ -1,4 +1,4 @@
-# Impostor: scenarios (version 2.2, 3 October 2026)
+# Impostor: scenarios (version 3, 4 October 2026)
 
 Status: **IMP-001 to IMP-108 approved by the owner, 3 October 2026.** Version 2 (same day) makes every approved
 scenario exact, from two independent readers (a coder-reader and a tester-reader, `docs/spec-rules.md` rule 12) and
@@ -7,6 +7,10 @@ only make approved behaviour exact. Version 2.2 adds the last engine-fit details
 `wordDidntWork` is legal, "Start new", the unfinished summary). Version 2.1 (same day) fits the existing engine (`SavedGame`, setup, views, move
 records) after a second coder read and tester read; the one behaviour change is IMP-101 (owner informed).
 IMP-200+ are approved as direction, built later.
+**Version 3 (owner-approved change, 4 October 2026):** one result screen right after the reveal (a 1.5 s build-up,
+then everything at once, the word always shown); the last guess becomes the optional "Last-chance guess" (off by
+default); "How to play" opens only on request (choices screen and menu) and holds the rules; the deal shows
+"Player 2 of 4" and "Everyone else, look away!". Changed IDs carry "Status: approved, owner, 2026-10-04 (changed)".
 After approval the tester copies these into `specs/impostor/` (file names in each section heading) and writes tests.
 **Hand-over only after the Tambola release** (`docs/roadmap.md`). Template: `specs/README.md`.
 
@@ -17,6 +21,19 @@ designed now, built later.
 
 Change classes (`docs/change-sop.md`): rules, secrets and seeds, saved evenings and the word list format = **C3**
 (tests first; sections 05, 06, 07 and IMP-096); screens = C1/C2.
+
+### What version 3 rewords or retires (rule 11)
+- Retired in 3: "Caught red-handed! <NAME> was the impostor.", "Meena was crew!", "The impostor was <NAME>. Escaped!",
+  "Still a tie! The impostor was <NAME>. Escaped!", the dots of the build-up (`build-up-dots`), the timed reveal
+  steps (2.5 s, 4.0 s, 5.5 s, 7.0 s), the automatic "Read this aloud" card ("once per session"), "Start the deal",
+  the menu item "Rules" (now "How to play").
+- New strings in 3: "Caught! <NAME> was the impostor.", "Meena was crew.", "<NAME> was the impostor and escaped!",
+  "Still a tie! <NAME> was the impostor and escaped!", "More options ›", "Last-chance guess", "Player 2 of 4",
+  "Everyone else, look away!", "How to play" (button and menu item).
+- Changed in 3: IMP-005, 008, 010, 011, 012, 013, 017, 031, 033, 034, 035, 037, 038, 041, 044, 070, 071, 072, 075, 080, 081,
+  083, 084, 087, 091, 094, 099, 105. Reworded only, no change in behaviour: IMP-027, 040, 062, 089, 100, 107, 109.
+  New in 3: IMP-019 (detail of IMP-010), IMP-039 (detail of IMP-033), IMP-076
+  (detail of IMP-005).
 
 ### What version 2 rewords or retires (rule 11)
 - Retired wordings: "Caught!" (IMP-085), "Sorry, Meena!", "Who was accused?", "Got it, deal", "We know it",
@@ -49,10 +66,11 @@ Every scenario uses these words with exactly these meanings.
 | **Size of an element** | The computed `font-size` of the named `data-testid` element, in CSS px. |
 | **Fits in N lines** | The element's height ≤ N × its computed `line-height`, with `scrollWidth ≤ clientWidth` (nothing cut off, no ellipsis). |
 | **No page scrolling** | `document.scrollingElement.scrollHeight ≤ window.innerHeight` and no horizontal scroll. A box that "scrolls inside" has `overflow-y: auto` and its own height limit; the page itself still does not scroll. |
-| **Room screens** | The screens meant for the whole table: "Pass the phone to…", "No problem! New word coming.", "Welcome back.", clues, talk, countdown, picker, reveal and round result. The **hold screen** (screen B of the deal) is private. |
+| **Room screens** | The screens meant for the whole table: "Pass the phone to…", "No problem! New word coming.", "Welcome back.", clues, talk, countdown, picker and the result screen (with its build-up and, with the last-chance guess, its guess and verdict steps). The **hold screen** (screen B of the deal) is private. |
 | **Round** | From the round's first "Pass the phone to…" screen to its result. A **redeal** ("Don't know this word?", "Deal again", "Start a fresh round") replaces the round in progress with a new deal under the same round number. |
-| **Completed round** | A round that reached a result: escaped, or caught plus a verdict. Practice rounds included. Redealt rounds and rounds dropped by the end of the evening are not completed. |
+| **Completed round** | A round that reached its result: escaped (`reveal` of a crew member, or `stillTie`); caught with the last-chance guess off (`reveal` of the impostor); caught with it on, once a verdict is tapped (`verdict`). Practice rounds included. Redealt rounds and rounds dropped by the end of the evening are not completed. |
 | **Counted round** | A completed round that is not the practice round. **Round numbers** count only counted rounds: round 1 is the first counted round; the round in progress is number (counted rounds so far + 1); the practice round has no number. |
+| **Last-chance guess** | The choice `lastGuess` (IMP-076), off by default: when on, a caught impostor may guess the word before it is shown (IMP-039). |
 | **Caught / escaped** | **Caught**: the vote revealed the impostor (whatever the guess). **Escaped**: the vote revealed a crew member, or the re-vote ended "Still a tie". The practice round counts as neither. |
 | **Evening** | One Impostor game: from the first "Start round" to ended or discarded. One saved game (engine `SavedGame`) per evening. "Change how we play" never starts a new evening. |
 | **Tonight / tonight's session** | The session (PLT-016) the evening belongs to. "Tonight's" counts on the result screen count this evening's counted rounds only. |
@@ -66,8 +84,10 @@ Every scenario uses these words with exactly these meanings.
 Example players used throughout, in seat order: **Riya, Arjun, Meena, Kabir** (and **Zoya** where five are needed).
 Example words, all real rows of `words.csv`: **Samosa** (IMPW-004, Food, family, hint "Tea time", no other names);
 **Pani puri** (IMPW-005, Food, other names "Golgappa / Puchka", hint "Street corner"); **Kheer / Payasam** (IMPW-007,
-Food, other names "Payesh", hint "Cardamom"); **Five more minutes, then phone off** (IMPW-402, School and childhood,
-the longest word, 33 characters).
+Food, other names "Payesh", hint "Cardamom"); **School trip** (IMPW-203, School and childhood, other names
+"Excursion", hint "Headcount"); **Mummy finding it in two seconds** (the longest word, 31 characters).
+`words.csv` has 291 rows (4 October 2026) in 9 categories: Food, Festivals and occasions, Around the house, Out and
+about, Films, music and TV, Sports and games, School and childhood, Weddings and family, Everyday moments.
 
 ---
 
@@ -95,12 +115,14 @@ U+2192; "✓" is U+2713; "›" is U+203A; "–" in "3–20" is U+2013; apostroph
 | Option lines | Easy "The impostor gets the category and a hint." · Hard "The impostor gets nothing and never starts." · Free flow "Talk as long as you like, then tap Vote now." · Timer "Two minutes to talk, then a chime." · No "Just play. We count catches and escapes." · Yes "Points every round, totals for the night." · Whole family "Words kids and grandparents know." · + Grown-ups "Adds words kids or elders may not know." | small line under the group | IMP-005 |
 | Categories row | "Categories: all 9 ›" / "Categories: 7 of 9 ›" | button | IMP-007 |
 | Categories sheet | heading "Categories"; 9 switches named exactly as the categories; switch "Include non-veg food"; message "Keep at least one category."; main "Done" | `role="switch"` each | IMP-007 |
+| More options | quiet "More options ›"; sheet heading "More options"; switch "Last-chance guess" with small line "A caught impostor can guess the word to steal the round."; main "Done" | button; `role="switch"` | IMP-076 |
+| Choices, How to play | quiet "How to play" (directly above "Start round") | button | IMP-070 |
 | Choices main | "Start round" | main button | IMP-005 |
-| Read-aloud card (no menu) | heading "Read this aloud"; 4 lines (IMP-070); main "Start the deal"; quiet "Practice round first" | h1; `ol` with 4 `li` | IMP-070 |
+| How to play (no menu) | heading "How to play"; heading "Read this aloud" and 4 lines (IMP-070); the rules (IMP-072); main "Done"; quiet "Practice round first" (only from the choices screen of a new evening) | h1; h2 and `ol` with 4 `li`; paragraphs | IMP-070, 071, 072 |
 | No words left | heading "You've played every word in these categories tonight!"; line "Turn on more categories or + Grown-ups."; main "Allow repeats"; quiet "Change categories" | h1; paragraph | IMP-052 |
-| Deal, screen A | "Pass the phone to" and `<NAME>`; main "I'm <Name>" | paragraph; `pass-name`; main button | IMP-010 |
+| Deal, screen A | "Player 2 of 4" (top left); "Pass the phone to" and `<NAME>`; "Everyone else, look away!"; main "I'm <Name>" | small line `deal-progress`; paragraph; `pass-name`; paragraph; main button | IMP-010, 019 |
 | Deal, after a return | "Welcome back." above screen A | paragraph | IMP-090 |
-| Deal, screen B | `<NAME>` at the top; pad "Hold here to see your word"; quiet "Tap instead" | heading; button `hold-pad`, accessible name = its visible text | IMP-010, 083 |
+| Deal, screen B | "Player 2 of 4" (top left); `<NAME>` at the top; pad "Hold here to see your word"; quiet "Tap instead" | heading; button `hold-pad`, accessible name = its visible text | IMP-010, 083 |
 | Deal, after the first hold | main "Done, pass to <Name>" (last player: "Done, everyone's seen"); quiet "Don't know this word?" | main button; quiet button | IMP-010, 015 |
 | Tap mode | "Tap to see your word" / "Tap to hide" | button `hold-pad` | IMP-014 |
 | Private block | IMP-011 table | `private-block`, 5 children | IMP-011 |
@@ -113,24 +135,25 @@ U+2192; "✓" is U+2713; "›" is U+203A; "–" in "3–20" is U+2013; apostroph
 | Countdown | "Get ready to point…" then "3", "2", "1", "Point!" | h1 then `countdown-number` | IMP-030 |
 | Picker | heading "Who got the most fingers?"; one button per name; quiet "It's a tie", "Count again"; main "Reveal" (disabled) / "Reveal <Name>" | h1; buttons with `aria-pressed` | IMP-031 |
 | Tie | main "Point again" (disabled) / "Point again: Arjun or Meena" / "Point again: Arjun, Meena or Kabir"; re-vote quiet "Still a tie" | main button; quiet button | IMP-032 |
-| Build-up | "<Name> was" with `build-up-dots` "." → ".." → "..." | `reveal-line`; span | IMP-033 |
-| Caught | "Caught red-handed! <NAME> was the impostor." · "Last chance, <Name>! Guess the word out loud. Get it right and you steal the round." · main "<Name> guessed. Show the word" · "The word was Samosa." · small line "Also called Golgappa / Puchka" · "Guessed right" / "Wrong guess" | `reveal-line` each, except the small line: `also-called` (not a reveal line, not announced); two quiet buttons | IMP-033 |
-| Escaped | "Meena was crew!" · "The impostor was <NAME>. Escaped!" · "The word was Samosa." | `reveal-line` each | IMP-034 |
-| Still a tie | "Still a tie! The impostor was <NAME>. Escaped!" · "The word was Samosa." | `reveal-line` each | IMP-038 |
+| Build-up | "<Name> was…" | `build-up` | IMP-033 |
+| Caught | "Caught! <NAME> was the impostor." | `reveal-line` | IMP-033 |
+| Word | "The word was School trip." · small line "Also called Excursion" · category chip "School and childhood" | `reveal-line`; `also-called` (not a reveal line, not announced); `word-category` | IMP-033 |
+| Last-chance guess | "Last chance, <Name>! Guess the word out loud. Get it right and you steal the round." · main "<Name> guessed. Show the word" · "Guessed right" / "Wrong guess" | `reveal-line`; main button; two quiet buttons | IMP-039 |
+| Wrong person | "Meena was crew." · "<NAME> was the impostor and escaped!" | `reveal-line` each | IMP-034 |
+| Still a tie | "Still a tie! <NAME> was the impostor and escaped!" | `reveal-line` | IMP-038 |
 | Result headline | "The crew wins!" · "<Name> steals the round!" · "<Name> escaped!" | h2 `round-outcome` | IMP-035, 034 |
 | Result, Score No | "Tonight: impostor caught 3 · escaped 2" | paragraph `evening-line` | IMP-040 |
 | Result, Score Yes | "+2 Arjun" · "+1 Arjun" · "+1 each: Riya, Meena, Kabir"; caption "Scores from round 4" | `round-points`; small line in `scoreboard` | IMP-044, 043 |
-| Result buttons | main "Next round"; quiet "Undo" (after a verdict); quiet "This word didn't work"; toast "Samosa won't come up again · Undo" | buttons; `undo-toast` | IMP-037, 107 |
+| Result buttons | main "Next round"; quiet "Undo" (after a verdict, last-chance guess only); quiet "This word didn't work"; toast "Samosa won't come up again · Undo" | buttons; `undo-toast` | IMP-037, 107 |
 | Players sheet | heading "Players"; main "Done"; toast "Kabir left · Undo" / "Kabir left · Points kept · Undo"; message "Keep at least 3 players." | h1; `undo-toast`; `role="alert"` | IMP-074 |
 | Players, mid-round | "Change players after this round." with main "OK" | dialog | IMP-074 |
 | Menu button | "··· Menu" | button, name contains "Menu" | IMP-075 |
-| Menu items | "Rules" · "Players" · "See my word again" · "Deal again with a new word" · "Change how we play" · "Settings" · "History" · "End the evening" | `role="menuitem"` | IMP-075 |
+| Menu items | "How to play" · "Players" · "See my word again" · "Deal again with a new word" · "Change how we play" · "Settings" · "History" · "End the evening" | `role="menuitem"` | IMP-075 |
 | See my word again | heading "Whose word?"; one button per name; quiet "Cancel" | dialog | IMP-017 |
 | Deal again | dialog "Deal again? This round won't count. For when someone said the word or saw a screen." with "Deal again" / "Keep playing" (main) | dialog | IMP-025 |
 | End between rounds | dialog "End the evening?" with "End the evening" / "Keep playing" (main) | dialog | IMP-092 |
 | Start new | dialog "Start a new evening? The evening from 8:40 pm will be ended." with "Start new" / "Carry on that evening" (main) | dialog | IMP-001 |
 | End mid-round | dialog "End now? This round won't count." with "End now" / "Keep playing" (main) | dialog | IMP-093 |
-| Rules | IMP-072 text; main "Done" | sheet, h1 "How to play" | IMP-072 |
 | Left over 3 hours | "This round was left halfway. Start a fresh round?" with main "Next round" | h1 | IMP-091 |
 | Summary (no menu) | heading "That's the night!"; `fun-line` ×0–3; "7 rounds · impostor caught 4 · escaped 3" (Score No); main "Back to Home"; quiet, in this order: "Oops, keep playing", "Play something else", "Share", "History", "Discard this evening" | h1; paragraphs; `summary-line`; buttons | IMP-092, 095, 101 |
 | Discard | dialog "Discard this evening? Its rounds and scores will be lost." with "Discard" / "Keep it" (main) | dialog | IMP-092 |
@@ -153,13 +176,16 @@ A test may set exactly these; the build must honour them.
      (seat order), choices, excludedWords: { dealtTonight: string[], recent: string[], blocked: string[] },
      testDeals?: { wordId?: string; impostor?: string; starter?: string }[] } }` (`testDeals`: Test hooks item 3).
      `choices = { mode: 'easy' | 'hard', talking: 'free' | 'timer', score: boolean, words: 'family' | 'grownups',
-     categories: string[] (exact CSV names), nonveg: boolean }`. Seeds are made only by a new evening's first
+     categories: string[] (exact CSV names), nonveg: boolean, lastGuess: boolean }` (`lastGuess` false by default;
+     a saved evening without it reads as false). Seeds are made only by a new evening's first
      "Start round" (IMP-060).
    - Moves, all recorded as `MoveRecord`s with `by: 'host'` (`type`, extra fields): `startDeal {practice: boolean}` ·
      `seen` · `dontKnow` · `startTalk` · `anotherRoundOfClues` · `voteNow` · `reveal {player}` ·
      `tie {players: string[]}` · `stillTie` · `showWord` · `verdict {right: boolean}` · `nextRound` · `dealAgain` ·
      `allowRepeats` · `wordDidntWork {blocked: boolean}` · `setPlayers {players: string[]}` · `setChoices {choices}` ·
      `endEvening`. `isOver` is true after `endEvening`.
+   - `showWord` and `verdict` are legal only in a round where the impostor was revealed and `lastGuess` is true;
+     with `lastGuess` false the `reveal` of the impostor completes the round.
    - Undo of a verdict is the engine's `undo` of that `verdict` record: `canUndo` is true only for the round's latest
      `verdict` while no `nextRound`, `setPlayers`, `setChoices` or `endEvening` has been recorded after it
      (`wordDidntWork` after it does not end the window).
@@ -171,8 +197,9 @@ A test may set exactly these; the build must honour them.
 
      | Tap | Records |
      |---|---|
-     | "Start round" (a new evening) | nothing (the evening is created; the read-aloud card or the deal follows) |
-     | "Start the deal" / "Practice round first" (or "Start round" when the card is skipped) | `startDeal {practice: false / true}` |
+     | "Start round" (a new evening) | the evening is created, then `startDeal {practice: false}` |
+     | "Practice round first" (How to play, opened from a new evening's choices screen) | the evening is created, then `startDeal {practice: true}` |
+     | "How to play", its "Done", "More options ›", its switch and "Done" | nothing (the switch changes the choices on screen) |
      | "I'm <Name>", holds, "Tap instead", "Tap to see your word", "Tap to hide" | nothing |
      | "Done, pass to …" / "Done, everyone's seen" | `seen` |
      | "Don't know this word?" | `dontKnow` (the new word and impostor are drawn now) |
@@ -183,8 +210,8 @@ A test may set exactly these; the build must honour them.
      | "Point again: …" | `tie {players}` |
      | "Reveal <Name>" | `reveal {player}` |
      | "Still a tie" | `stillTie` |
-     | "<Name> guessed. Show the word" | `showWord` |
-     | "Guessed right" / "Wrong guess" | `verdict {right: true / false}` |
+     | "<Name> guessed. Show the word" (last-chance guess on) | `showWord` |
+     | "Guessed right" / "Wrong guess" (last-chance guess on) | `verdict {right: true / false}` |
      | "Undo" (verdict) | engine `undo` of the `verdict` record |
      | "Next round" (result, or "left halfway" screen) | `nextRound` alone on a result (the next deal starts with it); `dealAgain` on the "left halfway" screen |
      | "Deal again" (dialog) | `dealAgain` |
@@ -207,7 +234,8 @@ A test may set exactly these; the build must honour them.
      nonveg: boolean; usedTonight: ReadonlySet<string>; recent: ReadonlySet<string>; blocked: ReadonlySet<string>;
      allowRepeats: boolean }, rng: Rng): ImpostorWord | null` (sets hold word ids; `null` = no word left; IMP-052).
    - `scoreRound(outcome: { impostor: string; caught: boolean; guessedRight: boolean | null }, players: readonly
-     string[]): Record<string, number>` (every player present, 0 when no points; IMP-041).
+     string[]): Record<string, number>` (every player present, 0 when no points; `guessedRight` is `null` when the
+     impostor escaped or the last-chance guess was off; IMP-041).
    - `readImpostorEvening(saved: SavedGame): { players, choices, excludedWords, seeds, moves, status }`: the
      evening's starting players, choices and excluded words, its seeds, its moves (the `move` of each record, in
      order) and the `SavedGame` status (IMP-096).
@@ -232,7 +260,7 @@ A test may set exactly these; the build must honour them.
    (`import.meta.env.MODE === 'release'`), and only that build passes `release: true`.
 4. **Hold input** uses Pointer Events only (`pointerdown`, `pointerup`, `pointercancel`, `pointerleave`), so
    `page.mouse.down/up` and dispatched events work. Only the first pointer on the pad counts; others are ignored.
-5. **Clock.** Every timer (500 ms hold, 8 s tap-mode hide, 2-minute timer, countdown, reveal steps, toasts, 3 h, 12 h)
+5. **Clock.** Every timer (500 ms hold, 8 s tap-mode hide, 2-minute timer, countdown, 1.5 s build-up, toasts, 3 h, 12 h)
    uses `setTimeout`/`setInterval` and `Date.now()`, so Playwright's `clock.install` / `runFor` drive them; no step
    waits on `requestAnimationFrame` alone.
 6. **Visibility.** The app reads `document.visibilityState` and listens to `visibilitychange` and `pagehide`
@@ -246,7 +274,8 @@ A test may set exactly these; the build must honour them.
    only where it exists. Both can be stubbed.
 9. **Test ids** (`data-testid`): `main-button`, `resume-card`, `unfinished-games` (existing), `pass-name`,
    `hold-pad`, `private-block`, `private-word`, `private-live`, `starter-name`, `clue-order`, `talk-heading`, `timer`,
-   `countdown-number`, `reveal-line` (one per reveal line, in order), `build-up-dots`, `also-called`, `round-outcome`,
+   `countdown-number`, `build-up`, `reveal-line` (one per reveal line, in order), `also-called`, `word-category`,
+   `round-outcome`, `deal-progress`,
    `evening-line`,
    `round-points`, `scoreboard`, `score-row` (with `data-name`, `data-points`, `data-rank`), `practice-chip`,
    `privacy-cover`, `fun-line`, `summary-line`, `history-game` (existing), `history-round`, `announcer`, `undo-toast`
@@ -346,7 +375,7 @@ Given no session tonight
 Then the list starts empty and "Clear list" is not shown until a name is added
 
 ## IMP-005: The four choices, with these defaults
-Status: approved, owner, 2026-10-03
+Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
 When the host taps "Next" on "Who's playing?"
 Then "How do you want to play?" shows four groups, each with two option buttons:
@@ -355,8 +384,10 @@ And on this phone's first ever evening the selected options are Easy, Free flow,
 And exactly one option per group is selected (outline, ✓, tint, `aria-pressed="true"`), never the main look
 (guideline 17a); tapping the other option moves the selection; tapping the selected one changes nothing
 And under each group only the selected option's line shows (Option lines in Canonical strings)
-And below the groups the button "Categories: all 9 ›" (IMP-007)
-And "Start round" is the one main button; tapping it starts the evening (IMP-070, IMP-008)
+And below the groups, in this order: the button "Categories: all 9 ›" (IMP-007), the quiet "More options ›"
+(IMP-076), and, directly above "Start round", the quiet "How to play" (IMP-070)
+And "Start round" is the one main button; tapping it creates the evening and starts the first deal at once (records
+`startDeal {practice: false}`; IMP-008)
 And "← Back" returns to "Who's playing?" with the list unchanged
 
 ## IMP-006: Choices stay for the evening and change only between rounds
@@ -387,12 +418,11 @@ And "Include non-veg food" does not change that button's text
 And every round has exactly one impostor (two impostors are later, IMP-036)
 
 ## IMP-008: Taps to the first deal
-Status: approved, owner, 2026-10-03
+Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
 Given tonight's names are filled in (IMP-004) and the choices are as wanted
-Then from tapping the Impostor card, the first "Pass the phone to…" screen comes after at most 4 taps on the first
-Impostor evening of tonight's session: card → "Next" → "Start round" → "Start the deal"
-And after at most 3 taps on any later Impostor evening of the same session (the read-aloud card is skipped, IMP-070)
+Then from tapping the Impostor card, the first "Pass the phone to…" screen comes after exactly 3 taps:
+card → "Next" → "Start round", on every evening (no card shows by itself, IMP-070)
 And no session-name question is asked (IMP-009)
 (Time is a usability target, not a test: 30 s for a group that played tonight; under 90 s when typing names.)
 
@@ -416,13 +446,14 @@ And when PLT-016 would start a new session, it is created with the name PLT-016 
 ## 02-deal.md: passing the phone
 
 ## IMP-010: Each player sees their role privately, in seat order
-Status: approved, owner, 2026-10-03
+Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
 Given Riya, Arjun, Meena and Kabir; Arjun is the impostor; the word is Samosa; hold mode (IMP-014 off)
 When the round's deal starts
-Then screen A shows "Pass the phone to" and RIYA (`pass-name`), with the main button "I'm Riya"
+Then screen A shows, top to bottom: "Player 1 of 4" (`deal-progress`, IMP-019), "Pass the phone to", RIYA
+(`pass-name`), "Everyone else, look away!" (body text, 17 px; 21 px with Larger text), and the main button "I'm Riya"
 When "I'm Riya" is tapped
-Then screen B shows RIYA at the top, the pad "Hold here to see your word" (`hold-pad`, a button with that accessible
+Then screen B shows "Player 1 of 4" (`deal-progress`), RIYA at the top, the pad "Hold here to see your word" (`hold-pad`, a button with that accessible
 name) in the lower half, and the quiet "Tap instead"; no word, and no element with the main look (the pad included)
 until "Done…" appears, in hold mode and tap mode alike, and in "See my word again" (IMP-017)
 When Riya presses the pad (`pointerdown`)
@@ -436,13 +467,14 @@ appear, and stay for the rest of her turn
 And a hold under 500 ms shows and hides the block and adds nothing; any later hold of at least 500 ms adds them
 And once they are shown, further holds of any length show and hide the block, and change nothing else
 When she taps "Done, pass to Arjun"
-Then screen A shows "Pass the phone to" ARJUN with "I'm Arjun", and so on in seat order
+Then screen A shows "Player 2 of 4", "Pass the phone to" ARJUN, "Everyone else, look away!" and "I'm Arjun", and so
+on in seat order
 And the last player's button reads "Done, everyone's seen" (IMP-016)
 And no screen A or B ever shows the previous player's block
 And a double tap on "Done…" may open the next player's screen B; nothing private shows there without a hold
 
 ## IMP-011: What each role sees: always five lines
-Status: approved, owner, 2026-10-03
+Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
 Given the word is Samosa (category Food, hint "Tea time", no other names)
 Then while held, `private-block` has exactly 5 children, in this order, for every role and mode:
@@ -455,6 +487,9 @@ Then while held, `private-block` has exactly 5 children, in this order, for ever
 | 4 (body text) | "Give one-word clues. Don't say it!" | "Listen, blend in, guess the word." | "Don't say it!" | "Guess the word if caught." |
 | 5 (small line) | other names line | empty | other names line | empty |
 
+And the impostor's line 4 above is for the last-chance guess on; with it off (the default) it reads, in Easy,
+"Listen and blend in. Don't get caught!" and, in Hard, "Don't get caught!" (lines 1–3 and 5 unchanged)
+
 And line 5 is "Also called " followed by `other_names` exactly as in `words.csv`, for example the word Pani puri gives
 "Also called Golgappa / Puchka", and Kheer / Payasam gives "Also called Payesh"
 And line 5 is an empty element of the same height as one small line when the word has no other names, and **always**
@@ -464,30 +499,33 @@ And the category shown is the word's `category` exactly ("Films, music and TV")
 And the impostor's block never contains the word or its other names
 
 ## IMP-012: The impostor's turn looks exactly like everyone else's
-Status: approved, owner, 2026-10-03
+Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
 Then for crew and impostor alike: the same screens A and B, the same buttons in the same places, the same background
 colour, the same five-line block with the same font sizes per line, `navigator.vibrate(10)` once on every
 `pointerdown` on the pad (or on "Tap to see your word"), no sound when the block shows, and "Done…" appearing at the
 same fake-clock moment for the same hold (guideline 45)
 And `private-word` is 36 px; with Larger text on, or for a word longer than 20 characters, it may be any size from
-30 px to 36 px; it fits in 3 lines at every size (the longest word, "Five more minutes, then phone off", included)
+30 px to 36 px; it fits in 3 lines at every size (the longest word, "Mummy finding it in two seconds", included)
 And lines 1 and 5 are small lines (15 px; 19 px with Larger text) and lines 3 and 4 body text (17 px; 21 px with
 Larger text) for every role
 Property (sample 200 seeded deals of 4 players, Easy and Hard): before any hold, the `outerHTML` of screens A and B
-for the impostor's turn equals that of a crew member's turn once player names are replaced by a placeholder;
+for the impostor's turn equals that of a crew member's turn once player names and the `deal-progress` text are
+replaced by placeholders;
 tolerance 0 differences
 
 ## IMP-013: The word is never in the page except while held
-Status: approved, owner, 2026-10-03
+Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
-Then from the first "Pass the phone to…" until the reveal shows the word (IMP-033, IMP-034, IMP-038), none of these
+Then from the first "Pass the phone to…" until the result screen shows the word (IMP-033, IMP-034, IMP-038, IMP-039),
+none of these
 is in `document.documentElement.outerHTML` or `document.title`, except inside `private-block` and `private-live`
 while that player's block is shown: the round's word, each of its other names, its hint, "You're the impostor",
 and (Hard) its category
 And "in" means a case-insensitive match of each term as a whole phrase, with a word boundary at both ends; `localStorage` and script sources are not checked
 And this holds on every screen reachable during a round: room screens, screen B before and between holds, the
-menu, Settings, Rules and "See my word again" before a hold (History is not reachable during a round, IMP-075)
+menu, Settings, "How to play" and "See my word again" before a hold, and the build-up (History is not reachable
+during a round, IMP-075)
 And long-pressing the pad or the word opens no text selection, copy or look-up bubble, magnifier, context menu or
 drag: the pad, `private-block` and their children have computed `user-select: none`, `-webkit-user-select: none`,
 `-webkit-touch-callout: none`, `-webkit-user-drag: none`, the attribute `draggable="false"`, and a `contextmenu`
@@ -541,7 +579,7 @@ starter and the clue order (IMP-020), and the main button "Talk it over" (Free f
 And the 3–5 player button of IMP-022 when it applies
 
 ## IMP-017: See my word again
-Status: approved, owner, 2026-10-03
+Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
 Given the clues screen, the talk screen or the picker is showing
 When the host opens the menu and taps "See my word again"
@@ -552,6 +590,8 @@ Then the dialog closes and nothing else changes (the timer stays paused, showing
 When "Meena" is tapped
 Then screen A shows "Pass the phone to" MEENA with "I'm Meena", then screen B exactly as in the deal (IMP-010 to
 IMP-014), and her "Done" button reads "Done, everyone's seen"
+And neither screen shows `deal-progress` during "See my word again"; screen A still shows "Everyone else, look
+away!"
 And "Don't know this word?" is not shown during "See my word again"
 When she taps it
 Then the screen it was opened from shows again, unchanged, with the timer paused
@@ -570,6 +610,20 @@ And while `document.visibilityState` is hidden, `privacy-cover` is in the page: 
 viewport, opaque, above everything; it is removed when the page is visible again
 And a return to visible during the deal shows "Welcome back." (IMP-090)
 
+
+## IMP-019: "Player 2 of 4" and "Everyone else, look away!"
+Status: approved, owner, 2026-10-04 (detail of IMP-010)
+Phase: Impostor 1
+Then screens A and B of the deal show `deal-progress` "Player N of M": N = the current player's position in this
+round's seat order (1 for the first), M = the number of this round's players; it is a small line (15 px; 19 px with
+Larger text) at the top left
+And when the practice chip shows (IMP-071), `deal-progress` sits on the same row directly to its right, 8 px from it
+And after a redeal ("No problem!", "Deal again", "left halfway" "Next round") the deal shows "Player 1 of 4" again;
+"Welcome back." (IMP-090) shows the progress of the player named
+And screen A shows "Everyone else, look away!" (body text) directly under `pass-name` on every screen A, "Welcome
+back." and "See my word again" included
+And the "No problem! New word coming." screen shows neither line
+And nothing else on screens A and B changes
 ---
 
 ## 03-clues-and-talk.md
@@ -663,7 +717,7 @@ When "Carry on" is tapped
 Then counting resumes from "1:30" (the next change, to "1:29", 1 s later), "Pause" returns and the small line goes
 And the timer also pauses, exactly as if "Pause" were tapped, only when the page becomes hidden (and so when the
 evening is reopened, IMP-091) and when "See my word again" opens (IMP-017); dialogs ("Deal again?", "End now?",
-"Players"), the menu, Rules and Settings never pause it; it never catches up for time spent paused (guideline 34);
+"Players"), the menu, "How to play" and Settings never pause it; it never catches up for time spent paused (guideline 34);
 only "Carry on" resumes it
 And the remaining time is kept in `pgn.impostor-ui.<id>` (`timerMs`), not as a move and not in the saved record
 
@@ -687,7 +741,7 @@ And there is no menu and no main button on the countdown screen
 And if the page is hidden during the countdown, on return it starts again from "Get ready to point…" (t = 0)
 
 ## IMP-031: Recording who got the most fingers: pick, then reveal
-Status: approved, owner, 2026-10-03
+Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
 Then the picker shows the heading "Who got the most fingers?", one button per player in seat order (two columns,
 each button 56 px tall), the quiet "It's a tie" and "Count again", and the main button "Reveal", disabled
@@ -700,7 +754,7 @@ And tapping the selected name again changes nothing
 When the host taps "Count again"
 Then the selection is cleared and the countdown runs again (IMP-030), then this same picker
 When the host taps "Reveal Arjun"
-Then the reveal starts (IMP-033 or IMP-034; guideline 47); recorded as `reveal`
+Then the result screen starts (IMP-033, IMP-034 or IMP-039; guideline 47); recorded as `reveal`
 
 ## IMP-032: A tie gets one re-vote
 Status: approved, owner, 2026-10-03
@@ -723,55 +777,50 @@ When the host taps "Still a tie"
 Then the impostor escapes (IMP-038); recorded as `stillTie`
 And there is never a second re-vote
 
-## IMP-033: Caught: the guess comes before the word is shown
-Status: approved, owner, 2026-10-03
+## IMP-033: Caught: one result screen, the word shown at once
+Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
-Given Arjun is the impostor and the word is Pani puri
-When "Reveal Arjun" is tapped (t = 0)
-Then one reveal screen shows, whose lines (`reveal-line`, in order) stay on screen once shown:
-- t = 0: build-up: "Arjun was" with `build-up-dots` "." at t = 0.6 s, ".." at t = 1.2 s, "..." at t = 1.8 s; sound
-  `drumroll` once at t = 0 (if sound on); `body`'s background colour does not change
-- t = 2.5 s: the build-up line's element is replaced by "Caught red-handed! ARJUN was the impostor." (so the
-  number of `reveal-line`s is 1 at t = 0, 1 at t = 2.5 s, 2 at t = 4.0 s)
-- t = 4.0 s: "Last chance, Arjun! Guess the word out loud. Get it right and you steal the round." and the main button "Arjun guessed. Show the word"
-And the word is not in the page (IMP-013) until "Arjun guessed. Show the word" is tapped
-When it is tapped
-Then that button goes, the `reveal-line` "The word was Pani puri." and, under it, the small line
-"Also called Golgappa / Puchka" (`also-called`, not a reveal line, not announced; only when the word has other
-names) appear, and two quiet buttons of equal size, "Guessed right" and
-"Wrong guess", appear side by side; neither has the main look (IMP-080)
-When a verdict is tapped (recorded as `verdict`)
-Then the two buttons go and the result block (IMP-035, IMP-040, IMP-044) appears below the lines at once, with the
-main button "Next round"
-And every reveal line is announced as it appears; the build-up is announced once as "Arjun was" (the dots are not
-announced)
-And with reduced motion the same lines appear at the same times, with no transform, transition or animation
-(the dots still appear as text)
-And sizes: the build-up line and the first line of each outcome ("Caught red-handed!…", "Meena was crew!",
-"Still a tie!…") 28 px; the other reveal lines 20 px; "Also called …" 15 px; `round-outcome` 28 px; `evening-line`
-and `round-points` 17 px (IMP-073)
+Given Arjun is the impostor, the word is School trip (other names "Excursion", category "School and childhood"),
+and the last-chance guess is off (IMP-076)
+When "Reveal Arjun" is tapped (t = 0; recorded as `reveal`, which completes the round)
+Then the result screen shows only the build-up `build-up` "Arjun was…" (28 px) from t = 0 to t = 1.5 s; sound
+`drumroll` plays once at t = 0 (if sound on); `body`'s background colour does not change; there is no menu button
+and no main button
+And at t = 1.5 s the build-up is replaced, all at once, by, top to bottom:
+1. `reveal-line` "Caught! ARJUN was the impostor." (28 px)
+2. `round-outcome` "The crew wins!" (h2, 28 px)
+3. `reveal-line` "The word was School trip." (20 px)
+4. `also-called` "Also called Excursion" (small line; only when the word has other names; not a reveal line)
+5. `word-category` "School and childhood": a chip with the word's `category` exactly, text 15 px (19 px with Larger
+   text), outlined, not a button
+6. `evening-line` (Score No, IMP-040) or `round-points` and `scoreboard` (Score Yes, IMP-044)
+7. the quiet "This word didn't work" (IMP-107) and the main button "Next round"; the menu button returns
+And there is no "Undo" and no guess step (a reveal is never undone, guideline 47; IMP-037)
+And with reduced motion the build-up and the switch at t = 1.5 s happen with no transform, transition or animation
+And nothing else appears later on this screen; it stays until "Next round" (or the menu) is used
 
-## IMP-034: The reveal when the crew got it wrong
-Status: approved, owner, 2026-10-03
+## IMP-034: The result when the crew picked the wrong person
+Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
-Given Arjun is the impostor and the word is Samosa
-When "Reveal Meena" is tapped (t = 0)
-Then the build-up shows as in IMP-033 with "Meena was", then:
-- t = 2.5 s: the build-up line is replaced by "Meena was crew!"
-- t = 4.0 s: "The impostor was ARJUN. Escaped!"
-- t = 5.5 s: "The word was Samosa."
-- t = 7.0 s: the result block, headline "Arjun escaped!", main button "Next round"
-And all these lines stay on screen; there is no last guess and no "Undo"
+Given Arjun is the impostor and the word is Samosa (category "Food", no other names)
+When "Reveal Meena" is tapped (t = 0; recorded as `reveal`, which completes the round)
+Then the build-up "Meena was…" shows from t = 0 to t = 1.5 s exactly as in IMP-033
+And at t = 1.5 s it is replaced, all at once, by, top to bottom: `reveal-line` "Meena was crew." (28 px),
+`reveal-line` "ARJUN was the impostor and escaped!" (20 px), `round-outcome` "Arjun escaped!", `reveal-line`
+"The word was Samosa.", no `also-called` line, `word-category` "Food", then items 6 and 7 of IMP-033
+And there is no guess step and no "Undo", whatever the last-chance guess setting
 
-## IMP-035: The room judges the last guess
-Status: approved, owner, 2026-10-03
+## IMP-035: The room judges the last-chance guess
+Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
-Given IMP-033's verdict step
-When the room agrees Arjun's guess "Kachori" is wrong and the host taps "Wrong guess"
+Given the last-chance guess is on, Arjun was caught, the word is Pani puri, and IMP-039's verdict step shows
+When the room agrees Arjun's guess "Samosa" is wrong and the host taps "Wrong guess"
 Then `round-outcome` reads "The crew wins!"
 When instead the host taps "Guessed right" (another name counts: "Golgappa" for Pani puri)
 Then `round-outcome` reads "Arjun steals the round!"
 And the app never judges the guess; it records only the tap
+Given the last-chance guess is off
+Then there is no guess, no verdict and no "Arjun steals the round!"
 
 ## IMP-036: Two impostors (after the play-test)
 Status: approved, owner, 2026-10-03
@@ -781,30 +830,51 @@ Then both impostors see "You're one of 2 impostors" and never who the other is
 (The vote and reveal for two impostors are designed after the play-test.)
 
 ## IMP-037: Undo the verdict only, before the next round
-Status: approved, owner, 2026-10-03
+Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
-Given a caught round's result block after "Wrong guess"
-Then the result block has the quiet "Undo"
+Given the last-chance guess is on and a caught round's result shows after "Wrong guess"
+Then the result has the quiet "Undo"
 When "Undo" is tapped
-Then the result block goes and "Guessed right" / "Wrong guess" show again, with the word still shown; any points of
-that verdict are taken back, and the round is no longer completed until a verdict is tapped again (engine `undo`
-of the `verdict` record; a "This word didn't work" tapped meanwhile stays)
+Then the result lines below the word (IMP-039's step 3) go and "Guessed right" / "Wrong guess" show again, with the
+word still shown; any points of that verdict are taken back, and the round is no longer completed until a verdict is
+tapped again (engine `undo` of the `verdict` record; a "This word didn't work" tapped meanwhile stays)
 And "Undo" is offered until "Next round" is tapped or players or choices are changed (`setPlayers`, `setChoices`),
-also after the evening is reopened (IMP-091) or after "Oops, keep playing" (IMP-101), and never on an escaped round
+also after the evening is reopened (IMP-091) or after "Oops, keep playing" (IMP-101)
+And "Undo" is never offered with the last-chance guess off, nor on an escaped or "Still a tie" round
 And a reveal is never undone (it is protected by "Reveal Arjun", IMP-031), and a deal is never undone (use "Deal
 again with a new word")
 
 ## IMP-038: "Still a tie": the impostor escapes
-Status: approved, owner, 2026-10-03 (detail of IMP-032)
+Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
 Given Arjun is the impostor, the word is Samosa, and the re-vote picker is showing
-When "Still a tie" is tapped (t = 0)
-Then the reveal screen shows with no build-up and no `drumroll`:
-- t = 0: "Still a tie! The impostor was ARJUN. Escaped!"
-- t = 1.5 s: "The word was Samosa."
-- t = 3.0 s: the result block, headline "Arjun escaped!", main button "Next round"
-And the round is escaped (+2 to Arjun when keeping score); there is no last guess and no "Undo"
+When "Still a tie" is tapped (t = 0; recorded as `stillTie`, which completes the round)
+Then the result screen shows at once, with no build-up and no `drumroll`, top to bottom: `reveal-line`
+"Still a tie! ARJUN was the impostor and escaped!" (28 px), `round-outcome` "Arjun escaped!", `reveal-line`
+"The word was Samosa.", `word-category` "Food", then items 6 and 7 of IMP-033
+And the round is escaped (+2 to Arjun when keeping score); there is no guess step and no "Undo"
 
+
+## IMP-039: The last-chance guess, when it is on
+Status: approved, owner, 2026-10-04 (detail of IMP-033)
+Phase: Impostor 1
+Given the last-chance guess is on (IMP-076), Arjun is the impostor and the word is School trip
+When "Reveal Arjun" is tapped (t = 0; recorded as `reveal`)
+Then the build-up shows from t = 0 to t = 1.5 s exactly as in IMP-033
+And at t = 1.5 s it is replaced, all at once, by: `reveal-line` "Caught! ARJUN was the impostor." (28 px),
+`reveal-line` "Last chance, Arjun! Guess the word out loud. Get it right and you steal the round." (20 px) and the
+main button "Arjun guessed. Show the word"; the word is not in the page (IMP-013); there is no menu button
+When "Arjun guessed. Show the word" is tapped (recorded as `showWord`)
+Then that button goes and, under the two lines, `reveal-line` "The word was School trip.", `also-called` "Also
+called Excursion" and `word-category` "School and childhood" appear, with two quiet buttons of equal size side by
+side, "Guessed right" and "Wrong guess"; neither has the main look (IMP-080)
+When a verdict is tapped (recorded as `verdict`, which completes the round)
+Then the two buttons go and these appear under the word, at once: `round-outcome` "The crew wins!" ("Wrong guess")
+or "Arjun steals the round!" ("Guessed right"), then items 6 and 7 of IMP-033, plus the quiet "Undo" (IMP-037);
+the menu button returns
+And every line shown stays on the screen until "Next round"
+And when the vote revealed a crew member, or the re-vote ended "Still a tie", there is no guess step: IMP-034 and
+IMP-038 apply unchanged
 ---
 
 ## 05-scoring.md (C3)
@@ -814,19 +884,20 @@ Status: approved, owner, 2026-10-03
 Phase: Impostor 1
 Given Score is No
 Then no points, ranks or scoreboard show anywhere in the evening
-And each counted round's result block shows `evening-line` "Tonight: impostor caught 3 · escaped 2": the counts of
+And each counted round's result screen shows `evening-line` "Tonight: impostor caught 3 · escaped 2": the counts of
 this evening's counted rounds, this round included
-And the practice round's result block shows no `evening-line`
+And the practice round's result shows no `evening-line`
 And `evening-line` is never shown while Score is Yes
 
 ## IMP-041: Points when keeping score
-Status: approved, owner, 2026-10-03
+Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
 Given Score is Yes
 Then each counted round scores exactly (`scoreRound`): escaped (wrong person or "Still a tie"): the impostor +2;
-caught and "Guessed right": the impostor +1; caught and "Wrong guess": every crew member of that round +1
+caught with the last-chance guess off: every crew member of that round +1; with it on, caught and "Guessed right":
+the impostor +1; caught and "Wrong guess": every crew member of that round +1
 And nobody else gets points; the practice round scores nothing
-And the result block shows this round's points and the evening's scoreboard (IMP-044)
+And the result screen shows this round's points and the evening's scoreboard (IMP-044)
 And there is no target score: the evening ends only when the host ends it
 
 ## IMP-042: Points always add up
@@ -849,10 +920,11 @@ When it is switched to Yes again
 Then scoring resumes from the next round, adding to the kept totals
 
 ## IMP-044: Scoreboard order and this round's points
-Status: approved, owner, 2026-10-03 (detail of IMP-041)
+Status: approved, owner, 2026-10-04 (changed; detail of IMP-041)
 Phase: Impostor 1
-Then `round-points` shows this round's points: "+2 Arjun" (escaped), "+1 Arjun" (caught, guessed right),
-"+1 each: Riya, Meena, Kabir" (caught, wrong guess; that round's crew in seat order)
+Then `round-points` shows this round's points: "+2 Arjun" (escaped), "+1 Arjun" (caught, guessed right: last-chance
+guess on only), "+1 each: Riya, Meena, Kabir" (caught, with no guess or a wrong guess; that round's crew in seat
+order)
 And `scoreboard` lists every player of the evening, one `score-row` each, highest total first, ranked 1-2-2-4
 (players with equal totals share the rank; the next rank skips), equal totals in seat order
 And a player who left stays in the ranking by their total, like everyone else, greyed; among equal totals, current
@@ -971,7 +1043,8 @@ running; tolerance 0
 Status: approved, owner, 2026-10-03
 Phase: Impostor 1
 Then IMP-013's check holds on every screen the host can reach during a round: screen A, screen B before a hold, the
-clues, talk, countdown and picker screens, the menu, Settings, Rules and the "Whose word?" dialog
+clues, talk, countdown and picker screens, the build-up, the menu, Settings, "How to play" and the "Whose word?"
+dialog
 And `viewFor` the host viewer returns no word, hint, other name or impostor before the reveal (contract suite)
 
 ## IMP-063: Every crew member has the same word, every round one impostor
@@ -995,52 +1068,54 @@ Then the evening's seeds and forced deals are exactly as given
 
 ## 08-room-host-and-teach.md
 
-## IMP-070: The read-aloud card, once a session
-Status: approved, owner, 2026-10-03
+## IMP-070: How to play, on request
+Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
-Given the first Impostor evening of tonight's session
-When "Start round" is tapped
-Then the card shows the heading "Read this aloud" and these 4 lines, in an ordered list, exactly:
+Then "How to play" never opens by itself
+When the host taps the quiet "How to play" on "How do you want to play?", or the menu item "How to play" (IMP-075)
+Then a sheet shows the heading "How to play", then the heading "Read this aloud" with these 4 lines in an ordered
+list, exactly:
 1. "Everyone gets the same secret word, except the impostor."
 2. "Take turns to say one word about it. Don't say the word!"
 3. "Then talk, and all point at who you think the impostor is."
-4. "Impostor: blend in. Caught? Guess the word to steal the round."
-And the main button "Start the deal" (starts round 1's deal) and the quiet "Practice round first" (IMP-071); both
-are recorded as `startDeal`
-And the card shows before the practice round when there is one, and not again before round 1
-And it does not show for any later Impostor evening of the same session, whatever happened to the evening it was
-shown for (ended, discarded or unfinished): "Start round" goes straight to the deal (the app records
-`startDeal {practice: false}` itself)
-And the card has no menu button; "← Back" returns to "How do you want to play?" and the evening stays created
-(unfinished, IMP-001)
+4. with the last-chance guess on: "Impostor: blend in. Caught? Guess the word to steal the round."; off:
+   "Impostor: blend in. Don't get caught!"
+And under them the rules of IMP-072
+And the main button "Done" closes the sheet and returns to the screen it was opened from, with nothing else changed
+(a running timer keeps running, IMP-027)
+And the quiet "Practice round first" (IMP-071) shows only when the sheet was opened from the choices screen of a new
+evening (not from "Change how we play", IMP-006, and not from the menu)
+And the text follows the choices selected on screen when opened from the choices screen, and the evening's current
+choices when opened from the menu
+And the sheet has no menu button; IMP-013's check holds while it is open
 
 ## IMP-071: Practice round
-Status: approved, owner, 2026-10-03
+Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
-When the host taps "Practice round first"
-Then the next round is a practice round, played exactly like a normal round, with the chip "Practice"
-(`practice-chip`) at the top left of its deal, clues, talk, countdown, picker, reveal and result screens
+When the host taps "Practice round first" in "How to play" opened from a new evening's choices screen
+Then the evening is created with the choices on screen and its first round is a practice round (records
+`startDeal {practice: true}`), played exactly like a normal round, with the chip "Practice" (`practice-chip`) at the
+top left of its deal, clues, talk, countdown, picker and result screens
 And it has no round number (the round after it is round 1); it uses a word (which then counts as dealt tonight,
 IMP-051); it counts for the starter cycle (IMP-021) and the impostor streak (IMP-061)
 And it scores no points (no `round-points`, no `scoreboard` on its result) and is not in `evening-line`,
 the summary line, fun lines or Share's counts
-And after its result, "Next round" deals round 1 with no card and no chip
+And after its result, "Next round" deals round 1 with no chip
+And a practice round can only be the first round of an evening
 
-## IMP-072: Rules mid-game never show secrets
-Status: approved, owner, 2026-10-03
+## IMP-072: The rules in "How to play" never show secrets
+Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
-When anyone opens "Rules" from the menu
-Then a sheet shows the heading "How to play", these lines for **Easy**, each its own paragraph, exactly:
+Then under the read-aloud lines (IMP-070), "How to play" shows these paragraphs for **Easy**, exactly:
 "1. Everyone sees the same secret word, except the impostor, who sees only the category and a hint." ·
 "2. Take turns clockwise. Say one word about the secret word." ·
 "3. Not allowed: the word itself, a rhyme, a translation, or 'thing'. Repeating someone's clue is allowed." ·
 "4. Talk it over, then everyone points at once on 3, 2, 1." ·
-"5. Caught? The impostor gets one guess at the word to steal the round." ·
+"5. Caught? The impostor gets one guess at the word to steal the round." (only with the last-chance guess on) ·
 "Kids may use up to 3 words."
 And for **Hard**, line 1 reads "1. Everyone sees the same secret word, except the impostor, who sees nothing." and
 the paragraph "The impostor never starts." comes between lines 2 and 3; the rest is the same
-And the main button "Done" closes the sheet and returns to the same screen with nothing else changed
-And IMP-013's check holds while it is open (no word, hint, other name or role)
+And they never show a word, hint, other name or role (IMP-013)
 
 ## IMP-073: Sizes for the phone in the middle of the table
 Status: approved, owner, 2026-10-03
@@ -1056,9 +1131,10 @@ Then at every size, these sizes hold (guideline 46):
 | `countdown-number` "3" "2" "1" | 200 px portrait | 812 × 375: exactly 160 px | 160 px |
 | `countdown-number` "Point!" | 96 px | 320 px wide: exactly 72 px | 72 px |
 | `private-word` | 36 px | Larger text on, or word over 20 characters | 30 px |
-| `reveal-line`, build-up and first line of an outcome | 28 px | never | 28 px |
+| `build-up`, and the first `reveal-line` of each result | 28 px | never | 28 px |
 | `reveal-line`, other lines | 20 px | never | 20 px |
 | `round-outcome` | 28 px | never | 28 px |
+| `deal-progress`, `word-category`, `also-called` | 15 px (19 px with Larger text) | never | 15 px |
 
 And "may shrink" means the size is any value from the floor to the full size; with no listed reason it is exactly the
 full size
@@ -1083,80 +1159,99 @@ Then a dialog shows only "Change players after this round." and the main button 
 changed
 
 ## IMP-075: The menu at each moment
-Status: approved, owner, 2026-10-03 (detail of IMP-006, IMP-017, IMP-025, IMP-093)
+Status: approved, owner, 2026-10-04 (changed; detail of IMP-006, IMP-017, IMP-025, IMP-093)
 Phase: Impostor 1
 Then "··· Menu" (top right) has exactly these items, in this order (the item that ends things last):
 
 | Moment | Items |
 |---|---|
-| Deal (screens A, B, "No problem!", "Welcome back.") | Rules · Players · Deal again with a new word · Settings · End the evening |
-| Clues, talk (Free flow or Timer), picker | Rules · Players · See my word again · Deal again with a new word · Settings · End the evening |
-| Round result (between rounds), no-words screen (IMP-052) | Rules · Players · Change how we play · Settings · History · End the evening |
-| "left halfway" screen (IMP-091) | Rules · Players · Settings · History · End the evening ("Players" shows only "Change players after this round." and "OK"; product owner, 4 October) |
+| Deal (screens A, B, "No problem!", "Welcome back.") | How to play · Players · Deal again with a new word · Settings · End the evening |
+| Clues, talk (Free flow or Timer), picker | How to play · Players · See my word again · Deal again with a new word · Settings · End the evening |
+| Round result (between rounds), no-words screen (IMP-052) | How to play · Players · Change how we play · Settings · History · End the evening |
+| "left halfway" screen (IMP-091) | How to play · Players · Settings · History · End the evening ("Players" shows only "Change players after this round." and "OK"; product owner, 4 October) |
 
-And there is no menu button on the read-aloud card, the countdown screen, during "See my word again", on the
-summary, nor on the reveal screen from "Reveal …" (or "Still a tie") until its result block appears
+And there is no menu button on "How to play", the countdown screen, during "See my word again", on the summary,
+during the 1.5 s build-up, nor during the last-chance guess's guess and verdict steps (IMP-039); the result screen
+has it (between-rounds items) once the round is completed
 And History opened from the between-rounds menu has "← Back", which returns to the same screen
 And there is no "← Back" during a round; the browser's or phone's Back button during a round keeps the same
 screen and changes nothing
 
+
+## IMP-076: More options: the last-chance guess
+Status: approved, owner, 2026-10-04 (detail of IMP-005)
+Phase: Impostor 1
+When the host taps the quiet "More options ›" on "How do you want to play?"
+Then a sheet shows the heading "More options", the switch "Last-chance guess" with the small line "A caught
+impostor can guess the word to steal the round." under it, and the main button "Done"
+And the switch is off on this phone's first ever evening; afterwards it starts from the last-used choices (IMP-009),
+or the evening's choices in "Change how we play" and "Play again"
+When the switch is turned on and "Done" is tapped
+Then the choice `lastGuess` is true; it is saved with the other choices (`setChoices` between rounds, IMP-006), and
+the button text "More options ›" does not change
+And "Include non-veg food" stays in the Categories sheet (IMP-007)
+And the setting changes only IMP-033/IMP-039 (the guess step), IMP-037 (Undo), IMP-041 (+1 to the impostor), the
+read-aloud line 4 and rule 5 (IMP-070, IMP-072); nothing else changes
 ---
 
 ## 09-usability.md
 
 ## IMP-080: At most one main button, and it is the next step
-Status: approved, owner, 2026-10-03
+Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
 Then every Impostor screen has at most one element with the main look, `data-testid="main-button"`, and it is the
 next step (guideline 17a)
 And exactly these have none: "What shall we play?" (cards), screen B until "Done…" appears (hold mode, tap mode and
 "See my word again"), the countdown,
-the reveal before "<Name> guessed. Show the word" or before the result block appears, and the verdict step ("Guessed right" /
-"Wrong guess" look equal)
+the 1.5 s build-up, and the verdict step of the last-chance guess ("Guessed right" / "Wrong guess" look equal)
 And a destructive choice ("End now", "End the evening", "Discard", "Deal again") is never the main button
 
 ## IMP-081: Nothing scrolls during a round
-Status: approved, owner, 2026-10-03
+Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
-Then the deal, clues, talk, countdown, picker, reveal and result screens have no page scrolling at every size, with
+Then the deal, clues, talk, countdown, picker and result screens have no page scrolling at every size, with
 names of 16 characters, 3 to 20 players, the practice chip, the timer, and the longest word
-("Five more minutes, then phone off": `private-word` fits in 3 lines, IMP-012)
+("Mummy finding it in two seconds": `private-word` fits in 3 lines, IMP-012)
 And where content is taller than the screen, these give way, in this order, and nothing else:
 1. `clue-order`, the picker's name list and `scoreboard` scroll inside their own boxes (IMP-020, IMP-082, IMP-044);
 2. the room-screen names shrink to their floors (IMP-073);
-3. on the reveal screen, the reveal lines above the result block scroll inside their own box, kept scrolled to the
-   newest line
+3. on the result screen, everything above its buttons scrolls inside one box, scrolled to the top when the screen
+   appears (after the last-chance guess's verdict: scrolled so `round-outcome` is wholly in view)
 And the main button stays wholly on screen and fixed at the bottom throughout
-And at 812 × 375 the hold screen puts the block on the left and the pad (and "Done…") on the right; the reveal
-screen puts the reveal lines on the left and the result block on the right
+And at 812 × 375 the hold screen puts the block on the left and the pad (and "Done…") on the right; the result
+screen puts the reveal lines, the word and its chip on the left and `round-outcome`, the evening line or points and
+the buttons on the right
 
 ## IMP-082: Lists of 12 to 20 players
 Status: approved, owner, 2026-10-03
 Phase: Impostor 1
 Then at 390 × 844 with Larger text off and names of up to 8 characters, the picker ("Who got the most fingers?")
 shows 12 players in two columns with no scrolling at all
-And the `scoreboard` on the round result may always scroll inside its own box (the reveal lines above it stay)
+And the `scoreboard` on the result screen may always scroll inside its own box (the lines above it stay)
 And otherwise (13 to 20 players, longer names, Larger text, smaller screens or landscape) each list is two columns
 and scrolls inside its own box, the main button stays fixed at the bottom, and the heading or `round-outcome`
 stays wholly on screen
 
 ## IMP-083: Screen readers
-Status: approved, owner, 2026-10-03
+Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
 Then `announcer` (`aria-live="polite"`) receives exactly: the clue order (IMP-020), "1 minute left" and "Time's up"
-(IMP-024), "3", "2", "1", "Point!" (IMP-030), and each reveal line as it appears (IMP-033, IMP-034, IMP-038)
-And the build-up is announced once, as "Arjun was"; its dots, and the `also-called` line, are never announced
+(IMP-024), "3", "2", "1", "Point!" (IMP-030), the build-up once ("Arjun was…", at t = 0), and at t = 1.5 s each
+`reveal-line` and `round-outcome` in screen order (IMP-033, IMP-034, IMP-038, IMP-039; after a verdict,
+`round-outcome`)
+And `also-called`, `word-category` and `deal-progress` are never announced
 And `hold-pad` is a button whose accessible name is its visible text: "Hold here to see your word" (or "Tap to see
 your word" / "Tap to hide")
 And the player's block is put in `private-live` (`aria-live="assertive"`) only while it is shown on their own turn,
 and emptied when it hides (IMP-018); `announcer` never receives a word, hint or role before the reveal
 
 ## IMP-084: No flashing
-Status: approved, owner, 2026-10-03
+Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
-Then sampled every 50 ms through the countdown and the whole reveal, no element's computed background colour
+Then sampled every 50 ms through the countdown, the build-up and the first 3 s of the result screen, no element's
+computed background colour
 changes more than 3 times in any 1 s window
-And the reveal screens for caught, escaped and "Still a tie" have the same `body` background colour
+And the result screens for caught, escaped and "Still a tie" have the same `body` background colour
 
 ## IMP-085: Kind words
 Status: approved, owner, 2026-10-03
@@ -1173,11 +1268,12 @@ Then the block hides at once, the pad shows again, and the player stays on their
 And the phone moves to the next player only on "Done…" (IMP-010); nothing else changes
 
 ## IMP-087: The screen stays awake during a round
-Status: approved, owner, 2026-10-03
+Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
 Then `navigator.wakeLock.request('screen')` is called when a round's first screen A shows, and again on every return
 to visible while a round is in progress (guideline 32)
-And the lock is released when the round's result block appears (and requested again if "Undo" reopens the verdict)
+And the lock is released when the round is completed (the result screen at t = 1.5 s, or the verdict with the
+last-chance guess) and requested again if "Undo" reopens the verdict
 And when `navigator.wakeLock` is missing or refused, nothing else happens (no message)
 
 ## IMP-088: The choices screen at 320 × 568 and in landscape
@@ -1195,7 +1291,7 @@ And at 812 × 375 the four groups sit in a 2 × 2 grid and "Start round" overlap
 Status: approved, owner, 2026-10-03 (detail of IMP-012, IMP-024, IMP-030, IMP-033)
 Phase: Impostor 1
 Then the only sounds in Impostor are `tick` (each countdown number), `ding` ("Point!"), `chime` (timer at 0:00) and
-`drumroll` (reveal build-up start), played only with sound on, and recorded in `window.__sounds` (Test hooks item 7)
+`drumroll` (start of the 1.5 s build-up after "Reveal …"), played only with sound on, and recorded in `window.__sounds` (Test hooks item 7)
 And `chime` and `drumroll` peak gain ≤ `tick`'s peak gain
 And no sound plays during the deal (screens A and B) for any role
 And vibration is `navigator.vibrate(10)` on each press of the pad only (IMP-012)
@@ -1218,7 +1314,7 @@ And players who tapped "Done" are not asked again
 And reopened more than 3 hours after the round's last move, IMP-091's "This round was left halfway." shows instead
 
 ## IMP-091: Interrupted later in a round
-Status: approved, owner, 2026-10-03
+Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
 Given the app was closed (or reloaded) during the deal, clues, talk, countdown, picker or reveal (the deal within 3
 hours: IMP-090)
@@ -1227,11 +1323,12 @@ Then: clues and Free-flow talk show the same screen; Timer talk shows the timer 
 reopened after "Vote now" (or after a tie's "Point again"), the countdown always runs again from "Get ready to
 point…" and then the picker opens with nothing selected (tie mode and ticks cleared, a re-vote stays a re-vote)
 (product owner, 4 October)
-And a reveal reopened before "Arjun guessed. Show the word" was tapped shows every line up to "Last chance, Arjun!…" and the main
-button "Arjun guessed. Show the word", with the word not in the page
-And a reveal reopened after that shows its lines with no build-up and no timing: the word and the verdict buttons,
-or, after a verdict, the result block with "Undo" (IMP-037); an escaped or "Still a tie" reveal shows all its lines and its result block
-And a return from hidden (without a reload) during a reveal does the same as a reopen
+And reopened after "Reveal …" or "Still a tie", the result screen shows with no build-up, exactly as at t = 1.5 s
+(IMP-033, IMP-034, IMP-038)
+And with the last-chance guess, reopened before "Arjun guessed. Show the word" was tapped it shows the two caught
+lines and that button, with the word not in the page; after it, the word and the verdict buttons; after a verdict,
+the full result with "Undo" (IMP-037)
+And a return from hidden (without a reload) during the 1.5 s build-up shows the same as a reopen
 When it is reopened more than 3 hours after the round's last move
 Then the screen shows "This round was left halfway. Start a fresh round?" with the main button "Next round"
 And "Next round" deals that round again with a new word and impostor under the same round number (recorded as
@@ -1269,14 +1366,14 @@ not completed); "Oops, keep playing" returns to the round exactly where "End now
 And "Keep playing" closes the dialog with nothing changed (a running timer kept running while the dialog was open)
 
 ## IMP-094: What History keeps
-Status: approved, owner, 2026-10-03
+Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
 Then a kept evening stores: players, choices, and for each completed round its word, impostor, who was revealed (or
-"Still a tie"), the verdict, the points (when scored) and whether it was the practice round; plus its saved record
+"Still a tie"), the verdict (last-chance guess only), the points (when scored) and whether it was the practice round; plus its saved record
 for exact replay (IMP-096)
 And while an evening is in progress, History shows it as one `history-game` row containing "In progress", with no
 rounds, words or names of impostors
-And a completed round appears in History only after its result block has appeared
+And a completed round appears in History only once it is completed
 
 ## IMP-095: Fun lines at the end
 Status: approved, owner, 2026-10-03
@@ -1308,7 +1405,7 @@ Then every evening is saved, at every move, as one engine `SavedGame` at the eng
                                       "categories": ["Food", "Festivals and occasions", "Around the house",
                                                      "Out and about", "Films, music and TV", "Sports and games",
                                                      "School and childhood", "Weddings and family", "Everyday moments"],
-                                      "nonveg": false },
+                                      "nonveg": false, "lastGuess": false },
                          "excludedWords": { "dealtTonight": ["IMPW-002"], "recent": ["IMPW-003"],
                                             "blocked": ["IMPW-018"] } } },
   "records": [ { "v": 1, "seq": 1, "at": 1791043200000, "by": "host", "move": { "type": "startDeal", "practice": false } },
@@ -1347,7 +1444,7 @@ Then with 1 counted round the summary line reads "1 round · impostor caught 1 �
 And "escaped 1 time" / "escaped 2 times" in fun line 1
 
 ## IMP-099: Time limits, measured exactly
-Status: approved, owner, 2026-10-03 (detail of IMP-091, IMP-101, IMP-104)
+Status: approved, owner, 2026-10-04 (changed; detail of IMP-091, IMP-101, IMP-104)
 Phase: Impostor 1
 Then every limit is "more than" (strictly greater), measured with `Date.now()` against a move's `at`:
 - 3 hours, IMP-090 and IMP-091: from the last move of the round in progress (its deal moves included); not used
@@ -1356,8 +1453,8 @@ Then every limit is "more than" (strictly greater), measured with `Date.now()` a
   `at` = the moment the limit is noticed (app open or next check). When `summaryShownAt` is set, this is the only
   limit that applies: reopened after it, `endEvening` is recorded and the summary shows without "Oops, keep playing";
   the IMP-091 "left halfway" screen never shows for such an evening, and IMP-104 does not apply;
-- 12 hours, IMP-104: from the move that completed the last completed round (`verdict`, `reveal` of a crew member, or
-  `stillTie`), or from the first move when there is none
+- 12 hours, IMP-104: from the move that completed the last completed round (`reveal` with the last-chance guess off,
+  `reveal` of a crew member, `stillTie`, or `verdict`), or from the first move when there is none
 Example: a round whose last move was at 21:00:00.000 reopened at exactly 00:00:00.000 returns to the same step; at
 00:00:00.001 it shows "This round was left halfway. Start a fresh round?"
 
@@ -1368,7 +1465,7 @@ Example: a round whose last move was at 21:00:00.000 reopened at exactly 00:00:0
 ## IMP-100: After the round, the phone can rest
 Status: approved, owner, 2026-10-03
 Phase: Impostor 1
-When the round's result block appears
+When the round is completed (IMP-033, IMP-034, IMP-038, IMP-039)
 Then the wake lock is released (IMP-087), and nothing still secret is on screen (every secret of the round has been
 revealed by then)
 
@@ -1380,7 +1477,7 @@ Then the evening is still in progress (`status` "in-progress", no `endEvening` y
 holds `summaryShownAt`
 When the host taps "Oops, keep playing"
 Then the summary goes and the evening is exactly where "End the evening" or "End now" was tapped (between rounds:
-the same result block, with "Undo" when its window is open, IMP-037); nothing is recorded and nothing is lost
+the same result screen, with "Undo" when its window is open, IMP-037); nothing is recorded and nothing is lost
 And `endEvening` is recorded when the host leaves the summary screen: "Back to Home", "Play something else",
 "History", or "Discard this evening" then "Discard" (which deletes instead). "Share" does not leave it, and a share
 sheet's return does not count
@@ -1420,13 +1517,13 @@ rounds; a half-played round is dropped (IMP-097 applies when there is no counted
 And neither "What shall we play?" nor Home shows it as unfinished
 
 ## IMP-105: Looking back at an evening
-Status: approved, owner, 2026-10-03
+Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
 Then History lists a kept Impostor evening as a `history-game` row reading "Impostor · 7 rounds"
 When the host opens it
 Then it shows the players, the choices, and one `history-round` per completed round in order, reading exactly:
-"Round 3 · Samosa · Arjun caught, guessed right" / "Round 3 · Samosa · Arjun caught, wrong guess" /
-"Round 3 · Samosa · Arjun escaped"; the practice round reads "Practice · Samosa · Arjun escaped" (and so on); when
+"Round 3 · Samosa · Arjun caught" (no last-chance guess) / "Round 3 · Samosa · Arjun caught, guessed right" /
+"Round 3 · Samosa · Arjun caught, wrong guess" / "Round 3 · Samosa · Arjun escaped"; the practice round reads "Practice · Samosa · Arjun escaped" (and so on); when
 the round was scored, its `round-points` text follows on its own line ("+2 Arjun")
 And the fun lines of IMP-095 and, when scored, the final scoreboard
 And it can't be changed (PLT-008); it can be deleted (PLT-010) or cleared with all history (PLT-011)
@@ -1459,7 +1556,7 @@ And nothing is sent unless the host picks an app; it works with no internet (the
 ## IMP-107: "This word didn't work"
 Status: approved, owner, 2026-10-03
 Phase: Impostor 1
-When the host taps the quiet "This word didn't work" on a round's result block (practice included; the move itself
+When the host taps the quiet "This word didn't work" on a round's result screen (practice included; the move itself
 is legal from the round's `reveal` or `stillTie` until its `nextRound`, `dealAgain` or `endEvening`, with or without a
 verdict, so it survives an "Undo" of the verdict, IMP-037)
 Then that word is never dealt again on this phone (blocked; recorded as `wordDidntWork {blocked: true}`), and
@@ -1489,8 +1586,8 @@ phone; body text 21 px and small lines 19 px when on, Terms), the switch "Tap to
 small line (IMP-014), and "Skipped words (N)" when N ≥ 1 (IMP-107)
 And changing a setting mid-round takes effect when Settings closes ("Larger text") or on the next screen B (tap
 mode), and never shows a word on any other screen
-And closing Settings returns to the same screen with nothing else changed; opening the menu, Rules or Settings does
-not pause a running timer
+And closing Settings returns to the same screen with nothing else changed; opening the menu, "How to play" or Settings
+does not pause a running timer
 
 ---
 

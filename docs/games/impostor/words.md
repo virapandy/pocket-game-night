@@ -48,7 +48,7 @@ The host can switch categories off (for example no Films for grandparents).
 ## How big
 | Theme | Words at first release | Why |
 |---|---|---|
-| Multicultural | 309 in 9 categories (version 3, below) | The only theme at first; must not repeat across several evenings |
+| Multicultural | 291 in 9 categories (revised 4 October, below) | The only theme at first; must not repeat across several evenings |
 | Each regional theme (later) | about 160 (8 × 20) | Enough for 4–5 evenings of 8 rounds with no repeats |
 
 **No word repeats within an evening**, and recent evenings' words are avoided where possible (to decide, see

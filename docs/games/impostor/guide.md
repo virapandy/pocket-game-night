@@ -5,8 +5,8 @@ Exact screens, wording and rules for the build are in `scenarios.md`; where this
 ## Overview
 Everyone gets the same secret word, except one player: the **impostor**, who gets no word. Going round the
 circle, each player says **one word** linked to the secret word. Say too much and the impostor learns it; say
-too little and you look like the impostor. Then everyone votes on who the impostor is. A caught impostor gets
-one last chance: guess the word and steal the round.
+too little and you look like the impostor. Then everyone votes on who the impostor is, and the phone shows who it was and the word. Optionally (the
+"Last-chance guess" setting, off by default), a caught impostor gets one guess at the word to steal the round.
 
 - **Other names:** Imposter, Undercover (a variant), Who is the Spy; close cousins: The Chameleon, Spyfall.
 - **Players:** 3 to 20; best with 4 to 8 (one impostor gets too easy to hide in big groups). **Time:** about 4 minutes a round; an evening is 5 to 8 rounds.
@@ -25,8 +25,9 @@ app: one phone.** Nobody sits out, the word is fair and new every round, and the
 4. **Clues:** each player says one word linked to the secret word. No saying the word, no rhymes or "sounds like".
 5. **Discuss**: who sounded unsure? (Free flow until someone taps "Vote now", or a 2-minute timer.)
 6. **Vote:** on "3, 2, 1, point!" everyone points at once. The player with the most fingers on them is accused.
-7. **Reveal:** the phone shows whether they were the impostor.
-8. **Last guess:** a caught impostor says one guess aloud; then the phone shows the word. Right: they steal the round.
+7. **Reveal:** the phone shows, on one screen, whether they were the impostor, who the impostor was, and the word.
+8. **Last-chance guess (optional, off by default):** when it is on, a caught impostor says one guess aloud before
+   the word is shown; then the phone shows the word and the room judges. Right: they steal the round.
 9. Next round (with points, if you chose to keep score) with a new word, a new impostor and the next starter.
 
 ## Choices asked at the start (owner, 3 October; they start from the last-used values on this phone)
@@ -48,7 +49,7 @@ app: one phone.** Nobody sits out, the word is fair and new every round, and the
 | 6 | Discussion as chosen at the start (free flow or 2-minute timer) | | Owner |
 | 7 | Vote by pointing together on "3, 2, 1, point!"; the host enters who was accused | The Chameleon; most popular on BGG | |
 | 8 | Tie: one re-vote between the tied players; still tied, the impostor escapes | imposter.online; BGG house rules | |
-| 9 | A caught impostor gets one guess, said aloud, **before the word is shown** and without the clues being repeated; then the phone shows the word and the room judges (other names count) | imposter.online; BGG house rule | Room judges: ours |
+| 9 | Optional, off by default ("Last-chance guess" in More options): a caught impostor gets one guess, said aloud, **before the word is shown** and without the clues being repeated; then the phone shows the word and the room judges (other names count). When off, the word is shown with the result at once | imposter.online; BGG house rule | Room judges: ours |
 | 10 | Picking the impostor: random, but never the same player 3 rounds in a row | Players complain about streaks (BGG, app reviews) | Ours |
 | 11 | Non-veg food words are off unless the host turns them on | Veg/non-veg is a real divide at Indian tables (research) | Ours |
 
@@ -56,8 +57,9 @@ app: one phone.** Nobody sits out, the word is fair and new every round, and the
 | Outcome | Points |
 |---|---|
 | The impostor escapes | Impostor +2 |
-| Caught, but guesses the word | Impostor +1 |
-| Caught, guess wrong | Every crew member +1 |
+| Caught (last-chance guess off) | Every crew member +1 |
+| Caught, but guesses the word (last-chance guess on) | Impostor +1 |
+| Caught, guess wrong (last-chance guess on) | Every crew member +1 |
 
 No race to a target: the night's scoreboard just adds up, and the evening ends when the host ends it.
 (Sources: imposter.online +3/+2/+1 to 10; The Chameleon 2/1/2 to 5; BGG players warn that targets cause
@@ -91,7 +93,7 @@ the whole night.
 ## How Pocket Game Night plays it
 - **The phone does:** pick a fair word from the Multicultural list (`words.md`), pick the impostor, deal privately
   by passing the phone, choose the starter, run the timer, count down the vote, the reveal, and the scoreboard.
-- **The room does:** the clues, the arguing, the pointing, and judging the last guess.
+- **The room does:** the clues, the arguing, the pointing, and judging the last-chance guess when it is on.
 - **One phone is enough**; players' own phones are a later option (see `lifecycle.md`).
 
 ## Sources (opened 3 October 2026)
@@ -121,5 +123,5 @@ the whole night.
 | View | Each player sees only their own role during the deal; the host screen never shows the word or the impostor until the reveal |
 | Game over | A round ends at its score; the evening ends when the host ends it |
 | Invariants | Exactly the set number of impostors; every crew member has the same word; in Hard mode the impostor never starts; nobody is impostor 3 rounds running; no word repeats in an evening; points add up |
-| Undo | Undo only the last guess verdict ("Guessed right" / "Wrong guess"), before "Next round"; never a reveal (it is pick, then confirm); never the deal (redeal instead) (IMP-037) |
+| Undo | Undo only the last-chance guess verdict ("Guessed right" / "Wrong guess", when that setting is on), before "Next round"; never a reveal (it is pick, then confirm); never the deal (redeal instead) (IMP-037) |
 | Secrets | The word and impostor come from their own seed, separate from the starter |

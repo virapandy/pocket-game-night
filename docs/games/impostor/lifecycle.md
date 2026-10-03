@@ -61,19 +61,19 @@ game arrives; with two games, two cards are enough.
 The four choices are equal two-way switches (guideline 17a: a chosen option is outlined with ✓, never the main
 button look). They start from the last-used values on this phone (first ever: the defaults); "Change how we play" is
 in the menu between rounds.
-**Target:** 30 s for a group that played earlier tonight; under 90 s the first time (typing names). At most 4 taps
-from the Impostor card to the first deal (3 when the read-aloud card was already shown this session).
+**Target:** 30 s for a group that played earlier tonight; under 90 s the first time (typing names). 3 taps from the
+Impostor card to the first deal (card → "Next" → "Start round").
 **Late joiner:** menu → "Players" between rounds; they join from the next round, scoring from zero.
 **Someone leaves:** remove between rounds; their points stay on the scoreboard.
 
 ## Stage 3. Teach
 | Moment | What the app does |
 |---|---|
-| First Impostor evening of tonight's session | Before the deal, once per session, a **"Read this aloud"** card with four lines (exact text in IMP-070), main "Start the deal" and quiet "Practice round first" |
-| First round, newcomers present | Optional **practice round** ("Practice round first" on the card): played normally, with a "Practice" chip, no points, not counted (IMP-071) |
+| Before the first round, on request | **"How to play"** on the choices screen (and in the menu): the four read-aloud lines and the rules (IMP-070, IMP-072); it never opens by itself |
+| First round, newcomers present | Optional **practice round** ("Practice round first" in "How to play" opened from the choices screen): played normally, with a "Practice" chip, no points, not counted (IMP-071) |
 | During the deal | The hold screen says what to do, in five lines for every role (IMP-011): crew "Your secret · **Samosa** · Category: Food · Give one-word clues. Don't say it!"; impostor "Your secret · **You're the impostor** · Category: Food · Hint: Tea time · Listen, blend in, guess the word." |
-| During clues | "Rules" in the menu, never showing anyone's word |
-| After the reveal | The reveal lines say why: "The impostor was ARJUN. Escaped!" or "Caught red-handed! ARJUN was the impostor.", then "The word was Samosa." |
+| During clues | "How to play" in the menu, never showing anyone's word |
+| After the reveal | One result screen says why: "Caught! ARJUN was the impostor." or "Meena was crew." and "ARJUN was the impostor and escaped!", then "The word was Samosa." and its category |
 
 ## Stage 4. Play
 **The deal (pass the phone), one player at a time:**
@@ -105,9 +105,10 @@ from the Impostor card to the first deal (3 when the read-aloud card was already
 - The host taps who has most fingers: "Who got the most fingers?" with each name, plus "It's a tie" → tick the tied
   players → one re-vote → "Still a tie", the impostor escapes.
 
-**Reveal:** after "Reveal Arjun" (pick, then confirm), a 2.5-second build-up with no colour change, then "**Caught red-handed! ARJUN was
-the impostor.**" or "**Meena was crew!** The impostor was ARJUN. Escaped!" (then the word).
-**Last guess** (only if caught): "Last chance, Arjun! Guess the word out loud. Get it right and you steal the round." **before** the word is shown; then "Arjun guessed. Show the word",
+**Reveal:** after "Reveal Arjun" (pick, then confirm), a 1.5-second build-up with no colour change, then one result
+screen: "**Caught! ARJUN was the impostor.**" or "**Meena was crew.** ARJUN was the impostor and escaped!", with the
+word, its category and the outcome.
+**Last-chance guess** (optional, off by default; only if caught): "Last chance, Arjun! Guess the word out loud. Get it right and you steal the round." **before** the word is shown; then "Arjun guessed. Show the word",
 and the room decides: "Guessed right" / "Wrong guess".
 
 **Moments every game must handle**
@@ -171,4 +172,4 @@ Play 3 rounds with 5+ family members, one person as the dealer (sits out this on
   change (reduce motion respected).
 - Landscape and 320 px: the deal screens are one name and one button, so they fit anywhere; check the scoreboard
   with 10 players at 360 × 640.
-- Tone: a caught impostor gets a laugh ("Caught red-handed!"), never a put-down.
+- Tone: a caught impostor gets a laugh ("Caught! ARJUN was the impostor."), never a put-down.
