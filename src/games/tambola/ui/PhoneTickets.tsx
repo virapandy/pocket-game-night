@@ -523,7 +523,10 @@ export function PhoneTickets({
 
   // ---------- Quick mark (TAM-192) ----------
   if (screen.name === 'quick') {
-    const thumbCell = Math.max(8, Math.min(16, Math.floor((w - 32 - (tickets.length - 1) * 8) / (9 * tickets.length))));
+    // RC fix 3 (C1): every thumbnail also takes 6 px beyond its 9 cells (a 1 px border each side and 2 px padding
+    // each side), so count that too or three tickets wrap onto two rows at 360 px wide and push "Show claim" off.
+    const count = tickets.length;
+    const thumbCell = Math.max(8, Math.min(16, Math.floor((w - 32 - (count - 1) * 8 - count * 6) / (9 * count))));
     // A number marked on any ticket (on the pad or on the ticket) shows a fill and a ✓ on its key (owner 2026-10-01).
     const markedAnywhere = new Set(tickets.flatMap((t) => [...marksOn(game, t.number)]));
     return (
