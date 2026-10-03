@@ -71,7 +71,7 @@ function setup(config: ImpostorConfig, seeds: Readonly<Record<string, string>>):
     allowRepeats: false,
     startedThisCycle: [],
     recentImpostors: [],
-    undoVerdictAt: null,
+    undoVerdictSeq: null,
     totals: Object.fromEntries(config.players.map((p) => [p, 0])),
   };
 }
@@ -118,6 +118,7 @@ function deal(s: ImpostorState, practice: boolean): ImpostorState {
     stillTie: false,
     verdict: null,
     wordBlocked: false,
+    blockAdded: false,
     points: null,
   };
   return {
@@ -249,11 +250,11 @@ function apply(s: ImpostorState, move: ImpostorMove, ctx: MoveContext): Result {
     case 'verdict':
       if (step !== 'guess') return no('The verdict comes after the word is shown.');
       if (typeof move.right !== 'boolean') return no('The verdict is right or wrong.');
-      return ok({ ...complete(s, r!, true, move.right, { verdict: move.right }), undoVerdictAt: ctx.at });
+      return ok({ ...complete(s, r!, true, move.right, { verdict: move.right }), undoVerdictSeq: ctx.seq ?? null });
 
     case 'nextRound':
       if (step !== 'result') return no('The round has no result yet.');
-      return ok(deal({ ...s, undoVerdictAt: null }, false));
+      return ok(deal({ ...s, undoVerdictSeq: null }, false));
 
     case 'dealAgain':
       if (!r || step === null || !REDEAL_STEPS.includes(step)) return no('There is no round to deal again.');
@@ -268,8 +269,13 @@ function apply(s: ImpostorState, move: ImpostorMove, ctx: MoveContext): Result {
       if (!r || step === null || !AFTER_REVEAL.includes(step)) return no('"This word didn\'t work" comes after the reveal.');
       if (typeof move.blocked !== 'boolean') return no('Blocked must be yes or no.');
       if (move.blocked === r.wordBlocked) return no(move.blocked ? 'Already skipped.' : 'Not skipped.');
-      const blocked = move.blocked ? [...s.blocked, r.wordId] : s.blocked.filter((id) => id !== r.wordId);
-      return ok({ ...s, blocked, round: { ...r, wordBlocked: move.blocked } });
+      if (move.blocked) {
+        const add = !s.blocked.includes(r.wordId);
+        return ok({ ...s, blocked: add ? [...s.blocked, r.wordId] : s.blocked, round: { ...r, wordBlocked: true, blockAdded: add } });
+      }
+      // Undo of the toast: take back only what this round's tap added (never a word frozen as blocked).
+      const blocked = r.blockAdded ? s.blocked.filter((id) => id !== r.wordId) : s.blocked;
+      return ok({ ...s, blocked, round: { ...r, wordBlocked: false, blockAdded: false } });
     }
 
     case 'setPlayers': {
@@ -282,7 +288,7 @@ function apply(s: ImpostorState, move: ImpostorMove, ctx: MoveContext): Result {
         players,
         totals: totalsFor(s.totals, players),
         startedThisCycle: s.startedThisCycle.filter((p) => players.includes(p)),
-        undoVerdictAt: null,
+        undoVerdictSeq: null,
       });
     }
 
@@ -290,13 +296,13 @@ function apply(s: ImpostorState, move: ImpostorMove, ctx: MoveContext): Result {
       if (!betweenRounds) return no('Choices change only between rounds.');
       const problem = choicesProblem(move.choices);
       if (problem) return no(problem);
-      const next = { ...s, choices: copyChoices(move.choices), undoVerdictAt: null };
+      const next = { ...s, choices: copyChoices(move.choices), undoVerdictSeq: null };
       // IMP-052 "Change categories": the same round is dealt again under the new choices.
       return ok(s.phase === 'noWords' ? deal(next, s.pendingPractice) : next);
     }
 
     case 'endEvening':
-      return ok({ ...s, over: true, undoVerdictAt: null });
+      return ok({ ...s, over: true, undoVerdictSeq: null });
 
     default:
       return no('Unknown move.');
@@ -322,6 +328,7 @@ function view(s: ImpostorState, viewer: Viewer): ImpostorView {
 
 function invariants(s: ImpostorState): string[] {
   const problems: string[] = [];
+  if (!s.seeds.word || !s.seeds.starter) problems.push('The word seed or starter seed is missing.');
   const pp = playersProblem(s.players);
   if (pp) problems.push(`Players: ${pp}`);
   const r = s.round;
@@ -385,8 +392,8 @@ export const impostorRules: GameRules<ImpostorConfig, ImpostorState, ImpostorMov
       !state.over &&
       by === HOST &&
       record.move.type === 'verdict' &&
-      state.undoVerdictAt !== null &&
-      record.at === state.undoVerdictAt &&
+      state.undoVerdictSeq !== null &&
+      record.seq === state.undoVerdictSeq &&
       state.round?.verdict === record.move.right
     );
   },

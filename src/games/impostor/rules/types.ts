@@ -104,6 +104,8 @@ export interface Round {
   readonly verdict: boolean | null;
   /** "This word didn't work" is on for this round's word. */
   readonly wordBlocked: boolean;
+  /** Whether that tap added the word to the blocked set (false when it was already blocked, say from excludedWords). */
+  readonly blockAdded: boolean;
   /** This round's points, when it was scored. */
   readonly points: Readonly<Record<string, number>> | null;
 }
@@ -135,8 +137,8 @@ export interface ImpostorState {
   readonly startedThisCycle: readonly string[];
   /** The impostor of each completed round, oldest first. */
   readonly recentImpostors: readonly string[];
-  /** The `at` of the verdict that "Undo" may still take back (IMP-037), or null. */
-  readonly undoVerdictAt: number | null;
+  /** The record number (`seq`) of the verdict that "Undo" may still take back (IMP-037), or null. */
+  readonly undoVerdictSeq: number | null;
   /** Every player's total over the scored rounds, players who left included (IMP-042). */
   readonly totals: Readonly<Record<string, number>>;
 }
