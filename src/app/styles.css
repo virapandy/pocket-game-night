@@ -242,10 +242,8 @@ body { -webkit-tap-highlight-color: transparent; }
   .ticket-type-step .choice-card { min-height: 0; padding: 10px 40px 10px 14px; }
   .ticket-type-step .bottom-action { padding: 6px 0 max(8px, env(safe-area-inset-bottom)); }
   .ticket-type-step .bottom-action .button-big { min-height: 52px; }
-}
-/* The opening hint before the first call (UX list row 11): in landscape the side column is centred, and a
-   centred column taller than its space was cut off at the top; "safe" keeps its top in view. */
-@media (orientation: landscape) and (max-height: 600px) {
+  /* The opening hint before the first call (UX list row 11): the side column is centred, and a centred column
+     taller than its space was cut off at the top; "safe" keeps its top in view. */
   .stage-side:has(.first-hint) { justify-content: safe center; }
 }
 .visually-hidden {
