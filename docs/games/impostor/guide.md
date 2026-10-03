@@ -23,8 +23,8 @@ app: one phone.** Nobody sits out, the word is fair and new every round, and the
 4. **Clues:** each player says one word linked to the secret word. No saying the word, no rhymes or "sounds like".
 5. **Discuss**: who sounded unsure? (Free flow until someone taps "Vote now", or a 2-minute timer.)
 6. **Vote:** on "3, 2, 1, point!" everyone points at once. The player with the most fingers on them is accused.
-7. **Reveal:** the phone shows whether they were the impostor, and the word.
-8. **Last guess:** a caught impostor says one guess aloud. Right: they steal the round.
+7. **Reveal:** the phone shows whether they were the impostor.
+8. **Last guess:** a caught impostor says one guess aloud; then the phone shows the word. Right: they steal the round.
 9. Next round (with points, if you chose to keep score) with a new word, a new impostor and the next starter.
 
 ## Choices asked at the start (owner, 3 October; remembered for the evening)
@@ -38,7 +38,7 @@ app: one phone.** Nobody sits out, the word is fair and new every round, and the
 ## Rules
 | # | Rule | Convention | Ours? |
 |---|---|---|---|
-| 1 | One impostor for 3–7 players; from 8, the host may choose 2 (off by default) | imposter.online; two impostors split opinion on BGG | |
+| 1 | One impostor. (Two impostors for 8+ players come after the play-test) | imposter.online; two impostors split opinion on BGG | First release one only: ours, for simplicity |
 | 2 | What the impostor sees depends on the mode (above) | Category public in The Chameleon; hint optional in apps | Easy/Hard: owner |
 | 3 | One word per clue, one round of clues; a second round is offered for 3–5 players | imposter.online; BGG (fewer turns in big groups) | |
 | 4 | Not allowed: saying the word (the round restarts with a new word), rhymes, direct translations, filler like "thing". **Repeating a clue is allowed** (it just looks suspicious) | Spyfall publisher bans naming it; Gooseberry designer on repeats | Translations banned: ours |
@@ -46,7 +46,7 @@ app: one phone.** Nobody sits out, the word is fair and new every round, and the
 | 6 | Discussion as chosen at the start (free flow or 2-minute timer) | | Owner |
 | 7 | Vote by pointing together on "3, 2, 1, point!"; the host enters who was accused | The Chameleon; most popular on BGG | |
 | 8 | Tie: one re-vote between the tied players; still tied, the impostor escapes | imposter.online; BGG house rules | |
-| 9 | A caught impostor gets one guess, said aloud, **without the clues being repeated**; the room judges | imposter.online; BGG house rule | Room judges: ours |
+| 9 | A caught impostor gets one guess, said aloud, **before the word is shown** and without the clues being repeated; then the phone shows the word and the room judges (other names count) | imposter.online; BGG house rule | Room judges: ours |
 | 10 | Picking the impostor: random, but never the same player 3 rounds in a row | Players complain about streaks (BGG, app reviews) | Ours |
 | 11 | Non-veg food words are off unless the host turns them on | Veg/non-veg is a real divide at Indian tables (research) | Ours |
 
@@ -114,7 +114,7 @@ the whole night.
 | Question | Impostor's answer |
 |---|---|
 | Setup | Players in seat order, theme, categories, number of impostors, settings, seed |
-| Legal moves | Seen my word · don't know the word (redeal) · start clues · start/skip timer · record accused (one of the players) · re-vote · guess right / wrong · next round · end evening: a finite list |
+| Legal moves | Seen my word (done) · don't know the word (redeal) · talk it over / start timer · vote now · reveal a player · tie (pick tied players) · still a tie · show the word · guess right / wrong · next round · deal again · end evening: a finite list |
 | Apply | Pure: each move gives the next state |
 | View | Each player sees only their own role during the deal; the host screen never shows the word or the impostor until the reveal |
 | Game over | A round ends at its score; the evening ends when the host ends it |

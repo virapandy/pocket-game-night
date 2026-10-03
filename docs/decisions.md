@@ -161,4 +161,8 @@ Claude to follow game conventions. Every Tambola rule above is also a host setti
 | I13 | Words: **Whole family** (default) or "+ Grown-ups"; non-veg food off unless switched on | Owner confirmed 3 October; persona review; veg/non-veg divide |
 | I14 | Repeating someone's clue is allowed (it looks suspicious); saying the word restarts the round | Owner confirmed 3 October; convention (BGG, Spyfall publisher) |
 | I16 | **Add quirky, funny words** to the list (owner, 3 October); same fairness and persona checks | Owner |
+| I17 | Detailed UX decided with the UX designer (`docs/games/impostor/ux.md`, findings R1–R20): the word is shown only after the last guess; "Reveal Arjun" (pick, then confirm); letting go only hides, "Done, pass to…" moves on; same screen for every role; no long-press menus; nothing auto-advances | Product owner with the UX designer, 3 October |
+| I18 | Home stays as decided on 1 October; "Host a game" leads to "What shall we play?" (Tambola, Impostor) | Product owner (keeps the owner's Home decision) |
+| I19 | First release: one impostor only; two impostors for 8+ players after the play-test | Product owner (simplicity first; reversible) — owner may overrule |
+| I20 | New lasting UX guidelines 45–48 (private reveal on a passed phone, table screens, pick-then-reveal, no auto-advance at decision points) | Product owner with the UX designer |
 | I15 | Later, rarely: twist rounds (no impostor; everyone an impostor) | Players love them used sparingly (BGG) — later |

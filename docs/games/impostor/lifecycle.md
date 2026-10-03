@@ -1,7 +1,8 @@
 # Impostor: the whole evening, stage by stage (draft, 3 October 2026)
 
 Designed against the five stages in `docs/proposals/next-game-lifecycle.md`, before any build. Rules are in
-`guide.md`, words in `words.md`, open questions in `docs/decisions.md` ("Impostor" rows).
+`guide.md`, words in `words.md`, decisions in `docs/decisions.md` ("Impostor" rows). **Every screen in detail:
+`ux.md`** (decided with the UX designer; where this file and `ux.md` differ, `ux.md` wins).
 
 ## Who is involved
 | Role | Who | Note |
@@ -24,8 +25,8 @@ Designed against the five stages in `docs/proposals/next-game-lifecycle.md`, bef
 ## Stage 1. Decide: "what shall we play?"
 | Who | Sees | Does | Target |
 |---|---|---|---|
-| Host | Home: Tambola and Impostor cards, each with players and time: "Impostor · 3–20 players · 4 min a round · Find who doesn't know the word" | Taps Impostor | 5 s |
-| Guest with the link | Home with "Host a game" / "Join". Join on Impostor: "Impostor plays on the host's phone. Nothing to join: just play along!" | Puts the phone away | — |
+| Host | Home unchanged ("Host a game" / "Join with my ticket"); "Host a game" → "What shall we play?" with Tambola and Impostor cards | Taps Impostor | 5 s |
+| Guest with the link | "Join with my ticket" ends with "Playing Impostor? It's all on the host's phone. Nothing to join, just play along!" | Puts the phone away | — |
 
 Game picker (platform piece, two games now): a short filter by "How many of you?" comes later, when a third
 game arrives; with two games, two cards are enough.
@@ -39,7 +40,7 @@ game arrives; with two games, two cards are enough.
 │  2 Arjun       ≡  ✕          │   │ Score     [ No ✓ ][ Yes ]    │
 │  3 Meena       ≡  ✕          │   │ Words [Whole family✓][+Grown-ups]│
 │  [+ Add player]              │   │ Categories: all ›            │
-│  Same players as Tambola? ✓  │   │ Impostors: 1                 │
+│  Same players as Tambola? ✓  │   │                              │
 │                              │   │                              │
 │ [           Next           ] │   │ [        Start round       ] │
 └──────────────────────────────┘   └──────────────────────────────┘
@@ -52,7 +53,7 @@ game arrives; with two games, two cards are enough.
 | Score | **No** | Yes: the night's scoreboard |
 | Words | **Whole family** | "+ Grown-ups" adds words kids or elders may not know; non-veg food stays off unless switched on in Categories |
 | Categories | All 9 | Switch any off |
-| Impostors | 1; 2 offered from 8 players | |
+| Impostors | 1 (two after the play-test) | |
 
 The four choices are equal two-way switches (guideline 17a: a chosen option is outlined with ✓, never the main
 button look). They are asked once per evening and remembered; "Change how we play" is in the menu between rounds.
@@ -65,16 +66,16 @@ button look). They are asked once per evening and remembered; "Change how we pla
 |---|---|
 | First round of the evening | Before the deal, a **"Read this aloud"** card: "Everyone gets the same secret word, except one impostor who gets none. Say one word each about it. Then point at who you think the impostor is. Impostor: blend in, and guess the word if you're caught." One button: "Got it, deal". Skippable with "We know it". |
 | First round, newcomers present | Optional **practice round** (setting on the card): played normally, but no points |
-| During the deal | The reveal screen says what to do: crew "Your word: **Biryani** · Give one-word clues. Don't say it!"; impostor "**You are the impostor** · Category: Food · Listen, blend in, guess the word" |
+| During the deal | The reveal screen says what to do: crew "Your word: **Samosa** · Give one-word clues. Don't say it!"; impostor "**You are the impostor** · Category: Food · Listen, blend in, guess the word" |
 | During clues | "Rules" in the menu, never showing anyone's word |
-| After the reveal | One line on why: "Arjun was the impostor. The word was Biryani." |
+| After the reveal | One line on why: "Arjun was the impostor. The word was Samosa." |
 
 ## Stage 4. Play
 **The deal (pass the phone), one player at a time:**
 ```
 ┌───────────────────┐   ┌───────────────────┐   ┌───────────────────┐
-│ Pass the phone to │   │   Riya            │   │ Done? Let go and  │
-│                   │   │                   │   │ pass to           │
+│ Pass the phone to │   │   Riya            │   │ (after one hold)  │
+│                   │   │                   │   │ [Done, pass to    │
 │      RIYA         │ → │  Hold to see your │ → │                   │
 │                   │   │      word         │   │      ARJUN        │
 │ [ I'm Riya ]      │   │   (press & hold)  │   │ [ I'm Arjun ]     │
@@ -94,13 +95,14 @@ button look). They are asked once per evening and remembered; "Change how we pla
 
 **Vote:**
 - "Get ready to point… 3, 2, 1, **point!**" (voice and big numbers).
-- Someone said the word by mistake: menu "Someone said the word" → a new word, same players, no points.
+- Someone said the word by mistake: menu "Deal again with a new word", no points.
 - The host taps who has most fingers: "Who was accused?" with each name, plus "It's a tie" → pick the tied players
   → one re-vote → still tied, the impostor escapes.
 
-**Reveal:** a short drum-roll screen, then "**Arjun was the impostor!** The word was **Biryani**." or "**Meena was
-crew.** The impostor was Arjun. The word was Biryani."
-**Last guess** (only if caught): "Arjun, guess the word aloud. No repeating the clues!" The room decides: "Guessed right" / "Wrong".
+**Reveal:** after "Reveal Arjun" (pick, then confirm), a short calm build-up, then "**Caught red-handed! ARJUN was
+the impostor.**" or "**Meena was crew!** The impostor was ARJUN. Escaped!" (then the word).
+**Last guess** (only if caught): "Arjun, one guess. Say it out loud!" **before** the word is shown; then "Show the word",
+and the room decides: "Guessed right" / "Wrong guess".
 
 **Moments every game must handle**
 | Moment | Behaviour |
@@ -108,7 +110,7 @@ crew.** The impostor was Arjun. The word was Biryani."
 | Phone locks or a call comes during the deal | Resumes at "Pass the phone to <next>", never on a word |
 | App closed mid-round | Reopens at the same step; the word only reappears by "hold to see" for a chosen player |
 | Someone forgets their word | Menu: "See my word again" → "Pass the phone to…" pick a name → hold to see. Family trust, like Tambola's anchor |
-| Someone glimpsed another's screen | Menu: "Redeal this round" (new word, new impostor), no points |
+| Someone glimpsed another's screen | Menu: "Deal again with a new word" (new word, new impostor), no points |
 | Phone dies | Paper: one person sits out, writes slips; the guide's "How to play" works without the app |
 | Ending early | "End the evening" any time between rounds; mid-round, the round is dropped with no points |
 

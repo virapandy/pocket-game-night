@@ -36,6 +36,18 @@ complete test only before a release; up to 3 coders in parallel, each on its own
 - C1/C2 questions don't stop work (pick by the UX guidelines, note it); C3 questions go to the owner in one list.
 - Stuck after 3 rounds or half a day: tell the owner. One progress line at the top of `reports/latest.md` per step.
 
+### Queued: Impostor, the next game (product owner, 3 October): start only after the Tambola release
+Design done (owner-approved direction; scenarios await the owner's approval): `docs/games/impostor/` (guide,
+lifecycle, **ux.md** every screen, words.csv 309 words, scenarios.md IMP-001 to IMP-096 and later IMP-200+), decisions
+I1–I20, guidelines 45–48. When Tambola is released and the owner has approved the scenarios:
+1. Tester: copy `scenarios.md` into `specs/impostor/` (file per heading), status as approved by the owner; write tests
+   first for the C3 parts (rules, secrets and seeds, scoring, words list format, saved evenings: IMP-010–017,
+   020–021, 025, 031–037, 040–043, 050–054, 060–063, 090–096); C1/C2 screen tests alongside the build.
+2. Coder: the game slice `src/games/impostor/` on the existing contract (no engine change expected); the word list
+   from `docs/games/impostor/words.csv` into `content/impostor/` (like the rhymes); "What shall we play?" after
+   "Host a game". Lanes: A deal and privacy, B talk/vote/reveal/result, C setup, menu and end; C3 parts in one lane.
+3. Release as usual; then the paper or first-build play-test questions in `ux.md`.
+
 ### Status (2 October, product owner with the UX designer, on app 5c5030d)
 | Item | State |
 |---|---|

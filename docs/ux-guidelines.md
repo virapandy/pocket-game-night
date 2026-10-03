@@ -115,6 +115,18 @@ speed [8]. Our users:
 43. **Taps respond within 100 ms;** no constant animations on the host screen, which also saves battery [22].
 44. **Test with a throttled CPU and a real budget Android phone** [22].
 
+## 9. Secrets on a passed phone, and the table (Impostor review, 3 October 2026)
+45. **Private reveal on a passed phone.** The secret shows only while held (or tapped, with an auto-hide). When hidden
+    it is not in the page at all, and it hides when the app goes to the background (a blank cover for the app
+    switcher). Every role gets the same layout, timing, vibration and sound. The private text is sized for one reader
+    at arm's length, and shows above the finger. No text selection, callout, magnifier, context menu or drag.
+46. **Room screen on the table.** When the phone lies in the middle: main text at least 56 CSS px, timers at least
+    120 CSS px, countdown numbers at least 200 CSS px. Remember half the table reads it upside down **[Inference]**.
+47. **A reveal can't be undone, so it is pick, then confirm.** The deciding tap names the person ("Reveal Arjun").
+    Undo is only for what is still secret or still open.
+48. **Shared screens stop at decision points.** A countdown started by a tap is fine; a timer ending never starts the
+    next step by itself (extends 28).
+
 ## Decisions (owner, 2026-09-28)
 - **Auto-call mode:** off by default. When the host turns it on, they set the time between calls,
   can change it at any time, and can pause and resume with one tap (TAM-120).
