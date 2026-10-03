@@ -1,8 +1,11 @@
 # Impostor: the whole evening, stage by stage (draft, 3 October 2026)
 
+**Binding details are in scenarios.md; where this file differs, scenarios.md wins.**
+
 Designed against the five stages in `docs/proposals/next-game-lifecycle.md`, before any build. Rules are in
 `guide.md`, words in `words.md`, decisions in `docs/decisions.md` ("Impostor" rows). **Every screen in detail:
-`ux.md`** (decided with the UX designer; where this file and `ux.md` differ, `ux.md` wins).
+`ux.md`** (decided with the UX designer; where this file and `ux.md` differ, `ux.md` wins; `scenarios.md` wins
+over both).
 
 ## Who is involved
 | Role | Who | Note |
@@ -36,39 +39,41 @@ game arrives; with two games, two cards are enough.
 ┌──────────────────────────────┐   ┌──────────────────────────────┐
 │ ← Impostor                   │   │ ← How do you want to play?   │
 │ Who's playing?  (seat order) │   │ Mode      [ Easy ✓ ][ Hard ] │
-│  1 Riya        ≡  ✕          │   │ Talking   [Free flow✓][Timer]│
-│  2 Arjun       ≡  ✕          │   │ Score     [ No ✓ ][ Yes ]    │
-│  3 Meena       ≡  ✕          │   │ Words [Whole family✓][+Grown-ups]│
-│  [+ Add player]              │   │ Categories: all ›            │
-│  Same players as Tambola? ✓  │   │                              │
+│  1 Riya        ▲ ▼  ✕        │   │ Talking   [Free flow✓][Timer]│
+│  2 Arjun       ▲ ▼  ✕        │   │ Score     [ No ✓ ][ Yes ]    │
+│  3 Meena       ▲ ▼  ✕        │   │ Words [Whole family✓][+Grown-ups]│
+│  [Type a name…     ][ Add ]  │   │ Categories: all 9 ›          │
+│  Clear list                  │   │                              │
 │                              │   │                              │
 │ [           Next           ] │   │ [        Start round       ] │
 └──────────────────────────────┘   └──────────────────────────────┘
 ```
 | Choice | Default | Note |
 |---|---|---|
-| Players | Names from tonight's session if there is one, else empty | Seat order = passing order = clue order; drag to fix |
+| Players | Names from tonight's session if there is one, else empty | Seat order = passing order = clue order; ▲ ▼ to fix (no dragging) |
 | Mode | **Easy** | Hard: no category or hint, impostor never starts (`guide.md`) |
-| Talking | **Free flow** with "Vote now" | Timer: 2 minutes, gentle chime |
+| Talking | **Free flow** with "Vote now" | Timer: 2 minutes, then a chime |
 | Score | **No** | Yes: the night's scoreboard |
 | Words | **Whole family** | "+ Grown-ups" adds words kids or elders may not know; non-veg food stays off unless switched on in Categories |
 | Categories | All 9 | Switch any off |
 | Impostors | 1 (two after the play-test) | |
 
 The four choices are equal two-way switches (guideline 17a: a chosen option is outlined with ✓, never the main
-button look). They are asked once per evening and remembered; "Change how we play" is in the menu between rounds.
-**Target:** 30 s for a group that played earlier tonight; under 90 s the first time (typing names).
-**Late joiner:** "Add player" between rounds; they join from the next round, scoring from zero.
+button look). They start from the last-used values on this phone (first ever: the defaults); "Change how we play" is
+in the menu between rounds.
+**Target:** 30 s for a group that played earlier tonight; under 90 s the first time (typing names). At most 4 taps
+from the Impostor card to the first deal (3 when the read-aloud card was already shown this session).
+**Late joiner:** menu → "Players" between rounds; they join from the next round, scoring from zero.
 **Someone leaves:** remove between rounds; their points stay on the scoreboard.
 
 ## Stage 3. Teach
 | Moment | What the app does |
 |---|---|
-| First round of the evening | Before the deal, a **"Read this aloud"** card: "Everyone gets the same secret word, except one impostor who gets none. Say one word each about it. Then point at who you think the impostor is. Impostor: blend in, and guess the word if you're caught." One button: "Got it, deal". Skippable with "We know it". |
-| First round, newcomers present | Optional **practice round** (setting on the card): played normally, but no points |
-| During the deal | The reveal screen says what to do: crew "Your word: **Samosa** · Give one-word clues. Don't say it!"; impostor "**You are the impostor** · Category: Food · Listen, blend in, guess the word" |
+| First Impostor evening of tonight's session | Before the deal, once per session, a **"Read this aloud"** card with four lines (exact text in IMP-070), main "Start the deal" and quiet "Practice round first" |
+| First round, newcomers present | Optional **practice round** ("Practice round first" on the card): played normally, with a "Practice" chip, no points, not counted (IMP-071) |
+| During the deal | The hold screen says what to do, in five lines for every role (IMP-011): crew "Your secret · **Samosa** · Category: Food · Give one-word clues. Don't say it!"; impostor "Your secret · **You're the impostor** · Category: Food · Hint: Tea time · Listen, blend in, guess the word." |
 | During clues | "Rules" in the menu, never showing anyone's word |
-| After the reveal | One line on why: "Arjun was the impostor. The word was Samosa." |
+| After the reveal | The reveal lines say why: "The impostor was ARJUN. Escaped!" or "Caught red-handed! ARJUN was the impostor.", then "The word was Samosa." |
 
 ## Stage 4. Play
 **The deal (pass the phone), one player at a time:**
@@ -76,8 +81,8 @@ button look). They are asked once per evening and remembered; "Change how we pla
 ┌───────────────────┐   ┌───────────────────┐   ┌───────────────────┐
 │ Pass the phone to │   │   Riya            │   │ (after one hold)  │
 │                   │   │                   │   │ [Done, pass to    │
-│      RIYA         │ → │  Hold to see your │ → │                   │
-│                   │   │      word         │   │      ARJUN        │
+│      RIYA         │ → │ Hold here to see  │ → │                   │
+│                   │   │    your word      │   │      ARJUN        │
 │ [ I'm Riya ]      │   │   (press & hold)  │   │ [ I'm Arjun ]     │
 └───────────────────┘   └───────────────────┘   └───────────────────┘
 ```
@@ -86,20 +91,21 @@ button look). They are asked once per evening and remembered; "Change how we pla
   different colour, sound or animation before the reveal (apps leak roles this way, per reviews).
 - Later, with regional themes: a script switch for this player on the hold screen (`words.md` rule 4).
 - "Don't know this word?" under the word (crew and impostor alike) redeals quietly (`words.md`).
-- After the last player: "Everyone has seen their word. Put the phone in the middle."
+- After the last player: "✓ Everyone has seen their word." and "Phone in the middle, face up."
 
 **Clues and discussion (phone in the middle, face up):**
-- "**Meena starts**, then clockwise" with the seat order shown; never the impostor.
+- "**MEENA** starts", then clockwise, with the seat order shown; in Hard mode never the impostor (in Easy the impostor
+  may start); nobody starts twice until everyone has (IMP-021).
 - **Free flow:** the screen shows "Talk it over" and one main button, "**Vote now**".
-- **Timer:** a big 2-minute timer everyone can see, a gentle chime at the end; "Vote now" ends it early.
+- **Timer:** a 2-minute timer at 120 px, a chime at the end; "Vote now" ends it early.
 
 **Vote:**
-- "Get ready to point… 3, 2, 1, **point!**" (voice and big numbers).
+- "Get ready to point… 3, 2, 1, **Point!**" (numbers at 200 px; ticks; voice only if the phone voice is on).
 - Someone said the word by mistake: menu "Deal again with a new word", no points.
-- The host taps who has most fingers: "Who was accused?" with each name, plus "It's a tie" → pick the tied players
-  → one re-vote → still tied, the impostor escapes.
+- The host taps who has most fingers: "Who got the most fingers?" with each name, plus "It's a tie" → tick the tied
+  players → one re-vote → "Still a tie", the impostor escapes.
 
-**Reveal:** after "Reveal Arjun" (pick, then confirm), a short calm build-up, then "**Caught red-handed! ARJUN was
+**Reveal:** after "Reveal Arjun" (pick, then confirm), a 2.5-second build-up with no colour change, then "**Caught red-handed! ARJUN was
 the impostor.**" or "**Meena was crew!** The impostor was ARJUN. Escaped!" (then the word).
 **Last guess** (only if caught): "Arjun, one guess. Say it out loud!" **before** the word is shown; then "Show the word",
 and the room decides: "Guessed right" / "Wrong guess".
@@ -117,10 +123,10 @@ and the room decides: "Guessed right" / "Wrong guess".
 ## Stage 5. After the round, after the evening
 | Moment | What happens |
 |---|---|
-| Round result | The reveal; if keeping score, this round's points and the **night's scoreboard** (one row per player, sorted); if not, a running "Impostor caught 3 · escaped 2" for the night |
-| Next round | "Next round" (main): new word, never one used tonight; new impostor at random; the starter moves on one seat |
+| Round result | The reveal; if keeping score, this round's points and the **night's scoreboard** (one row per player, sorted); if not, a running "Tonight: impostor caught 3 · escaped 2" for the evening |
+| Next round | "Next round" (main): new word, never one used tonight; new impostor at random; the next starter is picked at random among those who haven't started this cycle (IMP-021) |
 | Who's impostor next | Random each round, but never the same player 3 rounds running (owner, I5); twice in a row can happen, so nobody can rule themselves out |
-| End the evening | Fun lines for the night ("Best impostor: Arjun, escaped 3 times"), and the final scoreboard if keeping score; "Play something else" back to Home |
+| End the evening | Fun lines for the night ("Best impostor: Arjun, escaped 3 times"), and the final scoreboard if keeping score; "Play something else" opens "What shall we play?"; "Back to Home" opens Home |
 | Words afterwards | The history shows each round's word and impostor (fun to look back on). Words used in the last 3 evenings are avoided when possible |
 | Play again tomorrow | A new evening; the player list is offered again |
 | Ended by mistake | "Oops, keep playing" on the summary; "Carry on this evening" in History within 3 hours (IMP-101) |
@@ -134,7 +140,7 @@ and the room decides: "Guessed right" / "Wrong guess".
 | Question | Answer |
 |---|---|
 | Ending early vs discarding | Ending keeps the scoreboard; discarding the evening throws its points away (asks first) |
-| Resuming hours later | Yes, between rounds; a half-played round restarts with a new deal (the word may have been forgotten or discussed) |
+| Resuming hours later | Within 3 hours of the round's last move, the same step; after more than 3 hours a half-played round restarts with a new deal (the word may have been forgotten or discussed); after more than 12 hours the evening ends by itself (IMP-091, IMP-104) |
 | Chaining | Each round chains into the next; the night's scoreboard carries across Impostor rounds, and into the session total with other games (later) |
 | What a finished evening keeps | Players, each round's word, impostor, accused, guess, points; the seed for replay |
 | Must never be lost | The scoreboard of a finished evening |
@@ -158,9 +164,11 @@ Play 3 rounds with 5+ family members, one person as the dealer (sits out this on
 
 ## UX notes (checked against `docs/ux-guidelines.md`)
 - One main button per screen (17a): "I'm Riya", "Start round", "Next round".
-- Hold-to-see must also work for people who can't hold (accessibility): a "Tap to show / Tap to hide" setting.
+- Hold-to-see must also work for people who can't hold (accessibility): the "Tap to show instead of hold" setting,
+  or "Tap instead" for one turn.
 - Screen readers: the word is read only while held, and never announced on the shared screen.
-- Nothing flashes during the reveal; the drum-roll is sound plus a calm animation (reduce motion respected).
+- Nothing flashes during the reveal; the build-up is the drumroll sound plus three dots appearing, with no colour
+  change (reduce motion respected).
 - Landscape and 320 px: the deal screens are one name and one button, so they fit anywhere; check the scoreboard
   with 10 players at 360 × 640.
 - Tone: a caught impostor gets a laugh ("Caught red-handed!"), never a put-down.

@@ -39,15 +39,16 @@ about 800 reviews the top complaints were paywalls, ads, and **the same words re
 mixed-region fairness, every word free and offline, no repeats.
 
 ## Categories
-Food · Festivals and occasions · Around the house · Travel and places · Films and music · Cricket and games ·
-School and childhood · Weddings and family · **Desi life** (funny everyday moments). All **family-friendly** by default; nothing about politics, religion
-as a joke, caste, or real people other than well-loved film and sports names. A "grown-ups" set can come later.
+Nine, named exactly as in `words.csv`: Food · Festivals and occasions · Around the house · Travel and places ·
+Films, music and TV · Cricket and games · School and childhood · Weddings and family · **Desi life** (funny everyday
+moments). Each word is marked **family** (dealt by default) or **grown-ups** (dealt with "+ Grown-ups"); nothing about
+politics, religion as a joke, caste, or real people other than well-loved film and sports names.
 The host can switch categories off (for example no Films for grandparents).
 
 ## How big
 | Theme | Words at first release | Why |
 |---|---|---|
-| Multicultural | about 240 (8 categories × 30) | The only theme at first; must not repeat across several evenings |
+| Multicultural | 309 in 9 categories (version 3, below) | The only theme at first; must not repeat across several evenings |
 | Each regional theme (later) | about 160 (8 × 20) | Enough for 4–5 evenings of 8 rounds with no repeats |
 
 **No word repeats within an evening**, and recent evenings' words are avoided where possible (to decide, see
@@ -66,7 +67,7 @@ vegetarian grandmother of 70 from Ahmedabad, and a 10-year-old in Pune. The chan
 | Hints that gave the word away ("Style" for Rajinikanth) or meant nothing (seasons differ across India) | about 40 | Rewritten; no month or season hints |
 | Words everyone suggested (Coconut, Umbrella, Rain, Banana leaf meal, Gas cylinder) | 20 | Added |
 
-**Result:** 241 words in 8 categories: **185 "whole family"**, 56 "grown-ups"; 2 non-veg (off by default).
+**Result of version 2 (superseded by version 3 below):** 241 words in 8 categories: **185 "whole family"**, 56 "grown-ups"; 2 non-veg (off by default).
 Films is the thinnest for families (11), because films split by age more than anything else.
 
 **Biggest lesson:** age divides a family table more than region does (56 words against 16).
@@ -86,13 +87,14 @@ owner approves. Simulated players are a first filter, not the last word. Before 
 North, the South and the East, plus a grandparent and a child, each strike anything they wouldn't know. (Later, each regional theme gets a reader who grew up there.)
 
 ## Behind the scenes (for the builders later)
-Each word is stored once with: the word, other names ("Payasam"), native-script spellings, its themes,
-its category, family-friendly yes/no, and a **close cousin** ("Idli ↔ Dosa"). The cousin isn't used now; it
+Each word is stored once with: the word, other names ("Payesh" for "Kheer / Payasam"), native-script spellings (later),
+its themes, its category, its audience (family or grown-ups), non-veg yes/no, an Easy-mode hint, and a **close cousin** ("Idli ↔ Dosa"). The cousin isn't used now; it
 lets us add the popular "Undercover" variant later (the impostor gets a similar word instead of none) without
-redoing the lists.
+redoing the lists. The first release ships `content/impostor/words.json` built from `words.csv` (fields and rules:
+`scenarios.md` IMP-054, IMP-055).
 
 ## First samples (flavour only, not the lists; regional rows are for later)
-| Theme | Food | Festivals and occasions | Around the house / life | Films and music |
+| Theme | Food | Festivals and occasions | Around the house / life | Films, music and TV |
 |---|---|---|---|---|
 | Multicultural | Biryani, Dosa, Samosa, Pani puri, Gulab jamun, Kheer / Payasam | Diwali, Holi, Onam, Christmas, Eid, Birthday party | Pressure cooker, Ceiling fan, Tiffin box, Auto-rickshaw, Board exam | Rajinikanth, Shah Rukh Khan, A. R. Rahman, Baahubali, Cinema interval |
 | Full Desi | Chhole bhature, Golgappe, Kachori, Kulhad chai | Karva Chauth, Raksha Bandhan, Baraat, Mehendi | Dhaba, Paan, Mela, Sasural | Sholay, DDLJ, Amitabh Bachchan, Antakshari |
