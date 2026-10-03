@@ -272,10 +272,18 @@ export function cueTickets(fills: readonly CueFill[]): number[] {
 }
 
 /**
- * The cue's one line (TAM-195, UX list row 1): every part, then "Shout if it's right!": "Ticket 1: Early Five and Top
- * Line filled. Shout if it's right!". The screen offers "More" (the parts as a list) only when the line doesn't fit.
+ * The cue's one line (TAM-195, UX list row 1). One ticket named: its prizes in prize order, "Ticket 1: Early Five and
+ * Top Line filled. Shout if it's right!" ("More" only if it doesn't fit). Several tickets: the approved short wording,
+ * "Tickets 1 and 3: patterns filled. Shout if it's right!", which fits one line even at 320 px, with "More" always
+ * there for each ticket's prizes. Only Early Five: "Early Five filled on tickets 1 and 2. Shout if it's right!".
  */
-export function cueLine(fills: readonly CueFill[]): string | null {
+export function cueLine(fills: readonly CueFill[]): { line: string; more: boolean } | null {
   if (fills.length === 0) return null;
-  return `${cueParts(fills).join('. ')}. Shout if it's right!`;
+  const parts = cueParts(fills);
+  const lines = fills.filter((f) => f.pattern !== 'early-five');
+  const tickets = cueTickets(fills);
+  if (lines.length === 0 || parts.length === 1) return { line: `${parts.join('. ')}. Shout if it's right!`, more: false };
+  if (tickets.length > 1) return { line: `${ticketList(tickets)}: patterns filled. Shout if it's right!`, more: true };
+  // One ticket with lines, and Early Five said apart on other tickets: name the ticket, the rest under "More".
+  return { line: `${parts[0]}. Shout if it's right!`, more: true };
 }

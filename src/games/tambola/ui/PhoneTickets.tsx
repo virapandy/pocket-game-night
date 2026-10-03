@@ -417,7 +417,7 @@ export function PhoneTickets({
 
   // TAM-195 (rows 1a and 1): one slim line, never over a ticket and never pushing the buttons off screen; "More" when
   // it doesn't fit.
-  const cueBox = cueSays && <CueLine line={cueSays} onMore={() => setPopup('cue')} />;
+  const cueBox = cueSays && <CueLine line={cueSays.line} always={cueSays.more} onMore={() => setPopup('cue')} />;
 
   // `outlined`: the claim screen (UX list row 13) outlines only the chosen prize's pattern, never the cue's.
   const ticketBox = (t: (typeof tickets)[number], cell: number, extra?: { outlined?: ReadonlySet<number>; noTap?: boolean }) => (
@@ -663,8 +663,8 @@ export function PhoneTickets({
   );
 }
 
-/** The cue's line (TAM-195, UX list row 1), with "More" only when the whole line doesn't fit. */
-function CueLine({ line, onMore }: { line: string; onMore: () => void }) {
+/** The cue's line (TAM-195, UX list row 1), with "More" when it names several tickets or the line doesn't fit. */
+function CueLine({ line, always, onMore }: { line: string; always: boolean; onMore: () => void }) {
   const text = useRef<HTMLSpanElement>(null);
   const [more, setMore] = useState(false);
   useLayoutEffect(() => {
@@ -682,7 +682,7 @@ function CueLine({ line, onMore }: { line: string; onMore: () => void }) {
       <span className="pattern-cue-text" ref={text}>
         {line}
       </span>
-      {more && (
+      {(always || more) && (
         <button type="button" className="pattern-cue-more" onClick={onMore}>
           More
         </button>
