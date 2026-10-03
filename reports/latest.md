@@ -1,10 +1,11 @@
 # Test report
-Progress (2026-10-03 13:05 local, tester): step 1 done (tests updated for lane A's 3 cue fixes, row 7 ask once / ask
-again, row 19 History wording; TAM-058 "paper" check tightened); step 2 done: quick verify 37104619193 on 882fb03
-GREEN (every Android browser test, 349 passed, 1 skipped); step 3 done: screenshot comparison set up
-(`screens.spec.ts`, 19 screens × 3 sizes = 57 reference pictures, Mac only so far), pushed. Next: the release
-candidate's complete run; the product owner / UX designer check the pictures. Rows built: 25 of 25; rows with all
-their tests green: 25 of 25.
+Progress (2026-10-03, tester, release prep for rc-2026-10-03, `docs/change-sop.md` "Added 3 October" item 2): the
+manual Screenshots run 37106167958 (success) made the Linux reference pictures; all 57 are now committed next to the
+Mac ones as **unapproved references** (19 screens × 3 sizes, names `<screen>-<size>-android-linux.png`, exactly what
+`screens.spec.ts` asks for on Linux). Earlier today: quick verify 37104619193 on 882fb03 GREEN. No browser tests run
+locally for this step. Next: the product owner / UX designer approve or flag each screen below ("Screenshots to
+approve"); then the release candidate's complete run compares against them. Rows built: 25 of 25; rows with all their
+tests green: 25 of 25.
 
 Commit tested: f6f154a (app; unchanged at 882fb03, the commit automation ran)   Date: 2026-10-03
 Automation run: quick verify 37104619193 on 882fb03: GREEN. Smoke set 16 passed; the push touched shared test set-up,
@@ -59,9 +60,45 @@ host-plays-on-paper (8); host-calling (11, 16, 25); host-room-view (25); host-re
 host-game-over-payouts (14, 22, 5); host-verdict-proof (24, 5); host-settings-in-game (18); history-clear-one (5, 19);
 player-tickets-cue (1, 2, 3); player-quick-mark (3); player-which-ticket (12); player-which-prize (17);
 player-claim-qr (13, 19); player-done-with-this-game (20); player-home-saved-tickets (21).
-- The references are the Mac's (`-android-darwin.png`); fonts differ on Linux, so the complete run will report these 24
-  tests as skipped with "no approved linux reference picture … yet" until Linux pictures exist (never a pass).
-- They are not yet approved: the product owner or UX designer checks them at release.
+- References exist for both machines: the Mac's (`-android-darwin.png`, 57) and, since today, Linux's
+  (`-android-linux.png`, 57, from Screenshots run 37106167958). The complete run uses the Linux ones, so these 24 tests
+  now compare instead of skipping.
+- Neither set is approved yet: the product owner or UX designer checks them at release (list below).
+
+## Screenshots to approve (rc-2026-10-03)
+Folder: `tests/browser/screens.spec.ts-snapshots/`. Each screen has 3 Linux pictures:
+`<screen>-360x640-android-linux.png`, `<screen>-390x844-android-linux.png`, `<screen>-812x375-android-linux.png`
+(the Mac set has the same names ending `-android-darwin.png`). Pink boxes are covers the test puts over QR codes and the
+counting-down Undo bar, not part of the app. Mark each Approve or Flag. "Looked at" is the tester's first look only;
+every problem noted is the same on the Mac pictures (it is the app's layout, not Linux), and Linux's wider font makes
+the 360 ones slightly worse.
+
+| Screen (file name start) | Rows | Tester's first look | Approve / Flag |
+|---|---|---|---|
+| host-ticket-type | 11, 1 | 360 and 812: the "New game" title and question are half hidden under the Cancel bar (page scrolled) | |
+| host-prizes | 9, 19 | 812: the prize list squeezed to a sliver, only the top edge of "Early Five" shows; 360: "+ Bottom Line" cut, "Remove" touches the box edge | |
+| host-hand-out | 10, 19, 25 | 812: the QR overlaps "Can't scan? Give a paper ticket" and the "Next ticket" button; 360: "Check it says Game Z9QB" clipped at the bottom, the typed code and "0 of 3 handed out" not visible | |
+| host-not-handed-out-question | 7 | Pop-up fine at 390; at 360 and 812 the QR cover lies on top of the pop-up and hides its words (test cover, see note) | |
+| host-plays-on-paper | 8 | Looks fine; known polish: "Repeat · Another rhyme" and empty "Last" before the first call | |
+| host-calling | 11, 16, 25 | 360: the big number's top is cut off under the header; otherwise fine | |
+| host-room-view | 25 | 812: "Last" overlaps the rhyme text, and the 24/74/8 tiles are cut at the bottom | |
+| host-record-a-win | 5 | 390 fine; 360: Back and Cancel partly under the Undo-bar cover (test cover); 812 fine | |
+| host-game-over-payouts | 14, 22, 5 | 812: payout list squeezed to a sliver ("Top Line" cut through); 360: Riya's "net: gets ₹20" cut, Home/Report buttons wrap | |
+| host-verdict-proof | 24, 5 | 360: the verdict card overlaps "Scan a claim" and the Early 5 / Top / House chips; 390 and 812 fine | |
+| host-settings-in-game | 18 | Looks fine (page continues below) | |
+| history-clear-one | 5, 19 | Looks fine | |
+| player-tickets-cue | 1, 2, 3 | Looks fine; row 1 question already open: in landscape the line is cut with "…" plus "More" | |
+| player-quick-mark | 3 | 360 and 390: the header (name, tickets, game, time) wraps into a tall thin column, pushing the grid down; at 360 rows 71–90 and "Show claim" are off screen | |
+| player-which-ticket | 12 | 812: the ticket previews are very small to read; otherwise fine | |
+| player-which-prize | 17 | Looks fine | |
+| player-claim-qr | 13, 19 | Looks fine (812: ticket and Done continue below) | |
+| player-done-with-this-game | 20 | Looks fine | |
+| player-home-saved-tickets | 21 | Looks fine; 360: "Menu" touches the right edge | |
+
+Note on the test covers (tester's own, for the owner): in `host-not-handed-out-question` (360, 812) and
+`host-record-a-win` (360) the cover over the QR or the Undo bar is drawn on top of the pop-up and hides some of its
+words, so those pictures cannot catch changes to those words. Tightening it (covering only what shows) changes the
+pictures, so it waits for the reviewers' verdict and a new Screenshots run.
 
 ## Quarantined
 SOP item 6 (standing owner approval): a test that fails and then passes with no change is set aside for at most 2 days,
