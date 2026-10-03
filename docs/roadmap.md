@@ -25,7 +25,7 @@ row). The owner has Android only, so iPhone is covered by automated checks, not 
 | 5 | **7 Feedback reports** | "Report a problem" with replays; ready to share beyond family | Phase 2 green | decide on connected mode |
 | 6 | **6 Connected mode** | Calls and claims over the internet | **only if** play-tests show it's wanted | |
 | 7 | **Simulations and extended testing** | Nothing visible: the generic simulated player (Jev), mass simulations, mutation testing, Android emulator runs, so bugs are caught before families see them | Tambola complete | |
-| — | **Impostor** (next game; owner, 3 October): design done in `docs/games/impostor/` (scenarios await approval) by the lifecycle process (`docs/proposals/next-game-lifecycle.md`); scenarios go to the tester only after the Tambola release. New games must replace a box, cards or a moderator (`docs/decisions.md`, 3 October); Mafia and a Codenames-style game are next candidates | | owner approves the design | design and paper play-test |
+| — | **Impostor** (next game; owner, 3 October): design done and scenarios approved (3 October) in `docs/games/impostor/` by the lifecycle process (`docs/proposals/next-game-lifecycle.md`); scenarios go to the tester only after the Tambola release. New games must replace a box, cards or a moderator (`docs/decisions.md`, 3 October); Mafia and a Codenames-style game are next candidates | | owner approves the design | design and paper play-test |
 
 Step 7 uses the Phase 2.5 scenarios for the simulated player (PLT-110 to PLT-113) and the testing
 layers from the architecture proposal; the rest of Phase 2.5 (shared blocks, the new-game template)

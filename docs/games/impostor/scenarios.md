@@ -1,7 +1,7 @@
 # Impostor: scenario drafts (product owner, 3 October 2026)
 
-Status: **IMP-001 to IMP-096 approved by the owner, 3 October 2026**; IMP-100 to IMP-108 (after the game) are
-drafts for a quick OK; IMP-200+ approved as direction, built later. After approval, the tester copies them into
+Status: **IMP-001 to IMP-096 approved by the owner, 3 October 2026**; IMP-100 to IMP-108 (after the game) approved the
+same day; IMP-200+ approved as direction, built later. After approval, the tester copies them into
 `specs/impostor/` (file names in each heading) and writes tests. **Hand-over only after the Tambola release**
 (`docs/roadmap.md`). Template: `specs/README.md`. Prefix `IMP-`; platform behaviour `PLT-`.
 
@@ -548,13 +548,13 @@ Then a saved evening has a format version, and older formats always still open (
 ## 11-after-the-game.md (shared rules: `specs/platform/01-lifecycle.md`, PLT-001 to PLT-029)
 
 ## IMP-100: After the round, the phone can rest
-Status: draft (after-the-game additions, 3 October)
+Status: approved, owner, 2026-10-03
 Phase: Impostor 1
 When the round result shows
 Then the screen may sleep again (keep-awake ends, IMP-087), and nothing still secret is on screen
 
 ## IMP-101: Ended by mistake
-Status: draft (after-the-game additions, 3 October)
+Status: approved, owner, 2026-10-03
 Phase: Impostor 1
 When the host ends the evening
 Then the summary has a quiet "Oops, keep playing" until the host leaves the summary; it reopens the evening between
@@ -562,7 +562,7 @@ rounds with nothing lost
 And within 3 hours of ending, History offers "Carry on this evening" on that evening
 
 ## IMP-102: Something else tonight, with the same people
-Status: draft (after-the-game additions, 3 October)
+Status: approved, owner, 2026-10-03
 Phase: Impostor 1
 When the host taps the quiet "Play something else" on the summary
 Then "What shall we play?" opens, and the next game's players arrive filled in (IMP-004, PLT-024)
@@ -570,14 +570,14 @@ And the Impostor evening belongs to tonight's session (PLT-016) and stays out of
 session screen lists it as "Impostor · 7 rounds"
 
 ## IMP-103: Play again another day
-Status: draft (after-the-game additions, 3 October)
+Status: approved, owner, 2026-10-03
 Phase: Impostor 1
 When the host taps "Play again" on a past evening in History (PLT-009)
 Then a new evening starts with the same players and choices, as a new evening in today's session
 And words from the last 3 evenings are avoided (IMP-052)
 
 ## IMP-104: An evening left open ends by itself
-Status: draft (after-the-game additions, 3 October)
+Status: approved, owner, 2026-10-03
 Phase: Impostor 1
 Given an evening was left without ending it
 When the app is opened more than 12 hours after its last round
@@ -585,7 +585,7 @@ Then the evening is kept in History as ended, with the rounds that were finished
 And "What shall we play?" shows no resume card for it
 
 ## IMP-105: Looking back at an evening
-Status: draft (after-the-game additions, 3 October)
+Status: approved, owner, 2026-10-03
 Phase: Impostor 1
 When the host opens a past evening in History
 Then it shows the players, the choices, and for each round: the word, the impostor, caught or escaped, the guess
@@ -593,7 +593,7 @@ result, and points if kept; the fun lines; practice rounds marked "Practice"
 And it can't be changed (PLT-008); it can be deleted (PLT-010) or cleared with all history (PLT-011)
 
 ## IMP-106: Share the night
-Status: draft (after-the-game additions, 3 October)
+Status: approved, owner, 2026-10-03
 Phase: Impostor 1
 When the host taps the quiet "Share" on the summary
 Then the phone's own share sheet opens with a short plain-text recap, for example:
@@ -603,7 +603,7 @@ in that app)
 And the recap has only first names and words, never anything else from the phone
 
 ## IMP-107: "This word didn't work"
-Status: draft (after-the-game additions, 3 October)
+Status: approved, owner, 2026-10-03
 Phase: Impostor 1
 When the host taps the quiet "This word didn't work" on a round result
 Then that word is never dealt again on this phone, with "Samosa won't come up again · Undo"
@@ -611,7 +611,7 @@ And Settings lists "Skipped words (3)" with "Bring back" for each
 And a problem report (PLT-200) may include the skipped words, so the list can be improved for everyone
 
 ## IMP-108: Nothing about the evening leaves the phone by itself
-Status: draft (after-the-game additions, 3 October)
+Status: approved, owner, 2026-10-03
 Phase: Impostor 1
 Then an evening's players, words and results stay on this phone (PLT-013) and leave it only through "Share"
 (IMP-106) or a problem report the host chooses to send (PLT-200)
