@@ -15,7 +15,7 @@ Without the app: someone who sits out to write words on slips, plus a word list,
 app: one phone.** Nobody sits out, the word is fair and new every round, and the score is kept.
 
 ## How to play
-1. Pick a word theme and categories. The phone picks a secret word and, at random, the impostor.
+1. Pick categories (the words are Multicultural: fair to players from anywhere in India). The phone picks a secret word and, at random, the impostor.
 2. **Pass the phone round.** Each player sees the screen "Pass to Riya", takes the phone, holds to see their
    word (or "You are the impostor"), lets go, and passes it on.
 3. The phone names who starts (never the impostor), then play goes clockwise.
@@ -61,12 +61,12 @@ ends when the host ends it.
 ## What we do differently from other Impostor apps
 Research of the leading apps and about 800 reviews (3 October 2026): the complaints are paywalls, ads, repeated
 words, roles leaking while the phone is passed, an impostor picked suspiciously often, and no Indian content.
-Ours: India-centric word themes with a fair Multicultural default, each player's own script, every word free and
+Ours: India-centric words that are fair to a mixed-region group (regional themes later), every word free and
 offline, no repeats in an evening, a private deal where the impostor's turn looks identical, and the scores of
 the whole night.
 
 ## How Pocket Game Night plays it
-- **The phone does:** pick a fair word from India-centric themes (`words.md`), pick the impostor, deal privately
+- **The phone does:** pick a fair word from the Multicultural list (`words.md`), pick the impostor, deal privately
   by passing the phone, choose the starter, run the timer, count down the vote, the reveal, and the scoreboard.
 - **The room does:** the clues, the arguing, the pointing, and judging the last guess.
 - **One phone is enough**; players' own phones are a later option (see `lifecycle.md`).

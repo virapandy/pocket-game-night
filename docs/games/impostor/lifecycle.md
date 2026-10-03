@@ -50,10 +50,10 @@ game arrives; with two games, two cards are enough.
 | Choice | Default | Note |
 |---|---|---|
 | Players | Names from tonight's session if there is one, else empty | Seat order = passing order = clue order; drag to fix |
-| Word theme | **Multicultural** | Full Desi, Tamil, Telugu, Malayalam |
+| Word theme | **Multicultural** (the only one at first) | Regional themes later |
 | Categories | All 8 | Switch any off |
 | Impostors | 1; 2 offered from 8 players | |
-| Settings (menu) | Discussion 60 s; one clue round; kids' rule off; script: English letters | |
+| Settings (menu) | Discussion 60 s; one clue round; kids' rule off | |
 
 **Target:** 30 s for a group that played earlier tonight; under 90 s the first time (typing names).
 **Late joiner:** "Add player" between rounds; they join from the next round, scoring from zero.
@@ -82,7 +82,7 @@ game arrives; with two games, two cards are enough.
 - The word shows **only while held**; letting go hides it. No screen ever shows the previous player's word.
 - **The impostor's turn looks and feels exactly like everyone's:** same screens, same taps, same length, no
   different colour, sound or animation before the reveal (apps leak roles this way, per reviews).
-- **Script, for this player:** a small "অ आ அ" switch on the hold screen picks their script (`words.md` rule 4).
+- Later, with regional themes: a script switch for this player on the hold screen (`words.md` rule 4).
 - "Don't know this word?" under the word (crew and impostor alike) redeals quietly (`words.md`).
 - After the last player: "Everyone has seen their word. Put the phone in the middle."
 

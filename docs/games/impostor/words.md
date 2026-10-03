@@ -1,18 +1,18 @@
 # Impostor: word themes (draft, 3 October 2026)
 
-Owner's brief: words are **India-centric**, with seven themes (Kannada and Bengali added by the owner, 3 October). **Multicultural is the default**: picture
-friends who grew up in Chennai, Delhi, Lucknow and Calicut playing together.
+Owner's brief: words are **India-centric**. **The first release has one theme, Multicultural** (owner, 3 October):
+picture friends who grew up in Chennai, Delhi, Lucknow and Calicut playing together. Six regional themes come later.
 
-## The seven themes
-| Theme | For | What's in it | How words are shown |
-|---|---|---|---|
-| **Multicultural** (default) | Mixed groups from anywhere in India | Common ground: things anyone who grew up in India knows, wherever they grew up | English letters |
-| **Full Desi** | Hindi-speaking groups | Bollywood, North Indian food, festivals, weddings, everyday Hindi-belt life | English letters; Devanagari as an option |
-| **Tamil** | Tamil groups | Kollywood, Tamil food, festivals, places, everyday life | English letters; Tamil script as an option |
-| **Telugu** | Telugu groups | Tollywood, Andhra and Telangana food, festivals, places | English letters; Telugu script as an option |
-| **Malayalam** | Malayali groups | Mollywood, Kerala food, festivals, places | English letters; Malayalam script as an option |
-| **Kannada** | Kannada groups | Sandalwood, Karnataka food, festivals, places | English letters; Kannada script as an option |
-| **Bengali** | Bengali groups | Bengali cinema and music, Bengali food, Durga Puja and festivals, places | English letters; Bengali script as an option |
+## Themes
+| Theme | When | For | What's in it | How words are shown |
+|---|---|---|---|---|
+| **Multicultural** | **First release** | Mixed groups from anywhere in India | Common ground: things anyone who grew up in India knows, wherever they grew up | English letters |
+| **Full Desi** | Later | Hindi-speaking groups | Bollywood, North Indian food, festivals, weddings, everyday Hindi-belt life | English letters; Devanagari as an option |
+| **Tamil** | Later | Tamil groups | Kollywood, Tamil food, festivals, places, everyday life | English letters; Tamil script as an option |
+| **Telugu** | Later | Telugu groups | Tollywood, Andhra and Telangana food, festivals, places | English letters; Telugu script as an option |
+| **Malayalam** | Later | Malayali groups | Mollywood, Kerala food, festivals, places | English letters; Malayalam script as an option |
+| **Kannada** | Later | Kannada groups | Sandalwood, Karnataka food, festivals, places | English letters; Kannada script as an option |
+| **Bengali** | Later | Bengali groups | Bengali cinema and music, Bengali food, Durga Puja and festivals, places | English letters; Bengali script as an option |
 
 ## The fairness rule for Multicultural
 Impostor only works if **every crew member knows the word**. If the Calicut player doesn't know "Chhath",
@@ -23,7 +23,7 @@ they look like the impostor and the round is spoiled. So:
    separate harvest card only if each name is known; otherwise the thing is left out.
 3. **Never stars of one industry only.** A film person goes in only if known nationally (Rajinikanth, Shah Rukh
    Khan, A. R. Rahman), never a regional favourite the rest won't know.
-4. **Each player picks their own script on their own reveal screen.** The Chennai player can read
+4. **Later, with the regional themes: each player picks their own script on their own reveal screen.** The Chennai player can read
    "பிரியாணி", the Delhi player "बिरयानी", the Calicut player "ബിരിയാണി", the Bengaluru player "ಬಿರಿಯಾನಿ", the Kolkata player
    "বিরিয়ানি", the rest "Biryani": same word, one game.
    English letters is the default; a player's choice is remembered for the evening.
@@ -47,17 +47,16 @@ The host can switch categories off (for example no Films for grandparents).
 ## How big
 | Theme | Words at first release | Why |
 |---|---|---|
-| Multicultural | about 240 (8 categories × 30) | Default; must not repeat across several evenings |
-| Each regional theme (6) | about 160 (8 × 20) | Enough for 4–5 evenings of 8 rounds with no repeats |
+| Multicultural | about 240 (8 categories × 30) | The only theme at first; must not repeat across several evenings |
+| Each regional theme (later) | about 160 (8 × 20) | Enough for 4–5 evenings of 8 rounds with no repeats |
 
 **No word repeats within an evening**, and recent evenings' words are avoided where possible (to decide, see
 `decisions.md`).
 
 ## Who checks the words
 Like the Tambola rhymes (`docs/games/tambola/rhymes.csv`), the product owner drafts each list as a sheet; the
-owner approves. **For each regional theme, someone who grew up there reads the list** and strikes anything
-wrong, niche or awkward. For Multicultural, readers from the North, the South and the East each strike
-anything they wouldn't know.
+owner approves. For Multicultural, readers who grew up in the North, the South and the East each strike anything they
+wouldn't know. (Later, each regional theme gets a reader who grew up there.)
 
 ## Behind the scenes (for the builders later)
 Each word is stored once with: the word, other names ("Payasam"), native-script spellings, its themes,
@@ -65,7 +64,7 @@ its category, family-friendly yes/no, and a **close cousin** ("Idli ↔ Dosa"). 
 lets us add the popular "Undercover" variant later (the impostor gets a similar word instead of none) without
 redoing the lists.
 
-## First samples (flavour only, not the lists)
+## First samples (flavour only, not the lists; regional rows are for later)
 | Theme | Food | Festivals and occasions | Around the house / life | Films and music |
 |---|---|---|---|---|
 | Multicultural | Biryani, Dosa, Samosa, Pani puri, Gulab jamun, Kheer / Payasam | Diwali, Holi, Onam, Christmas, Eid, Birthday party | Pressure cooker, Ceiling fan, Tiffin box, Auto-rickshaw, Board exam | Rajinikanth, Shah Rukh Khan, A. R. Rahman, Baahubali, Cinema interval |
