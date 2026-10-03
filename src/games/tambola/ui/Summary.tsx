@@ -72,7 +72,10 @@ export function Summary({ view }: { view: TambolaView }) {
                 <span className="payout-name">{p.name}</span>
                 <span className="payout-figures">
                   paid {rupees(p.paid)} · won {rupees(p.won)}
-                  {p.handedBack > 0 ? ` · handed back ${rupees(p.handedBack)}` : ''} ·{' '}
+                  {p.handedBack > 0 ? ` · handed back ${rupees(p.handedBack)}` : ''}
+                  {/* The "·" before the net stays on the line before it (non-breaking space), never starting a line;
+                      on a narrow phone, where the net has its own line, it is hidden (RC fix 2, C1). */}
+                  <span className="payout-sep">{'\u00a0·'}</span>{' '}
                   <span className="payout-net">
                     net: <strong>{netWords(p.net)}</strong>
                   </span>
