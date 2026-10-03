@@ -118,7 +118,7 @@ export function PhoneTickets({
   const [layout, setLayout] = useState<Layout>(() => (prefs.get<string>(LAYOUT_KEY, 'all') === 'one' ? 'one' : 'all'));
   const [selected, setSelected] = useState<number | null>(null);
   const [large, setLarge] = useState(() => prefs.get<boolean>(LARGE_TEXT_KEY, false) === true);
-  const [popup, setPopup] = useState<'menu' | 'prizes' | 'cue' | null>(null);
+  const [popup, setPopup] = useState<'menu' | 'prizes' | 'cue' | 'clear' | null>(null);
   const [linkError, setLinkError] = useState<string | null>(null);
   /** TAM-214: a 4th ticket was refused ("This phone already holds 3 tickets"). */
   const [notice, setNotice] = useState<string | null>(null);
@@ -184,6 +184,13 @@ export function PhoneTickets({
   };
   const leave = () => {
     prefs.set(AWAY_KEY, true);
+    onHome();
+  };
+  // TAM-215 (UX list row 20): "Clear tickets" clears this phone's tickets, held ones too, and goes Home.
+  const clearAll = () => {
+    savePhoneGame(prefs, null);
+    prefs.set(AWAY_KEY, false);
+    setGame(null);
     onHome();
   };
   const openTickets = () => {
@@ -406,12 +413,18 @@ export function PhoneTickets({
             <button type="button" role="menuitem" className="menu-item" onClick={leave}>
               Home
             </button>
+            {/* TAM-215 (UX list row 20): the last item, after a divider. */}
+            <div role="separator" className="menu-divider" />
+            <button type="button" role="menuitem" className="menu-item" onClick={() => setPopup('clear')}>
+              Done with this game…
+            </button>
           </div>
           <button type="button" className="menu-item menu-close" onClick={() => setPopup(null)}>
             Close
           </button>
         </Popup>
       )}
+      {popup === 'clear' && <ClearTickets game={game} onKeep={() => setPopup(null)} onClear={clearAll} />}
     </>
   );
 
@@ -689,6 +702,54 @@ function CueLine({ line, always, onMore }: { line: string; always: boolean; onMo
       )}
     </div>
   );
+}
+
+/**
+ * TAM-215 (UX list row 20): "Clear your tickets from this phone?", naming each ticket, held ones by their holder
+ * ("Tickets 1 · 2 and Grandma's ticket 3 · Game 7K3P"). "Keep my tickets" is the main button; "Clear tickets" is
+ * outlined: a confirmation, as it can't be undone. Also asked by "Clear" on Home (PLT-300).
+ */
+export function ClearTickets({ game, onKeep, onClear }: { game: PhoneGameFacts; onKeep: () => void; onClear: () => void }) {
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onKeep();
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [onKeep]);
+  return (
+    <div className="backdrop" onClick={(e) => e.target === e.currentTarget && onKeep()}>
+      <div className="dialog" role="dialog" aria-modal="true" aria-labelledby="clear-tickets-title" data-testid="clear-tickets">
+        <h2 className="section-title" id="clear-tickets-title">
+          Clear your tickets from this phone?
+        </h2>
+        <p className="lead">{ticketsNamed(game)}</p>
+        <p className="note">Your marks go too. Do this when the host says the game is over.</p>
+        <div className="row">
+          <button type="button" className="button button-quiet" onClick={onClear}>
+            Clear tickets
+          </button>
+          <button type="button" className="button" onClick={onKeep}>
+            Keep my tickets
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** "Tickets 1 · 2 and Grandma's ticket 3 · Game 7K3P": this phone's own tickets, then each holder's (TAM-214). */
+function ticketsNamed(game: PhoneGameFacts): string {
+  const groups = new Map<string | null, number[]>();
+  for (const t of game.tickets) {
+    const who = holderOf(game, t);
+    const key = who === null || who === game.name ? null : who;
+    groups.set(key, [...(groups.get(key) ?? []), t.number]);
+  }
+  const list = (word: string, numbers: readonly number[]) => `${numbers.length === 1 ? word : `${word}s`} ${numbers.join(' · ')}`;
+  const parts: string[] = [];
+  const own = groups.get(null);
+  if (own) parts.push(list('Ticket', own));
+  for (const [who, numbers] of groups) if (who !== null) parts.push(`${who}'s ${list('ticket', numbers)}`);
+  return `${parts.join(' and ')} · Game ${game.game}.`;
 }
 
 function Popup({ label, children, onClose }: { label: string; children: ReactNode; onClose: () => void }) {
