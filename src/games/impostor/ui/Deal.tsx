@@ -4,7 +4,7 @@ import { useEffect, useLayoutEffect, useRef, useState, type PointerEvent as Poin
 import { flushSync } from 'react-dom';
 import type { ImpostorWord } from '../rules';
 import { buzz } from './device';
-import { Caps, MainButton, QuietButton } from './parts';
+import { Caps, MainButton } from './parts';
 
 /** What one player may see: the round's word for the crew; for the impostor only what their mode allows. */
 export type Secret = { readonly role: 'crew' | 'impostor'; readonly word: ImpostorWord; readonly mode: 'easy' | 'hard' };
@@ -22,8 +22,11 @@ export function blockLines(s: Secret): [string, string, string, string, string] 
     : ['Your secret', "You're the impostor", 'Listen and blend in.', 'Guess the word if caught.', ''];
 }
 
-/** IMP-073: a room name at its full size, shrunk only when it would not fit on one line, to the floor (then it wraps). */
-export function useFitText(ref: RefObject<HTMLElement | null>, full: number, floor: number, key: unknown) {
+/**
+ * IMP-073: a room name at its full size, shrunk only when it would not fit on one line, to the floor (then it wraps).
+ * With `wrap` false (screen B's name, which never wraps) a name still too wide at the floor shrinks just enough to fit.
+ */
+export function useFitText(ref: RefObject<HTMLElement | null>, full: number, floor: number, key: unknown, wrap = true) {
   useLayoutEffect(() => {
     const el = ref.current;
     if (!el) return;
@@ -32,8 +35,10 @@ export function useFitText(ref: RefObject<HTMLElement | null>, full: number, flo
     const now = Math.min(full, parseFloat(getComputedStyle(el).fontSize) || full);
     const size = Math.max(floor, Math.floor((now * el.clientWidth) / el.scrollWidth));
     el.style.fontSize = `${size}px`;
-    if (size === floor) el.style.whiteSpace = 'normal';
-  }, [ref, full, floor, key]);
+    if (size !== floor) return;
+    if (wrap) el.style.whiteSpace = 'normal';
+    else if (el.scrollWidth > el.clientWidth + 0.5) el.style.fontSize = `${Math.floor((size * el.clientWidth) / el.scrollWidth)}px`;
+  }, [ref, full, floor, key, wrap]);
 }
 
 const HOLD_MS = 500;
@@ -209,13 +214,26 @@ function ScreenB({
     if (tapTimer.current) clearTimeout(tapTimer.current);
   }, []);
 
-  // IMP-081: a long name shrinks to one line (floor 20 px, then it wraps), leaving room for the block.
+  // IMP-073: screen B's name is 48 px, shrunk to one line (floor 32 px; 20 px on 320 × 568 and 360 × 640), never wrapping.
   const nameRef = useRef<HTMLHeadingElement>(null);
-  useFitText(nameRef, 28, 20, name);
+  const [nameFloor] = useState(() => (window.innerHeight <= 640 && window.innerHeight > window.innerWidth ? 20 : 32));
+  useFitText(nameRef, 48, nameFloor, name, false);
+
+  // IMP-010: when the block would be taller than its layer, lines 3 to 5 shrink to 15 px, then the word to 30 px.
+  const layerRef = useRef<HTMLDivElement>(null);
+  const blockRef = useRef<HTMLDivElement>(null);
+  const [fit, setFit] = useState(0);
+  useLayoutEffect(() => {
+    if (!shown || fit >= 2) return;
+    const layer = layerRef.current;
+    const block = blockRef.current;
+    if (layer && block && block.getBoundingClientRect().bottom > layer.getBoundingClientRect().bottom + 0.5) setFit(fit + 1);
+  }, [shown, fit]);
 
   const lines = blockLines(secret);
   const long = secret.role === 'crew' && secret.word.word.length > 20;
-  const padText = tapMode ? (shown ? 'Tap to hide' : 'Tap to see your word') : 'Hold here to see your word';
+  const padText = tapMode ? (shown ? 'Tap to hide' : 'Tap to see your word') : shown ? 'Let go to hide' : 'Hold here to see your word';
+  const canDontKnow = ready && !seeAgain && !!onDontKnow;
 
   const holdHandlers = {
     onPointerDown: (e: PointerEv<HTMLButtonElement>) => {
@@ -248,56 +266,67 @@ function ScreenB({
     },
   };
 
+  const blockClass = ['imp-block', long ? 'imp-block-long' : '', fit >= 1 ? 'imp-block-tight' : '', fit >= 2 ? 'imp-block-tighter' : '']
+    .filter(Boolean)
+    .join(' ');
+
+  // Guideline 45a: everything on screen B has its place from the start, so nothing moves after the first hold.
+  // The pad and "Tap instead" sit at fixed places above the main button's reserved space; "Don't know this word?"
+  // and the main button keep their space, hidden, until the first hold.
   return (
     <>
-      <DealProgress progress={progress} />
-      <h1 ref={nameRef} className="imp-turn-name imp-caps">
-        {name}
-      </h1>
-      <section className="imp-hold">
-        <div className="imp-block-area">
-          {shown && (
-            <div
-              className={`imp-block${long ? ' imp-block-long' : ''}`}
-              data-testid="private-block"
-              draggable={false}
-              onContextMenu={stop}
-              onDragStart={stop}
-            >
-              <p className="imp-small" draggable={false}>
-                {lines[0]}
-              </p>
-              <p className="imp-private-word" data-testid="private-word" draggable={false}>
-                {lines[1]}
-              </p>
-              <p className="imp-body" draggable={false}>
-                {lines[2]}
-              </p>
-              <p className="imp-body" draggable={false}>
-                {lines[3]}
-              </p>
-              <p className="imp-small imp-line5" draggable={false}>
-                {lines[4]}
-              </p>
-            </div>
-          )}
+      <div className="imp-turn-b">
+        <DealProgress progress={progress} />
+        <h1 ref={nameRef} className="imp-turn-name imp-caps" data-testid="pass-name">
+          {name}
+        </h1>
+        <button
+          type="button"
+          className={canDontKnow ? 'imp-deal-text' : 'imp-deal-text imp-reserved'}
+          onClick={canDontKnow ? onDontKnow : undefined}
+        >
+          Don't know this word?
+        </button>
+      </div>
+      {shown && (
+        // IMP-010: an opaque layer over the top of screen B (over the whole top bar and the left half in landscape).
+        <div className="imp-layer" ref={layerRef} onContextMenu={stop} onDragStart={stop}>
+          <div ref={blockRef} className={blockClass} data-testid="private-block" draggable={false} onContextMenu={stop} onDragStart={stop}>
+            <p className="imp-block-small" draggable={false}>
+              {lines[0]}
+            </p>
+            <p className="imp-private-word" data-testid="private-word" draggable={false}>
+              {lines[1]}
+            </p>
+            <p className="imp-block-body" draggable={false}>
+              {lines[2]}
+            </p>
+            <p className="imp-block-body" draggable={false}>
+              {lines[3]}
+            </p>
+            <p className="imp-block-small imp-line5" draggable={false}>
+              {lines[4]}
+            </p>
+          </div>
         </div>
-        <div className="imp-pad-area">
-          <button
-            type="button"
-            className="imp-pad"
-            data-testid="hold-pad"
-            draggable={false}
-            onContextMenu={stop}
-            onDragStart={stop}
-            {...(tapMode ? tapHandlers : holdHandlers)}
-          >
-            {padText}
-          </button>
-          {!tapMode && <QuietButton onClick={() => setTapMode(true)}>Tap instead</QuietButton>}
-          {ready && !seeAgain && onDontKnow && <QuietButton onClick={onDontKnow}>Don't know this word?</QuietButton>}
-        </div>
-      </section>
+      )}
+      <div className="imp-pad-area">
+        <button
+          type="button"
+          className="imp-pad"
+          data-testid="hold-pad"
+          draggable={false}
+          onContextMenu={stop}
+          onDragStart={stop}
+          {...(tapMode ? tapHandlers : holdHandlers)}
+        >
+          {padText}
+        </button>
+        {/* IMP-014: in tap mode "Tap instead" is not shown; its space stays, so the pad never moves. */}
+        <button type="button" className={tapMode ? 'imp-quiet imp-reserved' : 'imp-quiet'} onClick={() => setTapMode(true)}>
+          Tap instead
+        </button>
+      </div>
       {/* IMP-083: the block in a live region on the player's own turn only, emptied when it hides. */}
       <div className="imp-sr" data-testid="private-live" aria-live="assertive">
         {shown ? lines.filter(Boolean).join(' ') : ''}
