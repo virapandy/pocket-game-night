@@ -1,4 +1,60 @@
 # Test report
+Progress (2026-10-03, tester, Impostor round 3 on main at f01d78b, the fix for round 2's one failure): the hold screen
+at 320 × 568 with Larger text (IMP-081 / IMP-010) now passes on both phones. Nothing else regressed: every Impostor and
+Tambola browser test passes on both phones, except the IMP-075 mark (open question) and the same 4 Android screenshot
+references (the other session's, left alone). No test changed this round.
+
+Commit tested: f01d78b (app and tests; f01d78b changes only `src/games/impostor/ui/impostor.css`)   Date: 2026-10-03
+Automation (the verdict): complete run 37139451171 (f01d78b, both phones, report only): Android 560 passed, 4 failed
+(the 4 screenshots), 1 skipped; iPhone 534 passed, 0 failed, 31 skipped (screenshot and Android-only tests). No flaky
+or retried test. Quick verify 37139429154 (f01d78b, Android): green; rule tests 627 of 627, smoke 16 of 16, changed
+areas 411 passed, 1 skipped, 0 failed.
+Result: GREEN for Impostor apart from the IMP-075 mark and the 4 known Android screenshots (the complete run itself is
+red only on those 4 screenshots)
+
+## Layers (f01d78b)
+| Layer | Tests | Passing | Failing |
+|---|---|---|---|
+| Rule tests (`npm test`, on GitHub: complete run "check" and quick verify) | 627 | 627 | 0 |
+| Impostor browser, per phone (complete run 37139451171) | 184 | 183 + 1 marked (IMP-075 open question) | 0 |
+| Tambola and platform browser, per phone (same run) | 381 | all, except 4 Android screenshots | 4 Android screenshots (not behaviour, left alone) |
+
+## Round-2 failure, now
+| Scenario | Test | On f01d78b |
+|---|---|---|
+| IMP-081 / IMP-010 | impostor-round-screens.spec.ts "320 × 568, Larger text: after "Don't know this word?" appears, the block clears the name and the pad; nothing scrolls" | passes, both phones (the 360, 390 and 812 sizes and the round 2 room-screen overlap checks also pass) |
+
+## Failing (real bugs only)
+- None.
+
+## Expected to fail
+Still marked: 1 per phone, unchanged: impostor-round-screens.spec.ts IMP-075 the "left halfway" screen has the
+between-rounds menu (open question for the product owner; fails only on "Change how we play").
+
+## Screenshots to refresh and approve (Android; the other session's, left alone)
+`host-game-over-payouts-360x640`, `host-verdict-proof-812x375`, `player-quick-mark-360x640`, `player-quick-mark-812x375`:
+unchanged.
+
+## Questions
+- IMP-075 / IMP-091 (product owner): "Change how we play" on the "left halfway" screen (unchanged).
+- PLT-006 with IMP-102: which comes first, an unfinished Tambola setup or tonight's Impostor names (unchanged; worth one
+  line in a spec).
+
+## Flaky or setup problems (not for the Build workspace)
+- The owner's Mac: load average about 150. A local `npm test` could not start its workers (31 "Timeout waiting for
+  worker" errors, no test ran; not a test failure) and a 2-worker retry printed nothing. The rule test result here is
+  GitHub's (627 of 627, twice). No local browser run.
+
+## Requests for the Build workspace
+- None.
+
+## Notes for the owner (plain English)
+- The last problem from round 2 is fixed: on the smallest phone with "Larger text" on, the player's secret no longer
+  sits on top of their name while they look at their word.
+- Everything else in Impostor and Tambola still works on both phones. Two things stay open, as before: one question
+  about the "left halfway" screen's menu, and 4 Tambola pictures waiting for approval from the other session.
+
+# Round 2 report (60b1f5c), kept for reference
 Progress (2026-10-03, tester, Impostor round 2 on main at 60b1f5c, the fixes for round 1's failures on c857400): rule
 tests 627 of 627 pass. Browser, both phones, on GitHub (the owner's Mac was at a load of 85 to 170 and could not start
 browsers in 10 minutes): every round-1 failure is fixed except one size: the hold screen at 320 × 568 with Larger text
