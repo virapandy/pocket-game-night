@@ -340,6 +340,7 @@ export function Game({
         key={`again-${seeAgain.name}-${seeAgain.key}`}
         name={seeAgain.name}
         next={null}
+        progress={null}
         secret={secretFor(seeAgain.name)}
         banner={null}
         tapPref={tapPref}
@@ -354,6 +355,7 @@ export function Game({
         key={`${turnKey}-${returns}`}
         name={name}
         next={r.players[r.seen + 1] ?? null}
+        progress={{ n: r.seen + 1, of: r.players.length }}
         secret={secretFor(name)}
         banner={banner?.turn === turnKey ? banner.kind : null}
         tapPref={tapPref}

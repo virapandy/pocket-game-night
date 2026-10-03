@@ -361,6 +361,10 @@
 /* ----- The deal (IMP-010 to IMP-014) ----- */
 .imp-pass { font-size: 1.35rem; font-weight: 700; }
 .imp-welcome { font-size: 1.35rem; font-weight: 800; }
+/* IMP-019, IMP-073: "Player 2 of 4" 17 px (21 px with Larger text); "Everyone else, look away!" 20 px (24 px). */
+.imp-deal-progress { flex: none; width: 100%; text-align: center; font-size: var(--imp-body); line-height: 1.2; color: var(--muted); }
+.imp-look-away { font-size: 20px; font-weight: 700; line-height: 1.25; }
+.imp-larger .imp-look-away { font-size: 24px; }
 .imp-room-title { font-size: 28px; font-weight: 800; line-height: 1.2; }
 /* IMP-073: 48 px, shrunk to fit one line (to 32 px, then wrapping) by the screen. */
 .imp-pass-name { width: 100%; font-size: 48px; font-weight: 800; line-height: 1.1; white-space: nowrap; overflow-wrap: anywhere; }

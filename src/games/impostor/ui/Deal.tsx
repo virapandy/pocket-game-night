@@ -45,6 +45,7 @@ const stop = (e: { preventDefault: () => void }) => e.preventDefault();
 export function Turn({
   name,
   next,
+  progress,
   secret,
   banner,
   tapPref,
@@ -55,6 +56,8 @@ export function Turn({
   name: string;
   /** The next player's name, or null for the last player ("Done, everyone's seen"). */
   next: string | null;
+  /** IMP-019: "Player N of M" on screens A and B; null during "See my word again" (IMP-017). */
+  progress: Progress | null;
   secret: Secret;
   /** Above screen A: "Welcome back." (IMP-090), or the "No problem!" room screen (IMP-015). */
   banner: 'welcome' | 'noProblem' | null;
@@ -66,11 +69,12 @@ export function Turn({
   onDontKnow?: () => void;
 }) {
   const [screen, setScreen] = useState<'A' | 'B'>('A');
-  if (screen === 'A') return <ScreenA name={name} banner={banner} onMe={() => setScreen('B')} />;
+  if (screen === 'A') return <ScreenA name={name} progress={progress} banner={banner} onMe={() => setScreen('B')} />;
   return (
     <ScreenB
       name={name}
       next={next}
+      progress={progress}
       secret={secret}
       tap={tapPref()}
       seeAgain={!!seeAgain}
@@ -80,7 +84,30 @@ export function Turn({
   );
 }
 
-function ScreenA({ name, banner, onMe }: { name: string; banner: 'welcome' | 'noProblem' | null; onMe: () => void }) {
+/** IMP-019: the current player's place in this round's seat order, from 1. */
+export type Progress = { readonly n: number; readonly of: number };
+
+/** IMP-019: "Player 2 of 4", 17 px (21 px with Larger text), centred; never announced (IMP-083). */
+function DealProgress({ progress }: { progress: Progress | null }) {
+  if (!progress) return null;
+  return (
+    <p className="imp-deal-progress" data-testid="deal-progress">
+      Player {progress.n} of {progress.of}
+    </p>
+  );
+}
+
+function ScreenA({
+  name,
+  progress,
+  banner,
+  onMe,
+}: {
+  name: string;
+  progress: Progress | null;
+  banner: 'welcome' | 'noProblem' | null;
+  onMe: () => void;
+}) {
   const nameRef = useRef<HTMLParagraphElement>(null);
   useFitText(nameRef, 48, 32, name);
   return (
@@ -96,9 +123,13 @@ function ScreenA({ name, banner, onMe }: { name: string; banner: 'welcome' | 'no
         ) : (
           <>
             {banner === 'welcome' && <p className="imp-welcome">Welcome back.</p>}
+            <DealProgress progress={progress} />
             <p className="imp-pass">Pass the phone to</p>
             <p ref={nameRef} className="imp-pass-name imp-caps" data-testid="pass-name">
               {name}
+            </p>
+            <p className="imp-look-away" data-testid="look-away">
+              Everyone else, look away!
             </p>
           </>
         )}
@@ -111,6 +142,7 @@ function ScreenA({ name, banner, onMe }: { name: string; banner: 'welcome' | 'no
 function ScreenB({
   name,
   next,
+  progress,
   secret,
   tap: tapSetting,
   seeAgain,
@@ -119,6 +151,7 @@ function ScreenB({
 }: {
   name: string;
   next: string | null;
+  progress: Progress | null;
   secret: Secret;
   tap: boolean;
   seeAgain: boolean;
@@ -217,6 +250,7 @@ function ScreenB({
 
   return (
     <>
+      <DealProgress progress={progress} />
       <h1 ref={nameRef} className="imp-turn-name imp-caps">
         {name}
       </h1>
