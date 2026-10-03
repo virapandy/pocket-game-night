@@ -7,8 +7,10 @@ screenshot problem is checked below: most are fixed, 2 are still wrong, 3 small 
 browser spec passes on 60d9982 as it stood.
 
 Commit tested: 60d9982   Date: 2026-10-03
-Automation run: quick verify 37107118670 on 60d9982 (the coder's push): GREEN. Quick verify on this push: run id in
-the tester's hand-back to the orchestrator.
+Automation run: quick verify 37107118670 on 60d9982 (the coder's push): GREEN. Quick verify 37109376278 on the
+tester's push 2c7c02c: RED from a workflow fault, not a test: type-check, build, rule tests and the smoke set passed;
+"Browser tests for the changed areas" picked only `screens.spec.ts`, whose tests are all @screens, so
+`--grep-invert @screens` left none and Playwright stopped with "No tests found" (request below).
 Result: GREEN (every test); the screenshot findings below are layout problems for the coder, not failing tests.
 
 ## Layers (owner's Mac: `caffeinate -i taskpolicy -b`, at most 3 workers, Android first)
@@ -97,6 +99,9 @@ listed here with its date, and fixed by the tester; never deleted or weakened.
   moved the bar's words; fixed in the spec (running clock, the bar covered). Not quarantined: never in the gate yet.
 
 ## Requests for the Build workspace
+- `quick.yml`, "Browser tests for the changed areas": when the changed specs hold only @screens tests (a push that
+  changes only `screens.spec.ts` or its pictures), the step fails with "No tests found" (run 37109376278). Add
+  `--pass-with-no-tests` to that command, or leave `screens.spec.ts` out of the picked specs.
 - Layout items 1 to 5 under "Failing" (screenshots), most important first.
 - (Done since the last report: quick verify now uses two shards and skips @screens; the Screenshots workflow exists.)
 
