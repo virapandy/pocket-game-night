@@ -317,11 +317,23 @@
 @media (max-width: 340px) {
   .imp-option { font-size: var(--imp-small); }
 }
+/* The choices heading sits on its own line under "← Back"; on short phones it shares the bar's row (below). */
+.imp-bar-title { flex-wrap: wrap; row-gap: 12px; }
+.imp-bar-title .imp-title { flex: 1 0 100%; }
 @media (max-height: 640px) and (orientation: portrait) {
   .imp-setup .imp-title { font-size: 1.35rem; }
   .imp-setup .imp-scroll { gap: 8px; }
   .imp-groups { gap: 6px; }
   .imp-setup .imp-bar { min-height: 44px; }
+  /* IMP-088: at 320 × 568 the four groups, Categories and "Start round" all show with no scrolling. */
+  .imp-setup.imp-screen { padding-top: 8px; --imp-foot: calc(var(--imp-main-h) + var(--imp-gutter) + 8px); }
+  .imp-setup .imp-screen-inner { gap: 6px; }
+  .imp-setup .imp-bar-title { flex-wrap: nowrap; }
+  .imp-setup .imp-bar-title .imp-title { flex: 1 1 auto; min-width: 0; font-size: var(--imp-body); line-height: 1.15; }
+  .imp-setup .imp-choices-scroll { gap: 6px; padding-bottom: 0; }
+  .imp-setup .imp-groups { gap: 4px; }
+  .imp-setup .imp-group-wrap { gap: 2px; }
+  .imp-setup .imp-option-line { line-height: 1.2; }
 }
 
 /* ----- Read this aloud (IMP-070) ----- */

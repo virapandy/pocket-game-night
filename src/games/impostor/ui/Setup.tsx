@@ -236,11 +236,12 @@ export function HowToPlayChoices({
   return (
     <main className="imp-screen imp-setup">
       <div className="imp-screen-inner" hidden={sheet}>
-        <header className="imp-bar">
+        {/* IMP-088: the heading shares the bar's row on short phones (320 × 568), so everything fits unscrolled. */}
+        <header className="imp-bar imp-bar-title">
           <QuietButton onClick={onBack}>← Back</QuietButton>
-        </header>
-        <div className="imp-scroll">
           <h1 className="imp-title">How do you want to play?</h1>
+        </header>
+        <div className="imp-scroll imp-choices-scroll">
           <div className="imp-groups">
             {GROUPS.map((g) => {
               const current = choices[g.key];
