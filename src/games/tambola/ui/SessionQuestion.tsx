@@ -1,5 +1,6 @@
-// PLT-016: before the first number, the first game of a gathering asks for a session name (suggesting the day),
-// and a game long after the last one asks "Continue '…' or start a new session?". Later games join silently.
+// PLT-016: a game long after the last one asks "Continue '…' or start a new session?" before the first number;
+// "New session" then asks for its name (suggesting the day). The first game of all and later games ask nothing
+// (UX list row 9: the session line above "Confirm prizes" is enough).
 import { useState } from 'react';
 import type { Session } from '../../../engine';
 
@@ -18,12 +19,12 @@ export function SessionQuestionScreen({
   onContinue,
   onBack,
 }: {
-  ask: 'name' | { continue: Session };
+  ask: { continue: Session };
   onStart: (name: string) => void;
   onContinue: (session: Session) => void;
   onBack: () => void;
 }) {
-  const [naming, setNaming] = useState(ask === 'name');
+  const [naming, setNaming] = useState(false);
   const [name, setName] = useState(() => suggestedSessionName(Date.now()));
   const start = () => onStart(name.trim() || suggestedSessionName(Date.now()));
   return (
@@ -33,7 +34,7 @@ export function SessionQuestionScreen({
           ← Back
         </button>
       </header>
-      {naming || ask === 'name' ? (
+      {naming ? (
         <>
           <section className="stack setup-body">
             <h1 className="step-title">New session</h1>

@@ -34,7 +34,7 @@ type Route =
   | { name: 'how' }
   | { name: 'settings' }
   | { name: 'setup'; initial?: { draft: SetupDraft; step: SetupStep } }
-  | { name: 'session'; config: TambolaConfig; ask: 'name' | { continue: Session } }
+  | { name: 'session'; config: TambolaConfig; ask: { continue: Session } }
   | { name: 'play'; saved: TambolaSaved; match: TambolaMatch; resumed: boolean; startDialog?: 'end' | 'discard' };
 
 /** The setup of a played game, with any renames and late joiners (TAM-068, PLT-009, PLT-020). */
