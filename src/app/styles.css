@@ -606,6 +606,18 @@ button, [role="button"], a { touch-action: manipulation; }
 .room-number { font-size: min(300px, 70vw); font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
 .room-rhyme { margin: 0; max-width: 100%; font-size: 2rem; font-weight: 700; overflow-wrap: anywhere; }
 .room-verdict { margin: 0; font-size: 1.4rem; font-weight: 800; }
+/* RC fix (C1): nothing in the room view is squeezed (the last calls once shrank onto the rhyme); a view taller than
+   the screen scrolls from its top instead of being cut at both ends. */
+.room { justify-content: safe center; }
+.room > *, .room-side > * { flex: none; }
+.room-side { max-width: 100%; display: flex; flex-direction: column; align-items: center; gap: 16px; }
+/* Landscape (812 × 375): the number on the left, the rhyme, last calls and verdict beside it on the right. */
+@media (orientation: landscape) and (max-height: 600px) {
+  .room { flex-direction: row; align-items: center; justify-content: safe center; gap: 32px; padding: 12px 24px; }
+  .room-number { font-size: min(300px, 70vw, calc(100dvh - 100px)); }
+  .room > .room-side { flex: 0 1 auto; min-width: 0; max-width: 55%; gap: 10px; }
+  .room-side .room-rhyme { font-size: 1.6rem; }
+}
 
 /* ----- Summary and history ----- */
 .summary { display: flex; flex-direction: column; gap: 12px; }
