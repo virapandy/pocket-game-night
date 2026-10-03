@@ -8,9 +8,13 @@ const pkg = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 
 const commit = process.env.GITHUB_SHA?.slice(0, 7);
 const APP_VERSION = commit ? `${pkg.version}+${commit}` : `${pkg.version}+local`;
 
-// Served from GitHub Pages at https://virapandy.github.io/pocket-game-night/.
+// Served from GitHub Pages at https://virapandy.github.io/pocket-game-night/ (the families' link).
 // Local preview uses the same path, so browser tests see exactly what is deployed.
-export const BASE = '/pocket-game-night/';
+// Automation also builds the owner's preview with APP_BASE=/pocket-game-night/preview/: its own path,
+// its own service worker scope and its own installed app, so it never replaces the families' app.
+const FAMILIES_BASE = '/pocket-game-night/';
+export const BASE = process.env.APP_BASE || FAMILIES_BASE;
+const IS_PREVIEW = BASE !== FAMILIES_BASE;
 
 export default defineConfig({
   base: BASE,
@@ -23,8 +27,8 @@ export default defineConfig({
       injectRegister: false,
       includeAssets: ['icon.svg', 'apple-touch-icon.png'],
       manifest: {
-        name: 'Pocket Game Night',
-        short_name: 'Game Night',
+        name: IS_PREVIEW ? 'Pocket Game Night (preview)' : 'Pocket Game Night',
+        short_name: IS_PREVIEW ? 'GN preview' : 'Game Night',
         description: 'Run in-person party and card games from one phone.',
         start_url: BASE,
         scope: BASE,
@@ -42,6 +46,8 @@ export default defineConfig({
         // Open once, then works offline: precache the whole app shell and content on first visit.
         globPatterns: ['**/*.{js,css,html,svg,png,json,woff2}'],
         navigateFallback: `${BASE}index.html`,
+        // The families' app must never answer for the preview, which lives inside its path.
+        navigateFallbackDenylist: IS_PREVIEW ? [] : [new RegExp(`^${BASE}preview/`)],
         cleanupOutdatedCaches: true,
       },
     }),

@@ -1,0 +1,132 @@
+# Quick verify (docs/change-sop.md), on every push to main, aiming for about 3 minutes:
+# type-check, boundary check, build, every rule test, then the browser smoke set (tests tagged @smoke)
+# and the browser tests for the areas this push touched (tests/browser/areas.json), Android only.
+# Green: publishes the owner's preview link, https://virapandy.github.io/pocket-game-night/preview/.
+# The families' link is left on the last release (the families' half is rebuilt from that commit).
+# Pushes that change only docs/ or reports/ do not start a run.
+name: Quick verify
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - 'reports/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: quick-verify-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # the push's changed files pick the area tests
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Type-check
+        run: npm run typecheck
+      - name: Boundary check
+        run: npm run check:boundaries
+      - name: Build
+        run: npm run build
+      - name: Rule, contract and property tests
+        if: hashFiles('tests/vitest.config.ts') != ''
+        run: npm test
+      - name: Playwright version
+        id: pw
+        if: hashFiles('tests/playwright.config.ts') != ''
+        run: echo "version=$(node -p "require('./package-lock.json').packages['node_modules/@playwright/test'].version")" >> "$GITHUB_OUTPUT"
+      - name: Cache browsers
+        id: pw-cache
+        if: hashFiles('tests/playwright.config.ts') != ''
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ms-playwright-${{ runner.os }}-chromium-${{ steps.pw.outputs.version }}
+      - name: Install browser
+        if: hashFiles('tests/playwright.config.ts') != '' && steps.pw-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps chromium
+      - name: Install browser system libraries
+        if: hashFiles('tests/playwright.config.ts') != '' && steps.pw-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps chromium
+      - name: Browser smoke set
+        id: smoke
+        if: hashFiles('tests/playwright.config.ts') != ''
+        run: npm run test:browser -- --project=android --grep @smoke
+      # Area tests: spec files mapped from the changed paths. No map, or no match: the smoke set alone.
+      - name: Browser tests for the changed areas
+        id: areas
+        if: hashFiles('tests/playwright.config.ts') != '' && (success() || steps.smoke.outcome == 'failure')
+        env:
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.sha }}
+        run: |
+          specs=$(node scripts/browser-areas.mjs "$BEFORE" "$AFTER")
+          if [ -z "$specs" ]; then echo "No area tests mapped for this push; smoke set only."; exit 0; fi
+          echo "Area tests:"; echo "$specs"
+          # shellcheck disable=SC2086
+          npm run test:browser -- --project=android $(echo "$specs" | tr '\n' ' ')
+      - name: Keep browser results
+        if: failure() && (steps.smoke.outcome == 'failure' || steps.areas.outcome == 'failure')
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-test-results-quick
+          path: test-results/browser/
+          retention-days: 14
+          if-no-files-found: ignore
+
+  # Both halves build alongside the checks, so publishing adds little time.
+  preview-site:
+    uses: ./.github/workflows/build-site.yml
+    permissions:
+      contents: read
+      actions: read
+    with:
+      site: preview
+      sha: ${{ github.sha }}
+
+  families-site:
+    uses: ./.github/workflows/build-site.yml
+    permissions:
+      contents: read
+      actions: read
+    with:
+      site: families
+
+  publish:
+    needs: [verify, preview-site, families-site]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    concurrency:
+      group: pages-publish
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}preview/
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: site-families
+          path: site
+      - uses: actions/download-artifact@v4
+        with:
+          name: site-preview
+          path: site/preview
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deployment
+        uses: actions/deploy-pages@v4

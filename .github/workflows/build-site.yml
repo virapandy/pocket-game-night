@@ -1,0 +1,81 @@
+# Builds one half of the published site, for "Quick verify" (quick.yml) and "Complete run" (ci.yml).
+# GitHub Pages holds one site, so every publish uploads both halves together:
+#   families: the last released commit, at https://virapandy.github.io/pocket-game-night/
+#   preview:  the newest checked commit, at https://virapandy.github.io/pocket-game-night/preview/
+# Each half is rebuilt from its commit, so nothing has to be stored between runs.
+# When no commit is given, the right one is looked up from earlier successful runs:
+#   families: the newest successful "Complete run" started by hand (a release). Before the first release
+#             under this scheme, the newest successful push run of ci.yml (what the old automation published).
+#   preview:  the newest successful "Quick verify" push run.
+name: Build site half
+
+on:
+  workflow_call:
+    inputs:
+      site:
+        description: families or preview
+        required: true
+        type: string
+      sha:
+        description: commit to build; empty means look it up
+        required: false
+        type: string
+        default: ''
+      fallback_sha:
+        description: commit to use when the lookup finds nothing; empty means fail
+        required: false
+        type: string
+        default: ''
+
+jobs:
+  build:
+    name: build ${{ inputs.site }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - name: Choose commit
+        id: pick
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          SITE: ${{ inputs.site }}
+          SHA: ${{ inputs.sha }}
+          FALLBACK: ${{ inputs.fallback_sha }}
+        run: |
+          if [ -z "$SHA" ]; then
+            if [ "$SITE" = families ]; then
+              SHA=$(gh run list -R "$REPO" --workflow ci.yml --branch main --status success --limit 100 \
+                --json headSha,event -q '[.[] | select(.event == "workflow_dispatch" or .event == "push")][0].headSha // empty')
+            else
+              SHA=$(gh run list -R "$REPO" --workflow quick.yml --branch main --event push --status success --limit 1 \
+                --json headSha -q '.[0].headSha // empty')
+            fi
+          fi
+          [ -z "$SHA" ] && SHA="$FALLBACK"
+          if [ -z "$SHA" ]; then echo "::error::No commit found for the $SITE site; nothing published."; exit 1; fi
+          echo "Building the $SITE site from $SHA"
+          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.pick.outputs.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Build
+        env:
+          SITE: ${{ inputs.site }}
+          SHA: ${{ steps.pick.outputs.sha }}
+        run: |
+          if [ "$SITE" = preview ]; then export APP_BASE=/pocket-game-night/preview/; fi
+          GITHUB_SHA="$SHA" npm run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: site-${{ inputs.site }}
+          path: dist
+          retention-days: 1
+          if-no-files-found: error
