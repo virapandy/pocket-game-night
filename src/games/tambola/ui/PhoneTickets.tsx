@@ -560,7 +560,7 @@ export function PhoneTickets({
                   setScreen({ name: 'quick', message: r.marked ? `✓ ${n} marked on ${where}` : `${n} unmarked on ${where}` });
                 }}
               >
-                {n}
+                <span className="quick-n">{n}</span>
                 {on && <span className="quick-tick">✓</span>}
               </button>
             );

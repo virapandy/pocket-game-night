@@ -951,7 +951,11 @@ button.tcell { cursor: pointer; }
 .quick-key { position: relative; min-height: 44px; padding: 0; font: inherit; font-weight: 700; color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; touch-action: manipulation; }
 /* A marked number: the marks' deep blue fill and a ✓, so it never relies on colour alone (owner 2026-10-01, UX list row 3). */
 .quick-key-on { color: var(--mark-text); background: var(--mark-bg); border: 2px solid var(--mark-bg); }
-.quick-tick { position: absolute; top: 1px; right: 3px; font-size: 14px; line-height: 1; }
+/* N4 (3 October): the ✓ sits in the key's top-right corner, as on ticket cells, and a marked key's number moves a
+   little left and down, so the ✓ never lies over the digits (keys about 31 px at 360, 33 x 44 at 390). */
+.quick-tick { position: absolute; top: 1px; right: 2px; font-size: 14px; line-height: 1; pointer-events: none; }
+.quick-n { display: inline-block; font-variant-numeric: tabular-nums; }
+.quick-key-on .quick-n { transform: translate(-3px, 4px); }
 /* RC fix (C1, round 2): on a short portrait phone (360 x 640) the whole pad, the thumbnails, the cue line and
    "Show claim" fit without scrolling: the screen is exactly the phone's height and the keys give up height (44 px
    down to 28 px) instead of pushing the rest off. The pad needs its own min-height: a flex item's default
