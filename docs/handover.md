@@ -65,6 +65,14 @@ current; instructions live here, not in chat. History from Phase 0 and 1a is fur
    Home's menu, confirmed; 5 "Settle with host" has the main look until a tab is opened (row 5); 6 all three tickets
    must fit at 812 × 375 with Larger text (row 1). Coder: solid red marks do break guideline 17a; row 3 changes them.
    The tests can now drop the "either answer" allowances for 1–6. (Earlier questions for report 357b824: done.)
+3b. **Product owner, 3 October, on the tester's report for rows 8–15 (f361bd0):**
+   - **Numbering:** those tests follow the **1 October** row numbers. In today's list they are rows 5 (typed claim form),
+     10, 12, 3 (cue outline: now orange with a corner mark, Early Five once), 15, 16, 17 and 19. Still without tests: rows
+     1, 2, 3 (blue marks), 4, 6, 7, 8, 9, 11, 13, 14 and 18. Ask the tester for those next, using today's numbers.
+   - **Tester's five spec questions:** all five readings accepted as written (toast and picture sizes, Early Five said
+     once across tickets, "Waiting" counts tickets still to hand out, only the first-named ticket says "Pattern filled",
+     each held ticket names its holder).
+   - The two "owner" test changes (chips wrap, 12 px margin) are recorded (f2486a7).
 4. **Owner check on two real Android phones (owner's task):** scan a ticket QR with a phone camera, mark a few
    numbers, show a claim QR and scan it with the host phone. This is the one path the review could not try (no
    camera in the review browser). Check the player's phone shows their **name and the game's start time** (a
