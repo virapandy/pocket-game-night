@@ -230,13 +230,13 @@ test.describe('IMP-075: the menu at each moment', () => {
     await expect(page.getByTestId('round-outcome')).toBeVisible();
   });
 
-  test.fail('IMP-006: "Change how we play" on a result opens the current choices; "← Back" records nothing; "Start round" records setChoices then nextRound', async ({ page }) => {
+  test('IMP-006: "Change how we play" on a result opens the current choices; "← Back" records nothing; "Start round" records setChoices then nextRound', async ({ page }) => {
     await startEvening(page, { mode: 'hard', talking: 'timer', seeds: { deals: [{ wordId: SAMOSA, impostor: 'Arjun', starter: 'Riya' }, { wordId: 'IMPW-006', impostor: 'Meena', starter: 'Arjun' }] } });
     await dealAll(page);
     await mainButton(page).filter({ hasText: 'Start the 2-minute timer' }).click();
     await mainButton(page).filter({ hasText: 'Vote now' }).click();
     await page.clock.runFor(6000);
-    await reveal(page, 'Riya');
+    await reveal(page, 'Riya', 7500); // an escaped reveal reaches its result at 7 s (IMP-034)
     await expect(page.getByTestId('round-outcome')).toBeVisible();
     const atResult = (await onlyEvening(page)).records;
     await fromMenu(page, 'Change how we play');

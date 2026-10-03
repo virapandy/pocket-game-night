@@ -373,10 +373,10 @@ test.describe('IMP-099: time limits, measured exactly', () => {
     await ctx.close();
   });
 
-  test.fail('the summary\'s 3 hours: at exactly 3 hours it still offers "Oops, keep playing"; 1 ms later endEvening is recorded at that moment and "Oops" is gone', async ({ page, browser }) => {
+  test('the summary\'s 3 hours: at exactly 3 hours it still offers "Oops, keep playing"; 1 ms later endEvening is recorded at that moment and "Oops" is gone', async ({ page, browser }) => {
     const e = savedEvening({ deals: DEALS, moves: [...R1_CAUGHT_WRONG, ...R2_ESCAPED] });
     const shownAt = lastAt(e) + 5 * 60_000;
-    await phoneWith(page, [e], { now: shownAt + 3 * H, ui: { [e.id]: { summaryShownAt: shownAt } } });
+    await phoneWith(page, [e], { now: shownAt + 3 * H, ui: { [e.id]: { summaryShownAt: shownAt } }, fixed: true });
     await openEvening(page);
     await expect(summaryHeading(page)).toBeVisible();
     await expect(quiet(page, 'Oops, keep playing')).toBeVisible();
@@ -384,7 +384,7 @@ test.describe('IMP-099: time limits, measured exactly', () => {
     await silence(ctx);
     const later = await ctx.newPage();
     const now = shownAt + 3 * H + 1;
-    await phoneWith(later, [e], { now, ui: { [e.id]: { summaryShownAt: shownAt } } });
+    await phoneWith(later, [e], { now, ui: { [e.id]: { summaryShownAt: shownAt } }, fixed: true });
     await expect(summaryHeading(later)).toBeVisible();
     await expect(quiet(later, 'Oops, keep playing')).toHaveCount(0);
     const saved = await onlyEvening(later);

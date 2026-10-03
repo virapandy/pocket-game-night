@@ -1,11 +1,80 @@
 # Test report
-Progress (2026-10-03, tester, the rest of Impostor on main at c857400, round 2 in progress): rule tests 627 of 627
-pass on c857400. Quick verify 37130708905 (tests d4ecd6e on app c857400, Android) ran every Impostor file: 38 marked
-tests now pass and their marks are removed in this push; 6 real failures remain (IMP-081 at 320 and 360, IMP-088,
-IMP-003). New `impostor-play-screens.spec.ts` (screens built in c857400). The owner's Mac is under heavy macOS system
-load (load average about 140), so browsers cannot start locally; this round's browser verdict comes from GitHub (quick
-verify on this push and the report-only complete run, both phones). Final counts follow in the next push.
+Progress (2026-10-03, tester, the whole of Impostor on main at c857400): rule tests 627 of 627 pass. Browser, both
+phones, on GitHub (the owner's Mac was under macOS system load, about 140, and could not start browsers): 176 Impostor
+tests per phone (49 new in `impostor-play-screens.spec.ts`); every expected-to-fail mark is off except one open question
+(IMP-075 "left halfway" menu). Real failures: IMP-102 (Tambola names after Impostor), IMP-081 hold screen at 320 and
+360, IMP-088 at 320, IMP-003 "← Back" list. Tambola: every Tambola test passes on both phones in the complete run,
+except 4 Android screenshot comparisons that changed where last round's flagged screen problems were fixed.
 
+Commit tested: c857400 (app), tests at this push   Date: 2026-10-03
+Automation: complete run 37133348919 (tests 385df28, both phones, report only): Android 544 passed, 12 failed, 1
+skipped; iPhone 518 passed, 8 failed, 31 skipped (screenshot tests are Android only). The 12 and 8 are the real
+failures below, the announcer test and IMP-006 / IMP-099 test faults fixed in this push, and the 4 Android screenshots.
+Quick verify 37133348530 (tests 385df28, Android): 348 passed, 8 failed (same list, Android). Quick verify on this
+report's push is named in the tester's hand-back.
+Result: RED (5 real failures, below)
+
+## Layers (c857400)
+| Layer | Tests | Passing | Failing |
+|---|---|---|---|
+| Rule tests (`npm test`, local) | 627 | 627 | 0 |
+| Impostor browser, per phone (complete run 37133348919, Android and iPhone) | 176 | 165 | 8: 7 real (IMP-081 ×4, IMP-088, IMP-003, IMP-102) and the IMP-083 announcer test fault; plus 3 marked tests failing as marked (IMP-006 and IMP-099 summary 3 h, test faults fixed and unmarked here; IMP-075 open question) |
+| Tambola and platform browser tests (same run) | 381 per phone (Android 1 skipped; iPhone 31 skipped: screenshots and Android-only tests) | all run, except 4 Android screenshots | 4 screenshots (not behaviour) |
+
+## Failing (real bugs only)
+- IMP-102, impostor-play-screens.spec.ts "Play something else → What shall we play?; Tambola's setup arrives with
+  tonight's names" (both phones): after an Impostor evening with Riya, Arjun, Meena, Kabir and "Play something else",
+  Tambola → New game → Paper tickets → Next shows "Name of player 1" empty (placeholder "Player 1"). Expected: Riya,
+  Arjun, Meena, Kabir filled in (IMP-004, PLT-024).
+- IMP-081 / IMP-010, impostor-round-screens.spec.ts "320 × 568" and "360 × 640", Larger text off and on (both phones on
+  GitHub; 360 passes on the Mac's fonts): with the longest word and a 16-character name the private block lies over the
+  player's name (320: block y 59–232, name y 72–140; Larger text: block starts above the screen). Expected: block and
+  name apart, block wholly above the pad, nothing scrolling.
+- IMP-088, impostor-setup.spec.ts "320 × 568 … everything shows with no page scrolling" (both phones): "Start round"
+  covers "Categories: all 9 ›" and the last option line is cut. Expected: groups, Categories and "Start round" all on
+  screen at 320 × 568.
+- IMP-003, impostor-setup.spec.ts ""← Back" … the list is kept when the host comes back in the same visit" (both
+  phones): after "← Back" and the Impostor card again, the list is empty. Expected: the typed names still there.
+- Mac only, iPhone (WebKit on macOS): "9:30 PM" where IMP-001 says "9:30 pm" (Home row and the "Start a new evening?"
+  dialog). It does not happen on GitHub's iPhone (Linux WebKit) or Android. Low priority; for the coder to look at.
+
+## Expected to fail
+Removed on c857400 (pass on both phones): 38 marks (quick verify 37130708905 and complete run 37133348919): privacy
+IMP-013 ×2, 053, 031/033; saved evenings IMP-037, 091 ×7, 092 ×2, 093, 094 ×2 (096 fixture included), 095, 097, 098 ×2;
+scoring IMP-035, 040–044 (14); setup IMP-071 after the practice result; round screens IMP-075 result menu, IMP-087
+release. In this push also IMP-006 and IMP-099 summary 3 h (test faults fixed; quick verify on this push confirms).
+Still marked: 1 per phone.
+| File | Test | Why |
+|---|---|---|
+| impostor-round-screens.spec.ts | IMP-075 the "left halfway" screen has the between-rounds menu | open question for the product owner (below); fails only on "Change how we play" |
+
+## Tests changed (test faults; no assertion loosened)
+- IMP-083 announcer (new): the clock jumped 6 s at once, so the screen could skip drawing one announcement ("3" in one
+  run, "The word was Samosa." in another). It now steps one moment at a time, as the passing IMP-030 test does.
+- IMP-006 (written last round, marked): waited 4 s after "Reveal Riya"; an escaped reveal reaches its result at 7 s.
+- IMP-099 summary 3 h: the same real-time drift as last round's exact-3-hours test; `fixed: true` now.
+- New file fixes before any verdict: IMP-052 looked up "the only saved evening" while an earlier evening is saved too;
+  IMP-100 matched the word line twice (the announcer has it too); IMP-081 play screens allow 1 px of sub-pixel rounding.
+
+## Screenshots to refresh and approve (Android, complete run)
+`host-game-over-payouts-360x640`, `host-verdict-proof-812x375`, `player-quick-mark-360x640`, `player-quick-mark-812x375`:
+about 1% of pixels changed, exactly at last round's flagged problems (the cut "Settle with players" label, the ✓ over
+the digits, the verdict buttons at 812). They look fixed; the references need a Screenshots run and the product owner's
+or UX designer's approval. Not a Tambola behaviour change.
+
+## Questions
+- IMP-075 / IMP-091 (product owner): "Change how we play" on the "left halfway" screen, which the rules refuse mid-round.
+- IMP-003: does "the same visit to the Impostor setup" include going back to "What shall we play?" and tapping the card
+  again? The test reads it as yes.
+- IMP-089: there is no test yet for "sound off" (no visible sound switch was found to turn off through the screens);
+  which Settings switch is "the app's existing sound setting"?
+
+## Flaky or setup problems (not for the Build workspace)
+- The owner's Mac: load average 120–170 from macOS services (asset and update daemons) from about 19:00; browsers could
+  not start. This round's browser results are from GitHub. A preview server left from 16:06 had also stopped answering
+  and was stopped.
+
+## Round 1 (lane E, 870cd2f), kept for reference
 Progress (2026-10-03, tester, Impostor lane E on main at 870cd2f: setup, deal and privacy, saved evenings, first clue
 screen): rule tests 627 of 627 pass. Browser, local, Android + iPhone: the three Impostor files have 30 tests per phone
 that now pass (marks removed) and 36 per phone still marked (they need talk, vote, reveal, result, summary, History's

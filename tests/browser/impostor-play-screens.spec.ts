@@ -679,14 +679,23 @@ test.describe('IMP-083 and IMP-084: screen readers, no flashing', () => {
     });
     await expect(announcer(page)).toHaveAttribute('aria-live', 'polite');
     await toTalk(page);
-    await toPickerFromTalk(page);
+    // One moment at a time, so every announcement is drawn before the next.
+    await mainButton(page).filter({ hasText: 'Vote now' }).click();
+    for (const n of ['3', '2', '1', 'Point!']) { await page.clock.runFor(1000); await expect(countdown(page)).toHaveText(n); }
+    await page.clock.runFor(2000);
+    await expect(pickerHeading(page)).toBeVisible();
     await pickerName(page, 'Arjun').click();
     await mainButton(page).click();
-    await page.clock.runFor(4500);
+    await expect(revealLines(page)).toHaveCount(1);
+    await page.clock.runFor(2500);
+    await expect(revealLines(page).first()).toHaveText(/Caught red-handed!/);
+    await page.clock.runFor(1500);
+    await expect(revealLines(page)).toHaveCount(2);
     const beforeWord: string[] = await page.evaluate(() => (window as any).__ann);
     for (const t of beforeWord) for (const s of secretTerms(SAMOSA, 'hard')) expect(t.toLowerCase(), 'no secret announced').not.toContain(s.toLowerCase());
     await mainButton(page).filter({ hasText: 'Show the word' }).click();
-    await page.clock.runFor(2000);
+    await expect(revealLines(page).last()).toHaveText(exact('The word was Samosa.'));
+    await page.clock.runFor(500);
     const ann: string[] = await page.evaluate(() => (window as any).__ann);
     const tail = ann.filter((t) => !/clockwise/.test(t));
     expect(tail).toEqual(['3', '2', '1', 'Point!', 'Arjun was', 'Caught red-handed! Arjun was the impostor.', 'Arjun, one guess. Say it out loud! (No repeating the clues.)', 'The word was Samosa.']);
