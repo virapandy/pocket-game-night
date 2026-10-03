@@ -47,8 +47,15 @@ When unsure between two classes, take the higher one.
    The full mutation run stays weekly; changes in between get mutation only where they touched code (C3 above).
    A release includes mutation on every rules or money line changed since the last release.
 
-**Two links:** a **preview** link for the owner, updated after every quick verify, and the **families'** link,
-updated only by a release. (Build to set up; until then the single link updates on releases only.)
+**Two links** (set up 3 October): a **preview** link for the owner, https://virapandy.github.io/pocket-game-night/preview/,
+updated after every green quick verify (its own saved games), and the **families'** link,
+https://virapandy.github.io/pocket-game-night/, updated only by a release.
+
+**Release commands** (orchestrator):
+1. Freeze: `git tag rc-<date> && git push origin rc-<date>`; release notes in `docs/releases/rc-<date>.md`.
+2. Complete run on the candidate (reports only, publishes nothing): `gh workflow run ci.yml --ref rc-<date>`.
+3. After the owner's yes: `gh workflow run release.yml --ref main -f tag=rc-<date>` — refuses unless a complete run
+   on that commit is green; publishes the families' link and creates the version release from `package.json`.
 
 ## Parallel work
 - Up to **3 coders** at once, each in its own working copy (git worktree) on its own short branch, each owning one
