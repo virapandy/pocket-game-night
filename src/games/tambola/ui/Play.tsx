@@ -401,7 +401,16 @@ export function Play({
   }
 
   if (room) {
-    return <RoomView view={tambolaRules.view(match.state, { kind: 'room' })} money={money} names={nameOf} fromPress={room === 'press'} onBack={() => setRoom(false)} />;
+    return (
+      <RoomView
+        view={tambolaRules.view(match.state, { kind: 'room' })}
+        code={phone ? view.code : null}
+        money={money}
+        names={nameOf}
+        fromPress={room === 'press'}
+        onBack={() => setRoom(false)}
+      />
+    );
   }
 
   if (settingsOpen) {
@@ -652,10 +661,10 @@ export function Play({
         </button>
         <span className="bar-progress">
           {view.allCalled ? 'All 90 numbers called' : `${called} of 90 called`}
+          {/* UX list row 25 (TAM-107, TAM-172): the game code, quiet text on its own line, for the room to read. */}
           {phone && (
             <span className="bar-code" data-testid="game-code">
-              {' '}
-              · Game {view.code}
+              Tambola · Game {view.code}
             </span>
           )}
         </span>
@@ -1576,12 +1585,15 @@ function Board({ called }: { called: readonly number[] }) {
 
 function RoomView({
   view,
+  code,
   money,
   names,
   fromPress,
   onBack,
 }: {
   view: TambolaView;
+  /** Phone-ticket games: the game code, small in the bottom-left corner (UX list row 25). */
+  code: string | null;
   money: boolean;
   names: (id: string) => string;
   fromPress: boolean;
@@ -1619,6 +1631,11 @@ function RoomView({
         </p>
       )}
       <p className="note">Tap anywhere to go back</p>
+      {code && (
+        <p className="room-code" data-testid="room-game-code">
+          Game {code}
+        </p>
+      )}
     </main>
   );
 }

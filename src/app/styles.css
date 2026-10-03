@@ -933,3 +933,11 @@ button.tcell { cursor: pointer; }
 .game-over p { margin: 0; }
 /* UX row 24 (TAM-174, TAM-177, TAM-179): a scanned verdict's proof, a second smaller line in ordinary text colour. */
 .claim-proof { margin: 0; font-size: 0.95rem; font-weight: 600; color: var(--text); overflow-wrap: anywhere; }
+/* UX row 25 (TAM-107, TAM-172): the game code. Calling screen: quiet text under the progress; room view: small,
+   in the bottom-left corner, kept in from the edge and well below the number and the last calls. */
+.play-bar .bar-code { font-weight: 700; color: var(--muted); }
+.room:has(.room-code) { padding-bottom: 64px; }
+.room-code {
+  position: absolute; left: max(20px, env(safe-area-inset-left)); bottom: max(20px, env(safe-area-inset-bottom)); margin: 0;
+  font-size: 1rem; font-weight: 800; letter-spacing: 0.05em; color: var(--muted); pointer-events: none;
+}
