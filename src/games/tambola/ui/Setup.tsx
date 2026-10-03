@@ -320,9 +320,12 @@ function TicketTypeStep({
   };
   return (
     <>
-      <section className="stack setup-body">
+      {/* RC fix (C1): the title stays put above the step, so it is never scrolled under the Cancel bar. */}
+      <div className="step-head">
         <h1 className="step-title">New game</h1>
         <p className="lead">How are tickets handed out?</p>
+      </div>
+      <section className="stack setup-body">
         <div className="choice-cards">
           {card('paper', 'Paper tickets', 'Always works. Print or bring tickets.')}
           {card('phone', 'Phone tickets', 'Each player gets their ticket on their phone. Everyone must have opened the link once.')}
