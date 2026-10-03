@@ -176,6 +176,10 @@ function ScreenB({
     if (tapTimer.current) clearTimeout(tapTimer.current);
   }, []);
 
+  // IMP-081: a long name shrinks to one line (floor 20 px, then it wraps), leaving room for the block.
+  const nameRef = useRef<HTMLHeadingElement>(null);
+  useFitText(nameRef, 28, 20, name);
+
   const lines = blockLines(secret);
   const long = secret.role === 'crew' && secret.word.word.length > 20;
   const padText = tapMode ? (shown ? 'Tap to hide' : 'Tap to see your word') : 'Hold here to see your word';
@@ -213,7 +217,9 @@ function ScreenB({
 
   return (
     <>
-      <h1 className="imp-turn-name imp-caps">{name}</h1>
+      <h1 ref={nameRef} className="imp-turn-name imp-caps">
+        {name}
+      </h1>
       <section className="imp-hold">
         <div className="imp-block-area">
           {shown && (

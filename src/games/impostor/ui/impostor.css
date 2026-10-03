@@ -345,7 +345,8 @@
 .imp-room-title { font-size: 28px; font-weight: 800; line-height: 1.2; }
 /* IMP-073: 48 px, shrunk to fit one line (to 32 px, then wrapping) by the screen. */
 .imp-pass-name { width: 100%; font-size: 48px; font-weight: 800; line-height: 1.1; white-space: nowrap; overflow-wrap: anywhere; }
-.imp-turn-name { flex: none; text-align: center; font-size: 1.75rem; font-weight: 800; line-height: 1.15; overflow-wrap: anywhere; }
+/* Shrunk to fit one line (to 20 px, then wrapping) by the screen, like the other room names (IMP-073, IMP-081). */
+.imp-turn-name { flex: none; text-align: center; font-size: 1.75rem; font-weight: 800; line-height: 1.15; white-space: nowrap; overflow-wrap: anywhere; }
 .imp-hold { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; gap: 12px; }
 .imp-block-area { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; justify-content: flex-end; }
 .imp-block { display: flex; flex-direction: column; gap: 4px; text-align: center; }
@@ -376,6 +377,14 @@
 @media (max-height: 640px) and (orientation: portrait) {
   .imp-pad { min-height: 120px; }
   .imp-room .imp-bar { min-height: 44px; }
+  /* IMP-081, IMP-010: on short phones (320 × 568, 360 × 640) the pad and its quiet buttons share one row, so the
+     private block (longest word, Larger text too) fits between the name and the pad with nothing scrolling. */
+  .imp-room.imp-screen { padding-top: 8px; --imp-foot: calc(var(--imp-main-h) + var(--imp-gutter) + 8px); }
+  .imp-room .imp-screen-inner { gap: 6px; }
+  .imp-room .imp-hold { gap: 8px; }
+  .imp-room .imp-pad-area { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); align-items: start; }
+  .imp-room .imp-pad { grid-column: 1; grid-row: 1 / span 2; align-self: stretch; min-height: 96px; padding: 8px; font-size: 1rem; }
+  .imp-room .imp-pad-area .imp-quiet { grid-column: 2; padding: 0 8px; }
 }
 
 /* ----- The clues (IMP-016, IMP-020) ----- */
