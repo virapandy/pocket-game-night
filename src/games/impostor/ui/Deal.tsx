@@ -29,7 +29,8 @@ export function useFitText(ref: RefObject<HTMLElement | null>, full: number, flo
     if (!el) return;
     // Only names that do not fit get a size of their own, so equal screens stay equal in the page (IMP-012).
     if (el.scrollWidth <= el.clientWidth + 0.5) return;
-    const size = Math.max(floor, Math.floor((full * el.clientWidth) / el.scrollWidth));
+    const now = Math.min(full, parseFloat(getComputedStyle(el).fontSize) || full);
+    const size = Math.max(floor, Math.floor((now * el.clientWidth) / el.scrollWidth));
     el.style.fontSize = `${size}px`;
     if (size === floor) el.style.whiteSpace = 'normal';
   }, [ref, full, floor, key]);
