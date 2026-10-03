@@ -3,7 +3,7 @@
 // can be added later by connected mode (TAM-211) through the same place, without changing the screens that read
 // it (quick mark, the pattern cue, the claim picker). See docs/games/tambola/ux-phone-tickets.md, section 6.
 import type { Preferences } from '../../../engine';
-import { cornerNumbers, isPattern, numbersOn, PATTERNS, rowNumbers, type Pattern, type Rows } from '../rules';
+import { cornerNumbers, isPattern, numbersOn, PATTERN_NAMES, PATTERNS, rowNumbers, type Pattern, type Rows } from '../rules';
 
 export type Source = 'player' | 'host';
 
@@ -207,8 +207,8 @@ export interface CueFill {
 
 /**
  * TAM-195: where the player's own marks fill a prize of this game, only when the host turned the cue on. Based
- * only on their marks: never a verdict. Each fill (ticket order; Early Five last on a ticket, as the lines and
- * corners say more), and the cells to outline per ticket.
+ * only on their marks: never a verdict. Each fill (ticket order, then the game's prize order, UX list row 1), and the
+ * cells to outline per ticket.
  */
 export function patternCue(game: PhoneGameFacts): { fills: CueFill[]; cells: Map<number, Set<number>> } {
   const fills: CueFill[] = [];
@@ -217,9 +217,7 @@ export function patternCue(game: PhoneGameFacts): { fills: CueFill[]; cells: Map
   const crossed = crossedOut(game);
   const prizes = prizesOf(game).filter((p) => !crossed.has(p));
   // Second Full House fills exactly when Full House does: say it once.
-  const said = prizes
-    .filter((p) => p !== 'second-full-house' || !prizes.includes('full-house'))
-    .sort((a, b) => Number(a === 'early-five') - Number(b === 'early-five'));
+  const said = prizes.filter((p) => p !== 'second-full-house' || !prizes.includes('full-house'));
   for (const t of game.tickets) {
     const marks = marksOn(game, t.number);
     const numbers = numbersOn(t.rows);
@@ -242,10 +240,29 @@ function ticketList(numbers: readonly number[], word = 'Ticket'): string {
   return `${word}s ${numbers.slice(0, -1).join(', ')} and ${numbers[numbers.length - 1]}`;
 }
 
-/** TAM-195 (UX list row 11): Early Five is said once, however many tickets have 5 marks: "Early Five filled on ticket 1". */
-function earlyFive(fills: readonly CueFill[]): string | null {
-  const on = fills.filter((f) => f.pattern === 'early-five').map((f) => f.ticket);
-  return on.length ? `${CUE_WORDS['early-five']} on ${ticketList(on, 'ticket')}` : null;
+/** "Early Five and Top Line", "Early Five, Top Line and Full House". */
+function andList(words: readonly string[]): string {
+  return words.length === 1 ? words[0]! : `${words.slice(0, -1).join(', ')} and ${words[words.length - 1]}`;
+}
+
+/**
+ * The cue's parts (TAM-195, UX list row 1): one per ticket, in ticket order, naming its prizes in prize order: one
+ * prize "Ticket 3: top row filled", several "Ticket 1: Early Five and Top Line filled". Early Five is said once
+ * (row 11): on the ticket it shares with another prize when it is on just that one ticket, otherwise once at the
+ * end: "Early Five filled on tickets 1 and 2".
+ */
+export function cueParts(fills: readonly CueFill[]): string[] {
+  const five = fills.filter((f) => f.pattern === 'early-five').map((f) => f.ticket);
+  const lineTickets = new Set(fills.filter((f) => f.pattern !== 'early-five').map((f) => f.ticket));
+  const fold = five.length === 1 && lineTickets.has(five[0]!);
+  const parts: string[] = [];
+  for (const t of lineTickets) {
+    const prizes = fills.filter((f) => f.ticket === t && (f.pattern !== 'early-five' || fold)).map((f) => f.pattern);
+    const what = prizes.length === 1 ? CUE_WORDS[prizes[0]!] : `${andList(prizes.map((p) => PATTERN_NAMES[p]))} filled`;
+    parts.push(`Ticket ${t}: ${what}`);
+  }
+  if (five.length && !fold) parts.push(`${CUE_WORDS['early-five']} on ${ticketList(five, 'ticket')}`);
+  return parts;
 }
 
 /** The tickets the cue's line names, in the order it names them (TAM-190: "Which ticket?" lists the first one first). */
@@ -255,22 +272,10 @@ export function cueTickets(fills: readonly CueFill[]): number[] {
 }
 
 /**
- * The cue's one line (TAM-195, row 1a): "Ticket 3: top row filled. Shout if it's right!", or with fills on several
- * tickets "Tickets 1 and 3: patterns filled. Shout if it's right!"; only 5 marks: "Early Five filled on ticket 1.
- * Shout if it's right!". `more` is true when there is more to say (Early Five, said once, is then under "More").
+ * The cue's one line (TAM-195, UX list row 1): every part, then "Shout if it's right!": "Ticket 1: Early Five and Top
+ * Line filled. Shout if it's right!". The screen offers "More" (the parts as a list) only when the line doesn't fit.
  */
-export function cueLine(fills: readonly CueFill[]): { line: string; more: boolean } | null {
+export function cueLine(fills: readonly CueFill[]): string | null {
   if (fills.length === 0) return null;
-  const lines = fills.filter((f) => f.pattern !== 'early-five');
-  if (lines.length === 0) return { line: `${earlyFive(fills)}. Shout if it's right!`, more: false };
-  const tickets = cueTickets(fills);
-  const what = tickets.length === 1 ? CUE_WORDS[lines[0]!.pattern] : 'patterns filled';
-  return { line: `${ticketList(tickets)}: ${what}. Shout if it's right!`, more: fills.length > 1 };
-}
-
-/** Each fill in full, for "More": "Ticket 1: top row filled", then Early Five once: "Early Five filled on tickets 1 and 2". */
-export function cueDetails(fills: readonly CueFill[]): string[] {
-  const out = fills.filter((f) => f.pattern !== 'early-five').map((f) => `Ticket ${f.ticket}: ${CUE_WORDS[f.pattern]}`);
-  const five = earlyFive(fills);
-  return five ? [...out, five] : out;
+  return `${cueParts(fills).join('. ')}. Shout if it's right!`;
 }

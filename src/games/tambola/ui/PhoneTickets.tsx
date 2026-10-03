@@ -2,7 +2,7 @@
 // player's own tickets: never a called number, never another ticket (TAM-050, TAM-051). The player marks by hand,
 // can use quick mark, crosses out prizes announced as won, and shows a claim QR the host scans (TAM-177).
 // The phone checks nothing: only the host's scan decides (owner, 2026-09-29).
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import type { PlayerTicketInput, Preferences, ReportSubject } from '../../../engine';
 import { decodeTicket, decodeTypedCode, encodeClaim, PATTERN_NAMES, type Pattern } from '../rules';
 import { QrCode } from './qr';
@@ -10,7 +10,7 @@ import {
   addTicket,
   AWAY_KEY,
   crossedOut,
-  cueDetails,
+  cueParts,
   cueLine,
   cueTickets,
   holderOf,
@@ -66,6 +66,25 @@ function useViewport() {
   return size;
 }
 
+/**
+ * The height an element is given by the layout (UX list row 1): the tickets take the room the bar, the cue line and
+ * the buttons leave, measured rather than guessed, so Larger text or a wrapped header never pushes the buttons off.
+ */
+function useGivenHeight(): [(el: HTMLElement | null) => void, number | null] {
+  const [el, setEl] = useState<HTMLElement | null>(null);
+  const [height, setHeight] = useState<number | null>(null);
+  useLayoutEffect(() => {
+    if (!el) return;
+    const read = () => setHeight(el.clientHeight);
+    read();
+    if (typeof ResizeObserver === 'undefined') return;
+    const ro = new ResizeObserver(read);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [el]);
+  return [setEl, height];
+}
+
 const time = (t: number) => {
   const d = new Date(t);
   return `${d.getHours() % 12 || 12}:${String(d.getMinutes()).padStart(2, '0')} ${d.getHours() < 12 ? 'am' : 'pm'}`;
@@ -104,6 +123,7 @@ export function PhoneTickets({
   /** TAM-214: a 4th ticket was refused ("This phone already holds 3 tickets"). */
   const [notice, setNotice] = useState<string | null>(null);
   const { w, h } = useViewport();
+  const [ticketsRef, given] = useGivenHeight();
 
   const save = (next: PhoneGameFacts | null) => {
     savePhoneGame(prefs, next);
@@ -259,19 +279,19 @@ export function PhoneTickets({
   // The caption beside each ticket in landscape, and the ticket's 2 px border on each side.
   const side = (landscape ? 20 : 0) + 4;
   const chrome = landscape ? 104 : 190 + (cueSays ? 32 : 0);
-  const allCell = Math.max(
-    24,
-    Math.min(
-      80,
-      Math.floor((w - 24 - (cols - 1) * 12 - cols * side) / (9 * cols)),
-      Math.floor((h - chrome - ticketRows * (caption + 8)) / (3 * ticketRows)),
-    ),
-  );
+  // The height: what the layout gives the tickets once measured (each ticket's caption and 4 px of border, 8 px
+  // between rows); before that, an estimate.
+  const tallest =
+    given !== null
+      ? Math.floor((given - ticketRows * (caption + 4) - (ticketRows - 1) * 8) / (3 * ticketRows))
+      : Math.floor((h - chrome - ticketRows * (caption + 8)) / (3 * ticketRows));
+  const allCell = Math.max(24, Math.min(80, Math.floor((w - 24 - (cols - 1) * 12 - cols * side) / (9 * cols)), tallest));
   // Portrait one at a time (owner decision 2026-10-01, replacing the full-width 42 px cells): the ticket keeps a
   // 12 px margin each side, with no border, and the cells fill the width between (40 px on a 390 px phone, 39 on 375).
+  const oneTallest = given !== null ? Math.floor((given - caption - 4) / 3) : Math.floor((h - chrome - 60) / 3);
   const oneCell = landscape
-    ? Math.max(44, Math.min(80, Math.floor((w - 24 - side) / 9), Math.floor((h - chrome - 60) / 3)))
-    : Math.max(24, Math.min(80, Math.floor((w - 24) / 9), Math.floor((h - chrome - 60) / 3)));
+    ? Math.max(44, Math.min(80, Math.floor((w - 24 - side) / 9), oneTallest))
+    : Math.max(24, Math.min(80, Math.floor((w - 24) / 9), oneTallest));
 
   const header = (onBack?: () => void) => (
     <header className="phone-bar">
@@ -332,7 +352,7 @@ export function PhoneTickets({
         <Popup label="Patterns filled" onClose={() => setPopup(null)}>
           <div data-testid="pattern-cue-more" className="stack-tight">
             <ul className="cue-list">
-              {cueDetails(cue.fills).map((line) => (
+              {cueParts(cue.fills).map((line) => (
                 <li key={line}>{line}</li>
               ))}
             </ul>
@@ -395,17 +415,9 @@ export function PhoneTickets({
     </>
   );
 
-  // TAM-195 (row 1a): one slim line, never over a ticket and never pushing the buttons off screen; "More" for the rest.
-  const cueBox = cueSays && (
-    <div className="pattern-cue" data-testid="pattern-cue" role="status">
-      <span className="pattern-cue-text">{cueSays.line}</span>
-      {cueSays.more && (
-        <button type="button" className="pattern-cue-more" onClick={() => setPopup('cue')}>
-          More
-        </button>
-      )}
-    </div>
-  );
+  // TAM-195 (rows 1a and 1): one slim line, never over a ticket and never pushing the buttons off screen; "More" when
+  // it doesn't fit.
+  const cueBox = cueSays && <CueLine line={cueSays} onMore={() => setPopup('cue')} />;
 
   const ticketBox = (t: (typeof tickets)[number], cell: number, extra?: { outlined?: ReadonlySet<number>; noTap?: boolean }) => (
     <section key={t.number} className={landscape ? 'phone-ticket phone-ticket-side' : 'phone-ticket'} data-testid="phone-ticket" data-ticket={t.number}>
@@ -495,7 +507,9 @@ export function PhoneTickets({
     return (
       <main className={rootClass}>
         {header(() => setScreen({ name: 'quick', message: screen.message }))}
-        <div className="tickets tickets-one">{ticketBox(t, oneCell)}</div>
+        <div className="tickets tickets-one tickets-fill" ref={ticketsRef}>
+          {ticketBox(t, oneCell)}
+        </div>
         <div className="phone-actions">
           {cueBox}
           <div className="phone-buttons">{showClaimButton}</div>
@@ -620,12 +634,12 @@ export function PhoneTickets({
           })}
         </div>
       )}
-      <div className={showOne ? 'tickets tickets-one' : cols === 2 ? 'tickets tickets-two' : 'tickets'}>
+      <div className={`${showOne ? 'tickets tickets-one' : cols === 2 ? 'tickets tickets-two' : 'tickets'} tickets-fill`} ref={ticketsRef}>
         {shown.map((t) => ticketBox(t, showOne ? oneCell : allCell))}
       </div>
       <div className="phone-actions">
-        {/* In landscape the cue line takes the place of the reminder, beside the buttons, so it adds no height. */}
-        {!(landscape && cueBox) && <p className="note listen">Listen to the anchor and mark your numbers.</p>}
+        {/* The cue line takes the place of the reminder (row 1); in landscape beside the buttons, so it adds no height. */}
+        {!cueBox && <p className="note listen">Listen to the anchor and mark your numbers.</p>}
         {cueBox}
         <div className="phone-buttons">
           {tickets.length > 1 &&
@@ -646,6 +660,34 @@ export function PhoneTickets({
       </div>
       {popups}
     </main>
+  );
+}
+
+/** The cue's line (TAM-195, UX list row 1), with "More" only when the whole line doesn't fit. */
+function CueLine({ line, onMore }: { line: string; onMore: () => void }) {
+  const text = useRef<HTMLSpanElement>(null);
+  const [more, setMore] = useState(false);
+  useLayoutEffect(() => {
+    const el = text.current;
+    if (!el) return;
+    const read = () => setMore(el.scrollWidth > el.clientWidth + 1 || el.scrollHeight > el.clientHeight + 1);
+    read();
+    if (typeof ResizeObserver === 'undefined') return;
+    const ro = new ResizeObserver(read);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [line]);
+  return (
+    <div className="pattern-cue" data-testid="pattern-cue" role="status">
+      <span className="pattern-cue-text" ref={text}>
+        {line}
+      </span>
+      {more && (
+        <button type="button" className="pattern-cue-more" onClick={onMore}>
+          More
+        </button>
+      )}
+    </div>
   );
 }
 
