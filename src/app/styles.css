@@ -941,3 +941,9 @@ button.tcell { cursor: pointer; }
   position: absolute; left: max(20px, env(safe-area-inset-left)); bottom: max(20px, env(safe-area-inset-bottom)); margin: 0;
   font-size: 1rem; font-weight: 800; letter-spacing: 0.05em; color: var(--muted); pointer-events: none;
 }
+/* UX row 19 (TAM-126, TAM-183) and TAM-123: the host's prize chips wrap and stay compact, so the called number keeps
+   at least 30% of the screen when they take two lines. A chip with a "Close" button keeps its 44 px target. */
+.play .prize-chips { min-height: 32px; gap: 6px; }
+.play .prize-chip { min-height: 32px; padding: 0 10px; font-size: 0.9rem; line-height: 1.25; }
+.play .prize-chip:has(.chip-close) { min-height: 48px; padding-right: 2px; }
+.play .prize-chip .chip-close { flex: none; min-height: 44px; }

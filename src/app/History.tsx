@@ -145,7 +145,7 @@ export function History({
       {clearing && (
         <Dialog>
           <p className="lead">
-            Delete all {past.length} past {past.length === 1 ? 'game' : 'games'} from this phone? This can't be undone.
+            {past.length === 1 ? 'Delete the past game' : `Delete all ${past.length} past games`} from this phone? This can't be undone.
           </p>
           {unsettled > 0 && (
             <p className="note">
@@ -156,7 +156,7 @@ export function History({
           {/* PLT-301: a destructive action is never the main button; "Keep" is. */}
           <div className="row">
             <button type="button" className="button button-quiet" onClick={clearAll}>
-              Delete all
+              {past.length === 1 ? 'Delete' : 'Delete all'}
             </button>
             <button type="button" className="button" onClick={() => setClearing(false)}>
               Keep
