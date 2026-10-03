@@ -2,7 +2,7 @@
 // player's own tickets: never a called number, never another ticket (TAM-050, TAM-051). The player marks by hand,
 // can use quick mark, crosses out prizes announced as won, and shows a claim QR the host scans (TAM-177).
 // The phone checks nothing: only the host's scan decides (owner, 2026-09-29).
-import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import type { PlayerTicketInput, Preferences, ReportSubject } from '../../../engine';
 import { decodeTicket, decodeTypedCode, encodeClaim, PATTERN_NAMES, type Pattern } from '../rules';
 import { QrCode } from './qr';
@@ -530,11 +530,14 @@ export function PhoneTickets({
     // RC fix 3 (C1): every thumbnail also takes 6 px beyond its 9 cells (a 1 px border each side and 2 px padding
     // each side), so count that too or three tickets wrap onto two rows at 360 px wide and push "Show claim" off.
     const count = tickets.length;
-    const thumbCell = Math.max(8, Math.min(16, Math.floor((w - 32 - (count - 1) * 8 - count * 6) / (9 * count))));
+    // N3 (3 October): in landscape the pad takes the left of the screen, its 9 rows the full height, and the words,
+    // ticket pictures, cue line and "Show claim" a column beside it, so 1–90 and "Show claim" all fit.
+    const side = landscape ? Math.min(340, Math.floor((w - 32) * 0.42)) : w - 32;
+    const thumbCell = Math.max(8, Math.min(16, Math.floor((side - (count - 1) * 8 - count * 6) / (9 * count))));
     // A number marked on any ticket (on the pad or on the ticket) shows a fill and a ✓ on its key (owner 2026-10-01).
     const markedAnywhere = new Set(tickets.flatMap((t) => [...marksOn(game, t.number)]));
     return (
-      <main className={`${rootClass} quick-screen`}>
+      <main className={`${rootClass} quick-screen`} style={landscape ? ({ '--quick-side': `${side}px` } as CSSProperties) : undefined}>
         {header(() => setScreen({ name: 'tickets' }))}
         <p className="note listen">Listen to the anchor, then tap the number you heard.</p>
         <p className="quick-message" data-testid="quick-mark-message" aria-live="polite">

@@ -963,6 +963,21 @@ button.tcell { cursor: pointer; }
   .quick-screen .quick-pad { flex: 0 1 auto; min-height: calc(9 * 28px + 8 * 3px); grid-template-rows: repeat(9, minmax(28px, 44px)); }
   .quick-screen .quick-key { min-height: 0; }
 }
+/* N3 (3 October): Quick mark in landscape (812 x 375): the pad on the left, its 9 rows sharing the full height (keys
+   about 33 px tall there, at least 24); the words, ticket pictures, cue line and "Show claim" in a column on the right. */
+.phone-landscape.quick-screen {
+  height: 100dvh; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) var(--quick-side, 320px);
+  grid-template-rows: auto auto auto auto minmax(0, 1fr) auto; gap: 6px 16px; padding-bottom: max(8px, env(safe-area-inset-bottom));
+}
+.phone-landscape.quick-screen > .phone-bar { grid-column: 1 / -1; grid-row: 1; }
+.phone-landscape.quick-screen > .listen { grid-column: 2; grid-row: 2; margin: 0; }
+.phone-landscape.quick-screen > .quick-message { grid-column: 2; grid-row: 3; }
+.phone-landscape.quick-screen > .thumbs { grid-column: 2; grid-row: 4; }
+.phone-landscape.quick-screen > .phone-actions { grid-column: 2; grid-row: 6; flex-direction: column; align-items: stretch; }
+.phone-landscape.quick-screen .phone-buttons { margin-left: 0; }
+.phone-landscape.quick-screen .phone-buttons > .button { flex: 1 1 0; }
+.phone-landscape.quick-screen > .quick-pad { grid-column: 1; grid-row: 2 / -1; min-height: calc(9 * 24px + 8 * 3px); grid-template-rows: repeat(9, minmax(24px, 1fr)); }
+.phone-landscape.quick-screen .quick-key { min-height: 0; }
 .thumbs { flex: none; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
 .thumb { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 2px; font: inherit; color: var(--muted); background: transparent; border: 0; cursor: pointer; }
 .thumb-caption { font-size: 0.8rem; font-weight: 700; line-height: 1.2; }
