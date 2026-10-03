@@ -406,8 +406,10 @@
   .imp-larger .imp-block .imp-private-word { line-height: 1.1; }
 }
 
-/* ----- The clues (IMP-016, IMP-020) ----- */
+/* ----- The clues (IMP-016, IMP-020, IMP-022) ----- */
 .imp-clues { justify-content: center; align-items: center; text-align: center; gap: 8px; }
+.imp-clues-top, .imp-clues-who { flex: none; width: 100%; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.imp-clues-rest { flex: 0 1 auto; min-height: 0; width: 100%; display: flex; flex-direction: column; align-items: center; gap: 8px; }
 .imp-starter { width: 100%; font-size: 56px; font-weight: 800; line-height: 1.1; white-space: nowrap; overflow-wrap: anywhere; }
 .imp-starts { font-size: 1.35rem; font-weight: 700; }
 .imp-clue-order { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
@@ -490,7 +492,19 @@
   .imp-pad-area { width: 358px; align-self: stretch; margin-left: auto; }
   .imp-pad { flex: 1 1 auto; min-height: 64px; }
   .imp-turn-name { font-size: 1.35rem; text-align: left; }
-  .imp-starter { font-size: 40px; }
+  /* IMP-020: starter and "starts" in the left half; the lines, the order and the buttons in the right half. */
+  .imp-clues {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    grid-template-areas: "who top" "who rest";
+    column-gap: 16px;
+    row-gap: 8px;
+    align-items: stretch;
+  }
+  .imp-clues-who { grid-area: who; justify-content: center; }
+  .imp-clues-top { grid-area: top; }
+  .imp-clues-rest { grid-area: rest; justify-content: flex-start; }
   .imp-count { font-size: 160px; }
   .imp-count-point { font-size: 96px; }
   .imp-talk-heading { font-size: 48px; }

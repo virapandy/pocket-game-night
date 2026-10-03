@@ -30,27 +30,35 @@ export function Clues({
   const nameRef = useRef<HTMLParagraphElement>(null);
   useFitText(nameRef, 56, 32, starter);
   const said = order.join(', ');
-  useEffect(() => announce(`${starter} starts, then clockwise: ${said}`), [announce, starter, said]);
+  useEffect(() => announce(`${starter} starts. Each say one word about your secret: ${said}`), [announce, starter, said]);
+  // IMP-020: in landscape the starter sits in the left half; everything else, buttons included, in the right half.
   return (
     <>
       <section className="imp-stage imp-clues">
-        <p className="imp-body">✓ Everyone has seen their word.</p>
-        <p className="imp-body">Phone in the middle, face up.</p>
-        <p ref={nameRef} className="imp-starter imp-caps" data-testid="starter-name">
-          {starter}
-        </p>
-        <p className="imp-starts">starts</p>
-        <p className="imp-body imp-clue-order" data-testid="clue-order">
-          then clockwise: {order.join(' → ')}
-        </p>
-        {secondClues && (
-          <p className="imp-body">
-            Second round: <Caps>{starter}</Caps> starts again
+        <div className="imp-clues-top">
+          <p className="imp-body">✓ Everyone has seen their word.</p>
+          <p className="imp-body">Phone in the middle, face up.</p>
+        </div>
+        <div className="imp-clues-who">
+          <p ref={nameRef} className="imp-starter imp-caps" data-testid="starter-name">
+            {starter}
           </p>
-        )}
-        {!secondClues && players.length <= 5 && <QuietButton onClick={onSecondClues}>Another round of clues</QuietButton>}
+          <p className="imp-starts">starts</p>
+        </div>
+        <div className="imp-clues-rest">
+          <p className="imp-body">Each say one word about your secret:</p>
+          <p className="imp-body imp-clue-order" data-testid="clue-order">
+            {order.join(' → ')}
+          </p>
+          {secondClues && (
+            <p className="imp-body">
+              Second round: <Caps>{starter}</Caps> starts again
+            </p>
+          )}
+          {!secondClues && players.length <= 5 && <QuietButton onClick={onSecondClues}>One more round of clues</QuietButton>}
+        </div>
       </section>
-      <MainButton onClick={onTalk}>{talking === 'timer' ? 'Start the 2-minute timer' : 'Talk it over'}</MainButton>
+      <MainButton onClick={onTalk}>{talking === 'timer' ? 'Clues done, start the 2-minute timer' : 'Clues done, talk it over'}</MainButton>
     </>
   );
 }
