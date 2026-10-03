@@ -1,0 +1,39 @@
+# Screenshots: makes fresh reference pictures for the screenshot tests (tests tagged @screens) on Linux,
+# the same machine type the complete run uses, and keeps them as a downloadable artifact.
+# Started by hand only: gh workflow run screenshots.yml --ref main
+# It never commits and never publishes; the Test role reviews the pictures and commits the approved ones.
+name: Screenshots
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  screenshots:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Install browser
+        run: npx playwright install --with-deps chromium
+      - name: Make reference pictures
+        env:
+          SCREENS_NEW: '1'
+        run: npm run test:browser -- --project=android --grep @screens --update-snapshots
+      - name: Keep the pictures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screens-snapshots
+          path: tests/browser/screens.spec.ts-snapshots/
+          retention-days: 14
+          if-no-files-found: warn
