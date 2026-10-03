@@ -521,9 +521,8 @@ export function PhoneTickets({
 
   // ---------- Showing a claim (TAM-177, TAM-190, TAM-193) ----------
   if (screen.name === 'claim-ticket' || screen.name === 'claim-prize') {
-    const named = cueTickets(cue.fills);
-    const filled = new Set(cue.fills.map((f) => f.ticket));
-    const first = named[0];
+    // UX list row 12: only the ticket the cue's line names first says "Pattern filled" (product owner, 3 October).
+    const first = cueTickets(cue.fills)[0];
     const choiceOrder = first === undefined ? tickets : [...tickets.filter((t) => t.number === first), ...tickets.filter((t) => t.number !== first)];
     // The pictures stay small (at most half a full ticket's cells) so every choice fits on one screen.
     const pictureCell = Math.max(10, Math.min(22, Math.floor(allCell / 2), Math.floor((h - 220) / (tickets.length * 3 + tickets.length * 2))));
@@ -534,13 +533,13 @@ export function PhoneTickets({
             <h1 className="step-title">Which ticket?</h1>
             <div className="ticket-choices">
               {choiceOrder.map((t) => (
-                // TAM-190 (UX list row 10): a small picture of each ticket with her marks; with the cue on, the
+                // TAM-190 (UX list row 12): a small picture of each ticket with her marks; with the cue on, the
                 // ticket its line names first comes first, marked "Pattern filled".
                 <button key={t.number} type="button" className="button button-quiet ticket-choice" onClick={() => setScreen({ name: 'claim-prize', ticket: t.number })}>
                   <span className="ticket-choice-name">
                     Ticket {t.number}
                     {mixed && holderOf(game, t) ? ` · ${holderOf(game, t)}` : ''}
-                    {filled.has(t.number) && <span className="ticket-choice-tag"> · Pattern filled</span>}
+                    {t.number === first && <span className="ticket-choice-tag"> · Pattern filled</span>}
                   </span>
                   <span className="ticket-picture" data-testid="ticket-picture" data-ticket={t.number} aria-hidden="true">
                     <TicketGrid rows={t.rows} cell={pictureCell} marks={marksFor(t.number)} className="ticket-thumb" />
