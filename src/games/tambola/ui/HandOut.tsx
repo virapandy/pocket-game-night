@@ -58,11 +58,16 @@ export function HandOut({
 
   if (!ticket || number === undefined) {
     return (
-      <main className="screen" data-testid="hand-out">
-        <p className="lead">Every ticket is handed out.</p>
-        <button type="button" className="button button-big" onClick={onDone}>
-          {doneLabel}
-        </button>
+      <main className="screen hand-out" data-testid="hand-out">
+        <div className="hand-out-body stack">
+          <p className="lead">Every ticket is handed out.</p>
+        </div>
+        {/* UX list row 10 (TAM-181): the main button full width at the bottom, as on every hand-out screen. */}
+        <div className="bottom-action hand-out-actions">
+          <button type="button" className="button button-big" onClick={onDone}>
+            {doneLabel}
+          </button>
+        </div>
       </main>
     );
   }
@@ -136,7 +141,7 @@ export function HandOut({
           Waiting: {[...waiting.entries()].map(([id, n]) => `${nameOf(id)} (${n} ${n === 1 ? 'ticket' : 'tickets'})`).join(', ')}
         </p>
       </div>
-      {/* TAM-181 (UX list row 9): the one main button full width at the bottom, the paper fallback a link above it. */}
+      {/* TAM-181 (UX list row 10): the one main button full width at the bottom, the paper fallback a link above it. */}
       <div className="bottom-action hand-out-actions">
         <button type="button" className="text-button hand-out-paper" onClick={() => onPaper(owner)}>
           Can't scan? Give a paper ticket
