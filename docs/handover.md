@@ -36,6 +36,15 @@ complete test only before a release; up to 3 coders in parallel, each on its own
 - C1/C2 questions don't stop work (pick by the UX guidelines, note it); C3 questions go to the owner in one list.
 - Stuck after 3 rounds or half a day: tell the owner. One progress line at the top of `reports/latest.md` per step.
 
+### Release gate rc-1.2.0 (Tambola 1.2.0, branch release/1.2): product owner with UX designer, 3 October
+**Verdict: GO** (`docs/games/tambola/ux-review-2026-10-03-release-1.2.0.md`), from Screenshots run 37119724773.
+Fixed in the pictures: point a, point b, N3, N4, N5, nothing under the rhyme before the first call, payouts and prizes at
+360, landscape "Which prize?" and claim QR. Not in the pictures, so for the owner's try-out: N1 (paper winner by name,
+also while a won prize waits) and the thin "Screen may sleep" line after "Got it". The empty-looking Called · Undo
+bar is the test's see-through countdown, not a fault. Next list (not blocking): the first-run screen tip pushing the
+number off at 360 with a verdict; payout buttons stacking when a wider font cuts "Settle with players" at 390; small
+polish. **Tester:** add pictures of the thin sleep line after "Got it" and of N1's name list.
+
 ### Release review of rc-2026-10-03b (1.1.0): product owner with UX designer, 3 October
 **Verdict: GO, after one small text fix** (`docs/games/tambola/ux-review-2026-10-03-release-1.1.0.md`).
 - **Fix before release (C1, one line):** in a phone-ticket game, after a recorded win, "Add another winner" with a
