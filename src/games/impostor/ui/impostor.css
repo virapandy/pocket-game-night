@@ -336,8 +336,16 @@
   .imp-setup .imp-option-line { line-height: 1.2; }
 }
 
-/* ----- Read this aloud (IMP-070) ----- */
+/* IMP-005, IMP-070, IMP-076: "More options ›" left and "How to play" right, equal widths, directly above "Start round". */
+.imp-choice-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.imp-choice-row .imp-quiet { min-width: 0; padding: 0 8px; }
+/* IMP-076: a group whose label is too long for the 64 px column sits above its two options. */
+.imp-group-wide { grid-template-columns: 1fr 1fr; }
+.imp-group-wide .imp-group-label { grid-column: 1 / -1; }
+
+/* ----- How to play (IMP-070, IMP-072) ----- */
 .imp-read { padding-left: 24px; display: flex; flex-direction: column; gap: 10px; font-size: var(--imp-body); line-height: 1.4; }
+.imp-practice-first { align-self: flex-start; }
 
 /* ----- The deal (IMP-010 to IMP-014) ----- */
 .imp-pass { font-size: 1.35rem; font-weight: 700; }

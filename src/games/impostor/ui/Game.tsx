@@ -1,4 +1,4 @@
-// One evening on screen, start to finish: the read-aloud card, the deal, the clues, talk and the timer, the countdown,
+// One evening on screen, start to finish: the deal, the clues, talk and the timer, the countdown,
 // the picker, the reveal and the round result, the menu with its dialogs and sheets, the privacy cover,
 // "Welcome back.", "left halfway", the no-words screen and the summary (IMP-016 to IMP-109).
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
@@ -9,12 +9,12 @@ import { Clues } from './Clues';
 import { Turn, type Secret } from './Deal';
 import { usePageHidden, useWakeLock } from './device';
 import {
-  clearUi, endEvening, LEFT_HALFWAY_MS, markCardShown, PREF, record, undoableVerdict, undoVerdict,
+  clearUi, endEvening, LEFT_HALFWAY_MS, PREF, record, undoableVerdict, undoVerdict,
   type Evening, type EveningMatch, type UiState,
 } from './evening';
 import { Dialog, HideMainButton, MainButton, Menu, QuietButton, Toast, useToast, type MenuItem } from './parts';
 import { Reveal, type ResultInfo } from './Reveal';
-import { HowToPlayChoices, ReadAloud } from './Setup';
+import { HowToPlayChoices } from './Setup';
 import { PlayersSheet, RulesSheet, SettingsSheet } from './Sheets';
 import { counts, headline, pointsText, scoreRows, storyOf } from './story';
 import { Summary } from './Summary';
@@ -148,10 +148,10 @@ export function Game({
   // IMP-087, IMP-100: the screen stays on from a round's first screen A until its result block appears.
   useWakeLock(state.phase === 'round' && !resultShown && !leftHalfway && !summary, roundKey);
 
-  // IMP-070: the card counts as shown for tonight's session once it is on screen.
+  // IMP-070: no card opens by itself; an evening with no deal yet goes back to its choices.
   useEffect(() => {
-    if (state.phase === 'ready') markCardShown(prefs, saved);
-  }, [state.phase, prefs, saved]);
+    if (state.phase === 'ready') onBackToChoices(saved);
+  }, [state.phase, onBackToChoices, saved]);
 
   // IMP-099, IMP-101: 3 hours after the summary first showed, `endEvening` is recorded by itself.
   useEffect(() => {
@@ -182,9 +182,7 @@ export function Game({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [summary]);
 
-  if (state.phase === 'ready') {
-    return <ReadAloud onBack={() => onBackToChoices(saved)} onDeal={(practice) => act({ type: 'startDeal', practice })} />;
-  }
+  if (state.phase === 'ready') return null;
 
   // ---- The summary (IMP-092, IMP-093, IMP-097, IMP-101) ----
   if (summary) {
@@ -257,7 +255,7 @@ export function Game({
   const betweenRounds = leftHalfway || state.phase === 'noWords' || (step === 'result' && resultShown);
 
   // IMP-075: the menu at each moment.
-  const rules: MenuItem = { label: 'Rules', onSelect: () => setOverlay('rules') };
+  const rules: MenuItem = { label: 'How to play', onSelect: () => setOverlay('rules') };
   const settings: MenuItem = { label: 'Settings', onSelect: () => setOverlay('settings') };
   const end: MenuItem = { label: 'End the evening', onSelect: () => setOverlay('end') };
   const dealAgain: MenuItem = { label: 'Deal again with a new word', onSelect: () => setOverlay('dealAgain') };
@@ -498,7 +496,7 @@ export function Game({
         {said}
       </div>
 
-      {overlay === 'rules' && <RulesSheet mode={state.choices.mode} onDone={() => setOverlay(null)} />}
+      {overlay === 'rules' && <RulesSheet choices={state.choices} onDone={() => setOverlay(null)} />}
       {overlay === 'settings' && (
         <SettingsSheet
           prefs={prefs}

@@ -1,8 +1,9 @@
 // Getting to the first deal: "Who's playing?" (IMP-003, IMP-004), "How do you want to play?" (IMP-005, IMP-007,
-// IMP-009, IMP-088) and the read-aloud card (IMP-070).
+// IMP-009, IMP-088), with "How to play" on request (IMP-070).
 import { useRef, useState, type FormEvent } from 'react';
 import { CATEGORIES, type Choices } from '../rules';
 import { MainButton, OptionButton, QuietButton, Sheet, Switch, Toast, useToast } from './parts';
+import { MoreOptionsSheet, RulesSheet } from './Sheets';
 
 const MAX_PLAYERS = 20;
 const MIN_PLAYERS = 3;
@@ -219,23 +220,38 @@ const GROUPS = [
   },
 ] as const;
 
-/** "How do you want to play?" (IMP-005, IMP-007, IMP-088). */
+/**
+ * "How do you want to play?" (IMP-005, IMP-007, IMP-088). Above "Start round", one row of two quiet buttons: "More
+ * options ›" (IMP-076) left and "How to play" (IMP-070) right. "How to play" follows the choices on screen.
+ */
 export function HowToPlayChoices({
   choices,
   onChange,
   onBack,
   onStart,
+  onPractice,
+  lastGuess,
+  onLastGuess,
 }: {
   choices: Choices;
   onChange: (next: Choices) => void;
   onBack: () => void;
   onStart: () => void;
+  /** A new evening only: "Practice round first" in "How to play" (IMP-071). */
+  onPractice?: () => void;
+  /**
+   * IMP-076: the last-chance guess on screen and its change. "More options ›" shows once these are given (the
+   * setting itself is the rules' change).
+   */
+  lastGuess?: boolean;
+  onLastGuess?: (on: boolean) => void;
 }) {
-  const [sheet, setSheet] = useState(false);
+  const [sheet, setSheet] = useState<'categories' | 'howTo' | 'more' | null>(null);
   const n = choices.categories.length;
+  const more = onLastGuess !== undefined;
   return (
     <main className="imp-screen imp-setup">
-      <div className="imp-screen-inner" hidden={sheet}>
+      <div className="imp-screen-inner" hidden={sheet !== null}>
         {/* IMP-088: the heading shares the bar's row on short phones (320 × 568), so everything fits unscrolled. */}
         <header className="imp-bar imp-bar-title">
           <QuietButton onClick={onBack}>← Back</QuietButton>
@@ -267,18 +283,46 @@ export function HowToPlayChoices({
               );
             })}
           </div>
-          <button type="button" className="imp-row-button" onClick={() => setSheet(true)}>
+          <button type="button" className="imp-row-button" onClick={() => setSheet('categories')}>
             {n === CATEGORIES.length ? `Categories: all ${n} ›` : `Categories: ${n} of ${CATEGORIES.length} ›`}
           </button>
+          <div className="imp-choice-row">
+            {more ? (
+              <QuietButton className="imp-choice-more" onClick={() => setSheet('more')}>
+                More options ›
+              </QuietButton>
+            ) : (
+              <span className="imp-choice-more" />
+            )}
+            <QuietButton className="imp-choice-how" onClick={() => setSheet('howTo')}>
+              How to play
+            </QuietButton>
+          </div>
         </div>
         <MainButton onClick={onStart}>Start round</MainButton>
       </div>
-      {sheet && (
+      {sheet === 'categories' && (
         <CategoriesSheet
           choices={choices}
           onDone={(next) => {
             onChange(next);
-            setSheet(false);
+            setSheet(null);
+          }}
+        />
+      )}
+      {sheet === 'howTo' && (
+        <RulesSheet
+          choices={lastGuess === undefined ? choices : ({ ...choices, lastGuess } as Choices)}
+          onDone={() => setSheet(null)}
+          {...(onPractice ? { onPractice } : {})}
+        />
+      )}
+      {sheet === 'more' && (
+        <MoreOptionsSheet
+          lastGuess={lastGuess ?? false}
+          onDone={(on) => {
+            onLastGuess?.(on);
+            setSheet(null);
           }}
         />
       )}
@@ -311,27 +355,5 @@ function CategoriesSheet({ choices, onDone }: { choices: Choices; onDone: (next:
       )}
       <Switch label="Include non-veg food" checked={nonveg} onChange={setNonveg} />
     </Sheet>
-  );
-}
-
-/** IMP-070: the read-aloud card, once a session. No menu; "← Back" returns to the choices. */
-export function ReadAloud({ onBack, onDeal }: { onBack: () => void; onDeal: (practice: boolean) => void }) {
-  return (
-    <main className="imp-screen">
-      <header className="imp-bar">
-        <QuietButton onClick={onBack}>← Back</QuietButton>
-      </header>
-      <div className="imp-scroll">
-        <h1 className="imp-title">Read this aloud</h1>
-        <ol className="imp-read">
-          <li>Everyone gets the same secret word, except the impostor.</li>
-          <li>Take turns to say one word about it. Don't say the word!</li>
-          <li>Then talk, and all point at who you think the impostor is.</li>
-          <li>Impostor: blend in. Caught? Guess the word to steal the round.</li>
-        </ol>
-        <QuietButton onClick={() => onDeal(true)}>Practice round first</QuietButton>
-      </div>
-      <MainButton onClick={() => onDeal(false)}>Start the deal</MainButton>
-    </main>
   );
 }

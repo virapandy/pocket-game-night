@@ -3,7 +3,7 @@ import { useRef, useState, type ReactNode } from 'react';
 import type { Preferences, SavedGame, SavedGameStore, SessionPicker } from '../../../engine';
 import type { Choices } from '../rules';
 import {
-  cardDue, clearUi, clock, createEvening, describeEvening, endEvening, lastChoices, loadEvening, pastNames, PREF, record,
+  clearUi, clock, createEvening, describeEvening, endEvening, lastChoices, loadEvening, pastNames, PREF, record,
   tonightsNames, unfinishedEvening, type Evening, type EveningMatch,
 } from './evening';
 import { Game } from './Game';
@@ -23,12 +23,19 @@ type Route =
   | { name: 'choices' }
   | { name: 'game'; saved: Evening; match: EveningMatch; resumed: boolean; seq: number };
 
-function openRoute(store: SavedGameStore, open: ImpostorOpen | undefined): { route: Route; players?: string[]; choices?: Choices } {
+function openRoute(
+  store: SavedGameStore,
+  open: ImpostorOpen | undefined,
+): { route: Route; players?: string[]; choices?: Choices; created?: Evening } {
   if (!open) return { route: { name: 'players' } };
   const saved = store.get(open.id) as Evening | undefined;
   const match = saved && loadEvening(saved);
   if (!saved || !match) return { route: { name: 'players' } };
   if (open.action === 'reuse') return { route: { name: 'players' }, players: [...match.state.players], choices: match.state.choices };
+  // An evening made by "Start round" with no deal recorded (an older build's read-aloud card): back to its choices.
+  if (match.state.phase === 'ready') {
+    return { route: { name: 'choices' }, players: [...match.state.players], choices: match.state.choices, created: saved };
+  }
   return { route: { name: 'game', saved, match, resumed: true, seq: 0 } };
 }
 
@@ -72,30 +79,26 @@ export function ImpostorScreen({
   const [players, setPlayers] = useState<string[]>(() => start.players ?? (kept ? [...kept] : null) ?? tonightsNames(store, sessions, Date.now()));
   const [choices, setChoices] = useState<Choices>(() => start.choices ?? lastChoices(prefs));
   const [past] = useState(() => pastNames(store));
-  /** The evening made by "Start round" with nothing recorded yet (back from the read-aloud card). */
-  const [created, setCreated] = useState<Evening | null>(null);
+  /** The evening made by "Start round" with nothing recorded yet (reused by the next "Start round"). */
+  const [created, setCreated] = useState<Evening | null>(start.created ?? null);
   const [larger, setLarger] = useState(() => prefs.get<boolean>(PREF.largerText, false) === true);
 
   const seqRef = useRef(0);
   const nextSeq = () => ++seqRef.current;
   /** IMP-001: another unfinished evening is ended (or carried on) before a new one starts. */
-  const [asking, setAsking] = useState<{ saved: Evening; match: EveningMatch } | null>(null);
-  const begin = () => {
+  const [asking, setAsking] = useState<{ saved: Evening; match: EveningMatch; practice: boolean } | null>(null);
+  /** IMP-008, IMP-071: "Start round" (or "Practice round first") creates the evening and starts its first deal. */
+  const begin = (practice: boolean) => {
     const reuse = created && store.get(created.id)?.records.length === 0 ? created : null;
     const ev = createEvening({ store, prefs, sessions, players, choices, testSeedsRaw: testSeedsRaw(), release, reuse });
     setCreated(ev.saved);
-    if (cardDue(prefs, ev.saved)) {
-      setRoute({ name: 'game', ...ev, resumed: false, seq: nextSeq() });
-      return;
-    }
-    // IMP-070: no card for a later evening of the session; the app records the start of the deal itself.
-    const dealt = record(store, ev.saved, ev.match, { type: 'startDeal', practice: false });
+    const dealt = record(store, ev.saved, ev.match, { type: 'startDeal', practice });
     setRoute({ name: 'game', ...(dealt ?? ev), resumed: false, seq: nextSeq() });
   };
-  const startRound = () => {
+  const startRound = (practice: boolean) => {
     const other = unfinishedEvening(store);
-    if (other && other.saved.id !== created?.id) setAsking(other);
-    else begin();
+    if (other && other.saved.id !== created?.id) setAsking({ ...other, practice });
+    else begin(practice);
   };
 
   let screen: ReactNode;
@@ -113,7 +116,13 @@ export function ImpostorScreen({
       break;
     case 'choices':
       screen = (
-        <HowToPlayChoices choices={choices} onChange={setChoices} onBack={() => setRoute({ name: 'players' })} onStart={startRound} />
+        <HowToPlayChoices
+          choices={choices}
+          onChange={setChoices}
+          onBack={() => setRoute({ name: 'players' })}
+          onStart={() => startRound(false)}
+          onPractice={() => startRound(true)}
+        />
       );
       break;
     default:
@@ -153,7 +162,7 @@ export function ImpostorScreen({
               endEvening(store, asking.saved, asking.match);
               clearUi(ui, asking.saved.id);
               setAsking(null);
-              begin();
+              begin(asking.practice);
             }}
           >
             Start new

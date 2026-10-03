@@ -1,28 +1,82 @@
-// The sheets over a round: Rules (IMP-072), Settings (IMP-014, IMP-107, IMP-109) and Players between rounds
-// (IMP-074). None shows a word or a role.
+// The sheets: How to play (IMP-070, IMP-072), More options (IMP-076), Settings (IMP-014, IMP-107, IMP-109) and
+// Players between rounds (IMP-074). None shows a word or a role.
 import { useState } from 'react';
 import type { Preferences } from '../../../engine';
-import { wordById } from '../rules';
+import { wordById, type Choices } from '../rules';
 import { PREF } from './evening';
-import { Sheet, Switch, Toast, useToast } from './parts';
+import { OptionButton, QuietButton, Sheet, Switch, Toast, useToast } from './parts';
 import { PlayerList } from './Setup';
 
-/** IMP-072: "How to play", for the evening's mode. */
-export function RulesSheet({ mode, onDone }: { mode: 'easy' | 'hard'; onDone: () => void }) {
+/**
+ * The last-chance guess of a set of choices (IMP-076). Choices saved before the setting existed had the guess, so they
+ * read as on (IMP-009, IMP-096).
+ */
+export const guessOn = (choices: Choices): boolean => (choices as { lastGuess?: boolean }).lastGuess ?? true;
+
+/**
+ * IMP-070, IMP-072: "How to play", opened only on request (the choices screen or the menu). Its text follows the
+ * choices it is given: the mode's paragraph, and the guess paragraph only with the last-chance guess on. "Practice
+ * round first" (IMP-071) only when opened from a new evening's choices screen. No word, hint or role (IMP-013).
+ */
+export function RulesSheet({
+  choices,
+  onDone,
+  onPractice,
+}: {
+  choices: Choices;
+  onDone: () => void;
+  onPractice?: () => void;
+}) {
   return (
     <Sheet title="How to play" onDone={onDone}>
       <div className="imp-rules">
+        <h2 className="imp-subtitle">Read this aloud</h2>
+        <ol className="imp-read">
+          <li>Everyone sees the secret word except one impostor.</li>
+          <li>Clockwise, say one word about it. Don't say the word!</li>
+          <li>Talk, then on 3, 2, 1 everyone points.</li>
+          <li>Most fingers is revealed. Caught: the crew wins. Wrong person: the impostor wins.</li>
+        </ol>
         <p>
-          {mode === 'easy'
-            ? '1. Everyone sees the same secret word, except the impostor, who sees only the category and a hint.'
-            : '1. Everyone sees the same secret word, except the impostor, who sees nothing.'}
+          {choices.mode === 'easy' ? 'The impostor sees the category and a hint.' : 'The impostor sees nothing and never starts.'}
         </p>
-        <p>2. Take turns clockwise. Say one word about the secret word.</p>
-        {mode === 'hard' && <p>The impostor never starts.</p>}
-        <p>3. Not allowed: the word itself, a rhyme, a translation, or 'thing'. Repeating someone's clue is allowed.</p>
-        <p>4. Talk it over, then everyone points at once on 3, 2, 1.</p>
-        <p>5. Caught? The impostor gets one guess at the word to steal the round.</p>
-        <p>Kids may use up to 3 words.</p>
+        {guessOn(choices) && <p>A caught impostor can steal the round by guessing the word.</p>}
+        <ul className="imp-read">
+          <li>Not allowed: the word itself, a rhyme, a translation, or 'thing'.</li>
+          <li>Repeating someone's clue is allowed.</li>
+          <li>Kids may use up to 3 words.</li>
+        </ul>
+        {onPractice && (
+          <QuietButton className="imp-practice-first" onClick={onPractice}>
+            Practice round first
+          </QuietButton>
+        )}
+      </div>
+    </Sheet>
+  );
+}
+
+/**
+ * IMP-076: "More options": "Last guess for a caught impostor", Off / On. The change applies only on "Done"; any
+ * other way of closing it keeps the choice as it was.
+ */
+export function MoreOptionsSheet({ lastGuess, onDone }: { lastGuess: boolean; onDone: (lastGuess: boolean) => void }) {
+  const [on, setOn] = useState(lastGuess);
+  return (
+    <Sheet title="More options" onDone={() => onDone(on)}>
+      <div className="imp-group-wrap">
+        <div className="imp-group imp-group-wide" role="group" aria-labelledby="imp-group-guess">
+          <span id="imp-group-guess" className="imp-group-label">
+            Last guess for a caught impostor
+          </span>
+          <OptionButton selected={!on} onClick={() => setOn(false)}>
+            Off
+          </OptionButton>
+          <OptionButton selected={on} onClick={() => setOn(true)}>
+            On
+          </OptionButton>
+        </div>
+        <p className="imp-small">A caught impostor can steal the round by guessing the word.</p>
       </div>
     </Sheet>
   );
