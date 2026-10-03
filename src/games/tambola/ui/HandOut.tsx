@@ -83,9 +83,6 @@ export function HandOut({
           ← Back
         </button>
         <span className="bar-progress">Hand out tickets</span>
-        <span className="game-code" data-testid="game-code">
-          Game {view.code}
-        </span>
       </header>
       <div className="hand-out-body stack">
         <p className="hand-out-ticket" data-testid="hand-out-ticket">
@@ -122,8 +119,12 @@ export function HandOut({
           </div>
         ) : (
           <div className="hand-out-qr">
+            {/* UX list row 25 (TAM-172): the game code above the QR, for the room to check against. */}
+            <p className="game-code hand-out-code" data-testid="game-code">
+              Game {view.code}
+            </p>
             <QrCode text={link} testId="ticket-qr" size={240} label={`QR code for ticket ${number}`} />
-            <p className="note">Scan with your phone's camera</p>
+            <p className="note">Scan with your camera to get your ticket. Check it says Game {view.code}.</p>
             <p className="note">
               or type: <strong className="ticket-code" data-testid="ticket-code">{typedCode(info)}</strong>
             </p>
