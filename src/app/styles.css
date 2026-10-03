@@ -820,7 +820,7 @@ button, [role="button"], a { touch-action: manipulation; }
   .hand-out .hand-out-info { grid-column: 2; grid-row: 3; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
   .hand-out .hand-out-scan { text-align: left; }
   .hand-out .hand-out-actions { grid-column: 2; grid-row: 4; padding: 0 0 max(8px, env(safe-area-inset-bottom)); }
-  .hand-out .qr { width: clamp(160px, calc(100dvh - 72px), 280px) !important; height: clamp(160px, calc(100dvh - 72px), 280px) !important; }
+  .hand-out .qr { width: clamp(170px, calc(100dvh - 72px), 280px) !important; height: clamp(170px, calc(100dvh - 72px), 280px) !important; }
 }
 /* RC fix (C1): the whole 20-character code shows on a 360 px phone with a wide font: it shrinks with the screen
    width, and if it still does not fit it wraps between its groups of 4 (never inside a group). */
