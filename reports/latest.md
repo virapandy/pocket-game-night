@@ -1,4 +1,20 @@
 # Test report
+Progress (2026-10-03, tester, Impostor step 1: specs and C3 tests first, on main at e5fb4a7): `specs/impostor/` added,
+copied unchanged from `docs/games/impostor/scenarios.md` v2.2 (README with Terms, Canonical strings and Test hooks;
+01-setup.md to 11-after-the-game.md and 12-later.md; 91 scenarios, statuses kept "approved, owner, 2026-10-03").
+Failing tests written for the C3 scenarios. Rule and property tests (`tests/games/impostor/`, 101 tests): words.test.ts
+IMP-050–055; deal.test.ts IMP-010, 011, 015, 016, 025, 063; starter.test.ts IMP-020, 021; vote-and-reveal.test.ts
+IMP-031–035, 037, 038; scoring.test.ts IMP-041, 042; secrets-and-seeds.test.ts IMP-060–062, 064; saved-evening.test.ts
+IMP-096 (fixture `tests/fixtures/impostor-saved-evenings.json`); `tests/contract/impostor.test.ts` the contract suite.
+Browser tests (66 per phone, in the area map, not in the smoke set): impostor-privacy.spec.ts IMP-010–017, 020, 031,
+033, 053, 060, 062, 064; impostor-saved-evenings.spec.ts IMP-037, 090–099; impostor-scoring.spec.ts IMP-035, 040–044.
+As expected they fail because the game is not built yet: 94 of 101 rule tests fail ("impostorRules / pickWord / … is
+not exported from src/games/impostor yet"); the 7 that pass check the word list the coder already shipped (IMP-053–055)
+and the fixture's format (IMP-096). All 66 browser tests fail on Android at the first Impostor screen ("Who's playing?"
+is not there yet). Three questions for the product owner in `docs/test-questions.md` (IMP-042 totals, IMP-091 reopen
+after "Vote now", IMP-099 summary left over 3 hours). Request for the Build workspace: IMP-064's release-build half can
+only be seen on a `--mode release` build; the rule test covers `readTestSeeds(raw, true)`.
+
 Progress (2026-10-03, tester, release-candidate fix round 3, last check before the release freeze): pulled main at
 e6fc91a (85b9cc1, "quick mark thumbnails stay on one row at 360", plus a docs-only Impostor commit on top). New Linux
 reference from Screenshots run 37111322622 on main (green); the Mac picture regenerated locally. The quick mark problem

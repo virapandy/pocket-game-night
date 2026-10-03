@@ -222,14 +222,17 @@
         "dark-mode.spec.ts",
         "layout.spec.ts",
         "setup-layout.spec.ts",
-        "after-the-game.spec.ts"
+        "after-the-game.spec.ts",
+        "impostor-privacy.spec.ts",
+        "impostor-saved-evenings.spec.ts",
+        "impostor-scoring.spec.ts"
       ]
     },
     {
       "name": "History",
       "lane": "shared",
       "paths": ["src/app/History.tsx"],
-      "specs": ["history.spec.ts", "lifecycle.spec.ts", "format-1.spec.ts", "after-the-game.spec.ts"]
+      "specs": ["history.spec.ts", "lifecycle.spec.ts", "format-1.spec.ts", "after-the-game.spec.ts", "impostor-privacy.spec.ts", "impostor-saved-evenings.spec.ts", "impostor-scoring.spec.ts"]
     },
     {
       "name": "Sessions and tally screens",
@@ -247,7 +250,7 @@
       "name": "Saved data on the phone (app storage, saved-game format)",
       "lane": "shared",
       "paths": ["src/app/storage.ts", "src/engine/storage.ts", "src/engine/saved-game.ts"],
-      "specs": ["lifecycle.spec.ts", "history.spec.ts", "format-1.spec.ts", "sessions.spec.ts", "phone-tickets.spec.ts", "held-tickets.spec.ts", "after-the-game.spec.ts"]
+      "specs": ["lifecycle.spec.ts", "history.spec.ts", "format-1.spec.ts", "sessions.spec.ts", "phone-tickets.spec.ts", "held-tickets.spec.ts", "after-the-game.spec.ts", "impostor-privacy.spec.ts", "impostor-saved-evenings.spec.ts", "impostor-scoring.spec.ts"]
     },
     {
       "name": "Money, sessions and tally rules",
@@ -273,6 +276,12 @@
       "lane": "shared",
       "paths": ["src/engine/**"],
       "specs": ["lifecycle.spec.ts", "claims.spec.ts", "payouts-and-tally.spec.ts"]
+    },
+    {
+      "name": "Impostor: rules, screens, saved evenings, word list (C3 tests written first, 3 October 2026; not in the smoke set until they pass)",
+      "lane": "shared",
+      "paths": ["src/games/impostor/**", "content/impostor/**", "tests/browser/impostor.ts", "tests/fixtures/impostor-saved-evenings.json"],
+      "specs": ["impostor-privacy.spec.ts", "impostor-saved-evenings.spec.ts", "impostor-scoring.spec.ts"]
     },
     {
       "name": "Build, dependencies and test set-up: everything",

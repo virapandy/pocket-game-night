@@ -759,3 +759,28 @@ the approved pictures once the product owner or UX designer has checked them at 
 | `player-claim-qr` | claim QR for Top Line, ticket 1, only that pattern outlined, "Done" | 13, 19 |
 | `player-done-with-this-game` | "Clear your tickets from this phone?" | 20 |
 | `player-home-saved-tickets` | Home 6 h 10 min later: "Your tickets from 7:00 pm · Open · Clear" | 21 |
+
+## Impostor (C3 browser tests written before the screens, 3 October 2026)
+Specs: `impostor-privacy.spec.ts` (IMP-010 to IMP-017, IMP-020, IMP-031, IMP-033, IMP-053, IMP-060, IMP-062, IMP-064),
+`impostor-saved-evenings.spec.ts` (IMP-037, IMP-090 to IMP-099), `impostor-scoring.spec.ts` (IMP-035, IMP-040 to
+IMP-044). Shared steps: `impostor.ts`. Every text, name and test id is the one in `specs/impostor/README.md` (Terms,
+Canonical strings, Test hooks); nothing else is assumed. They are mapped in `areas.json` ("Impostor: …") and are
+**not** in the smoke set until they pass.
+
+How the tests drive the game (Test hooks items 3 to 9 and 13):
+- **Before load** they write `pgn.test.seeds` (seeds and forced deals), `pgn.pref.impostor.tapToShow`, or a saved
+  evening at `pgn.game.<id>` (IMP-096's `SavedGame`, with `config.testDeals`, in a session under `pgn.session.<id>`)
+  and `pgn.impostor-ui.<id>` (`timerMs`, `summaryShownAt`). The fake clock (`page.clock.install`) is set first, so
+  "3 hours" and "12 hours" are exact.
+- **Start:** Home → "Host a game…" → the button whose name starts "Impostor" → "Who's playing?" (field "Player name",
+  "Add") → "Next" → "How do you want to play?" (option buttons inside `role="group"` named "Mode", "Talking",
+  "Score") → `main-button` "Start round" → "Read this aloud" → `main-button` "Start the deal" or "Practice round first".
+- **Deal:** `pass-name`, the button "I'm <Name>", `hold-pad` pressed with `page.mouse.down/up` (Pointer Events) while
+  the fake clock runs 500 ms, `private-block` (its 5 children read as text), `main-button` "Done, pass to …" /
+  "Done, everyone's seen", "Don't know this word?".
+- **Reopening:** a saved evening is opened from Home's `unfinished-games` row ("Tap to resume") when Home shows first,
+  or straight away when the app opens on it.
+- **Privacy (IMP-013):** the word, its other names, its hint, "You're the impostor" and (Hard) its category must not be
+  in `document.documentElement.outerHTML` (script bodies left out) or `document.title`, case-insensitive, as whole
+  phrases. The 200-deal outerHTML property of IMP-012 runs as 4 tests of 50 deals ("Deal again with a new word" between
+  deals), so it takes a few minutes.

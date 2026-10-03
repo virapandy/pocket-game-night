@@ -1,0 +1,144 @@
+# 01-setup.md: getting to the first deal
+
+Copied unchanged from `docs/games/impostor/scenarios.md` (version 2.2, 3 October 2026), the binding contract. Terms, Canonical strings and Test hooks: [README.md](README.md).
+
+## IMP-001: "Host a game" offers Tambola and Impostor
+Status: approved, owner, 2026-10-03
+Phase: Impostor 1
+Given Home (PLT-300: still "Host a game" and "Join with my ticket")
+Then the "Host a game" button's second line reads exactly "Tambola or Impostor on this phone"
+When the host taps "Host a game"
+Then "What shall we play?" shows two cards of equal size and look (neither has the main look):
+"Tambola" with "Housie on paper or phones · 2 hrs", and "Impostor" with
+"Find who doesn't know the word · 3–20 players · about 4 min a round"
+And there is no main button on this screen; tapping a card opens that game's setup at once
+Given an Impostor evening is unfinished (not ended, not discarded, not auto-ended by IMP-104)
+Then "What shall we play?" shows, above the two cards, the button "Impostor · round 4 · Tap to resume"
+(`resume-card`), and Home's `unfinished-games` shows a row "Impostor, 8:40 pm, round 4" with "Tap to resume"
+(8:40 pm = the evening's start time, in Tambola's row format)
+And "round 4" is the number of the round in progress, or of the next round when between rounds (a practice round in
+progress shows "round 1")
+And an evening whose summary was showing and not yet left (`summaryShownAt` set, no `endEvening`) is unfinished too,
+and shows the next round's number
+When either is tapped
+Then the evening reopens at its saved step (IMP-090, IMP-091), or, for such an evening, at the summary (IMP-101)
+When instead the host taps the "Impostor" card while that evening is unfinished
+Then a dialog asks exactly "Start a new evening? The evening from 8:40 pm will be ended." with "Start new" and
+"Carry on that evening" (main)
+And "Carry on that evening" reopens it at its saved step
+And "Start new" records `endEvening` at once, with no summary (a half-played round is dropped; IMP-097 applies:
+with no counted round it is deleted rather than kept), then opens "Who's playing?" for the new evening
+And only one Impostor evening is ever unfinished at a time
+
+## IMP-002: A guest is told there's nothing to join
+Status: approved, owner, 2026-10-03
+Phase: Impostor 1
+When a guest opens "Join with my ticket"
+Then the last paragraph of that screen reads exactly
+"Playing Impostor? It's all on the host's phone. Nothing to join, just play along!"
+And nothing else on that screen changes
+
+## IMP-003: Players are added in seat order, without dragging
+Status: approved, owner, 2026-10-03
+Phase: Impostor 1
+Given "Who's playing?" with an empty list
+When the host types "Riya" in "Player name" and taps "Add" (or presses Enter), then Arjun, Meena and Kabir the same way
+Then the list shows 1 Riya, 2 Arjun, 3 Meena, 4 Kabir, in that order: the passing order and the clue order
+And after each add the field is empty and keeps focus (the phone keyboard stays open)
+And each row has ▲ "Move Riya up", ▼ "Move Riya down" and ✕ "Remove Riya", each at least 44 × 44 CSS px
+(guideline 21: nothing needs dragging); row 1's ▲ and the last row's ▼ are disabled
+And names are trimmed of spaces at both ends; an empty or all-space name adds nothing ("Add" is disabled)
+And the field has `maxlength="16"`, so a 17th character cannot be typed
+And a name equal to one in the list, ignoring case ("riya"), is not added and shows
+"Riya is already playing. Add an initial, like Riya S." (the name as already listed) until the field changes
+And with 20 players "Add" is disabled and "20 players is the most." shows
+And while fewer than 3 players are listed, "Next" is disabled and "Add at least 3 players." shows
+And past names show under the field as buttons, one tap adding that name at the end: the last 8 distinct names used
+in any game on this phone, newest game first; within one game, in that game's seat order; names that differ only in
+case count as one, shown as most recently typed; a name already in the list (ignoring case) is not offered
+And ✕ during setup removes the player at once, with no toast; removing below 3 is allowed during setup (Next disables)
+And a tap on "Add" (or Enter) with a refused name (duplicate, or 20 players listed) leaves the field as typed
+And text left in the field when "Next" is tapped is not added and is cleared
+And "← Back" on "Who's playing?" returns to "What shall we play?"; the list is kept if the host comes back within the
+same visit to the Impostor setup, and is otherwise rebuilt by IMP-004
+
+## IMP-004: Tonight's names arrive filled in
+Status: approved, owner, 2026-10-03
+Phase: Impostor 1
+Given tonight's session (PLT-016) already has a game with Riya, Arjun and Meena (Tambola or Impostor; the most recent
+game's players, PLT-024)
+When the host taps the Impostor card
+Then "Who's playing?" already lists Riya, Arjun and Meena in that game's order, with a quiet "Clear list"
+And "Clear list" shows whenever the list has at least 1 name, filled in or typed
+When the host taps "Clear list"
+Then the list empties at once and the toast "List cleared · Undo" shows for 5 s; "Undo" restores the same list
+in the same order
+Given no session tonight
+Then the list starts empty and "Clear list" is not shown until a name is added
+
+## IMP-005: The four choices, with these defaults
+Status: approved, owner, 2026-10-03
+Phase: Impostor 1
+When the host taps "Next" on "Who's playing?"
+Then "How do you want to play?" shows four groups, each with two option buttons:
+Mode "Easy" / "Hard"; Talking "Free flow" / "Timer"; Score "No" / "Yes"; Words "Whole family" / "+ Grown-ups"
+And on this phone's first ever evening the selected options are Easy, Free flow, No, Whole family (later: IMP-009)
+And exactly one option per group is selected (outline, ✓, tint, `aria-pressed="true"`), never the main look
+(guideline 17a); tapping the other option moves the selection; tapping the selected one changes nothing
+And under each group only the selected option's line shows (Option lines in Canonical strings)
+And below the groups the button "Categories: all 9 ›" (IMP-007)
+And "Start round" is the one main button; tapping it starts the evening (IMP-070, IMP-008)
+And "← Back" returns to "Who's playing?" with the list unchanged
+
+## IMP-006: Choices stay for the evening and change only between rounds
+Status: approved, owner, 2026-10-03
+Phase: Impostor 1
+Given the host chose Hard and Timer and round 1 ended
+When the host taps "Next round"
+Then round 2 uses Hard and Timer
+When, on a round result, the host opens the menu and taps "Change how we play"
+Then "How do you want to play?" opens with the evening's current choices selected; "Start round" records
+`setChoices` (even with nothing changed) and then `nextRound`, and the next round's deal starts; "← Back" returns
+to the same result unchanged and records nothing
+And the evening stays the same evening (same seeds, same round numbering)
+And "Change how we play" is not in the menu during a round (IMP-075)
+
+## IMP-007: Categories, non-veg and one impostor
+Status: approved, owner, 2026-10-03
+Phase: Impostor 1
+When the host taps "Categories: all 9 ›"
+Then a sheet "Categories" shows 9 switches, named and ordered exactly: "Food", "Festivals and occasions",
+"Around the house", "Travel and places", "Films, music and TV", "Cricket and games", "School and childhood",
+"Weddings and family", "Desi life"; on the first ever evening all are on
+And below them the switch "Include non-veg food", off on the first ever evening
+And when only one category switch is on, that switch is disabled and "Keep at least one category." shows
+When the host switches off two categories and taps "Done"
+Then the button reads "Categories: 7 of 9 ›"
+And "Include non-veg food" does not change that button's text
+And every round has exactly one impostor (two impostors are later, IMP-036)
+
+## IMP-008: Taps to the first deal
+Status: approved, owner, 2026-10-03
+Phase: Impostor 1
+Given tonight's names are filled in (IMP-004) and the choices are as wanted
+Then from tapping the Impostor card, the first "Pass the phone to…" screen comes after at most 4 taps on the first
+Impostor evening of tonight's session: card → "Next" → "Start round" → "Start the deal"
+And after at most 3 taps on any later Impostor evening of the same session (the read-aloud card is skipped, IMP-070)
+And no session-name question is asked (IMP-009)
+(Time is a usability target, not a test: 30 s for a group that played tonight; under 90 s when typing names.)
+
+## IMP-009: Choices start from last time; the evening joins tonight's session silently
+Status: approved, owner, 2026-10-03 (detail of IMP-005, IMP-006, IMP-008)
+Phase: Impostor 1
+Given `pgn.pref.impostor.lastChoices` (written at every first "Start round" and every `setChoices`: the most
+recently started evening's latest choices, whether ended or discarded) holds Hard, Timer, Yes, + Grown-ups,
+7 categories and non-veg on
+When the host starts a new evening from the Impostor card
+Then "How do you want to play?" opens with exactly those 6 choices selected
+And on a phone that has never played, the IMP-005 defaults apply
+And "Play again" (IMP-103) uses the choices of the evening it was tapped on instead
+When "Start round" is tapped
+Then the evening joins tonight's session by PLT-016's rules with no question (no "Session name" field, no
+"Continue … or start a new session?")
+And when PLT-016 would start a new session, it is created with the name PLT-016 suggests (the day, as
+"Sunday 4 Oct"), without asking

@@ -1,0 +1,664 @@
+{
+  "$comment": [
+    "IMP-096: Impostor evenings saved as engine SavedGame records at format 2 (scenarios v2.2). Written by the Test role from the scenario's example, with forced deals (config.testDeals) so every round is known.",
+    "This fixture must always open, with readSavedGame, readImpostorEvening and the app, now and after every later change (PLT-001, PLT-014). Never edit it; add a new fixture for a new format."
+  ],
+  "session": {
+    "format": 1,
+    "id": "session-imp-fixture",
+    "name": "Saturday 3 Oct",
+    "createdAt": 1791043140000,
+    "settlements": []
+  },
+  "ended": {
+    "format": 2,
+    "gameType": "impostor",
+    "id": "imp-fixture-ended",
+    "createdAt": 1791043200000,
+    "updatedAt": 1791043605000,
+    "status": "ended",
+    "sessionId": "session-imp-fixture",
+    "setup": {
+      "gameId": "impostor",
+      "seeds": {
+        "word": "3f9a0c-fixture-word",
+        "starter": "b71e44-fixture-starter"
+      },
+      "config": {
+        "players": [
+          "Riya",
+          "Arjun",
+          "Meena",
+          "Kabir"
+        ],
+        "choices": {
+          "mode": "easy",
+          "talking": "free",
+          "score": true,
+          "words": "family",
+          "categories": [
+            "Food",
+            "Festivals and occasions",
+            "Around the house",
+            "Travel and places",
+            "Films, music and TV",
+            "Cricket and games",
+            "School and childhood",
+            "Weddings and family",
+            "Desi life"
+          ],
+          "nonveg": false
+        },
+        "excludedWords": {
+          "dealtTonight": [
+            "IMPW-002"
+          ],
+          "recent": [
+            "IMPW-003"
+          ],
+          "blocked": [
+            "IMPW-018"
+          ]
+        },
+        "testDeals": [
+          {
+            "wordId": "IMPW-004",
+            "impostor": "Arjun",
+            "starter": "Riya"
+          },
+          {
+            "wordId": "IMPW-005",
+            "impostor": "Meena",
+            "starter": "Arjun"
+          },
+          {
+            "wordId": "IMPW-007",
+            "impostor": "Kabir",
+            "starter": "Meena"
+          }
+        ]
+      }
+    },
+    "records": [
+      {
+        "v": 1,
+        "seq": 1,
+        "at": 1791043200000,
+        "by": "host",
+        "move": {
+          "type": "startDeal",
+          "practice": false
+        }
+      },
+      {
+        "v": 1,
+        "seq": 2,
+        "at": 1791043215000,
+        "by": "host",
+        "move": {
+          "type": "seen"
+        }
+      },
+      {
+        "v": 1,
+        "seq": 3,
+        "at": 1791043230000,
+        "by": "host",
+        "move": {
+          "type": "seen"
+        }
+      },
+      {
+        "v": 1,
+        "seq": 4,
+        "at": 1791043245000,
+        "by": "host",
+        "move": {
+          "type": "seen"
+        }
+      },
+      {
+        "v": 1,
+        "seq": 5,
+        "at": 1791043260000,
+        "by": "host",
+        "move": {
+          "type": "seen"
+        }
+      },
+      {
+        "v": 1,
+        "seq": 6,
+        "at": 1791043275000,
+        "by": "host",
+        "move": {
+          "type": "startTalk"
+        }
+      },
+      {
+        "v": 1,
+        "seq": 7,
+        "at": 1791043290000,
+        "by": "host",
+        "move": {
+          "type": "voteNow"
+        }
+      },
+      {
+        "v": 1,
+        "seq": 8,
+        "at": 1791043305000,
+        "by": "host",
+        "move": {
+          "type": "reveal",
+          "player": "Arjun"
+        }
+      },
+      {
+        "v": 1,
+        "seq": 9,
+        "at": 1791043320000,
+        "by": "host",
+        "move": {
+          "type": "showWord"
+        }
+      },
+      {
+        "v": 1,
+        "seq": 10,
+        "at": 1791043335000,
+        "by": "host",
+        "move": {
+          "type": "verdict",
+          "right": false
+        }
+      },
+      {
+        "v": 1,
+        "seq": 11,
+        "at": 1791043350000,
+        "by": "host",
+        "move": {
+          "type": "nextRound"
+        }
+      },
+      {
+        "v": 1,
+        "seq": 12,
+        "at": 1791043365000,
+        "by": "host",
+        "move": {
+          "type": "seen"
+        }
+      },
+      {
+        "v": 1,
+        "seq": 13,
+        "at": 1791043380000,
+        "by": "host",
+        "move": {
+          "type": "seen"
+        }
+      },
+      {
+        "v": 1,
+        "seq": 14,
+        "at": 1791043395000,
+        "by": "host",
+        "move": {
+          "type": "seen"
+        }
+      },
+      {
+        "v": 1,
+        "seq": 15,
+        "at": 1791043410000,
+        "by": "host",
+        "move": {
+          "type": "seen"
+        }
+      },
+      {
+        "v": 1,
+        "seq": 16,
+        "at": 1791043425000,
+        "by": "host",
+        "move": {
+          "type": "startTalk"
+        }
+      },
+      {
+        "v": 1,
+        "seq": 17,
+        "at": 1791043440000,
+        "by": "host",
+        "move": {
+          "type": "voteNow"
+        }
+      },
+      {
+        "v": 1,
+        "seq": 18,
+        "at": 1791043455000,
+        "by": "host",
+        "move": {
+          "type": "reveal",
+          "player": "Riya"
+        }
+      },
+      {
+        "v": 1,
+        "seq": 19,
+        "at": 1791043470000,
+        "by": "host",
+        "move": {
+          "type": "nextRound"
+        }
+      },
+      {
+        "v": 1,
+        "seq": 20,
+        "at": 1791043485000,
+        "by": "host",
+        "move": {
+          "type": "seen"
+        }
+      },
+      {
+        "v": 1,
+        "seq": 21,
+        "at": 1791043500000,
+        "by": "host",
+        "move": {
+          "type": "seen"
+        }
+      },
+      {
+        "v": 1,
+        "seq": 22,
+        "at": 1791043515000,
+        "by": "host",
+        "move": {
+          "type": "seen"
+        }
+      },
+      {
+        "v": 1,
+        "seq": 23,
+        "at": 1791043530000,
+        "by": "host",
+        "move": {
+          "type": "seen"
+        }
+      },
+      {
+        "v": 1,
+        "seq": 24,
+        "at": 1791043545000,
+        "by": "host",
+        "move": {
+          "type": "startTalk"
+        }
+      },
+      {
+        "v": 1,
+        "seq": 25,
+        "at": 1791043560000,
+        "by": "host",
+        "move": {
+          "type": "voteNow"
+        }
+      },
+      {
+        "v": 1,
+        "seq": 26,
+        "at": 1791043575000,
+        "by": "host",
+        "move": {
+          "type": "tie",
+          "players": [
+            "Arjun",
+            "Kabir"
+          ]
+        }
+      },
+      {
+        "v": 1,
+        "seq": 27,
+        "at": 1791043590000,
+        "by": "host",
+        "move": {
+          "type": "stillTie"
+        }
+      },
+      {
+        "v": 1,
+        "seq": 28,
+        "at": 1791043605000,
+        "by": "host",
+        "move": {
+          "type": "endEvening"
+        }
+      }
+    ]
+  },
+  "inProgress": {
+    "format": 2,
+    "gameType": "impostor",
+    "id": "imp-fixture-in-progress",
+    "createdAt": 1791043200000,
+    "updatedAt": 1791043500000,
+    "status": "in-progress",
+    "sessionId": "session-imp-fixture",
+    "setup": {
+      "gameId": "impostor",
+      "seeds": {
+        "word": "3f9a0c-fixture-word",
+        "starter": "b71e44-fixture-starter"
+      },
+      "config": {
+        "players": [
+          "Riya",
+          "Arjun",
+          "Meena",
+          "Kabir"
+        ],
+        "choices": {
+          "mode": "easy",
+          "talking": "free",
+          "score": true,
+          "words": "family",
+          "categories": [
+            "Food",
+            "Festivals and occasions",
+            "Around the house",
+            "Travel and places",
+            "Films, music and TV",
+            "Cricket and games",
+            "School and childhood",
+            "Weddings and family",
+            "Desi life"
+          ],
+          "nonveg": false
+        },
+        "excludedWords": {
+          "dealtTonight": [
+            "IMPW-002"
+          ],
+          "recent": [
+            "IMPW-003"
+          ],
+          "blocked": [
+            "IMPW-018"
+          ]
+        },
+        "testDeals": [
+          {
+            "wordId": "IMPW-004",
+            "impostor": "Arjun",
+            "starter": "Riya"
+          },
+          {
+            "wordId": "IMPW-005",
+            "impostor": "Meena",
+            "starter": "Arjun"
+          },
+          {
+            "wordId": "IMPW-007",
+            "impostor": "Kabir",
+            "starter": "Meena"
+          }
+        ]
+      }
+    },
+    "records": [
+      {
+        "v": 1,
+        "seq": 1,
+        "at": 1791043200000,
+        "by": "host",
+        "move": {
+          "type": "startDeal",
+          "practice": false
+        }
+      },
+      {
+        "v": 1,
+        "seq": 2,
+        "at": 1791043215000,
+        "by": "host",
+        "move": {
+          "type": "seen"
+        }
+      },
+      {
+        "v": 1,
+        "seq": 3,
+        "at": 1791043230000,
+        "by": "host",
+        "move": {
+          "type": "seen"
+        }
+      },
+      {
+        "v": 1,
+        "seq": 4,
+        "at": 1791043245000,
+        "by": "host",
+        "move": {
+          "type": "seen"
+        }
+      },
+      {
+        "v": 1,
+        "seq": 5,
+        "at": 1791043260000,
+        "by": "host",
+        "move": {
+          "type": "seen"
+        }
+      },
+      {
+        "v": 1,
+        "seq": 6,
+        "at": 1791043275000,
+        "by": "host",
+        "move": {
+          "type": "startTalk"
+        }
+      },
+      {
+        "v": 1,
+        "seq": 7,
+        "at": 1791043290000,
+        "by": "host",
+        "move": {
+          "type": "voteNow"
+        }
+      },
+      {
+        "v": 1,
+        "seq": 8,
+        "at": 1791043305000,
+        "by": "host",
+        "move": {
+          "type": "reveal",
+          "player": "Arjun"
+        }
+      },
+      {
+        "v": 1,
+        "seq": 9,
+        "at": 1791043320000,
+        "by": "host",
+        "move": {
+          "type": "showWord"
+        }
+      },
+      {
+        "v": 1,
+        "seq": 10,
+        "at": 1791043335000,
+        "by": "host",
+        "move": {
+          "type": "verdict",
+          "right": false
+        }
+      },
+      {
+        "v": 1,
+        "seq": 11,
+        "at": 1791043350000,
+        "by": "host",
+        "move": {
+          "type": "nextRound"
+        }
+      },
+      {
+        "v": 1,
+        "seq": 12,
+        "at": 1791043365000,
+        "by": "host",
+        "move": {
+          "type": "seen"
+        }
+      },
+      {
+        "v": 1,
+        "seq": 13,
+        "at": 1791043380000,
+        "by": "host",
+        "move": {
+          "type": "seen"
+        }
+      },
+      {
+        "v": 1,
+        "seq": 14,
+        "at": 1791043395000,
+        "by": "host",
+        "move": {
+          "type": "seen"
+        }
+      },
+      {
+        "v": 1,
+        "seq": 15,
+        "at": 1791043410000,
+        "by": "host",
+        "move": {
+          "type": "seen"
+        }
+      },
+      {
+        "v": 1,
+        "seq": 16,
+        "at": 1791043425000,
+        "by": "host",
+        "move": {
+          "type": "startTalk"
+        }
+      },
+      {
+        "v": 1,
+        "seq": 17,
+        "at": 1791043440000,
+        "by": "host",
+        "move": {
+          "type": "voteNow"
+        }
+      },
+      {
+        "v": 1,
+        "seq": 18,
+        "at": 1791043455000,
+        "by": "host",
+        "move": {
+          "type": "reveal",
+          "player": "Riya"
+        }
+      },
+      {
+        "v": 1,
+        "seq": 19,
+        "at": 1791043470000,
+        "by": "host",
+        "move": {
+          "type": "nextRound"
+        }
+      },
+      {
+        "v": 1,
+        "seq": 20,
+        "at": 1791043485000,
+        "by": "host",
+        "move": {
+          "type": "seen"
+        }
+      },
+      {
+        "v": 1,
+        "seq": 21,
+        "at": 1791043500000,
+        "by": "host",
+        "move": {
+          "type": "seen"
+        }
+      }
+    ]
+  },
+  "expect": {
+    "rounds": [
+      {
+        "word": "Samosa",
+        "wordId": "IMPW-004",
+        "impostor": "Arjun",
+        "revealed": "Arjun",
+        "verdict": "wrong",
+        "points": {
+          "Riya": 1,
+          "Arjun": 0,
+          "Meena": 1,
+          "Kabir": 1
+        }
+      },
+      {
+        "word": "Pani puri",
+        "wordId": "IMPW-005",
+        "impostor": "Meena",
+        "revealed": "Riya",
+        "verdict": null,
+        "points": {
+          "Riya": 0,
+          "Arjun": 0,
+          "Meena": 2,
+          "Kabir": 0
+        }
+      },
+      {
+        "word": "Kheer / Payasam",
+        "wordId": "IMPW-007",
+        "impostor": "Kabir",
+        "revealed": null,
+        "verdict": null,
+        "points": {
+          "Riya": 0,
+          "Arjun": 0,
+          "Meena": 0,
+          "Kabir": 2
+        }
+      }
+    ],
+    "totals": {
+      "Riya": 1,
+      "Arjun": 0,
+      "Meena": 3,
+      "Kabir": 3
+    },
+    "inProgress": {
+      "round": 3,
+      "seen": 2,
+      "nextToSee": "Meena"
+    }
+  }
+}
