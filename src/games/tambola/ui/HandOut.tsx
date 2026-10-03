@@ -100,60 +100,70 @@ export function HandOut({
             ({mine.indexOf(number) + 1} of {mine.length})
           </span>
         </p>
-        {picking ? (
-          <div className="stack-tight">
-            <p className="note">Give ticket {number} to:</p>
-            <div className="choice-grid">
-              {view.players
-                .filter((p) => p.id !== owner)
-                .map((p) => (
-                  <button
-                    key={p.id}
-                    type="button"
-                    className="button button-quiet"
-                    onClick={() => {
-                      const why = onAssign(number, p.id);
-                      setError(why);
-                      if (!why) {
-                        setPicking(false);
-                        // A new owner hasn't been asked about yet (row 7).
-                        setAskedFor(null);
-                      }
-                    }}
-                  >
-                    {p.name}
-                  </button>
-                ))}
-            </div>
-            <button type="button" className="button button-quiet" onClick={() => setPicking(false)}>
-              Cancel
-            </button>
-          </div>
-        ) : (
+        {/* RC fix (C1): the QR (with the game code above it) is its own block, so in landscape it sits in a column
+            of its own beside the words and buttons. */}
+        {!picking && (
           <div className="hand-out-qr">
             {/* UX list row 25 (TAM-172): the game code above the QR, for the room to check against. */}
             <p className="game-code hand-out-code" data-testid="game-code">
               Game {view.code}
             </p>
             <QrCode text={link} testId="ticket-qr" size={240} label={`QR code for ticket ${number}`} />
-            <p className="note">Scan with your camera to get your ticket. Check it says Game {view.code}.</p>
-            <p className="note">
-              or type: <strong className="ticket-code" data-testid="ticket-code">{typedCode(info)}</strong>
-            </p>
           </div>
         )}
-        {error && (
-          <p className="error" role="alert">
-            {error}
-          </p>
-        )}
-        <p className="note" data-testid="hand-out-progress">
-          {index} of {queue.length} handed out
-        </p>
-        <p className="note" data-testid="hand-out-waiting">
-          Waiting: {[...waiting.entries()].map(([id, n]) => `${nameOf(id)} (${n} ${n === 1 ? 'ticket' : 'tickets'})`).join(', ')}
-        </p>
-        {notice}
+        <div className="hand-out-info">
+          {picking ? (
+            <div className="stack-tight">
+              <p className="note">Give ticket {number} to:</p>
+              <div className="choice-grid">
+                {view.players
+                  .filter((p) => p.id !== owner)
+                  .map((p) => (
+                    <button
+                      key={p.id}
+                      type="button"
+                      className="button button-quiet"
+                      onClick={() => {
+                        const why = onAssign(number, p.id);
+                        setError(why);
+                        if (!why) {
+                          setPicking(false);
+                          // A new owner hasn't been asked about yet (row 7).
+                          setAskedFor(null);
+                        }
+                      }}
+                    >
+                      {p.name}
+                    </button>
+                  ))}
+              </div>
+              <button type="button" className="button button-quiet" onClick={() => setPicking(false)}>
+                Cancel
+              </button>
+            </div>
+          ) : (
+            <div className="hand-out-scan">
+              <p className="note">Scan with your camera to get your ticket. Check it says Game {view.code}.</p>
+              <p className="note">
+                or type: <strong className="ticket-code" data-testid="ticket-code">{typedCode(info)}</strong>
+              </p>
+            </div>
+          )}
+          {error && (
+            <p className="error" role="alert">
+              {error}
+            </p>
+          )}
+          <div className="hand-out-status">
+            <p className="note" data-testid="hand-out-progress">
+              {index} of {queue.length} handed out
+            </p>
+            <p className="note" data-testid="hand-out-waiting">
+              Waiting: {[...waiting.entries()].map(([id, n]) => `${nameOf(id)} (${n} ${n === 1 ? 'ticket' : 'tickets'})`).join(', ')}
+            </p>
+          </div>
+          {notice}
+        </div>
       </div>
       {/* TAM-181 (UX list row 10): the one main button full width at the bottom, the paper fallback a link above it. */}
       <div className="bottom-action hand-out-actions">
