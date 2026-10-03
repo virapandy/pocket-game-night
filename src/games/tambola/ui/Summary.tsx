@@ -118,20 +118,20 @@ function Settle({ payouts }: { payouts: readonly Payout[] }) {
       <div className="row">
         <button
           type="button"
-          className={shown === null ? 'button grow' : shown === 'host' ? 'button button-quiet grow pick-on' : 'button button-quiet grow'}
+          className={shown === null ? 'button grow settle-tab' : shown === 'host' ? 'button button-quiet grow settle-tab pick-on' : 'button button-quiet grow settle-tab'}
           aria-pressed={shown === 'host'}
           onClick={() => setShown(shown === 'host' ? null : 'host')}
         >
-          {shown === 'host' && <span aria-hidden="true">✓ </span>}
+          {shown === 'host' && <span className="tab-check" aria-hidden="true">✓ </span>}
           Settle with host
         </button>
         <button
           type="button"
-          className={shown === 'players' ? 'button button-quiet grow pick-on' : 'button button-quiet grow'}
+          className={shown === 'players' ? 'button button-quiet grow settle-tab pick-on' : 'button button-quiet grow settle-tab'}
           aria-pressed={shown === 'players'}
           onClick={() => setShown(shown === 'players' ? null : 'players')}
         >
-          {shown === 'players' && <span aria-hidden="true">✓ </span>}
+          {shown === 'players' && <span className="tab-check" aria-hidden="true">✓ </span>}
           Settle with players
         </button>
       </div>
