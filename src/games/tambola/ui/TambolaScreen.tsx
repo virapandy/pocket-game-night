@@ -107,7 +107,7 @@ export function TambolaScreen({
     store.put(saved);
     setRoute({ name: 'play', saved, match, resumed: false });
   };
-  /** Prizes confirmed: the setup is no longer "unfinished" (PLT-006); then the session question (PLT-016). */
+  /** Prizes confirmed: the setup is no longer "unfinished" (PLT-006); then, only long after the last game, the session question (PLT-016). */
   const start = (config: TambolaConfig) => {
     clearDraft(prefs);
     const now = Date.now();
@@ -116,7 +116,10 @@ export function TambolaScreen({
     if (choice?.kind === 'new' && choice.chosen) return begin(config, sessions.create(choice.name, now));
     const q = sessions.question(now);
     if (q.kind === 'join') begin(config, q.session);
-    else setRoute({ name: 'session', config, ask: q.kind === 'name' ? 'name' : { continue: q.session } });
+    // UX list row 9 (PLT-016, PLT-029): the very first game has no naming screen; the line already showed the
+    // new session's suggested name, so the game starts in it.
+    else if (q.kind === 'name') begin(config, sessions.create(choice?.kind === 'new' ? choice.name : suggestedSessionName(now), now));
+    else setRoute({ name: 'session', config, ask: { continue: q.session } });
   };
 
   switch (route.name) {
