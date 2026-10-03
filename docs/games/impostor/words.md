@@ -1,9 +1,9 @@
 # Impostor: word themes (draft, 3 October 2026)
 
-Owner's brief: words are **India-centric**, with five themes. **Multicultural is the default**: picture
+Owner's brief: words are **India-centric**, with seven themes (Kannada and Bengali added by the owner, 3 October). **Multicultural is the default**: picture
 friends who grew up in Chennai, Delhi, Lucknow and Calicut playing together.
 
-## The five themes
+## The seven themes
 | Theme | For | What's in it | How words are shown |
 |---|---|---|---|
 | **Multicultural** (default) | Mixed groups from anywhere in India | Common ground: things anyone who grew up in India knows, wherever they grew up | English letters |
@@ -11,18 +11,21 @@ friends who grew up in Chennai, Delhi, Lucknow and Calicut playing together.
 | **Tamil** | Tamil groups | Kollywood, Tamil food, festivals, places, everyday life | English letters; Tamil script as an option |
 | **Telugu** | Telugu groups | Tollywood, Andhra and Telangana food, festivals, places | English letters; Telugu script as an option |
 | **Malayalam** | Malayali groups | Mollywood, Kerala food, festivals, places | English letters; Malayalam script as an option |
+| **Kannada** | Kannada groups | Sandalwood, Karnataka food, festivals, places | English letters; Kannada script as an option |
+| **Bengali** | Bengali groups | Bengali cinema and music, Bengali food, Durga Puja and festivals, places | English letters; Bengali script as an option |
 
 ## The fairness rule for Multicultural
 Impostor only works if **every crew member knows the word**. If the Calicut player doesn't know "Chhath",
 they look like the impostor and the round is spoiled. So:
-1. **A word is in Multicultural only if someone who grew up in any of Delhi, Lucknow, Chennai, Hyderabad or
-   Calicut would know it without an explanation.** Regional things that went national count (Dosa, Biryani, Onam).
+1. **A word is in Multicultural only if someone who grew up in any of Delhi, Lucknow, Chennai, Hyderabad,
+   Bengaluru, Calicut or Kolkata would know it without an explanation.** Regional things that went national count (Dosa, Biryani, Onam).
 2. **One thing, two names: show both.** "Kheer / Payasam", "Rangoli / Kolam", "Lohri / Pongal / Sankranti" is a
    separate harvest card only if each name is known; otherwise the thing is left out.
 3. **Never stars of one industry only.** A film person goes in only if known nationally (Rajinikanth, Shah Rukh
    Khan, A. R. Rahman), never a regional favourite the rest won't know.
 4. **Each player picks their own script on their own reveal screen.** The Chennai player can read
-   "பிரியாணி", the Delhi player "बिरयानी", the Calicut player "ബിരിയാണി", the rest "Biryani": same word, one game.
+   "பிரியாணி", the Delhi player "बिरयानी", the Calicut player "ബിരിയാണി", the Bengaluru player "ಬಿರಿಯಾನಿ", the Kolkata player
+   "বিরিয়ানি", the rest "Biryani": same word, one game.
    English letters is the default; a player's choice is remembered for the evening.
 5. **"Don't know this word?"** is on every reveal screen, for the crew **and** the impostor, so pressing it gives
    nothing away. It quietly redeals the round with a new word (same players, new impostor).
@@ -45,7 +48,7 @@ The host can switch categories off (for example no Films for grandparents).
 | Theme | Words at first release | Why |
 |---|---|---|
 | Multicultural | about 240 (8 categories × 30) | Default; must not repeat across several evenings |
-| Each regional theme | about 160 (8 × 20) | Enough for 4–5 evenings of 8 rounds with no repeats |
+| Each regional theme (6) | about 160 (8 × 20) | Enough for 4–5 evenings of 8 rounds with no repeats |
 
 **No word repeats within an evening**, and recent evenings' words are avoided where possible (to decide, see
 `decisions.md`).
@@ -53,7 +56,7 @@ The host can switch categories off (for example no Films for grandparents).
 ## Who checks the words
 Like the Tambola rhymes (`docs/games/tambola/rhymes.csv`), the product owner drafts each list as a sheet; the
 owner approves. **For each regional theme, someone who grew up there reads the list** and strikes anything
-wrong, niche or awkward. For Multicultural, one reader from the North and one from the South each strike
+wrong, niche or awkward. For Multicultural, readers from the North, the South and the East each strike
 anything they wouldn't know.
 
 ## Behind the scenes (for the builders later)
@@ -70,3 +73,5 @@ redoing the lists.
 | Tamil | Filter kaapi, Pongal, Jigarthanda, Murukku | Karthigai Deepam, Jallikattu, Thiruvizha | Kolam, Veshti, Marina Beach, Meenakshi temple | Rajinikanth, Vijay, Ilaiyaraaja |
 | Telugu | Pesarattu, Gongura pachadi, Pulihora, Tirupati laddu | Ugadi, Bathukamma, Bonalu, Sankranti kites | Charminar, Hyderabadi Irani chai | Chiranjeevi, Pushpa, Baahubali |
 | Malayalam | Sadya, Puttu and kadala, Appam and stew, Banana chips | Onam, Vishu kani, Vallam kali, Thrissur Pooram | Pookalam, Mundu, Houseboat, Kathakali | Mohanlal, Mammootty |
+| Kannada | Bisi bele bath, Mysore pak, Ragi mudde, Masala dosa at a darshini | Mysuru Dasara, Ugadi, Kambala | Filter coffee, Lalbagh, Mysore Palace, Yakshagana | Dr Rajkumar, Puneeth Rajkumar, KGF |
+| Bengali | Rosogolla, Mishti doi, Macher jhol, Kathi roll | Durga Puja, Pandal hopping, Poila Baishakh | Howrah Bridge, Yellow taxi, Tram, Adda | Satyajit Ray, Uttam Kumar, Rabindra Sangeet |

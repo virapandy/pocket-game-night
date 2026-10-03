@@ -155,7 +155,7 @@ Claude to follow game conventions. Every Tambola rule above is also a host setti
 | I7 | "See my word again" | Not allowed · **allowed, by passing the phone and holding (family trust)** | Allowed |
 | I8 | Players' own phones | First release · **one phone first; own phones with connected mode (Phase 6)** | One phone first |
 | I9 | Word repeats | Never within an evening (all agree) · also avoid the last 3 evenings | Both |
-| I10 | Multicultural fairness rule and per-player script (`words.md`) | As drafted | As drafted |
-| I11 | Word reviewers | Someone who grew up in each region reads its list; one North and one South reader for Multicultural | Owner names them |
+| I10 | Multicultural fairness rule and per-player script (`words.md`); seven themes incl. Kannada and Bengali (owner, 3 October) | As drafted | As drafted |
+| I11 | Word reviewers | Someone who grew up in each region reads its list (Hindi belt, Tamil, Telugu, Malayalam, Kannada, Bengali); North, South and East readers for Multicultural | Owner names them |
 | I12 | Family in-jokes (adding your own words) | First release · later | Later |
 
