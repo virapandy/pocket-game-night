@@ -734,9 +734,9 @@ button.tcell { cursor: pointer; }
 .phone-bar-actions { flex: none; display: flex; }
 .tickets { display: flex; flex-direction: column; gap: 8px; align-items: center; }
 .tickets-two { display: grid; grid-template-columns: repeat(2, max-content); justify-content: center; gap: 8px 12px; }
-.tickets-one { overflow-x: auto; margin: 0 -8px; padding: 0; align-items: flex-start; }
-/* TAM-122, TAM-191 (owner 2026-10-01): in portrait one at a time keeps a 12 px margin each side (8 px + 4 px). */
-.phone:not(.phone-landscape) .tickets-one { margin: 0; padding: 0 4px; align-items: center; }
+/* TAM-122, TAM-191 (owner 2026-10-01, UX list row 2): one at a time keeps a 12 px margin each side (8 px + 4 px), in
+   portrait and landscape, and never slides sideways. */
+.tickets-one { overflow-x: hidden; margin: 0; padding: 0 4px; align-items: center; }
 .phone-ticket { display: flex; flex-direction: column; gap: 2px; margin: 0; }
 .phone-ticket-caption { margin: 0; font-size: 0.85rem; font-weight: 700; line-height: 18px; height: 18px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .phone-ticket-side { flex-direction: row; align-items: center; gap: 2px; }

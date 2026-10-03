@@ -249,8 +249,9 @@ export function PhoneTickets({
   const mark = (ticket: number) => (n: number) => save(toggleMark(game, ticket, n));
   const marksFor = (ticket: number) => ({ marked: marksOn(game, ticket), cue: cue.cells.get(ticket) ?? new Set<number>() });
 
-  // Cell sizes (TAM-122, TAM-173, TAM-191): all tickets at once without scrolling, cells at least 40 px;
-  // one at a time, cells at least 44 px in landscape and 42 px in portrait. Landscape: two side by side, the third below.
+  // Cell sizes (TAM-122, TAM-173, TAM-191, UX list row 2): all tickets at once without scrolling, always within the
+  // screen's width down to 320 px, with a 12 px margin each side (cells about 32 px at 320 px; never below the 24 px
+  // floor of guideline 41). One at a time: at least 44 px in landscape. Landscape: two side by side, the third below.
   const landscape = w > h;
   const cols = landscape && tickets.length > 1 ? 2 : 1;
   const ticketRows = Math.ceil(tickets.length / cols);
@@ -259,17 +260,17 @@ export function PhoneTickets({
   const side = (landscape ? 20 : 0) + 4;
   const chrome = landscape ? 104 : 190 + (cueSays ? 32 : 0);
   const allCell = Math.max(
-    40,
+    24,
     Math.min(
       80,
-      Math.floor((w - 16 - (cols - 1) * 12 - cols * side) / (9 * cols)),
+      Math.floor((w - 24 - (cols - 1) * 12 - cols * side) / (9 * cols)),
       Math.floor((h - chrome - ticketRows * (caption + 8)) / (3 * ticketRows)),
     ),
   );
   // Portrait one at a time (owner decision 2026-10-01, replacing the full-width 42 px cells): the ticket keeps a
   // 12 px margin each side, with no border, and the cells fill the width between (40 px on a 390 px phone, 39 on 375).
   const oneCell = landscape
-    ? Math.max(44, Math.min(80, Math.floor((w - 16 - side) / 9), Math.floor((h - chrome - 60) / 3)))
+    ? Math.max(44, Math.min(80, Math.floor((w - 24 - side) / 9), Math.floor((h - chrome - 60) / 3)))
     : Math.max(24, Math.min(80, Math.floor((w - 24) / 9), Math.floor((h - chrome - 60) / 3)));
 
   const header = (onBack?: () => void) => (
