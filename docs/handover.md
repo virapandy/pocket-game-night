@@ -56,6 +56,13 @@ current; instructions live here, not in chat. History from Phase 0 and 1a is fur
    | 18 | 2 | Settings opened during a game has "Back" at the top (today "Done" is 1,830 px down) | TAM-120 | F |
    | 19 | 1 | Polish: player screens use 16 px side margins like the rest; host prize chips wrap ("Close" runs off a 390 px screen, TAM-183); "Add a ticket by code" (TAM-117); "Done" outlined under the claim QR; "Waiting: Riya (3 tickets)" (TAM-132); a long name doesn't break "(1 of 1)"; "New game" at the bottom; "Remove" in grey; Full House field aligned; "Delete the past game" for one | listed | S, H, F |
 
+   | 20 | 2 | Player's menu: "Done with this game…" clears this phone's tickets after "Clear your tickets from this phone?" ("Keep my tickets" main, "Clear tickets" outlined); held tickets named and cleared | TAM-171, new TAM | A |
+   | 21 | 2 | Tickets more than 6 hours old open on Home with "Your tickets from 7:30 pm / yesterday, 9:15 pm / Sat 28 Sep · Open · Clear"; the phone saves when a typed-code ticket was added | TAM-171, PLT-300 | A |
+   | 22 | 2 | Host's summary after End or Discard starts with a "Game over" banner ("Players: phones away…"; Discard: "Nobody wins…"), payouts still visible below | TAM-140, PLT-005 | A |
+   | 23 | 2 | A claim from an old game, looked up in History: "That game has ended (game 7K3P, 9:15 pm)…" or "That game was discarded…"; unknown games as today; a new game's ticket replacing old ones says "Your tickets from game 7K3P were cleared" | TAM-179, TAM-171 | A |
+
+   (Rows 20–23, added 3 October from `docs/games/tambola/ux-review-2026-10-03-after-the-game.md` (A), are severity 2 but
+   numbered at the end so earlier row numbers stay as the tester already uses them.)
    Not changing: tickets per player stay 1 to 3; the 20-character typed code; "Show claim" stays the player's main
    button; "Tap to resume" stays; auto-call calls at once when the host turns it on. After the next green build the UX
    designer re-checks each row.
