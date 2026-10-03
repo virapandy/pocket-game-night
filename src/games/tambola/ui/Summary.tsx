@@ -6,7 +6,8 @@ import { settleUp } from '../../../engine';
 import { PATTERN_NAMES, type Payout, type TambolaView } from '../rules';
 import { plural, rupees } from './format';
 
-const signed = (n: number) => (n > 0 ? `+${rupees(n)}` : n < 0 ? `−${rupees(-n)}` : rupees(0));
+/** TAM-089 (UX list row 14): the sign stays with the amount, in words: "gets ₹35", "pays ₹12", "even". */
+const netWords = (n: number) => (n > 0 ? `gets ${rupees(n)}` : n < 0 ? `pays ${rupees(-n)}` : 'even');
 
 export function Summary({ view }: { view: TambolaView }) {
   const s = view.summary;
@@ -71,7 +72,10 @@ export function Summary({ view }: { view: TambolaView }) {
                 <span className="payout-name">{p.name}</span>
                 <span className="payout-figures">
                   paid {rupees(p.paid)} · won {rupees(p.won)}
-                  {p.handedBack > 0 ? ` · handed back ${rupees(p.handedBack)}` : ''} · net <strong>{signed(p.net)}</strong>
+                  {p.handedBack > 0 ? ` · handed back ${rupees(p.handedBack)}` : ''} ·{' '}
+                  <span className="payout-net">
+                    net: <strong>{netWords(p.net)}</strong>
+                  </span>
                 </span>
               </li>
             ))}
@@ -131,9 +135,9 @@ function Settle({ payouts }: { payouts: readonly Payout[] }) {
       {shown === 'host' && (
         <div className="stack-tight" data-testid="settle-with-host">
           <p className="note">Everyone paid the host. The host hands out:</p>
-          <ul className="tally-list">
+          <ul className="settle-lines">
             {payouts.map((p) => (
-              <li key={p.playerId} className="hand-over" data-testid="host-gives" data-name={p.name} data-amount={String(p.hostGives)}>
+              <li key={p.playerId} data-testid="host-gives" data-name={p.name} data-amount={String(p.hostGives)}>
                 Host gives {p.name} {rupees(p.hostGives)}
               </li>
             ))}
@@ -147,9 +151,9 @@ function Settle({ payouts }: { payouts: readonly Payout[] }) {
           {handOvers.length === 0 ? (
             <p className="lead">Everyone is even: nothing to hand over.</p>
           ) : (
-            <ul className="tally-list">
+            <ul className="settle-lines">
               {handOvers.map((h, i) => (
-                <li key={i} className="hand-over" data-testid="hand-over" data-from={h.from} data-to={h.to} data-amount={String(h.amount)}>
+                <li key={i} data-testid="hand-over" data-from={h.from} data-to={h.to} data-amount={String(h.amount)}>
                   {h.from} pays {h.to} {rupees(h.amount)}
                 </li>
               ))}

@@ -920,3 +920,11 @@ button.tcell { cursor: pointer; }
 .switch-track-on { background: var(--ok); border-color: var(--ok); }
 .switch-track-on .switch-knob { left: 24px; }
 .cue-warning { font-weight: 600; }
+
+/* ===== Host screens, UX list of 3 October (lane B): payouts, settle, summary, calling, settings ===== */
+/* UX row 14 (TAM-089, TAM-199): the net's sign stays with its amount ("net: pays ₹12"), never split over two lines;
+   who hands what to whom is plain text, not button-like boxes. */
+.payout-net { white-space: nowrap; }
+.settle-lines { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.settle-lines > li { padding: 8px 2px; font-size: 1.1rem; font-weight: 700; border-bottom: 1px solid var(--border); }
+.settle-lines > li:last-child { border-bottom: 0; }

@@ -266,9 +266,9 @@ export function SessionScreen({ id, onBack }: { id: string; onBack: () => void }
               {handOvers.length === 0 ? (
                 <p className="lead">Everyone is even: nothing to hand over.</p>
               ) : (
-                <ul className="tally-list">
+                <ul className="settle-lines">
                   {handOvers.map((h, i) => (
-                    <li key={i} className="hand-over" data-testid="hand-over" data-from={h.from} data-to={h.to} data-amount={String(h.amount)}>
+                    <li key={i} data-testid="hand-over" data-from={h.from} data-to={h.to} data-amount={String(h.amount)}>
                       {h.from} pays {h.to} {rupees(h.amount)}
                     </li>
                   ))}
@@ -300,7 +300,7 @@ export function SessionScreen({ id, onBack }: { id: string; onBack: () => void }
               <h3 className="section-title">Settled on {when(opened.at)}</h3>
               <People people={opened.people} testId="settled-people" />
               {opened.handOvers.length > 0 && (
-                <ul className="tally-list">
+                <ul className="settle-lines">
                   {opened.handOvers.map((h, i) => (
                     <li key={i}>
                       {h.from} pays {h.to} {rupees(h.amount)}
