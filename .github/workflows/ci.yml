@@ -1,6 +1,7 @@
 # On every push to main: type-check, boundary check, build, every test layer that exists,
 # then publish to GitHub Pages only if all of it is green, so the live link never shows a broken build.
-# Pushes that change only docs/ do not start a run at all, so they can never cancel a run for code.
+# Pushes that change only docs/ or reports/ do not start a run at all, so they can never cancel a run for code.
+# The browser tests run in four parallel jobs (android and iphone, each split in two halves) to keep a round short.
 name: Check and publish
 
 on:
@@ -8,6 +9,7 @@ on:
     branches: [main]
     paths-ignore:
       - 'docs/**'
+      - 'reports/**'
   workflow_dispatch:
 
 permissions:
@@ -37,28 +39,66 @@ jobs:
       - name: Rule, contract and property tests
         if: hashFiles('tests/vitest.config.ts') != ''
         run: npm test
-      - name: Install browsers
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  browser:
+    name: browser (${{ matrix.project }} ${{ matrix.shard }}/2)
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [android, iphone]
+        shard: [1, 2]
+        include:
+          - project: android
+            browser: chromium
+          - project: iphone
+            browser: webkit
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Build
+        run: npm run build
+      # Browsers are cached per browser and per Playwright version (read from package-lock.json).
+      - name: Playwright version
+        id: pw
         if: hashFiles('tests/playwright.config.ts') != ''
-        run: npx playwright install --with-deps chromium webkit
+        run: echo "version=$(node -p "require('./package-lock.json').packages['node_modules/@playwright/test'].version")" >> "$GITHUB_OUTPUT"
+      - name: Cache browsers
+        id: pw-cache
+        if: hashFiles('tests/playwright.config.ts') != ''
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ms-playwright-${{ runner.os }}-${{ matrix.browser }}-${{ steps.pw.outputs.version }}
+      - name: Install browser
+        if: hashFiles('tests/playwright.config.ts') != '' && steps.pw-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps ${{ matrix.browser }}
+      - name: Install browser system libraries
+        if: hashFiles('tests/playwright.config.ts') != '' && steps.pw-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps ${{ matrix.browser }}
       - name: Browser tests
         id: browser
         if: hashFiles('tests/playwright.config.ts') != ''
-        run: npm run test:browser
+        run: npm run test:browser -- --project=${{ matrix.project }} --shard=${{ matrix.shard }}/2
       # When the browser step fails, keep its traces and screenshots so the Test workspace can see why.
       - name: Keep browser results
         if: failure() && steps.browser.outcome == 'failure'
         uses: actions/upload-artifact@v4
         with:
-          name: browser-test-results
+          name: browser-test-results-${{ matrix.project }}-${{ matrix.shard }}
           path: test-results/browser/
           retention-days: 14
           if-no-files-found: ignore
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: dist
 
   publish:
-    needs: check
+    needs: [check, browser]
     runs-on: ubuntu-latest
     permissions:
       pages: write
