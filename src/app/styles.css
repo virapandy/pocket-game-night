@@ -831,9 +831,15 @@ button.tcell { cursor: pointer; }
 }
 .phone-large { font-size: 1.2rem; }
 .phone-large .tcell { font-size: calc(var(--cell) * 0.52); }
-.phone-bar { flex: none; display: flex; align-items: center; gap: 4px; min-height: 44px; }
-.phone-ticket-header { flex: 1; min-width: 0; margin: 0; font-weight: 700; font-size: 0.9rem; line-height: 1.25; color: var(--muted); }
-.phone-bar-actions { flex: none; display: flex; }
+/* RC fix (C1): in portrait the name, tickets, game and time sit on one line of their own under Back, Prizes and Menu
+   (ending in "…" if too long), never squeezed into a tall column between them; in landscape they fit between. */
+.phone-bar { flex: none; display: flex; flex-wrap: wrap; align-items: center; gap: 0 4px; min-height: 44px; }
+.phone-ticket-header {
+  order: 1; flex: 1 0 100%; min-width: 0; margin: 0; font-weight: 700; font-size: 0.9rem; line-height: 1.25; color: var(--muted);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.phone-bar-actions { flex: none; display: flex; margin-left: auto; }
+.phone-landscape .phone-ticket-header { order: 0; flex: 1 1 0; }
 .tickets { display: flex; flex-direction: column; gap: 8px; align-items: center; margin: 0 -4px; }
 .tickets-two { display: grid; grid-template-columns: repeat(2, max-content); justify-content: center; gap: 8px 12px; }
 /* TAM-122, TAM-191 (owner 2026-10-01, UX list rows 2 and 19): tickets keep a 12 px margin each side (the screen's
@@ -887,6 +893,13 @@ button.tcell { cursor: pointer; }
 /* A marked number: the marks' deep blue fill and a ✓, so it never relies on colour alone (owner 2026-10-01, UX list row 3). */
 .quick-key-on { color: var(--mark-text); background: var(--mark-bg); border: 2px solid var(--mark-bg); }
 .quick-tick { position: absolute; top: 1px; right: 3px; font-size: 14px; line-height: 1; }
+/* RC fix (C1): on a short portrait phone (360 x 640) the whole pad and "Show claim" fit without scrolling: the screen
+   is exactly the phone's height and the keys give up height (44 px down to 28 px) instead of pushing it off. */
+@media (orientation: portrait) and (max-height: 700px) {
+  .quick-screen { height: 100dvh; }
+  .quick-screen .quick-pad { flex: 0 1 auto; grid-template-rows: repeat(9, minmax(28px, 44px)); }
+  .quick-screen .quick-key { min-height: 0; }
+}
 .thumbs { flex: none; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
 .thumb { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 2px; font: inherit; color: var(--muted); background: transparent; border: 0; cursor: pointer; }
 .thumb-caption { font-size: 0.8rem; font-weight: 700; line-height: 1.2; }
