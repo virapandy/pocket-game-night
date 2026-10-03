@@ -39,7 +39,7 @@ And nobody is paid a prize, and the summary shows each player's contribution to 
 (Equally per ticket means each player gets back exactly what they paid.)
 
 ## TAM-145: Closing a prize tier is a manual step, and so is ending the game
-Status: approved, owner, 2026-09-30 (docs/decisions.md 2026-09-30: the Close on the prize chip stays and still works while the screen is dimmed); approved, owner, 2026-09-30 (docs/games/tambola/changes-2026-09-30-playtest.md: "Next number waits" replaced by "the main button becomes 'Close Top Line'", TAM-198); was approved, owner, 2026-09-29 (added on the owner's decision of 2026-09-29, docs/decisions.md: the result goes away by itself after closing); was approved, owner, 2026-09-28 (owner: the win and the end of the game are manual; the host can add another winner, for every tier)
+Status: approved, owner, 2026-10-03 (UX list row 6, docs/handover.md 2b; docs/games/tambola/ux-review-2026-10-02-full.md: "Add another winner" in phone-ticket games too); approved, owner, 2026-09-30 (docs/decisions.md 2026-09-30: the Close on the prize chip stays and still works while the screen is dimmed); approved, owner, 2026-09-30 (docs/games/tambola/changes-2026-09-30-playtest.md: "Next number waits" replaced by "the main button becomes 'Close Top Line'", TAM-198); was approved, owner, 2026-09-29 (added on the owner's decision of 2026-09-29, docs/decisions.md: the result goes away by itself after closing); was approved, owner, 2026-09-28 (owner: the win and the end of the game are manual; the host can add another winner, for every tier)
 Phase: Phase 1a
 Given Top Line has just been accepted for Riya
 Then Top Line stays open, and the host sees "Add another winner" and "Close Top Line"
@@ -50,11 +50,22 @@ When the host taps "Close Top Line"
 Then Top Line is closed: a later Top Line claim is refused with "Top Line already won" (TAM-030), and "Next number" works again
 And after the host closes a tier, its result goes away by itself; no Done is needed
 And the same holds for every tier, Full House included: the last Full House is closed by hand, then the host ends the game (TAM-075)
+Phone-ticket games (UX list row 6, approved, owner, 2026-10-03)
+Given a phone-ticket game in which Kabir plays on paper (TAM-058)
+And Riya's Top Line claim has just been accepted from her claim QR (TAM-177)
+Then "Add another winner" is shown and works, exactly as in a paper game, while Top Line waits to be closed
+When the host taps it
+Then the host can add the next winner either way: scan another claim QR (TAM-177), or record a paper player's win
+by picking Kabir (TAM-039)
+And a second winner who completed on the same number shares the prize with Riya (TAM-041, TAM-087)
+And Top Line still waits to be closed: the main button is still "Close Top Line" (TAM-198)
+Wrong input: a scanned claim QR that isn't a win (a number not called, or complete on an earlier number) is a bogey
+or a late claim as usual (TAM-177, TAM-038), and Riya's win stands, still waiting to be closed
 (A claim that completed on an earlier number is still late, TAM-043. Closing a tier nobody won does nothing,
 so undoing a wrong claim still reopens its tier, TAM-070.)
 
 ## TAM-198: After a win, closing the prize is the main action
-Status: approved, owner, 2026-09-30 (docs/decisions.md 2026-09-30: what still works while the screen is dimmed); approved, owner, 2026-09-30 (docs/games/tambola/changes-2026-09-30-playtest.md section 1, from the family play-test)
+Status: approved, owner, 2026-10-03 (UX list row 6: phone-ticket games too); approved, owner, 2026-09-30 (docs/decisions.md 2026-09-30: what still works while the screen is dimmed); approved, owner, 2026-09-30 (docs/games/tambola/changes-2026-09-30-playtest.md section 1, from the family play-test)
 Phase: Phase 1a
 Given a win for Top Line has just been recorded (TAM-037)
 Then the big button at the bottom, where "Next number" is, becomes "Close Top Line": filled, enabled,
@@ -72,3 +83,5 @@ Then that works as it does at any other time (TAM-066, TAM-140)
 When the host taps "Close Top Line"
 Then the prize closes, the screen is no longer dimmed, and the button is "Next number" again
 And "Undo win" stays available on the win card until the prize is closed (TAM-070)
+And all of this holds in a phone-ticket game too, after a claim accepted from a claim QR: "Add another winner" sits
+above "Close Top Line" and works while the screen is dimmed (UX list row 6, approved, owner, 2026-10-03; TAM-145)

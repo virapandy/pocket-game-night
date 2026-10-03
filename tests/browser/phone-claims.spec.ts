@@ -8,7 +8,7 @@ import { call, endGame, fromMenu, HOME, mainButton, nextNumber, payoutPeople, ty
 import {
   callUntil, cellsWith, claimRefused, claimResult, closePhones, cornersOf, countOn, currentHandOut, enterTicketNumber,
   fakeCamera, gameCodeOf, gridOf, handOutAll, newPhone, numbersOf, openHostTickets, phoneGame, playerWith, PORTRAIT, readDrawnQr,
-  phoneTicket, rowOf, scanClaim, scanClaimButton, setUpPhoneGame, showClaim, ticketChoice,
+  phoneTicket, rowOf, scanClaim, scanClaimButton, setUpPhoneGame, showClaim, showToCamera, ticketChoice,
 } from './phone';
 
 test.afterEach(closePhones);
@@ -332,5 +332,89 @@ test.describe('The host\'s list of tickets', () => {
     await fromMenu(page, 'Tickets');
     await expect(page.getByTestId('host-ticket')).toHaveCount(6);
     for (const n of [1, 2, 3, 4, 5, 6]) expect(numbersOf(await gridOf(hostTicket(page, n)))).toHaveLength(15);
+  });
+});
+
+// ---------------------------------------------------------------- UX list row 6 (TAM-145, TAM-198; owner approved 3 October 2026)
+
+/**
+ * Phone-ticket games: "Add another winner" is shown and works while an accepted claim waits to be closed, exactly as in
+ * paper games (docs/games/tambola/ux-review-2026-10-02-full.md; README.md "Row 6: Add another winner with phone tickets").
+ * Riya (phone, ticket 1), Kabir (paper, TAM-058), Asha (phone, ticket 3). Riya's Early Five is accepted from her claim QR.
+ */
+async function acceptedPhoneWinWithPaperPlayer(host: Page, browser: Parameters<typeof playerWith>[0], testInfo: Parameters<typeof playerWith>[1]) {
+  await fakeCamera(host, 'ok');
+  await setUpPhoneGame(host, [{ name: 'Riya' }, { name: 'Kabir' }, { name: 'Asha' }]);
+  const handOuts = [await currentHandOut(host)];
+  await host.getByRole('button', { name: 'Next ticket', exact: true }).click(); // Riya's ticket
+  await host.getByRole('button', { name: /^Can.t scan\? Give a paper ticket/ }).or(host.getByRole('link', { name: /^Can.t scan\? Give a paper ticket/ })).first().click(); // Kabir plays on paper
+  handOuts.push(...(await handOutAll(host)));
+  const riya = await playerWith(browser, testInfo, handOuts, 'Riya', PORTRAIT);
+  const asha = await playerWith(browser, testInfo, handOuts, 'Asha', PORTRAIT);
+  const mine = numbersOf(riya.grids.get(riya.tickets[0]!)!);
+  const called = await callUntil(host, (c) => countOn(mine, c) >= 5);
+  await scanClaim(host, await showClaim(riya.page, 'Early Five'));
+  await expect(claimResult(host).getByText(/Early Five: ✓ Accepted, ₹\d+ to Riya/)).toBeVisible({ timeout: 2000 });
+  await expect(mainButton(host)).toHaveAccessibleName('Close Early Five');
+  return { riya, asha, called };
+}
+
+const addAnotherWinner = (host: Page) => host.getByRole('button', { name: 'Add another winner', exact: true });
+
+/** The button is shown, enabled, sits just above "Close Early Five", and is on top where a finger taps (TAM-198). */
+async function expectAddAnotherWinnerUsable(host: Page) {
+  await expect(addAnotherWinner(host), '"Add another winner" while the win waits to be closed (phone tickets)').toBeVisible();
+  await expect(addAnotherWinner(host)).toBeEnabled();
+  const a = (await addAnotherWinner(host).boundingBox())!, m = (await mainButton(host).boundingBox())!;
+  expect(a.y + a.height, '"Add another winner" sits above the main button').toBeLessThanOrEqual(m.y + 0.5);
+  const onTop = await addAnotherWinner(host).evaluate((el) => {
+    const r = el.getBoundingClientRect();
+    const top = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2);
+    return !!top && (top === el || el.contains(top));
+  });
+  expect(onTop, '"Add another winner" is not under the dimmed layer').toBe(true);
+}
+
+test.describe('TAM-145 and TAM-198 (UX list row 6): phone-ticket games, "Add another winner" while a win waits to close', () => {
+  test('a paper player\'s tie can be added: Kabir shares Early Five with Riya; the prize still waits to be closed; both are paid', async ({ page, browser }, testInfo) => {
+    test.setTimeout(150_000); // calling until 5 of a ticket's numbers are out can take 60 or more calls (TAM-101)
+    await acceptedPhoneWinWithPaperPlayer(page, browser, testInfo);
+    await expectAddAnotherWinnerUsable(page);
+    await addAnotherWinner(page).click();
+    // As in paper games (TAM-039): the paper player is picked by name, then Confirm.
+    await page.getByRole('button', { name: 'Kabir', exact: true }).click();
+    await page.getByRole('button', { name: 'Confirm', exact: true }).click();
+    await expect(claimResult(page).getByText(/Shared/)).toBeVisible();
+    await expect(mainButton(page), 'the prize still waits to be closed').toHaveAccessibleName('Close Early Five');
+    await mainButton(page).click();
+    await expect(nextNumber(page)).toBeEnabled();
+    await endGame(page);
+    const people = await payoutPeople(page);
+    expect(people.find((p: any) => p.name === 'Riya')!.won, 'Riya\'s share').toBeGreaterThan(0);
+    expect(people.find((p: any) => p.name === 'Kabir')!.won, 'Kabir\'s share').toBeGreaterThan(0);
+    expect(people.find((p: any) => p.name === 'Asha')!.won).toBe(0);
+  });
+
+  test('another claim QR can be scanned from it; one that isn\'t a win is a bogey (or late) as usual, and Riya\'s win stands, still waiting to be closed', async ({ page, browser }, testInfo) => {
+    test.setTimeout(150_000);
+    const { asha, called } = await acceptedPhoneWinWithPaperPlayer(page, browser, testInfo);
+    await expectAddAnotherWinnerUsable(page);
+    await addAnotherWinner(page).click();
+    // The scanner opens at once, or "Scan a claim" is offered next to the paper players (README, row 6).
+    const scanner = page.getByTestId('claim-scanner');
+    if (!(await scanner.isVisible())) await page.getByRole('button', { name: 'Scan a claim', exact: true }).last().click();
+    await expect(scanner).toBeVisible();
+    // Asha's Early Five: accepted (shared) only if her 5th number was the latest call; otherwise a bogey (TAM-038).
+    const ashaNumbers = numbersOf(asha.grids.get(asha.tickets[0]!)!);
+    const before = countOn(ashaNumbers, called.slice(0, -1)), now = countOn(ashaNumbers, called);
+    await showToCamera(page, await showClaim(asha.page, 'Early Five'));
+    if (now >= 5 && before < 5) {
+      await expect(claimResult(page).getByText(/Shared|to Asha/).first()).toBeVisible({ timeout: 2000 });
+    } else {
+      await expect(claimResult(page).getByText(/Early Five: ✗ Bogey/).first()).toBeVisible({ timeout: 2000 });
+    }
+    // Riya's win stands and Early Five still waits to be closed.
+    await expect(mainButton(page)).toHaveAccessibleName('Close Early Five');
+    await expect(page.getByTestId('prize-chip').filter({ hasText: /Early Five/ }).filter({ hasText: /Riya/ })).toBeVisible();
   });
 });

@@ -490,12 +490,14 @@ TAM-213), `report-problem.spec.ts` (PLT-200). Rule side: `tests/games/tambola/ph
 - Two buttons whose accessible names start `Host a game` and `Join with my ticket`: the same size (within 2 px), the
   same background colour, top border colour and width, and font weight; neither has the main look. The host card's
   text mentions "this phone"; the join card's mentions "QR" or "code".
-- First visit (fresh storage): the text "You're ready for game night" (straight or curly apostrophe).
+- First visit (fresh storage): the text "You're ready for game night" (straight or curly apostrophe). On the first visit
+  only: after a reload, or opening Home again, it is gone (product owner's answer 3, 2 October 2026).
 - `Host a game` → the Tambola start screen (`New game`); a game picker with a `Tambola…` button in between is fine.
 - `Join with my ticket` → some text mentioning the "camera" (scan the host's QR with the phone's camera) and a button
   starting `Type the code`, which shows the field `Ticket code` and `Open ticket` (a wrong code: `role="alert"`).
 - `unfinished-games` sits wholly below both cards; nothing inside it has the main look ("Tap to resume" today is solid
-  red: that changes); tapping its "Tap to resume" (or "Resume") still goes back into the game (PLT-004).
+  red: that changes); tapping its "Tap to resume" still goes back into the game (PLT-004; the words stay "Tap to resume", product owner's
+  answer 1, 2 October 2026).
 - `Sessions`, `History`, `Report a problem` and `Settings` stay reachable from Home: a button or `menuitem` with that
   exact name, directly or after tapping a button named with "Menu". "Settings" there leads to the same settings as
   the Tambola start screen's (the PLT-209 tests use it to reach `Reports waiting to send`).
@@ -626,3 +628,54 @@ margin replaces "cells at least 42 px"), `layout.spec.ts` (TAM-126: chips wrap, 
 - `claim-screen`'s `Done` (TAM-193): outlined, never the main look, under `claim-qr`.
 - Prizes step (TAM-183): every visible `Remove…` button's text colour is a neutral grey with at least 4.5:1 contrast,
   never the main look; a visible border is grey too.
+
+## Product owner's answers to questions 1 to 6 (2 October 2026, `docs/handover.md` step 3): no more "either answer"
+- 1: the unfinished game's row says exactly "Tap to resume" (`home-and-buttons.spec.ts`).
+- 2: one ticket filling two prizes: the cue (line plus `More`) says "Ticket 1: Early Five and Top Line filled. Shout if
+  it's right!" (prize order). With fills on two tickets, `More` names each ticket's prizes, such as "Ticket 1: Early Five
+  and Top Line filled" or "Ticket 1: Top Line filled", Early Five said at most once (`phone-tickets.spec.ts`,
+  `pattern-cue.spec.ts`; UX list row 1).
+- 3: "You're ready for game night" on the first visit only (`home-and-buttons.spec.ts`).
+- 4: Settings from Home's menu: unchanged, already tested.
+- 5: on the payout screen, before any settle tab is opened, `Settle with host` is the one control with the main look
+  (`home-and-buttons.spec.ts` TAM-197/TAM-089; UX list row 5).
+- 6: at 812 × 375 with 3 tickets and Larger text on, the page doesn't scroll and all three `phone-ticket` boxes are wholly
+  on screen (`pattern-cue.spec.ts`; UX list row 1).
+
+## C3 batch of 3 October 2026: UX list rows 6, 20, 21 and 23 (owner approved; tests first)
+
+### Row 6: "Add another winner" with phone tickets (TAM-145, TAM-198; `phone-claims.spec.ts`)
+- In a phone-ticket game, after a claim QR is accepted, `Add another winner` shows exactly as in paper games: enabled,
+  above `main-button` (`Close Early Five`), topmost at its centre while the screen is dimmed.
+- Tapping it offers the ways to add the next winner: one button per **paper** player, named by name, then `Confirm`
+  (as in paper games, TAM-039: the result says "Shared"); and scanning another claim QR, either by opening
+  `claim-scanner` at once or with a button `Scan a claim` (the tests tap the last visible one). A scanned claim gets its
+  usual verdict in `claim-result` ("✗ Bogey", or accepted and shared); `main-button` still reads `Close Early Five`,
+  and the won `prize-chip` still names Riya.
+
+### Row 20: "Done with this game…" (TAM-215; `after-the-game.spec.ts`)
+- The player's `Menu` (named "Menu"): its **last** `menuitem` is named "Done with this game…" (or "...", or none).
+- It opens a `dialog` (or `alertdialog`) holding "Clear your tickets from this phone?", "Tickets 1 · 2 · Game 7K3P"
+  (a held ticket adds "Grandma's ticket 3", TAM-214), "Your marks go too." and "Do this when the host says the game is
+  over.", with `Keep my tickets` (the one main look) and `Clear tickets` (outlined, never the main look).
+- `Keep my tickets`: the dialog closes, every ticket and mark stays. `Clear tickets`: Home (`Host a game`, `Join with my
+  ticket`), no `phone-ticket`, no `saved-tickets`, no text "Your tickets" anywhere, also after a reload.
+
+### Row 21: tickets more than 6 hours old (PLT-300, TAM-171; `after-the-game.spec.ts`)
+- The tests set each phone's clock with Playwright's clock and read times in the `Asia/Kolkata` time zone.
+- A ticket's time: the game's start time from its QR; for a ticket added by typed code, when it was added to the phone.
+- Opened less than 6 hours after that time: the tickets open, as before. More than 6 hours: Home, no `phone-ticket`, and
+  `data-testid="saved-tickets"`, wholly below both Home cards, with the text "Your tickets from 9:15 am" (same day),
+  "Your tickets from yesterday, 9:15 pm" (the day before) or "Your tickets from Sat 26 Sep" (earlier; times as h:mm am/pm),
+  and the buttons `Open` and `Clear` (exact names, never the main look; Home still has no main look).
+- `Open`: the tickets with every mark. `Clear`: the dialog of row 20; `Keep my tickets` keeps the row, `Clear tickets`
+  removes the tickets and the row (also after a reload).
+
+### Row 23: a claim or a ticket from an old game (TAM-179, TAM-171; `after-the-game.spec.ts`)
+- In `claim-refused`, for a claim QR of a game this host phone ended: "That game has ended (game 7K3P, 9:15 pm). This
+  claim doesn't count." (the time as the old game's tickets show it in `phone-ticket-header`); discarded: "That game was
+  discarded (game 7K3P). This claim doesn't count."; a game the phone never ran, or one removed with History's `Clear all
+  history`: "This claim is for another game (code 7K3P)" as before. Never "✗" or "Bogey"; no `claim-result`; its
+  `Close` has the main look and closes it, back to the calling screen.
+- A player's phone adding a ticket of a new game (QR link, or the menu's `Add a ticket by code`) shows only the new
+  ticket and the text "Your tickets from game 7K3P were cleared." (7K3P the old game's code).

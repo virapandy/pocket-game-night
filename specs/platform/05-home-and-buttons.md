@@ -6,7 +6,7 @@ observations of 1 October 2026, checked by the UX designer and decided with the 
 `docs/decisions.md` 2026-10-01, UX list rows 2 and 4 in `docs/handover.md`).
 
 ## PLT-300: Home: host a game or join with my ticket
-Status: approved, owner, 2026-10-01 (UX list row 2)
+Status: approved, owner, 2026-10-03 (UX list row 21: tickets more than 6 hours old open on Home); was approved, owner, 2026-10-01 (UX list row 2)
 Phase: Phase 2 (phone tickets)
 Given the app opens on Home
 Then Home shows two equal choices, "Host a game" and "Join with my ticket", as cards of the same size and look,
@@ -25,6 +25,25 @@ Then their ticket opens
 Given this is the first time the app has been opened on this phone
 Then Home also says "You're ready for game night" (TAM-057)
 Wrong input: a typed code that is not a ticket is refused with a one-line reason, and no ticket opens (TAM-117)
+
+Tickets left on a player's phone (UX list row 21, approved, owner, 2026-10-03; docs/handover.md 2b;
+docs/games/tambola/ux-review-2026-10-03-after-the-game.md, decision 2)
+Given a player's phone holds tickets whose time (TAM-171: the game's start time, or when a typed-code ticket was added)
+is less than 6 hours ago
+When the app is opened
+Then the tickets open, as before (TAM-171)
+Given the tickets' time is more than 6 hours ago
+When the app is opened
+Then Home opens, not the tickets, with one row below the two choices, where "Your tickets ›" is today:
+- the same day: "Your tickets from 7:30 pm"
+- the day before: "Your tickets from yesterday, 9:15 pm"
+- earlier: "Your tickets from Sat 28 Sep"
+And the row has two quiet buttons, "Open" and "Clear", neither with the main look (PLT-301)
+When the player taps "Open"
+Then the tickets open with every mark
+When the player taps "Clear"
+Then the question of TAM-215 is asked; "Clear tickets" clears them and the row goes; "Keep my tickets" keeps them and the row
+And saved tickets that have neither time (kept from before this change) also get the row
 
 ## PLT-301: One main button per screen, and it is the next step
 Status: approved, owner, 2026-10-01 (UX list row 4; UX guideline 17a; hand-out and typed claim form named from UX list rows 8 and 9)

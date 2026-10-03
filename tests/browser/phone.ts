@@ -13,11 +13,15 @@ export const LANDSCAPE = { width: 844, height: 390 };
 
 /**
  * Another phone: a new browser context with the same device settings as this test's project (Android or
- * iPhone), silent like every page (fixtures.ts). `viewport` defaults to the project's.
+ * iPhone), silent like every page (fixtures.ts). `viewport` defaults to the project's. `extra.timezoneId`: the
+ * phone's time zone (after-the-game.spec.ts reads dates and times off the screen).
  */
-export async function newPhone(browser: Browser, testInfo: TestInfo, viewport?: { width: number; height: number }): Promise<Page> {
+export async function newPhone(
+  browser: Browser, testInfo: TestInfo, viewport?: { width: number; height: number }, extra: { timezoneId?: string } = {},
+): Promise<Page> {
   const use = testInfo.project.use as any;
   const context: BrowserContext = await browser.newContext({
+    ...extra,
     baseURL: use.baseURL,
     viewport: viewport ?? use.viewport,
     userAgent: use.userAgent,

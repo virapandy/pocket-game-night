@@ -51,6 +51,19 @@ test.describe('PLT-300: Home: "Host a game" and "Join with my ticket"', () => {
     await expectOneMainButton(page, 'Home', null);
   });
 
+  test('TAM-057: "You\'re ready for game night" shows on the first visit only, not when the app is opened again', async ({ page }) => {
+    // Product owner's answer 3 (2 October 2026, docs/handover.md step 3): first visit only.
+    await page.goto(HOME);
+    await expect(page.getByText(READY).first()).toBeVisible();
+    await dismissInstallTip(page);
+    await page.reload();
+    await expect(hostAGame(page)).toBeVisible();
+    await expect(page.getByText(READY), 'the second visit still says "You\'re ready for game night"').toHaveCount(0);
+    await page.goto(HOME);
+    await expect(hostAGame(page)).toBeVisible();
+    await expect(page.getByText(READY)).toHaveCount(0);
+  });
+
   test('Sessions, History, Report a problem and Settings are still reachable from Home (directly or in its menu)', async ({ page }) => {
     for (const name of ['Sessions', 'History', 'Report a problem', 'Settings']) {
       await page.goto(HOME);
@@ -116,7 +129,8 @@ test.describe('PLT-300: Home: "Host a game" and "Join with my ticket"', () => {
       expect(await hasMainLook(controls.nth(i)), `"${(await controls.nth(i).innerText()).trim()}" in the unfinished games has the main look`).toBe(false);
     }
     await expectOneMainButton(page, 'Home with an unfinished game', null);
-    await list.getByText(/Tap to resume|Resume/).first().click();
+    // Product owner's answer 1 (2 October 2026, docs/handover.md step 3): the words stay "Tap to resume" (PLT-004).
+    await list.getByText('Tap to resume', { exact: true }).first().click();
     await expect(nextNumber(page)).toBeVisible();
   });
 });
@@ -225,7 +239,7 @@ test.describe('PLT-301: one main button per screen, and it is the next step', ()
     expect(await hasMainLook(discard.first()), '"Discard…" has the main look').toBe(false);
   });
 
-  test('TAM-197: on the payout screen "Play again" is outlined, not the main look', async ({ page }) => {
+  test('TAM-197 and TAM-089: on the payout screen "Play again" is outlined, not the main look; "Settle with host" is the main look until a tab is opened', async ({ page }) => {
     await setUpPaperGame(page, { players: ['Riya', 'Asha', 'Dad'] });
     await winEverythingAndEnd(page, 'Riya', THREE_TIERS);
     const again = page.getByRole('button', { name: 'Play again', exact: true });
@@ -234,6 +248,9 @@ test.describe('PLT-301: one main button per screen, and it is the next step', ()
     expect(await isOutlined(again), '"Play again" is outlined').toBe(true);
     const main = await mainLookButtons(page);
     expect(main.length, `controls with the main look on the payout screen: ${JSON.stringify(main)}`).toBeLessThanOrEqual(1);
+    // Product owner's answer 5 (2 October 2026, docs/handover.md step 3; TAM-089, UX list row 5): until a settle tab is
+    // opened, "Settle with host" is the screen's one main button.
+    expect(main.length === 1 && main[0]!.startsWith('Settle with host'), `"Settle with host" has the main look until a settle tab is opened; main look on: ${JSON.stringify(main)}`).toBe(true);
   });
 
   test('player: the tickets screen and "One at a time": "Show claim" is the one main button; a chosen tab is never the main look', async ({ page, browser }, testInfo) => {

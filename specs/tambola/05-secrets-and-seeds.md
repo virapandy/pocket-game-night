@@ -72,7 +72,8 @@ Then the host phone can show any ticket in the game
 Status: approved, owner, 2026-10-01 (first-visit line on Home, UX list row 2, docs/games/tambola/ux-review-2026-10-01-action-hierarchy.md); was approved, owner, 2026-09-29 (Phase 2 sign-off, with the product owner's verdict of 2026-09-28)
 Phase: Phase 2 (phone tickets)
 Given a guest opens the app link for the first time, before game night, with internet
-Then Home says "You're ready for game night" (PLT-300)
+Then Home says "You're ready for game night" (PLT-300), on that first visit only; later visits don't (product
+owner's answer 3, 2 October 2026, docs/handover.md step 3)
 Given a player opened the app link once before, and now has no internet
 When they scan their ticket QR
 Then their ticket appears and they can mark it
@@ -138,13 +139,19 @@ When a player's ticket is shown on their phone
 Then it shows the ticket number, the game code and start time, and the prize tiers for that game
 And the host screen shows the same game code, so a ticket from an earlier game is easy to spot
 
-## TAM-171: A phone ticket survives locks and reloads
-Status: approved, owner, 2026-09-29 (Phase 2 sign-off, with the product owner's verdict of 2026-09-28)
+## TAM-171: A phone ticket survives locks and reloads, and stays until the player clears it
+Status: approved, owner, 2026-10-03 (UX list rows 20, 21 and 23, docs/handover.md 2b; docs/games/tambola/ux-review-2026-10-03-after-the-game.md); was approved, owner, 2026-09-29 (Phase 2 sign-off, with the product owner's verdict of 2026-09-28)
 Phase: Phase 2 (phone tickets)
 Given a player's phone shows ticket 3 with 9 numbers marked
 When the phone locks, the browser reloads, or the player switches apps and comes back
 Then ticket 3 is still there with the same 9 marks
-And it stays until the player scans a ticket for a new game
+And it stays until the player taps "Done with this game…" (TAM-215), clears it from Home (PLT-300), or adds a
+ticket from a new game
+And each ticket remembers its game's start time (from the QR), or, for a ticket added by typed code (which carries
+no time), when it was added to this phone; that time decides how it opens (PLT-300)
+When the player adds a ticket from a new game (by QR or typed code)
+Then it replaces the old game's tickets, marks and all, without asking (also tickets held for others, TAM-214)
+And the new ticket shows one quiet line: "Your tickets from game 7K3P were cleared." (7K3P being the old game's code)
 
 ## TAM-172: Each phone ticket is handed to a named player
 Status: approved, owner, 2026-09-28
@@ -222,11 +229,17 @@ Wrong input: with no ticket number, or no prize chosen, "Check" does nothing (it
 no refusal
 
 ## TAM-179: A claim QR that does not belong to this game is refused, calmly
-Status: approved, owner, 2026-09-29 (Phase 2 sign-off; changed by the product owner's verdict of 2026-09-28: a mismatched claim QR is refused, never a bogey, and the host can check by ticket number)
+Status: approved, owner, 2026-10-03 (UX list row 23, docs/handover.md 2b; docs/games/tambola/ux-review-2026-10-03-after-the-game.md, decision 4: a claim from an old game is looked up in History); was approved, owner, 2026-09-29 (Phase 2 sign-off; changed by the product owner's verdict of 2026-09-28: a mismatched claim QR is refused, never a bogey, and the host can check by ticket number)
 Phase: Phase 2 (phone tickets)
 When the host scans a claim QR
 Then it is refused with a plain reason, and nothing in the game changes, when:
-- it is from another game (a different game code): "This claim is for another game (code 7K3P)"
+- it is from another game (a different game code), looked up in this phone's History (UX list row 23, approved,
+  owner, 2026-10-03):
+  - a game that ended on this phone: "That game has ended (game 7K3P, 9:15 pm). This claim doesn't count." (the
+    time is that game's start time)
+  - a game that was discarded on this phone: "That game was discarded (game 7K3P). This claim doesn't count."
+  - a game this phone doesn't know, or one deleted from History: "This claim is for another game (code 7K3P)", as before
+  Each is shown calmly, with ⓘ, never ✗ or "Bogey", and "Close" is the main button
 - its ticket was never handed out in this game (TAM-176): "Ticket 5 is not in this game"
 - its ticket is out after a bogey (TAM-044): "Ticket 3 is out"
 - the prize is closed or already won (TAM-030): "Top Line already won"
@@ -346,6 +359,10 @@ And (UX list row 11, approved, owner, 2026-10-01) the outline does not rely on c
 than the 3 CSS px line of 1 October (at least 4 CSS px), and every outlined cell also gets a corner mark that a marked cell outside the pattern doesn't have
 And Early Five is said once, however many of her tickets have 5 marks: "Early Five filled on ticket 1" (line and
 "More" together mention Early Five once)
+And (product owner's answers 2 and 6, 2 October 2026, docs/handover.md step 3; UX list row 1) when one ticket fills
+two prizes at once, the line names both, in prize order: "Ticket 1: Early Five and Top Line filled. Shout if it's
+right!", with "More" when it doesn't fit
+And on an 812 × 375 phone in landscape with 3 tickets and Larger text on, all three tickets fit with no scrolling
 
 ## TAM-196: Players can cross out prizes that are gone; the host's scan catches the rest
 Status: approved, owner, 2026-09-29 (new with the Phase 2 sign-off: docs/games/tambola/changes-2026-09-29-phone-tickets.md; replaces "every prize stays selectable")
@@ -375,3 +392,23 @@ Then it is refused: "This phone already holds 3 tickets", and the 3 tickets and 
 Edge: scanning one of the 3 tickets again is not a 4th ticket: nothing is refused and nothing changes
 Edge: a ticket of a new game still replaces the old game's tickets (TAM-171); it is never refused
 (The limit stays at 3 for now; a later version may change it from play-tests, docs/playtest-checklist.md row 16.)
+
+## TAM-215: "Done with this game…" clears this phone's tickets, after asking
+Status: approved, owner, 2026-10-03 (UX list row 20, docs/handover.md 2b; docs/games/tambola/ux-review-2026-10-03-after-the-game.md, decision 1)
+Phase: Phase 2 (phone tickets)
+Given Riya's phone holds her tickets 1 and 2 of game 7K3P, with marks
+When she opens her menu
+Then "Done with this game…" is its last item, after a divider
+When she taps it
+Then she is asked "Clear your tickets from this phone?", with "Tickets 1 · 2 · Game 7K3P. Your marks go too. Do this
+when the host says the game is over."
+And the buttons are "Keep my tickets", the main button, and "Clear tickets", outlined (a confirmation, not Undo: it is
+rare, can't be undone, and a stray tap mid-game would wipe the marks)
+When she taps "Keep my tickets"
+Then nothing changes: tickets 1 and 2 and every mark stay
+When she taps "Clear tickets" instead
+Then her phone shows Home, and holds no tickets: not after a reload either, and Home has no row of her tickets
+And she can join the next game as usual ("Join with my ticket", or scanning the next QR)
+Given her phone also holds Grandma's ticket 3 (TAM-214)
+Then the question names it too ("Tickets 1 · 2 and Grandma's ticket 3 · Game 7K3P …"), and "Clear tickets" clears it too
+(Clearing changes nothing on the host phone: the host's record of the game stays, TAM-172.)

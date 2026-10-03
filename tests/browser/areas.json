@@ -29,7 +29,8 @@
         "held-tickets.spec.ts",
         "home-and-buttons.spec.ts",
         "report-problem.spec.ts",
-        "phone-late-joiners.spec.ts"
+        "phone-late-joiners.spec.ts",
+        "after-the-game.spec.ts"
       ]
     },
     {
@@ -41,7 +42,8 @@
         "phone-claims.spec.ts",
         "phone-late-joiners.spec.ts",
         "held-tickets.spec.ts",
-        "pattern-cue.spec.ts"
+        "pattern-cue.spec.ts",
+        "after-the-game.spec.ts"
       ]
     },
     {
@@ -63,14 +65,15 @@
         "dark-mode.spec.ts",
         "report-problem.spec.ts",
         "home-and-buttons.spec.ts",
-        "lifecycle.spec.ts"
+        "lifecycle.spec.ts",
+        "after-the-game.spec.ts"
       ]
     },
     {
       "name": "Host scans a claim (camera, typed ticket number)",
       "lane": "B",
       "paths": ["src/games/tambola/ui/scanner.ts"],
-      "specs": ["phone-claims.spec.ts", "ux-rows-8-15.spec.ts"]
+      "specs": ["phone-claims.spec.ts", "ux-rows-8-15.spec.ts", "after-the-game.spec.ts"]
     },
     {
       "name": "Settings (game and start screen): voice, auto-call, late joining, cue switch, dark mode, house rules",
@@ -151,7 +154,8 @@
         "lifecycle.spec.ts",
         "ux-rows-8-15.spec.ts",
         "late-joiners.spec.ts",
-        "rhymes.spec.ts"
+        "rhymes.spec.ts",
+        "after-the-game.spec.ts"
       ]
     },
     {
@@ -164,7 +168,8 @@
         "history.spec.ts",
         "phone-tickets.spec.ts",
         "usability.spec.ts",
-        "auto-call.spec.ts"
+        "auto-call.spec.ts",
+        "after-the-game.spec.ts"
       ]
     },
     {
@@ -183,7 +188,8 @@
         "setup.spec.ts",
         "late-joiners.spec.ts",
         "phone-late-joiners.spec.ts",
-        "format-1.spec.ts"
+        "format-1.spec.ts",
+        "after-the-game.spec.ts"
       ]
     },
     {
@@ -211,14 +217,15 @@
         "usability.spec.ts",
         "dark-mode.spec.ts",
         "layout.spec.ts",
-        "setup-layout.spec.ts"
+        "setup-layout.spec.ts",
+        "after-the-game.spec.ts"
       ]
     },
     {
       "name": "History",
       "lane": "shared",
       "paths": ["src/app/History.tsx"],
-      "specs": ["history.spec.ts", "lifecycle.spec.ts", "format-1.spec.ts"]
+      "specs": ["history.spec.ts", "lifecycle.spec.ts", "format-1.spec.ts", "after-the-game.spec.ts"]
     },
     {
       "name": "Sessions and tally screens",
@@ -236,7 +243,7 @@
       "name": "Saved data on the phone (app storage, saved-game format)",
       "lane": "shared",
       "paths": ["src/app/storage.ts", "src/engine/storage.ts", "src/engine/saved-game.ts"],
-      "specs": ["lifecycle.spec.ts", "history.spec.ts", "format-1.spec.ts", "sessions.spec.ts", "phone-tickets.spec.ts", "held-tickets.spec.ts"]
+      "specs": ["lifecycle.spec.ts", "history.spec.ts", "format-1.spec.ts", "sessions.spec.ts", "phone-tickets.spec.ts", "held-tickets.spec.ts", "after-the-game.spec.ts"]
     },
     {
       "name": "Money, sessions and tally rules",

@@ -114,6 +114,8 @@ When a game ends
 Then the summary lists each tier with its winner(s) and amount (or "not won") (TAM-088)
 And each person has one row: paid, won, and net (TAM-088)
 And below the rows are two buttons: "Settle with host" and "Settle with players" (TAM-199)
+And until a settle tab is opened, "Settle with host" has the main look, the screen's one (PLT-301; product owner's
+answer 5, 2 October 2026, docs/handover.md step 3; UX list row 5)
 When the host taps "Settle with host"
 Then it shows what the host, as the bank, gives each person: "Host gives Riya ₹77" (prize won plus money handed back)
 And the total the host gives out equals the pot, to the rupee

@@ -11,7 +11,7 @@ import { expect, test, type Page } from './fixtures';
 import { CUE_WARNING, cueSwitch, HOME, onTopAtCentre, openTambola, ticketCard, typeTicketCode } from './helpers';
 import {
   allCueText, cellsWith, closePhones, cueMore, currentHandOut, gridOf, handOutAll, newPhone, openQuickMark, patternCue,
-  phoneGame, phoneTicket, playerMenu, playerWith, PORTRAIT, rowOf, scanTicket, setUpPhoneGame, shownTickets, tapCell, thumbnail,
+  pageFits, phoneGame, phoneTicket, playerMenu, playerWith, PORTRAIT, rowOf, scanTicket, setUpPhoneGame, shownTickets, tapCell, thumbnail,
 } from './phone';
 
 /** Real format-1 ticket QRs from the app at d3aa874 (tests/fixtures/ticket-qr-v1.json). */
@@ -181,6 +181,23 @@ async function expectSlimCue(player: Page, where: string) {
   }
 }
 
+/**
+ * Product owner's answer 6 (2 October 2026, docs/handover.md step 3; UX list row 1): at 812 × 375 with 3 tickets and
+ * Larger text, all three tickets fit with no scrolling: the page doesn't scroll and every ticket is wholly on screen.
+ */
+async function expectAllTicketsFit(player: Page, where: string) {
+  await player.evaluate(() => window.scrollTo(0, 0));
+  expect(await pageFits(player), `${where}: the page scrolls`).toBe(true);
+  const vp = player.viewportSize()!;
+  const tickets = shownTickets(player);
+  expect(await tickets.count(), `${where}: tickets shown`).toBe(3);
+  for (let i = 0; i < 3; i++) {
+    const b = (await tickets.nth(i).boundingBox())!;
+    expect(b.x >= -0.5 && b.y >= -0.5 && b.x + b.width <= vp.width + 0.5 && b.y + b.height <= vp.height + 0.5,
+      `${where}: ticket ${await tickets.nth(i).getAttribute('data-ticket')} is wholly on screen (box ${Math.round(b.x)},${Math.round(b.y)} ${Math.round(b.width)}×${Math.round(b.height)})`).toBe(true);
+  }
+}
+
 /** Checks the slim line in portrait and landscape (375 × 812), with Larger text off and on. */
 async function expectSlimEverywhere(player: Page, tickets: number) {
   for (const larger of [false, true]) {
@@ -193,6 +210,7 @@ async function expectSlimEverywhere(player: Page, tickets: number) {
       await player.setViewportSize(vp);
       await player.evaluate(() => new Promise<void>((r) => requestAnimationFrame(() => requestAnimationFrame(() => r()))));
       await expectSlimCue(player, `${tickets} ticket(s), ${vp.width} × ${vp.height}, Larger text ${larger ? 'on' : 'off'}`);
+      if (larger && tickets === 3 && vp === SMALL_LANDSCAPE) await expectAllTicketsFit(player, '3 tickets, 812 × 375, Larger text on');
     }
   }
 }
@@ -209,6 +227,8 @@ test.describe('TAM-195 (row 1a): with the cue on, the message is one slim line t
       expect(player.tickets.length).toBe(count);
       await fillTopRow(player.page, last);
       await expect(patternCue(player.page)).toContainText(new RegExp(`Ticket ${last}\\b`));
+      // A full top row is also 5 marks: the line names both prizes, in prize order (product owner's answer 2, 2 October 2026).
+      expect(await allCueText(player.page)).toMatch(new RegExp(`Ticket ${last}: Early Five and Top Line filled\\. Shout if it['’]s right!`, 'i'));
       await expectSlimEverywhere(player.page, count);
     });
   }
@@ -223,8 +243,10 @@ test.describe('TAM-195 (row 1a): with the cue on, the message is one slim line t
     await expect(cueMore(riya.page)).toBeVisible();
     await expectSlimCue(riya.page, '3 tickets, two with fills');
     const all = await allCueText(riya.page);
-    expect(all).toMatch(/Ticket 1: top row filled/i);
-    expect(all).toMatch(/Ticket 3: top row filled/i);
+    // Each ticket names its prizes (product owner's answer 2, 2 October 2026); Early Five is said once (row 11).
+    expect(all).toMatch(/Ticket 1: (Early Five and )?Top Line filled/i);
+    expect(all).toMatch(/Ticket 3: (Early Five and )?Top Line filled/i);
+    expect((all.match(/Early Five/gi) ?? []).length, `Early Five is said at most once in "${all}"`).toBeLessThanOrEqual(1);
     // Never a verdict, never a claim.
     await expect(riya.page.getByText(/accepted|you won|winner|correct|valid claim/i)).toHaveCount(0);
   });
