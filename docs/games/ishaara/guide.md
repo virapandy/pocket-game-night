@@ -62,7 +62,7 @@ the map, turns words over, counts words and guesses left, and keeps the night's 
 | 16 | **Timer:** none by default. Anyone may start a **90-second "hurry up" timer** on a slow clue giver or team. When it runs out, the clue giver must give a clue (the rulebook's advice: clue your hardest word and keep thinking); the team must guess or end its turn. The phone never ends a turn by itself | CGE sand timer (about 1.5 min) | Never automatic: ours (UX guideline 48) |
 | 17 | **Clue givers rotate:** each new game suggests, for each team, the player who has been clue giver least often tonight (ties: the earliest in that team's list) | CGE: "do other people want a chance?" | Rotation rule: ours |
 | 18 | Teams of similar size; uneven by one is fine; at least 2 per team (a clue giver and a guesser) | CGE rulebook | Minimum per team stated: ours |
-| 19 | A word turned over can't be turned back (it was confirmed first). Undo exists only for team and setup changes | Touching a card is final (CGE) | Pick-then-confirm: ours (UX guideline 47) |
+| 19 | A word turned over can't be turned back (it was confirmed first). Undo exists only for team moves and removing a player | Touching a card is final (CGE) | Pick-then-confirm: ours (UX guideline 47) |
 
 ## Choices asked at the start (their default first; later games start from the last-used values on this phone)
 | Choice | Options | Why |
@@ -104,5 +104,5 @@ casual groups tally wins informally, `research.md`.)
 | View | Room view: words, turned-over colours, whose turn, clue number, guesses left, words left. **Map view: clue givers only.** The room view never contains the map of a face-down word (not in the page at all) |
 | Game over | A team's words all turned over, or the Bhoot turned over |
 | Invariants | Exactly 9/8/7/1 (or 6/5/5/0); the starting team has the larger count; guesses never exceed number + 1; at least one guess before "End our turn"; no word repeats in an evening; the same code always rebuilds the same board and map |
-| Undo | Not for reveals (pick, then confirm); only team and setup changes, before the first clue |
-| Secrets | The board and map come from one seed carried in the map code; the code encodes the word list edition, board size and words audience, so any phone rebuilds the same board offline |
+| Undo | Not for reveals (pick, then confirm); only team moves and shuffles on "Make teams", and removing a player |
+| Secrets | The board and map come from the map code (edition, board size, audience, deal index, deck seed, check symbol), so any phone rebuilds the same board offline; scenarios ISH-022 to ISH-028 |

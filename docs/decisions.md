@@ -198,3 +198,4 @@ Status: **decided: owner, 4 October 2026, "follow the recommendation"** for K1â€
 | K16 | Undo | No undo of a reveal (pick, then confirm); "Oops, keep guessing" after "End our turn"; undo for team moves | As recommended |
 | K17 | Clue giver rotation | Fewest games as clue giver tonight, ties to the earliest in the team list | As recommended |
 | K18 | Resume | Within 12 hours at the same step; the map screen always returns to "Pass the phone toâ€¦" | As recommended |
+| K19 | Map code and words after the two-reader check (product owner, 4 October): 7-symbol code (config, deal index, deck seed, check symbol); each evening deals from a shuffled deck so no word repeats for 15 games; any word-list change makes a new edition. Showing the code to clue givers is accepted with K3 as family trust, an exception to "seeds never leave the host phone" (ISH-028) | Product owner (follows from K3 and K10) |

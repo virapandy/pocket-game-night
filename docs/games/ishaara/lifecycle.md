@@ -40,16 +40,16 @@ Fits 4–20 players; best 6–8; about 15 minutes a game.
 | Own phones only: scan the map | Once per game; QR or 6-character code | 20 s |
 **Target:** 30 s from the Ishaara card to the first clue for a group that played earlier tonight; 2 minutes the first time.
 **Late joiner:** "Change teams" between games, or menu → "Players" during a game: joins as a guesser on the smaller team
-straight away (guessers have no secret). **Someone leaves:** removed between turns; if they were the clue giver, the
-team picks a new one, who then sees the map ("Change clue giver" in the menu).
+straight away (guessers have no secret). **Someone leaves:** removed at once from "Players"; if they were the clue giver,
+the team's next player takes over and sees the map at the team's next pass (own phones: "Show the map to a clue giver").
 
 ## Stage 3. Teach
 | Moment | What the app does |
 |---|---|
 | First Ishaara game of the session | "Read this aloud": four lines (`ux.md` §5) |
-| First clue of the game | Under the number keys, one small line: "One word, one number. No faces, no pointing!" |
-| First guess of the game | Small line: "Tap a word, then Reveal. Take up to the number + 1." |
-| Any time | Menu → "Rules": the rule book in plain words, never showing the map |
+| First clue of the evening | Under the number keys, one small line: "One word, one number. No faces, no pointing!" |
+| First guess of the evening | Small line: "Tap a word, then Reveal. You can take one more than the number." |
+| Any time | Menu → "How to play": the rule book in plain words, never showing the map |
 | After a wrong word | The result line says what happened and whose turn it is, so the rule teaches itself |
 | Kids or first-timers | "Family: 16" board, no Bhoot |
 

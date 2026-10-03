@@ -30,6 +30,10 @@ The list is `words.csv` (edition 1, 400 words). It is our own list, never Codena
 Product owner changes to the first draft: Copy (Indian English, less used in the South) and Fast (religious sense)
 replaced by Chennai and Kolkata, so the places aren't all north and west.
 
+## Editions
+`words.csv` has `edition` and `retired_in` columns (scenarios ISH-023): **any change to the list makes a new edition**;
+retired words stay in the file with `retired_in`, so every old map code still rebuilds the same board.
+
 ## To check before release (as Impostor's list)
 - **Persona review** (nine reviewers: North, South, East, West, a grandparent, a 9-year-old, a teen, a strict-veg home,
   a non-Hindi speaker) and then **real readers**.

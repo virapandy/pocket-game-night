@@ -63,7 +63,7 @@ The shared names step (PLT-024), tonight's names filled in. "Next" needs at leas
 ```
 ← Back                         ··· Menu
 Make teams
- MANGO 🥭 (4)          PEACOCK 🪶 (3)
+ Mango 🥭 (4)          Peacock 🪶 (3)
  Riya  ★ clue giver     Arjun ★ clue giver
  Meena                  Kabir
  Zoya                   Dev
@@ -124,9 +124,9 @@ A (room)                    B (private, held)                  B (released)
 Clue givers, scan your map
  Riya (Mango) and Arjun (Peacock)
      ┌────────┐
-     │   QR   │      or type: K7P-3QX
+     │   QR   │      or type: K7P-3QX4
      └────────┘
- Everyone else: look away from your neighbour's phone.
+ Everyone else: look away from their phones.
 [         Both have the map         ]
 ```
 On the clue giver's phone: the map, always visible, "Hide map" / "Show map", tap a word to fade it as found (this phone
@@ -150,7 +150,7 @@ Keys 56 × 56 px, selected look on the chosen number.
 Landscape (recommended when the phone lies in the middle):
 ```
 ┌───────────────────────────────────────────────────┬────────────────┐
-│ Cricket │ Bat    │ Monsoon│ Kite   │ Tiffin       │ MANGO guessing │
+│ Cricket │ Bat    │ Monsoon│ Kite   │ Tiffin       │ Mango guessing │
 │ Ring    │ Rocket │ Chalk  │ Ganga  │ Match        │ Clue: 2        │
 │ Fan     │ Star   │ Pitch  │ Train  │ Mehendi      │ 3 guesses left │
 │ Cup     │ Bank   │ Lassi  │ Ghost  │ Paneer       │ 🥭 7 · 🪶 8     │
@@ -164,18 +164,18 @@ Landscape (recommended when the phone lies in the middle):
   board." (the longest words can't fit at 12 px).
 - Tap a word: selected look. Main "Reveal KITE" (pick, then confirm). "End our turn" disabled until one guess is made.
 - After a reveal, one result line above the buttons: "✓ Mango's word! 2 guesses left." · "Nobody's word. Peacock's
-  turn next." · "Peacock's word! It counts for them." · "👻 You woke the Bhoot!"
-- Menu: "Rules", "Hurry up: 90 s", "That clue broke a rule", "Deal a new board", "End the game".
+  turn next." · "✗ Peacock's word! It counts for them."; the Bhoot goes straight to game over
+- Menu: see the menu table in `scenarios.md` ("How to play" replaces "Rules").
 
 ### 9. Turn over, game over
 - Turn over: the result line stays, the board stays visible; main "Peacock's turn" → screen 6A for Peacock (one phone)
   or screen 7 (own phones).
-- Game over: "Mango wins! All 9 words found." (or "Peacock woke the Bhoot. Mango wins!"), the **whole map** on the
+- Game over: "Mango wins! All 9 words found." (Bhoot: "Mango wins!" with "Peacock woke the Bhoot!"), the **whole map** on the
   board: face-down words now coloured but faded, turned-over words solid. "Tonight: Mango 2 · Peacock 1". Main
   "Play again"; quiet "Change teams", "End the evening".
 
 ### 10. End of the evening
-"Tonight: Mango 3 · Peacock 2"; fun lines ("Riya's clues won 2 games", "The Bhoot woke up once"); "Play something
+"Tonight: Mango 3 · Peacock 2"; fun lines ("Riya's clues won 2 games", "The Bhoot woke up 1 time"); "Play something
 else"; "Back to Home".
 
 ## 3. Lasting rule added to `docs/ux-guidelines.md`
