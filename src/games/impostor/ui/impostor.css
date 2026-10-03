@@ -386,6 +386,17 @@
   .imp-room .imp-pad { grid-column: 1; grid-row: 1 / span 2; align-self: stretch; min-height: 96px; padding: 8px; font-size: 1rem; }
   .imp-room .imp-pad-area .imp-quiet { grid-column: 2; padding: 0 8px; }
 }
+/* IMP-081, IMP-010: at 320 × 568 with Larger text, the block's lines sit closer (same font sizes, IMP-012, IMP-073)
+   so the longest word's block fits below the name and above the pad. The same for every role. */
+@media (max-height: 600px) and (orientation: portrait) {
+  .imp-larger .imp-room .imp-screen-inner { gap: 4px; }
+  .imp-larger .imp-room .imp-hold { gap: 4px; }
+  .imp-larger .imp-block { gap: 0; }
+  .imp-larger .imp-block .imp-body { line-height: 1.25; }
+  .imp-larger .imp-block .imp-small { line-height: 1.25; }
+  .imp-larger .imp-block .imp-line5 { min-height: 1.25em; }
+  .imp-larger .imp-block .imp-private-word { line-height: 1.1; }
+}
 
 /* ----- The clues (IMP-016, IMP-020) ----- */
 .imp-clues { justify-content: center; align-items: center; text-align: center; gap: 8px; }
