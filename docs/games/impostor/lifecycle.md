@@ -129,7 +129,7 @@ and the room decides: "Guessed right" / "Wrong guess".
 | End the evening | Fun lines for the night ("Best impostor: Arjun, escaped 3 times"), and the final scoreboard if keeping score; "Play something else" opens "What shall we play?"; "Back to Home" opens Home |
 | Words afterwards | The history shows each round's word and impostor (fun to look back on). Words used in the last 3 evenings are avoided when possible |
 | Play again tomorrow | A new evening; the player list is offered again |
-| Ended by mistake | "Oops, keep playing" on the summary; "Carry on this evening" in History within 3 hours (IMP-101) |
+| Ended by mistake | "Oops, keep playing" on the summary, until the summary is left or 3 hours pass; an ended evening never reopens (IMP-101) |
 | Something else tonight | "Play something else" keeps the players; the evening sits in tonight's session, outside any money tally (IMP-102) |
 | Left open | Ends by itself after 12 hours, kept in History (IMP-104) |
 | Share the night | A plain-text recap through the phone's share sheet, only on tap (IMP-106) |

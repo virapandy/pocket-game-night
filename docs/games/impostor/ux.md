@@ -211,7 +211,7 @@ the build-up. Over 3 hours: "This round was left halfway. Start a fresh round?" 
 | Deal | Fits; pad 120 px | Fits | Fits | Word left, pad and Done right | Word wraps to 3 lines |
 | Longest word (33 characters) | At most 3 lines, 30–36 px | At most 3 lines | At most 3 lines | At most 3 lines | 30 px floor |
 | Choices | One-row form only | Fits | Fits | 2 × 2 grid, button right (17b) | Scrolls, button fixed (setup) |
-| Who got the most fingers? (12) | Fits; scrolls with Larger text | Fits | Fits | 4 × 3 grid | Inside scroll |
+| Who got the most fingers? (12) | 2 columns; scrolls inside with Larger text | 2 columns | 2 columns, no scroll (names ≤ 8 characters) | 2 columns, scrolls inside | Inside scroll |
 | Scoreboard (12) | 2 columns, scrolls inside | 2 columns, scrolls inside | 2 columns, no scroll (names ≤ 8 characters) | 2 columns, scrolls inside | Inside scroll |
 Names up to 16 characters shrink to 32 px on room screens and wrap to 2 lines in two-column lists.
 

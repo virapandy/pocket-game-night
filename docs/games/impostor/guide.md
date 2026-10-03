@@ -116,7 +116,7 @@ the whole night.
 | Question | Impostor's answer |
 |---|---|
 | Setup | Players in seat order, choices (mode, talking, score, words, categories, non-veg), excluded words, word seed, starter seed (IMP-096) |
-| Legal moves | Seen my word (done) · don't know the word (redeal) · talk it over / start timer · another round of clues · vote now · reveal a player · tie (pick tied players) · still a tie · show the word · guess right / wrong · next round · deal again · allow repeats · this word didn't work · change players · change choices · end evening · keep playing: a finite list (move names in `scenarios.md`, Test hooks) |
+| Legal moves | Seen my word (done) · don't know the word (redeal) · talk it over / start timer · another round of clues · vote now · reveal a player · tie (pick tied players) · still a tie · show the word · guess right / wrong · next round · deal again · allow repeats · this word didn't work · change players · change choices · end evening: a finite list (move names in `scenarios.md`, Test hooks) |
 | Apply | Pure: each move gives the next state |
 | View | Each player sees only their own role during the deal; the host screen never shows the word or the impostor until the reveal |
 | Game over | A round ends at its score; the evening ends when the host ends it |
