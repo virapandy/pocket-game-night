@@ -1,5 +1,5 @@
 // Impostor on the engine's game contract (src/engine/CLAUDE.md): setup, legal moves, apply, view, game over,
-// invariants, undo. The contract is specs/impostor/ (scenarios v2.2), Test hooks item 1.
+// invariants, undo. The contract is specs/impostor/ (scenarios v3.8), Test hooks items 1 and 3.
 // Every word and impostor comes from the word seed; every starter from the starter seed (IMP-060). Each deal and each
 // starter pick derives its own generator from its seed and its count, so the state stays plain data and replays exactly.
 import { createRng, HOST, type GameRules, type MoveContext, type Verdict, type Viewer } from '../../../engine';
@@ -61,6 +61,7 @@ function setup(config: ImpostorConfig, seeds: Readonly<Record<string, string>>):
     testDeals: (config.testDeals ?? []).map((d) => ({ ...d })),
     frozen,
     players: [...config.players],
+    leaving: [],
     choices: copyChoices(config.choices),
     phase: 'ready',
     pendingPractice: false,
@@ -103,9 +104,21 @@ const anyWordWithRepeats = (s: ImpostorState) =>
  * The id deal n (the next one) gives from this state (Test hooks item 1): its forced deal's word if any, else the pick
  * of ``createRng(`${seeds.word}:word:${n}`)``; null when no word is left (IMP-052).
  */
+/**
+ * Deal n's forced deal (Test hooks item 3), or undefined when there is none or it names an impostor or starter who is
+ * not among the players dealt in: such an entry is ignored as a whole, so a round can always start (IMP-078).
+ */
+function forcedDeal(s: ImpostorState, n: number, players: readonly string[]) {
+  const d = s.testDeals[n - 1];
+  if (!d) return undefined;
+  if (d.impostor !== undefined && !players.includes(d.impostor)) return undefined;
+  if (d.starter !== undefined && !players.includes(d.starter)) return undefined;
+  return d;
+}
+
 function wordFor(s: ImpostorState): DealtWordId {
   const n = s.dealCount + 1;
-  const forced = s.testDeals[n - 1]?.wordId;
+  const forced = forcedDeal(s, n, s.players)?.wordId;
   if (forced !== undefined) return forced;
   return pickWord(ACTIVE_WORDS, wordFilter(s), createRng(`${s.seeds.word}:word:${n}`))?.id ?? null;
 }
@@ -126,7 +139,7 @@ function deal(s: ImpostorState, practice: boolean, wordId: unknown): Result {
   const word = isString(wordId) ? wordById(wordId) : undefined;
   if (!word) return no('That word is not in the list.');
   const n = s.dealCount + 1;
-  const forced = s.testDeals[n - 1];
+  const forced = forcedDeal(s, n, s.players);
   const impostor = forced?.impostor ?? pickImpostor(s.players, s.recentImpostors, createRng(`${s.seeds.word}:impostor:${n}`));
   const round: Round = {
     number: practice ? null : s.counted + 1,
@@ -145,6 +158,7 @@ function deal(s: ImpostorState, practice: boolean, wordId: unknown): Result {
     wordBlocked: false,
     blockAdded: false,
     points: null,
+    left: [],
   };
   return ok({
     ...s,
@@ -164,6 +178,7 @@ function beforeDeal(s: ImpostorState, move: AskedMove): ImpostorState | null {
     case 'startDeal': return s;
     case 'dontKnow': return r ? { ...s, blocked: s.blocked.includes(r.wordId) ? s.blocked : [...s.blocked, r.wordId] } : null;
     case 'nextRound': case 'dealAgain': return s;
+    case 'dealAgainWithout': return isString(move.player) ? without(s, move.player) : null;
     case 'allowRepeats': return { ...s, allowRepeats: true };
     case 'setChoices':
       return s.phase === 'noWords' && step === null && typeof move.choices === 'object' && move.choices !== null
@@ -185,7 +200,7 @@ export function withDealtWord(s: ImpostorState, move: AskedMove): ImpostorMove {
 /** The deal ends: the starter is picked (IMP-021) and the clues screen shows, which counts the round for the cycle. */
 function pickTheStarter(s: ImpostorState, r: Round): ImpostorState {
   // Deal n's starter: its forced deal's, or the pick of `${seeds.starter}:${n}` (Test hooks item 1, IMP-021).
-  const forced = s.testDeals[s.dealCount - 1]?.starter;
+  const forced = forcedDeal(s, s.dealCount, r.players)?.starter;
   const skip = s.choices.mode === 'hard' ? r.impostor : null;
   const started = s.startedThisCycle.filter((p) => r.players.includes(p));
   let starter: string;
@@ -211,13 +226,36 @@ function complete(s: ImpostorState, r: Round, caught: boolean, right: boolean | 
   const points = scored ? scoreRound({ impostor: r.impostor, caught, guessedRight: right }, r.players) : null;
   const totals = { ...s.totals };
   if (points) for (const [p, v] of Object.entries(points)) totals[p] = (totals[p] ?? 0) + v;
+  // IMP-078: pending leavers go now, their points kept.
+  const left = s.leaving;
   return {
-    ...s,
+    ...withoutLeavers(s),
     counted: r.practice ? s.counted : s.counted + 1,
     recentImpostors: [...s.recentImpostors, r.impostor],
     totals,
-    round: { ...r, ...extra, step: 'result', points },
+    round: { ...r, ...extra, step: 'result', points, left: [...left] },
   };
+}
+
+/** The pending leavers removed from the list (IMP-078): at a round's result, or when `endEvening` drops the round. */
+function withoutLeavers(s: ImpostorState): ImpostorState {
+  if (s.leaving.length === 0) return s;
+  const players = s.players.filter((p) => !s.leaving.includes(p));
+  return { ...s, players, leaving: [], startedThisCycle: s.startedThisCycle.filter((p) => players.includes(p)) };
+}
+
+/** The list without one player, before "Deal again without …" deals (IMP-078); points kept. */
+function without(s: ImpostorState, player: string): ImpostorState {
+  const players = s.players.filter((p) => p !== player);
+  return { ...s, players, startedThisCycle: s.startedThisCycle.filter((p) => players.includes(p)) };
+}
+
+/** IMP-078: why this player cannot leave mid-round, or null. Pending leavers count as gone; never fewer than 3. */
+function leaveProblem(s: ImpostorState, r: Round, player: unknown): string | null {
+  if (!isString(player) || !r.players.includes(player)) return 'That player is not in this round.';
+  if (s.leaving.includes(player)) return 'That player is already leaving after this round.';
+  if (s.players.length - s.leaving.length - 1 < MIN_PLAYERS) return '3 players needed.';
+  return null;
 }
 
 /** Totals follow the new list: a returning name (ignoring case) keeps its total under the new spelling (IMP-044). */
@@ -232,6 +270,8 @@ function totalsFor(totals: Readonly<Record<string, number>>, players: readonly s
 }
 
 const REDEAL_STEPS: readonly RoundStep[] = ['deal', 'clues', 'talk', 'vote', 'revote', 'caught', 'guess'];
+/** IMP-074, IMP-078, IMP-079: the moments the Players sheet opens mid-round (deal, clues, talk, picker). */
+const MID_ROUND_STEPS: readonly RoundStep[] = ['deal', 'clues', 'talk', 'vote', 'revote'];
 const AFTER_REVEAL: readonly RoundStep[] = ['caught', 'guess', 'result'];
 
 /** Every accepted move adds one to the move counter, so replay rebuilds it exactly. */
@@ -337,10 +377,27 @@ function applyMove(s: ImpostorState, move: ImpostorMove, ctx: MoveContext): Resu
       return ok({ ...s, blocked, round: { ...r, wordBlocked: false, blockAdded: false } });
     }
 
+    case 'leaveAfterRound': {
+      if (!r || step === null || !MID_ROUND_STEPS.includes(step)) return no('Someone leaves mid-round only during a round.');
+      const problem = leaveProblem(s, r, move.player);
+      if (problem) return no(problem);
+      return ok({ ...s, leaving: [...s.leaving, move.player] });
+    }
+
+    case 'dealAgainWithout': {
+      if (!r || step === null || !MID_ROUND_STEPS.includes(step)) return no('There is no round to deal again.');
+      const problem = leaveProblem(s, r, move.player);
+      if (problem) return no(problem);
+      return deal(without(s, move.player), r.practice, move.wordId);
+    }
+
     case 'setPlayers': {
-      if (!betweenRounds) return no('Change players after this round.');
+      const mid = r !== null && step !== null && MID_ROUND_STEPS.includes(step);
+      if (!betweenRounds && !mid) return no('Change players after this round.');
       const problem = playersProblem(move.players);
       if (problem) return no(problem);
+      // IMP-079: mid-round the list may only grow: this round's players stay, in their seats, ahead of anyone added.
+      if (mid && !r!.players.every((p, i) => move.players[i] === p)) return no('Someone leaves mid-round from their own dialog.');
       const players = [...move.players];
       return ok({
         ...s,
@@ -363,7 +420,7 @@ function applyMove(s: ImpostorState, move: ImpostorMove, ctx: MoveContext): Resu
     }
 
     case 'endEvening':
-      return ok({ ...s, over: true, undoVerdictSeq: null, undoVerdictAt: null });
+      return ok({ ...withoutLeavers(s), over: true, undoVerdictSeq: null, undoVerdictAt: null });
 
     default:
       return no('Unknown move.');
@@ -377,10 +434,12 @@ function view(s: ImpostorState, viewer: Viewer): ImpostorView {
     return viewer.playerId === r.impostor ? { role: 'impostor' } : { role: 'crew', wordId: r.wordId };
   }
   const practice = r ? r.practice : s.phase === 'noWords' ? s.pendingPractice : false;
+  // Mid-round, this round's dealt players (joiners and pending leavers follow from the moves); else the current list.
+  const dealt = r && r.step !== 'result' ? r.players : s.players;
   const table = {
     round: r ? r.number : practice ? null : s.counted + 1,
     practice,
-    players: [...s.players],
+    players: [...dealt],
     starter: r ? r.starter : null,
   };
   if (r && (r.revealed !== null || r.stillTie)) return { ...table, impostor: r.impostor, wordId: r.wordId };
@@ -401,8 +460,11 @@ function invariants(s: ImpostorState): string[] {
       if (r.seen > r.players.length) problems.push('More players have seen their word than are playing.');
       if (r.starter !== null && !r.players.includes(r.starter)) problems.push('The starter is not playing.');
       if (r.revealed !== null && !r.players.includes(r.revealed)) problems.push('The revealed player is not playing.');
+      if (r.step !== 'result' && !r.players.every((p) => s.players.includes(p))) problems.push('A player of this round is not on the list.');
     }
   }
+  if (!s.leaving.every((p) => s.players.includes(p))) problems.push('A pending leaver is not on the list.');
+  if (s.players.length - s.leaving.length < MIN_PLAYERS) problems.push('Fewer than 3 players would be left.');
   if (s.counted > s.dealCount) problems.push('More rounds counted than dealt.');
   for (const [p, v] of Object.entries(s.totals)) {
     if (!Number.isInteger(v) || v < 0) problems.push(`${p}'s total is not a whole number of points.`);
@@ -428,6 +490,8 @@ function candidates(s: ImpostorState): ImpostorMove[] {
     { type: 'verdict', right: false },
     { type: 'nextRound' },
     { type: 'dealAgain' },
+    ...players.map((player) => ({ type: 'leaveAfterRound' as const, player })),
+    ...players.map((player) => ({ type: 'dealAgainWithout' as const, player })),
     { type: 'allowRepeats' },
     { type: 'wordDidntWork', blocked: true },
     { type: 'wordDidntWork', blocked: false },

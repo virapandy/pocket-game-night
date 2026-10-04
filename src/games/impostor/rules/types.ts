@@ -100,6 +100,10 @@ export type ImpostorMove =
   | { readonly type: 'allowRepeats'; readonly wordId: DealtWordId }
   | { readonly type: 'wordDidntWork'; readonly blocked: boolean }
   | { readonly type: 'setPlayers'; readonly players: readonly string[] }
+  /** IMP-078 "Finish this round first": the player stays in this round and leaves at its result. */
+  | { readonly type: 'leaveAfterRound'; readonly player: string }
+  /** IMP-078 "Deal again without Kabir": one move that removes the player and deals the same round again. */
+  | { readonly type: 'dealAgainWithout'; readonly player: string; readonly wordId: DealtWordId }
   /** `wordId` only when it redeals the same round from the no-words screen (IMP-052). */
   | { readonly type: 'setChoices'; readonly choices: Choices; readonly wordId?: DealtWordId }
   | { readonly type: 'endEvening' };
@@ -132,14 +136,21 @@ export interface Round {
   readonly blockAdded: boolean;
   /** This round's points, when it was scored. */
   readonly points: Readonly<Record<string, number>> | null;
+  /** IMP-078: the players who left at this round's result ("Finish this round first"), in the order marked. */
+  readonly left: readonly string[];
 }
 
 export interface ImpostorState {
   readonly seeds: { readonly word: string; readonly starter: string };
   readonly testDeals: readonly TestDeal[];
   readonly frozen: ExcludedWords;
-  /** Current players, in seat order. */
+  /**
+   * Current players, in seat order (the list the next deal deals): mid-round it holds this round's players, then
+   * anyone added during the round (IMP-079); pending leavers stay in it until a round reaches its result (IMP-078).
+   */
   readonly players: readonly string[];
+  /** IMP-078: pending leavers ("Finish this round first"), removed at the round's result or by `endEvening`. */
+  readonly leaving: readonly string[];
   readonly choices: Choices;
   /** ready: before "Start the deal"; noWords: a deal found no word (IMP-052); round: a round is dealt. */
   readonly phase: 'ready' | 'noWords' | 'round';
