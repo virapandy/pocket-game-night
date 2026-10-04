@@ -4,7 +4,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import type { Preferences, SavedGameStore } from '../../../engine';
 import { HOST } from '../../../engine';
-import { impostorRules, wordById, type Choices, type ImpostorMove, type PlayerView } from '../rules';
+import { impostorRules, wordById, type AskedMove, type Choices, type PlayerView } from '../rules';
 import { Clues } from './Clues';
 import { Turn, type Secret } from './Deal';
 import { usePageHidden, useWakeLock } from './device';
@@ -115,7 +115,7 @@ export function Game({
     setEv(next);
     return next.match;
   };
-  const act = (move: ImpostorMove): EveningMatch | null => {
+  const act = (move: AskedMove): EveningMatch | null => {
     const cur = evRef.current;
     return keepEv(record(store, cur.saved, cur.match, move));
   };

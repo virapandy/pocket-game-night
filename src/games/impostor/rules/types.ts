@@ -72,10 +72,16 @@ export interface WordFilter {
   readonly allowRepeats: boolean;
 }
 
+/**
+ * The id of the word a move deals (Test hooks item 1, scenarios v3.5): `null` when no word is left (the no-words
+ * screen). Live, the rules list the id the deal's own seed picks; replay accepts any id of the shipped list.
+ */
+export type DealtWordId = string | null;
+
 export type ImpostorMove =
-  | { readonly type: 'startDeal'; readonly practice: boolean }
+  | { readonly type: 'startDeal'; readonly practice: boolean; readonly wordId: DealtWordId }
   | { readonly type: 'seen' }
-  | { readonly type: 'dontKnow' }
+  | { readonly type: 'dontKnow'; readonly wordId: DealtWordId }
   | { readonly type: 'startTalk' }
   | { readonly type: 'anotherRoundOfClues' }
   | { readonly type: 'voteNow' }
@@ -84,13 +90,17 @@ export type ImpostorMove =
   | { readonly type: 'stillTie' }
   | { readonly type: 'showWord' }
   | { readonly type: 'verdict'; readonly right: boolean }
-  | { readonly type: 'nextRound' }
-  | { readonly type: 'dealAgain' }
-  | { readonly type: 'allowRepeats' }
+  | { readonly type: 'nextRound'; readonly wordId: DealtWordId }
+  | { readonly type: 'dealAgain'; readonly wordId: DealtWordId }
+  | { readonly type: 'allowRepeats'; readonly wordId: DealtWordId }
   | { readonly type: 'wordDidntWork'; readonly blocked: boolean }
   | { readonly type: 'setPlayers'; readonly players: readonly string[] }
-  | { readonly type: 'setChoices'; readonly choices: Choices }
+  /** `wordId` only when it redeals the same round from the no-words screen (IMP-052). */
+  | { readonly type: 'setChoices'; readonly choices: Choices; readonly wordId?: DealtWordId }
   | { readonly type: 'endEvening' };
+
+/** A move as the screens ask for it: a word-dealing move before the rules fill in its `wordId`. */
+export type AskedMove = ImpostorMove extends infer M ? (M extends { wordId: DealtWordId } ? Omit<M, 'wordId'> & { readonly wordId?: DealtWordId } : M) : never;
 
 /** Where a round is: deal, clues, talk, vote (picker), revote, caught (impostor revealed), guess (word shown), result. */
 export type RoundStep = 'deal' | 'clues' | 'talk' | 'vote' | 'revote' | 'caught' | 'guess' | 'result';
@@ -134,10 +144,11 @@ export interface ImpostorState {
   readonly over: boolean;
   /** Counted rounds completed (IMP terms). */
   readonly counted: number;
-  /** Rounds dealt so far, redeals included: picks each deal's seed and forced deal. */
+  /**
+   * Words dealt so far, redeals included (a deal that finds no word does not count): deal n draws its word, impostor
+   * and starter from its own seeds and takes `testDeals[n-1]`.
+   */
   readonly dealCount: number;
-  /** Starters picked so far: picks each starter's seed. */
-  readonly starterPicks: number;
   /** Words dealt this evening (redeals and practice included). */
   readonly dealt: readonly string[];
   /** The evening's blocked words: the frozen ones, plus "Don't know this word?" and "This word didn't work". */

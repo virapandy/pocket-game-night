@@ -6,8 +6,8 @@ import {
   type Match, type Preferences, type SavedGame, type SavedGameStore, type Session, type SessionPicker,
 } from '../../../engine';
 import {
-  CATEGORIES, DEFAULT_CHOICES, impostorRules, readTestSeeds, RENAMED_CATEGORIES,
-  type Choices, type ExcludedWords, type ImpostorConfig, type ImpostorMove, type ImpostorState,
+  CATEGORIES, DEFAULT_CHOICES, impostorRules, readTestSeeds, RENAMED_CATEGORIES, withDealtWord,
+  type AskedMove, type Choices, type ExcludedWords, type ImpostorConfig, type ImpostorMove, type ImpostorState,
 } from '../rules';
 
 export type Evening = SavedGame<ImpostorConfig, ImpostorMove>;
@@ -68,11 +68,12 @@ export function record(
   store: SavedGameStore,
   saved: Evening,
   match: EveningMatch,
-  move: ImpostorMove,
+  move: AskedMove,
 ): { saved: Evening; match: EveningMatch } | null {
   const last = match.records[match.records.length - 1];
   const at = Math.max(Date.now(), last?.at ?? 0);
-  const r = play(impostorRules, match, move, { by: HOST, at });
+  // A word-dealing move records the id of the word it deals (Test hooks item 1, IMP-096).
+  const r = play(impostorRules, match, withDealtWord(match.state, move), { by: HOST, at });
   if (!r.ok) return null;
   const next = toSaved(saved, r.value, at);
   store.put(next);

@@ -2,10 +2,10 @@
 // invariants, undo. The contract is specs/impostor/ (scenarios v2.2), Test hooks item 1.
 // Every word and impostor comes from the word seed; every starter from the starter seed (IMP-060). Each deal and each
 // starter pick derives its own generator from its seed and its count, so the state stays plain data and replays exactly.
-import { createRng, deriveSeed, HOST, type GameRules, type MoveContext, type Verdict, type Viewer } from '../../../engine';
+import { createRng, HOST, type GameRules, type MoveContext, type Verdict, type Viewer } from '../../../engine';
 import { pickImpostor, pickStarter, pickWord, scoreRound, wordById, ACTIVE_WORDS } from './picks';
 import {
-  CATEGORIES, type Choices, type ImpostorConfig, type ImpostorMove, type ImpostorState, type ImpostorView, type Round,
+  CATEGORIES, type AskedMove, type Choices, type DealtWordId, type ImpostorConfig, type ImpostorMove, type ImpostorState, type ImpostorView, type Round,
   type RoundStep,
 } from './types';
 
@@ -65,7 +65,6 @@ function setup(config: ImpostorConfig, seeds: Readonly<Record<string, string>>):
     over: false,
     counted: 0,
     dealCount: 0,
-    starterPicks: 0,
     dealt: [],
     blocked: [...frozen.blocked],
     allowRepeats: false,
@@ -95,16 +94,33 @@ const anyWordWithRepeats = (s: ImpostorState) =>
   pickWord(ACTIVE_WORDS, wordFilter(s, true), { int: () => 0 }) !== null;
 
 /**
- * Deals a round (a new one, or a redeal under the same number): the next forced deal if any, else the word and the
- * impostor from this deal's own generator. With no word left, the evening waits on the no-words screen (IMP-052).
+ * The id deal n (the next one) gives from this state (Test hooks item 1): its forced deal's word if any, else the pick
+ * of ``createRng(`${seeds.word}:word:${n}`)``; null when no word is left (IMP-052).
  */
-function deal(s: ImpostorState, practice: boolean): ImpostorState {
-  const forced = s.testDeals[s.dealCount];
-  const rng = createRng(deriveSeed(s.seeds.word, `deal-${s.dealCount}`));
-  const forcedWord = forced?.wordId !== undefined ? wordById(forced.wordId) : undefined;
-  const word = forcedWord ?? pickWord(ACTIVE_WORDS, wordFilter(s), rng);
-  if (!word) return { ...s, phase: 'noWords', pendingPractice: practice, round: null };
-  const impostor = forced?.impostor ?? pickImpostor(s.players, s.recentImpostors, rng);
+function wordFor(s: ImpostorState): DealtWordId {
+  const n = s.dealCount + 1;
+  const forced = s.testDeals[n - 1]?.wordId;
+  if (forced !== undefined) return forced;
+  return pickWord(ACTIVE_WORDS, wordFilter(s), createRng(`${s.seeds.word}:word:${n}`))?.id ?? null;
+}
+
+/**
+ * Deals a round (a new one, or a redeal under the same number) with the move's recorded word: deal n's impostor comes
+ * from its forced deal or ``createRng(`${seeds.word}:impostor:${n}`)``, so a recorded word never shifts the draws.
+ * A recorded null (no word left) waits on the no-words screen (IMP-052) and is not a deal. Any id of the shipped list
+ * replays, retired ones included (IMP-054, IMP-096); a move without an id is refused, so old records do not replay.
+ */
+function deal(s: ImpostorState, practice: boolean, wordId: unknown): Result {
+  if (wordId === undefined) return no('A dealt word needs its id.');
+  if (wordId === null) {
+    if (wordFor(s) !== null) return no('A word is left to deal.');
+    return ok({ ...s, phase: 'noWords', pendingPractice: practice, round: null });
+  }
+  const word = isString(wordId) ? wordById(wordId) : undefined;
+  if (!word) return no('That word is not in the list.');
+  const n = s.dealCount + 1;
+  const forced = s.testDeals[n - 1];
+  const impostor = forced?.impostor ?? pickImpostor(s.players, s.recentImpostors, createRng(`${s.seeds.word}:impostor:${n}`));
   const round: Round = {
     number: practice ? null : s.counted + 1,
     practice,
@@ -123,18 +139,45 @@ function deal(s: ImpostorState, practice: boolean): ImpostorState {
     blockAdded: false,
     points: null,
   };
-  return {
+  return ok({
     ...s,
     phase: 'round',
     pendingPractice: false,
     round,
-    dealCount: s.dealCount + 1,
+    dealCount: n,
     dealt: [...s.dealt, word.id],
-  };
+  });
+}
+
+/** The state a word-dealing move deals from (before the deal), or null when the move does not deal a word now. */
+function beforeDeal(s: ImpostorState, move: AskedMove): ImpostorState | null {
+  const r = s.round;
+  const step = s.phase === 'round' && r ? r.step : null;
+  switch (move.type) {
+    case 'startDeal': return s;
+    case 'dontKnow': return r ? { ...s, blocked: s.blocked.includes(r.wordId) ? s.blocked : [...s.blocked, r.wordId] } : null;
+    case 'nextRound': case 'dealAgain': return s;
+    case 'allowRepeats': return { ...s, allowRepeats: true };
+    case 'setChoices':
+      return s.phase === 'noWords' && step === null && typeof move.choices === 'object' && move.choices !== null
+        ? { ...s, choices: copyChoices(move.choices) } : null;
+    default: return null;
+  }
+}
+
+/**
+ * The move with the id of the word it deals filled in, as the rules list it (Test hooks item 1): what the screens
+ * record. Moves that deal no word are returned unchanged.
+ */
+export function withDealtWord(s: ImpostorState, move: AskedMove): ImpostorMove {
+  if ('wordId' in move && move.wordId !== undefined) return move as ImpostorMove;
+  const from = beforeDeal(s, move);
+  return (from ? { ...move, wordId: wordFor(from) } : move) as ImpostorMove;
 }
 
 /** The deal ends: the starter is picked (IMP-021) and the clues screen shows, which counts the round for the cycle. */
 function pickTheStarter(s: ImpostorState, r: Round): ImpostorState {
+  // Deal n's starter: its forced deal's, or the pick of `${seeds.starter}:${n}` (Test hooks item 1, IMP-021).
   const forced = s.testDeals[s.dealCount - 1]?.starter;
   const skip = s.choices.mode === 'hard' ? r.impostor : null;
   const started = s.startedThisCycle.filter((p) => r.players.includes(p));
@@ -144,13 +187,12 @@ function pickTheStarter(s: ImpostorState, r: Round): ImpostorState {
     starter = forced;
     newCycle = !r.players.some((p) => p !== skip && !started.includes(p));
   } else {
-    const rng = createRng(deriveSeed(s.seeds.starter, `starter-${s.starterPicks}`));
+    const rng = createRng(`${s.seeds.starter}:${s.dealCount}`);
     ({ starter, newCycle } = pickStarter(r.players, started, skip, rng));
   }
   const cycle = newCycle ? [starter] : started.includes(starter) ? started : [...started, starter];
   return {
     ...s,
-    starterPicks: s.starterPicks + 1,
     startedThisCycle: cycle,
     round: { ...r, starter, step: 'clues' },
   };
@@ -203,7 +245,7 @@ function applyMove(s: ImpostorState, move: ImpostorMove, ctx: MoveContext): Resu
     case 'startDeal':
       if (s.phase !== 'ready') return no('The deal has already started.');
       if (typeof move.practice !== 'boolean') return no('Practice must be yes or no.');
-      return ok(deal(s, move.practice));
+      return deal(s, move.practice, move.wordId);
 
     case 'seen':
       if (!r || step !== 'deal') return no('Nobody is being dealt to.');
@@ -213,7 +255,7 @@ function applyMove(s: ImpostorState, move: ImpostorMove, ctx: MoveContext): Resu
 
     case 'dontKnow':
       if (!r || step !== 'deal') return no('"Don\'t know this word?" is only during the deal.');
-      return ok(deal({ ...s, blocked: s.blocked.includes(r.wordId) ? s.blocked : [...s.blocked, r.wordId] }, r.practice));
+      return deal(beforeDeal(s, move)!, r.practice, move.wordId);
 
     case 'startTalk':
       if (step !== 'clues') return no('The clues screen is not showing.');
@@ -262,16 +304,16 @@ function applyMove(s: ImpostorState, move: ImpostorMove, ctx: MoveContext): Resu
 
     case 'nextRound':
       if (step !== 'result') return no('The round has no result yet.');
-      return ok(deal({ ...s, undoVerdictSeq: null, undoVerdictAt: null }, false));
+      return deal({ ...s, undoVerdictSeq: null, undoVerdictAt: null }, false, move.wordId);
 
     case 'dealAgain':
       if (!r || step === null || !REDEAL_STEPS.includes(step)) return no('There is no round to deal again.');
-      return ok(deal(s, r.practice));
+      return deal(s, r.practice, move.wordId);
 
     case 'allowRepeats':
       if (s.phase !== 'noWords') return no('Words are left.');
       if (s.allowRepeats || !anyWordWithRepeats(s)) return no('Even repeats leave no word.');
-      return ok(deal({ ...s, allowRepeats: true }, s.pendingPractice));
+      return deal({ ...s, allowRepeats: true }, s.pendingPractice, move.wordId);
 
     case 'wordDidntWork': {
       if (!r || step === null || !AFTER_REVEAL.includes(step)) return no('"This word didn\'t work" comes after the reveal.');
@@ -305,8 +347,10 @@ function applyMove(s: ImpostorState, move: ImpostorMove, ctx: MoveContext): Resu
       const problem = choicesProblem(move.choices);
       if (problem) return no(problem);
       const next = { ...s, choices: copyChoices(move.choices), undoVerdictSeq: null, undoVerdictAt: null };
-      // IMP-052 "Change categories": the same round is dealt again under the new choices.
-      return ok(s.phase === 'noWords' ? deal(next, s.pendingPractice) : next);
+      // IMP-052 "Change categories": the same round is dealt again under the new choices, with its word id.
+      if (s.phase === 'noWords') return deal(next, s.pendingPractice, move.wordId);
+      if (move.wordId !== undefined) return no('No word is dealt between rounds.');
+      return ok(next);
     }
 
     case 'endEvening':
@@ -360,7 +404,7 @@ function invariants(s: ImpostorState): string[] {
 /** Moves listed for a generic player. `tie`, `setPlayers` and `setChoices` carry details from the room. */
 function candidates(s: ImpostorState): ImpostorMove[] {
   const players = s.round?.players ?? s.players;
-  return [
+  const asked: AskedMove[] = [
     { type: 'startDeal', practice: false },
     { type: 'startDeal', practice: true },
     { type: 'seen' },
@@ -380,6 +424,7 @@ function candidates(s: ImpostorState): ImpostorMove[] {
     { type: 'wordDidntWork', blocked: false },
     { type: 'endEvening' },
   ];
+  return asked.map((m) => withDealtWord(s, m));
 }
 
 export const impostorRules: GameRules<ImpostorConfig, ImpostorState, ImpostorMove, ImpostorView> = {
