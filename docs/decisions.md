@@ -220,3 +220,9 @@ Status: **decided: owner, 4 October 2026, "follow the recommendation"** for K1�
 | K29 | New setup choice for the Full board: **Landmine: Lose the game** (default, the standard rule) or **Lose your turn** (turn ends, the other team gets one word free) | Owner, 4 October |
 | K30 | Boards are **Full** (25 words) and **Easy** (16 words, no Landmine); playing against the phone (2–3 players) is a future extension | Owner, 4 October |
 | K31 | Secret Words scenarios **version 3.2 approved**; the build starts when Impostor's release candidate 1.3.0 is frozen (release work on its branch, Secret Words on `main`) | Owner, 4 October |
+| K32 | Player walk and session events (`player-walk-2026-10-04.md` W1–W20, `session-events-2026-10-04.md` E1–E25): fixes accepted as proposed, for scenarios v3.3 | Owner, 4 October ("follow the recommendation") |
+| K33 | Q1: the Landmine defaults to **Lose your turn** with Whole family words, **Lose the game** with + Harder words; the host can change it | Owner, 4 October |
+| K34 | Q2: clues in English or words used in English (chai, dosa), stated in a "Clue rules" box; no other-language setting | Owner, 4 October |
+| K35 | Q3: a Reveal stays final; every main button ignores taps for 800 ms after its screen appears (1.5 s after a turn-ending reveal) | Owner, 4 October |
+| K36 | Q4: the secret map hides 60 s after the last touch, with "Still looking? Tap to keep the map" from 50 s | Owner, 4 October |
+| K37 | Q5: next day, Home offers "Play again with last night's teams" (names and teams filled in, new tally); last night stays in History | Owner, 4 October |
