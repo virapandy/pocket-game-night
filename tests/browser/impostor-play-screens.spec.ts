@@ -430,7 +430,7 @@ test.describe('IMP-033, IMP-034, IMP-038, IMP-039, IMP-073: the one result scree
     await expect(result(page, 'round-outcome'), 'nothing else appears later').toHaveText(exact('The crew wins!'));
   });
 
-  test('IMP-073 (I23): the headline is 44 px below 360 px wide, always one line; 56 px at 360 wide', async ({ page }) => {
+  test('IMP-073 (I23): the headline is 44 px below 360 px wide, always one line there; 56 px at 360 wide', async ({ page }) => {
     await toResult(page);
     await pickerName(page, 'Riya').click();
     await mainButton(page).filter({ hasText: /^Reveal / }).click();
@@ -441,10 +441,11 @@ test.describe('IMP-033, IMP-034, IMP-038, IMP-039, IMP-073: the one result scree
       const r = document.createRange(); r.selectNodeContents(el);
       return new Set(Array.from(r.getClientRects()).filter((x) => x.width > 1).map((x) => Math.round(x.top))).size === 1 && el.scrollWidth <= el.clientWidth;
     });
+    // "Always one line" is the rule for the 44 px size below 360 px wide; at 360 and up the spec sets only 56 px.
     for (const [w, ht, px] of [[320, 568, 44], [359, 640, 44], [360, 640, 56]] as const) {
       await page.setViewportSize({ width: w, height: ht });
       expect(await fontSize(h), `${w} wide`).toBe(px);
-      expect(await oneLine(), `${w} wide: one line`).toBe(true);
+      if (px === 44) expect(await oneLine(), `${w} wide: one line`).toBe(true);
     }
   });
 

@@ -58,8 +58,10 @@ step ahead of the room. Once: on a summary with 0 counted rounds (an evening end
 - specs/impostor/ regenerated from scenarios.md (I23): IMP-033 sizes and IMP-073 rows (result headline 44 px below
   360 px wide; hold-screen name floor) and Test hooks item 1 (any listed id accepted live and on replay; the app records
   the pickWord id). No test checked 56 px at 320; the IMP-033 size check runs at 390 (still 56 px).
-- New: impostor-play-screens.spec.ts "IMP-073 (I23): the headline is 44 px below 360 px wide, always one line; 56 px at
-  360 wide" (320 and 359 → 44 px, 360 → 56 px, one line each).
+- New: impostor-play-screens.spec.ts "IMP-073 (I23): the headline is 44 px below 360 px wide, always one line there;
+  56 px at 360 wide" (320 and 359 → 44 px on one line, 360 → 56 px). Test fault fixed before any verdict: it first also
+  asked for one line at 360, which the spec does not say; on GitHub's Linux font "✗ Escaped!" at 56 px wraps onto two
+  lines at 360 px wide (quick verify 37188884009). For the product owner: one line at 360 too?
 - Runner fixes in tests/sims/impostor-runner.ts and the overlap helper in tests/browser/impostor.ts (5a77f36).
 
 ## Flaky or setup problems (not for the Build workspace)
