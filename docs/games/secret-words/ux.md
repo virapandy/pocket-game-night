@@ -54,7 +54,7 @@ Shared rules: one full-width main button at the bottom, always the next step; qu
 pick, then confirm (guideline 47); the screen stays awake from the deal to the game result.
 
 ### 1. What shall we play?
-A third equal card: **Secret Words** "Team word hunt with one-word clues · 4–20 players · about 15 min a game".
+A third equal card: **Secret Words** "Inspired by Codenames · team word hunt · 4–20 players · about 15 min a game".
 
 ### 2. Who's playing?
 The shared names step (PLT-024), tonight's names filled in. "Next" needs at least 4 names.

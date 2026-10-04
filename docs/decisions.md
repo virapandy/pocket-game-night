@@ -181,7 +181,7 @@ Claude to follow game conventions. Every Tambola rule above is also a host setti
 Status: **decided: owner, 4 October 2026, "follow the recommendation"** for K1–K18 (the Recommendation column is the decision), including festival names as board words. Norm = the Codenames convention.
 | # | Question | Options | Recommendation |
 |---|---|---|---|
-| K1 | Name | ~~Ishaara~~ → **Secret Words** (owner, 4 October: an English name, since "Codenames" is a trademark; the rules themselves are free to use) | Secret Words; never "Codenames" in the app |
+| K1 | Name | ~~Ishaara~~ → **Secret Words** (owner, 4 October: an English name, since "Codenames" is a trademark; the rules themselves are free to use) | Secret Words; "Codenames" never as our name (K22: "Inspired by Codenames" allowed) |
 | K2 | Theme | Spy noir (norm, too close to Codenames) · flat minimal red/blue · **flat board with Team Mango and Team Peacock and a friendly Bhoot** | Mango v Peacock + Bhoot (`ux.md` §1); red stays for the main button |
 | K3 | How clue givers see the map | **Both in the first release**: "Pass this phone" (hold to see) and "Clue givers' own phones" (QR or code, offline); two equal cards, no default | Both; the code makes own phones work offline |
 | K4 | Teams | Shuffled into equal teams the first time; tap to move; last teams after | As recommended |
@@ -202,3 +202,4 @@ Status: **decided: owner, 4 October 2026, "follow the recommendation"** for K1�
 | K19 | Map code and words after the two-reader check (product owner, 4 October): 7-symbol code (config, deal index, deck seed, check symbol); each evening deals from a shuffled deck so no word repeats for 15 games; any word-list change makes a new edition. Showing the code to clue givers is accepted with K3 as family trust, an exception to "seeds never leave the host phone" (SWD-028) | Product owner (follows from K3 and K10) |
 | K20 | Secret Words scenarios version 2 (SWD-001 to SWD-099) approved; queued for the tester after Impostor's release | Owner, 4 October |
 | K21 | Renamed Ishaara → **Secret Words**: IDs SWD- (scenarios) and SWDW- (words), folder `docs/games/secret-words/`, game id `secret-words`. A name change only; scenario approval (K20) stands | Owner, 4 October |
+| K22 | The app may say **"Inspired by Codenames"** in plain text: on the Secret Words picker card and in How to play, with "Codenames is a trademark of Czech Games Edition. Secret Words is not made or endorsed by them." Never as the game's name, never their logo or look (SWD-001, SWD-011) | Owner, 4 October |

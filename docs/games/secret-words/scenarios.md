@@ -10,6 +10,9 @@ Phases: **Secret Words 1** = first release. **Secret Words later** = designed no
 Change classes (`docs/change-sop.md`): the deal, the map code, the board algorithm, saved evenings and the word list
 format = **C3** (tests first: sections 02, 04 rules, 05, 06, SWD-099); screens = C1/C2.
 
+**"Inspired by Codenames" (owner, 4 October, K22):** the picker card and How to play say so (SWD-001, SWD-011); the word
+"Codenames" appears nowhere else in the app, never as a name, logo or styling.
+
 **Renamed (owner, 4 October, K21):** the game was called Ishaara until 4 October; IDs ISH- became SWD- and word ids ISHW-
 became SWDW-, one for one. Every "Ishaara" on screen reads "Secret Words". Nothing else changed.
 
@@ -73,7 +76,7 @@ Plurals: "1 word" / "2 words"; "1 guess" / "2 guesses"; "1 game" / "2 games"; "1
 | Where | Exact text | Element | ID |
 |---|---|---|---|
 | Home, under "Host a game" | "Tambola, Impostor or Secret Words on this phone" | text inside the button | SWD-001 |
-| Picker card | "Secret Words" · "Team word hunt with one-word clues · 4–20 players · about 15 min a game" | button, name starts "Secret Words" | SWD-001 |
+| Picker card | "Secret Words" · "Inspired by Codenames · team word hunt · 4–20 players · about 15 min a game" | button, name starts "Secret Words" | SWD-001 |
 | Picker resume card | "Secret Words · game 2 · Tap to resume" | `resume-card` | SWD-001 |
 | Start new | dialog "Start a new evening? The evening from 8:40 pm will be ended." with "Start new" / "Carry on that evening" (main) | dialog | SWD-001 |
 | Home unfinished row | "Secret Words, 8:40 pm, game 2" and "Tap to resume" | inside `unfinished-games` | SWD-062 |
@@ -88,7 +91,7 @@ Plurals: "1 word" / "2 words"; "1 guess" / "2 guesses"; "1 game" / "2 games"; "1
 | Options | "Full: 25 words" / "Family: 16 words"; "Whole family" / "+ Grown-ups" | buttons with `aria-pressed` | SWD-009 |
 | Option lines | Full "9 and 8 words to find, 7 nobody's, 1 Bhoot." · Family "6 and 5 words to find, 5 nobody's, no Bhoot." · Whole family "Words kids and grandparents know." · + Grown-ups "Adds words kids or elders may not know." | small line under the group | SWD-009 |
 | Read this aloud | heading "Read this aloud"; 4 lines (SWD-010); main "Let's play"; quiet "Show me the board first" | h1; `ol` of 4 `li` | SWD-010 |
-| How to play | heading "How to play"; h2 "Read this aloud" + the 4 lines; h2 "The rules" + 8 lines (SWD-011); main "Done" | h1; h2; `ol` | SWD-011 |
+| How to play | heading "How to play"; h2 "Read this aloud" + the 4 lines; h2 "The rules" + 8 lines (SWD-011); small line `credit` (SWD-011); main "Done" | h1; h2; `ol`; small line | SWD-011 |
 | Preview board | `turn-line` "Mango starts"; counts; main "Start" | paragraphs; main | SWD-012 |
 | Scan screen | heading "Clue givers, scan your map"; "Riya (Mango) and Arjun (Peacock)"; QR; "or type: K7P-3QX4"; small line "Everyone else: look away from their phones."; main "Both have the map" | h1; paragraph; `map-qr` (`img`, name "Map code K7P-3QX4"); `map-code-text`; small line; main | SWD-033 |
 | Pass screen | heading "Mango's turn"; "Pass the phone to"; `<NAME>`; "Mango's clue giver"; quiet "Hurry up: 90 s"; main "I'm Riya" | h1 `turn-heading`; paragraph; `pass-name`; paragraph; button; main | SWD-030 |
@@ -225,7 +228,8 @@ word sits." 3 "Don't say a word that is still face down on the board, or part of
 an English sentence (chai, jugaad), is fine. Names like Taj Mahal count as one word." 5 "No faces, no pointing, no extra
 hints. The other clue giver judges a clue before the first guess." 6 "Guessers take at least one guess, and up to the number
 plus one. 0 or ∞: as many as you like." 7 "Your word: keep going. Nobody's word or the other team's: your turn ends. The
-Bhoot: you lose!" (Family: without "The Bhoot: you lose!") 8 "First team to find all its words wins." Main "Done" returns.
+Bhoot: you lose!" (Family: without "The Bhoot: you lose!") 8 "First team to find all its words wins." Then the small line `credit`: "Inspired by Codenames, designed by Vlaada
+Chvátil. Codenames is a trademark of Czech Games Edition. Secret Words is not made or endorsed by them." Main "Done" returns.
 The page may scroll. Nothing about the map appears.
 
 ### SWD-012 The preview board (detail of SWD-010)
@@ -627,7 +631,7 @@ retired_in }[]`). **Checks:** ids unique; words 3–8 letters A–Z, unique igno
 4. **Test ids:** `main-button`, `resume-card`, `unfinished-games`, `team-bar`, `turn-heading`, `pass-name`, `hold-pad`,
    `privacy-cover`, `word-board`, `board-cell` (`data-index`), `map-grid`, `map-cell` (`data-index`), `map-qr`,
    `map-code-text`, `map-code-line`, `clue-prompt`, `clue-key`, `word-counts`, `turn-line`, `clue-line`, `tip`, `result-line`,
-   `hurry-timer`, `game-heading`, `tally`, `fun-line`, `saved-map`, `clue-giver-badge`, `turn-sideways`, `history-game`,
+   `hurry-timer`, `game-heading`, `tally`, `fun-line`, `saved-map`, `clue-giver-badge`, `turn-sideways`, `credit`, `history-game`,
    `history-round`, `announcer`, `undo-toast`, `toast`.
 5. **QR reading in tests** needs a QR decoder in the test tools (for example jsQR): a tooling request from the tester.
 
