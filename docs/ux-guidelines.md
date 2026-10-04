@@ -131,7 +131,7 @@ speed [8]. Our users:
 48. **Shared screens stop at decision points.** A countdown started by a tap is fine; a timer ending never starts the
     next step by itself (extends 28).
 
-49. **Word boards on a shared phone** (Ishaara, 4 October 2026). A board of many words can't meet rule 46's 56 px. Instead:
+49. **Word boards on a shared phone** (Secret Words, 4 October 2026). A board of many words can't meet rule 46's 56 px. Instead:
     landscape first; one font size for the whole board, the largest that fits, never below 12 px; words of at most 8 letters;
     a smaller board option; a "turn sideways" message where even 12 px can't fit. Guessers lean in, as over a real board.
 

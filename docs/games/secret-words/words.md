@@ -1,9 +1,9 @@
-# Ishaara: the word list (draft v1, 4 October 2026)
+# Secret Words: the word list (draft v1, 4 October 2026)
 
 The list is `words.csv` (edition 1, 400 words). It is our own list, never Codenames'. Decision K10.
 
 ## What makes a good board word
-1. **One word, 3 to 8 letters A–Z** (so 25 fit on a phone; ISH-090, ISH-099).
+1. **One word, 3 to 8 letters A–Z** (so 25 fit on a phone; SWD-090, SWD-099).
 2. **Several meanings or many links**, so one clue can join two or three words: Match (cricket, matchbox, rishta),
    Rocket (Diwali rocket, space rocket), Fan (ceiling fan, cricket fan), Kite (Sankranti kite, the bird).
 3. **Known without explanation by a 10-year-old and a grandparent from any region**: the Multicultural fairness rule
@@ -31,7 +31,7 @@ Product owner changes to the first draft: Copy (Indian English, less used in the
 replaced by Chennai and Kolkata, so the places aren't all north and west.
 
 ## Editions
-`words.csv` has `edition` and `retired_in` columns (scenarios ISH-023): **any change to the list makes a new edition**;
+`words.csv` has `edition` and `retired_in` columns (scenarios SWD-023): **any change to the list makes a new edition**;
 retired words stay in the file with `retired_in`, so every old map code still rebuilds the same board.
 
 ## To check before release (as Impostor's list)
@@ -40,5 +40,5 @@ retired words stay in the file with `retired_in`, so every old map code still re
 - Flagged for that review: Pongal and Onam (regional festivals), Garba and Dandiya, Duster and Almirah (Indian English),
   Ladoo spelling (Laddu in the South), Googly (kids know only the ball), Santa, Hotel (eatery sense).
 - Look-alikes on one board (Chai/Chain/Chair, Crow/Crown, Goa/Goal): fine by the rules; the play-test says if they
-  confuse. Each word's fit in a 57 px cell at 12 px is checked by the build (ISH-099).
+  confuse. Each word's fit in a 57 px cell at 12 px is checked by the build (SWD-099).
 - About 60% general English with an Indian feel, 40% India-specific; aim nearer half-and-half in edition 2.

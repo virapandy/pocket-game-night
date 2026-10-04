@@ -1,27 +1,30 @@
-# Ishaara: scenarios (version 2, 4 October 2026)
+# Secret Words: scenarios (version 2, 4 October 2026)
 
-Status: **ISH-001 to ISH-099 approved by the owner, 4 October 2026 (version 2).** ISH-200+ are direction, built later. Decisions K1–K18 decided by the owner (4 October, "follow the
+Status: **SWD-001 to SWD-099 approved by the owner, 4 October 2026 (version 2).** SWD-200+ are direction, built later. Decisions K1–K18 decided by the owner (4 October, "follow the
 recommendation"). Version 2 resolves every guess from the two-reader check (`docs/spec-rules.md` rule 12: a coder-reader
-and a tester-reader, 4 October). After approval the tester copies these into `specs/ishaara/` (file names in each section
+and a tester-reader, 4 October). After approval the tester copies these into `specs/secret-words/` (file names in each section
 heading) and writes tests. Hand-over follows `docs/roadmap.md`: after Impostor's release.
 
 **This file is binding: where `ux.md`, `lifecycle.md` or `guide.md` differ, this file wins.**
-Phases: **Ishaara 1** = first release. **Ishaara later** = designed now, built later (ISH-200+).
+Phases: **Secret Words 1** = first release. **Secret Words later** = designed now, built later (SWD-200+).
 Change classes (`docs/change-sop.md`): the deal, the map code, the board algorithm, saved evenings and the word list
-format = **C3** (tests first: sections 02, 04 rules, 05, 06, ISH-099); screens = C1/C2.
+format = **C3** (tests first: sections 02, 04 rules, 05, 06, SWD-099); screens = C1/C2.
+
+**Renamed (owner, 4 October, K21):** the game was called Ishaara until 4 October; IDs ISH- became SWD- and word ids ISHW-
+became SWDW-, one for one. Every "Ishaara" on screen reads "Secret Words". Nothing else changed.
 
 ### What version 2 changes (rule 11)
-- **The map code** is now 7 symbols (`XXX-XXXX`): config, deal index, a 4-symbol deck seed, a check symbol (ISH-022). The
+- **The map code** is now 7 symbols (`XXX-XXXX`): config, deal index, a 4-symbol deck seed, a check symbol (SWD-022). The
   6-symbol code of version 1 is retired: with a seed per board, "no repeats this evening" could not hold (about 1.5% of
   evenings would succeed by game 6).
-- **The words come from a shuffled deck** per evening, 25 words per deal (ISH-024); `words.csv` gains `edition` and `retired_in`.
-- The scan screen is a **map screen** (it carries the code); it is not a room screen (ISH-025, ISH-028).
+- **The words come from a shuffled deck** per evening, 25 words per deal (SWD-024); `words.csv` gains `edition` and `retired_in`.
+- The scan screen is a **map screen** (it carries the code); it is not a room screen (SWD-025, SWD-028).
 - Dialogs put the safe choice on the main button, as Impostor ("Keep playing" (main)).
-- "Rules" is now **"How to play"** (as Impostor), with exact text (ISH-011).
+- "Rules" is now **"How to play"** (as Impostor), with exact text (SWD-011).
 - Retired wordings: "Rules" (menu item), "Yes, it broke a rule (main)", "Deal a new board (main)", "End the game (main)",
   "or type: K7P-3QX" (now "or type: K7P-3QX4"), "Meena is now Mango's clue giver." (now part of the removal toast),
   "Everyone else: look away from your neighbour's phone." (ux.md).
-- New detail IDs: ISH-011, 012, 027, 028, 038, 048, 049, 056, 066, 067.
+- New detail IDs: SWD-011, 012, 027, 028, 038, 048, 049, 056, 066, 067.
 
 ---
 
@@ -35,26 +38,26 @@ names, plurals, t = …, sound on**. Characters: "·" U+00B7 with a space either
 |---|---|
 | **Screen sizes** | 320 × 568, 360 × 640, 390 × 844 (portrait), 812 × 375 and 568 × 320 (landscape). "Every size" = all five, Larger text off and on. |
 | **Narrow portrait** | `innerWidth < 360` and `innerHeight > innerWidth` (320 × 568 in the list). |
-| **Landscape main button** | On every Ishaara screen except the board screens, the private map and the map phone: as Impostor, 358 × 60 at the bottom right, 16 px from the right and bottom edges. Board screens: ISH-091. |
+| **Landscape main button** | On every Secret Words screen except the board screens, the private map and the map phone: as Impostor, 358 × 60 at the bottom right, 16 px from the right and bottom edges. Board screens: SWD-091. |
 | **Team** | **Mango** or **Peacock**, written so, never upper case. Mango is always listed first. |
 | **Team bar** | `team-bar`: an 8 px strip in the team colour across the top edge, on the pass screen, the clue screen and the board screens; always with the team's name in words nearby (`turn-heading` or `turn-line`). |
 | **Team colour** | `--mango` / `--peacock` (`ux.md` §1); used only for that team's cells and its bar. |
 | **Team icon** | Our own SVG: mango (Mango), feather (Peacock), dot (Nobody), ghost (Bhoot); `aria-hidden`, 16 × 16 px, top left of a cell, 2 px in. |
 | **Kind** | `mango`, `peacock`, `nobody` or `bhoot`. |
 | **Board** | **Full** = 25 words, 5 × 5; **Family** = 16 words, 4 × 4. Cells in row-major order, `data-index` 0 top left. |
-| **Board screens** | The preview board (ISH-012), guessing (ISH-041), the end-turn line (ISH-044), turn over (ISH-045) and the board part of game over (ISH-051). |
+| **Board screens** | The preview board (SWD-012), guessing (SWD-041), the end-turn line (SWD-044), turn over (SWD-045) and the board part of game over (SWD-051). |
 | **Word text** | Every board and map word shows exactly as in the list (title case, e.g. "Kite"), in the app's body font stack, weight 600, never transformed. Elsewhere `<WORD>` is the same word upper case by CSS (`text-transform`), DOM text as in the list. |
 | **Face down / turned over** | Not yet revealed / revealed. Turned over: fill in the kind's colour, the kind's icon and the word (white text on Mango, Peacock and Bhoot in light mode; `--text` on Nobody). |
 | **Locked** | Board cells that can't be picked: `aria-disabled="true"`, taps do nothing, **not greyed** (an exception to "disabled"). |
 | **The map** | The kind of every word on the board. |
-| **Map screens** | The private map (ISH-031), the scan screen (ISH-033) and the map phone (ISH-034). |
-| **Room screens** | Every host-phone screen of a game that is not a map screen. Until game over, **no room screen has any information about a face-down word's kind in the page** (ISH-025). |
+| **Map screens** | The private map (SWD-031), the scan screen (SWD-033) and the map phone (SWD-034). |
+| **Room screens** | Every host-phone screen of a game that is not a map screen. Until game over, **no room screen has any information about a face-down word's kind in the page** (SWD-025). |
 | **Clue giver** | The one player per team, at any moment, who may see the map. The **credited** clue giver of a game is the team's clue giver when the game ends. |
 | **Deal** | Dealing a board: the first deal, "Play again", "Deal a new board", and the deal after "Change teams". The deals of an evening are numbered from 1. |
-| **Game** | From a deal to its result. A board replaced by "Deal a new board" is not a game. **Won** games have a winner; **ended early** games ended by "End the game", "End the evening" mid-game, "Start new" or ISH-063. **Game number** N = games so far + 1 while playing; on game over, the finished game's number. |
+| **Game** | From a deal to its result. A board replaced by "Deal a new board" is not a game. **Won** games have a winner; **ended early** games ended by "End the game", "End the evening" mid-game, "Start new" or SWD-063. **Game number** N = games so far + 1 while playing; on game over, the finished game's number. |
 | **Turn** | From a team's clue screen to its end-turn line or turn over. Turns are numbered per board from 1, both teams together. |
 | **Guess** | One confirmed reveal ("Reveal <WORD>"). **Allowance**: clue 1–9 → number + 1; 0 and ∞ → unlimited. |
-| **Evening** | One Ishaara saved game (engine `SavedGame`), created at its first deal, holding every game of that evening. It joins the current session (PLT-016) as Impostor's evenings do (IMP-102). |
+| **Evening** | One Secret Words saved game (engine `SavedGame`), created at its first deal, holding every game of that evening. It joins the current session (PLT-016) as Impostor's evenings do (IMP-102). |
 | **This evening's words** | Every word on any board dealt in this evening, replaced boards included. |
 | **Tally** | `tally`: "Tonight: Mango 2 · Peacock 1": won games of this evening by team. |
 | **Map code** | 7 symbols from `23456789ABCDEFGHJKMNPQRSTUVWXYZ` (31 symbols; value = index, `2` = 0), shown `XXX-XXXX` (hyphen in the DOM text). |
@@ -69,52 +72,52 @@ Plurals: "1 word" / "2 words"; "1 guess" / "2 guesses"; "1 game" / "2 games"; "1
 ## Canonical strings
 | Where | Exact text | Element | ID |
 |---|---|---|---|
-| Home, under "Host a game" | "Tambola, Impostor or Ishaara on this phone" | text inside the button | ISH-001 |
-| Picker card | "Ishaara" · "Team word hunt with one-word clues · 4–20 players · about 15 min a game" | button, name starts "Ishaara" | ISH-001 |
-| Picker resume card | "Ishaara · game 2 · Tap to resume" | `resume-card` | ISH-001 |
-| Start new | dialog "Start a new evening? The evening from 8:40 pm will be ended." with "Start new" / "Carry on that evening" (main) | dialog | ISH-001 |
-| Home unfinished row | "Ishaara, 8:40 pm, game 2" and "Tap to resume" | inside `unfinished-games` | ISH-062 |
-| Join screen | after Impostor's line: "Playing Ishaara? Clue givers: scan the host's map code. Everyone else: just play along!"; quiet "I have a map code" | paragraph; button | ISH-002 |
-| Code entry | heading "Type the map code"; label "Map code"; placeholder "K7P-3QX4"; main "Open the map"; errors "That code doesn't look right. Check it with the host." · "This map needs a newer version of the app. Open the app once with internet, then try again." | h1; input; main; `role="alert"` | ISH-002 |
-| Who's playing? | heading "Who's playing?"; "Add at least 4 players." · "20 players is the most." · Impostor's duplicate message | h1; `role="alert"` | ISH-003 |
-| Make teams | heading "Make teams"; h2s "Mango (4)" / "Peacock (3)"; badge "Clue giver"; small line "Tap a name to move it to the other team."; quiet "Shuffle teams", "Change clue givers"; main "Next"; alert "Each team needs at least 2 players." | h1; h2; `clue-giver-badge`; small line; buttons; `role="alert"` | ISH-004–008 |
-| Team toasts | "Om moved to Peacock · Undo" · "Teams shuffled · Undo" | `undo-toast` | ISH-005, 006 |
-| Clue givers sheet | dialog "Clue givers"; groups "Mango" / "Peacock"; one button per player; main "Done" | dialog; `role="group"`; buttons with `aria-pressed` | ISH-007 |
-| Choices | heading "How do you want to play?"; small line "Same as last time" (carried over); groups "How do clue givers see the map?", "Board", "Words"; main "Deal the words" | h1; small line; `role="group"` | ISH-009 |
-| Map cards | "Pass this phone" + "One phone. The clue giver holds it to see the map." · "Clue givers' own phones" + "They scan a code. Works without internet." | buttons with `aria-pressed` | ISH-009 |
-| Options | "Full: 25 words" / "Family: 16 words"; "Whole family" / "+ Grown-ups" | buttons with `aria-pressed` | ISH-009 |
-| Option lines | Full "9 and 8 words to find, 7 nobody's, 1 Bhoot." · Family "6 and 5 words to find, 5 nobody's, no Bhoot." · Whole family "Words kids and grandparents know." · + Grown-ups "Adds words kids or elders may not know." | small line under the group | ISH-009 |
-| Read this aloud | heading "Read this aloud"; 4 lines (ISH-010); main "Let's play"; quiet "Show me the board first" | h1; `ol` of 4 `li` | ISH-010 |
-| How to play | heading "How to play"; h2 "Read this aloud" + the 4 lines; h2 "The rules" + 8 lines (ISH-011); main "Done" | h1; h2; `ol` | ISH-011 |
-| Preview board | `turn-line` "Mango starts"; counts; main "Start" | paragraphs; main | ISH-012 |
-| Scan screen | heading "Clue givers, scan your map"; "Riya (Mango) and Arjun (Peacock)"; QR; "or type: K7P-3QX4"; small line "Everyone else: look away from their phones."; main "Both have the map" | h1; paragraph; `map-qr` (`img`, name "Map code K7P-3QX4"); `map-code-text`; small line; main | ISH-033 |
-| Pass screen | heading "Mango's turn"; "Pass the phone to"; `<NAME>`; "Mango's clue giver"; quiet "Hurry up: 90 s"; main "I'm Riya" | h1 `turn-heading`; paragraph; `pass-name`; paragraph; button; main | ISH-030 |
-| Welcome back | "Welcome back." above the pass screen | paragraph | ISH-032 |
-| Private map | heading `<NAME>`; small line "Mango's turn · Mango 9 left · Peacock 8 left"; pad "Hold here to see the map"; quiet "Tap instead"; tap mode "Tap to see the map" / "Tap to hide"; main "I have my clue" (ISH-037: "Done, hide the map") | h1; small line; `hold-pad`; button; main | ISH-031 |
-| Map phone | heading "Ishaara map"; "Code K7P-3QX4 · Mango starts"; small line "Tap a word once it's turned over, to fade it."; quiet "Hide map" / "Show map"; quiet "Done with this game" | h1; `map-code-line`; small line; buttons | ISH-034 |
-| Map phone dialog | "Clear this map from your phone?" with "Clear map" / "Keep it" (main) | dialog | ISH-036 |
-| Map phone toast | "New map. The old one was cleared." | `toast` | ISH-036 |
-| Saved map row (Home) | "Ishaara map K7P-3QX4 · Tap to open" (button) · older: "Ishaara map K7P-3QX4" with "Open" / "Clear" | `saved-map` | ISH-036 |
-| Clue screen | heading "Mango's turn"; "Riya, say your clue out loud. How many words is it for?"; keys "0"…"9", "∞"; counts; tip "One word, one number. No faces, no pointing!"; quiet "Hurry up: 90 s"; main "Pick a number" (disabled) / "Clue for 2: start guessing" / "Clue for 0: start guessing" / "Clue for ∞: start guessing" | h1 `turn-heading`; paragraph `clue-prompt`; `clue-key` buttons with `aria-pressed`; `word-counts`; small line `tip`; button; main | ISH-040 |
-| Counts | "Mango 9 left · Peacock 8 left" (landscape board panel: two lines, "Mango 9 left" / "Peacock 8 left") | `word-counts` | ISH-040, 043 |
-| Board status | `turn-line` "Mango guessing"; `clue-line` "Clue: 2 · 3 guesses left" / "Clue: 1 · 1 guess left" / "Clue: ∞ · guess as many as you like" / "Clue: 0 · guess as many as you like" | paragraphs | ISH-041 |
-| First-guess tip | "Tap a word, then Reveal. You can take one more than the number." | small line `tip` | ISH-041 |
-| Board buttons | quiet "End our turn"; main "Reveal" (disabled) / "Reveal <WORD>" | button; main | ISH-042, 044 |
-| Result lines | ISH-043 table; end-turn "Mango ended their turn."; quiet "Oops, keep guessing" | `result-line`; button | ISH-043, 044 |
-| Turn-over main | "Peacock's turn" | main | ISH-045 |
-| Broke a rule | dialog "That clue broke a rule? Mango's turn ends and one of Peacock's words is turned over." with "Yes, it broke a rule" / "Cancel" (main); result line "Clue broke a rule. One of Peacock's words was turned over." | dialog; `result-line` | ISH-046 |
-| Timer | `hurry-timer` "1:30" … "0:01", then "Time's up!", or "Paused"; button / menu item "Hurry up: 90 s" ↔ "Stop timer" | span; button | ISH-047 |
-| Game over | heading "Mango wins!"; line "All 9 words found." / "Peacock woke the Bhoot!"; ended early: heading "Game ended. No winner."; tally; main "Play again"; quiet "Change teams", "End the evening" | h1 `game-heading`; `result-line`; `tally`; buttons | ISH-050–054 |
-| Deal new | dialog "Deal a new board? This board won't count. Same teams and clue givers." with "Deal a new board" / "Keep playing" (main) | dialog | ISH-055 |
-| End game | dialog "End this game with no winner?" with "End the game" / "Keep playing" (main) | dialog | ISH-054 |
-| End evening | dialog "End the evening? Tonight's tally stays in History." (mid-game: "End the evening? This game won't count.") with "End the evening" / "Keep playing" (main) | dialog | ISH-060 |
-| Summary | heading "Tonight's Ishaara"; tally; fun lines; main "Play something else"; quiet "Back to Home"; menu "Discard this evening" | h1; `tally`; `fun-line` each; buttons | ISH-060, 065 |
-| Discard | dialog "Discard this evening? Its games and tally will be lost." with "Discard" / "Keep it" (main) | dialog | ISH-065 |
-| Players sheet | dialog "Players"; h2s "Mango" / "Peacock"; names with "Remove Kabir" (✕); label "Player name", placeholder "Type a name…", button "Add"; main "Done"; toasts "Kabir left · Undo" · "Riya left · Meena gives Mango's clues · Undo" | dialog; buttons; input; `undo-toast` | ISH-061 |
-| Show the map sheet | dialog "Show the map to"; buttons "Riya (Mango)", "Arjun (Peacock)"; quiet "Cancel" | dialog | ISH-037 |
-| Sideways | "Turn your phone sideways to see the board." | paragraph `turn-sideways` (body text) | ISH-092 |
-| History | "Ishaara · 3 games"; "Game 2 · Mango won · Riya and Arjun gave clues"; "Game 2 · Mango won, Peacock woke the Bhoot · Riya and Arjun gave clues"; "Game 3 · Ended early · Meena and Kabir gave clues" | `history-game`; `history-round` | ISH-064 |
-| Announcements | ISH-095 | `announcer` (`aria-live="polite"`) | ISH-095 |
+| Home, under "Host a game" | "Tambola, Impostor or Secret Words on this phone" | text inside the button | SWD-001 |
+| Picker card | "Secret Words" · "Team word hunt with one-word clues · 4–20 players · about 15 min a game" | button, name starts "Secret Words" | SWD-001 |
+| Picker resume card | "Secret Words · game 2 · Tap to resume" | `resume-card` | SWD-001 |
+| Start new | dialog "Start a new evening? The evening from 8:40 pm will be ended." with "Start new" / "Carry on that evening" (main) | dialog | SWD-001 |
+| Home unfinished row | "Secret Words, 8:40 pm, game 2" and "Tap to resume" | inside `unfinished-games` | SWD-062 |
+| Join screen | after Impostor's line: "Playing Secret Words? Clue givers: scan the host's map code. Everyone else: just play along!"; quiet "I have a map code" | paragraph; button | SWD-002 |
+| Code entry | heading "Type the map code"; label "Map code"; placeholder "K7P-3QX4"; main "Open the map"; errors "That code doesn't look right. Check it with the host." · "This map needs a newer version of the app. Open the app once with internet, then try again." | h1; input; main; `role="alert"` | SWD-002 |
+| Who's playing? | heading "Who's playing?"; "Add at least 4 players." · "20 players is the most." · Impostor's duplicate message | h1; `role="alert"` | SWD-003 |
+| Make teams | heading "Make teams"; h2s "Mango (4)" / "Peacock (3)"; badge "Clue giver"; small line "Tap a name to move it to the other team."; quiet "Shuffle teams", "Change clue givers"; main "Next"; alert "Each team needs at least 2 players." | h1; h2; `clue-giver-badge`; small line; buttons; `role="alert"` | SWD-004–008 |
+| Team toasts | "Om moved to Peacock · Undo" · "Teams shuffled · Undo" | `undo-toast` | SWD-005, 006 |
+| Clue givers sheet | dialog "Clue givers"; groups "Mango" / "Peacock"; one button per player; main "Done" | dialog; `role="group"`; buttons with `aria-pressed` | SWD-007 |
+| Choices | heading "How do you want to play?"; small line "Same as last time" (carried over); groups "How do clue givers see the map?", "Board", "Words"; main "Deal the words" | h1; small line; `role="group"` | SWD-009 |
+| Map cards | "Pass this phone" + "One phone. The clue giver holds it to see the map." · "Clue givers' own phones" + "They scan a code. Works without internet." | buttons with `aria-pressed` | SWD-009 |
+| Options | "Full: 25 words" / "Family: 16 words"; "Whole family" / "+ Grown-ups" | buttons with `aria-pressed` | SWD-009 |
+| Option lines | Full "9 and 8 words to find, 7 nobody's, 1 Bhoot." · Family "6 and 5 words to find, 5 nobody's, no Bhoot." · Whole family "Words kids and grandparents know." · + Grown-ups "Adds words kids or elders may not know." | small line under the group | SWD-009 |
+| Read this aloud | heading "Read this aloud"; 4 lines (SWD-010); main "Let's play"; quiet "Show me the board first" | h1; `ol` of 4 `li` | SWD-010 |
+| How to play | heading "How to play"; h2 "Read this aloud" + the 4 lines; h2 "The rules" + 8 lines (SWD-011); main "Done" | h1; h2; `ol` | SWD-011 |
+| Preview board | `turn-line` "Mango starts"; counts; main "Start" | paragraphs; main | SWD-012 |
+| Scan screen | heading "Clue givers, scan your map"; "Riya (Mango) and Arjun (Peacock)"; QR; "or type: K7P-3QX4"; small line "Everyone else: look away from their phones."; main "Both have the map" | h1; paragraph; `map-qr` (`img`, name "Map code K7P-3QX4"); `map-code-text`; small line; main | SWD-033 |
+| Pass screen | heading "Mango's turn"; "Pass the phone to"; `<NAME>`; "Mango's clue giver"; quiet "Hurry up: 90 s"; main "I'm Riya" | h1 `turn-heading`; paragraph; `pass-name`; paragraph; button; main | SWD-030 |
+| Welcome back | "Welcome back." above the pass screen | paragraph | SWD-032 |
+| Private map | heading `<NAME>`; small line "Mango's turn · Mango 9 left · Peacock 8 left"; pad "Hold here to see the map"; quiet "Tap instead"; tap mode "Tap to see the map" / "Tap to hide"; main "I have my clue" (SWD-037: "Done, hide the map") | h1; small line; `hold-pad`; button; main | SWD-031 |
+| Map phone | heading "Secret Words map"; "Code K7P-3QX4 · Mango starts"; small line "Tap a word once it's turned over, to fade it."; quiet "Hide map" / "Show map"; quiet "Done with this game" | h1; `map-code-line`; small line; buttons | SWD-034 |
+| Map phone dialog | "Clear this map from your phone?" with "Clear map" / "Keep it" (main) | dialog | SWD-036 |
+| Map phone toast | "New map. The old one was cleared." | `toast` | SWD-036 |
+| Saved map row (Home) | "Secret Words map K7P-3QX4 · Tap to open" (button) · older: "Secret Words map K7P-3QX4" with "Open" / "Clear" | `saved-map` | SWD-036 |
+| Clue screen | heading "Mango's turn"; "Riya, say your clue out loud. How many words is it for?"; keys "0"…"9", "∞"; counts; tip "One word, one number. No faces, no pointing!"; quiet "Hurry up: 90 s"; main "Pick a number" (disabled) / "Clue for 2: start guessing" / "Clue for 0: start guessing" / "Clue for ∞: start guessing" | h1 `turn-heading`; paragraph `clue-prompt`; `clue-key` buttons with `aria-pressed`; `word-counts`; small line `tip`; button; main | SWD-040 |
+| Counts | "Mango 9 left · Peacock 8 left" (landscape board panel: two lines, "Mango 9 left" / "Peacock 8 left") | `word-counts` | SWD-040, 043 |
+| Board status | `turn-line` "Mango guessing"; `clue-line` "Clue: 2 · 3 guesses left" / "Clue: 1 · 1 guess left" / "Clue: ∞ · guess as many as you like" / "Clue: 0 · guess as many as you like" | paragraphs | SWD-041 |
+| First-guess tip | "Tap a word, then Reveal. You can take one more than the number." | small line `tip` | SWD-041 |
+| Board buttons | quiet "End our turn"; main "Reveal" (disabled) / "Reveal <WORD>" | button; main | SWD-042, 044 |
+| Result lines | SWD-043 table; end-turn "Mango ended their turn."; quiet "Oops, keep guessing" | `result-line`; button | SWD-043, 044 |
+| Turn-over main | "Peacock's turn" | main | SWD-045 |
+| Broke a rule | dialog "That clue broke a rule? Mango's turn ends and one of Peacock's words is turned over." with "Yes, it broke a rule" / "Cancel" (main); result line "Clue broke a rule. One of Peacock's words was turned over." | dialog; `result-line` | SWD-046 |
+| Timer | `hurry-timer` "1:30" … "0:01", then "Time's up!", or "Paused"; button / menu item "Hurry up: 90 s" ↔ "Stop timer" | span; button | SWD-047 |
+| Game over | heading "Mango wins!"; line "All 9 words found." / "Peacock woke the Bhoot!"; ended early: heading "Game ended. No winner."; tally; main "Play again"; quiet "Change teams", "End the evening" | h1 `game-heading`; `result-line`; `tally`; buttons | SWD-050–054 |
+| Deal new | dialog "Deal a new board? This board won't count. Same teams and clue givers." with "Deal a new board" / "Keep playing" (main) | dialog | SWD-055 |
+| End game | dialog "End this game with no winner?" with "End the game" / "Keep playing" (main) | dialog | SWD-054 |
+| End evening | dialog "End the evening? Tonight's tally stays in History." (mid-game: "End the evening? This game won't count.") with "End the evening" / "Keep playing" (main) | dialog | SWD-060 |
+| Summary | heading "Tonight's Secret Words"; tally; fun lines; main "Play something else"; quiet "Back to Home"; menu "Discard this evening" | h1; `tally`; `fun-line` each; buttons | SWD-060, 065 |
+| Discard | dialog "Discard this evening? Its games and tally will be lost." with "Discard" / "Keep it" (main) | dialog | SWD-065 |
+| Players sheet | dialog "Players"; h2s "Mango" / "Peacock"; names with "Remove Kabir" (✕); label "Player name", placeholder "Type a name…", button "Add"; main "Done"; toasts "Kabir left · Undo" · "Riya left · Meena gives Mango's clues · Undo" | dialog; buttons; input; `undo-toast` | SWD-061 |
+| Show the map sheet | dialog "Show the map to"; buttons "Riya (Mango)", "Arjun (Peacock)"; quiet "Cancel" | dialog | SWD-037 |
+| Sideways | "Turn your phone sideways to see the board." | paragraph `turn-sideways` (body text) | SWD-092 |
+| History | "Secret Words · 3 games"; "Game 2 · Mango won · Riya and Arjun gave clues"; "Game 2 · Mango won, Peacock woke the Bhoot · Riya and Arjun gave clues"; "Game 3 · Ended early · Meena and Kabir gave clues" | `history-game`; `history-round` | SWD-064 |
+| Announcements | SWD-095 | `announcer` (`aria-live="polite"`) | SWD-095 |
 
 ### Menu ("··· Menu", top right) at each step
 Items in this order; **—** = not present; "disabled" = shown and disabled. "← Back" or "Done" from Settings, History and
@@ -128,56 +131,56 @@ How to play returns to the same step.
 | Pass screen | ✓ | — | — | ✓ | — | ✓ | ✓ | ✓ | ✓ | ✓ |
 | Private map | no menu | | | | | | | | | |
 | Clue screen | ✓ | — (button on screen) | — | ✓ | own phones only | ✓ | ✓ | ✓ | ✓ | ✓ |
-| Guessing | ✓ | ✓ | ✓, disabled outside ISH-046's window | ✓ | own phones only | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Guessing | ✓ | ✓ | ✓, disabled outside SWD-046's window | ✓ | own phones only | ✓ | ✓ | ✓ | ✓ | ✓ |
 | End-turn line, turn over | ✓ | — | — | ✓ | own phones only | ✓ | ✓ | ✓ | ✓ | ✓ |
 | Game over | ✓ | — | — | ✓ | — | — | — | — | ✓ | ✓ |
 | Summary | only "Discard this evening" | | | | | | | | | |
 
 **Back:** "← Back" on setup screens: Who's playing? → the picker; Make teams → Who's playing?; Choices → Make teams;
 Read this aloud → Choices; code entry → the Join screen; map phone → Home. Make teams keeps its teams across "← Back"
-(ISH-004). During a game there is no "← Back", and the browser's or phone's Back does nothing (the existing back guard).
+(SWD-004). During a game there is no "← Back", and the browser's or phone's Back does nothing (the existing back guard).
 
 ---
 
-## 01 Setup → `specs/ishaara/01-setup.md`
+## 01 Setup → `specs/secret-words/01-setup.md`
 
-### ISH-001 Picking Ishaara
-Home's "Host a game" reads "Tambola, Impostor or Ishaara on this phone". Its picker "What shall we play?" shows three cards
-of equal width and height (±1 px) in the order Tambola, Impostor, Ishaara; tapping Ishaara opens "Who's playing?". With an
-unfinished Ishaara evening its resume card shows above the cards (after Impostor's, if both are unfinished); tapping the
-Ishaara card then opens the "Start new" dialog: "Start new" ends that evening (ISH-067) and opens "Who's playing?";
+### SWD-001 Picking Secret Words
+Home's "Host a game" reads "Tambola, Impostor or Secret Words on this phone". Its picker "What shall we play?" shows three cards
+of equal width and height (±1 px) in the order Tambola, Impostor, Secret Words; tapping Secret Words opens "Who's playing?". With an
+unfinished Secret Words evening its resume card shows above the cards (after Impostor's, if both are unfinished); tapping the
+Secret Words card then opens the "Start new" dialog: "Start new" ends that evening (SWD-067) and opens "Who's playing?";
 "Carry on that evening" resumes it.
 
-### ISH-002 The Join screen and the map code
-The Join screen keeps Impostor's line, then Ishaara's line, then quiet "I have a map code", which opens the code entry.
+### SWD-002 The Join screen and the map code
+The Join screen keeps Impostor's line, then Secret Words's line, then quiet "I have a map code", which opens the code entry.
 Input: `autocapitalize="characters"`, `maxlength="12"`. The typed text is read with spaces and hyphens removed and letters
 upper-cased. "Open the map" is disabled while that leaves fewer than 7 characters. On tap:
 1. not exactly 7 characters, any character outside the alphabet (0, O, 1, I, L included), or a wrong check symbol
-   (ISH-022), or a deal index too large for its edition → "That code doesn't look right. Check it with the host.", typed
+   (SWD-022), or a deal index too large for its edition → "That code doesn't look right. Check it with the host.", typed
    text kept;
 2. a config symbol for an edition this app doesn't have (value ≥ 4 while the app has only edition 1) → "This map needs a
    newer version of the app. Open the app once with internet, then try again.";
-3. otherwise the map phone opens (ISH-034).
+3. otherwise the map phone opens (SWD-034).
 **The QR link** `<origin><BASE_URL>#map=K7P3QX4` (`BASE_URL` = the app's base, e.g. `/pocket-game-night/` or `/preview/`)
 opens the map phone directly; the hash is then removed from the address. An invalid code in the link opens the code entry
 with it filled in and the error shown. Opening a map never changes an unfinished host evening on that phone.
 
-### ISH-003 Who's playing?
+### SWD-003 Who's playing?
 Impostor's names screen (IMP-003) **without** the "Sit in a circle…" line and without ▲ ▼ (order means nothing here):
 tonight's names filled in, "Clear list", past names. "Next" is disabled while there are fewer than 4 names, with "Add at
 least 4 players." shown below the list whenever that is true (0 names included). Adding a 21st name shows "20 players is the
 most." and adds nothing. "← Back" → the picker.
 
-### ISH-004 Make teams
+### SWD-004 Make teams
 The first time in a new evening's setup: names are shuffled with ``shuffle(names, createRng(`${teamSeed}:${k}`))``, k = 1;
 the first ⌈n/2⌉ go to Mango and the rest to Peacock, each in shuffled order. `teamSeed` is made (or read from test hook 2) on
-first entering Make teams for a new evening and kept into the evening's setup. Clue givers: ISH-007.
+first entering Make teams for a new evening and kept into the evening's setup. Clue givers: SWD-007.
 Returning to Make teams ("← Back" then "Next", or "Change teams" later) keeps the teams: names no longer playing are dropped;
-new names join the smaller team (Mango if equal) at the end; a clue giver who left is replaced by ISH-007.
+new names join the smaller team (Mango if equal) at the end; a clue giver who left is replaced by SWD-007.
 Columns side by side, each (screen width − 32 − 8) / 2 px wide; names may wrap to 2 lines; the badge sits on its own line
 under the name. This screen may scroll (page); the main button stays fixed.
 
-### ISH-005 Moving a player
+### SWD-005 Moving a player
 Each name is a button with accessible name "Move Om to Peacock" (`aria-label`; the badge is not part of the name). A tap
 moves the player to the end of the other team and shows "Om moved to Peacock · Undo". If they were their team's clue giver,
 the old team's clue giver becomes the player now at the moved player's old position, else the team's first player; the
@@ -185,37 +188,37 @@ moved player is a guesser. A team left empty has no clue giver; the next player 
 restores teams and clue givers exactly as before that move. Only the latest move can be undone (a new toast replaces the
 old one). A second tap within 500 ms of the first does nothing.
 
-### ISH-006 Shuffle teams
-"Shuffle teams" draws a new split with the next k (ISH-004). If it puts the same set of names in each team as now, it draws
-again with the next k, at most 10 draws in all, keeping the 10th. Clue givers by ISH-007. Toast "Teams shuffled · Undo"
-(Undo as ISH-005). k counts every draw of the evening and is saved (`splits`).
+### SWD-006 Shuffle teams
+"Shuffle teams" draws a new split with the next k (SWD-004). If it puts the same set of names in each team as now, it draws
+again with the next k, at most 10 draws in all, keeping the 10th. Clue givers by SWD-007. Toast "Teams shuffled · Undo"
+(Undo as SWD-005). k counts every draw of the evening and is saved (`splits`).
 
-### ISH-007 Clue givers
+### SWD-007 Clue givers
 Each team's suggested clue giver is its member credited with the **fewest games this evening** (won and ended early;
 replaced boards don't count); ties go to the earliest in that team's list. (Game 1: each team's first player.) "Change clue
 givers" opens the sheet: per team, the current one selected; tapping another selects it; "Done" applies; closing it any
 other way changes nothing.
 
-### ISH-008 Team minimum
+### SWD-008 Team minimum
 While either team has fewer than 2 players, "Next" is disabled and "Each team needs at least 2 players." shows. Teams may
 differ in size by any amount.
 
-### ISH-009 How do you want to play?
+### SWD-009 How do you want to play?
 Three groups, each showing only its chosen option's line (the map cards always show their own text).
 **Map**: two equal cards (±1 px), none selected the first time on this phone, so "Deal the words" is disabled until one is
 tapped. **Board**: Full (default) / Family. **Words**: Whole family (default) / + Grown-ups. A new evening starts from this
-phone's last-used values for all three (ISH-066), with "Same as last time" under the heading. "Deal the words": if the
-read-aloud card is due (ISH-010) it opens; otherwise it deals at once (in a new evening, the evening is created then).
-Between games the choices change only through "Change teams" → "Next" → this screen (ISH-056).
+phone's last-used values for all three (SWD-066), with "Same as last time" under the heading. "Deal the words": if the
+read-aloud card is due (SWD-010) it opens; otherwise it deals at once (in a new evening, the evening is created then).
+Between games the choices change only through "Change teams" → "Next" → this screen (SWD-056).
 
-### ISH-010 Read this aloud
-Due when no Ishaara game has been dealt yet in the current session (PLT-016); checked when "Deal the words" is tapped in a
+### SWD-010 Read this aloud
+Due when no Secret Words game has been dealt yet in the current session (PLT-016); checked when "Deal the words" is tapped in a
 new evening. Lines: 1 "Two teams, Mango and Peacock. Each has a clue giver who sees the secret map." 2 "Clue givers: say
 one word and a number. 'Monsoon, 2' means two of our words go with monsoon." 3 "Guessers: talk, then turn over words one at
 a time. Wrong word? Your turn ends." 4 "Find all your words first. Turn over the Bhoot and you lose!" (Family: "Find all your
-words first!"). "Let's play" deals; "Show me the board first" deals and opens the preview board (ISH-012).
+words first!"). "Let's play" deals; "Show me the board first" deals and opens the preview board (SWD-012).
 
-### ISH-011 How to play (detail of ISH-010)
+### SWD-011 How to play (detail of SWD-010)
 Menu → "How to play": h2 "Read this aloud" and its 4 lines, then h2 "The rules": 1 "Clue givers see the secret map.
 Everyone else sees only the words." 2 "A clue is one word and one number. It must be about meaning, not spelling or where a
 word sits." 3 "Don't say a word that is still face down on the board, or part of one." 4 "English, or a word you'd use in
@@ -225,31 +228,31 @@ plus one. 0 or ∞: as many as you like." 7 "Your word: keep going. Nobody's wor
 Bhoot: you lose!" (Family: without "The Bhoot: you lose!") 8 "First team to find all its words wins." Main "Done" returns.
 The page may scroll. Nothing about the map appears.
 
-### ISH-012 The preview board (detail of ISH-010)
+### SWD-012 The preview board (detail of SWD-010)
 After "Show me the board first": the board with every cell locked, `turn-line` "Mango starts" (the starting team), the
 counts, and main "Start", which leads to the scan screen (own phones) or the pass screen (one phone). No clue line, no tips.
 
 ---
 
-## 02 The deal and its secrets → `specs/ishaara/02-deal.md` (C3)
+## 02 The deal and its secrets → `specs/secret-words/02-deal.md` (C3)
 
-### ISH-020 What a board holds
+### SWD-020 What a board holds
 Full: 25 distinct words; starting team 9, other 8, nobody 7, Bhoot 1. Family: 16 distinct words; 6, 5, 5, 0.
 **Property:** for 10,000 random valid codes of each size, exactly these counts and all words distinct.
 
-### ISH-021 Who starts
+### SWD-021 Who starts
 **Property:** over 10,000 random valid codes, each team starts between 48% and 52% of boards.
 
-### ISH-022 The map code
+### SWD-022 The map code
 Symbols (values 0–30): **1 config** = (edition − 1) × 4 + (Family ? 2 : 0) + (+ Grown-ups ? 1 : 0) (edition 1: 0–3);
-**2 deal index** n (0–30, the board's place in the deck, ISH-024); **3–6 deck seed** d (0 to 31⁴ − 1 = 923,520, base 31,
+**2 deal index** n (0–30, the board's place in the deck, SWD-024); **3–6 deck seed** d (0 to 31⁴ − 1 = 923,520, base 31,
 most significant first); **7 check** = (1·v1 + 2·v2 + 3·v3 + 4·v4 + 5·v5 + 6·v6) mod 31. Shown "K7P-3QX4".
 **The board from a code** (`boardFromCode`), a pure function of the code and the shipped list:
 1. `candidates` = rows with `edition` ≤ e and (`retired_in` blank or > e); for Whole family only rows with `audience` =
    family; in `words.csv` row order.
-2. `deck` = ``shuffle(candidates, createRng(`ishaara:deck:${d}`))`` (the engine's `shuffle`).
+2. `deck` = ``shuffle(candidates, createRng(`secret-words:deck:${d}`))`` (the engine's `shuffle`).
 3. `words` = `deck.slice(25·n, 25·n + size)` (size 25 or 16; Family boards also step by 25).
-4. `r` = ``createRng(`ishaara:board:${d}:${n}`)``; `starts` = `r.int(2) === 0 ? 'mango' : 'peacock'`; then `kinds` =
+4. `r` = ``createRng(`secret-words:board:${d}:${n}`)``; `starts` = `r.int(2) === 0 ? 'mango' : 'peacock'`; then `kinds` =
    `shuffle([starts × 9, other × 8, nobody × 7, bhoot × 1], r)` (Family 6, 5, 5, 0), in that order of draws.
 A code is valid only if its check is right, its edition is shipped and 25·n + size ≤ candidates.length.
 **Property:** `boardFromCode` gives the same result for 10,000 codes on every call. **Browser check (5 codes, via test hook
@@ -257,55 +260,55 @@ A code is valid only if its check is right, its edition is shipped and 25·n + s
 starting team. **Golden boards:** the tester records 5 codes with their exact boards from the first green build as fixtures;
 any later change to them is a C3 defect (a list change makes a new edition instead).
 
-### ISH-023 Words and editions
+### SWD-023 Words and editions
 `words.csv` columns: `id, word, meanings, category, audience, nonveg, edition, retired_in, notes`. Edition 1 = every row with
 `edition` 1. **Any change to the list makes a new edition** (new rows get the new edition; a retired row gets `retired_in` =
 the new edition and stays in the file). The app ships every edition it knows, so old codes and old evenings always rebuild the
 same boards. At most 7 editions fit the config symbol; each edition's candidates stay at most 775 words (31 deals of 25).
 Non-veg words are dealt (K10).
 
-### ISH-024 The deck: no repeats this evening
+### SWD-024 The deck: no repeats this evening
 At evening creation, whenever the candidate list changes (Board or Words changed), and when the deck runs out, the host picks
 a **deck**: with ``rng = createRng(`${seeds.deal}:deck:${k}`)`` (k = the evening's deck number from 1) it draws up to 200
 deck seeds, each `rng.int(923521)`, and keeps the one whose first min(75, candidates.length) deck words contain the fewest of
 (this evening's words ∪ recent words), ties to the earliest drawn, stopping early at the first with none. `recent` = the board
-words of the 3 most recently started other Ishaara evenings on this phone that weren't discarded, frozen at evening
+words of the 3 most recently started other Secret Words evenings on this phone that weren't discarded, frozen at evening
 creation. Deals then use n = 0, 1, 2, … in that deck; when 25·n + size would exceed the candidates, the next deal picks a new
 deck (k + 1) and starts at n = 0. **Property:** for 1,000 random evenings of 15 Full Whole-family deals with the edition-1
 list, no word is on two boards. (Once the deck runs out, or after a change of Board or Words, repeats can happen.)
 
-### ISH-025 The map stays private
+### SWD-025 The map stays private
 Until game over, every room screen's DOM has no kind of a face-down cell: all face-down cells have the same attributes,
 classes, inline style and computed style except `data-index` and the word text. **Rule property:** over 10,000 random games,
 `viewFor(room)` never contains a face-down cell's kind. **Browser check:** 10 seeded games in each map mode, at every step.
 The map and the code appear only on map screens.
 
-### ISH-026 Replays
+### SWD-026 Replays
 The evening's record holds its seeds, setup and moves; every `deal` and `dealNew` records its code, and `brokeRule` its cell.
 Replay accepts any recorded code valid for the shipped editions and gives the same boards, reveals and results. Live, `play`
-accepts only the code ISH-024 gives for that deal (or the test hook's), and only ISH-046's cell.
+accepts only the code SWD-024 gives for that deal (or the test hook's), and only SWD-046's cell.
 
-### ISH-027 Map code checks (detail of ISH-022)
+### SWD-027 Map code checks (detail of SWD-022)
 **Property:** every code `codeFor` makes passes the check; changing any one symbol of a valid code to any other symbol fails
 it, and so does swapping two adjacent different symbols.
 
-### ISH-028 The scan screen shows the code (detail of ISH-025)
+### SWD-028 The scan screen shows the code (detail of SWD-025)
 The scan screen shows the code by design (K3, owner); it is a map screen. Accepted with K3: someone who can read the code
 and the app's source could work out the other boards of that deck. This is family trust, like Tambola's anchor, and an
 owner-accepted exception to "seeds never leave the host phone".
 
 ---
 
-## 03 Seeing the map → `specs/ishaara/03-map.md` (screens C2; privacy C3)
+## 03 Seeing the map → `specs/secret-words/03-map.md` (screens C2; privacy C3)
 
-### ISH-030 One phone: pass to the clue giver
+### SWD-030 One phone: pass to the clue giver
 At the start of each turn in "Pass this phone" mode: team bar; heading "Mango's turn" with the team icon; "Pass the phone
 to"; `pass-name` RIYA at 48 px, shrinking in 1 px steps to 32 px to fit one line, and wrapping onto 2 lines at 32 px if it
 still doesn't fit; "Mango's clue giver"; quiet "Hurry up: 90 s"; main "I'm Riya".
 
-### ISH-031 One phone: the private map
+### SWD-031 One phone: the private map
 After "I'm Riya": heading RIYA; small line "Mango's turn · Mango 9 left · Peacock 8 left"; the map area (the board's layout,
-ISH-090/091, empty while hidden); pad "Hold here to see the map" (at least 200 × 96 px; portrait: under the map area, its
+SWD-090/091, empty while hidden); pad "Hold here to see the map" (at least 200 × 96 px; portrait: under the map area, its
 bottom at least 8 px above the main button's slot; landscape: in a 200 px column at the right, 16 px from the edge); quiet
 "Tap instead"; no menu, no team bar.
 - `pointerdown` on the pad shows the map; `pointerup`, `pointercancel` or `pointerleave` removes it from the page at once.
@@ -321,50 +324,50 @@ bottom at least 8 px above the main button's slot; landscape: in a 200 px column
 - No text selection, callout, magnifier, context menu or drag on the pad or the map. No sound, no vibration.
 - Narrow portrait: only "Turn your phone sideways to see the board." under the heading and small line; no pad until turned.
 
-### ISH-032 Leaving a map screen
+### SWD-032 Leaving a map screen
 On `visibilitychange` to hidden on the private map or the map phone: a full-screen `privacy-cover` appears and the map is
 removed in the same task. Back on the host: the pass screen for the same player with "Welcome back." above it. Reload or resume
 does the same.
 
-### ISH-033 Own phones: scan the map
+### SWD-033 Own phones: scan the map
 After each deal (after the preview's "Start", if shown) in own-phones mode: the scan screen (strings above), QR at least
 200 × 200 px encoding `<origin><BASE_URL>#map=<code>` (no hyphen). Mango's clue giver is named first. "Both have the map"
 opens the starting team's clue screen. Resuming any time before the board's first clue shows the scan screen again. The
-host never shows the map in this mode until game over, except through ISH-037.
+host never shows the map in this mode until game over, except through SWD-037.
 
-### ISH-034 The map phone
-Heading "Ishaara map"; `map-code-line` "Code K7P-3QX4 · Mango starts"; the map grid (`map-grid`, cells `map-cell` with
+### SWD-034 The map phone
+Heading "Secret Words map"; `map-code-line` "Code K7P-3QX4 · Mango starts"; the map grid (`map-grid`, cells `map-cell` with
 `data-index`, in the host board's order, each with word text, kind colour and icon, laid out and sized as the board,
-ISH-090/091, without the panel); the small line; quiet "Hide map" / "Show map"; quiet "Done with this game". No main button,
+SWD-090/091, without the panel); the small line; quiet "Hide map" / "Show map"; quiet "Done with this game". No main button,
 no menu; "← Back" → Home. The map shows on opening; after the app has been hidden it returns hidden, with "Show map". Wake
 lock while shown. Narrow portrait: "Turn your phone sideways to see the board." in place of the grid, buttons kept.
 Landscape: grid at the left; heading, code line and buttons in a 200 px column at the right. The host's game ending changes
 nothing here. Larger text follows this phone's own setting.
 
-### ISH-035 Fading found words
+### SWD-035 Fading found words
 Tapping a map cell toggles **found** (40% opacity, word struck through, accessible name adds ", found") on this phone only,
 saved with the map. A second tap within 500 ms does nothing.
 
-### ISH-036 Clearing and replacing maps
-This phone keeps at most one map (`pgn.ishaara.map` = `{ code, savedAt, found: number[] }`; `savedAt` = when the code was
+### SWD-036 Clearing and replacing maps
+This phone keeps at most one map (`pgn.secretWords.map` = `{ code, savedAt, found: number[] }`; `savedAt` = when the code was
 first opened). "Done with this game" → dialog → "Clear map" removes it and opens Home. Opening a different code replaces it,
 with the toast "New map. The old one was cleared."; opening the same code opens it with its found marks and no toast. Home
-shows a saved map as `saved-map`: a button "Ishaara map K7P-3QX4 · Tap to open"; more than 6 hours after `savedAt`, the
-text "Ishaara map K7P-3QX4" with buttons "Open" and "Clear" ("Clear" opens the same dialog). The app never opens a saved map
+shows a saved map as `saved-map`: a button "Secret Words map K7P-3QX4 · Tap to open"; more than 6 hours after `savedAt`, the
+text "Secret Words map K7P-3QX4" with buttons "Open" and "Clear" ("Clear" opens the same dialog). The app never opens a saved map
 by itself.
 
-### ISH-037 Showing the map on the host (own phones)
-Menu → "Show the map to a clue giver" → sheet with the two current clue givers → a name: ISH-030 and ISH-031 for that player,
+### SWD-037 Showing the map on the host (own phones)
+Menu → "Show the map to a clue giver" → sheet with the two current clue givers → a name: SWD-030 and SWD-031 for that player,
 with main "Done, hide the map", which returns to the step the game was on.
 
-### ISH-038 Larger text on map screens (detail of ISH-031, ISH-034)
-Larger text changes the heading and lines, never the map's word size (ISH-090).
+### SWD-038 Larger text on map screens (detail of SWD-031, SWD-034)
+Larger text changes the heading and lines, never the map's word size (SWD-090).
 
 ---
 
-## 04 Clues and guesses → `specs/ishaara/04-play.md` (rules C3, screens C2)
+## 04 Clues and guesses → `specs/secret-words/04-play.md` (rules C3, screens C2)
 
-### ISH-040 The clue
+### SWD-040 The clue
 Team bar; heading "Mango's turn"; `clue-prompt` "Riya, say your clue out loud. How many words is it for?" (fits in 3 lines);
 keys; counts; on the evening's first turn of its first game only, the tip; quiet "Hurry up: 90 s"; main.
 Keys `clue-key`: portrait 0–4 and 5–9 in two rows, then "∞" full width; each 56 × 56 px (∞ 56 px tall), gaps 2 px at 320 px
@@ -374,19 +377,19 @@ wide and 8 px from 360 px up. 812 × 375: one row of 11 keys (0–9, ∞), 56 ×
 for 0: start guessing"; ∞: "Clue for ∞: start guessing"). No page scrolling at every size, except 320 × 568 with Larger
 text, where the content above the fixed main button scrolls inside.
 
-### ISH-041 Guessing and the allowance
+### SWD-041 Guessing and the allowance
 After the clue: team bar, `turn-line` "Mango guessing", `clue-line`, counts, the board, the tip on the evening's first turn of
 its first game (hidden from that turn's first guess on), quiet "End our turn", main. The clue line counts down while guesses
 remain: "Clue: 2 · 3 guesses left" → "Clue: 2 · 2 guesses left" → "Clue: 2 · 1 guess left". **Property:** no turn records
 more guesses than its allowance, and none ends by "End our turn" before one guess.
 
-### ISH-042 Pick, then confirm
+### SWD-042 Pick, then confirm
 Face-down cells are buttons (`board-cell`, `data-index`, accessible name "Kite, face down", `aria-pressed`). A tap picks
 (selected look: outline, ✓, tint; never a team colour); a tap on the picked cell unpicks; a tap on another moves the pick.
 Turned-over cells are not buttons. Main "Reveal" (disabled) / "Reveal <WORD>". Tapping it is the guess. The pick clears after
 each guess.
 
-### ISH-043 What a guess does
+### SWD-043 What a guess does
 At t = 0 the cell starts a 300 ms turn (none with reduce motion); at t = 300 ms (0 with reduce motion) the cell shows turned
 over, the counts update and the result line shows; taps on cells and buttons do nothing until then.
 
@@ -401,23 +404,23 @@ over, the counts update and the result line shows; taps on cells and buttons do 
 | The Bhoot | none | Game over at t = 300 ms: the other team wins |
 Templates: "Mango" = the guessing team, "Peacock" = the other. The last-word and Bhoot rows win over the others.
 
-### ISH-044 Ending the turn early
+### SWD-044 Ending the turn early
 "End our turn" is disabled until the team has made a guess this turn. A tap shows the end-turn line: cells locked, result
 line "Mango ended their turn.", quiet "Oops, keep guessing" (back to guessing; nothing recorded), main "Peacock's turn"
 (records the end of the turn and the next turn). A running timer stops when the line shows.
 
-### ISH-045 Turn over
+### SWD-045 Turn over
 Cells locked (not greyed), the result line stays, the clue line and tip are removed, "End our turn" is hidden, main
 "Peacock's turn": one phone → the pass screen for Peacock's clue giver; own phones → Peacock's clue screen.
 
-### ISH-046 A clue that broke a rule
+### SWD-046 A clue that broke a rule
 Menu item enabled from the clue until the turn's first guess; disabled otherwise. Dialog → "Yes, it broke a rule": the turn
 ends; `list` = the other team's face-down cells in cell order; cell =
 ``list[createRng(`${seeds.deal}:penalty:${D}:${T}`).int(list.length)]`` (D = deal number of the evening, T = turn number on
-this board); that cell turns over as ISH-043 (vibration 50 ms, the `thud` sound). Result line "Clue broke a rule. One of
+this board); that cell turns over as SWD-043 (vibration 50 ms, the `thud` sound). Result line "Clue broke a rule. One of
 Peacock's words was turned over." and turn over; if it was Peacock's last word: game over, Peacock wins.
 
-### ISH-047 Hurry up: 90 s
+### SWD-047 Hurry up: 90 s
 "Hurry up: 90 s" (buttons on the pass and clue screens; menu item while guessing) starts the timer: `hurry-timer` at 28 px in
 the top bar left of "··· Menu" (portrait), at the top of the panel (landscape board), at the top right of the private map. It
 reads "1:30" at t = 0, "1:29" at t = 1 s, … "0:01" at t = 89 s, and "Time's up!" from t = 90 s (with the chime, sound on);
@@ -427,101 +430,101 @@ when the clue is given, at the end-turn line, at turn over, on "Deal a new board
 is hidden it shows "Paused" and the button or item reads "Hurry up: 90 s" (which restarts at 1:30). It is not saved: after a
 reload there is no timer.
 
-### ISH-048 Reload during play (detail)
-Only moves are saved, plus the step (`pgn.ishaara-ui.<id>`: preview, scan, pass, map, end-turn line). A reload returns to
+### SWD-048 Reload during play (detail)
+Only moves are saved, plus the step (`pgn.secretWords-ui.<id>`: preview, scan, pass, map, end-turn line). A reload returns to
 the last step with the last reveal's result line; picks, the selected key, open dialogs and menus, the timer and tap mode
 are lost; a private map returns to its pass screen with "Welcome back.".
 
-### ISH-049 Double taps (detail)
+### SWD-049 Double taps (detail)
 Every button that records a move ignores another tap for 800 ms after a tap; picks and key choices follow the last tap.
 
 ---
 
-## 05 Winning and the night → `specs/ishaara/05-results.md` (C3)
+## 05 Winning and the night → `specs/secret-words/05-results.md` (C3)
 
-### ISH-050 Who wins
-A team wins when all its words are turned over (by either team, or ISH-046). Turning over the Bhoot makes the other team win.
+### SWD-050 Who wins
+A team wins when all its words are turned over (by either team, or SWD-046). Turning over the Bhoot makes the other team win.
 **Property:** every one of 10,000 random scripted games ends with exactly one winner, or ended early.
 
-### ISH-051 Game over
+### SWD-051 Game over
 Heading "Mango wins!"; line "All 9 words found." (the winner's total: 9, 8, 6 or 5) or, for the Bhoot, "Peacock woke the
 Bhoot!" (the losing team); the whole map: turned-over cells as before, face-down cells now in their kind's colour and icon
 at 50% opacity (accessible name "Kite, Peacock's word, not found"); tally; main "Play again"; quiet "Change teams", "End the
 evening". The page may scroll as one, main fixed. Wake lock released. Narrow portrait: the sideways line instead of the board.
 
-### ISH-052 Tally
+### SWD-052 Tally
 "Tonight: Mango 2 · Peacock 1" (won games only); "Tonight: Mango 0 · Peacock 0" before any.
 
-### ISH-053 Play again
-Same teams; clue givers by ISH-007; same choices; a new deal (ISH-024); then the scan screen or the new starting team's pass
+### SWD-053 Play again
+Same teams; clue givers by SWD-007; same choices; a new deal (SWD-024); then the scan screen or the new starting team's pass
 screen.
 
-### ISH-054 End the game
+### SWD-054 End the game
 Menu "End the game" (scan, pass, clue, guessing, end-turn, turn over) → dialog → "End the game": heading "Game ended. No
-winner.", no result line, the whole map as ISH-051, tally unchanged, same buttons. The game counts for ISH-007 and History.
+winner.", no result line, the whole map as SWD-051, tally unchanged, same buttons. The game counts for SWD-007 and History.
 
-### ISH-055 Deal a new board
+### SWD-055 Deal a new board
 Menu "Deal a new board" (any step from the first deal until game over) → dialog → "Deal a new board": a new deal with the same
 teams, clue givers and choices; the starting team drawn anew; turn numbers restart; tips don't show again; the timer stops;
 clue-giver counts unchanged. Then the scan screen or the new starting team's pass screen.
 
-### ISH-056 Change teams (detail of ISH-051)
+### SWD-056 Change teams (detail of SWD-051)
 "Change teams" → Make teams (current teams) → "Next" → Choices → "Deal the words" deals the next game (no read-aloud).
 
 ---
 
-## 06 The evening → `specs/ishaara/06-evening.md` (saved data C3)
+## 06 The evening → `specs/secret-words/06-evening.md` (saved data C3)
 
-### ISH-060 End of the evening
+### SWD-060 End of the evening
 "End the evening" (game over button, or menu) → dialog → "End the evening": a game in progress is ended early; the evening ends;
 the summary shows: tally; fun lines, at most two, in this order: "Riya's clues won 2 games" (the credited clue giver with the
 most won games, at least 1; tie: the one who reached that count first) and "The Bhoot woke up 1 time" (at least 1); main
 "Play something else" (the picker, tonight's names kept); quiet "Back to Home". An ended evening never reopens; an evening
 with no game at all is deleted, otherwise it stays in History.
 
-### ISH-061 Players during a game
+### SWD-061 Players during a game
 Menu "Players" (sheet; changes apply at once): "Add" puts a name in the smaller team (Mango if equal) as a guesser from now on;
 Impostor's duplicate message; "20 players is the most.". "Remove Kabir" removes a guesser with "Kabir left · Undo" (Undo puts
 them back in place). Removing a clue giver makes the team's next player in list order (wrapping to the first) its clue giver,
 with "Riya left · Meena gives Mango's clues · Undo"; if that team is on its pass, private map or clue step in one-phone mode,
 its pass screen restarts for Meena; once guessing has started, the turn carries on. In own-phones mode the new clue giver uses
-ISH-037. "Remove" is disabled for every player of a team of 2.
+SWD-037. "Remove" is disabled for every player of a team of 2.
 
-### ISH-062 Leaving and resuming
-Every move is saved. Home's row "Ishaara, 8:40 pm, game 2" (the evening's start, phone's local time, "pm" lower case, no
-leading zero; game number per Terms). "Tap to resume" returns to the same step (ISH-048).
+### SWD-062 Leaving and resuming
+Every move is saved. Home's row "Secret Words, 8:40 pm, game 2" (the evening's start, phone's local time, "pm" lower case, no
+leading zero; game number per Terms). "Tap to resume" returns to the same step (SWD-048).
 
-### ISH-063 The 12-hour limit
+### SWD-063 The 12-hour limit
 When the app opens or Home shows, an evening whose last move is more than 12 hours old ends: `endGame` (if a game was in
 progress) and `endEvening`, both at the last move + 12 hours. No summary shows.
 
-### ISH-064 History
-Evening row "Ishaara · 3 games" (won and ended early). Game rows: "Game 2 · Mango won · Riya and Arjun gave clues"; Bhoot: "Game
+### SWD-064 History
+Evening row "Secret Words · 3 games" (won and ended early). Game rows: "Game 2 · Mango won · Riya and Arjun gave clues"; Bhoot: "Game
 2 · Mango won, Peacock woke the Bhoot · Riya and Arjun gave clues"; "Game 3 · Ended early · Meena and Kabir gave clues"
 (credited clue givers, Mango's first). Tapping a game row opens its board with the whole map ("← Back" to the evening).
 
-### ISH-065 Discard the evening
+### SWD-065 Discard the evening
 Summary menu "Discard this evening" → dialog → "Discard": the evening is deleted and Home opens. No undo.
 
-### ISH-066 Saved choices (detail of ISH-009)
-`pgn.pref.ishaara.lastChoices` = `{ map, board, words }`, written at each deal. Unreadable or missing → the first-time state.
+### SWD-066 Saved choices (detail of SWD-009)
+`pgn.pref.secretWords.lastChoices` = `{ map, board, words }`, written at each deal. Unreadable or missing → the first-time state.
 
-### ISH-067 Start new (detail of ISH-001)
+### SWD-067 Start new (detail of SWD-001)
 "Start new" records `endGame` (if a game was in progress) and `endEvening` for the old evening, then opens "Who's playing?"
 for a new evening. No summary shows.
 
 ---
 
-## 09 Usability → `specs/ishaara/09-usability.md` (C1/C2)
+## 09 Usability → `specs/secret-words/09-usability.md` (C1/C2)
 
-### ISH-090 Board text and portrait layout
+### SWD-090 Board text and portrait layout
 Portrait board: 8 px side margins, 4 px gaps; cells (width − 16 − gaps) / columns wide (Full at 360: 65.6 px; at 390: 71.6
 px). Cell height 56 px, shrinking to no less than 48 px so the page doesn't scroll. One font size for all words of a board:
 the largest whole px from 22 down to 12 at which every word fits in 1 line within its cell minus 4 px padding each side.
 Larger text doesn't change it. Status lines: `turn-line` 1 line, `clue-line` at most 2, counts 1, `result-line` at most 2
 (it replaces the tip). No page scrolling at 360 × 640 and 390 × 844, Larger text off and on.
 
-### ISH-091 Landscape board
+### SWD-091 Landscape board
 812 × 375: grid at the left (margins 16 px left and bottom, 8 px under the team bar); a 200 px panel at the right (16 px right
 margin, 12 px gap): at its top `hurry-timer` and "··· Menu", then `turn-line`, `clue-line`, counts (two lines),
 `result-line` and tip in a middle part that scrolls inside if needed, then "End our turn" (200 × 48) and the main button
@@ -529,37 +532,37 @@ margin, 12 px gap): at its top `hurry-timer` and "··· Menu", then `turn-line`
 568 × 320: the same with 8 px margins, a 160 px panel (main 160 × 60) and an 8 px gap; cells at least 69 × 54 px. No page
 scrolling.
 
-### ISH-092 Narrow portrait
+### SWD-092 Narrow portrait
 On the board screens, the private map and the map phone, narrow portrait shows `turn-sideways` in place of the grid; the other
 parts of the screen stay (on the board, "Reveal" stays disabled). Turning to landscape shows the grid. All other screens work at
 320 × 568 portrait.
 
-### ISH-093 Never colour alone
+### SWD-093 Never colour alone
 Every turned-over cell and every map cell has its kind's icon and an accessible name: "Kite, Mango's word" / "Kite, Peacock's
-word" / "Kite, nobody's word" / "Kite, the Bhoot" (+ ", found" or ", not found" where ISH-031, ISH-035 and ISH-051 say).
+word" / "Kite, nobody's word" / "Kite, the Bhoot" (+ ", found" or ", not found" where SWD-031, SWD-035 and SWD-051 say).
 
-### ISH-094 Targets
-Every button at least 44 × 44 px; board cells per ISH-090/091; keys per ISH-040.
+### SWD-094 Targets
+Every button at least 44 × 44 px; board cells per SWD-090/091; keys per SWD-040.
 
-### ISH-095 Screen readers
+### SWD-095 Screen readers
 The announcer reads: the clue ("Mango's clue: 1 word" / "2 words" / "0 words" / "as many as you like"); each result line; at
 turn over "Peacock's turn"; at game over the heading then the line ("Mango wins! All 9 words found."). It never announces the
 map. Map cells are reachable by name only on map screens.
 
-### ISH-096 Reduce motion
+### SWD-096 Reduce motion
 With `prefers-reduced-motion: reduce`: no cell turn and no animations (`document.getAnimations().length === 0` on board
 screens); everything else the same.
 
-### ISH-097 Sound and vibration
+### SWD-097 Sound and vibration
 Sounds (Impostor's sound hook, `window.__sounds`): `ding` (own word), `thud` (nobody's, the other team's, a broken-rule
 turn), `boo` (the Bhoot), `chime` (time's up); peak gains of `thud`, `boo` and `chime` ≤ `ding`'s. Vibration 50 ms on every
 reveal, 200 ms on the Bhoot. The private map and the map phone make no sound and no vibration.
 
-### ISH-098 One main button
+### SWD-098 One main button
 At most one main button per screen, always the next step.
 
-### ISH-099 Word list check (C3, content)
-`content/ishaara/words.json` is built from `words.csv` (`{ id, word, meanings, category, audience, nonveg, edition,
+### SWD-099 Word list check (C3, content)
+`content/secret-words/words.json` is built from `words.csv` (`{ id, word, meanings, category, audience, nonveg, edition,
 retired_in }[]`). **Checks:** ids unique; words 3–8 letters A–Z, unique ignoring case; every edition's candidates ≤ 775.
 **Browser content test** (both browser projects): every word, as word text, fits in 57 px at 12 px (the 360 × 640 cell) and in
 63 px at 14 px (the 390 × 844 cell). A failing word is reported to the product owner, who replaces it in a new edition.
@@ -567,29 +570,29 @@ retired_in }[]`). **Checks:** ids unique; words 3–8 letters A–Z, unique igno
 ---
 
 ## Test hooks the build provides
-1. **Rule API** in `src/games/ishaara/index.ts` (pure), fitting the engine (`startMatch`, `play`, `replay`, `viewFor`,
+1. **Rule API** in `src/games/secret-words/index.ts` (pure), fitting the engine (`startMatch`, `play`, `replay`, `viewFor`,
    `SavedGame`, `createRng`, `shuffle`):
    ```ts
    type Team = 'mango' | 'peacock'; type Kind = Team | 'nobody' | 'bhoot';
-   interface IshaaraChoices { map: 'pass' | 'own'; board: 'full' | 'family'; words: 'family' | 'grownups' }
+   interface SecretWordsChoices { map: 'pass' | 'own'; board: 'full' | 'family'; words: 'family' | 'grownups' }
    interface Teams { mango: string[]; peacock: string[]; clueGivers: { mango: string | null; peacock: string | null } }
-   // SetupInput: { gameId: 'ishaara', seeds: { deal: string, teams: string }, config: { players: string[], teams: Teams,
-   //   splits: number, choices: IshaaraChoices, excludedWords: { recent: string[] /* ids */ }, testBoards?: string[] } }
-   type IshaaraMove =
+   // SetupInput: { gameId: 'secret-words', seeds: { deal: string, teams: string }, config: { players: string[], teams: Teams,
+   //   splits: number, choices: SecretWordsChoices, excludedWords: { recent: string[] /* ids */ }, testBoards?: string[] } }
+   type SecretWordsMove =
      | { type: 'deal'; code: string } | { type: 'dealNew'; code: string } | { type: 'mapSeen' }
      | { type: 'clue'; n: 0|1|2|3|4|5|6|7|8|9|'inf' } | { type: 'reveal'; cell: number }
      | { type: 'endTurn' } | { type: 'brokeRule'; cell: number } | { type: 'nextTurn' } | { type: 'endGame' }
      | { type: 'setTeams'; teams: Teams; splits: number } | { type: 'setClueGivers'; clueGivers: Teams['clueGivers'] }
-     | { type: 'setChoices'; choices: IshaaraChoices } | { type: 'setPlayers'; players: string[]; teams: Teams }
+     | { type: 'setChoices'; choices: SecretWordsChoices } | { type: 'setPlayers'; players: string[]; teams: Teams }
      | { type: 'endEvening' };
-   boardFromCode(code: string, words: readonly IshaaraWord[]):
+   boardFromCode(code: string, words: readonly SecretWordsWord[]):
      { words: string[]; kinds: Kind[]; starts: Team; edition: number; board: 'full' | 'family'; audience: 'family' | 'grownups' }
      | { error: 'invalid' | 'newer' };
    codeFor(cfg: { edition: number; board: 'full' | 'family'; words: 'family' | 'grownups' }, deck: number, n: number): string; // 7 symbols, no hyphen
    pickDeck(dealSeed: string, k: number, candidates: readonly string[], avoid: ReadonlySet<string>): number;
-   penaltyCell(state: IshaaraState, dealSeed: string): number;
+   penaltyCell(state: SecretWordsState, dealSeed: string): number;
    parseMapCode(typed: string): string | 'invalid' | 'newer';
-   readIshaaraEvening(saved: SavedGame);
+   readSecretWordsEvening(saved: SavedGame);
    readTestSeeds(raw: string | null, release: boolean): { deal?: string; teams?: string; boards?: string[] } | null;
    ```
    Views: room → `{ cells: { word: string; kind?: Kind }[]` (kind only when turned over, or for every cell after game over)`,
@@ -617,12 +620,12 @@ retired_in }[]`). **Checks:** ids unique; words 3–8 letters A–Z, unique igno
    | "Discard" | the SavedGame is deleted |
 2. **Seeds** from `localStorage['pgn.test.seeds']` in development and preview builds only (as Impostor):
    `{ "deal": "<seed>", "teams": "<seed>", "boards": ["K7P3QX4", …] }`. `teams` is read on first entering Make teams for a
-   new evening; `deal` and `boards` at evening creation. `boards[i]` is used for deal i + 1 and bypasses ISH-024; a code whose
+   new evening; `deal` and `boards` at evening creation. `boards[i]` is used for deal i + 1 and bypasses SWD-024; a code whose
    config doesn't match the choices is a test error. Without seeds: fresh random seeds per evening.
 3. **Pointer input, clock** (500 ms hold, 60 s tap mode, 800 ms ignore, 500 ms double tap, 300 ms turn, 90 s timer, toasts, 6 h,
    12 h), **visibility, wake lock, vibration, sounds**: as Impostor's hooks 4–8.
 4. **Test ids:** `main-button`, `resume-card`, `unfinished-games`, `team-bar`, `turn-heading`, `pass-name`, `hold-pad`,
-   `privacy-cover`, `ishaara-board`, `board-cell` (`data-index`), `map-grid`, `map-cell` (`data-index`), `map-qr`,
+   `privacy-cover`, `word-board`, `board-cell` (`data-index`), `map-grid`, `map-cell` (`data-index`), `map-qr`,
    `map-code-text`, `map-code-line`, `clue-prompt`, `clue-key`, `word-counts`, `turn-line`, `clue-line`, `tip`, `result-line`,
    `hurry-timer`, `game-heading`, `tally`, `fun-line`, `saved-map`, `clue-giver-badge`, `turn-sideways`, `history-game`,
    `history-round`, `announcer`, `undo-toast`, `toast`.
@@ -630,9 +633,9 @@ retired_in }[]`). **Checks:** ids unique; words 3–8 letters A–Z, unique igno
 
 ---
 
-## Ishaara later (direction, built later)
-- **ISH-200** 2–3 players together against the phone (the official co-op variant).
-- **ISH-201** Picture boards for children who can't read.
-- **ISH-202** Regional word themes; each player's own script on the map phone.
-- **ISH-203** Board on the TV.
-- **ISH-204** "My pick" on guessers' phones (connected mode).
+## Secret Words later (direction, built later)
+- **SWD-200** 2–3 players together against the phone (the official co-op variant).
+- **SWD-201** Picture boards for children who can't read.
+- **SWD-202** Regional word themes; each player's own script on the map phone.
+- **SWD-203** Board on the TV.
+- **SWD-204** "My pick" on guessers' phones (connected mode).

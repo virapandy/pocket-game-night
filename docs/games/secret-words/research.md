@@ -1,7 +1,7 @@
-# Ishaara: research (4 October 2026)
+# Secret Words: research (4 October 2026)
 
-Product owner, for the owner. **Ishaara** ("a hint") is our Codenames-style team word game (name decided by the owner, 4 October,
-decision K1). We follow the conventions of Codenames but use **our own name, our
+Product owner, for the owner. **Secret Words** is our Codenames-style team word game. "Codenames" is a trademark of Czech Games Edition, so the
+game has its own English name (owner, 4 October, decision K1); the rules of play are not protected and follow the convention. We follow the conventions of Codenames but use **our own name, our
 own words and our own look**, never theirs.
 
 Three research passes ran in parallel on 4 October 2026: the official rules, existing apps and their reviews, and

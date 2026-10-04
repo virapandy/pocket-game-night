@@ -1,4 +1,4 @@
-# Ishaara: the whole evening, stage by stage (draft, 4 October 2026)
+# Secret Words: the whole evening, stage by stage (draft, 4 October 2026)
 
 **Binding details are in scenarios.md; where this file differs, scenarios.md wins.**
 Designed against the five stages in `docs/proposals/next-game-lifecycle.md`, before any build. Rules: `guide.md`.
@@ -26,8 +26,8 @@ Screens: `ux.md`. Words: `words.md`.
 ## Stage 1. Decide
 | Who | Sees | Does | Target |
 |---|---|---|---|
-| Host | "What shall we play?": Tambola, Impostor, **Ishaara** | Taps Ishaara | 5 s |
-| Guest with the link | Join screen line: "Playing Ishaara? Clue givers: scan the host's map code. Everyone else: just play along!" | Clue givers scan; others put the phone away | — |
+| Host | "What shall we play?": Tambola, Impostor, **Secret Words** | Taps Secret Words | 5 s |
+| Guest with the link | Join screen line: "Playing Secret Words? Clue givers: scan the host's map code. Everyone else: just play along!" | Clue givers scan; others put the phone away | — |
 Fits 4–20 players; best 6–8; about 15 minutes a game.
 
 ## Stage 2. Set up and join
@@ -38,7 +38,7 @@ Fits 4–20 players; best 6–8; about 15 minutes a game.
 | How do you want to play? | Map: no default (two equal cards); Board Full; Words Whole family; last-used values afterwards | 5 s |
 | Read this aloud | Once per session | 20 s |
 | Own phones only: scan the map | Once per game; QR or 6-character code | 20 s |
-**Target:** 30 s from the Ishaara card to the first clue for a group that played earlier tonight; 2 minutes the first time.
+**Target:** 30 s from the Secret Words card to the first clue for a group that played earlier tonight; 2 minutes the first time.
 **Late joiner:** "Change teams" between games, or menu → "Players" during a game: joins as a guesser on the smaller team
 straight away (guessers have no secret). **Someone leaves:** removed at once from "Players"; if they were the clue giver,
 the team's next player takes over and sees the map at the team's next pass (own phones: "Show the map to a clue giver").
@@ -46,7 +46,7 @@ the team's next player takes over and sees the map at the team's next pass (own 
 ## Stage 3. Teach
 | Moment | What the app does |
 |---|---|
-| First Ishaara game of the session | "Read this aloud": four lines (`ux.md` §5) |
+| First Secret Words game of the session | "Read this aloud": four lines (`ux.md` §5) |
 | First clue of the evening | Under the number keys, one small line: "One word, one number. No faces, no pointing!" |
 | First guess of the evening | Small line: "Tap a word, then Reveal. You can take one more than the number." |
 | Any time | Menu → "How to play": the rule book in plain words, never showing the map |

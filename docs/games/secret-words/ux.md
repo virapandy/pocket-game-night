@@ -1,4 +1,4 @@
-# Ishaara: theme and screens (draft, 4 October 2026)
+# Secret Words: theme and screens (draft, 4 October 2026)
 
 **Binding details are in scenarios.md; where this file differs, scenarios.md wins.**
 Product owner, from the app research in `research.md` §3 and the lessons of Tambola and Impostor. To be reviewed with
@@ -54,7 +54,7 @@ Shared rules: one full-width main button at the bottom, always the next step; qu
 pick, then confirm (guideline 47); the screen stays awake from the deal to the game result.
 
 ### 1. What shall we play?
-A third equal card: **Ishaara** "Team word hunt with one-word clues · 4–20 players · about 15 min a game".
+A third equal card: **Secret Words** "Team word hunt with one-word clues · 4–20 players · about 15 min a game".
 
 ### 2. Who's playing?
 The shared names step (PLT-024), tonight's names filled in. "Next" needs at least 4 names.
@@ -94,7 +94,7 @@ Words   [ Whole family ✓ ][ + Grown-ups ]
 [            Deal the words            ]   (disabled until a map card is chosen)
 ```
 
-### 5. Read this aloud (first Ishaara game of tonight's session, once)
+### 5. Read this aloud (first Secret Words game of tonight's session, once)
 1. "Two teams, Mango and Peacock. Each has a clue giver who sees the secret map."
 2. "Clue givers: say one word and a number. 'Monsoon, 2' means two of our words go with monsoon."
 3. "Guessers: talk, then turn over words one at a time. Wrong word? Your turn ends."

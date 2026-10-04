@@ -88,12 +88,12 @@ All open Impostor questions in `docs/test-questions.md` are answered in `docs/de
 build already does all of it. Tester: copy the changed scenario lines into `specs/impostor/` and remove the IMP-075
 mark (the "left halfway" menu as built is now the spec). Then Impostor waits for the owner's "release Impostor".
 
-### Queued: Ishaara, the third game (owner approved scenarios v2, 4 October): start only after Impostor's release
-Design complete in `docs/games/ishaara/` (research, guide, ux, lifecycle, words). **Scenarios ISH-001 to ISH-099 approved by
-the owner, 4 October** (`docs/games/ishaara/scenarios.md` version 2; ISH-200+ are direction only). Decisions K1–K19 in
-`docs/decisions.md`. When Impostor is released: the **tester** copies the scenarios into `specs/ishaara/` (file names in each
+### Queued: Secret Words, the third game (owner approved scenarios v2, 4 October): start only after Impostor's release
+Design complete in `docs/games/secret-words/` (research, guide, ux, lifecycle, words). **Scenarios SWD-001 to SWD-099 approved by
+the owner, 4 October** (`docs/games/secret-words/scenarios.md` version 2; SWD-200+ are direction only). Decisions K1–K19 in
+`docs/decisions.md`. When Impostor is released: the **tester** copies the scenarios into `specs/secret-words/` (file names in each
 section heading), requests a QR decoder for tests (hook 5), and writes tests first for the C3 sections (02 deal, 04 rules,
-05, 06, ISH-099), including the golden boards of ISH-022; then the **coder** builds by `docs/change-sop.md` (screens in lanes,
+05, 06, SWD-099), including the golden boards of SWD-022; then the **coder** builds by `docs/change-sop.md` (screens in lanes,
 C3 in its own lane). The word list `words.csv` still needs the persona and real-reader review (product owner) before release.
 
 ### Queued: Impostor, the next game (product owner, 3 October): start only after the Tambola release

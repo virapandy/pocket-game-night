@@ -1,4 +1,4 @@
-# Ishaara: the rule book (draft, 4 October 2026)
+# Secret Words: the rule book (draft, 4 October 2026)
 
 Exact screens, wording and numbers for the build are in `scenarios.md`; where this file differs, `scenarios.md` wins.
 Evidence: `research.md`. Look and screens: `ux.md`. The whole evening: `lifecycle.md`. Decisions: K1–K18 in
@@ -96,7 +96,7 @@ casual groups tally wins informally, `research.md`.)
   from the code in the QR.
 
 ## Contract check (for the builders)
-| Question | Ishaara's answer |
+| Question | Secret Words's answer |
 |---|---|
 | Setup | Players, teams (Mango list, Peacock list), clue giver per team, map mode, board size, words audience, excluded words (used tonight), board seed |
 | Legal moves | show map (one phone) · give clue (number 0–9 or ∞) · pick word · reveal picked word · end turn · clue broke a rule · start/stop hurry-up timer · next team's turn · play again · change teams · change clue giver · end the evening: a finite list |
@@ -105,4 +105,4 @@ casual groups tally wins informally, `research.md`.)
 | Game over | A team's words all turned over, or the Bhoot turned over |
 | Invariants | Exactly 9/8/7/1 (or 6/5/5/0); the starting team has the larger count; guesses never exceed number + 1; at least one guess before "End our turn"; no word repeats in an evening; the same code always rebuilds the same board and map |
 | Undo | Not for reveals (pick, then confirm); only team moves and shuffles on "Make teams", and removing a player |
-| Secrets | The board and map come from the map code (edition, board size, audience, deal index, deck seed, check symbol), so any phone rebuilds the same board offline; scenarios ISH-022 to ISH-028 |
+| Secrets | The board and map come from the map code (edition, board size, audience, deal index, deck seed, check symbol), so any phone rebuilds the same board offline; scenarios SWD-022 to SWD-028 |

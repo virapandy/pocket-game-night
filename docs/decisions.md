@@ -176,11 +176,11 @@ Claude to follow game conventions. Every Tambola rule above is also a host setti
 | I22 | Owner's play (4 October): the category "Cricket and games" is renamed **"Sports and games"** (Badminton, Hockey, Chess under "Cricket" made no sense); Elephant dropped (no fitting category), Rain and Aadhaar card moved to Desi life; one duplicate hint fixed (308 words). The last-guess step now says what is at stake: "Last chance, Arjun! Guess the word out loud. Get it right and you steal the round." with main "Arjun guessed. Show the word" (the owner read the old step as the game carrying on after a correct catch) | Owner's play-test; product owner |
 | I15 | Later, rarely: twist rounds (no impostor; everyone an impostor) | Players love them used sparingly (BGG) — later |
 
-## Ishaara (Codenames-style word game): decisions (4 October 2026; evidence in `docs/games/ishaara/research.md`)
+## Secret Words (Codenames-style word game): decisions (4 October 2026; evidence in `docs/games/secret-words/research.md`)
 Status: **decided: owner, 4 October 2026, "follow the recommendation"** for K1–K18 (the Recommendation column is the decision), including festival names as board words. Norm = the Codenames convention.
 | # | Question | Options | Recommendation |
 |---|---|---|---|
-| K1 | Name | **Ishaara** ("hint", known across India) · Word Detectives · Mango vs Peacock | Ishaara (never "Codenames") |
+| K1 | Name | ~~Ishaara~~ → **Secret Words** (owner, 4 October: an English name, since "Codenames" is a trademark; the rules themselves are free to use) | Secret Words; never "Codenames" in the app |
 | K2 | Theme | Spy noir (norm, too close to Codenames) · flat minimal red/blue · **flat board with Team Mango and Team Peacock and a friendly Bhoot** | Mango v Peacock + Bhoot (`ux.md` §1); red stays for the main button |
 | K3 | How clue givers see the map | **Both in the first release**: "Pass this phone" (hold to see) and "Clue givers' own phones" (QR or code, offline); two equal cards, no default | Both; the code makes own phones work offline |
 | K4 | Teams | Shuffled into equal teams the first time; tap to move; last teams after | As recommended |
@@ -198,5 +198,6 @@ Status: **decided: owner, 4 October 2026, "follow the recommendation"** for K1�
 | K16 | Undo | No undo of a reveal (pick, then confirm); "Oops, keep guessing" after "End our turn"; undo for team moves | As recommended |
 | K17 | Clue giver rotation | Fewest games as clue giver tonight, ties to the earliest in the team list | As recommended |
 | K18 | Resume | Within 12 hours at the same step; the map screen always returns to "Pass the phone to…" | As recommended |
-| K19 | Map code and words after the two-reader check (product owner, 4 October): 7-symbol code (config, deal index, deck seed, check symbol); each evening deals from a shuffled deck so no word repeats for 15 games; any word-list change makes a new edition. Showing the code to clue givers is accepted with K3 as family trust, an exception to "seeds never leave the host phone" (ISH-028) | Product owner (follows from K3 and K10) |
-| K20 | Ishaara scenarios version 2 (ISH-001 to ISH-099) approved; queued for the tester after Impostor's release | Owner, 4 October |
+| K19 | Map code and words after the two-reader check (product owner, 4 October): 7-symbol code (config, deal index, deck seed, check symbol); each evening deals from a shuffled deck so no word repeats for 15 games; any word-list change makes a new edition. Showing the code to clue givers is accepted with K3 as family trust, an exception to "seeds never leave the host phone" (SWD-028) | Product owner (follows from K3 and K10) |
+| K20 | Secret Words scenarios version 2 (SWD-001 to SWD-099) approved; queued for the tester after Impostor's release | Owner, 4 October |
+| K21 | Renamed Ishaara → **Secret Words**: IDs SWD- (scenarios) and SWDW- (words), folder `docs/games/secret-words/`, game id `secret-words`. A name change only; scenario approval (K20) stands | Owner, 4 October |
