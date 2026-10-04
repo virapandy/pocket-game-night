@@ -218,3 +218,4 @@ Status: **decided: owner, 4 October 2026, "follow the recommendation"** for K1â€
 | K28 | The danger word is **the Landmine** (was the Ghost) | Owner, 4 October (product owner noted the real-weapon tone; owner chose it) |
 | K29 | New setup choice for the Full board: **Landmine: Lose the game** (default, the standard rule) or **Lose your turn** (turn ends, the other team gets one word free) | Owner, 4 October |
 | K30 | Boards are **Full** (25 words) and **Easy** (16 words, no Landmine); playing against the phone (2â€“3 players) is a future extension | Owner, 4 October |
+| K31 | Secret Words scenarios **version 3.2 approved**; the build starts when Impostor's release candidate 1.3.0 is frozen (release work on its branch, Secret Words on `main`) | Owner, 4 October |

@@ -110,13 +110,20 @@ All open Impostor questions in `docs/test-questions.md` are answered in `docs/de
 build already does all of it. Tester: copy the changed scenario lines into `specs/impostor/` and remove the IMP-075
 mark (the "left halfway" menu as built is now the spec). Then Impostor waits for the owner's "release Impostor".
 
-### Queued: Secret Words, the third game (owner approved scenarios v2, 4 October): start only after Impostor's release
-Design complete in `docs/games/secret-words/` (research, guide, ux, lifecycle, words). **Scenarios SWD-001 to SWD-099 approved by
-the owner, 4 October; version 3 (play modes P1–P9) in its two-reader check, then approval** (`docs/games/secret-words/scenarios.md` version 2; SWD-200+ are direction only). Decisions K1–K19 in
-`docs/decisions.md`. When Impostor is released: the **tester** copies the scenarios into `specs/secret-words/` (file names in each
-section heading), requests a QR decoder for tests (hook 5), and writes tests first for the C3 sections (02 deal, 04 rules,
-05, 06, SWD-099), including the golden boards of SWD-022; then the **coder** builds by `docs/change-sop.md` (screens in lanes,
-C3 in its own lane). The word list `words.csv` (452 words) and `team-names.csv` are owner-approved (K27).
+### Secret Words, the third game: START WHEN RELEASE CANDIDATE 1.3.0 IS FROZEN (owner, 4 October)
+**Scenarios version 3.2 (SWD-001 to SWD-104) approved by the owner on 4 October**, after two two-reader checks and a final
+check pass; SWD-200+ are direction only. Design in `docs/games/secret-words/`: `scenarios.md` (binding), guide, ux, lifecycle,
+play-modes, legal, `words.csv` (452 words) and `team-names.csv` (both owner-approved, K27). Decisions K1–K30 and P1–P11 in
+`docs/decisions.md`.
+**Start** as soon as Impostor's release candidate 1.3.0 is frozen on its release branch (do not wait for "release Impostor");
+release work stays on the release branch, Secret Words goes on `main`, as decided on 3 October.
+1. **Tester:** copy the scenarios into `specs/secret-words/` (file names in each section heading); request a QR decoder for
+   tests (hook 5); write tests first for the C3 parts: 02 deal (incl. the golden boards of SWD-022 and SWD-027/039 properties),
+   04 rules, 05, 06, SWD-099, SWD-101; mark tests for unbuilt features "expected to fail" so quick verify stays green.
+2. **Coder:** build by `docs/change-sop.md`: the rules and map code (C3) in their own lane; screens in lanes (setup and Home
+   "Join a game"; the map screens and map phone; clue and board). Each lane through the AI reviewer before merge.
+3. **Product owner and UX designer** review the preview at phone sizes; the owner tries it, ideally with a family game.
+4. Never let Secret Words work delay the Impostor release: release-branch fixes come first.
 
 ### Queued: Impostor, the next game (product owner, 3 October): start only after the Tambola release
 Design done (owner-approved direction; scenarios await the owner's approval): `docs/games/impostor/` (guide,

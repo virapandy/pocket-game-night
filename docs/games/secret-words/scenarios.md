@@ -1,8 +1,7 @@
 # Secret Words: scenarios (version 3, 4 October 2026)
 
-Status: **version 3.2, draft.** Version 2 (SWD-001 to SWD-099) was approved by the owner on 4 October; version 3 applies the
-owner's decisions P1–P9 of 4 October (`play-modes.md`) and "Join a game", and version 3.1 resolves the two-reader check of version 3 (4 October); it waits for the owner's approval.
-SWD-200+ are direction, built later. Decisions K1–K18 decided by the owner (4 October, "follow the
+Status: **version 3.2 approved by the owner, 4 October 2026** (SWD-001 to SWD-104; started when release candidate 1.3.0 is
+frozen). SWD-200+ are direction, built later. Decisions K1–K18 decided by the owner (4 October, "follow the
 recommendation"). Version 2 resolves every guess from the two-reader check (`docs/spec-rules.md` rule 12: a coder-reader
 and a tester-reader, 4 October). After approval the tester copies these into `specs/secret-words/` (file names in each section
 heading) and writes tests. Hand-over follows `docs/roadmap.md`: after Impostor's release.
