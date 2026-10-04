@@ -1,5 +1,6 @@
 # Once a week (and on request): the long, report-only checks (PLT-118).
-# Mass simulation with an optional Jev smoke run, mutation testing, and the Android phone emulator.
+# Mass simulation with an optional Jev smoke run, mutation testing, the Android phone emulator, and screen
+# simulation evenings (200 by default; on request use the inputs below, `only_sims` to run them alone).
 # Separate from "Complete run" (ci.yml): it never blocks, cancels or waits on it, and never publishes.
 # Every job is report-only: a failure here shows in the results but fails nothing else.
 name: Weekly extended checks
@@ -8,6 +9,19 @@ on:
   schedule:
     - cron: '0 2 * * 1' # Mondays 02:00 UTC
   workflow_dispatch:
+    inputs:
+      evenings:
+        description: 'Screen simulation evenings (screen-sims job)'
+        type: number
+        default: 200
+      jev_evenings:
+        description: 'How many of those evenings Jev plays as a persona'
+        type: number
+        default: 50
+      only_sims:
+        description: 'Run only the screen simulations (skip the mass simulation, mutation and Android jobs)'
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -18,6 +32,7 @@ concurrency:
 
 jobs:
   simulation:
+    if: ${{ !inputs.only_sims }}
     runs-on: ubuntu-latest
     timeout-minutes: 90
     continue-on-error: true
@@ -58,6 +73,7 @@ jobs:
   # `mutate` in tests/stryker.config.mjs (the command line's --mutate replaces that list for one group). If that
   # list changes, change the groups here to match.
   mutation:
+    if: ${{ !inputs.only_sims }}
     runs-on: ubuntu-latest
     timeout-minutes: 240
     continue-on-error: true
@@ -96,6 +112,7 @@ jobs:
           if-no-files-found: warn
 
   android:
+    if: ${{ !inputs.only_sims }}
     runs-on: ubuntu-latest
     timeout-minutes: 60
     continue-on-error: true
@@ -132,7 +149,7 @@ jobs:
   # It does not commit: the Test role copies what it needs into reports/.
   report:
     needs: [simulation, mutation, android]
-    if: always()
+    if: ${{ always() && !inputs.only_sims }}
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
@@ -197,3 +214,80 @@ jobs:
         with:
           name: weekly-report
           path: weekly/
+
+  # Screen simulation evenings (report-only): whole evenings played through the app's screens, split over 8
+  # machines. About 2 minutes an evening; 25 per shard at 2 workers is about 30 minutes. Jev plays some evenings
+  # as a persona, inside the weekly decision cap (the same jev-usage count as the simulation job).
+  screen-sims:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4, 5, 6, 7, 8]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: ISO week
+        id: week
+        run: echo "week=$(date -u +%G-W%V)" >> "$GITHUB_OUTPUT"
+      # Same as the simulation job: this week's Jev decision count is kept between runs.
+      - uses: actions/cache@v4
+        with:
+          path: reports/runs/jev-usage.json
+          key: jev-usage-${{ steps.week.outputs.week }}-${{ github.run_id }}-sims-${{ matrix.shard }}
+          restore-keys: |
+            jev-usage-${{ steps.week.outputs.week }}-
+            jev-usage-
+      - name: Screen simulation evenings (shard ${{ matrix.shard }} of 8)
+        run: npx playwright test --config tests/playwright.sims.config.ts --shard=${{ matrix.shard }}/8 --workers=2
+        env:
+          SIM_EVENINGS: ${{ inputs.evenings || 200 }}
+          SIM_JEV_EVENINGS: ${{ inputs.jev_evenings || 50 }}
+          SIM_RUN: w${{ github.run_id }}
+          JEV_DECISIONS: 400
+          JEV_API_KEY: ${{ secrets.JEV_API_KEY }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: screen-sims-${{ matrix.shard }}
+          path: |
+            reports/sim/screen/
+            tests/replays/screen/
+          if-no-files-found: warn
+
+  screen-sims-report:
+    needs: screen-sims
+    if: always()
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: screen-sims-*
+          merge-multiple: true
+          path: sims/
+      - name: Screen simulation summary
+        run: |
+          node tests/sims/summary.mjs sims/reports/sim/screen
+          cat reports/sim/screen-summary.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: screen-sims-report
+          path: |
+            reports/sim/screen-summary.md
+            sims/tests/replays/screen/
+          if-no-files-found: warn
