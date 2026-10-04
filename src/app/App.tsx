@@ -432,11 +432,15 @@ function PastGameActions({
     if (u && u.id !== saved.id) setStartNew(u);
     else onReuse();
   };
+  // IMP-001, IMP-103: the unfinished Impostor game's own row has no "Play again" (a tap on the row resumes it).
+  const ownUnfinished = saved.gameType === impostor.info.id && saved.status === 'in-progress';
   return (
     <div className="row">
-      <button type="button" className="button" onClick={reuse}>
-        {reuseLabel}
-      </button>
+      {!ownUnfinished && (
+        <button type="button" className="button" onClick={reuse}>
+          {reuseLabel}
+        </button>
+      )}
       {startNew && (
         <StartNewDialog
           startedAt={startNew.startedAt}
