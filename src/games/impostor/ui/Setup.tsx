@@ -1,6 +1,6 @@
 // Getting to the first deal: "Who's playing?" (IMP-003, IMP-004), "How do you want to play?" (IMP-005, IMP-007,
 // IMP-009, IMP-088), with "How to play" on request (IMP-070).
-import { useRef, useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { CATEGORIES, type Choices } from '../rules';
 import { MainButton, OptionButton, QuietButton, Sheet, Switch, Toast, useToast } from './parts';
 import { MoreOptionsSheet, RulesSheet } from './Sheets';
@@ -252,6 +252,14 @@ export function HowToPlayChoices({
   const [sheet, setSheet] = useState<'categories' | 'howTo' | 'more' | null>(null);
   const n = choices.categories.length;
   const more = onLastGuess !== undefined;
+  // IMP-076: the browser's or phone's Back closes "More options" and discards its change. The app's back guard
+  // (App.tsx) keeps the address, so Back stays on this screen.
+  useEffect(() => {
+    if (sheet !== 'more') return;
+    const back = () => setSheet(null);
+    window.addEventListener('popstate', back);
+    return () => window.removeEventListener('popstate', back);
+  }, [sheet]);
   return (
     <main className="imp-screen imp-setup">
       <div className="imp-screen-inner" hidden={sheet !== null}>
