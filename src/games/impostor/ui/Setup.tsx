@@ -27,23 +27,31 @@ export function PlayerList({
   const [dupOf, setDupOf] = useState<string | null>(null);
   const field = useRef<HTMLInputElement>(null);
   const full = players.length >= MAX_PLAYERS;
+  // IMP-003 (M3): every Enter adds the name typed before it, however fast. Two Enters can come before the screen is
+  // drawn again, so the list is read from what was last added, and the name from the field itself.
+  const list = useRef(players);
+  list.current = players;
   const add = (raw: string, fromField: boolean) => {
+    const now = list.current;
     const name = raw.trim();
-    if (name === '' || full) return;
-    const existing = players.find((p) => same(p, name));
+    if (name === '' || now.length >= MAX_PLAYERS) return;
+    const existing = now.find((p) => same(p, name));
     if (existing) {
       if (fromField) setDupOf(existing);
       return;
     }
-    onChange([...players, name]);
+    const next = [...now, name];
+    list.current = next;
+    onChange(next);
     if (fromField) {
+      if (field.current) field.current.value = '';
       setText('');
       setDupOf(null);
     }
   };
   const submit = (e: FormEvent) => {
     e.preventDefault();
-    add(text, true);
+    add(field.current?.value ?? text, true);
     field.current?.focus();
   };
   const move = (i: number, by: -1 | 1) => {
@@ -103,6 +111,11 @@ export function PlayerList({
           autoComplete="off"
           autoCapitalize="words"
           enterKeyHint="done"
+          // Enter adds at once, even while the "Add" button still looks disabled for a name not yet drawn.
+          onKeyDown={(e) => {
+            if (e.key !== 'Enter') return;
+            submit(e);
+          }}
           onChange={(e) => {
             setText(e.target.value);
             setDupOf(null);
