@@ -81,7 +81,7 @@ v3.5** (passed the coder and tester reads per `docs/spec-rules.md`); every chang
 2. **How to play only on request** (button on the choices screen and in the menu); its text follows the settings.
 3. **Pass the phone:** "Player 2 of 4", "Everyone else, look away!", a full-width pad that reads "Let go to hide",
    nothing moves after the first hold, "New word for everyone?" confirmation.
-4. **UX fixes F1–F12** (`ux.md`, last section): one-page result and summary screens, room-sized reveal, landscape
+4. **UX fixes F1–F12** (`ux.md`, last section): result and summary screens that scroll as one page on small phones or with Larger text (no inner scroll areas; scenarios win), room-sized reveal, landscape
    layouts, clue wording, tie buttons, summary winner line, "1 more minute", polish. Guidelines 45a and 46a.
 5. **C3, word list and saved evenings:** rebuild `content/impostor/words.json` from `docs/games/impostor/words.csv`
    (311 rows: 291 active, 20 `retired`; new category names "Sports and games", "Out and about", "Everyday moments");

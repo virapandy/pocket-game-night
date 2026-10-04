@@ -219,9 +219,10 @@ A test may set exactly these; the build must honour them.
      `endEvening`. `isOver` is true after `endEvening`.
    - Every move that deals a word carries the dealt word's id as `wordId`: `startDeal`, `nextRound`, `dealAgain`,
      `dontKnow`, `allowRepeats`, and `setChoices` when it redeals the same round from the no-words screen (IMP-052).
-     `nextRound` that finds no word left carries `wordId: null` (the no-words screen shows). Live, `play` accepts only
-     the id that `pickWord` gives for deal n (or that deal's `testDeals` entry); replay accepts any recorded id that
-     exists in the shipped list (retired words included, IMP-054), so later edits to `words.csv` never change a past
+     `nextRound` that finds no word left carries `wordId: null` (the no-words screen shows). The rules accept any
+     recorded id that exists in the shipped list (retired words included, IMP-054), live and on replay alike (the engine
+     can't tell them apart); the app always records the id that `pickWord` gives for deal n (or that deal's `testDeals`
+     entry), and tests check exactly that (product owner, 4 October, as built), so later edits to `words.csv` never change a past
      evening (IMP-096). A word-dealing move without `wordId` makes the evening unreplayable (hidden by IMP-096).
    - Random draws are per dealt round: the n-th deal of the evening (every move that deals a word counts, redeals included, from 1; a `nextRound`
      with `wordId: null` does not)
@@ -915,7 +916,7 @@ And at t = 1.5 s the build-up is replaced, all at once, by, top to bottom:
 6. `round-outcome` "The crew wins!" (h2)
 7. `evening-line` (Score No, IMP-040) or `round-points` and `scoreboard` (Score Yes, IMP-044)
 8. the quiet "This word didn't work" (IMP-107); and the main button "Next round", pinned; the menu button returns
-And sizes: `build-up` 40 px; `result-headline` 56 px, centred; `result-note` 20 px; `result-impostor` 32 px, centred
+And sizes: `build-up` 40 px; `result-headline` 56 px, centred (44 px at widths below 360 px, always one line); `result-note` 20 px; `result-impostor` 32 px, centred
 (it may wrap onto 3 lines); `word-label` body text; `result-word` 44 px, centred, fitting in 3 lines (a word over 12
 characters may be any size from 32 px to 44 px); `also-called` small line; `word-category` 17 px (21 px with Larger
 text) in an outlined chip directly below the word (and below `also-called` when shown); `round-outcome` 28 px;
@@ -1273,7 +1274,7 @@ Then at every size, these sizes hold (guideline 46):
 | `starter-name` | 56 px | name over 8 characters, or 320 px wide | 32 px (may wrap onto 2 lines) |
 | `talk-heading` | 56 px | 320 px wide | 32 px |
 | `pass-name` on screen A | 48 px | name would not fit in 1 line at 48 px | 32 px (may wrap onto 2 lines) |
-| `pass-name` on screen B | 48 px | name would not fit in 1 line at 48 px (it never wraps) | 32 px; 20 px at 320 × 568 and 360 × 640 (product owner, 4 October) |
+| `pass-name` on screen B | 48 px | name would not fit in 1 line at 48 px (it never wraps) | 32 px; 20 px in portrait at heights of 640 px or less; a name still too wide at that floor shrinks just enough to fit on one line, never cut off (product owner, 4 October, as built) |
 | "Time's up!" (h1) | 40 px | never | 40 px |
 | `timer` | 120 px | 320 px wide: exactly 112 px | 112 px |
 | `countdown-heading` "Get ready to point…" | 40 px | never | 40 px |
@@ -1282,7 +1283,7 @@ Then at every size, these sizes hold (guideline 46):
 | `countdown-number` "Point!" | 96 px | 320 px wide: exactly 72 px | 72 px |
 | `private-word` (box 2 lines tall) | 36 px | Larger text on, or word over 20 characters | 30 px |
 | `build-up` | 40 px | never | 40 px |
-| `result-headline` | 56 px | never | 56 px |
+| `result-headline` | 56 px | widths below 360 px, so it stays on one line (product owner, 4 October) | 44 px |
 | `result-impostor` | 32 px (may wrap onto 3 lines) | never | 32 px |
 | `result-word` | 44 px | word over 12 characters | 32 px (fits in 3 lines) |
 | `result-note`, `guess-line` | 20 px | never | 20 px |
