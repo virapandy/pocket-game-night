@@ -39,8 +39,8 @@ When unsure between two classes, take the higher one.
 
 ## Release (the only complete test)
 1. The orchestrator calls a release when the owner asks, or when a set of handover items is done.
-2. The complete run: every browser test on both phones, every rule test, and the UX designer's re-check of the rows
-   in the release.
+2. The complete run: every browser test on both phones, every rule test, the UX designer's re-check of the rows
+   in the release, and a **player play** of each changed flow (the player helper, `docs/proposals/player-agent.md`).
 3. Red: rerun the failing tests on each change in the batch to find the one that broke it; fix it first.
 4. Green: the owner tries the preview and says yes; then the release goes to the families' link.
 5. Nightly and weekly runs (complete run nightly; mutation, simulation, emulator, Jev weekly) never block anyone.

@@ -24,6 +24,14 @@ Steps 1, 5 and parts of 3 need research. Run them as parallel research agents wh
 
 ---
 
+## Step 0a: Player stories first (owner, 4 October 2026)
+Start from the people, not the rules. For each persona in `docs/proposals/player-agent.md` (first-time host,
+grandparent, 10-year-old, distracted host, competitive uncle, guest with the link), write "I want to… so that…" for
+every stage of the evening, including **stopping, pausing and coming back, switching game, teaching someone, fixing a
+mistake**. Every later step is checked against these stories. After the screen sketches, a **player walk** (the player
+helper, each persona, reading only the sketches) lists what players want and can't see; after the build, a **player
+play** of the preview does the same before release.
+
 ## Step 0: Fit check
 Answer the five intake questions from the research brief in one line each. Stop if any answer is no.
 | Question | Include only if |
