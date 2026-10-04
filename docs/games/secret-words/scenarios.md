@@ -1,7 +1,7 @@
 # Secret Words: scenarios (version 3.2, 4 October 2026)
 
-Status: **version 3.2 approved by the owner, 4 October 2026** (SWD-001 to SWD-104; started when release candidate 1.3.0 is
-frozen). SWD-200+ are direction, built later. Decisions K1–K18 decided by the owner (4 October, "follow the
+Status: **version 3.3, draft** (version 3.2, SWD-001 to SWD-104, was approved on 4 October; 3.3 adds the owner's decisions
+K32–K41 and waits for its two-reader check and approval). SWD-200+ are direction, built later. Decisions K1–K18 decided by the owner (4 October, "follow the
 recommendation"). Version 2 resolves every guess from the two-reader check (`docs/spec-rules.md` rule 12: a coder-reader
 and a tester-reader, 4 October). After approval the tester copies these into `specs/secret-words/` (file names in each section
 heading) and writes tests. Hand-over follows `docs/roadmap.md`: after Impostor's release.
@@ -10,6 +10,15 @@ heading) and writes tests. Hand-over follows `docs/roadmap.md`: after Impostor's
 Phases: **Secret Words 1** = first release. **Secret Words later** = designed now, built later (SWD-200+).
 Change classes (`docs/change-sop.md`): the deal, the map code, the board algorithm, saved evenings and the word list
 format = **C3** (tests first: sections 02, 04 rules, 05, 06, SWD-099); screens = C1/C2.
+
+### Version 3.3 (owner, 4 October, K32–K41): real sessions and behaviour
+From the player walk (`player-walk-2026-10-04.md`), real-session events (`session-events-2026-10-04.md`) and behaviour
+(`behaviour.md`). New section **07 Sessions and behaviour** (SWD-110 to SWD-139) is binding and **wins over any earlier scenario
+it names**. Plain words everywhere: "Start the game", "+ Harder words", "Doesn't give clues", "Start 90-second timer",
+"Clue not allowed?", "Delete tonight's games", "End for tonight", "Landmine word: Shadow", "Flip the board", "Heads up: Cricket
+is on the board.", "New board", "blank" for nobody's words, "✓ Riya's clue works!" (the clue giver's name), "Boom! The Landmine
+got Coffee Commandos.". Retired: "Check 78" board checks (now words), "The Landmine went off 1 time", "Riya's clues won 2
+games", "Guesses only" tag on Make teams, the 180 s map hide (now 60 s).
 
 ### Version 3.2 (owner, 4 October, K28–K30)
 - The danger word is **the Landmine** (was the Ghost): "Coffee Commandos stepped on the Landmine!", "The Landmine went off 1
@@ -98,8 +107,8 @@ names, plurals, t = …, sound on**. Characters: "·" U+00B7 with a space either
 | **Map screens** | The private map (SWD-031), the scan screen (SWD-033) and the map phone (SWD-034). |
 | **Room screens** | Every host-phone screen of a game that is not a map screen. Until game over, **no room screen has any information about a face-down word's kind in the page** (SWD-025). |
 | **Clue giver** | The one player per team, at any moment, who may see the map. The **credited** clue giver of a game is the team's clue giver when the game ends. |
-| **Deal** | Dealing a board: the first deal, "Play again", "Deal a new board", and the deal after "Change teams". The deals of an evening are numbered from 1. |
-| **Game** | From a deal to its result. A board replaced by "Deal a new board" is not a game. **Won** games have a winner; **ended early** games ended by "End the game", "End the evening" mid-game, "Start new" or SWD-063. **Game number** N = games so far + 1 while playing; on game over, the finished game's number. |
+| **Deal** | Dealing a board: the first deal, "Play again", "New board", and the deal after "Change teams". The deals of an evening are numbered from 1. |
+| **Game** | From a deal to its result. A board replaced by "New board" is not a game. **Won** games have a winner; **ended early** games ended by "End the game", "End for tonight" mid-game, "Start new" or SWD-063. **Game number** N = games so far + 1 while playing; on game over, the finished game's number. |
 | **Turn** | From a team's clue screen to its end-turn line or turn over. Turns are numbered per board from 1, both teams together. |
 | **Guess** | One confirmed reveal ("Reveal <WORD>"). **Allowance**: clue 1–9 → number + 1; 0 and ∞ → unlimited. |
 | **Evening** | One Secret Words saved game (engine `SavedGame`), created at its first deal, holding every game of that evening. It joins the current session (PLT-016) as Impostor's evenings do (IMP-102). |
@@ -107,10 +116,10 @@ names, plurals, t = …, sound on**. Characters: "·" U+00B7 with a space either
 | **Tally** | `tally`: "Tonight: Chai Champions 2 · Coffee Commandos 1": won games of this evening by team (fits in 2 lines). |
 | **Map code** | 7 symbols from `23456789ABCDEFGHJKMNPQRSTUVWXYZ` (31 symbols; value = index, `2` = 0), shown `XXX-XXXX` (hyphen in the DOM text). |
 | **Map phone** | A phone showing a map opened from a map code. |
-| **Board check** | Symbols 2 and 7 of a map code, e.g. "78" for 27P-3QX8. |
+| **Board check** | The words of cells 0, 1 and 2 (SWD-116). |
 | **Quiet button height** | 48 px, as Impostor, everywhere in this file; a label may wrap onto 2 lines (15 px, 19 px with Larger text) only where a scenario says so. |
 | **Text matching** | Tests compare DOM text. Text written in CAPITALS here (a name, `<WORD>`, "CRICKET") is DOM text as typed or as in the list, shown upper case by CSS. |
-| **Eligible** | A player whose "Guesses only" switch is off (SWD-014). |
+| **Eligible** | A player whose "Doesn't give clues" switch is off (SWD-014). |
 
 Example players, typed in this order: **Riya, Arjun, Meena, Kabir, Zoya, Dev, Om**. Example words (edition 1):
 Cricket, Bat, Monsoon, Kite, Tiffin, Mehendi.
@@ -132,51 +141,51 @@ Plurals: "1 word" / "2 words"; "1 guess" / "2 guesses"; "1 game" / "2 games"; "1
 | Who's playing? | heading "Who's playing?"; "Add at least 4 players." · "20 players is the most." · Impostor's duplicate message | h1; `role="alert"` | SWD-003 |
 | Make teams | heading "Make teams"; h2s "Chai Champions (4)" / "Coffee Commandos (3)", each with its team icon and the small line "Orange team" / "Teal team"; badge "Clue giver"; small line "Tap a name to move it to the other team."; quiet "Shuffle teams", "New team names", "Change clue givers"; main "Next"; alert "Each team needs at least 2 players." | h1; h2; `clue-giver-badge`; small line; buttons; `role="alert"` | SWD-004–008 |
 | Team toasts | "Om moved to Coffee Commandos · Undo" · "Teams shuffled · Undo" · "New team names · Undo" | `undo-toast` | SWD-005, 006, 013 |
-| Clue givers sheet | dialog "Clue givers"; groups "Chai Champions" / "Coffee Commandos"; one button per player; per player a switch "Guesses only" (accessible name "Riya: guesses only"); alert "Each team needs someone who can give clues."; main "Done" | dialog; `role="group"`; buttons with `aria-pressed`; `role="switch"` | SWD-007, 014 |
-| Choices | heading "How do you want to play?"; small line "Same as last time" (carried over); groups "How many phones?", "Board", "Landmine" (Full board only), "Words"; main "Deal the words" | h1; small line; `role="group"` | SWD-009 |
+| Clue givers sheet | dialog "Clue givers"; groups "Chai Champions" / "Coffee Commandos"; one button per player; per player a switch "Doesn't give clues" (accessible name "Riya: guesses only"); alert "Each team needs someone who can give clues."; main "Done" | dialog; `role="group"`; buttons with `aria-pressed`; `role="switch"` | SWD-007, 014 |
+| Choices | heading "How do you want to play?"; small line "Same as last time" (carried over); groups "How many phones?", "Board", "Landmine" (Full board only), "Words"; main "Start the game" | h1; small line; `role="group"` | SWD-009 |
 | Phone cards | "One phone" + "Pass it to the clue giver to see the map. About 25 min a game." · "Two phones" + small line "Recommended" (`recommended`, between title and text) + "One more phone, shared by both clue givers. About 15 min a game." · "Three phones" + "One more phone for each clue giver. About 15 min a game." | buttons with `aria-pressed` | SWD-009 |
-| Options | "Full: 25 words" / "Easy: 16 words"; "Lose the game" / "Lose your turn"; "Whole family" / "+ Grown-ups" | buttons with `aria-pressed` | SWD-009 |
-| Option lines | Full "9 and 8 words to find, 7 nobody's, 1 Landmine." · Easy "6 and 5 words to find, 5 nobody's, no Landmine." · Lose the game "Step on it and your team loses." · Lose your turn "Step on it and your turn ends; the other team gets one word free." · Whole family "Words kids and grandparents know." · + Grown-ups "Adds words kids or elders may not know." | small line under the group | SWD-009 |
+| Options | "Full: 25 words" / "Easy: 16 words"; "Lose the game" / "Lose your turn"; "Whole family" / "+ Harder words" | buttons with `aria-pressed` | SWD-009 |
+| Option lines | Full "9 and 8 words to find, 7 blank, 1 Landmine." · Easy "6 and 5 words to find, 5 blank, no Landmine." · Lose the game "Step on it and your team loses." · Lose your turn "Step on it and your turn ends; the other team gets one word free." · Whole family "Words kids and grandparents know." · + Harder words "Adds words kids or elders may not know." | small line under the group | SWD-009 |
 | Read this aloud | heading "Read this aloud"; 4 lines (SWD-010); main "Let's play"; quiet "Show me the board first" | h1; `ol` of 4 `li` | SWD-010 |
 | How to play | heading "How to play"; h2 "Read this aloud" + the 4 lines; h2 "The rules" + 8 lines (SWD-011); small line `credit` (SWD-011); main "Done" | h1; h2; `ol`; small line | SWD-011 |
 | Preview board | `turn-line` "Chai Champions start"; counts; main "Start" | paragraphs; main | SWD-012 |
-| Scan screen | heading "Clue givers, scan your map"; two phones: "Riya and Arjun: sit side by side and share one map phone." · three phones: "Riya (Chai Champions, orange) and Arjun (Coffee Commandos, teal): scan on your own phones."; QR; "or type: 27P-3QX8"; `board-check` "Already have the last map open? Tap Next map on it and check it shows 78." or "New code: scan again."; `dnd-tip` (SWD-104); small line "Everyone else: look away from their phones."; main "The map phone is ready" (two) / "Both have the map" (three) | h1; paragraph; `map-qr` (`img`, name "Map code 27P-3QX8"); `map-code-text`; small line; main | SWD-033 |
-| Pass screen | heading "Chai Champions, your turn"; "Pass the phone to"; `<NAME>`; "Clue giver for Chai Champions (orange)"; `recap-line` (SWD-103); `dnd-tip` (SWD-104); quiet "Hurry up: 90 s"; main "I'm Riya" | h1 `turn-heading`; paragraph; `pass-name`; paragraph; small lines; button; main | SWD-030 |
+| Scan screen | heading "Clue givers, scan your map"; two phones: "Riya and Arjun: sit side by side and share one map phone." · three phones: "Riya (Chai Champions, orange) and Arjun (Coffee Commandos, teal): scan on your own phones."; QR; "or type: 27P-3QX8"; `board-check` (SWD-116); `dnd-tip` (SWD-104); small line "Everyone else: look away from their phones."; main "The map phone is ready" (two) / "Both have the map" (three) | h1; paragraph; `map-qr` (`img`, name "Map code 27P-3QX8"); `map-code-text`; small line; main | SWD-033 |
+| Pass screen | heading "Chai Champions, your turn"; "Pass the phone to"; `<NAME>`; "Clue giver for Chai Champions (orange)"; `recap-line` (SWD-103); `dnd-tip` (SWD-104); quiet "Start 90-second timer"; main "I'm Riya" | h1 `turn-heading`; paragraph; `pass-name`; paragraph; small lines; button; main | SWD-030 |
 | Welcome back | "Welcome back." above the pass screen | paragraph | SWD-032 |
-| Private map | heading `<NAME>`; small line "You give clues for Chai Champions (orange)"; counts; pad "Tap to see the map" / "Tap to hide"; quiet "Our words" / "Whole map"; quiet "↻ Turn" (accessible name "Turn the board"); list `our-words`: h2 "Your words (6 left)" ("(1 left)" for one), each word an `li`, small line `avoid-line` "Avoid: Shadow"; main "I have my clue" (SWD-037: "Done, hide the map"; from "See the map again": "Back to my clue") | h1; small line; `hold-pad`; button; `our-words`; main | SWD-031 |
-| Map phone | heading "Secret Words map"; "Code 27P-3QX8 · Check 78 · Orange team starts"; small line "Tap a word once it's turned over, to fade it."; quiet "Hide map" / "Show map"; quiet "Next map"; quiet "Done with this game"; toasts "Next map. Check it shows 8A on the host." · "That was the last map of this deck. Scan the new code." (toasts at the bottom, 16 px up) | h1; `map-code-line`; small line; buttons; `toast` | SWD-034, 039 |
+| Private map | heading `<NAME>`; small line "You give clues for Chai Champions (orange)"; counts; pad "Tap to see the map" / "Tap to hide"; quiet "Our words" / "Whole map"; quiet "↻ Flip" (accessible name "Flip the board"); list `our-words`: h2 "Your words (6 left)" ("(1 left)" for one), each word an `li`, small line `avoid-line` "Landmine word: Shadow"; main "I have my clue" (SWD-037: "Done, hide the map"; from "See the map again": "Back to my clue") | h1; small line; `hold-pad`; button; `our-words`; main | SWD-031 |
+| Map phone | heading "Secret Words map"; "Code 27P-3QX8 · Orange team starts" and "First words: Cricket · Bat · Monsoon" (SWD-116); small line "Tap a word once it's turned over, to fade it."; quiet "Hide map" / "Show map"; quiet "Next map"; quiet "Done with this game"; toasts "That was the last map of this deck. Scan the new code." (toasts at the bottom, 16 px up) | h1; `map-code-line`; small line; buttons; `toast` | SWD-034, 039 |
 | Map phone dialog | "Clear this map from your phone?" with "Clear map" / "Keep it" (main) | dialog | SWD-036 |
 | Map phone toast | "New map. The old one was cleared." | `toast` | SWD-036 |
 | Saved map row (Home) | "Secret Words map 27P-3QX8 · Tap to open" (button) · older: "Secret Words map 27P-3QX8" with "Open" / "Clear" | `saved-map` | SWD-036 |
-| Clue screen | heading "Chai Champions, your turn"; "Riya, say your clue out loud. How many words is it for?"; keys "0"…"9", "∞"; input labelled "Clue word (optional)" (`clue-word`); `clue-warning` "Cricket is still on the board. Clue rules say: pick another word." (paragraph under the input); counts; tip "One word, one number. No faces, no pointing!"; `recap-line` (two or three phones); quiet "See the map again" (one phone); from "Change clue": quiet "Keep my clue"; quiet "Hurry up: 90 s"; main "Pick a number" (disabled) / "Clue for 2: start guessing" / "Clue for 0: start guessing" / "Clue for ∞: start guessing" | h1 `turn-heading`; paragraph `clue-prompt`; `clue-key` buttons with `aria-pressed`; input; paragraph; `word-counts`; small lines `tip`, `recap-line`; buttons; main | SWD-040, 101 |
+| Clue screen | heading "Chai Champions, your turn"; "Riya, say your clue out loud. How many words is it for?"; keys "0"…"9", "∞"; input labelled "Clue word (optional)" (`clue-word`); `clue-warning` "Heads up: Cricket is on the board." (paragraph under the input); counts; tip "One word, one number. No faces, no pointing!"; `recap-line` (two or three phones); quiet "See the map again" (one phone); from "Change clue": quiet "Keep my clue"; quiet "Start 90-second timer"; main "Pick a number" (disabled) / "Clue for 2: start guessing" / "Clue for 0: start guessing" / "Clue for ∞: start guessing" | h1 `turn-heading`; paragraph `clue-prompt`; `clue-key` buttons with `aria-pressed`; input; paragraph; `word-counts`; small lines `tip`, `recap-line`; buttons; main | SWD-040, 101 |
 | Counts | circle icon "9 left" · diamond icon "8 left" (visible text "9 left · 8 left"; accessible name "Chai Champions: 9 words left. Coffee Commandos: 8 words left."); landscape board panel: two lines | `word-counts` | SWD-040, 043 |
-| Board status | `turn-line` "Chai Champions guessing"; `clue-line` with a word "CRICKET · 2 · 3 guesses left" (DOM "Cricket · 2 · 3 guesses left" as typed) / "CRICKET · ∞ · guess as many as you like", without "Clue: 2 · 3 guesses left" / "Clue: 1 · 1 guess left" / "Clue: ∞ · guess as many as you like" / "Clue: 0 · guess as many as you like"; `clue-history` "Earlier: MONSOON 2 · 1 · RAIN ∞"; quiet "Change clue", "Clue broke a rule?"; icon button "↻" (accessible name "Turn the board") | paragraphs; buttons | SWD-041, 102 |
+| Board status | `turn-line` "Chai Champions guessing"; `clue-line` with a word "CRICKET · 2 · 3 guesses left" (DOM "Cricket · 2 · 3 guesses left" as typed) / "CRICKET · ∞ · guess as many as you like", without "Clue: 2 · 3 guesses left" / "Clue: 1 · 1 guess left" / "Clue: ∞ · guess as many as you like" / "Clue: 0 · guess as many as you like"; `clue-history` "Earlier: MONSOON 2 · 1 · RAIN ∞"; quiet "Change clue", "Clue not allowed?"; icon button "↻" (accessible name "Flip the board") | paragraphs; buttons | SWD-041, 102 |
 | First-guess tip | "Tap a word, then Reveal. You can take one more than the number." | small line `tip` | SWD-041 |
 | Board buttons | quiet "End our turn"; main "Reveal" (disabled) / "Reveal <WORD>" | button; main | SWD-042, 044 |
 | Result lines | SWD-043 table; end-turn "Chai Champions ended their turn."; quiet "Oops, keep guessing" | `result-line`; button | SWD-043, 044 |
 | Turn-over main | "Other team's turn" | main | SWD-045 |
-| Broke a rule | dialog "That clue broke a rule? This turn ends and one of the other team's words is turned over." with "Yes, it broke a rule" / "Cancel" (main); result line "Clue broke a rule. One of the other team's words was turned over." | dialog; `result-line` | SWD-046 |
-| Timer | `hurry-timer` "1:30" … "0:01", then "Time's up!", or "Paused"; button / menu item "Hurry up: 90 s" ↔ "Stop timer" | span; button | SWD-047 |
-| Recap | "Last turn: Coffee Commandos found 2 words; Train was nobody's." (SWD-103) | `recap-line` | SWD-103 |
+| Broke a rule | dialog "Clue not allowed? This turn ends and one of the other team's words is turned over." with "Yes, it broke a rule" / "Cancel" (main); result line "Clue broke a rule. One of the other team's words was turned over." | dialog; `result-line` | SWD-046 |
+| Timer | `hurry-timer` "1:30" … "0:01", then "Time's up!", or "Paused"; button / menu item "Start 90-second timer" ↔ "Stop timer" | span; button | SWD-047 |
+| Recap | "Last turn: Coffee Commandos found 2 words; Train was blank." (SWD-103) | `recap-line` | SWD-103 |
 | Do Not Disturb tip | "Tip: turn on Do Not Disturb so messages don't pop up on the board." | `dnd-tip` | SWD-104 |
 | Earlier clues sheet | dialog "Earlier clues"; one `li` per clue in force of this game, oldest first: "Chai Champions: CRICKET 2" / "Coffee Commandos: 1" / "Chai Champions: RAIN ∞"; main "Done" | dialog | SWD-041 |
-| Game over | heading "Chai Champions win!"; line "All 9 words found." / "Coffee Commandos stepped on the Landmine!"; ended early: heading "Game ended. No winner."; tally; main "Play again"; quiet "Change teams", "End the evening" | h1 `game-heading`; `result-line`; `tally`; buttons | SWD-050–054 |
-| Deal new | dialog "Deal a new board? This board won't count. Same teams and clue givers." with "Deal a new board" / "Keep playing" (main) | dialog | SWD-055 |
+| Game over | heading "Chai Champions win!"; line "All 9 words found." / "Boom! The Landmine got Coffee Commandos."; ended early: heading "Game ended. No winner."; tally; main "Play again"; quiet "Change teams", "End for tonight" | h1 `game-heading`; `result-line`; `tally`; buttons | SWD-050–054 |
+| Deal new | dialog "New board? For when someone saw the map or the words are too hard. This board won't count. Same teams and clue givers." with "New board" / "Keep playing" (main) | dialog | SWD-055 |
 | End game | dialog "End this game with no winner?" with "End the game" / "Keep playing" (main) | dialog | SWD-054 |
-| End evening | dialog "End the evening? Tonight's tally stays in History." (mid-game: "End the evening? This game won't count.") with "End the evening" / "Keep playing" (main) | dialog | SWD-060 |
-| Summary | heading "Tonight's Secret Words"; tally; fun lines; main "Play something else"; quiet "Back to Home"; menu "Discard this evening" | h1; `tally`; `fun-line` each; buttons | SWD-060, 065 |
-| Discard | dialog "Discard this evening? Its games and tally will be lost." with "Discard" / "Keep it" (main) | dialog | SWD-065 |
+| End evening | dialog "End for tonight? Tonight's tally stays in History." (mid-game: "End for tonight? This game won't count.") with "End for tonight" / "Keep playing" (main) | dialog | SWD-060 |
+| Summary | heading "Tonight's Secret Words"; tally; fun lines; main "Play something else"; quiet "Back to Home"; menu "Delete tonight's games" | h1; `tally`; `fun-line` each; buttons | SWD-060, 065 |
+| Discard | dialog "Delete tonight's games? The games and tally will be lost." with "Delete" / "Keep it" (main) | dialog | SWD-065 |
 | Players sheet | dialog "Players"; h2s "Chai Champions" / "Coffee Commandos"; names with "Remove Kabir" (✕); label "Player name", placeholder "Type a name…", button "Add"; main "Done"; toasts "Kabir left · Undo" · "Riya left · Meena is the new clue giver · Undo" | dialog; buttons; input; `undo-toast` | SWD-061 |
 | Show the map sheet | dialog "Show the map to"; buttons "Riya (Chai Champions)", "Arjun (Coffee Commandos)"; quiet "Cancel" | dialog | SWD-037 |
 | Sideways | "Turn your phone sideways to see the board." | paragraph `turn-sideways` (body text) | SWD-092 |
-| History | "Secret Words · 3 games"; "Game 2 · Chai Champions won · Riya and Arjun gave clues"; "Game 2 · Chai Champions won, Coffee Commandos stepped on the Landmine · Riya and Arjun gave clues"; "Game 3 · Ended early · Meena and Kabir gave clues" | `history-game`; `history-round` | SWD-064 |
+| History | "Secret Words · 3 games"; "Game 2 · Chai Champions won · Riya and Arjun gave clues"; "Game 2 · Chai Champions won (Landmine) · Riya and Arjun gave clues"; "Game 3 · Ended early · Meena and Kabir gave clues" | `history-game`; `history-round` | SWD-064 |
 | Announcements | SWD-095 | `announcer` (`aria-live="polite"`) | SWD-095 |
 
 ### Menu ("··· Menu", top right) at each step
 Items in this order; **—** = not present; "disabled" = shown and disabled. "← Back" or "Done" from Settings, History and
 How to play returns to the same step.
 
-| Step | How to play | Hurry up / Stop timer | That clue broke a rule | Players | Show the map to a clue giver | Deal a new board | End the game | End the evening | Settings | History |
+| Step | How to play | Hurry up / Stop timer | Clue not allowed? | Players | Show the map to a clue giver | New board | End the game | End for tonight | Settings | History |
 |---|---|---|---|---|---|---|---|---|---|---|
 | Who's playing?, Make teams, Choices, Read this aloud | no menu ("← Back" instead) | | | | | | | | | |
 | Preview board | ✓ | — | — | — | — | ✓ | — | ✓ | ✓ | ✓ |
@@ -187,10 +196,10 @@ How to play returns to the same step.
 | Guessing | ✓ | ✓ | ✓, disabled outside SWD-046's window | ✓ | two or three phones | ✓ | ✓ | ✓ | ✓ | ✓ |
 | End-turn line, turn over | ✓ | — | — | ✓ | two or three phones | ✓ | ✓ | ✓ | ✓ | ✓ |
 | Game over | ✓ | — | — | ✓ | — | — | — | — | ✓ | ✓ |
-| Summary | only "Discard this evening" | | | | | | | | | |
+| Summary | only "Delete tonight's games" | | | | | | | | | |
 
 "Earlier clues" (SWD-041) sits after "How to play" on the guessing, end-turn line and turn-over steps, at every screen height;
-disabled before the board's first clue. At 568 × 320, "Change clue" (SWD-041) is a menu item after "That clue broke a rule",
+disabled before the board's first clue. At 568 × 320, "Change clue" (SWD-041) is a menu item after "Clue not allowed?",
 with the same window. The clue screen opened by "Change clue" has the clue screen's menu.
 
 **Back:** "← Back" on setup screens: Who's playing? → the picker; Make teams → Who's playing?; Choices → Make teams;
@@ -274,13 +283,13 @@ way; they differ only in the scan screen's wording (SWD-033). Cards are stacked 
 side by side at 812 × 375; each card's accessible name is its title, its texts linked by `aria-describedby`. "Recommended"
 never changes the card's look beyond its own small line. This screen may scroll (page); the main button stays fixed. **Board**: Full (default) / Easy. **Landmine** (shown only while Full is chosen; Easy has no Landmine): Lose the game
 (default, the standard rule) / Lose your turn (`choices.landmine` = `'lose' | 'turn'`; kept when Easy is chosen). **Words**: Whole family
-(default) / + Grown-ups. A new evening starts from this phone's last-used values for all four (SWD-066), with "Same as last
+(default) / + Harder words. A new evening starts from this phone's last-used values for all four (SWD-066), with "Same as last
 time" under the heading; each saved field is read on its own (an unknown value gives that field's first-time state;
-"Same as last time" shows only when all four were valid; a missing `landmine` reads as `'lose'`); version 2's `'pass'` and `'own'` read unchanged. "Deal the words": if the read-aloud card is due
+"Same as last time" shows only when all four were valid; a missing `landmine` reads as `'lose'`); version 2's `'pass'` and `'own'` read unchanged. "Start the game": if the read-aloud card is due
 (SWD-010) it opens; otherwise it deals at once (in a new evening, the evening is created then). Between games the choices
 change only through "Change teams" → "Next" → this screen (SWD-056).
 ### SWD-010 Read this aloud
-Due when no Secret Words game has been dealt yet in the current session (PLT-016); checked when "Deal the words" is tapped in a
+Due when no Secret Words game has been dealt yet in the current session (PLT-016); checked when "Start the game" is tapped in a
 new evening. Lines: 1 "Two teams, Chai Champions and Coffee Commandos. Each has a clue giver who sees the secret map." (the evening's names) 2 "Clue givers: say
 one word and a number. 'Monsoon, 2' means two of our words go with monsoon." 3 "Guessers: talk, then turn over words one at
 a time. Wrong word? Your turn ends." 4 "Find all your words first. Step on the Landmine and you lose!" (Lose your turn: "Find all your words first. Step on the
@@ -315,15 +324,15 @@ religion, caste, gender or body). `team-names.csv` changes like the word list: b
 its names as text.
 
 
-### SWD-014 Guesses only (P7)
-In the Clue givers sheet each player row has the name button and, on its own line under it, a switch "Guesses only" (`role="switch"`,
+### SWD-014 Doesn't give clues (P7)
+In the Clue givers sheet each player row has the name button and, on its own line under it, a switch "Doesn't give clues" (`role="switch"`,
 `aria-checked`, accessible name "Riya: guesses only"), off by default; the sheet scrolls inside. Changes apply on "Done", like the
 rest of the sheet. A player with it on is not **eligible**: never suggested by SWD-007 (game 1: each team's first eligible
 player; and so not by SWD-006), never chosen by SWD-005 or SWD-061 (each picks the next eligible player in list order,
 wrapping to the first), and their name button is disabled. Turning it on for the current clue giver makes the next eligible player the clue
 giver. A team's last eligible player's switch is disabled, with "Each team needs someone who can give clues." under that
 team's group. If a move or shuffle on Make teams leaves a team with no eligible player, Make teams shows the same message and
-"Next" is disabled. Make teams shows the small line "Guesses only" (`guess-only-tag`) under such names. In "Players" (SWD-061),
+"Next" is disabled. Make teams shows the small line "Doesn't give clues" (`guess-only-tag`) under such names. In "Players" (SWD-061),
 "Remove" is disabled for a team's last eligible player; added players start eligible. Kept in `teams.guessOnly` (recorded
 with `setTeams`), carried by name into a new evening from the latest Secret Words evening of the same session. The Clue givers
 sheet exists only on Make teams.
@@ -339,7 +348,7 @@ Full: 25 distinct words; starting team 9, other 8, nobody 7, Landmine 1. Easy: 1
 **Property:** over 10,000 random valid codes, each team starts between 48% and 52% of boards.
 
 ### SWD-022 The map code
-Symbols (values 0–30): **1 config** = (edition − 1) × 4 + (Easy ? 2 : 0) + (+ Grown-ups ? 1 : 0) (edition 1: 0–3);
+Symbols (values 0–30): **1 config** = (edition − 1) × 4 + (Easy ? 2 : 0) + (+ Harder words ? 1 : 0) (edition 1: 0–3);
 **2 deal index** n (0–30, the board's place in the deck, SWD-024); **3–6 deck seed** d (0 to 31⁴ − 1 = 923,520, base 31,
 most significant first); **7 check** = (1·v1 + 2·v2 + 3·v3 + 4·v4 + 5·v5 + 6·v6) mod 31. Shown "27P-3QX8".
 **The board from a code** (`boardFromCode`), a pure function of the code and the shipped list:
@@ -400,20 +409,20 @@ owner-accepted exception to "seeds never leave the host phone".
 At the start of each turn with one phone: team bar; heading "Chai Champions, your turn" with the team icon; "Pass the phone
 to"; `pass-name` RIYA at 48 px, shrinking in 1 px steps to 32 px to fit one line, and wrapping onto 2 lines at 32 px if it
 still doesn't fit; "Clue giver for Chai Champions (orange)"; the recap line (SWD-103); the Do Not Disturb tip on the evening's first pass
-screen (SWD-104); quiet "Hurry up: 90 s"; main "I'm Riya".
+screen (SWD-104); quiet "Start 90-second timer"; main "I'm Riya".
 
 ### SWD-031 One phone: the private map (P4)
 After "I'm Riya": heading "Riya" (CSS upper case); small line "You give clues for Chai Champions (orange)"; the counts; the map
 area (empty while hidden); pad `hold-pad`, a button named by its visible text "Tap to see the map" / "Tap to hide" (no
-`aria-pressed`); quiet "Our words" and quiet "↻ Turn" (accessible name "Turn the board") side by side (half width each, shown only while the map shows); main once
+`aria-pressed`); quiet "Our words" and quiet "↻ Flip" (accessible name "Flip the board") side by side (half width each, shown only while the map shows); main once
 shown; no menu, no team bar.
 - A tap on the pad shows the map; taps within 500 ms of the last are ignored. The map is removed from the page at once on
-  "Tap to hide", at t = 180 000 ms after the latest `pointerdown` anywhere on this screen (still shown at 179 999), and when the
+  "Tap to hide", by the 60-second rule of SWD-121, and when the
   app is hidden (SWD-032). When it hides, "Our words" and "Turn" hide and the list resets to the grid; the main stays.
 - The shown map: every cell with its word text, kind colour and icon; cells already turned over at 40% opacity with the word
   struck through (accessible name adds ", found"); turned as the team's board angle (SWD-102).
 - "Our words" swaps the grid for `our-words`: h2 "Your words (6 left)" ("(1 left)" for one; this team's face-down words), each
-  word an `li` at 24 px (28 px with Larger text) in `data-index` order, then the small line `avoid-line` "Avoid: Shadow" with
+  word an `li` at 24 px (28 px with Larger text) in `data-index` order, then the small line `avoid-line` "Landmine word: Shadow" with
   the landmine icon (the Landmine's word if face down; none on the Easy board). The button then reads "Whole map".
 - Main "I have my clue" appears at the first show and then stays; tapping it removes the map, records `mapSeen` (once per
   turn) and opens the clue screen.
@@ -433,21 +442,17 @@ does the same.
 ### SWD-033 Two or three phones: scan the map
 After each deal (after the preview's "Start", if shown) with two or three phones: the scan screen (strings above), QR at least
 200 × 200 px encoding `<origin><BASE_URL>#map=<code>` (no hyphen); the orange team's clue giver named first in both wordings.
-Two phones: main "The map phone is ready"; three phones: main "Both have the map". From the evening's second deal on (Play
-again, Deal a new board, Change teams), `board-check` reads "Already have the last map open? Tap Next map on it and check it
-shows 78." when this deal's code equals `nextMapCode` of the previous deal's code (replaced boards included), else "New code:
-scan again." On the evening's first deal `board-check` is absent. The main opens the starting team's clue screen. Resuming any time before the board's first clue shows the scan
+Two phones: main "The map phone is ready"; three phones: main "Both have the map". From the evening's second deal on, `board-check` follows SWD-116. The main opens the starting team's clue screen. Resuming any time before the board's first clue shows the scan
 screen again. The page may scroll; the QR stays 200 × 200 and the main stays fixed. The host never shows the map in these modes
 until game over, except through SWD-037.
 ### SWD-034 The map phone
-Heading "Secret Words map"; `map-code-line` "Code 27P-3QX8 · Check 78 · Orange team starts" (a map phone knows colours, not names); the map grid (`map-grid`, cells `map-cell` with
+Heading "Secret Words map"; `map-code-line` "Code 27P-3QX8 · Orange team starts" (team names when scanned, SWD-117) and `first-words` (SWD-116); the map grid (`map-grid`, cells `map-cell` with
 `data-index`, in the host board's order, each with word text, kind colour and icon, laid out and sized as the board,
 SWD-090/091, without the panel); the small line; quiet "Hide map" / "Show map"; quiet "Next map" (SWD-039); quiet "Done with this game". No main button, no "Turn",
 no menu; "← Back" → Home. The map shows on opening; after the app has been hidden it returns hidden, with "Show map". Wake
 lock while shown. Narrow portrait: "Turn your phone sideways to see the board." in place of the grid, buttons kept.
 Landscape: grid at the left; heading, code line and buttons in a column at the right (200 px at 812 × 375, 160 px at
-568 × 320) that scrolls inside if needed. `map-code-line` always includes the board check: "Code 27P-3QX8 · Check 78 ·
-Orange team starts". The host's game ending changes
+568 × 320) that scrolls inside if needed. The board check is by words (SWD-116). The host's game ending changes
 nothing here. Larger text follows this phone's own setting.
 
 ### SWD-035 Fading found words
@@ -473,10 +478,10 @@ Larger text changes the heading and lines, never the map's word size (SWD-090).
 ### SWD-039 Next map and the board check (P8, C3)
 "Next map" on a map phone opens `nextMapCode(code)`: the same config and deck seed, deal index n + 1, a new check symbol, if that
 code is valid (SWD-022); taps within 500 ms are ignored. It replaces the saved map (found marks cleared, `savedAt` = now), shows
-the map even if it was hidden, and the toast "Next map. Check it shows 8A on the host." (27P-3QX8 → 28P-3QXA, check "8A"). If
+the map even if it was hidden, and the toast of SWD-116 (27P-3QX8 → 28P-3QXA). If
 `nextMapCode` gives `null`: the toast "That was the last map of this deck. Scan the new code." and nothing changes. With
 edition 1's Whole family list (451 candidates), the last valid n is 17 for both Full and Easy (25·17 + 25 = 450 ≤ 451; 25·18 +
-16 = 466 > 451). "Deal a new board" uses up a deal index like any deal. **Property:** for 1,000 random evenings, every deal for
+16 = 466 > 451). "New board" uses up a deal index like any deal. **Property:** for 1,000 random evenings, every deal for
 which SWD-033 shows "Tap Next map" has exactly the code `nextMapCode` gives from the previous deal's code.
 ---
 
@@ -486,7 +491,7 @@ which SWD-033 shows "Tap Next map" has exactly the code `nextMapCode` gives from
 Team bar; heading "Chai Champions, your turn"; `clue-prompt` "Riya, say your clue out loud. How many words is it for?"; keys; the
 input `clue-word` "Clue word (optional)" (`maxlength="24"`, `autocapitalize="off"`; Enter does not submit); `clue-warning`
 (SWD-101); the counts; on the evening's first turn of its first game only, the tip; with two or three phones the recap line
-(SWD-103); one phone: quiet "See the map again"; from "Change clue": quiet "Keep my clue"; quiet "Hurry up: 90 s"; main.
+(SWD-103); one phone: quiet "See the map again"; from "Change clue": quiet "Keep my clue"; quiet "Start 90-second timer"; main.
 Keys `clue-key`: portrait 0–4 and 5–9 in two rows, then "∞" full width; each 56 × 56 px (∞ 56 px tall), gaps 2 px at 320 px wide
 and 8 px from 360 px up. "∞" shows "∞" only; accessible name "As many as you like" (accepted exception to WCAG 2.5.3). A tap
 selects a key (selected look); another tap moves the pick. Main "Pick a number" (disabled), then "Clue for 2: start guessing"
@@ -506,10 +511,10 @@ and left out when empty (SWD-101).
 After the clue (portrait, top to bottom): team bar; top bar with `hurry-timer` (if running) and "··· Menu"; `turn-line`
 "Chai Champions guessing" (1 line; at most 2 in the landscape panel); `clue-line` (22 px, weight 700, at most 2 lines, not
 grown by Larger text; shrinks in 1 px steps to 17 px, then wraps anywhere); `clue-history`; the counts row with the "↻" Turn
-button (44 × 44, accessible name "Turn the board") at its right end; the board; the tip or result line (at most 2 lines); the
+button (44 × 44, accessible name "Flip the board") at its right end; the board; the tip or result line (at most 2 lines); the
 **action slot**; the main.
 - **Action slot:** until the turn's first reveal (ending at the "Reveal" tap, t = 0), two quiet buttons side by side, "Change
-  clue" and "Clue broke a rule?" (half width each, 48 px, labels may wrap onto 2 lines); from the first reveal, quiet "End our
+  clue" and "Clue not allowed?" (half width each, 48 px, labels may wrap onto 2 lines); from the first reveal, quiet "End our
   turn". At turn over (including after `brokeRule`) the slot is empty.
 - `clue-line`: with a word, DOM "Cricket · 2 · 3 guesses left" (the word as typed, upper case by CSS); without, "Clue: 2 · 3
   guesses left". It counts down while guesses remain: "· 2 guesses left", "· 1 guess left"; for 0 and ∞, "· guess as many as
@@ -519,7 +524,7 @@ button (44 × 44, accessible name "Turn the board") at its right end; the board;
   `innerHeight` ≥ 700 (Larger text on or off) and in the landscape panel; otherwise hidden. The menu's "Earlier clues" sheet
   always lists every clue in force of this game.
 - "Change clue" opens the clue screen with the number and word selected; confirming records a new `clue` that replaces the
-  turn's clue (announced again); "Keep my clue" returns (SWD-040). "Clue broke a rule?" opens SWD-046's dialog; after
+  turn's clue (announced again); "Keep my clue" returns (SWD-040). "Clue not allowed?" opens SWD-046's dialog; after
   "Cancel", "Change clue" still works.
 - **Fit at 360 × 640:** team bar 8 + top bar 48 + turn-line 24 + clue-line 58 + counts row 44 + board (5 × 48 + 4 × 4) 256 +
   result 42 + action slot 48 + main 60 + bottom 16 = 604, plus 8 gaps of 4 px = 636 ≤ 640 with Larger text off. Shrink order
@@ -539,14 +544,14 @@ over, the counts update and the result line shows; taps on cells and buttons do 
 
 | Word was | Result line | Then |
 |---|---|---|
-| Own team's, guesses left (clue 1–9) | "✓ Your word! 2 guesses left." / "✓ Your word! 1 guess left." | Guessing continues |
-| Own team's, clue 0 or ∞ | "✓ Your word! Keep going, or end your turn." | Guessing continues |
-| Own team's, allowance used up | "✓ Your word! That's all your guesses." | Turn over |
-| Nobody's | "Nobody's word. Other team's turn next." | Turn over |
+| Own team's, guesses left (clue 1–9) | "✓ Riya's clue works! 2 guesses left." / "✓ Riya's clue works! 1 guess left." | Guessing continues |
+| Own team's, clue 0 or ∞ | "✓ Riya's clue works! Keep going, or end your turn." | Guessing continues |
+| Own team's, allowance used up | "✓ Riya's clue works! That's all your guesses." | Turn over |
+| Nobody's | "Blank word. Other team's turn next." | Turn over |
 | The other team's | "✗ The other team's word! It counts for them." | Turn over |
 | Either team's last word | none | Game over at t = 300 ms: that team wins |
 | The Landmine, Lose the game | none | Game over at t = 300 ms: the other team wins |
-| The Landmine, Lose your turn | "✗ The Landmine! Your turn is over, and the other team gets one word free." | Turn over; the free word turns over as SWD-046 (seed ``${seeds.deal}:landmine:${D}:${T}``, recorded as the reveal's `freeCell`); if it is that team's last word, game over: that team wins |
+| The Landmine, Lose your turn | "Boom! The Landmine! Your turn is over, and the other team gets one word free." | Turn over; the free word turns over as SWD-046 (seed ``${seeds.deal}:landmine:${D}:${T}``, recorded as the reveal's `freeCell`); if it is that team's last word, game over: that team wins |
 Result lines name no team, so every name fits. The last-word and Landmine rows win over the others. With Lose your turn, the Landmine stays turned over and can't be
 picked again.
 
@@ -561,23 +566,23 @@ Cells locked (not greyed), the result line stays, the clue line and tip are remo
 screen.
 
 ### SWD-046 A clue that broke a rule
-Menu item enabled from the clue until the turn's first guess; disabled otherwise. The board's quiet "Clue broke a rule?"
+Menu item enabled from the clue until the turn's first guess; disabled otherwise. The board's quiet "Clue not allowed?"
 (SWD-041) opens the same dialog. Dialog → "Yes, it broke a rule": the turn
 ends; `list` = the other team's face-down cells in cell order; cell =
 ``list[createRng(`${seeds.deal}:penalty:${D}:${T}`).int(list.length)]`` (D = deal number of the evening, T = turn number on
 this board); that cell turns over as SWD-043 (vibration 50 ms, the `thud` sound). Result line "Clue broke a rule. One of
 the other team's words was turned over." and turn over; if it was that team's last word: game over, that team wins.
 
-### SWD-047 Hurry up: 90 s
-"Hurry up: 90 s" (buttons on the pass and clue screens; menu item while guessing) starts the timer `hurry-timer`. Place and
+### SWD-047 Start 90-second timer
+"Start 90-second timer" (buttons on the pass and clue screens; menu item while guessing) starts the timer `hurry-timer`. Place and
 `font-size` (Larger text has no effect): portrait board screens, in the top bar left of "··· Menu", 56 px at 390 × 844 and 40 px
 at 360 × 640; landscape board panel, on its own row above "··· Menu", 40 px at 812 × 375 and 568 × 320; the private map's top
 right and every other screen, 28 px. "Time's up!" and "Paused" shrink in 1 px steps to fit their place, floor 28 px. It reads
 "1:30" at t = 0, "1:29" at t = 1 s, … "0:01" at t = 89 s, and "Time's up!" from t = 90 s (with the chime, sound on); "0:00" never
 shows. The button or menu item reads "Stop timer" from the start until tapped (also after "Time's up!"); "Stop timer" removes
 the timer. A timer started on the pass screen keeps running on the private map and the clue screen. Nothing else ever happens
-because of the timer. It is removed when the clue is given, at the end-turn line, at turn over, on "Deal a new board", "End the
-game" and game over. When the app is hidden it shows "Paused" and the button or item reads "Hurry up: 90 s"; a tap restarts it
+because of the timer. It is removed when the clue is given, at the end-turn line, at turn over, on "New board", "End the
+game" and game over. When the app is hidden it shows "Paused" and the button or item reads "Start 90-second timer"; a tap restarts it
 at 1:30 from that tap. It is not saved: after a reload there is no timer.
 ### SWD-048 Reload during play (detail)
 Only moves are saved, plus UI state `pgn.secretWords-ui.<id>` = `{ step, angles: { orange: 0 | 180, teal: 0 | 180 } }` (step:
@@ -593,12 +598,12 @@ The `clue` move carries `word` (1–24 characters after trimming), or no `word` 
 **Warning (clue screen only):** both the typed text and each face-down word are reduced to their letters a–z: NFKC, lower
 case, every other character dropped ("ice-cream" → "icecream", "Taj Mahal" → "tajmahal"). If the typed text keeps at least 3
 letters and equals a reduced face-down word, contains one, or is contained in one, `clue-warning` (a paragraph under the input)
-reads "Cricket is still on the board. Clue rules say: pick another word." for the first such word in `data-index` order (word
+reads "Heads up: Cricket is on the board." for the first such word in `data-index` order (word
 text); otherwise it is absent. It updates on every input event and never blocks. Worked cases with Bat and Monsoon face down:
 "bat" and "Batsman" warn ("Bat …"); "mon" warns ("Monsoon …"); "ca" never warns; "मानसून" never warns. Words already turned
 over never warn.
-### SWD-102 Turn the board (P6, flip only)
-"↻" Turn (accessible name "Turn the board") on every board screen and the private map, hidden in narrow portrait. Each tap
+### SWD-102 Flip the board (P6, flip only)
+"↻" Turn (accessible name "Flip the board") on every board screen and the private map, hidden in narrow portrait. Each tap
 flips the grid 180° (0° ↔ 180°) inside its area, so its words read upright from the other side of the table; cells keep their
 `data-index` (at 180°, index 0 is at the bottom right) and are tapped where they show. `word-board` (and the private map's
 `map-grid`) carry `data-angle="0"` or `"180"`. 90° is not offered: in portrait a turned 5 × 5 grid gives each word about 40–48 px,
@@ -608,16 +613,16 @@ angle; on the private map, the clue giver's team's; on the preview, the starting
 that played last. A team's angle is applied when its turn starts; turn over keeps the team that just played.
 ### SWD-103 Recap line (P9)
 `recap-line` on the pass screen (one phone) and the clue screen (two or three phones, also when opened by "Change clue"), from
-the board's second turn (it restarts after "Deal a new board"; it shows again after a reload): "Last turn: Coffee Commandos found
+the board's second turn (it restarts after "New board"; it shows again after a reload): "Last turn: Coffee Commandos found
 2 words;" (that team's own words turned over by its guesses in that turn; a word turned over by SWD-046 or as the Landmine's free word never counts; "found 1
 word", "found 0 words") then how the turn ended, the first that applies: broke a rule → "the clue broke a rule."; the Landmine (Lose your turn) → "they stepped on the Landmine."; "End our turn" →
-"they stopped."; allowance used up → "they used all their guesses."; a nobody's word → "Train was nobody's."; the other team's
+"they stopped."; allowance used up → "they used all their guesses."; a nobody's word → "Train was blank."; the other team's
 word (the current team's) → "Train was yours!". Fits in 2 lines (3 with Larger text) at every size with an 18-character team
 name and an 8-letter word.
 ### SWD-104 Do Not Disturb tip (P9)
 `dnd-tip` "Tip: turn on Do Not Disturb so messages don't pop up on the board." on the evening's first deal, on every showing of
 its first pass screen (one phone, including after "Welcome back." or a reload) until the evening's first `mapSeen`, or of its
-first scan screen (two or three phones) until the evening's first `clue`. Not after "Deal a new board" when that
+first scan screen (two or three phones) until the evening's first `clue`. Not after "New board" when that
 happens later. It never shows together with the "One word, one number" tip.
 ---
 
@@ -628,8 +633,8 @@ A team wins when all its words are turned over (by either team, or SWD-046). Wit
 **Property:** every one of 10,000 random scripted games ends with exactly one winner, or ended early.
 
 ### SWD-051 Game over
-Heading "Chai Champions win!"; line "All 9 words found." (the winner's total: 9, 8, 6 or 5) or, for the Landmine, "Coffee Commandos stepped on
-the Landmine!" (the losing team); the whole map: turned-over cells as before, face-down cells now in their kind's colour and icon
+Heading "Chai Champions win!"; line "All 9 words found." (the winner's total: 9, 8, 6 or 5) or, for the Landmine, "Boom! The Landmine got Coffee
+Commandos." (the losing team); the whole map: turned-over cells as before, face-down cells now in their kind's colour and icon
 at 50% opacity (accessible name "Kite, teal team, not found"); tally; main "Play again"; quiet "Change teams", "End the
 evening". The page may scroll as one, main fixed. Wake lock released. Narrow portrait: the sideways line instead of the board.
 
@@ -644,22 +649,21 @@ screen.
 Menu "End the game" (scan, pass, clue, guessing, end-turn, turn over) → dialog → "End the game": heading "Game ended. No
 winner.", no result line, the whole map as SWD-051, tally unchanged, same buttons. The game counts for SWD-007 and History.
 
-### SWD-055 Deal a new board
-Menu "Deal a new board" (any step from the first deal until game over) → dialog → "Deal a new board": a new deal with the same
+### SWD-055 New board
+Menu "New board" (any step from the first deal until game over) → dialog → "New board": a new deal with the same
 teams, clue givers and choices; the starting team drawn anew; turn numbers restart; tips don't show again; the timer stops;
 clue-giver counts unchanged. Then the scan screen or the new starting team's pass screen.
 
 ### SWD-056 Change teams (detail of SWD-051)
-"Change teams" → Make teams (current teams) → "Next" → Choices → "Deal the words" deals the next game (no read-aloud).
+"Change teams" → Make teams (current teams) → "Next" → Choices → "Start the game" deals the next game (no read-aloud).
 
 ---
 
 ## 06 The evening → `specs/secret-words/06-evening.md` (saved data C3)
 
 ### SWD-060 End of the evening
-"End the evening" (game over button, or menu) → dialog → "End the evening": a game in progress is ended early; the evening ends;
-the summary shows: tally; fun lines, at most two, in this order: "Riya's clues won 2 games" (the credited clue giver with the
-most won games, at least 1; tie: the one who reached that count first) and "The Landmine went off 1 time" (at least 1); main
+"End for tonight" (game over button, or menu) → dialog → "End for tonight": a game in progress is ended early; the evening ends;
+the summary shows what SWD-128 lists; main
 "Play something else" (the picker, tonight's names kept); quiet "Back to Home". An ended evening never reopens; an evening
 with no game at all is deleted, otherwise it stays in History.
 
@@ -681,13 +685,13 @@ progress) and `endEvening`, both at the last move + 12 hours. No summary shows.
 
 ### SWD-064 History
 Evening row "Secret Words · 3 games" (won and ended early). Game rows: "Game 2 · Chai Champions won · Riya and Arjun gave clues"; Landmine: "Game
-2 · Chai Champions won, Coffee Commandos stepped on the Landmine · Riya and Arjun gave clues"; "Game 3 · Ended early · Meena and Kabir gave clues"
+2 · Chai Champions won (Landmine) · Riya and Arjun gave clues"; "Game 3 · Ended early · Meena and Kabir gave clues"
 (credited clue givers, the orange team's first). Tapping a game row opens its board with the whole map and the line
 `history-clues` "Clues: Chai Champions CRICKET 2 · Coffee Commandos 1 · Chai Champions RAIN ∞" (every clue in force,
 oldest first; a clue without a word shows its number alone) ("← Back" to the evening).
 
 ### SWD-065 Discard the evening
-Summary menu "Discard this evening" → dialog → "Discard": the evening is deleted and Home opens. No undo.
+Summary menu "Delete tonight's games" → dialog → "Delete": the evening is deleted and Home opens. No undo.
 
 ### SWD-066 Saved choices (detail of SWD-009)
 `pgn.pref.secretWords.lastChoices` = `{ map, board, landmine, words }`, written at each deal. Unreadable or missing → the first-time state.
@@ -695,6 +699,147 @@ Summary menu "Discard this evening" → dialog → "Discard": the evening is del
 ### SWD-067 Start new (detail of SWD-001)
 "Start new" records `endGame` (if a game was in progress) and `endEvening` for the old evening, then opens "Who's playing?"
 for a new evening. No summary shows.
+
+---
+
+## 07 Sessions and behaviour (version 3.3) → `specs/secret-words/07-sessions.md` (C2; SWD-118, 125, 127, 129 C3)
+Binding; wins over any earlier scenario it names. Sources: W1–W20, E1–E25, B1–B12; decisions K32–K41.
+
+### SWD-110 Pause (E1)
+Menu "Pause" at every game step except the private map (which has its own exits, SWD-113). It covers the screen with
+`pause-cover`: h1 "Paused", line "Tap Carry on when everyone's back.", main "Carry on". While paused: the screen-on lock is
+released, a running timer shows "Paused" (SWD-047), map screens are hidden. "Carry on" returns to the same step. Nothing is
+recorded. A reload while paused returns to the step with the cover shown.
+
+### SWD-111 Home during a game (E1, W2)
+Quiet "← Home" (top left) on the pass screen, the scan screen, the turn-over step and game over. It opens Home at once (no
+dialog); the game stays unfinished and resumes from Home's row (SWD-115) or the picker's resume card at the same step. Phone Back
+still does nothing during a game.
+
+### SWD-112 Game over: what next (W2, W4, E13, B4, B8)
+Game over shows, in order: heading and line (SWD-051, SWD-128); `near-miss` and `best-clue` (SWD-128); the tally; `next-clue-givers`
+"Next clue givers: Meena and Kabir" (by SWD-007; pairs "Nana + Aarav and Kabir") with quiet "Swap" (opens the Clue givers sheet,
+applies on Done); quiet "Change players, phones or board" (opens Make teams → Choices with "← Back to the game" on each, nothing
+changing until "Start the game"); quiet "End for tonight"; quiet "← Home" (SWD-111); main "Play again". After "End the game"
+(SWD-054) the line "Game ended. No winner." shows a 10 s `undo-toast` "Game ended · Undo"; Undo returns to the step before.
+
+### SWD-113 The private map: wrong person and someone looking (E6, E8, E5)
+Before the first show, the private map has quiet "Not Riya? Go back" (returns to the pass screen; nothing recorded). While shown:
+quiet "Someone saw the map" opens the New board dialog (SWD-055). "I'm Riya" ignores taps for 1 s after the pass screen appears.
+
+### SWD-114 Taps right after a screen appears (E7, W11, K35)
+Every main button ignores taps for 800 ms after its screen appears (1.5 s for "Other team's turn" after a turn-ending reveal), in
+addition to SWD-049. Quiet buttons are not affected.
+
+### SWD-115 Home rows, Start new and next day (E18, K37)
+Unfinished row: "Secret Words, 8:40 pm · Chai Champions v Coffee Commandos · 2–1" and "Tap to resume" (score = the tally).
+"Start new" dialog: "Start a new game night? The one from 8:40 pm (Chai Champions v Coffee Commandos, 2–1) will end." with two
+equal quiet buttons "Carry on that one" / "Start new (ends that one)" and no main; asked once. **Next day:** for 36 hours after a
+game night ends, Home shows `last-night` "Last night: Chai Champions 2 · Coffee Commandos 1" with button "Play again with these
+teams": it opens Make teams with the same players, teams, names and "Doesn't give clues" switches, then Choices with "Same as last
+time"; a new game night and tally. Home's menu has "History" (SWD-064).
+
+### SWD-116 Board check by words (W1)
+Wherever a map must match the host: the host's scan screen shows `board-check` "The map phone should start with: Cricket · Bat ·
+Monsoon" (the words of cells 0, 1, 2), and the map phone shows `first-words` "First words: Cricket · Bat · Monsoon". From the
+evening's second deal, when the deal is the next of the same deck: "Hand the map phone to Meena and Kabir, tap Next map on it,
+and check it starts with: Kite · Tiffin · Rain" (names = this game's clue givers; "Tap Next map on the map phone, and check …" when
+they didn't change); otherwise "New code: scan again." Next map's toast: "Next map. It should start with: Kite · Tiffin · Rain."
+
+### SWD-117 Team names on the map phone (W5, C3 for the QR format)
+The scan QR carries the team-name pair id: `<origin><BASE_URL>#map=27P3QX8&t=SWDT-01`. A map phone opened from it shows "Chai
+Champions ● orange · Coffee Commandos ◆ teal" under the heading and names lists by team (SWD-120); a typed code shows colours
+only ("Orange team", "Teal team"). An unknown `t` is ignored.
+
+### SWD-118 Clue numbers explained (W6, C3 for the moves' view)
+Under the keys, `clue-help` "2 means up to 3 guesses. 0 or ∞: as many as you like."; the ∞ key shows "∞" over "many". The board
+shows `clue-line` "CRICKET · 2" (or "Clue: 2") at 22 px, and under it `guess-line` "3 guesses left (2 + 1 extra)", then "2 guesses
+left", "1 guess left"; for 0 and ∞ "Guess as many as you like". Replaces SWD-041's single-line format.
+
+### SWD-119 Setup words (W7, W15)
+Under the disabled "Start the game": "Pick how many phones to start." With 9 or more players, Choices shows "Big group? The Easy
+board is easier to read." under the Board group. The Landmine group's default follows K33: "Lose your turn" with Whole family,
+"Lose the game" with + Harder words, until the host taps one.
+
+### SWD-120 Map phone kindness (W12, W17, B10)
+The map phone's small line reads "Optional: tap a word once it's found to fade it; tap again to undo. The board in the middle
+is always right." It has quiet "Orange list" / "Teal list" / "Whole map" (team names when known), showing that team's face-down
+words big as SWD-031's "Our words", plus "Landmine word: Shadow". It always shows `map-end-line` "Game over? Tap Done with this
+game, or Next map for the next one." The map phone hides 60 s after the last touch (SWD-121).
+
+### SWD-121 Maps hide after 60 seconds (K36)
+The private map and the map phone hide 60 000 ms after the latest `pointerdown` on that screen. From 50 000 ms `hide-warning`
+"Still looking? Tap to keep the map" shows over the map; a tap anywhere restarts the 60 s. Replaces SWD-031's 180 s.
+
+### SWD-122 The picker (B1, B11, K38)
+Each guessing turn has a **picker**: the team's guessers (players who aren't this game's clue givers) take turns in list order,
+the team's first turn starting with its first guesser, each later turn of that team the next one (wrapping). `turn-line` reads
+"Chai Champions guessing · Sunita picks"; the main reads "Sunita: Reveal LAMP" (text may shrink to 17 px and wrap onto 2 lines);
+quiet "Pass the pick" opens a sheet of the team's guessers and sets the picker for this turn only. The first guessing turn of the
+evening shows the tip "Tap a word to suggest it. Sunita taps Reveal." (replaces SWD-041's first-guess tip). Anyone may still tap;
+the name is a social cue, never enforced. Saved in UI state (a reload keeps it). Rotation is unaffected by "Pass the pick".
+
+### SWD-123 Pairs of clue givers (B2, K39, C3)
+In the Clue givers sheet each team has quiet "Add a partner": pick a second player of the team. The clue giver is then shown as
+"Nana + Aarav" everywhere (pass screen "Pass the phone to NANA + AARAV", main "We're Nana and Aarav"; private map heading; scan
+screen; game over). Both are credited (SWD-007 counts the game for each) and neither is a guesser or picker that game. "Remove
+partner" undoes it. Either partner removed mid-game leaves the other as clue giver.
+
+### SWD-124 Disputes (B3, K40)
+"Clue not allowed?" (board button and menu, same window as SWD-046) opens the dialog "Clue not allowed? Both clue givers decide
+together." with three equal quiet buttons and "Let it go" as main: "Try another clue" (opens the clue screen with "Keep my clue",
+like "Change clue"; the new clue replaces the old) · "Turn ends, they get a word" (SWD-046's penalty) · "Let it go" (closes;
+nothing recorded). Replaces SWD-046's two-button dialog.
+
+### SWD-125 Credit people, blame the board (B5, B6)
+- Own word: "✓ Riya's clue works! 2 guesses left." (pairs: "✓ Nana and Aarav's clue works! …"); every other result line names no
+  person.
+- At the start of each guessing turn, `turn-line` shows "Riya: poker face, no hints!" for 3 000 ms, then SWD-122's text.
+- The Landmine (Lose the game): heading "Chai Champions win!", line "Boom! The Landmine got Coffee Commandos."; (Lose your turn)
+  "Boom! The Landmine! Your turn is over, and the other team gets one word free.".
+- Nothing ever names who tapped a wrong word.
+
+### SWD-126 A job for the waiting team (B7)
+On the pass screen (one phone) and the clue screen (two or three phones), `waiting-line` "Coffee Commandos: guess how many Riya will
+say!" (the team not giving the clue; the clue giver's name, or "Nana and Aarav").
+
+### SWD-127 Players during a game (E2, E3, E4, E16, B12, C3)
+The Players sheet lists each team; per player: tap the name to rename it (an input; Enter or "Done" saves; team, place and counts
+kept; same duplicate rule as SWD-003); "Move to Coffee Commandos" (guessers only; at any step except the private map; toast "Zoya
+moved to Coffee Commandos · Undo"); "Remove Kabir". Adding: the name field, a switch "Doesn't give clues", and two buttons "Add to
+Chai Champions" / "Add to Coffee Commandos"; toast "Neha joined Chai Champions". Removing a clue giver opens "Who gives clues for
+Coffee Commandos now?" with the team's eligible players (the next eligible pre-selected) and main "Done"; with one phone the new
+clue giver takes the next pass; with two or three phones see SWD-129. A removal that would leave a team with 1 player opens
+"Kabir leaves Coffee Commandos with only Om. Move someone over?" with a button per guesser of the other team and "Keep Kabir"
+(main; cancels the removal). Records `setPlayers` (rename map included).
+
+### SWD-128 Endings (B8)
+Game over: `near-miss` "Coffee Commandos were 1 word away!" ("2 words") when the losing team had 1 or 2 words left; `best-clue`
+"Best clue: MONSOON 3 · all 3 found" (or "· 2 found") for the clue (with a word) whose turn found the most of its team's words, at
+least 2, earliest on a tie; none otherwise. Summary ("Tonight's Secret Words"): `summary-line` "6 players · 3 games · 31 words found";
+the tally; `clue-credit` "Clues tonight from Riya, Nana and Zoya" (every credited clue giver, list order, Oxford comma none);
+quiet "Oops, keep playing" until the summary is left (returns to game over, the evening unended); quiet "← Home"; main "Play
+something else". No Landmine count, no ranking of clue givers.
+
+### SWD-129 Map code again (E9)
+With two or three phones, menu "Show the map code again" at every game step: the scan screen for the current board (no new deal),
+with "Everyone else: look away from their phones." Its main returns to the step.
+
+### SWD-130 Fair shuffles (B9)
+"Shuffle teams" (SWD-006) accepts the first draw whose teams differ in "Doesn't give clues" players by at most 1 and are not
+exactly last game's teams; at most 10 draws, else the 10th.
+
+### SWD-131 Clue rules box (K34)
+How to play adds h2 "Clue rules" with 4 lines: 1 "One word only. Names like Taj Mahal count as one." 2 "About meaning: no spelling,
+no rhymes, no 'top left'." 3 "Not a word on the board, or part of one." 4 "English, or a word you'd use in English (chai, dosa)."
+The dispute dialog (SWD-124) has a quiet "Clue rules" link opening this box.
+
+### SWD-132 Settings and names (E17, E19)
+Settings save every change at once (no Save button). In "Who's playing?" every Enter adds its name and keeps the field focused; 7
+names typed quickly with Enter give 7 rows.
+
+### SWD-133 Join scanner (W18)
+The Join screen's own scanner also reads map QRs ("Scan a ticket or secret map"), opening the map phone.
 
 ---
 
@@ -711,7 +856,7 @@ Larger text doesn't change it. Status lines and the full height budget: SWD-041.
 812 × 375: grid at the left (margins 16 px left and bottom, 8 px under the team bar); a 200 px panel at the right (16 px right
 margin, 12 px gap). Panel, top to bottom: `hurry-timer` row (when running); a row with "↻" (44 × 44) and "··· Menu"; a middle part
 that scrolls inside if needed: `turn-line` (at most 2 lines), `clue-line`, `clue-history`, counts (two lines), `result-line`, tip;
-then pinned at the bottom the action slot (until the first reveal "Change clue" and "Clue broke a rule?" stacked, each 200 × 48;
+then pinned at the bottom the action slot (until the first reveal "Change clue" and "Clue not allowed?" stacked, each 200 × 48;
 then "End our turn" 200 × 48) and the main button (200 × 60). Cells at least 100 × 56 px. The main button's text may shrink to
 17 px to fit. 568 × 320: the same with 8 px margins, a 160 px panel (main 160 × 60) and an 8 px gap, and no change row (both are
 menu items, SWD-041/046); cells at least 69 × 54 px. No page scrolling. Cell sizes are measured on the unturned board.
@@ -722,7 +867,7 @@ parts of the screen stay (on the board, "Reveal" stays disabled). Turning to lan
 
 ### SWD-093 Never colour alone
 Every turned-over cell and every map cell has its kind's icon and an accessible name: "Kite, orange team" / "Kite, teal
-team" / "Kite, nobody's word" / "Kite, the Landmine" (+ ", found" or ", not found" where SWD-031, SWD-035 and SWD-051 say).
+team" / "Kite, blank word" / "Kite, the Landmine" (+ ", found" or ", not found" where SWD-031, SWD-035 and SWD-051 say).
 
 ### SWD-094 Targets
 Every button at least 44 × 44 px; board cells per SWD-090/091; keys per SWD-040.
@@ -791,8 +936,8 @@ retired_in }[]`). **Checks:** ids unique; words 3–8 letters A–Z, unique igno
 
    | Tap | Records |
    |---|---|
-   | Setup screens, team moves, Shuffle, "New team names", Undo on teams, the "Guesses only" switch (until the sheet's "Done"), choice cards, "Start", "Both have the map", "The map phone is ready", "I'm Riya", pad taps, number keys, the clue word, picks, "End our turn", "Oops, keep guessing", Hurry up, Stop timer, How to play, Show the map to a clue giver, "Our words", "See the map again", "Back to my clue", "Change clue" (until confirmed), "Keep my clue", "Clue broke a rule?" (opens the dialog), "↻", Earlier clues, "Next map" (map phone) | nothing |
-   | "Let's play" / "Show me the board first" / "Deal the words" (new evening) | evening created, then `deal` |
+   | Setup screens, team moves, Shuffle, "New team names", Undo on teams, the "Doesn't give clues" switch (until the sheet's "Done"), choice cards, "Start", "Both have the map", "The map phone is ready", "I'm Riya", pad taps, number keys, the clue word, picks, "End our turn", "Oops, keep guessing", Hurry up, Stop timer, How to play, Show the map to a clue giver, "Our words", "See the map again", "Back to my clue", "Change clue" (until confirmed), "Keep my clue", "Clue not allowed?" (opens the dialog), "↻", Earlier clues, "Next map" (map phone) | nothing |
+   | "Let's play" / "Show me the board first" / "Start the game" (new evening) | evening created, then `deal` |
    | "I have my clue" | `mapSeen` (once per turn) |
    | "Clue for N: start guessing" (also after "Change clue") | `clue {n, word}` |
    | "Reveal <WORD>" | `reveal {cell}` |
@@ -800,11 +945,11 @@ retired_in }[]`). **Checks:** ids unique; words 3–8 letters A–Z, unique igno
    | turn-over "Other team's turn" | `nextTurn` |
    | "Yes, it broke a rule" | `brokeRule {cell}` |
    | "End the game" (dialog) | `endGame` |
-   | "Deal a new board" (dialog) | `dealNew {code}` |
+   | "New board" (dialog) | `dealNew {code}` |
    | "Play again" | `setClueGivers` (if they change), then `deal` |
-   | Change teams → Next → "Deal the words" | `setTeams` (if changed), `setClueGivers` (if changed), `setChoices` (if changed), then `deal` |
+   | Change teams → Next → "Start the game" | `setTeams` (if changed), `setClueGivers` (if changed), `setChoices` (if changed), then `deal` |
    | Players sheet add, remove, or its Undo | `setPlayers` each |
-   | "End the evening" (dialog), "Start new" | `endGame` (if mid-game), then `endEvening` |
+   | "End for tonight" (dialog), "Start new" | `endGame` (if mid-game), then `endEvening` |
    | "Discard" | the SavedGame is deleted |
 2. **Seeds** from `localStorage['pgn.test.seeds']` in development and preview builds only (as Impostor):
    `{ "deal": "<seed>", "teams": "<seed>", "boards": ["27P3QX8", …] }`. `teams` is read on first entering Make teams for a
@@ -815,7 +960,7 @@ retired_in }[]`). **Checks:** ids unique; words 3–8 letters A–Z, unique igno
 4. **Test ids:** `main-button`, `resume-card`, `unfinished-games`, `team-bar`, `turn-heading`, `pass-name`, `hold-pad`,
    `privacy-cover`, `word-board`, `board-cell` (`data-index`), `map-grid`, `map-cell` (`data-index`), `map-qr`,
    `map-code-text`, `map-code-line`, `clue-prompt`, `clue-key`, `word-counts`, `turn-line`, `clue-line`, `tip`, `result-line`,
-   `hurry-timer`, `game-heading`, `our-words`, `avoid-line`, `clue-word`, `clue-warning`, `clue-history`, `recap-line`, `board-check`, `dnd-tip`, `recommended`, `guess-only-tag`, `history-clues` (`word-board` and `map-grid` carry `data-angle`; `hold-pad` is named by its visible text), `tally`, `fun-line`, `saved-map`, `clue-giver-badge`, `turn-sideways`, `credit`, `history-game`,
+   `hurry-timer`, `game-heading`, `pause-cover`, `next-clue-givers`, `near-miss`, `best-clue`, `last-night`, `first-words`, `clue-help`, `guess-line`, `map-end-line`, `hide-warning`, `waiting-line`, `summary-line`, `clue-credit`, `our-words`, `avoid-line`, `clue-word`, `clue-warning`, `clue-history`, `recap-line`, `board-check`, `dnd-tip`, `recommended`, `guess-only-tag`, `history-clues` (`word-board` and `map-grid` carry `data-angle`; `hold-pad` is named by its visible text), `tally`, `fun-line`, `saved-map`, `clue-giver-badge`, `turn-sideways`, `credit`, `history-game`,
    `history-round`, `announcer`, `undo-toast`, `toast`.
 5. **QR reading in tests** needs a QR decoder in the test tools (for example jsQR): a tooling request from the tester.
 
