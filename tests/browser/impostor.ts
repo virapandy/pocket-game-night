@@ -396,8 +396,9 @@ export const textOf = (l: Locator) => l.evaluateAll((els) => els.map((e) => (e.t
 /**
  * Things drawn over each other on screen (the reviewer's layout check for IMP-081 and IMP-088, 3 October 2026): pairs
  * of visible controls and text that overlap by more than 1 px. Controls count by their boxes, text by the boxes of its
- * letters (see below); each is clipped by the boxes it scrolls in. An element and what it contains are never a pair. A toast only
- * counts against controls (it is a bar that may lie over text for its few seconds, but never over a button).
+ * letters (see below); each is clipped by the boxes it scrolls in. An element and what it contains are never a pair. A toast
+ * (with its own "Undo") only counts against controls (it is a bar that may lie over text for its few seconds, but never
+ * over a button).
  */
 export const overlapping = (page: Page): Promise<string[]> => page.evaluate(() => {
   for (const a of document.getAnimations()) { try { a.finish(); } catch { /* endless, such as the build-up dots */ } }
@@ -444,7 +445,7 @@ export const overlapping = (page: Page): Promise<string[]> => page.evaluate(() =
     const rects = raw.map((x) => clip(el, x)).filter((x): x is R => !!x);
     if (!rects.length) continue;
     const text = (el.textContent ?? '').replace(/\s+/g, ' ').trim().slice(0, 28);
-    items.push({ el, name: `${id ? `[${id}] ` : `${el.tagName.toLowerCase()} `}"${text}"`, rects, control: el.matches(CONTROL), toast: el.matches(TOAST) });
+    items.push({ el, name: `${id ? `[${id}] ` : `${el.tagName.toLowerCase()} `}"${text}"`, rects, control: el.matches(CONTROL), toast: !!el.closest(TOAST) });
   }
   const out: string[] = [];
   for (let i = 0; i < items.length; i++) for (let j = i + 1; j < items.length; j++) {
