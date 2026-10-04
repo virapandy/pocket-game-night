@@ -55,7 +55,8 @@ export function storyOf(setup: SetupInput<ImpostorConfig>, records: readonly Mov
     if (!next.ok) break;
     const s = next.value;
     if (s.recentImpostors.length > state.recentImpostors.length && s.round) rounds.push(asDone(s.round));
-    if (rec.move.type === 'setPlayers') {
+    // Players leave by `setPlayers`, "Deal again without …", at a round's result or at the end (IMP-078).
+    if (s.players !== state.players) {
       for (const p of state.players) {
         if (!s.players.some((q) => same(p, q))) left = [...left.filter((x) => !same(x, p)), p];
       }

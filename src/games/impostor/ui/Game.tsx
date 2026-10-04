@@ -15,12 +15,12 @@ import {
 import { Dialog, HideMainButton, MainButton, Menu, QuietButton, TapGuard, Toast, useToast, type MenuItem } from './parts';
 import { EndGameButton, Reveal, useTapGuard, type ResultInfo } from './Reveal';
 import { HowToPlayChoices } from './Setup';
-import { PlayersSheet, RulesSheet, SettingsSheet } from './Sheets';
+import { PlayersSheet, RulesSheet, SettingsSheet, type PlayersMoment } from './Sheets';
 import { counts, outcomeLine, pointsText, scoreRows, storyOf } from './story';
 import { Summary } from './Summary';
 import { Countdown, FreeTalk, Picker, TimerTalk } from './Talk';
 
-type Overlay = 'rules' | 'settings' | 'players' | 'choices' | 'dealAgain' | 'end' | 'playersMid' | 'whose' | null;
+type Overlay = 'rules' | 'settings' | 'players' | 'choices' | 'dealAgain' | 'end' | 'whose' | null;
 type Banner = { readonly turn: string; readonly kind: 'welcome' | 'noProblem' } | null;
 
 const TIMER_MS = 120_000;
@@ -181,6 +181,17 @@ export function Game({
   // IMP-087, IMP-100: the screen stays on from a round's first screen A until the round's result shows.
   useWakeLock(state.phase === 'round' && !resultShown && !leftHalfway && !summary, roundKey);
 
+  // IMP-078: "Kabir left after this round" (4 s) when the result's lines appear: once per round, not on a reopen.
+  const leftToasted = useRef<number | null>(resumed && step === 'result' ? roundKey : null);
+  const leftNow = resultShown && r ? r.left : [];
+  useEffect(() => {
+    if (leftNow.length === 0 || leftToasted.current === roundKey) return;
+    leftToasted.current = roundKey;
+    showToast(`${leftNow.join(', ')} left after this round`);
+    // Once per round's result.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [leftNow.length, roundKey]);
+
   // IMP-070: no card opens by itself; an evening with no deal yet goes back to its choices.
   useEffect(() => {
     if (state.phase === 'ready') onBackToChoices(saved);
@@ -236,7 +247,8 @@ export function Game({
           setUi({ summaryShownAt: undefined });
           setSummary(false);
         }}
-        onPlayAgain={leave(() => onPlayAgain([...state.players], state.choices))}
+        // IMP-103: the ended game's players; a pending leaver goes when `endEvening` is recorded (IMP-078).
+        onPlayAgain={leave(() => onPlayAgain(state.players.filter((p) => !state.leaving.includes(p)), state.choices))}
         onHome={leave(onHome)}
         onSomethingElse={leave(onSomethingElse)}
         onHistory={leave(() => onHistory(false))}
@@ -320,13 +332,13 @@ export function Game({
   // paused). "End game" asks "End now?" (IMP-093).
   const home: MenuItem = { label: 'Home (game is saved)', onSelect: onHome };
   const dealAgain: MenuItem = { label: 'Deal again with a new word', onSelect: () => setOverlay('dealAgain') };
-  const playersMid: MenuItem = { label: 'Players', onSelect: () => setOverlay('playersMid') };
+  // IMP-074: one Players sheet; mid-round (and on the "left halfway" screen) it is for adding (IMP-078, IMP-079).
+  const playersItem: MenuItem = { label: 'Players', onSelect: () => setOverlay('players') };
   let menu: MenuItem[] | null = null;
   if (betweenRounds) {
     menu = [
       rules,
-      // The "left halfway" screen keeps the round's limits (docs/test-questions.md, lane E).
-      leftHalfway ? playersMid : { label: 'Players', onSelect: () => setOverlay('players') },
+      playersItem,
       ...(leftHalfway
         ? []
         : [
@@ -341,9 +353,9 @@ export function Game({
       settings,
       { label: 'History', onSelect: () => onHistory(true) },
     ];
-  } else if (step === 'deal') menu = [rules, playersMid, dealAgain, settings, home, end];
+  } else if (step === 'deal') menu = [rules, playersItem, dealAgain, settings, home, end];
   else if ((step === 'clues' || step === 'talk' || step === 'vote' || step === 'revote') && !counting) {
-    menu = [rules, playersMid, { label: 'See my word again', onSelect: () => setOverlay('whose') }, dealAgain, settings, home, end];
+    menu = [rules, playersItem, { label: 'See my word again', onSelect: () => setOverlay('whose') }, dealAgain, settings, home, end];
   }
   // IMP-017: no menu from "Whose word?" until the screen it was opened from shows again.
   if (seeAgain || overlay === 'whose') menu = null;
@@ -553,7 +565,16 @@ export function Game({
   }
 
   const sheet = overlay === 'rules' || overlay === 'settings' || overlay === 'players';
-  const dialog = overlay === 'dealAgain' || overlay === 'end' || overlay === 'playersMid' || overlay === 'whose';
+  const dialog = overlay === 'dealAgain' || overlay === 'end' || overlay === 'whose';
+  /** Where the Players sheet opens (IMP-074): between rounds, mid-round (adding only), or "left halfway". */
+  const playersMoment: PlayersMoment = leftHalfway ? 'halfway' : r && step !== 'result' ? 'mid' : 'between';
+  /** IMP-079: players added during this round, in the order added (dealt in by the next deal). */
+  const joining = r && step !== 'result' ? state.players.filter((p) => !r.players.includes(p)) : [];
+  /** The sheet's list as the rules take it mid-round: this round's players in their seats, then anyone added. */
+  const asListed = (list: readonly string[]) =>
+    r && playersMoment !== 'between' ? [...r.players, ...list.filter((p) => !r.players.includes(p))] : [...list];
+  const showJoining =
+    joining.length > 0 && !leftHalfway && !seeAgain && !counting && (step === 'clues' || step === 'talk' || step === 'vote' || step === 'revote');
   return (
     <main
       className={`imp-screen imp-room${holdScreen ? ' imp-hold-screen' : ''}${resultScreen ? ' imp-page' : ''}${betweenRounds ? ' imp-between' : ''}`}
@@ -582,6 +603,11 @@ export function Game({
             )}
           </header>
           {body}
+          {showJoining && (
+            <p className="imp-small imp-joining" data-testid="joining-line">
+              Joining next round: {joining.join(', ')}
+            </p>
+          )}
         </div>
         {!sheet && <Toast toast={toast} onDone={clearToast} />}
       </HideMainButton.Provider>
@@ -604,10 +630,32 @@ export function Game({
           players={state.players}
           past={past}
           keepingScore={state.choices.score}
+          moment={playersMoment}
+          roundPlayers={r?.players ?? []}
+          leaving={state.leaving}
           onDone={(players) => {
-            if (!sameList(players, state.players)) act({ type: 'setPlayers', players });
+            if (playersMoment === 'between') {
+              if (!sameList(players, state.players)) act({ type: 'setPlayers', players });
+              setOverlay(null);
+              return;
+            }
+            // Mid-round, names added are recorded at once (IMP-079). On the "left halfway" screen ✕ removes as between
+            // rounds (IMP-074): each player of the round taken off is one "Deal again without" (a fresh deal follows
+            // anyway from "Next round"); the rules never take a player out of a dealt round by `setPlayers`.
+            const listed = asListed(players);
+            if (!sameList(listed, state.players)) act({ type: 'setPlayers', players: listed });
+            for (const p of r?.players ?? []) if (!players.includes(p)) act({ type: 'dealAgainWithout', player: p });
             setOverlay(null);
           }}
+          onLeave={(players, player, how) => {
+            // IMP-078: names added in the sheet are recorded first, then the leave.
+            const listed = asListed(players);
+            if (!sameList(listed, state.players)) act({ type: 'setPlayers', players: listed });
+            setOverlay(null);
+            if (how === 'finish') act({ type: 'leaveAfterRound', player });
+            else if (act({ type: 'dealAgainWithout', player })) resetRound();
+          }}
+          onEndGame={showSummary}
         />
       )}
       {overlay === 'dealAgain' && (
@@ -631,13 +679,6 @@ export function Game({
           <QuietButton onClick={showSummary}>End now</QuietButton>
           <MainButton inline onClick={() => setOverlay(null)}>
             Keep playing
-          </MainButton>
-        </Dialog>
-      )}
-      {overlay === 'playersMid' && (
-        <Dialog text="Change players after this round.">
-          <MainButton inline onClick={() => setOverlay(null)}>
-            OK
           </MainButton>
         </Dialog>
       )}

@@ -1,10 +1,10 @@
 // The sheets: How to play (IMP-070, IMP-072), More options (IMP-076), Settings (IMP-014, IMP-107, IMP-109) and
-// Players between rounds (IMP-074). None shows a word or a role.
-import { useState } from 'react';
+// Players (IMP-074, IMP-078, IMP-079). None shows a word or a role.
+import { useEffect, useState } from 'react';
 import type { Preferences } from '../../../engine';
 import { wordById, type Choices } from '../rules';
 import { PREF } from './evening';
-import { OptionButton, QuietButton, Sheet, Switch, Toast, useToast } from './parts';
+import { Dialog, MainButton, OptionButton, QuietButton, Sheet, Switch, Toast, useToast } from './parts';
 import { PlayerList } from './Setup';
 
 /**
@@ -155,40 +155,77 @@ export function SettingsSheet({ prefs, onDone }: { prefs: Preferences; onDone: (
   );
 }
 
+/** Where the Players sheet opens (IMP-074): between rounds, mid-round (adding only) or on the "left halfway" screen. */
+export type PlayersMoment = 'between' | 'mid' | 'halfway';
+
 /**
- * IMP-074: "Players" between rounds: the list of IMP-003; ✕ removes at once with an undo toast inside the sheet
- * ("Kabir left · Points kept · Undo" when keeping score); never below 3. "Done" hands back the final list.
+ * IMP-074, IMP-078, IMP-079: "Players". Between rounds (and on the "left halfway" screen) ✕ removes at once with an
+ * undo toast inside the sheet ("Kabir left · Points kept · Undo" when keeping score). Mid-round the sheet is for
+ * adding: ▲ ▼ are hidden; ✕ on a player of this round asks "Kabir has to leave?" (the same words whatever his role);
+ * ✕ on someone added during this round removes them at once; pending leavers are greyed with no ✕. A removal that
+ * would leave 2 players (pending leavers counted as gone) opens "3 players needed." instead. "Done" hands back the
+ * final list.
  */
 export function PlayersSheet({
   players: start,
   past,
   keepingScore,
+  moment = 'between',
+  roundPlayers = [],
+  leaving = [],
   onDone,
+  onLeave,
+  onEndGame,
 }: {
   players: readonly string[];
   past: readonly string[];
   keepingScore: boolean;
+  moment?: PlayersMoment;
+  /** This round's dealt players (mid-round and "left halfway"). */
+  roundPlayers?: readonly string[];
+  /** Pending leavers ("Finish this round first"). */
+  leaving?: readonly string[];
   onDone: (players: string[]) => void;
+  /** IMP-078: the host's answer to "Kabir has to leave?", with the sheet's list as it stands. */
+  onLeave?: (players: string[], player: string, how: 'finish' | 'without') => void;
+  /** "End game" in "3 players needed.": the summary, nothing recorded. */
+  onEndGame: () => void;
 }) {
   const [players, setPlayers] = useState<string[]>(() => [...start]);
-  const [tooFew, setTooFew] = useState(false);
+  const [ask, setAsk] = useState<'tooFew' | { leave: string } | null>(null);
+  const [focusKey, setFocusKey] = useState(0);
   const [toast, showToast, clearToast] = useToast();
+  // The phone's Back closes a dialog here and changes nothing (IMP-078).
+  useEffect(() => {
+    if (ask === null) return;
+    const back = () => setAsk(null);
+    window.addEventListener('popstate', back);
+    return () => window.removeEventListener('popstate', back);
+  }, [ask]);
+  // Pending leavers count as gone; during a round (or its "left halfway" screen) they are greyed, with no ✕.
+  const staying = moment === 'between' ? [] : leaving.filter((p) => players.includes(p));
   return (
     <Sheet title="Players" onDone={() => onDone(players)}>
       <PlayerList
         players={players}
         past={past}
-        onChange={(next) => {
-          setTooFew(false);
-          setPlayers(next);
-        }}
+        fixed={moment !== 'between'}
+        staying={staying}
+        focusKey={focusKey}
+        onChange={(next) => setPlayers(next)}
         onRemove={(i) => {
-          if (players.length <= 3) {
-            setTooFew(true);
+          const name = players[i]!;
+          if (players.length - staying.length - 1 < 3) {
+            setAsk('tooFew');
             return;
           }
-          const name = players[i]!;
+          if (moment === 'mid' && roundPlayers.includes(name)) {
+            setAsk({ leave: name });
+            return;
+          }
           setPlayers(players.filter((_, k) => k !== i));
+          // Mid-round, someone added during this round simply goes.
+          if (moment === 'mid') return;
           // "Undo" puts them back in the same seat.
           const back = () =>
             setPlayers((cur) =>
@@ -197,12 +234,42 @@ export function PlayersSheet({
           showToast(keepingScore ? `${name} left · Points kept` : `${name} left`, back);
         }}
       />
-      {tooFew && (
-        <p role="alert" className="imp-alert">
-          Keep at least 3 players.
-        </p>
-      )}
       <Toast toast={toast} onDone={clearToast} />
+      {ask === 'tooFew' && (
+        <Dialog text="3 players needed. Add someone, or end the game.">
+          <QuietButton onClick={onEndGame}>End game</QuietButton>
+          <MainButton
+            inline
+            onClick={() => {
+              setAsk(null);
+              setFocusKey((k) => k + 1);
+            }}
+          >
+            Add a player
+          </MainButton>
+        </Dialog>
+      )}
+      {ask !== null && ask !== 'tooFew' && (
+        <Dialog text={`${ask.leave} has to leave?`}>
+          <QuietButton
+            onClick={() => {
+              setAsk(null);
+              onLeave?.(players, ask.leave, 'without');
+            }}
+          >
+            Deal again without {ask.leave}
+          </QuietButton>
+          <MainButton
+            inline
+            onClick={() => {
+              setAsk(null);
+              onLeave?.(players, ask.leave, 'finish');
+            }}
+          >
+            Finish this round first
+          </MainButton>
+        </Dialog>
+      )}
     </Sheet>
   );
 }

@@ -16,16 +16,28 @@ export function PlayerList({
   onChange,
   past,
   onRemove,
+  fixed = false,
+  staying = [],
+  focusKey = 0,
 }: {
   players: readonly string[];
   onChange: (next: string[]) => void;
   past: readonly string[];
   /** ✕: removes at once by default (setup, IMP-003). */
   onRemove?: (index: number) => void;
+  /** IMP-074 mid-round: adding only, so ▲ ▼ are hidden. */
+  fixed?: boolean;
+  /** IMP-074: pending leavers, shown greyed with no ✕. */
+  staying?: readonly string[];
+  /** IMP-078 "Add a player": each change focuses the name field. */
+  focusKey?: number;
 }) {
   const [text, setText] = useState('');
   const [dupOf, setDupOf] = useState<string | null>(null);
   const field = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (focusKey > 0) field.current?.focus();
+  }, [focusKey]);
   const full = players.length >= MAX_PLAYERS;
   // IMP-003 (M3): every Enter adds the name typed before it, however fast. Two Enters can come before the screen is
   // drawn again, so the list is read from what was last added, and the name from the field itself.
@@ -67,31 +79,37 @@ export function PlayerList({
       {players.length > 0 && (
         <ol className="imp-player-list">
           {players.map((p, i) => (
-            <li key={`${p}-${i}`} className="imp-player-row">
+            <li key={`${p}-${i}`} className={staying.includes(p) ? 'imp-player-row imp-player-leaving' : 'imp-player-row'}>
               <span className="imp-player-num" aria-hidden="true">
                 {i + 1}
               </span>
               <span className="imp-player-name">{p}</span>
-              <button type="button" className="imp-icon" aria-label={`Move ${p} up`} disabled={i === 0} onClick={() => move(i, -1)}>
-                ▲
-              </button>
-              <button
-                type="button"
-                className="imp-icon"
-                aria-label={`Move ${p} down`}
-                disabled={i === players.length - 1}
-                onClick={() => move(i, 1)}
-              >
-                ▼
-              </button>
-              <button
-                type="button"
-                className="imp-icon"
-                aria-label={`Remove ${p}`}
-                onClick={() => (onRemove ? onRemove(i) : onChange(players.filter((_, k) => k !== i)))}
-              >
-                ✕
-              </button>
+              {!fixed && (
+                <>
+                  <button type="button" className="imp-icon" aria-label={`Move ${p} up`} disabled={i === 0} onClick={() => move(i, -1)}>
+                    ▲
+                  </button>
+                  <button
+                    type="button"
+                    className="imp-icon"
+                    aria-label={`Move ${p} down`}
+                    disabled={i === players.length - 1}
+                    onClick={() => move(i, 1)}
+                  >
+                    ▼
+                  </button>
+                </>
+              )}
+              {!staying.includes(p) && (
+                <button
+                  type="button"
+                  className="imp-icon"
+                  aria-label={`Remove ${p}`}
+                  onClick={() => (onRemove ? onRemove(i) : onChange(players.filter((_, k) => k !== i)))}
+                >
+                  ✕
+                </button>
+              )}
             </li>
           ))}
         </ol>

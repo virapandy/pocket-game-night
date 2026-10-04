@@ -298,6 +298,10 @@
 .imp-player-row { min-height: 56px; display: flex; align-items: center; gap: 6px; border-bottom: 1px solid var(--border); }
 .imp-player-num { flex: none; width: 24px; font-weight: 800; color: var(--muted); }
 .imp-player-name { flex: 1; min-width: 0; font-weight: 700; overflow-wrap: anywhere; }
+/* IMP-074: a pending leaver ("Finish this round first") is greyed, with no ✕. */
+.imp-player-leaving { opacity: 0.5; }
+/* IMP-079: "Joining next round: Zoya", directly above the main button's area. */
+.imp-joining { flex: none; }
 .imp-add { display: flex; gap: 8px; }
 .imp-input {
   flex: 1;
