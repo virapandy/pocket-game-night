@@ -53,6 +53,12 @@ The UX playbook's pass 12a "What next?" and guideline 47a stay as the measurable
    the player after each green build of a changed flow and before every release.
 4. Until it is installed, the product owner runs the same brief through a general helper (below).
 
+## Running players cleanly (learned on the first runs, 4 October)
+All browser tabs share the app's saved data. Run **one player at a time**, start each run from cleared app data
+(remove every `pgn.*` key on the preview, including `pgn.test.seeds`), and never run a player while tests or other
+reviewers use the same browser. Otherwise runs overwrite each other's games and a leftover test seed can freeze a
+round.
+
 ## Brief for a player run (used now, until installed)
 "You are <persona>. You have never seen this game's rules. Open <preview link> at <size>, and play a whole game of
 <game> with <n> imaginary people, from Home. Do not read any project files. At every screen write: what you want to
