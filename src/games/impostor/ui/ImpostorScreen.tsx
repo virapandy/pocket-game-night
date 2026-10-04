@@ -126,6 +126,8 @@ export function ImpostorScreen({
           onBack={() => setRoute({ name: 'players' })}
           onStart={() => startRound(false)}
           onPractice={() => startRound(true)}
+          lastGuess={choices.lastGuess}
+          onLastGuess={(on) => on !== choices.lastGuess && setChoices({ ...choices, lastGuess: on })}
           sameAsLast={carried !== null && choices === carried}
         />
       );

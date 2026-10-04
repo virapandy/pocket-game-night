@@ -11,7 +11,7 @@ import { PlayerList } from './Setup';
  * The last-chance guess of a set of choices (IMP-076). Choices saved before the setting existed had the guess, so they
  * read as on (IMP-009, IMP-096).
  */
-export const guessOn = (choices: Choices): boolean => (choices as { lastGuess?: boolean }).lastGuess ?? true;
+export const guessOn = (choices: Choices): boolean => choices.lastGuess !== false;
 
 /**
  * IMP-070, IMP-072: "How to play", opened only on request (the choices screen or the menu). Its text follows the

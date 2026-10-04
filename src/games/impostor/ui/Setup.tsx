@@ -316,7 +316,7 @@ export function HowToPlayChoices({
       )}
       {sheet === 'howTo' && (
         <RulesSheet
-          choices={lastGuess === undefined ? choices : ({ ...choices, lastGuess } as Choices)}
+          choices={lastGuess === undefined ? choices : { ...choices, lastGuess }}
           onDone={() => setSheet(null)}
           {...(onPractice ? { onPractice } : {})}
         />

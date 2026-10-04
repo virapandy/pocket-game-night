@@ -223,6 +223,8 @@ export function Game({
       <HowToPlayChoices
         choices={draft}
         onChange={setDraft}
+        lastGuess={draft.lastGuess}
+        onLastGuess={(on) => on !== draft.lastGuess && setDraft({ ...draft, lastGuess: on })}
         onBack={() => setOverlay(null)}
         onStart={() => {
           const noWords = state.phase === 'noWords';
