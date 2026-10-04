@@ -36,7 +36,7 @@ CGE owns the US trademark CODENAMES (Reg. No. 5133198, 2017). An Indian or EU re
 | Name | Secret Words | ✅ not close to "Codenames". **Avoid "Code Words", "Codenamez" and similar** |
 | Words | Our own 400 India-centric words | ✅ |
 | Look | Mango orange v Peacock teal, our icons, Tambola's clean style | ✅ not red/blue agents, beige cards or spy art |
-| Theme and terms | Clue giver, the map, the Bhoot | ✅ no spymaster, agent, assassin, key card |
+| Theme and terms | Clue giver, the map, the Ghost | ✅ no spymaster, agent, assassin, key card |
 | Rules text | "How to play" written in our own words | ✅ never copy CGE's rulebook |
 | "Inspired by Codenames" | Plain text, with a not-endorsed line | ✅ referential use; the residual risk is a polite request to remove the line, a one-line fix |
 

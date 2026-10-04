@@ -10,6 +10,9 @@ Phases: **Secret Words 1** = first release. **Secret Words later** = designed no
 Change classes (`docs/change-sop.md`): the deal, the map code, the board algorithm, saved evenings and the word list
 format = **C3** (tests first: sections 02, 04 rules, 05, 06, SWD-099); screens = C1/C2.
 
+**All names in English (owner, 4 October, K23):** the losing card is **the Ghost** (was "the Bhoot"); the board word Ghost
+(SWDW-209) is replaced by Shadow. Sounds and icons unchanged.
+
 **"Inspired by Codenames" (owner, 4 October, K22):** the picker card and How to play say so (SWD-001, SWD-011); the word
 "Codenames" appears nowhere else in the app: never as a name, logo, styling, heading, button, page title or web address
 (`legal.md`).
@@ -46,12 +49,12 @@ names, plurals, t = …, sound on**. Characters: "·" U+00B7 with a space either
 | **Team** | **Mango** or **Peacock**, written so, never upper case. Mango is always listed first. |
 | **Team bar** | `team-bar`: an 8 px strip in the team colour across the top edge, on the pass screen, the clue screen and the board screens; always with the team's name in words nearby (`turn-heading` or `turn-line`). |
 | **Team colour** | `--mango` / `--peacock` (`ux.md` §1); used only for that team's cells and its bar. |
-| **Team icon** | Our own SVG: mango (Mango), feather (Peacock), dot (Nobody), ghost (Bhoot); `aria-hidden`, 16 × 16 px, top left of a cell, 2 px in. |
-| **Kind** | `mango`, `peacock`, `nobody` or `bhoot`. |
+| **Team icon** | Our own SVG: mango (Mango), feather (Peacock), dot (Nobody), ghost (Ghost); `aria-hidden`, 16 × 16 px, top left of a cell, 2 px in. |
+| **Kind** | `mango`, `peacock`, `nobody` or `ghost`. |
 | **Board** | **Full** = 25 words, 5 × 5; **Family** = 16 words, 4 × 4. Cells in row-major order, `data-index` 0 top left. |
 | **Board screens** | The preview board (SWD-012), guessing (SWD-041), the end-turn line (SWD-044), turn over (SWD-045) and the board part of game over (SWD-051). |
 | **Word text** | Every board and map word shows exactly as in the list (title case, e.g. "Kite"), in the app's body font stack, weight 600, never transformed. Elsewhere `<WORD>` is the same word upper case by CSS (`text-transform`), DOM text as in the list. |
-| **Face down / turned over** | Not yet revealed / revealed. Turned over: fill in the kind's colour, the kind's icon and the word (white text on Mango, Peacock and Bhoot in light mode; `--text` on Nobody). |
+| **Face down / turned over** | Not yet revealed / revealed. Turned over: fill in the kind's colour, the kind's icon and the word (white text on Mango, Peacock and Ghost in light mode; `--text` on Nobody). |
 | **Locked** | Board cells that can't be picked: `aria-disabled="true"`, taps do nothing, **not greyed** (an exception to "disabled"). |
 | **The map** | The kind of every word on the board. |
 | **Map screens** | The private map (SWD-031), the scan screen (SWD-033) and the map phone (SWD-034). |
@@ -90,7 +93,7 @@ Plurals: "1 word" / "2 words"; "1 guess" / "2 guesses"; "1 game" / "2 games"; "1
 | Choices | heading "How do you want to play?"; small line "Same as last time" (carried over); groups "How do clue givers see the map?", "Board", "Words"; main "Deal the words" | h1; small line; `role="group"` | SWD-009 |
 | Map cards | "Pass this phone" + "One phone. The clue giver holds it to see the map." · "Clue givers' own phones" + "They scan a code. Works without internet." | buttons with `aria-pressed` | SWD-009 |
 | Options | "Full: 25 words" / "Family: 16 words"; "Whole family" / "+ Grown-ups" | buttons with `aria-pressed` | SWD-009 |
-| Option lines | Full "9 and 8 words to find, 7 nobody's, 1 Bhoot." · Family "6 and 5 words to find, 5 nobody's, no Bhoot." · Whole family "Words kids and grandparents know." · + Grown-ups "Adds words kids or elders may not know." | small line under the group | SWD-009 |
+| Option lines | Full "9 and 8 words to find, 7 nobody's, 1 Ghost." · Family "6 and 5 words to find, 5 nobody's, no Ghost." · Whole family "Words kids and grandparents know." · + Grown-ups "Adds words kids or elders may not know." | small line under the group | SWD-009 |
 | Read this aloud | heading "Read this aloud"; 4 lines (SWD-010); main "Let's play"; quiet "Show me the board first" | h1; `ol` of 4 `li` | SWD-010 |
 | How to play | heading "How to play"; h2 "Read this aloud" + the 4 lines; h2 "The rules" + 8 lines (SWD-011); small line `credit` (SWD-011); main "Done" | h1; h2; `ol`; small line | SWD-011 |
 | Preview board | `turn-line` "Mango starts"; counts; main "Start" | paragraphs; main | SWD-012 |
@@ -111,7 +114,7 @@ Plurals: "1 word" / "2 words"; "1 guess" / "2 guesses"; "1 game" / "2 games"; "1
 | Turn-over main | "Peacock's turn" | main | SWD-045 |
 | Broke a rule | dialog "That clue broke a rule? Mango's turn ends and one of Peacock's words is turned over." with "Yes, it broke a rule" / "Cancel" (main); result line "Clue broke a rule. One of Peacock's words was turned over." | dialog; `result-line` | SWD-046 |
 | Timer | `hurry-timer` "1:30" … "0:01", then "Time's up!", or "Paused"; button / menu item "Hurry up: 90 s" ↔ "Stop timer" | span; button | SWD-047 |
-| Game over | heading "Mango wins!"; line "All 9 words found." / "Peacock woke the Bhoot!"; ended early: heading "Game ended. No winner."; tally; main "Play again"; quiet "Change teams", "End the evening" | h1 `game-heading`; `result-line`; `tally`; buttons | SWD-050–054 |
+| Game over | heading "Mango wins!"; line "All 9 words found." / "Peacock woke the Ghost!"; ended early: heading "Game ended. No winner."; tally; main "Play again"; quiet "Change teams", "End the evening" | h1 `game-heading`; `result-line`; `tally`; buttons | SWD-050–054 |
 | Deal new | dialog "Deal a new board? This board won't count. Same teams and clue givers." with "Deal a new board" / "Keep playing" (main) | dialog | SWD-055 |
 | End game | dialog "End this game with no winner?" with "End the game" / "Keep playing" (main) | dialog | SWD-054 |
 | End evening | dialog "End the evening? Tonight's tally stays in History." (mid-game: "End the evening? This game won't count.") with "End the evening" / "Keep playing" (main) | dialog | SWD-060 |
@@ -120,7 +123,7 @@ Plurals: "1 word" / "2 words"; "1 guess" / "2 guesses"; "1 game" / "2 games"; "1
 | Players sheet | dialog "Players"; h2s "Mango" / "Peacock"; names with "Remove Kabir" (✕); label "Player name", placeholder "Type a name…", button "Add"; main "Done"; toasts "Kabir left · Undo" · "Riya left · Meena gives Mango's clues · Undo" | dialog; buttons; input; `undo-toast` | SWD-061 |
 | Show the map sheet | dialog "Show the map to"; buttons "Riya (Mango)", "Arjun (Peacock)"; quiet "Cancel" | dialog | SWD-037 |
 | Sideways | "Turn your phone sideways to see the board." | paragraph `turn-sideways` (body text) | SWD-092 |
-| History | "Secret Words · 3 games"; "Game 2 · Mango won · Riya and Arjun gave clues"; "Game 2 · Mango won, Peacock woke the Bhoot · Riya and Arjun gave clues"; "Game 3 · Ended early · Meena and Kabir gave clues" | `history-game`; `history-round` | SWD-064 |
+| History | "Secret Words · 3 games"; "Game 2 · Mango won · Riya and Arjun gave clues"; "Game 2 · Mango won, Peacock woke the Ghost · Riya and Arjun gave clues"; "Game 3 · Ended early · Meena and Kabir gave clues" | `history-game`; `history-round` | SWD-064 |
 | Announcements | SWD-095 | `announcer` (`aria-live="polite"`) | SWD-095 |
 
 ### Menu ("··· Menu", top right) at each step
@@ -219,7 +222,7 @@ Between games the choices change only through "Change teams" → "Next" → this
 Due when no Secret Words game has been dealt yet in the current session (PLT-016); checked when "Deal the words" is tapped in a
 new evening. Lines: 1 "Two teams, Mango and Peacock. Each has a clue giver who sees the secret map." 2 "Clue givers: say
 one word and a number. 'Monsoon, 2' means two of our words go with monsoon." 3 "Guessers: talk, then turn over words one at
-a time. Wrong word? Your turn ends." 4 "Find all your words first. Turn over the Bhoot and you lose!" (Family: "Find all your
+a time. Wrong word? Your turn ends." 4 "Find all your words first. Turn over the Ghost and you lose!" (Family: "Find all your
 words first!"). "Let's play" deals; "Show me the board first" deals and opens the preview board (SWD-012).
 
 ### SWD-011 How to play (detail of SWD-010)
@@ -229,7 +232,7 @@ word sits." 3 "Don't say a word that is still face down on the board, or part of
 an English sentence (chai, jugaad), is fine. Names like Taj Mahal count as one word." 5 "No faces, no pointing, no extra
 hints. The other clue giver judges a clue before the first guess." 6 "Guessers take at least one guess, and up to the number
 plus one. 0 or ∞: as many as you like." 7 "Your word: keep going. Nobody's word or the other team's: your turn ends. The
-Bhoot: you lose!" (Family: without "The Bhoot: you lose!") 8 "First team to find all its words wins." Then the small line `credit`: "Secret Words uses game rules inspired by
+Ghost: you lose!" (Family: without "The Ghost: you lose!") 8 "First team to find all its words wins." Then the small line `credit`: "Secret Words uses game rules inspired by
 Codenames, designed by Vlaada Chvátil. Codenames is a trademark of Czech Games Edition. Secret Words is an independent free
 game and is not made, sponsored or endorsed by Czech Games Edition." (plain text, no styling; `docs/games/secret-words/legal.md`) Main "Done" returns.
 The page may scroll. Nothing about the map appears.
@@ -243,7 +246,7 @@ counts, and main "Start", which leads to the scan screen (own phones) or the pas
 ## 02 The deal and its secrets → `specs/secret-words/02-deal.md` (C3)
 
 ### SWD-020 What a board holds
-Full: 25 distinct words; starting team 9, other 8, nobody 7, Bhoot 1. Family: 16 distinct words; 6, 5, 5, 0.
+Full: 25 distinct words; starting team 9, other 8, nobody 7, Ghost 1. Family: 16 distinct words; 6, 5, 5, 0.
 **Property:** for 10,000 random valid codes of each size, exactly these counts and all words distinct.
 
 ### SWD-021 Who starts
@@ -259,7 +262,7 @@ most significant first); **7 check** = (1·v1 + 2·v2 + 3·v3 + 4·v4 + 5·v5 + 
 2. `deck` = ``shuffle(candidates, createRng(`secret-words:deck:${d}`))`` (the engine's `shuffle`).
 3. `words` = `deck.slice(25·n, 25·n + size)` (size 25 or 16; Family boards also step by 25).
 4. `r` = ``createRng(`secret-words:board:${d}:${n}`)``; `starts` = `r.int(2) === 0 ? 'mango' : 'peacock'`; then `kinds` =
-   `shuffle([starts × 9, other × 8, nobody × 7, bhoot × 1], r)` (Family 6, 5, 5, 0), in that order of draws.
+   `shuffle([starts × 9, other × 8, nobody × 7, ghost × 1], r)` (Family 6, 5, 5, 0), in that order of draws.
 A code is valid only if its check is right, its edition is shipped and 25·n + size ≤ candidates.length.
 **Property:** `boardFromCode` gives the same result for 10,000 codes on every call. **Browser check (5 codes, via test hook
 2):** the host board and a map phone given the same code show the same words in the same cells with the same kinds and
@@ -407,8 +410,8 @@ over, the counts update and the result line shows; taps on cells and buttons do 
 | Nobody's | "Nobody's word. Peacock's turn next." | Turn over |
 | The other team's | "✗ Peacock's word! It counts for them." | Turn over |
 | Either team's last word | none | Game over at t = 300 ms: that team wins |
-| The Bhoot | none | Game over at t = 300 ms: the other team wins |
-Templates: "Mango" = the guessing team, "Peacock" = the other. The last-word and Bhoot rows win over the others.
+| The Ghost | none | Game over at t = 300 ms: the other team wins |
+Templates: "Mango" = the guessing team, "Peacock" = the other. The last-word and Ghost rows win over the others.
 
 ### SWD-044 Ending the turn early
 "End our turn" is disabled until the team has made a guess this turn. A tap shows the end-turn line: cells locked, result
@@ -449,12 +452,12 @@ Every button that records a move ignores another tap for 800 ms after a tap; pic
 ## 05 Winning and the night → `specs/secret-words/05-results.md` (C3)
 
 ### SWD-050 Who wins
-A team wins when all its words are turned over (by either team, or SWD-046). Turning over the Bhoot makes the other team win.
+A team wins when all its words are turned over (by either team, or SWD-046). Turning over the Ghost makes the other team win.
 **Property:** every one of 10,000 random scripted games ends with exactly one winner, or ended early.
 
 ### SWD-051 Game over
-Heading "Mango wins!"; line "All 9 words found." (the winner's total: 9, 8, 6 or 5) or, for the Bhoot, "Peacock woke the
-Bhoot!" (the losing team); the whole map: turned-over cells as before, face-down cells now in their kind's colour and icon
+Heading "Mango wins!"; line "All 9 words found." (the winner's total: 9, 8, 6 or 5) or, for the Ghost, "Peacock woke the
+Ghost!" (the losing team); the whole map: turned-over cells as before, face-down cells now in their kind's colour and icon
 at 50% opacity (accessible name "Kite, Peacock's word, not found"); tally; main "Play again"; quiet "Change teams", "End the
 evening". The page may scroll as one, main fixed. Wake lock released. Narrow portrait: the sideways line instead of the board.
 
@@ -484,7 +487,7 @@ clue-giver counts unchanged. Then the scan screen or the new starting team's pas
 ### SWD-060 End of the evening
 "End the evening" (game over button, or menu) → dialog → "End the evening": a game in progress is ended early; the evening ends;
 the summary shows: tally; fun lines, at most two, in this order: "Riya's clues won 2 games" (the credited clue giver with the
-most won games, at least 1; tie: the one who reached that count first) and "The Bhoot woke up 1 time" (at least 1); main
+most won games, at least 1; tie: the one who reached that count first) and "The Ghost woke up 1 time" (at least 1); main
 "Play something else" (the picker, tonight's names kept); quiet "Back to Home". An ended evening never reopens; an evening
 with no game at all is deleted, otherwise it stays in History.
 
@@ -505,8 +508,8 @@ When the app opens or Home shows, an evening whose last move is more than 12 hou
 progress) and `endEvening`, both at the last move + 12 hours. No summary shows.
 
 ### SWD-064 History
-Evening row "Secret Words · 3 games" (won and ended early). Game rows: "Game 2 · Mango won · Riya and Arjun gave clues"; Bhoot: "Game
-2 · Mango won, Peacock woke the Bhoot · Riya and Arjun gave clues"; "Game 3 · Ended early · Meena and Kabir gave clues"
+Evening row "Secret Words · 3 games" (won and ended early). Game rows: "Game 2 · Mango won · Riya and Arjun gave clues"; Ghost: "Game
+2 · Mango won, Peacock woke the Ghost · Riya and Arjun gave clues"; "Game 3 · Ended early · Meena and Kabir gave clues"
 (credited clue givers, Mango's first). Tapping a game row opens its board with the whole map ("← Back" to the evening).
 
 ### SWD-065 Discard the evening
@@ -545,7 +548,7 @@ parts of the screen stay (on the board, "Reveal" stays disabled). Turning to lan
 
 ### SWD-093 Never colour alone
 Every turned-over cell and every map cell has its kind's icon and an accessible name: "Kite, Mango's word" / "Kite, Peacock's
-word" / "Kite, nobody's word" / "Kite, the Bhoot" (+ ", found" or ", not found" where SWD-031, SWD-035 and SWD-051 say).
+word" / "Kite, nobody's word" / "Kite, the Ghost" (+ ", found" or ", not found" where SWD-031, SWD-035 and SWD-051 say).
 
 ### SWD-094 Targets
 Every button at least 44 × 44 px; board cells per SWD-090/091; keys per SWD-040.
@@ -561,8 +564,8 @@ screens); everything else the same.
 
 ### SWD-097 Sound and vibration
 Sounds (Impostor's sound hook, `window.__sounds`): `ding` (own word), `thud` (nobody's, the other team's, a broken-rule
-turn), `boo` (the Bhoot), `chime` (time's up); peak gains of `thud`, `boo` and `chime` ≤ `ding`'s. Vibration 50 ms on every
-reveal, 200 ms on the Bhoot. The private map and the map phone make no sound and no vibration.
+turn), `boo` (the Ghost), `chime` (time's up); peak gains of `thud`, `boo` and `chime` ≤ `ding`'s. Vibration 50 ms on every
+reveal, 200 ms on the Ghost. The private map and the map phone make no sound and no vibration.
 
 ### SWD-098 One main button
 At most one main button per screen, always the next step.
@@ -579,7 +582,7 @@ retired_in }[]`). **Checks:** ids unique; words 3–8 letters A–Z, unique igno
 1. **Rule API** in `src/games/secret-words/index.ts` (pure), fitting the engine (`startMatch`, `play`, `replay`, `viewFor`,
    `SavedGame`, `createRng`, `shuffle`):
    ```ts
-   type Team = 'mango' | 'peacock'; type Kind = Team | 'nobody' | 'bhoot';
+   type Team = 'mango' | 'peacock'; type Kind = Team | 'nobody' | 'ghost';
    interface SecretWordsChoices { map: 'pass' | 'own'; board: 'full' | 'family'; words: 'family' | 'grownups' }
    interface Teams { mango: string[]; peacock: string[]; clueGivers: { mango: string | null; peacock: string | null } }
    // SetupInput: { gameId: 'secret-words', seeds: { deal: string, teams: string }, config: { players: string[], teams: Teams,

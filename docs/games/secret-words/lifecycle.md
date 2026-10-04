@@ -51,7 +51,7 @@ the team's next player takes over and sees the map at the team's next pass (own 
 | First guess of the evening | Small line: "Tap a word, then Reveal. You can take one more than the number." |
 | Any time | Menu → "How to play": the rule book in plain words, never showing the map |
 | After a wrong word | The result line says what happened and whose turn it is, so the rule teaches itself |
-| Kids or first-timers | "Family: 16" board, no Bhoot |
+| Kids or first-timers | "Family: 16" board, no Ghost |
 
 ## Stage 4. Play
 **Turn loop:** map (one phone: pass and hold; own phones: already on their phone) → clue number → guesses → result →
@@ -93,8 +93,8 @@ next team.
 ## Paper play-test (process step 5), before any build
 6+ players, 3 games, one phone used only as a timer:
 1. Write 25 words from `words.csv` on slips in a 5 × 5 grid. One person (not playing that game) draws the map on paper:
-   9 for the starting team, 8 for the other, 7 nobody's, 1 Bhoot, and hands it to both clue givers.
-2. Play one Full game and one Family game (16 slips, 6/5/5, no Bhoot). Try one game where the map is shown on a phone
+   9 for the starting team, 8 for the other, 7 nobody's, 1 Ghost, and hands it to both clue givers.
+2. Play one Full game and one Family game (16 slips, 6/5/5, no Ghost). Try one game where the map is shown on a phone
    held privately, passed between clue givers.
 3. Note afterwards: did anyone not know a word? Was 8 letters too short? Were Mango and Peacock fun? How long did clue
    givers think? Did anyone want a timer? Did the kids enjoy being clue giver? Was passing the map phone annoying?

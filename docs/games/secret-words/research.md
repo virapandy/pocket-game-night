@@ -26,7 +26,7 @@ Full rule book: `guide.md`. The facts it rests on:
 | Fact | Convention |
 |---|---|
 | Board | 25 words in a 5 × 5 grid |
-| Split | Starting team 9 words, other team 8, 7 bystanders (ours: "nobody's words"), 1 assassin (ours: the **Bhoot**) |
+| Split | Starting team 9 words, other team 8, 7 bystanders (ours: "nobody's words"), 1 assassin (ours: the **Ghost**) |
 | Who starts | Shown on the key card; the starting team has 9 |
 | Clue | One word plus one number; the number says how many words it links |
 | Guesses | At least one; after each right guess, carry on up to **number + 1**; stop any time |
@@ -98,7 +98,7 @@ text; assuming players know the game; the Codenames name, words, beige-card look
 | 5 | Clue rules are shown in plain words and judged by the room; the app never polices a spoken clue | `guide.md` rules 6–8 |
 | 6 | Timer off by default; a 90-second "hurry up" timer anyone may start; it never moves on by itself (guideline 48) | decision K8 |
 | 7 | Rotate the clue giver every game; light tally of the night | decision K9 |
-| 8 | The Bhoot is a laugh, not a humiliation; Family board has no Bhoot | `ux.md` tone, decision K6 |
+| 8 | The Ghost is a laugh, not a humiliation; Family board has no Ghost | `ux.md` tone, decision K6 |
 | 9 | Our own India-centric words, fair to every region, tagged family / grown-ups, no repeats in an evening | `words.md`, decision K10 |
 | 10 | Design every phone (host, clue givers' own phones, guests) and every stage before any build | `lifecycle.md` |
 

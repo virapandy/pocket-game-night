@@ -21,7 +21,7 @@ first build.
 | A. Spy noir ("agents", black) | ✗ | ✗ | ✗ | ~ | ✗ dark | ✗ "assassin" |
 | B. Desi detective ("Jasoos", case files) | ~ still spy | ~ | ✓ | ~ | ~ | ~ |
 | C. Flat minimal, red v blue | ✓ | ~ | ✗ | ✓ | ✗ **red is our main-button colour** (guideline 17a) | ~ |
-| **D. Flat board + Indian festive teams: Mango v Peacock, the Bhoot** | **✓** | **✓** | **✓** | **✓** | **✓** | **✓** |
+| **D. Flat board + Indian festive teams: Mango v Peacock, the Ghost** | **✓** | **✓** | **✓** | **✓** | **✓** | **✓** |
 
 ### Decision (product owner; owner may overrule, K2)
 **Option D: Tambola's clean, flat look for the board, with two Indian team identities and a friendly ghost.**
@@ -29,13 +29,13 @@ first build.
   known to every region and every age, no politics, no religion. Orange and teal stay apart for the common colour-vision
   deficiencies (unlike red and green or red and blue).
 - **Nobody's words:** light sand, with a plain dot.
-- **The Bhoot** (instead of an assassin): a friendly cartoon ghost on near-black. "You woke the Bhoot!" gets a laugh,
-  never a put-down. "Bhoot" is understood across India (bhoot, bhootham, bhut).
+- **The Ghost** (instead of an assassin): a friendly cartoon ghost on near-black. "You woke the Ghost!" gets a laugh,
+  never a put-down. Plain English, like every name in the game (owner, 4 October, K23).
 - **Never colour alone** (guideline 26): every turned-over word and every map cell carries an **icon and a word**:
-  mango, feather, dot, ghost; "Mango", "Peacock", "Nobody", "Bhoot".
+  mango, feather, dot, ghost; "Mango", "Peacock", "Nobody", "Ghost".
 - **Red stays for the main button only**; turns are shown by a slim team-coloured bar **and** the team's name, not a
   full-screen colour.
-- **No Codenames vocabulary:** "clue giver", "guessers", "the map", "words", "the Bhoot"; never "spymaster", "agent",
+- **No Codenames vocabulary:** "clue giver", "guessers", "the map", "words", "the Ghost"; never "spymaster", "agent",
   "operative", "assassin", "key card", "codename".
 
 ### Colours (to be checked by the coder; text contrast ≥ 4.5:1, guideline 25)
@@ -44,7 +44,7 @@ first build.
 | `--mango` | #B45309 | #F59E0B | Mango cells (white text in light, near-black text in dark), Mango bar |
 | `--peacock` | #0F766E | #2DD4BF | Peacock cells, Peacock bar |
 | `--nobody` | #E7DFD3 | #3A3632 | Nobody's cells (text `--text`) |
-| `--bhoot` | #1C1B1A | #F3EFE9 | The Bhoot cell (inverted text) |
+| `--ghost` | #1C1B1A | #F3EFE9 | The Ghost cell (inverted text) |
 Face-down words: `--surface` with a 1 px `--border`. A picked word: Tambola's "selected" look (outline, ✓, tint),
 never the main look and never a team colour.
 
@@ -98,7 +98,7 @@ Words   [ Whole family ✓ ][ + Grown-ups ]
 1. "Two teams, Mango and Peacock. Each has a clue giver who sees the secret map."
 2. "Clue givers: say one word and a number. 'Monsoon, 2' means two of our words go with monsoon."
 3. "Guessers: talk, then turn over words one at a time. Wrong word? Your turn ends."
-4. "Find all your words first. Turn over the Bhoot and you lose!"
+4. "Find all your words first. Turn over the Ghost and you lose!"
 Main "Let's play"; quiet "Show me the board first" (opens the board with no turn started, then "Start").
 
 ### 6. Seeing the map
@@ -164,18 +164,18 @@ Landscape (recommended when the phone lies in the middle):
   board." (the longest words can't fit at 12 px).
 - Tap a word: selected look. Main "Reveal KITE" (pick, then confirm). "End our turn" disabled until one guess is made.
 - After a reveal, one result line above the buttons: "✓ Mango's word! 2 guesses left." · "Nobody's word. Peacock's
-  turn next." · "✗ Peacock's word! It counts for them."; the Bhoot goes straight to game over
+  turn next." · "✗ Peacock's word! It counts for them."; the Ghost goes straight to game over
 - Menu: see the menu table in `scenarios.md` ("How to play" replaces "Rules").
 
 ### 9. Turn over, game over
 - Turn over: the result line stays, the board stays visible; main "Peacock's turn" → screen 6A for Peacock (one phone)
   or screen 7 (own phones).
-- Game over: "Mango wins! All 9 words found." (Bhoot: "Mango wins!" with "Peacock woke the Bhoot!"), the **whole map** on the
+- Game over: "Mango wins! All 9 words found." (Ghost: "Mango wins!" with "Peacock woke the Ghost!"), the **whole map** on the
   board: face-down words now coloured but faded, turned-over words solid. "Tonight: Mango 2 · Peacock 1". Main
   "Play again"; quiet "Change teams", "End the evening".
 
 ### 10. End of the evening
-"Tonight: Mango 3 · Peacock 2"; fun lines ("Riya's clues won 2 games", "The Bhoot woke up 1 time"); "Play something
+"Tonight: Mango 3 · Peacock 2"; fun lines ("Riya's clues won 2 games", "The Ghost woke up 1 time"); "Play something
 else"; "Back to Home".
 
 ## 3. Lasting rule added to `docs/ux-guidelines.md`
