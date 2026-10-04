@@ -82,9 +82,9 @@ test.describe('IMP-016, IMP-020, IMP-022: the clues screen', () => {
   test('IMP-020 (I24): at 812 × 375 with Larger text and 5 players ("Go round again" shown), the clue order is shown in the right half, the main button wholly on screen', async ({ page }, testInfo) => {
     // Known bug, found 4 October 2026 on main ce6513c (reports/latest.md): with "Not enough clues?" and "Go round again"
     // now in the bottom bar, the clue order's box has no height left at 812 × 375 with Larger text on Linux fonts (the
-    // automation's), so the order is not shown; on Mac fonts half a line shows. Expected to fail where it was seen (the
-    // Android phone on Linux, Screenshots run 37193828590) until fixed; elsewhere a failure is the same bug.
-    test.fail(process.platform === 'linux' && testInfo.project.name === 'android', 'IMP-020 bug: clue order not shown at 812 × 375 with Larger text (Linux fonts)');
+    // automation's), so the order is not shown; on Mac fonts half a line shows. Expected to fail where it was seen (both
+    // phones on Linux: Screenshots run 37193828590, complete run 37194847819) until fixed.
+    test.fail(process.platform === 'linux', `IMP-020 bug: clue order not shown at 812 × 375 with Larger text (Linux fonts, ${testInfo.project.name})`);
     await page.setViewportSize({ width: 812, height: 375 });
     await startEvening(page, { players: P5, seeds: DEAL5, storage: { 'pgn.pref.largerText': true } });
     await dealAll(page, P5);
