@@ -289,6 +289,9 @@ export function Game({
   const rules: MenuItem = { label: 'How to play', onSelect: () => setOverlay('rules') };
   const settings: MenuItem = { label: 'Settings', onSelect: () => setOverlay('settings') };
   const end: MenuItem = { label: 'End game', onSelect: () => setOverlay('end') };
+  // IMP-075 (M11): mid-round, Home at once with nothing recorded (the game stays unfinished; a running timer is kept
+  // paused). "End game" asks "End now?" (IMP-093).
+  const home: MenuItem = { label: 'Home (game is saved)', onSelect: onHome };
   const dealAgain: MenuItem = { label: 'Deal again with a new word', onSelect: () => setOverlay('dealAgain') };
   const playersMid: MenuItem = { label: 'Players', onSelect: () => setOverlay('playersMid') };
   let menu: MenuItem[] | null = null;
@@ -311,11 +314,12 @@ export function Game({
       settings,
       { label: 'History', onSelect: () => onHistory(true) },
     ];
-  } else if (step === 'deal') menu = [rules, playersMid, dealAgain, settings, end];
+  } else if (step === 'deal') menu = [rules, playersMid, dealAgain, settings, home, end];
   else if ((step === 'clues' || step === 'talk' || step === 'vote' || step === 'revote') && !counting) {
-    menu = [rules, playersMid, { label: 'See my word again', onSelect: () => setOverlay('whose') }, dealAgain, settings, end];
+    menu = [rules, playersMid, { label: 'See my word again', onSelect: () => setOverlay('whose') }, dealAgain, settings, home, end];
   }
-  if (seeAgain) menu = null;
+  // IMP-017: no menu from "Whose word?" until the screen it was opened from shows again.
+  if (seeAgain || overlay === 'whose') menu = null;
 
   const startCountdown = () => {
     setCounting(true);
