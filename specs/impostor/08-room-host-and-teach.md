@@ -62,7 +62,7 @@ Then at every size, these sizes hold (guideline 46):
 | `starter-name` | 56 px | name over 8 characters, or 320 px wide | 32 px (may wrap onto 2 lines) |
 | `talk-heading` | 56 px | 320 px wide | 32 px |
 | `pass-name` on screen A | 48 px | name would not fit in 1 line at 48 px | 32 px (may wrap onto 2 lines) |
-| `pass-name` on screen B | 48 px | name would not fit in 1 line at 48 px (it never wraps) | 32 px; 20 px at 320 × 568 and 360 × 640 (product owner, 4 October) |
+| `pass-name` on screen B | 48 px | name would not fit in 1 line at 48 px (it never wraps) | 32 px; 20 px in portrait at heights of 640 px or less; a name still too wide at that floor shrinks just enough to fit on one line, never cut off (product owner, 4 October, as built) |
 | "Time's up!" (h1) | 40 px | never | 40 px |
 | `timer` | 120 px | 320 px wide: exactly 112 px | 112 px |
 | `countdown-heading` "Get ready to point…" | 40 px | never | 40 px |
@@ -71,7 +71,7 @@ Then at every size, these sizes hold (guideline 46):
 | `countdown-number` "Point!" | 96 px | 320 px wide: exactly 72 px | 72 px |
 | `private-word` (box 2 lines tall) | 36 px | Larger text on, or word over 20 characters | 30 px |
 | `build-up` | 40 px | never | 40 px |
-| `result-headline` | 56 px | never | 56 px |
+| `result-headline` | 56 px | widths below 360 px, so it stays on one line (product owner, 4 October) | 44 px |
 | `result-impostor` | 32 px (may wrap onto 3 lines) | never | 32 px |
 | `result-word` | 44 px | word over 12 characters | 32 px (fits in 3 lines) |
 | `result-note`, `guess-line` | 20 px | never | 20 px |

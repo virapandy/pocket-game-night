@@ -1,4 +1,76 @@
 # Test report
+Progress (2026-10-04, tester, triage of the 200-evening screen simulation, weekly run 37177083896 on 511fd42): every
+finding was a runner or check fault, none an app bug; the runner is fixed (5a77f36). The confirming batch of 40 evenings
+(weekly run 37188484624, only_sims, no Jev) found nothing: "40 evenings played (0 with Jev people): 0 dead ends, 0
+secrets shown, 0 screens flagged confusing, 0 layout breaks". Quick verify 37188484544 on 5a77f36: green (rule 649 of
+649, smoke 17 of 17, browser 238 passed). Specs refreshed from scenarios.md (I23: IMP-073, Test hooks item 1); new test
+for the 44 px headline below 360 px wide (passes on both phones on c254ca3).
+
+Commit tested: app c254ca3 (main)   Date: 2026-10-04
+Result: GREEN
+
+## Triage of the 200 evenings (weekly run 37177083896)
+| Finding (count) | Class | Scenario | Evenings | What it was |
+|---|---|---|---|---|
+| Dead ends (42: 22 "could not tap", 20 "did not finish") | Runner fault, fixed | IMP-075 | 002, 003, 007, 010, 011, 012, 014, 019, 023, 026, 027, 028, 030, 035, 039, 042, 043, 047, 048, 049, 050 (all Jev evenings) | With the menu open, Jev chose a button behind it ("I'm Kabir", "··· Menu"); the open menu takes the tap, so the click waited and the evening stopped. The runner now offers only the menu's items (or Escape) while a menu is open. The app was not stuck |
+| Secret shown "Stage" (deal-A, clues, talk, countdown, picker, build-up) | Check fault, fixed | IMP-013 | 082, 162 | The word "Stage" matched the app's CSS class `imp-stage`, not text. The check now reads the page's text, title and attributes, leaving out class, style, id and test ids |
+| Secret shown "Chutney" / "Ice cream" (deal-A, deal-B, dialog, no-problem) | Check fault, fixed; one note for the product owner | IMP-013, IMP-083 | 096, 144 | The announcer still held the previous round's result, "The word was Extra chutney" / "Ice cream tub full of dal", and the new round's word ("Chutney", "Ice cream") is part of it. Not this round's word showing. The check now leaves out words revealed earlier in the evening |
+| Layout: "a room screen scrolls" on the last-chance guess step (8) | Check fault, fixed | IMP-081 | 075, 081, 094, 099, 155, 172, 183 (812 × 375, guess on) | The guess step is part of the result screen, which scrolls as one page (IMP-081, I23). Only deal, clues, talk, countdown and picker must not scroll |
+| Layout: clue order "drawn over" "One more round of clues" / "Second round: …" / the main button (8) | Check fault, fixed | IMP-020, IMP-081 | 116, 139 (812 × 375, Larger text, 5 players) | The clue order scrolls inside its own box (IMP-020); the overlap check did not clip text by the element's own scroll box. It does now (`overlapping` in tests/browser/impostor.ts) |
+| Jev flagged confusing (13) | For the product owner (not a bug) | IMP-016, IMP-092 | below | |
+No finding was a real app bug, so no replay is kept; the 42 saved replays describe runner faults and are not added.
+
+## Jev's confusing-screen flags (13), for the product owner
+Jev was asked on each new screen "Which button would you press next to carry on the game?"; a flag means its confident
+answer (0.6 or more) was not the main button. Pictures from the run's artifacts (`gh run download 37177083896`); three
+are kept in the repo: `reports/screens/sims-2026-10-04/jev-flag-001-flag-15.png` (clues, portrait),
+`jev-flag-034-flag-10.png` (clues, Timer) and `jev-flag-007-flag-21.png` (summary).
+
+| Evening | Size | Screen | Persona | Jev's choice (probability) | Main button | Screenshot |
+|---|---|---|---|---|---|---|
+| 001 | 390 wide | clues | slow-grandparent | "One more round of clues" (0.8) | "Clues done, talk it over" | artifact `screen-sims-1`: `reports/sim/screen/w37177083896-001-flag-15.png` |
+| 007 | 360 wide | clues | distracted-host | "One more round of clues" (0.75) | "Clues done, talk it over" | artifact `screen-sims-1`: `reports/sim/screen/w37177083896-007-flag-17.png` |
+| 007 | 360 wide | summary (0 counted rounds) | distracted-host | "Oops, keep playing" (0.94) | "Back to Home" | artifact `screen-sims-1`: `reports/sim/screen/w37177083896-007-flag-21.png` |
+| 011 | 360 wide | clues | distracted-host | "One more round of clues" (0.81) | "Clues done, talk it over" | artifact `screen-sims-1`: `reports/sim/screen/w37177083896-011-flag-16.png` |
+| 017 | 360 wide | clues | slow-grandparent | "One more round of clues" (0.76) | "Clues done, talk it over" | artifact `screen-sims-1`: `reports/sim/screen/w37177083896-017-flag-12.png` |
+| 019 | 390 wide | clues | distracted-host | "One more round of clues" (0.71) | "Clues done, talk it over" | artifact `screen-sims-1`: `reports/sim/screen/w37177083896-019-flag-12.png` |
+| 021 | 390 wide | clues | slow-grandparent | "One more round of clues" (0.77) | "Clues done, talk it over" | artifact `screen-sims-1`: `reports/sim/screen/w37177083896-021-flag-16.png` |
+| 031 | 390 wide | clues | distracted-host | "One more round of clues" (0.76) | "Clues done, talk it over" | artifact `screen-sims-2`: `reports/sim/screen/w37177083896-031-flag-16.png` |
+| 034 | 390 wide | clues | eager-child | "One more round of clues" (0.71) | "Clues done, start the 2-minute timer" | artifact `screen-sims-2`: `reports/sim/screen/w37177083896-034-flag-10.png` |
+| 035 | 360 wide | clues | distracted-host | "One more round of clues" (0.79) | "Clues done, talk it over" | artifact `screen-sims-2`: `reports/sim/screen/w37177083896-035-flag-13.png` |
+| 039 | 360 wide | clues | distracted-host | "One more round of clues" (0.8) | "Clues done, talk it over" | artifact `screen-sims-2`: `reports/sim/screen/w37177083896-039-flag-17.png` |
+| 043 | 360 wide | clues | distracted-host | "One more round of clues" (0.74) | "Clues done, talk it over" | artifact `screen-sims-2`: `reports/sim/screen/w37177083896-043-flag-10.png` |
+| 045 | 390 wide | clues | slow-grandparent | "One more round of clues" (0.68) | "Clues done, start the 2-minute timer" | artifact `screen-sims-2`: `reports/sim/screen/w37177083896-045-flag-18.png` |
+
+In short: on the clues screen, before anyone has given a clue, Jev picks "One more round of clues" over "Clues done,
+talk it over" in 12 of 12 persona evenings that reached it with a rating; the main button's "Clues done" reads as a
+step ahead of the room. Once: on a summary with 0 counted rounds (an evening ended early), Jev picks "Oops, keep playing".
+
+## Notes for the product owner (look, not tested by any number)
+- Clues screen at 812 × 375 with Larger text and 16-character names: the starter's name breaks mid-word
+  ("ALEXANDRAPETROV / A"); allowed by IMP-020 (32 px, may wrap onto 2 lines, never cut off).
+  `reports/screens/sims-2026-10-04/clues-812x375-larger-long-names-139.png`.
+- The announcer keeps the last result's words into the next round's deal (heard once, not again); is an empty
+  announcer wanted when the next round starts? (IMP-083 lists what it receives, not when it is emptied.)
+- The ✓ touching the "y" of "Whole family" at 320 × 568 Larger text (earlier report).
+
+## Specs and tests changed this step
+- specs/impostor/ regenerated from scenarios.md (I23): IMP-033 sizes and IMP-073 rows (result headline 44 px below
+  360 px wide; hold-screen name floor) and Test hooks item 1 (any listed id accepted live and on replay; the app records
+  the pickWord id). No test checked 56 px at 320; the IMP-033 size check runs at 390 (still 56 px).
+- New: impostor-play-screens.spec.ts "IMP-073 (I23): the headline is 44 px below 360 px wide, always one line; 56 px at
+  360 wide" (320 and 359 → 44 px, 360 → 56 px, one line each).
+- Runner fixes in tests/sims/impostor-runner.ts and the overlap helper in tests/browser/impostor.ts (5a77f36).
+
+## Flaky or setup problems (not for the Build workspace)
+- Someone else has uncommitted work in the Test clone (docs/test-questions.md, tests/vitest.mutation.config.ts,
+  tests/games/tambola/phone-code-refusals.test.ts). Not mine; left untouched and not committed. Only one Test-role
+  session should use this clone at a time.
+
+## Requests for the Build workspace
+- None.
+
+# Layers 2 to 4 report (b67eea5), kept for reference
 Progress (2026-10-04, tester, end-to-end and Jev testing, owner approved "for 200"; main b67eea5, tests 34b9f05 and
 this push): IMP-088 and IMP-076 fixes confirmed on both phones; main is green (quick verify 37174659561 on 34b9f05).
 Layer 2: 12 Impostor golden journeys pass on both phones (journey 1 in the smoke set). Layer 3 and 4: the screen

@@ -240,9 +240,10 @@ A test may set exactly these; the build must honour them.
      `endEvening`. `isOver` is true after `endEvening`.
    - Every move that deals a word carries the dealt word's id as `wordId`: `startDeal`, `nextRound`, `dealAgain`,
      `dontKnow`, `allowRepeats`, and `setChoices` when it redeals the same round from the no-words screen (IMP-052).
-     `nextRound` that finds no word left carries `wordId: null` (the no-words screen shows). Live, `play` accepts only
-     the id that `pickWord` gives for deal n (or that deal's `testDeals` entry); replay accepts any recorded id that
-     exists in the shipped list (retired words included, IMP-054), so later edits to `words.csv` never change a past
+     `nextRound` that finds no word left carries `wordId: null` (the no-words screen shows). The rules accept any
+     recorded id that exists in the shipped list (retired words included, IMP-054), live and on replay alike (the engine
+     can't tell them apart); the app always records the id that `pickWord` gives for deal n (or that deal's `testDeals`
+     entry), and tests check exactly that (product owner, 4 October, as built), so later edits to `words.csv` never change a past
      evening (IMP-096). A word-dealing move without `wordId` makes the evening unreplayable (hidden by IMP-096).
    - Random draws are per dealt round: the n-th deal of the evening (every move that deals a word counts, redeals included, from 1; a `nextRound`
      with `wordId: null` does not)

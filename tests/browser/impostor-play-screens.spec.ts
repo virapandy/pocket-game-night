@@ -430,6 +430,24 @@ test.describe('IMP-033, IMP-034, IMP-038, IMP-039, IMP-073: the one result scree
     await expect(result(page, 'round-outcome'), 'nothing else appears later').toHaveText(exact('The crew wins!'));
   });
 
+  test('IMP-073 (I23): the headline is 44 px below 360 px wide, always one line; 56 px at 360 wide', async ({ page }) => {
+    await toResult(page);
+    await pickerName(page, 'Riya').click();
+    await mainButton(page).filter({ hasText: /^Reveal / }).click();
+    await page.clock.runFor(1500);
+    const h = result(page, 'result-headline');
+    await expect(h).toHaveText(exact('✗ Escaped!', []));
+    const oneLine = () => h.evaluate((el) => {
+      const r = document.createRange(); r.selectNodeContents(el);
+      return new Set(Array.from(r.getClientRects()).filter((x) => x.width > 1).map((x) => Math.round(x.top))).size === 1 && el.scrollWidth <= el.clientWidth;
+    });
+    for (const [w, ht, px] of [[320, 568, 44], [359, 640, 44], [360, 640, 56]] as const) {
+      await page.setViewportSize({ width: w, height: ht });
+      expect(await fontSize(h), `${w} wide`).toBe(px);
+      expect(await oneLine(), `${w} wide: one line`).toBe(true);
+    }
+  });
+
   test('IMP-034 escaped: "✗ Escaped!", "Meena was crew.", ARJUN was the impostor, the word, no "Also called", "Food", "Arjun escaped!"; no guess, no "Undo"', async ({ page }) => {
     await toResult(page, { word: SAMOSA, lastGuess: true });
     await pickerName(page, 'Meena').click();
