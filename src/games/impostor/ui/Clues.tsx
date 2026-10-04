@@ -1,7 +1,7 @@
 // After the last "Done": straight to the clues (IMP-016, IMP-020, IMP-022). The phone goes in the middle, face up.
 import { useEffect, useRef } from 'react';
 import { useFitText } from './Deal';
-import { Caps, MainButton, QuietButton } from './parts';
+import { Caps, MainButton, QuietButton, TapGuard } from './parts';
 
 /** The seat order from the starter, wrapping round (IMP-020). */
 export function clueOrder(players: readonly string[], starter: string): string[] {
@@ -40,8 +40,10 @@ export function Clues({
   // round again" and "See my word again" stacked; at 320 px wide the starter first, then one box scrolling inside
   // with the lines and the clue order, then the two buttons side by side; at 812 × 375 the starter in the left half
   // and the rest in the right half, the two buttons sharing one row and no "Not enough clues?".
+  // Guideline 20 (M18): a double tap on "Done, everyone's seen" never lands on this screen's buttons: they ignore
+  // taps for 500 ms after it shows.
   return (
-    <>
+    <TapGuard screen="clues">
       <section className="imp-stage imp-clues">
         <div className="imp-clues-who">
           <p ref={nameRef} className="imp-starter imp-caps" data-testid="starter-name">
@@ -77,6 +79,6 @@ export function Clues({
         </div>
       </section>
       <MainButton onClick={onTalk}>{talking === 'timer' ? 'Clues done, start timer' : 'Clues done, talk it over'}</MainButton>
-    </>
+    </TapGuard>
   );
 }
