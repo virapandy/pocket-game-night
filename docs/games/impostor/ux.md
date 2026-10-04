@@ -84,7 +84,7 @@ Categories: all 9 ›
 [          Start round          ]
 ```
 Other lines: Hard "The impostor gets nothing and never starts." · Timer "Two minutes to talk, then a chime." ·
-Yes "Points every round, totals for the night." · + Grown-ups "Adds words kids or elders may not know."
+Yes "Points every round, totals for the game." · + Grown-ups "Adds words kids or elders may not know."
 Categories sheet: 9 switches and "Include non-veg food" (off). More options sheet: "Last guess for a caught impostor"
 with "Off ✓" / "On" and "A caught impostor can steal the round by guessing the word." "More options ›" and "How to
 play" share one row. "Same as last time" under the heading when choices were carried over. 10 s.
@@ -92,7 +92,7 @@ play" share one row. "Same as last time" under the heading when choices were car
 ### 4. How to play (on request only: "How to play" on the choices screen, or the menu)
 Heading "How to play", then "Read this aloud": the 4 lines, the mode line, the last-guess line (only when on) and the
 rules list, exactly as in IMP-070 and IMP-072 (decided 4 October, F7).
-Main "Done"; quiet "Practice round first" only when opened from a new evening's choices
+Main "Done"; quiet "Practice round first" only when opened from a new game's choices
 screen (a "Practice" chip on every room screen; no points).
 
 ### 5. The deal
@@ -179,31 +179,32 @@ countdown → only those names plus "Still a tie" (the impostor escapes).
   chip and two equal buttons "Guessed right" / "Wrong guess" → "The crew wins!" / "Arjun steals the round!" (IMP-039).
 
 ### 11. Round result (on the same screen)
-Outcome: "The crew wins!" / "Arjun steals the round!" / "Arjun escaped!". Without scores: "Tonight: impostor caught 3
-· escaped 2". With scores: this round's points, then the night's scoreboard (36 px rows, highest first, ties share a
+Outcome: "The crew wins!" / "Arjun steals the round!" / "Arjun escaped!". Without scores: "This game: impostor caught 3
+· escaped 2". With scores: this round's points, then the game's scoreboard (36 px rows, highest first, ties share a
 place (1-2-2-4), leavers greyed; one column up to 360 px wide, two columns of 50% from 390 px; caption "Scores since round 4"). Main "Next round"; quiet "Undo" (the guess verdict
-only, last-chance guess on) and "This word didn't work".
+only, last-chance guess on) and "This word didn't work". Bottom row: outlined "End game" beside main "Next round"
+(stacked at 320 px); "← Home" top left keeps the game to resume (IMP-077).
 
-### 12. End of the evening
-"That's the night!", the lead line ("Arjun wins the night with 2 points!", or "Crew 4 · Impostors 3"), up to 2 fun
-lines, the final scoreboard. Main "Back to Home"; quiet "Oops, keep playing", "Play something else", "More ›" (Share,
-History, then after a divider "Discard this evening"). Scrolls as one page. Confirmations: "End the evening?" ("End the evening" / "Keep playing"); mid-round "End now? This round
-won't count." ("End now" / "Keep playing"); "Discard this evening? Its rounds and scores will be lost." ("Discard" /
-"Keep it").
+### 12. End of the game
+"That's the game!", the lead line ("Arjun wins the game with 2 points!", or "Crew 4 · Impostors 3"), up to 2 fun
+lines, the final scoreboard. Main "Play again"; quiet "Play something else", "Home", "More ›" ("Oops, keep playing",
+Share, History, then after a divider "Discard this game"). Scrolls as one page. "End game" between rounds opens it at
+once; mid-round (menu "End game"): "End now? This round won't count." ("End now" / "Keep playing"); "Discard this
+game? Its rounds and scores will be lost." ("Discard" / "Keep it").
 
 ### 13. Menu (destructive items last)
 | Moment | Items |
 |---|---|
-| Deal | How to play · Players · Deal again with a new word · Settings · End the evening |
-| Clues, talk, vote | How to play · Players · See my word again · Deal again with a new word · Settings · End the evening |
-| Between rounds | How to play · Players · Change how we play · Settings · History · End the evening |
+| Deal | How to play · Players · Deal again with a new word · Settings · End game |
+| Clues, talk, vote | How to play · Players · See my word again · Deal again with a new word · Settings · End game |
+| Between rounds | How to play · Players · Change how we play · Settings · History ("End game" is a button, IMP-077) |
 No menu on the countdown or during the reveal. "Deal again with a new word" confirms: "Deal again? This round won't count. For when someone said the word or saw a
 screen." ("Deal again" / "Keep playing").
 
 ### 14. Interruptions
 Deal: "Welcome back. Pass the phone to ARJUN" (the player who hasn't tapped Done), never a word. Clues or talk: same
 screen, timer "Paused · Tap to carry on". Countdown: back to "Get ready to point". After "Reveal": the result without
-the build-up. Over 3 hours: "This round was left halfway. Start a fresh round?" Storage gone: "Start a new evening".
+the build-up. Over 3 hours: "This round was left halfway. Start a fresh round?" Storage gone: "Start a new game".
 
 ## Privacy on a passed phone (guideline 45)
 - The word is in the page **only while held**: not hidden text, not the title, not History. It hides on lift, on
@@ -274,7 +275,7 @@ how to play on request and the pass-the-phone touches are built as scenarios v3.
 | N1 | 3 | "✗ Escaped!" breaks onto two lines at 320 px (headline stays 56 px) | **Must fix before release** | 44 px below 360 px wide, one line (IMP-073, decision I23) |
 | N2 | 2 | Two-column scoreboard: a total sits next to the other column's rank ("Riya 1 1 Chandrasekharan 1") | Next list | 24 px gap with a thin divider; rank as a muted 15 px "1." |
 | N3 | 2 | Long one-word names break mid-word ("VENKATARAGHAV / AN") | Next list | Break lines only at spaces; a one-word name too wide shrinks to fit one line (starter floor 24 px, list floor 15 px) |
-| N4 | 1 | Many players sharing the top score make a wall of names | Next list | More than 3 sharing: "11 players share the night with 1 point!"; round points "+1 each to the crew (11)" |
+| N4 | 1 | Many players sharing the top score make a wall of names | Next list | More than 3 sharing: "11 players share the game with 1 point!"; round points "+1 each to the crew (11)" |
 | N5 | 1 | "Whose word?" with 12 players hides Cancel at 360 × 640 | Next list | Cancel pinned at the bottom; only names scroll |
 | N6 | 1 | Hold-screen name 2 px past its box at 360 × 640 | Next list | Keep shrinking until it fits |
 
@@ -287,5 +288,5 @@ process: playbook pass 12a ("What next?") and guideline 47a.
 |---|---|
 | Round result | Main "Next round"; visible outlined "End game" beside it (same row at widths ≥ 360 px, above it at 320 px); "← Home" at top left |
 | Between rounds | "← Home" keeps the game saved; Home and "What shall we play?" show "Impostor · round 4 · Tap to resume" |
-| Words on screen | Only "game" in Impostor: "End game", "That's the game!", "Discard this game", "This game: caught 3 · escaped 2", "Start a new game? The game from 8:40 pm will be ended." No "evening", "night" or "session" on any Impostor screen; the session stays behind the scenes (History groups tonight's games) |
+| Words on screen | Only "game" in Impostor: "End game", "That's the game!", "Discard this game", "This game: impostor caught 3 · escaped 2", "Start a new game? The game from 8:40 pm will be ended." No "evening", "night" or "session" on any Impostor screen; the session stays behind the scenes (History groups tonight's games) |
 | End screen | "That's the game!", winner line, fun lines; main "Play again" (same players and choices, a new game); quiet "Play something else" and "Home"; "More ›" holds Oops, Share, History and, last, "Discard this game" |

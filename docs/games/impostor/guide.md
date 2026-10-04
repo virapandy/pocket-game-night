@@ -35,7 +35,7 @@ app: one phone.** Nobody sits out, the word is fair and new every round, and the
 |---|---|---|
 | **Mode** | **Easy**: the impostor sees the category and a hint word, and may start; kids may use up to 3 words · **Hard**: the impostor sees only "You're the impostor" and never starts | Hint as a difficulty dial (app reviews); impostor first with no information is "playing blind" (BGG, Chameleon family) |
 | **Discussion** | **Free flow** with a "Vote now" button · **Timer** (2 minutes, then a chime) | Groups prefer keeping it moving over a timer; fixed timers run too long (BGG: Insider, Spyfall) |
-| **Keep score?** | **No**, just play · Yes, the night's scoreboard | Most groups have more fun without points; races to a target make players gang up on the leader (BGG: Chameleon, Insider, Fake Artist dropped scoring) |
+| **Keep score?** | **No**, just play · Yes, the game's scoreboard | Most groups have more fun without points; races to a target make players gang up on the leader (BGG: Chameleon, Insider, Fake Artist dropped scoring) |
 | **Words** | **Whole family** (known to kids, elders and every region) · Grown-ups too | Words someone doesn't know spoil the round (Opinionated Gamers; persona review, see `words.md`) |
 
 ## Rules
@@ -61,7 +61,7 @@ app: one phone.** Nobody sits out, the word is fair and new every round, and the
 | Caught, but guesses the word (last-chance guess on) | Impostor +1 |
 | Caught, guess wrong (last-chance guess on) | Every crew member +1 |
 
-No race to a target: the night's scoreboard just adds up, and the evening ends when the host ends it.
+No race to a target: the game's scoreboard just adds up, and the game ends when the host taps "End game".
 (Sources: imposter.online +3/+2/+1 to 10; The Chameleon 2/1/2 to 5; BGG players warn that targets cause
 ganging up on the leader.)
 

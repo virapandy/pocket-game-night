@@ -1,6 +1,7 @@
-# Impostor: the whole evening, stage by stage (draft, 3 October 2026)
+# Impostor: the whole game, stage by stage (draft, 3 October 2026)
 
-**Binding details are in scenarios.md; where this file differs, scenarios.md wins.**
+**Binding details are in scenarios.md; where this file differs, scenarios.md wins.** On screen Impostor says only
+"game" (never "evening", "night" or "session"); "evening" below is design shorthand.
 
 Designed against the five stages in `docs/proposals/next-game-lifecycle.md`, before any build. Rules are in
 `guide.md`, words in `words.md`, decisions in `docs/decisions.md` ("Impostor" rows). **Every screen in detail:
@@ -119,7 +120,7 @@ and the room decides: "Guessed right" / "Wrong guess".
 | Someone forgets their word | Menu: "See my word again" → "Pass the phone to…" pick a name → hold to see. Family trust, like Tambola's anchor |
 | Someone glimpsed another's screen | Menu: "Deal again with a new word" (new word, new impostor), no points |
 | Phone dies | Paper: one person sits out, writes slips; the guide's "How to play" works without the app |
-| Ending early | "End the evening" any time between rounds; mid-round, the round is dropped with no points |
+| Ending early | Outlined "End game" beside "Next round" on every between-rounds screen; "← Home" keeps the game to resume; mid-round, menu "End game" drops the round with no points (IMP-077, IMP-093) |
 
 ## Stage 5. After the round, after the evening
 | Moment | What happens |
@@ -127,13 +128,13 @@ and the room decides: "Guessed right" / "Wrong guess".
 | Round result | The reveal; if keeping score, this round's points and the **night's scoreboard** (one row per player, sorted); if not, a running "Tonight: impostor caught 3 · escaped 2" for the evening |
 | Next round | "Next round" (main): new word, never one used tonight; new impostor at random; the next starter is picked at random among those who haven't started this cycle (IMP-021) |
 | Who's impostor next | Random each round, but never the same player 3 rounds running (owner, I5); twice in a row can happen, so nobody can rule themselves out |
-| End the evening | Fun lines for the night ("Best impostor: Arjun, escaped 3 times"), and the final scoreboard if keeping score; "Play something else" opens "What shall we play?"; "Back to Home" opens Home |
+| End game | "That's the game!", the winner line, fun lines ("Best impostor: Arjun, escaped 3 times"), and the final scoreboard if keeping score; main "Play again"; "Play something else" opens "What shall we play?"; "Home" opens Home (IMP-092) |
 | Words afterwards | The history shows each round's word and impostor (fun to look back on). Words used in the last 3 evenings are avoided when possible |
-| Play again tomorrow | A new evening; the player list is offered again |
-| Ended by mistake | "Oops, keep playing" on the summary, until the summary is left or 3 hours pass; an ended evening never reopens (IMP-101) |
-| Something else tonight | "Play something else" keeps the players; the evening sits in tonight's session, outside any money tally (IMP-102) |
+| Play again | A new game with the same players and choices, from the end screen or History (IMP-103) |
+| Ended by mistake | "Oops, keep playing" (in "More ›" on the summary), until the summary is left or 3 hours pass; an ended evening never reopens (IMP-101) |
+| Something else | "Play something else" keeps the players; the game sits in tonight's session, outside any money tally (IMP-102) |
 | Left open | Ends by itself after 12 hours, kept in History (IMP-104) |
-| Share the night | A plain-text recap through the phone's share sheet, only on tap (IMP-106) |
+| Share the game | A plain-text recap through the phone's share sheet, only on tap (IMP-106) |
 | A word that flopped | "This word didn't work" skips it on this phone for good; Settings can bring it back (IMP-107) |
 | Clearing secrets | One phone: nothing to clear (the word is hidden until the reveal). Own phones (later): "Game over, phones away" as Tambola rows 20–22 |
 
