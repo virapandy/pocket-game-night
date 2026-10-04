@@ -1,6 +1,6 @@
 # Ishaara: scenarios (version 2, 4 October 2026)
 
-Status: **version 2, for the owner's approval.** Decisions K1–K18 decided by the owner (4 October, "follow the
+Status: **ISH-001 to ISH-099 approved by the owner, 4 October 2026 (version 2).** ISH-200+ are direction, built later. Decisions K1–K18 decided by the owner (4 October, "follow the
 recommendation"). Version 2 resolves every guess from the two-reader check (`docs/spec-rules.md` rule 12: a coder-reader
 and a tester-reader, 4 October). After approval the tester copies these into `specs/ishaara/` (file names in each section
 heading) and writes tests. Hand-over follows `docs/roadmap.md`: after Impostor's release.

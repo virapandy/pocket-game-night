@@ -199,3 +199,4 @@ Status: **decided: owner, 4 October 2026, "follow the recommendation"** for K1â€
 | K17 | Clue giver rotation | Fewest games as clue giver tonight, ties to the earliest in the team list | As recommended |
 | K18 | Resume | Within 12 hours at the same step; the map screen always returns to "Pass the phone toâ€¦" | As recommended |
 | K19 | Map code and words after the two-reader check (product owner, 4 October): 7-symbol code (config, deal index, deck seed, check symbol); each evening deals from a shuffled deck so no word repeats for 15 games; any word-list change makes a new edition. Showing the code to clue givers is accepted with K3 as family trust, an exception to "seeds never leave the host phone" (ISH-028) | Product owner (follows from K3 and K10) |
+| K20 | Ishaara scenarios version 2 (ISH-001 to ISH-099) approved; queued for the tester after Impostor's release | Owner, 4 October |
