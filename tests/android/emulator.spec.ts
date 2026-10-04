@@ -138,14 +138,35 @@ test.describe('PLT-121: Android-only behaviour on the emulator (390 × 844)', ()
     await setUpPaperGame(page);
     const calls = await callMany(page, 4);
     const url = page.url();
+    // The game on screen is saved on this phone (pgn.game.*) with every call, updated at or after the last call.
+    await expect.poll(() => page.evaluate((n) => {
+      for (const k of Object.keys(localStorage)) {
+        if (!k.startsWith('pgn.game.')) continue;
+        try {
+          const g = JSON.parse(localStorage.getItem(k)!);
+          if (g.gameType !== 'tambola' || g.status === 'ended' || !Array.isArray(g.records)) continue;
+          const callRecords = g.records.filter((r: any) => r?.move?.type === 'call');
+          const lastCall = callRecords.at(-1);
+          if (callRecords.length >= n && lastCall && typeof g.updatedAt === 'number' && g.updatedAt >= lastCall.at) return true;
+        } catch { /* not a saved game */ }
+      }
+      return false;
+    }, calls.length), { message: 'the game was not saved after the last call', timeout: 10_000 }).toBe(true);
     await device.shell('input keyevent KEYCODE_HOME');
-    await page.waitForTimeout(1000);
+    // TAM-112's Given: Android discards an app that has been in the background a while, not the instant it leaves.
+    await page.waitForTimeout(10_000);
+    // Chrome really went to the background: it is no longer the resumed activity.
+    await expect.poll(async () => {
+      const out = (await device.shell('dumpsys activity activities')).toString();
+      return out.split('\n').filter((l) => /ResumedActivity/.test(l) && /com\.android\.chrome/.test(l)).length;
+    }, { message: 'Chrome is still the resumed activity after going home', timeout: 10_000 }).toBe(0);
     await context.close().catch(() => undefined);
     await device.shell('am kill com.android.chrome');
     await device.shell('am force-stop com.android.chrome');
     const again = await device.launchBrowser({ baseURL: page.url().replace(/#.*$/, '').replace(/[^/]*$/, '') });
     await new Promise((r) => setTimeout(r, 1500));
-    const p = again.pages()[0] ?? (await again.newPage());
+    // A fresh page, as the host returning to the app opens it.
+    const p = await again.newPage();
     await p.goto(url);
     await expect(p.getByText(/Game resumed|Tap to resume/)).toBeVisible();
     await resumeIfAsked(p);
