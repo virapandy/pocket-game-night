@@ -15,7 +15,7 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { expect, type Locator, type Page } from '@playwright/test';
 import {
-  WORDS, holdPad, mainButton, overlapping, passName, press, release, startEvening,
+  WORDS, freezeClock, holdPad, mainButton, overlapping, passName, press, release, startEvening,
 } from '../browser/impostor';
 import { backgroundAndReturn } from '../browser/helpers';
 import type { Jev } from '../sim/jev';
@@ -336,6 +336,10 @@ export async function playEvening(page: Page, cfg: EveningConfig, opts: { jev?: 
     players: cfg.players, mode: cfg.mode, talking: cfg.talking, score: cfg.score, practice: cfg.practice, storage,
     seeds: { word: `w-${cfg.seed}`, starter: `s-${cfg.seed}` }, ...(cfg.lastGuess ? { lastGuess: true } : {}),
   });
+  // From here the app's clock moves only when the runner moves it (50 ms a step, the waits, the hold), never with the
+  // computer's own time: the same seed then plays the same evening on any machine, fast or slow (evening 128 of weekly
+  // run 37189752105 replayed differently on a slower computer, where a 5 s "Undo" toast had already gone by step 116).
+  await freezeClock(page);
   const steps: Step[] = [];
   const findings: Finding[] = [];
   const flags: Flag[] = [];
@@ -369,10 +373,13 @@ export async function playEvening(page: Page, cfg: EveningConfig, opts: { jev?: 
     if (!opts2.length && !['countdown', 'build-up'].includes(screen ?? '')) findings.push({ kind: 'dead end', step: n, screen: screen ?? 'unknown', detail: 'nothing to tap' });
     // Choose: a replay repeats the saved step; otherwise Jev (as a persona) or the scripted host.
     let key: string;
-    if (opts.replay) {
-      const s = opts.replay[n - 1];
-      if (!s) break;
-      key = s.action;
+    // A replay repeats the saved steps; once they run out (an evening saved at a crash ends there), the scripted host
+    // carries on from the same seed, so a fixed evening can still reach its end and the replay can pass.
+    const saved = opts.replay?.[n - 1];
+    if (saved) {
+      key = saved.action;
+    } else if (opts.replay) {
+      key = scriptedPick(screen ?? 'unknown', opts2, r, { roundsDone, target: cfg.rounds, persona: null, ended });
     } else {
       key = scriptedPick(screen ?? 'unknown', opts2, r, { roundsDone, target: cfg.rounds, persona: cfg.persona?.id ?? null, ended });
       if (opts.jev && cfg.persona && screen && jevDecisions < JEV_PER_EVENING && opts2.length >= 2 && !['deal-A', 'deal-B', 'countdown', 'build-up'].includes(screen)) {
@@ -414,7 +421,8 @@ export async function playEvening(page: Page, cfg: EveningConfig, opts: { jev?: 
 /** Does one step. Returns the word read from the private block when the step was a hold. */
 async function act(page: Page, key: string, opts: Option[]): Promise<string | null> {
   if (key === 'action:hold') {
-    await press(page);
+    // The clock is frozen (playEvening): the 500 ms hold is moved on by hand.
+    await press(page, 550);
     await expect(page.getByTestId('private-block')).toBeVisible({ timeout: 3000 });
     const w = await page.getByTestId('private-word').textContent().catch(() => null);
     await page.clock.runFor(600);
@@ -450,12 +458,29 @@ async function act(page: Page, key: string, opts: Option[]): Promise<string | nu
   const o = opts.find((x) => x.key === key);
   if (!o?.locator) throw new Error(`no option ${key} on screen`);
   const tapToSee = o.label === 'Tap to see your word';
+  await waitOutCoveringToast(page, o.locator);
   await o.locator.click({ timeout: 3000 });
   if (tapToSee) {
     const w = await page.getByTestId('private-word').textContent({ timeout: 2000 }).catch(() => null);
     return w?.trim() ?? null;
   }
   return null;
+}
+
+/**
+ * A toast (README, Terms: a bar above the main button; an undo toast lasts 5 s, others 4 s) may lie over the button
+ * the host wants, such as a name chip in the Players sheet at 812 × 375. A real host waits for it to go, so the runner
+ * moves the clock on 5.1 s first. Before this, the runner gave up after 3 s and called it a crash (evening 128 of weekly
+ * run 37189752105: "Dev left · Undo" over the chip "Asha"). The toast's own buttons ("Undo") are never covered by it.
+ */
+async function waitOutCoveringToast(page: Page, target: Locator) {
+  await target.scrollIntoViewIfNeeded({ timeout: 1000 }).catch(() => {});
+  const covered = await target.evaluate((el) => {
+    const r = el.getBoundingClientRect();
+    const top = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+    return !!top && !el.contains(top) && !!top.closest('[data-testid="undo-toast"], [data-testid="toast"]');
+  }).catch(() => false);
+  if (covered) await page.clock.runFor(5100);
 }
 
 /** Layer 4: Jev plays the persona's choice, and (once per screen per evening) rates which button comes next. */

@@ -1,0 +1,776 @@
+{
+ "$comment": "A failing simulated evening (layer 3). Replayed step by step by tests/browser/impostor-sim-replays.spec.ts; never delete.",
+ "seed": "w37189752105-128",
+ "config": {
+  "seed": "w37189752105-128",
+  "width": 812,
+  "height": 375,
+  "players": [
+   "Riya",
+   "Arjun",
+   "Meena",
+   "Kabir",
+   "Zoya",
+   "Dev",
+   "Asha",
+   "Neel",
+   "Tara",
+   "Om"
+  ],
+  "mode": "hard",
+  "talking": "free",
+  "score": false,
+  "lastGuess": false,
+  "practice": false,
+  "larger": false,
+  "rounds": 2,
+  "persona": null
+ },
+ "finished": false,
+ "steps": [
+  {
+   "n": 1,
+   "screen": "deal-A",
+   "action": "button:··· Menu"
+  },
+  {
+   "n": 2,
+   "screen": "menu",
+   "action": "menuitem:Deal again with a new word"
+  },
+  {
+   "n": 3,
+   "screen": "dialog",
+   "action": "button:Keep playing"
+  },
+  {
+   "n": 4,
+   "screen": "deal-A",
+   "action": "button:I'm Riya"
+  },
+  {
+   "n": 5,
+   "screen": "deal-B",
+   "action": "action:hold"
+  },
+  {
+   "n": 6,
+   "screen": "deal-B",
+   "action": "button:Done, pass to Arjun"
+  },
+  {
+   "n": 7,
+   "screen": "deal-A",
+   "action": "button:··· Menu"
+  },
+  {
+   "n": 8,
+   "screen": "menu",
+   "action": "menuitem:Players"
+  },
+  {
+   "n": 9,
+   "screen": "dialog",
+   "action": "button:OK"
+  },
+  {
+   "n": 10,
+   "screen": "deal-A",
+   "action": "button:I'm Arjun"
+  },
+  {
+   "n": 11,
+   "screen": "deal-B",
+   "action": "action:hold"
+  },
+  {
+   "n": 12,
+   "screen": "deal-B",
+   "action": "button:Done, pass to Meena"
+  },
+  {
+   "n": 13,
+   "screen": "deal-A",
+   "action": "button:I'm Meena"
+  },
+  {
+   "n": 14,
+   "screen": "deal-B",
+   "action": "action:hold"
+  },
+  {
+   "n": 15,
+   "screen": "deal-B",
+   "action": "button:Done, pass to Kabir"
+  },
+  {
+   "n": 16,
+   "screen": "deal-A",
+   "action": "button:I'm Kabir"
+  },
+  {
+   "n": 17,
+   "screen": "deal-B",
+   "action": "action:hold"
+  },
+  {
+   "n": 18,
+   "screen": "deal-B",
+   "action": "button:Done, pass to Zoya"
+  },
+  {
+   "n": 19,
+   "screen": "deal-A",
+   "action": "button:I'm Zoya"
+  },
+  {
+   "n": 20,
+   "screen": "deal-B",
+   "action": "action:hold"
+  },
+  {
+   "n": 21,
+   "screen": "deal-B",
+   "action": "button:Don't know this word?"
+  },
+  {
+   "n": 22,
+   "screen": "dialog",
+   "action": "button:Back"
+  },
+  {
+   "n": 23,
+   "screen": "deal-B",
+   "action": "button:Done, pass to Dev"
+  },
+  {
+   "n": 24,
+   "screen": "deal-A",
+   "action": "button:I'm Dev"
+  },
+  {
+   "n": 25,
+   "screen": "deal-B",
+   "action": "action:hold"
+  },
+  {
+   "n": 26,
+   "screen": "deal-B",
+   "action": "button:Done, pass to Asha"
+  },
+  {
+   "n": 27,
+   "screen": "deal-A",
+   "action": "button:I'm Asha"
+  },
+  {
+   "n": 28,
+   "screen": "deal-B",
+   "action": "action:hold"
+  },
+  {
+   "n": 29,
+   "screen": "deal-B",
+   "action": "button:Done, pass to Neel"
+  },
+  {
+   "n": 30,
+   "screen": "deal-A",
+   "action": "button:I'm Neel"
+  },
+  {
+   "n": 31,
+   "screen": "deal-B",
+   "action": "action:hold"
+  },
+  {
+   "n": 32,
+   "screen": "deal-B",
+   "action": "button:Done, pass to Tara"
+  },
+  {
+   "n": 33,
+   "screen": "deal-A",
+   "action": "button:I'm Tara"
+  },
+  {
+   "n": 34,
+   "screen": "deal-B",
+   "action": "action:hold"
+  },
+  {
+   "n": 35,
+   "screen": "deal-B",
+   "action": "button:Done, pass to Om"
+  },
+  {
+   "n": 36,
+   "screen": "deal-A",
+   "action": "button:I'm Om"
+  },
+  {
+   "n": 37,
+   "screen": "deal-B",
+   "action": "action:hold"
+  },
+  {
+   "n": 38,
+   "screen": "deal-B",
+   "action": "button:Done, everyone's seen"
+  },
+  {
+   "n": 39,
+   "screen": "clues",
+   "action": "button:Clues done, talk it over"
+  },
+  {
+   "n": 40,
+   "screen": "talk",
+   "action": "button:Vote now"
+  },
+  {
+   "n": 41,
+   "screen": "countdown",
+   "action": "action:reopen"
+  },
+  {
+   "n": 42,
+   "screen": "countdown",
+   "action": "action:wait6000"
+  },
+  {
+   "n": 43,
+   "screen": "picker",
+   "action": "button:Asha"
+  },
+  {
+   "n": 44,
+   "screen": "picker",
+   "action": "button:Reveal Asha"
+  },
+  {
+   "n": 45,
+   "screen": "build-up",
+   "action": "action:wait1500"
+  },
+  {
+   "n": 46,
+   "screen": "result",
+   "action": "button:Next round"
+  },
+  {
+   "n": 47,
+   "screen": "deal-A",
+   "action": "button:I'm Riya"
+  },
+  {
+   "n": 48,
+   "screen": "deal-B",
+   "action": "action:hold"
+  },
+  {
+   "n": 49,
+   "screen": "deal-B",
+   "action": "button:Done, pass to Arjun"
+  },
+  {
+   "n": 50,
+   "screen": "deal-A",
+   "action": "button:I'm Arjun"
+  },
+  {
+   "n": 51,
+   "screen": "deal-B",
+   "action": "action:hold"
+  },
+  {
+   "n": 52,
+   "screen": "deal-B",
+   "action": "button:Done, pass to Meena"
+  },
+  {
+   "n": 53,
+   "screen": "deal-A",
+   "action": "button:I'm Meena"
+  },
+  {
+   "n": 54,
+   "screen": "deal-B",
+   "action": "action:hold"
+  },
+  {
+   "n": 55,
+   "screen": "deal-B",
+   "action": "button:Done, pass to Kabir"
+  },
+  {
+   "n": 56,
+   "screen": "deal-A",
+   "action": "button:I'm Kabir"
+  },
+  {
+   "n": 57,
+   "screen": "deal-B",
+   "action": "action:hold"
+  },
+  {
+   "n": 58,
+   "screen": "deal-B",
+   "action": "button:Don't know this word?"
+  },
+  {
+   "n": 59,
+   "screen": "dialog",
+   "action": "button:Back"
+  },
+  {
+   "n": 60,
+   "screen": "deal-B",
+   "action": "button:Done, pass to Zoya"
+  },
+  {
+   "n": 61,
+   "screen": "deal-A",
+   "action": "button:I'm Zoya"
+  },
+  {
+   "n": 62,
+   "screen": "deal-B",
+   "action": "action:hold"
+  },
+  {
+   "n": 63,
+   "screen": "deal-B",
+   "action": "button:Done, pass to Dev"
+  },
+  {
+   "n": 64,
+   "screen": "deal-A",
+   "action": "button:I'm Dev"
+  },
+  {
+   "n": 65,
+   "screen": "deal-B",
+   "action": "action:hold"
+  },
+  {
+   "n": 66,
+   "screen": "deal-B",
+   "action": "button:Done, pass to Asha"
+  },
+  {
+   "n": 67,
+   "screen": "deal-A",
+   "action": "button:I'm Asha"
+  },
+  {
+   "n": 68,
+   "screen": "deal-B",
+   "action": "action:hold"
+  },
+  {
+   "n": 69,
+   "screen": "deal-B",
+   "action": "button:Done, pass to Neel"
+  },
+  {
+   "n": 70,
+   "screen": "deal-A",
+   "action": "button:I'm Neel"
+  },
+  {
+   "n": 71,
+   "screen": "deal-B",
+   "action": "action:hold"
+  },
+  {
+   "n": 72,
+   "screen": "deal-B",
+   "action": "button:Done, pass to Tara"
+  },
+  {
+   "n": 73,
+   "screen": "deal-A",
+   "action": "button:I'm Tara"
+  },
+  {
+   "n": 74,
+   "screen": "deal-B",
+   "action": "action:hold"
+  },
+  {
+   "n": 75,
+   "screen": "deal-B",
+   "action": "action:hide"
+  },
+  {
+   "n": 76,
+   "screen": "deal-A",
+   "action": "button:I'm Tara"
+  },
+  {
+   "n": 77,
+   "screen": "deal-B",
+   "action": "action:hold"
+  },
+  {
+   "n": 78,
+   "screen": "deal-B",
+   "action": "button:Done, pass to Om"
+  },
+  {
+   "n": 79,
+   "screen": "deal-A",
+   "action": "button:I'm Om"
+  },
+  {
+   "n": 80,
+   "screen": "deal-B",
+   "action": "action:hold"
+  },
+  {
+   "n": 81,
+   "screen": "deal-B",
+   "action": "button:Don't know this word?"
+  },
+  {
+   "n": 82,
+   "screen": "dialog",
+   "action": "button:Back"
+  },
+  {
+   "n": 83,
+   "screen": "deal-B",
+   "action": "button:Done, everyone's seen"
+  },
+  {
+   "n": 84,
+   "screen": "clues",
+   "action": "button:Clues done, talk it over"
+  },
+  {
+   "n": 85,
+   "screen": "talk",
+   "action": "button:Vote now"
+  },
+  {
+   "n": 86,
+   "screen": "countdown",
+   "action": "action:wait6000"
+  },
+  {
+   "n": 87,
+   "screen": "picker",
+   "action": "button:It's a tie"
+  },
+  {
+   "n": 88,
+   "screen": "picker",
+   "action": "button:Dev"
+  },
+  {
+   "n": 89,
+   "screen": "picker",
+   "action": "button:✓ Dev"
+  },
+  {
+   "n": 90,
+   "screen": "picker",
+   "action": "button:Arjun"
+  },
+  {
+   "n": 91,
+   "screen": "picker",
+   "action": "button:Zoya"
+  },
+  {
+   "n": 92,
+   "screen": "picker",
+   "action": "button:Point again: Arjun or Zoya"
+  },
+  {
+   "n": 93,
+   "screen": "countdown",
+   "action": "action:wait6000"
+  },
+  {
+   "n": 94,
+   "screen": "picker",
+   "action": "button:Zoya"
+  },
+  {
+   "n": 95,
+   "screen": "picker",
+   "action": "button:Reveal Zoya"
+  },
+  {
+   "n": 96,
+   "screen": "build-up",
+   "action": "action:wait1500"
+  },
+  {
+   "n": 97,
+   "screen": "result",
+   "action": "button:··· Menu"
+  },
+  {
+   "n": 98,
+   "screen": "menu",
+   "action": "menuitem:Players"
+  },
+  {
+   "n": 99,
+   "screen": "dialog",
+   "action": "button:Move Dev up"
+  },
+  {
+   "n": 100,
+   "screen": "dialog",
+   "action": "button:Move Zoya up"
+  },
+  {
+   "n": 101,
+   "screen": "dialog",
+   "action": "button:Move Asha up"
+  },
+  {
+   "n": 102,
+   "screen": "dialog",
+   "action": "button:Move Zoya up"
+  },
+  {
+   "n": 103,
+   "screen": "dialog",
+   "action": "button:Move Dev down"
+  },
+  {
+   "n": 104,
+   "screen": "dialog",
+   "action": "button:Remove Meena"
+  },
+  {
+   "n": 105,
+   "screen": "dialog",
+   "action": "button:Move Arjun down"
+  },
+  {
+   "n": 106,
+   "screen": "dialog",
+   "action": "button:Move Arjun up"
+  },
+  {
+   "n": 107,
+   "screen": "dialog",
+   "action": "button:Move Kabir down"
+  },
+  {
+   "n": 108,
+   "screen": "dialog",
+   "action": "button:Remove Asha"
+  },
+  {
+   "n": 109,
+   "screen": "dialog",
+   "action": "button:Meena"
+  },
+  {
+   "n": 110,
+   "screen": "dialog",
+   "action": "button:Remove Meena"
+  },
+  {
+   "n": 111,
+   "screen": "dialog",
+   "action": "button:Asha"
+  },
+  {
+   "n": 112,
+   "screen": "dialog",
+   "action": "button:Remove Kabir"
+  },
+  {
+   "n": 113,
+   "screen": "dialog",
+   "action": "button:Move Dev down"
+  },
+  {
+   "n": 114,
+   "screen": "dialog",
+   "action": "button:Meena"
+  },
+  {
+   "n": 115,
+   "screen": "dialog",
+   "action": "button:Move Neel up"
+  },
+  {
+   "n": 116,
+   "screen": "dialog",
+   "action": "button:Undo"
+  },
+  {
+   "n": 117,
+   "screen": "dialog",
+   "action": "button:Move Tara down"
+  },
+  {
+   "n": 118,
+   "screen": "dialog",
+   "action": "button:Move Dev down"
+  },
+  {
+   "n": 119,
+   "screen": "dialog",
+   "action": "button:Move Tara down"
+  },
+  {
+   "n": 120,
+   "screen": "dialog",
+   "action": "button:Move Meena up"
+  },
+  {
+   "n": 121,
+   "screen": "dialog",
+   "action": "button:Move Arjun down"
+  },
+  {
+   "n": 122,
+   "screen": "dialog",
+   "action": "button:Move Asha up"
+  },
+  {
+   "n": 123,
+   "screen": "dialog",
+   "action": "button:Remove Tara"
+  },
+  {
+   "n": 124,
+   "screen": "dialog",
+   "action": "button:Move Kabir up"
+  },
+  {
+   "n": 125,
+   "screen": "dialog",
+   "action": "button:Remove Zoya"
+  },
+  {
+   "n": 126,
+   "screen": "dialog",
+   "action": "button:Remove Asha"
+  },
+  {
+   "n": 127,
+   "screen": "dialog",
+   "action": "button:Move Arjun down"
+  },
+  {
+   "n": 128,
+   "screen": "dialog",
+   "action": "button:Move Om up"
+  },
+  {
+   "n": 129,
+   "screen": "dialog",
+   "action": "button:Move Arjun up"
+  },
+  {
+   "n": 130,
+   "screen": "dialog",
+   "action": "button:Move Meena up"
+  },
+  {
+   "n": 131,
+   "screen": "dialog",
+   "action": "button:Move Dev up"
+  },
+  {
+   "n": 132,
+   "screen": "dialog",
+   "action": "button:Move Riya down"
+  },
+  {
+   "n": 133,
+   "screen": "dialog",
+   "action": "button:Remove Arjun"
+  },
+  {
+   "n": 134,
+   "screen": "dialog",
+   "action": "button:Remove Kabir"
+  },
+  {
+   "n": 135,
+   "screen": "dialog",
+   "action": "button:Remove Om"
+  },
+  {
+   "n": 136,
+   "screen": "dialog",
+   "action": "button:Move Neel down"
+  },
+  {
+   "n": 137,
+   "screen": "dialog",
+   "action": "button:Zoya"
+  },
+  {
+   "n": 138,
+   "screen": "dialog",
+   "action": "button:Move Neel up"
+  },
+  {
+   "n": 139,
+   "screen": "dialog",
+   "action": "button:Remove Meena"
+  },
+  {
+   "n": 140,
+   "screen": "dialog",
+   "action": "button:Remove Dev"
+  },
+  {
+   "n": 141,
+   "screen": "dialog",
+   "action": "button:Move Zoya up"
+  },
+  {
+   "n": 142,
+   "screen": "dialog",
+   "action": "button:Move Zoya down"
+  },
+  {
+   "n": 143,
+   "screen": "dialog",
+   "action": "button:Asha"
+  }
+ ],
+ "findings": [
+  {
+   "kind": "crash",
+   "step": 143,
+   "screen": "dialog",
+   "detail": "could not do \"button:Asha\": locator.click: Timeout 3000ms exceeded."
+  },
+  {
+   "kind": "did not finish",
+   "step": 143,
+   "screen": "dialog",
+   "detail": "no summary left after 143 steps"
+  }
+ ],
+ "flags": [],
+ "rounds": 1,
+ "jevDecisions": 0,
+ "screens": [
+  "deal-A",
+  "menu",
+  "dialog",
+  "deal-B",
+  "clues",
+  "talk",
+  "countdown",
+  "picker",
+  "build-up",
+  "result"
+ ]
+}
