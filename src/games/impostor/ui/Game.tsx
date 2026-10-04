@@ -250,9 +250,8 @@ export function Game({
 
   const secretFor = (name: string): Secret => {
     const view = impostorRules.view(state, { kind: 'player', playerId: name }) as PlayerView;
-    // IMP-011, Test hooks item 1: choices without `lastGuess` (evenings before version 3) read as on.
-    const lastGuess = (state.choices as unknown as { lastGuess?: boolean }).lastGuess !== false;
-    return { role: view?.role === 'impostor' ? 'impostor' : 'crew', word: wordById(r!.wordId)!, mode: state.choices.mode, lastGuess };
+    // IMP-011: the rules read choices without `lastGuess` (evenings before version 3) as on.
+    return { role: view?.role === 'impostor' ? 'impostor' : 'crew', word: wordById(r!.wordId)!, mode: state.choices.mode, lastGuess: state.choices.lastGuess };
   };
   const tapPref = () => prefs.get<boolean>(PREF.tapToShow, false) === true;
   const midRound = !!r && step !== 'result';

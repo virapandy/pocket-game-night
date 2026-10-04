@@ -97,7 +97,7 @@ export function headline(r: Pick<DoneRound, 'impostor' | 'revealed' | 'stillTie'
 /** IMP-105: "Round 3 · Samosa · Arjun caught, guessed right", "Practice · Samosa · Arjun escaped". */
 export function roundLine(r: DoneRound): string {
   const word = wordById(r.wordId)?.word ?? r.wordId;
-  const how = isCaught(r) ? `caught, ${r.verdict ? 'guessed right' : 'wrong guess'}` : 'escaped';
+  const how = isCaught(r) ? (r.verdict === null ? 'caught' : `caught, ${r.verdict ? 'guessed right' : 'wrong guess'}`) : 'escaped';
   return `${r.practice ? 'Practice' : `Round ${r.number}`} · ${word} · ${r.impostor} ${how}`;
 }
 

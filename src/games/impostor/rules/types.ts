@@ -33,11 +33,16 @@ export interface Choices {
   readonly words: 'family' | 'grownups';
   readonly categories: readonly string[];
   readonly nonveg: boolean;
+  /**
+   * IMP-076: the last-chance guess after a caught impostor. Off for a new evening unless chosen; a saved evening whose
+   * choices have no `lastGuess` reads as on (every evening before version 3 had the guess).
+   */
+  readonly lastGuess: boolean;
 }
 
-/** IMP-005 and IMP-007: the first-ever defaults. */
+/** IMP-005, IMP-007 and IMP-076: the first-ever defaults (the last-chance guess off). */
 export const DEFAULT_CHOICES: Choices = {
-  mode: 'easy', talking: 'free', score: false, words: 'family', categories: [...CATEGORIES], nonveg: false,
+  mode: 'easy', talking: 'free', score: false, words: 'family', categories: [...CATEGORIES], nonveg: false, lastGuess: false,
 };
 
 /** The word sets frozen when the evening starts (IMP-052, IMP-096). */

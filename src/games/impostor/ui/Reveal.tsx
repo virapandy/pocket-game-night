@@ -137,13 +137,15 @@ export function Reveal({
       lines.push({ key: 'crew', said: `${named} was crew!`, big: true, node: <>{named} was crew!</> });
     }
     if (caught) {
-      if (t >= SECOND) {
+      // IMP-033, IMP-076: with the last-chance guess off the reveal completes the round (result, no verdict).
+      const noGuess = round.step === 'result' && round.verdict === null;
+      if (t >= SECOND && !noGuess) {
         const g = `${round.impostor}, one guess. Say it out loud! (No repeating the clues.)`;
         lines.push({ key: 'guess', said: g, big: false, node: g });
       }
-      if (round.step === 'guess' || round.step === 'result') lines.push(wordLine);
+      if (round.step === 'guess' || (round.step === 'result' && (!noGuess || t >= SECOND))) lines.push(wordLine);
       showWordButton = round.step === 'caught' && t >= SECOND;
-      resultReady = round.step === 'result';
+      resultReady = round.step === 'result' && (!noGuess || t >= SECOND);
     } else {
       if (t >= SECOND) {
         lines.push({

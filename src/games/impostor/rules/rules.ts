@@ -42,10 +42,12 @@ function choicesProblem(c: unknown): string | null {
   if (typeof x.nonveg !== 'boolean') return 'Non-veg must be on or off.';
   if (!Array.isArray(x.categories) || x.categories.length === 0) return 'Keep at least one category.';
   if (!x.categories.every((k) => (CATEGORIES as readonly unknown[]).includes(k))) return 'Unknown category.';
+  if (x.lastGuess !== undefined && typeof x.lastGuess !== 'boolean') return 'The last-chance guess must be on or off.';
   return null;
 }
 
-const copyChoices = (c: Choices): Choices => ({ ...c, categories: [...c.categories] });
+/** A copy of the choices; no `lastGuess` (an evening saved before version 3) reads as on (IMP-096). */
+const copyChoices = (c: Choices): Choices => ({ ...c, categories: [...c.categories], lastGuess: c.lastGuess !== false });
 
 function setup(config: ImpostorConfig, seeds: Readonly<Record<string, string>>): ImpostorState {
   const frozen = {
@@ -285,6 +287,8 @@ function applyMove(s: ImpostorState, move: ImpostorMove, ctx: MoveContext): Resu
       const p = move.player;
       if (!isString(p) || !r!.players.includes(p)) return no('That player is not playing.');
       if (step === 'revote' && !r!.tied!.includes(p)) return no('That player was not tied.');
+      // IMP-033, IMP-076: with the last-chance guess off, revealing the impostor completes the round (no verdict).
+      if (p === r!.impostor && !s.choices.lastGuess) return ok(complete(s, r!, true, null, { revealed: p }));
       if (p === r!.impostor) return ok({ ...s, round: { ...r!, step: 'caught', revealed: p } });
       return ok(complete(s, r!, false, null, { revealed: p }));
     }

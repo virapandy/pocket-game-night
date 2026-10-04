@@ -3,7 +3,7 @@ import { useRef, useState, type ReactNode } from 'react';
 import type { Preferences, SavedGame, SavedGameStore, SessionPicker } from '../../../engine';
 import type { Choices } from '../rules';
 import {
-  clearUi, clock, createEvening, describeEvening, endEvening, lastChoices, loadEvening, pastNames, PREF, record,
+  clearUi, clock, createEvening, describeEvening, endEvening, lastChoices, loadEvening, pastNames, PREF, readChoices, record,
   tonightsNames, unfinishedEvening, type Evening, type EveningMatch,
 } from './evening';
 import { Game } from './Game';
@@ -31,10 +31,12 @@ function openRoute(
   const saved = store.get(open.id) as Evening | undefined;
   const match = saved && loadEvening(saved);
   if (!saved || !match) return { route: { name: 'players' } };
-  if (open.action === 'reuse') return { route: { name: 'players' }, players: [...match.state.players], choices: match.state.choices };
+  // IMP-103: the past evening's choices (names not among the 9 dropped; no lastGuess reads as on).
+  const choices = readChoices(match.state.choices, { savedEvening: true });
+  if (open.action === 'reuse') return { route: { name: 'players' }, players: [...match.state.players], choices };
   // An evening made by "Start round" with no deal recorded (an older build's read-aloud card): back to its choices.
   if (match.state.phase === 'ready') {
-    return { route: { name: 'choices' }, players: [...match.state.players], choices: match.state.choices, created: saved };
+    return { route: { name: 'choices' }, players: [...match.state.players], choices, created: saved };
   }
   return { route: { name: 'game', saved, match, resumed: true, seq: 0 } };
 }
@@ -148,7 +150,7 @@ export function ImpostorScreen({
           onBackToChoices={(saved) => {
             setCreated(saved);
             setPlayers([...saved.setup.config.players]);
-            setChoices(saved.setup.config.choices);
+            setChoices(readChoices(saved.setup.config.choices, { savedEvening: true }));
             setRoute({ name: 'choices' });
           }}
           onSettingsClosed={() => setLarger(prefs.get<boolean>(PREF.largerText, false) === true)}

@@ -256,8 +256,10 @@ export function pastNames(store: SavedGameStore): string[] {
 /**
  * A stored choices object, checked; the defaults when missing or damaged. Category names not among the 9 are dropped
  * (all 9 when none is left); with `renamed`, names from before 4 October are mapped first (IMP-009, `lastChoices` only).
+ * A missing `lastGuess` reads as off for a stored `lastChoices` (IMP-009) and as on for a past evening's choices
+ * (`savedEvening`, IMP-096).
  */
-export function readChoices(raw: unknown, opts: { renamed?: boolean } = {}): Choices {
+export function readChoices(raw: unknown, opts: { renamed?: boolean; savedEvening?: boolean } = {}): Choices {
   if (typeof raw !== 'object' || raw === null) return DEFAULT_CHOICES;
   const c = raw as Partial<Record<keyof Choices, unknown>>;
   const stored = Array.isArray(c.categories)
@@ -271,6 +273,7 @@ export function readChoices(raw: unknown, opts: { renamed?: boolean } = {}): Cho
     words: c.words === 'grownups' ? 'grownups' : 'family',
     categories: categories.length > 0 ? categories : [...CATEGORIES],
     nonveg: c.nonveg === true,
+    lastGuess: typeof c.lastGuess === 'boolean' ? c.lastGuess : opts.savedEvening === true,
   };
 }
 
