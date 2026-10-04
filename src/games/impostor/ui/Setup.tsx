@@ -252,10 +252,10 @@ export function HowToPlayChoices({
   const [sheet, setSheet] = useState<'categories' | 'howTo' | 'more' | null>(null);
   const n = choices.categories.length;
   const more = onLastGuess !== undefined;
-  // IMP-076: the browser's or phone's Back closes "More options" and discards its change. The app's back guard
-  // (App.tsx) keeps the address, so Back stays on this screen.
+  // IMP-076: the browser's or phone's Back closes any sheet here ("More options", Categories, How to play) and
+  // discards its change. The app's back guard (App.tsx) keeps the address, so Back stays on this screen.
   useEffect(() => {
-    if (sheet !== 'more') return;
+    if (sheet === null) return;
     const back = () => setSheet(null);
     window.addEventListener('popstate', back);
     return () => window.removeEventListener('popstate', back);
