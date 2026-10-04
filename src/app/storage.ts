@@ -13,6 +13,7 @@ import {
   type SessionPicker,
   type SessionStore,
 } from '../engine';
+import { games } from './games';
 
 /**
  * The start of every key this app keeps. The owner's preview build (served under /preview/, owner decision 3 October
@@ -50,22 +51,36 @@ function keepData() {
   }
 }
 
+/**
+ * Whether a saved game still opens with its game's rules. One that doesn't (IMP-096: an Impostor evening from an earlier
+ * preview build) is kept in storage but never listed: not on Home, in History, sessions or tonight's names.
+ */
+function opens(game: SavedGame): boolean {
+  const g = games.find((x) => x.info.id === game.gameType);
+  if (!g || !('opens' in g)) return true;
+  try {
+    return g.opens(game);
+  } catch {
+    return false;
+  }
+}
+
 export const gameStore: SavedGameStore = {
   list() {
     const s = storage();
     if (!s) return [];
-    const games: SavedGame[] = [];
+    const list: SavedGame[] = [];
     for (let i = 0; i < s.length; i++) {
       const key = s.key(i);
       if (!key?.startsWith(GAME_PREFIX)) continue;
       try {
         const read = readSavedGame(JSON.parse(s.getItem(key) ?? 'null'));
-        if (read.ok) games.push(read.game);
+        if (read.ok && opens(read.game)) list.push(read.game);
       } catch {
         // A damaged entry: skip it.
       }
     }
-    return games;
+    return list;
   },
   get(id) {
     try {

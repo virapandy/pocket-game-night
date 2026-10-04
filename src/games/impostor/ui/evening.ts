@@ -48,6 +48,21 @@ export function loadEvening(saved: SavedGame): EveningMatch | null {
   }
 }
 
+const opensCache = new Map<string, { readonly updatedAt: number; readonly n: number; readonly ok: boolean }>();
+
+/**
+ * IMP-096: whether a saved evening still replays. One that doesn't (refused by the rules, or an error while reading,
+ * such as a preview evening from before 3.1 without word ids) is never offered anywhere, and never crashes the app.
+ */
+export function eveningOpens(saved: SavedGame): boolean {
+  if (!isImpostor(saved)) return true;
+  const hit = opensCache.get(saved.id);
+  if (hit && hit.updatedAt === saved.updatedAt && hit.n === saved.records.length) return hit.ok;
+  const ok = loadEvening(saved) !== null;
+  opensCache.set(saved.id, { updatedAt: saved.updatedAt, n: saved.records.length, ok });
+  return ok;
+}
+
 /** The saved form of the match: "in-progress" until `endEvening`, then "ended" (PLT-001, IMP-096). */
 export function toSaved(prev: Evening, match: EveningMatch, now: number): Evening {
   return {

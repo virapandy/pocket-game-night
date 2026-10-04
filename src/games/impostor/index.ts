@@ -15,7 +15,7 @@
 import type { GameInfo, SavedGame, SavedGameStore, Preferences } from '../../engine';
 import { impostorRules } from './rules';
 import {
-  clearUi, clock, describeEvening, endEvening, loadEvening, pendingSummary, roundToShow, sweepEvenings, unfinishedEvening,
+  clearUi, clock, describeEvening, endEvening, eveningOpens, loadEvening, pendingSummary, roundToShow, sweepEvenings, unfinishedEvening,
   unfinishedLine,
 } from './ui/evening';
 import { ImpostorPastGame, ImpostorScreen } from './ui/ImpostorScreen';
@@ -54,6 +54,8 @@ export const impostor = {
   Screen: ImpostorScreen,
   PastGame: ImpostorPastGame,
   rules: impostorRules,
+  /** IMP-096: false for a saved evening that no longer replays; the app then never lists it. */
+  opens: eveningOpens,
   /** History and session rows: players and counted rounds. */
   describe: describeEvening,
   /** Home's unfinished row (IMP-001): "Impostor, 8:40 pm, round 4". */
