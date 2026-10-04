@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, type ReactNode, type RefObject } from 'react';
+import { Fragment, useCallback, useEffect, useRef, useState, type ReactNode, type RefObject } from 'react';
 import { useRegisterSW } from 'virtual:pwa-register/react';
 import { makePlayerReport, makeReport, type Report, type ReportSubject, type SavedGame } from '../engine';
 import { games, hostGames, impostor, phoneGames, tambola, type GameId, type HostGameId, type PhoneGameId } from './games';
@@ -627,6 +627,24 @@ function Home({
  * opens that game's setup at once. "← Back" returns to Home. An unfinished Impostor evening shows above the cards
  * ("Impostor · round 4 · Tap to resume"); the Impostor card then asks before starting a new evening.
  */
+/**
+ * IMP-001, F12: a game's line on its card, where a part with a number ("3–20 players", "2 hrs") never breaks across
+ * two lines; the line still wraps between its parts.
+ */
+function Tagline({ text }: { text: string }) {
+  const parts = text.split(' · ');
+  return (
+    <>
+      {parts.map((part, i) => (
+        <Fragment key={i}>
+          {i > 0 && ' · '}
+          {/\d/.test(part) ? <span className="nowrap">{part}</span> : part}
+        </Fragment>
+      ))}
+    </>
+  );
+}
+
 function PickGame({
   onBack,
   onPick,
@@ -663,7 +681,9 @@ function PickGame({
             onClick={() => (g.info.id === impostor.info.id && unfinished ? setAsking(true) : onPick(g.info.id))}
           >
             <span className="choice-card-title">{g.info.title}</span>
-            <span className="choice-card-text">{g.info.tagline}</span>
+            <span className="choice-card-text">
+              <Tagline text={g.info.tagline} />
+            </span>
           </button>
         ))}
       </div>

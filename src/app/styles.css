@@ -112,6 +112,8 @@ body { -webkit-tap-highlight-color: transparent; }
 .game-card:active { border-color: var(--accent); }
 .game-card-title { font-size: 1.5rem; font-weight: 800; }
 .game-card-tagline { color: var(--muted); }
+/* IMP-001: a part of a line that must stay on one line. */
+.nowrap { white-space: nowrap; }
 
 .button {
   min-height: 48px;
