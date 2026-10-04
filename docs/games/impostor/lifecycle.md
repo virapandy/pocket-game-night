@@ -107,9 +107,9 @@ Impostor card to the first deal (card → "Next" → "Start round").
   players → one re-vote → "Still a tie", the impostor escapes.
 
 **Reveal:** after "Reveal Arjun" (pick, then confirm), a 1.5-second build-up with no colour change, then one result
-screen: "**✓ Caught!** ARJUN was the impostor" or "**✗ Escaped!** Meena was crew. ARJUN was the impostor", with the
+screen: "**✓ Caught!** ARJUN was the impostor" or "**✗ Escaped!** Meena was not the impostor. ARJUN was the impostor", with the
 word, its category and the outcome.
-**Last guess for a caught impostor** (optional, off by default; only if caught): "Last chance, Arjun! Guess the word out loud. Get it right and you steal the round." **before** the word is shown; then "Arjun guessed. Show the word",
+**Last guess for a caught impostor** (optional, off by default; only if caught): "Last chance, Arjun! Guess the word out loud. Get it right and you win the round." **before** the word is shown; then "Arjun guessed. Show the word",
 and the room decides: "Guessed right" / "Wrong guess".
 
 **Moments every game must handle**

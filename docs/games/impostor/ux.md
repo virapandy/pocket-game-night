@@ -86,7 +86,7 @@ Categories: all 9 ›
 Other lines: Hard "The impostor gets nothing and never starts." · Timer "Two minutes to talk, then a chime." ·
 Yes "Points every round, totals for the game." · + Grown-ups "Adds words kids or elders may not know."
 Categories sheet: 9 switches and "Include non-veg food" (off). More options sheet: "Last guess for a caught impostor"
-with "Off ✓" / "On" and "A caught impostor can steal the round by guessing the word." "More options ›" and "How to
+with "Off ✓" / "On" and "A caught impostor can win the round by guessing the word." "More options ›" and "How to
 play" share one row. "Same as last time" under the heading when choices were carried over. 10 s.
 
 ### 4. How to play (on request only: "How to play" on the choices screen, or the menu)
@@ -143,7 +143,7 @@ which asks "New word for everyone?" ("New word" / "Back")
       starts
 Each say one word about your secret:
 Meena → Kabir → Zoya → Riya → Arjun
-[ Clues done, talk it over ]   (Timer: [ Clues done, start the 2-minute timer ])
+[ Clues done, talk it over ]   (Timer: [ Clues done, start timer ])
  One more round of clues        (3–5 players only)
 ```
 Starter name 56 px. Landscape: starter name left; order and buttons right.
@@ -169,24 +169,24 @@ countdown → only those names plus "Still a tie" (the impostor escapes).
 - Build-up 1.5 s: "Arjun was…", the drumroll sound, no colour change; then everything at once (exact order in
   IMP-033, IMP-034, IMP-038).
 - **Caught:** "✓ Caught!" (56 px) · "ARJUN was the impostor" (32 px) · "The word was" "School trip" (44 px) ·
-  "Also called Excursion" · chip "School and childhood" (17 px) · "The crew wins!".
-- **Wrong person:** "✗ Escaped!" · "Meena was crew." · "ARJUN was the impostor" · the word and chip · "Arjun escaped!".
+  "Also called Excursion" · chip "School and childhood" (17 px) · "You caught the impostor!".
+- **Wrong person:** "✗ Escaped!" · "Meena was not the impostor." · "ARJUN was the impostor" · the word and chip · "Arjun escaped!".
 - **Still a tie:** "✗ Escaped!" · "Still a tie." · "ARJUN was the impostor" · the word and chip · "Arjun escaped!"
   (no build-up).
 - The screen scrolls as one page; only "Next round" is pinned (guideline 46a). No "Undo" with the last guess off.
 - **Last guess for a caught impostor (optional, off by default):** caught → "✓ Caught!" · "ARJUN was the impostor" · "Last chance, Arjun!
-  Guess the word out loud. Get it right and you steal the round." · main "Arjun guessed. Show the word" → the word,
-  chip and two equal buttons "Guessed right" / "Wrong guess" → "The crew wins!" / "Arjun steals the round!" (IMP-039).
+  Guess the word out loud. Get it right and you win the round." · main "Arjun guessed. Show the word" → the word,
+  chip and two equal buttons "Guessed right" / "Wrong guess" → "You caught the impostor!" / "Arjun wins the round!" (IMP-039).
 
 ### 11. Round result (on the same screen)
-Outcome: "The crew wins!" / "Arjun steals the round!" / "Arjun escaped!". Without scores: "This game: impostor caught 3
+Outcome: "You caught the impostor!" / "Arjun wins the round!" / "Arjun escaped!". Without scores: "This game: impostor caught 3
 · escaped 2". With scores: this round's points, then the game's scoreboard (36 px rows, highest first, ties share a
 place (1-2-2-4), leavers greyed; one column up to 360 px wide, two columns of 50% from 390 px; caption "Scores since round 4"). Main "Next round"; quiet "Undo" (the guess verdict
 only, last-chance guess on) and "This word didn't work". Bottom row: outlined "End game" beside main "Next round"
 (stacked at 320 px); "← Home" top left keeps the game to resume (IMP-077).
 
 ### 12. End of the game
-"That's the game!", the lead line ("Arjun wins the game with 2 points!", or "Crew 4 · Impostors 3"), up to 2 fun
+"That's the game!", the lead line ("Arjun wins the game with 2 points!", or "Impostor caught 4 · escaped 3"), up to 2 fun
 lines, the final scoreboard. Main "Play again"; quiet "Play something else", "Home", "More ›" ("Oops, keep playing",
 Share, History, then after a divider "Discard this game"). Scrolls as one page. "End game" between rounds opens it at
 once; mid-round (menu "End game"): "End now? This round won't count." ("End now" / "Keep playing"); "Discard this
@@ -229,7 +229,7 @@ the build-up. Over 3 hours: "This round was left halfway. Start a fresh round?" 
 Names up to 16 characters shrink to 32 px on room screens and wrap to 2 lines in two-column lists.
 
 ## Tone (Indian English, plain)
-Use: "✓ Caught!", "Arjun steals the round!", "Arjun escaped!", "Meena was crew.", "The crew wins!",
+Use: "✓ Caught!", "Arjun wins the round!", "Arjun escaped!", "Meena was not the impostor.", "You caught the impostor!",
 "No problem! New word coming." Never: liar, loser, fooled, "bad clue", anything about
 a player's intelligence.
 
@@ -258,13 +258,13 @@ pick-then-reveal, room sizes for starter/timer/countdown.
 | F6 | 2 | Clue wording (judgement) | "Each say one word about your secret:" then "Arjun → Meena → Kabir → Riya"; main "Clues done, talk it over"; quiet "One more round of clues" |
 | F7 | 2 | How-to-play text wrong in Hard mode and with the guess off | The card's text follows the current settings (Hard: "The impostor sees nothing and never starts"; guess line only when the setting is on); lines per the designer |
 | F8 | 2 | "It's a tie" / "Count again" look like names, too close | 24 px gap, label "Not sure?" above, text-style 48 px buttons |
-| F9 | 2 | Summary repeats itself, no winner line, five equal buttons | Lead line "Arjun wins the night with 2 points!" (no scores: "Crew 4 · Impostors 3"); drop "Rounds played"; quiet "Oops, keep playing" and "Play something else"; "More ›" holds Share, History and, last after a divider, "Discard this evening" |
+| F9 | 2 | Summary repeats itself, no winner line, five equal buttons | Lead line "Arjun wins the night with 2 points!" (no scores: "Impostor caught 4 · escaped 3"); drop "Rounds played"; quiet "Oops, keep playing" and "Play something else"; "More ›" holds Share, History and, last after a divider, "Discard this evening" |
 | F10 | 1 | Timer | Label "Talk it over" 28 px above the timer; "Time's up!" adds quiet "1 more minute" |
 | F11 | 2 | "You're the impostor" wraps taller than a word at 320 px (predicted) | The word area has a fixed 2-line height, centred, for every role |
 | F12 | 1 | Polish | Category switches deep blue, not the main red (17a); screen-reader note only when "Tap to show" is on; History date once; "3–20" never breaks; "Whole family" fits in 48 px; "Same as last time" line on the choices screen when choices were carried over; "Scores since round 2" |
 Also: with the last guess off the result has no "Undo" (a reveal can't be undone); "Player 2 of 4" 17 px above "Pass the
 phone to" and on the hold screen; "Everyone else, look away!" 20 px; the setting reads "Last guess for a caught
-impostor" with Off ✓ / On and "A caught impostor can steal the round by guessing the word." New guidelines 45a and 46a.
+impostor" with Off ✓ / On and "A caught impostor can win the round by guessing the word." New guidelines 45a and 46a.
 Not now: the upside-down "table view".
 
 ## Re-check of round 4 (UX designer, 4 October 2026, live preview)
@@ -275,7 +275,7 @@ how to play on request and the pass-the-phone touches are built as scenarios v3.
 | N1 | 3 | "✗ Escaped!" breaks onto two lines at 320 px (headline stays 56 px) | **Must fix before release** | 44 px below 360 px wide, one line (IMP-073, decision I23) |
 | N2 | 2 | Two-column scoreboard: a total sits next to the other column's rank ("Riya 1 1 Chandrasekharan 1") | Next list | 24 px gap with a thin divider; rank as a muted 15 px "1." |
 | N3 | 2 | Long one-word names break mid-word ("VENKATARAGHAV / AN") | Next list | Break lines only at spaces; a one-word name too wide shrinks to fit one line (starter floor 24 px, list floor 15 px) |
-| N4 | 1 | Many players sharing the top score make a wall of names | Next list | More than 3 sharing: "11 players share the game with 1 point!"; round points "+1 each to the crew (11)" |
+| N4 | 1 | Many players sharing the top score make a wall of names | Next list | More than 3 sharing: "11 players share the game with 1 point!"; round points "+1 each to the other players (11)" |
 | N5 | 1 | "Whose word?" with 12 players hides Cancel at 360 × 640 | Next list | Cancel pinned at the bottom; only names scroll |
 | N6 | 1 | Hold-screen name 2 px past its box at 360 × 640 | Next list | Keep shrinking until it fits |
 
