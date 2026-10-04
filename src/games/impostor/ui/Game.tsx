@@ -170,7 +170,13 @@ export function Game({
   const resultScreen = !leftHalfway && !seeAgain && (step === 'caught' || step === 'guess' || step === 'result');
   /** IMP-077: a between-rounds screen ("Next round", "End game", "← Home"). */
   const betweenRounds = leftHalfway || state.phase === 'noWords' || (step === 'result' && resultShown);
-  const guard = useTapGuard(betweenRounds ? `${roundKey}|${state.phase}|${leftHalfway}` : null);
+  // IMP-077: the guard starts only at its moments (1.5 s after "Reveal …", at once after "Still a tie" or the verdict,
+  // when the "left halfway" or no-words screen shows), not when a round result is merely reopened (resume, History's
+  // "← Back"). Once the result has gone (Undo of a verdict, the next round), every later showing is guarded again.
+  const guardKey = `${roundKey}|${state.phase}|${leftHalfway}`;
+  const reopenedResult = useRef<string | null>(resumed && step === 'result' && !leftHalfway ? guardKey : null);
+  if (!betweenRounds) reopenedResult.current = null;
+  const guard = useTapGuard(betweenRounds && guardKey !== reopenedResult.current ? guardKey : null);
 
   // IMP-087, IMP-100: the screen stays on from a round's first screen A until the round's result shows.
   useWakeLock(state.phase === 'round' && !resultShown && !leftHalfway && !summary, roundKey);
