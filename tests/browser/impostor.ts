@@ -391,6 +391,12 @@ export async function summaryAction(page: Page, name: 'Share' | 'History' | 'Dis
 export const result = (page: Page, id: 'result-headline' | 'result-note' | 'result-impostor' | 'word-label' | 'result-word' | 'also-called' | 'word-category' | 'guess-line' | 'round-outcome' | 'build-up') =>
   page.getByTestId(id);
 
+/** Terms, "No page scrolling": nothing to scroll down or sideways. */
+export const noPageScrollAt = (page: Page) => page.evaluate(() => {
+  const s = document.scrollingElement!;
+  return s.scrollHeight <= window.innerHeight && s.scrollWidth <= window.innerWidth;
+});
+
 export const textOf = (l: Locator) => l.evaluateAll((els) => els.map((e) => (e.textContent ?? '').replace(/\s+/g, ' ').trim()));
 
 /**
