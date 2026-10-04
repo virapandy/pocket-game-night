@@ -12,7 +12,7 @@ import {
   clearUi, endEvening, LEFT_HALFWAY_MS, PREF, record, undoableVerdict, undoVerdict,
   type Evening, type EveningMatch, type UiState,
 } from './evening';
-import { Dialog, HideMainButton, MainButton, Menu, QuietButton, Toast, useToast, type MenuItem } from './parts';
+import { Dialog, HideMainButton, MainButton, Menu, QuietButton, TapGuard, Toast, useToast, type MenuItem } from './parts';
 import { EndGameButton, Reveal, useTapGuard, type ResultInfo } from './Reveal';
 import { HowToPlayChoices } from './Setup';
 import { PlayersSheet, RulesSheet, SettingsSheet } from './Sheets';
@@ -563,7 +563,14 @@ export function Game({
               </span>
             )}
             <span className="imp-grow" />
-            {menu && <Menu items={menu} />}
+            {/* IMP-010 (guideline 20): on the deal screens the menu button is guarded like the screen's own buttons. */}
+            {menu && step === 'deal' ? (
+              <TapGuard screen={`${turnKey}-${returns}-${holdScreen}-${banner?.turn === turnKey ? banner.kind : ''}`}>
+                <Menu items={menu} />
+              </TapGuard>
+            ) : (
+              menu && <Menu items={menu} />
+            )}
           </header>
           {body}
         </div>
