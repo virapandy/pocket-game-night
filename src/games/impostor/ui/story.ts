@@ -87,8 +87,8 @@ export function pointsText(r: DoneRound): string | null {
   return `+1 each: ${r.players.filter((p) => p !== r.impostor).join(', ')}`;
 }
 
-/** IMP-035, IMP-034: the result headline. */
-export function headline(r: Pick<DoneRound, 'impostor' | 'revealed' | 'stillTie' | 'verdict'>): string {
+/** IMP-035, IMP-034, IMP-085: the round's outcome (`round-outcome`). */
+export function outcomeLine(r: Pick<DoneRound, 'impostor' | 'revealed' | 'stillTie' | 'verdict'>): string {
   const caught = !r.stillTie && r.revealed === r.impostor;
   if (!caught) return `${r.impostor} escaped!`;
   return r.verdict ? `${r.impostor} steals the round!` : 'The crew wins!';

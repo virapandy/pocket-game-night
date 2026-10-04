@@ -16,7 +16,7 @@ import { Dialog, HideMainButton, MainButton, Menu, QuietButton, Toast, useToast,
 import { Reveal, type ResultInfo } from './Reveal';
 import { HowToPlayChoices } from './Setup';
 import { PlayersSheet, RulesSheet, SettingsSheet } from './Sheets';
-import { counts, headline, pointsText, scoreRows, storyOf } from './story';
+import { counts, outcomeLine, pointsText, scoreRows, storyOf } from './story';
 import { Summary } from './Summary';
 import { Countdown, FreeTalk, Picker, TimerTalk } from './Talk';
 
@@ -144,10 +144,13 @@ export function Game({
     if (revealLive !== null) setRevealLive(null);
   });
 
+  // IMP-033, IMP-038, IMP-039: the round's result shows (after the 1.5 s build-up; at once after "Still a tie").
   const resultShown =
-    step === 'result' && (revealLive !== roundKey || revealDone === roundKey || r?.verdict !== null);
+    step === 'result' && (r!.stillTie || revealLive !== roundKey || revealDone === roundKey || r!.verdict !== null);
+  /** The one result screen (with its build-up and guess steps): it scrolls as one page (guideline 46a). */
+  const resultScreen = !leftHalfway && !seeAgain && (step === 'caught' || step === 'guess' || step === 'result');
 
-  // IMP-087, IMP-100: the screen stays on from a round's first screen A until its result block appears.
+  // IMP-087, IMP-100: the screen stays on from a round's first screen A until the round's result shows.
   useWakeLock(state.phase === 'round' && !resultShown && !leftHalfway && !summary, roundKey);
 
   // IMP-070: no card opens by itself; an evening with no deal yet goes back to its choices.
@@ -434,7 +437,7 @@ export function Game({
     if (step === 'result') {
       const c = counts(story);
       result = {
-        headline: headline(r),
+        outcome: outcomeLine(r),
         eveningLine: r.points === null && !r.practice ? `Tonight: impostor caught ${c.caught} · escaped ${c.escaped}` : null,
         points: pointsText(r),
         rows: r.points !== null ? scoreRows(state, story) : null,
@@ -447,8 +450,9 @@ export function Game({
       <Reveal
         key={`reveal-${roundKey}`}
         round={r}
-        // Timed only until its result shows: drawn again later (back from "Change how we play"), it shows at once.
-        live={revealLive === roundKey && !resultShown}
+        // The build-up only until the result shows: drawn again later (back from "Change how we play"), it shows at
+        // once. "Still a tie" has no build-up, but its lines are still said as they appear (IMP-083).
+        live={revealLive === roundKey && (r.stillTie || !resultShown)}
         result={result}
         prefs={prefs}
         announce={announce}
@@ -461,7 +465,11 @@ export function Game({
         }}
         onUndo={() => {
           const cur = evRef.current;
-          if (keepEv(undoVerdict(store, cur.saved, cur.match))) clearToast();
+          if (keepEv(undoVerdict(store, cur.saved, cur.match))) {
+            clearToast();
+            // IMP-083: the next verdict's outcome is said again.
+            heardFor(roundKey).delete('outcome');
+          }
         }}
         onSkipWord={() => {
           const wordId = r.wordId;
@@ -485,7 +493,7 @@ export function Game({
   const sheet = overlay === 'rules' || overlay === 'settings' || overlay === 'players';
   const dialog = overlay === 'dealAgain' || overlay === 'end' || overlay === 'playersMid' || overlay === 'whose';
   return (
-    <main className={holdScreen ? 'imp-screen imp-room imp-hold-screen' : 'imp-screen imp-room'}>
+    <main className={`imp-screen imp-room${holdScreen ? ' imp-hold-screen' : ''}${resultScreen ? ' imp-page' : ''}`}>
       <HideMainButton.Provider value={dialog || sheet}>
         <div className="imp-screen-inner" hidden={sheet}>
           <header className="imp-bar">

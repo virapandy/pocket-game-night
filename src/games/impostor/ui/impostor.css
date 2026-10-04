@@ -208,8 +208,11 @@
   background: var(--toast-bg);
   border-radius: 22px;
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.18);
-  white-space: nowrap;
+  width: max-content;
+  box-sizing: border-box;
 }
+/* A long word wraps inside the toast, so "Undo" always stays on screen. */
+.imp-toast > span { min-width: 0; overflow-wrap: anywhere; }
 .imp-toast-button {
   min-height: 44px;
   min-width: 44px;
@@ -507,33 +510,69 @@
 .imp-pick-quiet { flex: none; display: flex; flex-wrap: wrap; gap: 8px; }
 .imp-pick-quiet .imp-quiet { flex: 1 1 0; }
 
-/* ----- The reveal and the round result (IMP-033 to IMP-044, IMP-081) ----- */
-.imp-reveal { gap: 10px; }
-.imp-reveal-lines {
-  flex: 0 1 auto;
-  min-height: 0;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+/* ----- The one result screen (IMP-033 to IMP-039, IMP-073, IMP-081; F1, F2) -----
+   The page scrolls as one (guideline 46a): no inner scroll areas; the main button stays pinned and the page's bottom
+   padding keeps the last line clear of it. */
+.imp-screen.imp-page { height: auto; min-height: 100dvh; overflow: visible; }
+.imp-page .imp-screen-inner { flex: 1 0 auto; }
+.imp-build-up { font-size: 40px; font-weight: 800; line-height: 1.2; overflow-wrap: anywhere; }
+.imp-result-page { flex: 1 0 auto; display: flex; flex-direction: column; gap: 8px; }
+.imp-result-left, .imp-result-right { display: flex; flex-direction: column; gap: 8px; }
+.imp-result-left { align-items: center; text-align: center; }
+.imp-result-right { text-align: center; }
+.imp-headline { font-size: 56px; font-weight: 800; line-height: 1.1; }
+.imp-result-note { font-size: 20px; font-weight: 700; line-height: 1.3; overflow-wrap: anywhere; }
+.imp-result-impostor { font-size: 32px; font-weight: 800; line-height: 1.2; overflow-wrap: anywhere; }
+.imp-result-word-block { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.imp-result-word { max-width: 100%; font-size: 44px; font-weight: 800; line-height: 1.15; overflow-wrap: anywhere; }
+/* IMP-073: a word over 12 characters may be 32 to 44 px; at 32 px the longest word fits in 3 lines. */
+.imp-result-word-long { font-size: 32px; }
+/* F2: the category as an outlined chip directly below the word (not a button). */
+.imp-category {
+  max-width: 100%;
+  margin-top: 4px;
+  padding: 3px 14px;
+  font-size: var(--imp-body);
+  font-weight: 700;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+  border: 2px solid var(--border);
+  border-radius: 18px;
 }
-.imp-reveal-line { font-size: 20px; font-weight: 700; line-height: 1.3; overflow-wrap: anywhere; }
-.imp-reveal-big { font-size: 28px; font-weight: 800; line-height: 1.2; }
-.imp-verdict { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.imp-result { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; gap: 8px; }
-.imp-outcome { flex: none; font-size: 28px; font-weight: 800; line-height: 1.2; overflow-wrap: anywhere; }
-.imp-result-quiet { flex: none; display: flex; flex-wrap: wrap; gap: 8px; }
-.imp-result-quiet .imp-quiet { flex: 1 1 auto; }
+.imp-verdict { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; }
+.imp-verdict .imp-quiet { min-width: 0; padding: 0 8px; }
+.imp-outcome { font-size: 28px; font-weight: 800; line-height: 1.2; overflow-wrap: anywhere; }
+/* IMP-037: "Undo" above "This word didn't work". */
+.imp-result-quiet { display: flex; flex-direction: column; gap: 8px; }
+@media (max-height: 640px) and (orientation: portrait) {
+  .imp-result-page, .imp-result-left, .imp-result-right { gap: 6px; }
+  .imp-result-word-block { gap: 2px; }
+}
 
-/* ----- The scoreboard (IMP-044): 36 px rows; two columns from 7 players; leavers greyed ----- */
-.imp-scoreboard { flex: 0 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; display: flex; flex-direction: column; gap: 4px; }
-.imp-score-list { list-style: none; padding: 0; display: grid; grid-auto-rows: 36px; column-gap: 16px; }
-.imp-score-two { grid-auto-flow: column; grid-template-columns: 1fr 1fr; }
-.imp-score-row { height: 36px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border); font-size: var(--imp-body); }
+/* ----- The scoreboard (IMP-044): rows at least 36 px; one column up to 360 px wide and in landscape, two columns of
+   50% from 390 px wide in portrait (the first holding the first ceil(n / 2) rows); never its own scroll area ----- */
+.imp-scoreboard { width: 100%; display: flex; flex-direction: column; gap: 4px; text-align: left; }
+.imp-score-list { list-style: none; padding: 0; display: grid; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 361px) and (orientation: portrait) {
+  .imp-score-list {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: repeat(var(--imp-score-rows, 1), auto);
+    grid-auto-flow: column;
+  }
+}
+.imp-score-row {
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 8px 2px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: var(--imp-body);
+  line-height: 1.25;
+}
 .imp-score-left { opacity: 0.5; }
 .imp-score-rank { flex: none; width: 1.6em; font-weight: 800; color: var(--muted); }
-.imp-score-name { flex: 1; min-width: 0; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.imp-score-name { flex: 1; min-width: 0; font-weight: 700; overflow-wrap: anywhere; }
 .imp-score-points { flex: none; font-weight: 800; font-variant-numeric: tabular-nums; }
 
 /* ----- The summary and the look back (IMP-092, IMP-095, IMP-105) ----- */
@@ -572,8 +611,7 @@
   .imp-count { font-size: 160px; }
   .imp-count-point { font-size: 96px; }
   .imp-talk-heading { font-size: 48px; }
-  /* IMP-081: the reveal lines on the left, the result block on the right. */
-  .imp-reveal { flex-direction: row; gap: 16px; }
-  .imp-reveal-lines { flex: 1 1 0; max-height: 100%; }
-  .imp-result { flex: 1 1 0; }
+  /* IMP-081: the result screen: the headline to the outcome on the left; the evening line or points with the
+     scoreboard, the quiet buttons and the verdict buttons on the right. */
+  .imp-result-page { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 16px; align-items: start; }
 }

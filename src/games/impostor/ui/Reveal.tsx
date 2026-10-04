@@ -1,6 +1,9 @@
-// The reveal and the round result (IMP-033 to IMP-038, IMP-040, IMP-043, IMP-044, IMP-107). One screen: the reveal
-// lines stay once shown; then the result block. Live after a tap (timed lines); otherwise (reopened, back from
-// hidden) every line up to the current step at once, with no build-up (IMP-091).
+// The one result screen (IMP-033, IMP-034, IMP-037, IMP-038, IMP-039; F1, F2): right after "Reveal <Name>" the
+// build-up "Arjun was…" for 1.5 s, then everything at once: "✓ Caught!" / "✗ Escaped!", who the impostor was, the
+// word and its category, the outcome, the evening line or points and scoreboard, and "Next round". With the
+// last-chance guess on, a caught impostor guesses first ("Arjun guessed. Show the word", then the room's verdict).
+// "Still a tie" shows at once. Reopened (or back from hidden) it shows at once, with no build-up (IMP-091).
+// The screen scrolls as one page; only the main button stays pinned (guideline 46a, IMP-081).
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import type { Preferences } from '../../../engine';
 import { wordById, type Round } from '../rules';
@@ -8,31 +11,24 @@ import { playSound } from './device';
 import { Caps, MainButton, QuietButton } from './parts';
 import type { ScoreRow } from './story';
 
-/** When each reveal step happens, in ms after the tap (IMP-033, IMP-034, IMP-038). */
-const DOTS = [600, 1200, 1800];
-const FIRST = 2500;
-const SECOND = 4000;
-const THIRD = 5500;
-const RESULT = 7000;
-const TIE_WORD = 1500;
-const TIE_RESULT = 3000;
-
-interface Line {
-  readonly key: string;
-  /** What the announcer says (IMP-083). */
-  readonly said: string;
-  readonly big: boolean;
-  readonly node: ReactNode;
-}
+/** IMP-033: the build-up lasts 1.5 s. */
+const BUILD_UP = 1500;
 
 export interface ResultInfo {
-  readonly headline: string;
+  /** `round-outcome`: "The crew wins!", "Arjun steals the round!" or "Arjun escaped!". */
+  readonly outcome: string;
   readonly eveningLine: string | null;
   readonly points: string | null;
   readonly rows: readonly ScoreRow[] | null;
   readonly scoresFrom: number | null;
   readonly canUndo: boolean;
   readonly canSkipWord: boolean;
+}
+
+/** One announcement (IMP-083) and the key that makes sure it is said once. */
+interface Said {
+  readonly key: string;
+  readonly text: string;
 }
 
 export function Reveal({
@@ -50,185 +46,200 @@ export function Reveal({
   onSkipWord,
 }: {
   round: Round;
-  /** Timed (just tapped) or all at once. */
+  /** Just tapped: the build-up first (none after "Still a tie"). Otherwise everything at once. */
   live: boolean;
   result: ResultInfo | null;
   prefs: Preferences;
   announce: (text: string) => void;
-  /** This round's lines already announced (IMP-083), kept across redraws of the reveal. */
+  /** This round's announcements already made (IMP-083), kept across redraws of the screen. */
   heard: Set<string>;
   /** Records "Show the word"; true when it was recorded. */
   onShowWord: () => boolean;
   onVerdict: (right: boolean) => void;
-  /** The timed reveal reached its result block. */
+  /** The build-up is over (the round's lines show). */
   onDone: () => void;
   onNext: () => void;
   onUndo: () => void;
   onSkipWord: () => void;
 }) {
-  const [t, setT] = useState(() => (live ? 0 : Infinity));
   const tie = round.stillTie;
+  const [building, setBuilding] = useState(() => live && !tie);
   const done = useRef(onDone);
   done.current = onDone;
+  const prefsRef = useRef(prefs);
+  prefsRef.current = prefs;
 
   useEffect(() => {
-    if (!live) {
-      setT(Infinity);
+    if (!live || tie) {
+      setBuilding(false);
       return;
     }
-    if (!tie) playSound('drumroll', prefs);
-    const marks = tie ? [TIE_WORD, TIE_RESULT] : [...DOTS, FIRST, SECOND, THIRD, RESULT];
-    const timers = marks.map((m) => setTimeout(() => setT((cur) => Math.max(cur, m)), m));
-    const end = tie ? TIE_RESULT : RESULT;
-    timers.push(setTimeout(() => done.current(), end));
-    return () => timers.forEach(clearTimeout);
-    // Started once per reveal: `live` turning false stops it (all lines at once).
-  }, [live, tie, prefs]);
+    playSound('drumroll', prefsRef.current);
+    const t = setTimeout(() => {
+      setBuilding(false);
+      done.current();
+    }, BUILD_UP);
+    return () => clearTimeout(t);
+    // Started once per reveal: `live` turning false (back from hidden) shows everything at once.
+  }, [live, tie]);
 
   const word = wordById(round.wordId);
   const wordText = word?.word ?? '';
   const named = round.revealed ?? round.impostor;
   const caught = !tie && round.revealed === round.impostor;
-  const lines: Line[] = [];
-  const wordLine: Line = { key: 'word', said: `The word was ${wordText}.`, big: false, node: <>The word was {wordText}.</> };
-  let resultReady = false;
-  let showWordButton = false;
-  if (tie) {
-    lines.push({
-      key: 'tie',
-      said: `Still a tie! The impostor was ${round.impostor}. Escaped!`,
-      big: true,
-      node: (
-        <>
-          Still a tie! The impostor was <Caps>{round.impostor}</Caps>. Escaped!
-        </>
-      ),
-    });
-    if (t >= TIE_WORD) lines.push(wordLine);
-    resultReady = t >= TIE_RESULT;
-  } else {
-    if (t < FIRST) {
-      const dots = DOTS.filter((d) => t >= d).length;
-      lines.push({
-        key: 'build',
-        said: `${named} was`,
-        big: true,
-        node: (
-          <>
-            {named} was
-            <span data-testid="build-up-dots" aria-hidden="true">
-              {'.'.repeat(dots)}
-            </span>
-          </>
-        ),
-      });
-    } else if (caught) {
-      lines.push({
-        key: 'caught',
-        said: `Caught red-handed! ${round.impostor} was the impostor.`,
-        big: true,
-        node: (
-          <>
-            Caught red-handed! <Caps>{round.impostor}</Caps> was the impostor.
-          </>
-        ),
-      });
-    } else {
-      lines.push({ key: 'crew', said: `${named} was crew!`, big: true, node: <>{named} was crew!</> });
-    }
-    if (caught) {
-      // IMP-033, IMP-076: with the last-chance guess off the reveal completes the round (result, no verdict).
-      const noGuess = round.step === 'result' && round.verdict === null;
-      if (t >= SECOND && !noGuess) {
-        const g = `${round.impostor}, one guess. Say it out loud! (No repeating the clues.)`;
-        lines.push({ key: 'guess', said: g, big: false, node: g });
-      }
-      if (round.step === 'guess' || (round.step === 'result' && (!noGuess || t >= SECOND))) lines.push(wordLine);
-      showWordButton = round.step === 'caught' && t >= SECOND;
-      resultReady = round.step === 'result' && (!noGuess || t >= SECOND);
-    } else {
-      if (t >= SECOND) {
-        lines.push({
-          key: 'escaped',
-          said: `The impostor was ${round.impostor}. Escaped!`,
-          big: false,
-          node: (
-            <>
-              The impostor was <Caps>{round.impostor}</Caps>. Escaped!
-            </>
-          ),
-        });
-      }
-      if (t >= THIRD) lines.push(wordLine);
-      resultReady = t >= RESULT;
+  const guessStep = caught && round.step === 'caught';
+  const wordShown = !guessStep;
+  const verdictStep = caught && round.step === 'guess';
+  const complete = round.step === 'result' && result !== null;
+
+  // IMP-083: what the announcer says, in screen order; each said once, as it appears.
+  const said: Said[] = [];
+  if (building) said.push({ key: 'build', text: `${named} was…` });
+  else {
+    const first = [caught ? '✓ Caught!' : '✗ Escaped!'];
+    if (tie) first.push('Still a tie.');
+    else if (!caught) first.push(`${named} was crew.`);
+    first.push(`${round.impostor} was the impostor.`);
+    if (guessStep || verdictStep || (caught && round.verdict !== null)) {
+      // The last-chance guess: the caught lines with the guess line, then the word, then the outcome.
+      said.push({ key: 'lines', text: [...first, guessLine(round.impostor)].join(' ') });
+      if (wordShown) said.push({ key: 'word', text: `The word was ${wordText}.` });
+      if (complete) said.push({ key: 'outcome', text: result.outcome });
+    } else if (complete) {
+      said.push({ key: 'lines', text: [...first, `The word was ${wordText}.`, result.outcome].join(' ') });
     }
   }
-
-  // IMP-083: each line announced as it appears (the build-up once, as "Arjun was"); nothing on a reopen. What was
-  // said is kept by the evening's screen (`heard`), so drawing this screen again never loses or repeats a line.
+  // Reopened: nothing is said again.
   useState(() => {
-    if (!live && heard.size === 0) for (const l of lines) heard.add(l.key);
+    if (!live) for (const s of said) heard.add(s.key);
     return true;
   });
-  const keys = lines.map((l) => l.key).join('|');
+  const keys = said.map((s) => s.key).join('|');
   useEffect(() => {
-    const fresh = lines.filter((l) => !heard.has(l.key));
+    const fresh = said.filter((s) => !heard.has(s.key));
     if (fresh.length === 0) return;
-    for (const l of fresh) heard.add(l.key);
-    announce(fresh.map((l) => l.said).join(' '));
-    // `keys` stands for the lines.
+    for (const s of fresh) heard.add(s.key);
+    announce(fresh.map((s) => s.text).join(' '));
+    // `keys` stands for the announcements.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [keys, announce, heard]);
 
-  // IMP-081: the lines scroll inside their own box, kept at the newest line.
-  const box = useRef<HTMLDivElement>(null);
-  const showAlso = lines.some((l) => l.key === 'word') && caught && !!word?.other_names;
+  // IMP-081: the screen appears scrolled to the top; after the verdict, scrolled so the outcome is wholly in view.
+  const outcomeRef = useRef<HTMLHeadingElement>(null);
+  const verdictTapped = useRef(false);
   useLayoutEffect(() => {
-    const el = box.current;
-    if (el) el.scrollTop = el.scrollHeight;
-  }, [keys, resultReady]);
+    window.scrollTo(0, 0);
+  }, [building]);
+  useLayoutEffect(() => {
+    const el = outcomeRef.current;
+    if (!complete || !verdictTapped.current || !el) return;
+    verdictTapped.current = false;
+    const foot = document.querySelector('[data-testid="main-button"]')?.getBoundingClientRect().top ?? window.innerHeight;
+    const r = el.getBoundingClientRect();
+    if (r.bottom > foot - 8) window.scrollBy(0, r.bottom - foot + 8);
+    else if (r.top < 0) window.scrollBy(0, r.top - 8);
+  }, [complete]);
+
+  if (building) {
+    return (
+      <section className="imp-stage imp-center">
+        <p className="imp-build-up" data-testid="build-up">
+          {named} was…
+        </p>
+      </section>
+    );
+  }
+
+  let right: ReactNode = null;
+  if (verdictStep) {
+    right = (
+      <div className="imp-verdict">
+        <QuietButton
+          onClick={() => {
+            verdictTapped.current = true;
+            onVerdict(true);
+          }}
+        >
+          Guessed right
+        </QuietButton>
+        <QuietButton
+          onClick={() => {
+            verdictTapped.current = true;
+            onVerdict(false);
+          }}
+        >
+          Wrong guess
+        </QuietButton>
+      </div>
+    );
+  } else if (complete) {
+    right = <ResultBlock result={result} practice={round.practice} onUndo={onUndo} onSkipWord={onSkipWord} />;
+  }
 
   return (
     <>
-      <section className="imp-stage imp-reveal">
-        <div ref={box} className="imp-reveal-lines">
-          {lines.map((l) => (
-            <p key={l.key} className={l.big ? 'imp-reveal-line imp-reveal-big' : 'imp-reveal-line'} data-testid="reveal-line">
-              {l.node}
-            </p>
-          ))}
-          {showAlso && (
-            <p className="imp-small" data-testid="also-called">
-              Also called {word!.other_names}
+      <section className="imp-result-page">
+        <div className="imp-result-left">
+          <h1 className="imp-headline" data-testid="result-headline">
+            {caught ? '✓ Caught!' : '✗ Escaped!'}
+          </h1>
+          {(tie || !caught) && (
+            <p className="imp-result-note" data-testid="result-note">
+              {tie ? 'Still a tie.' : `${named} was crew.`}
             </p>
           )}
-          {caught && round.step === 'guess' && (
-            <div className="imp-verdict">
-              <QuietButton onClick={() => onVerdict(true)}>Guessed right</QuietButton>
-              <QuietButton onClick={() => onVerdict(false)}>Wrong guess</QuietButton>
+          <p className="imp-result-impostor" data-testid="result-impostor">
+            <Caps>{round.impostor}</Caps> was the impostor
+          </p>
+          {guessStep && (
+            <p className="imp-result-note" data-testid="guess-line">
+              {guessLine(round.impostor)}
+            </p>
+          )}
+          {wordShown && (
+            <div className="imp-result-word-block">
+              <p className="imp-body" data-testid="word-label">
+                The word was
+              </p>
+              <p className={wordText.length > 12 ? 'imp-result-word imp-result-word-long' : 'imp-result-word'} data-testid="result-word">
+                {wordText}
+              </p>
+              {word?.other_names && (
+                <p className="imp-small" data-testid="also-called">
+                  Also called {word.other_names}
+                </p>
+              )}
+              <p className="imp-category" data-testid="word-category">
+                {word?.category ?? ''}
+              </p>
             </div>
           )}
+          {complete && (
+            <h2 ref={outcomeRef} className="imp-outcome" data-testid="round-outcome">
+              {result.outcome}
+            </h2>
+          )}
         </div>
-        {resultReady && result && <ResultBlock result={result} practice={round.practice} onUndo={onUndo} onSkipWord={onSkipWord} />}
+        {right && <div className="imp-result-right">{right}</div>}
       </section>
-      {showWordButton && (
+      {guessStep && (
         <MainButton
           onClick={() => {
-            // IMP-083: the word line is announced with the tap itself.
-            if (onShowWord() && !heard.has(wordLine.key)) {
-              heard.add(wordLine.key);
-              announce(wordLine.said);
-            }
+            onShowWord();
           }}
         >
-          Show the word
+          {round.impostor} guessed. Show the word
         </MainButton>
       )}
-      {resultReady && result && <MainButton onClick={onNext}>Next round</MainButton>}
+      {complete && <MainButton onClick={onNext}>Next round</MainButton>}
     </>
   );
 }
 
+/** IMP-039: the caught impostor's last chance. */
+const guessLine = (name: string) => `Last chance, ${name}! Guess the word out loud. Get it right and you steal the round.`;
+
+/** Item 7 and 8 of IMP-033: the evening line or this round's points and the scoreboard, then the quiet buttons. */
 function ResultBlock({
   result,
   practice,
@@ -241,10 +252,7 @@ function ResultBlock({
   onSkipWord: () => void;
 }) {
   return (
-    <div className="imp-result">
-      <h2 className="imp-outcome" data-testid="round-outcome">
-        {result.headline}
-      </h2>
+    <>
       {!practice && result.eveningLine !== null && (
         <p className="imp-body" data-testid="evening-line">
           {result.eveningLine}
@@ -262,24 +270,22 @@ function ResultBlock({
           {result.canSkipWord && <QuietButton onClick={onSkipWord}>This word didn't work</QuietButton>}
         </div>
       )}
-    </div>
+    </>
   );
 }
 
 /**
- * IMP-044: one row per player, rank, name and total; 36 px rows; one column up to 6 players, two from 7 (the first
- * column holds the first ceil(n / 2) rows). Players who left are greyed. "Scores from round N" when N > 1 (IMP-043).
+ * IMP-044: one row per player, rank, name and total; rows at least 36 px, growing when a name wraps. One column up
+ * to 360 px wide and in landscape; two columns of 50% from 390 px wide in portrait, the first holding the first
+ * ceil(n / 2) rows. Never its own scroll area. Players who left are greyed. "Scores since round N" when N > 1
+ * (IMP-043).
  */
 export function Scoreboard({ rows, scoresFrom }: { rows: readonly ScoreRow[]; scoresFrom: number | null }) {
-  const two = rows.length >= 7;
-  const perColumn = two ? Math.ceil(rows.length / 2) : rows.length;
+  const perColumn = Math.ceil(rows.length / 2);
   return (
     <div className="imp-scoreboard" data-testid="scoreboard">
-      {scoresFrom !== null && scoresFrom > 1 && <p className="imp-small">Scores from round {scoresFrom}</p>}
-      <ol
-        className={two ? 'imp-score-list imp-score-two' : 'imp-score-list'}
-        style={two ? { gridTemplateRows: `repeat(${perColumn}, 36px)` } : undefined}
-      >
+      {scoresFrom !== null && scoresFrom > 1 && <p className="imp-small">Scores since round {scoresFrom}</p>}
+      <ol className="imp-score-list" style={{ ['--imp-score-rows' as string]: String(perColumn) }}>
         {rows.map((r) => (
           <li
             key={r.name}
