@@ -380,6 +380,7 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
               saved={saved}
               reuseLabel={game.info.id === impostor.info.id ? impostor.reuseLabel : 'Use this setup'}
               onReuse={() => setRoute({ name: 'game', gameId: game.info.id as GameId, open: { id: saved.id, action: 'reuse' } })}
+              onCarryOn={(id) => setRoute({ name: 'game', gameId: 'impostor', open: { id, action: 'resume' } })}
               onDelete={() => {
                 gameStore.remove(saved.id);
                 setDeleted({ games: [saved], at: Date.now() });
@@ -412,20 +413,40 @@ function PastGameActions({
   saved,
   reuseLabel,
   onReuse,
+  onCarryOn,
   onDelete,
 }: {
   saved: SavedGame;
   /** "Use this setup" (PLT-009); Impostor's "Play again" (IMP-103). */
   reuseLabel: string;
   onReuse: () => void;
+  /** IMP-001: "Carry on that game" (the unfinished Impostor game). */
+  onCarryOn: (id: string) => void;
   onDelete: () => void;
 }) {
   const [asking, setAsking] = useState<string | null>(null);
+  /** IMP-001: Impostor's "Play again" while another Impostor game is unfinished asks once first. */
+  const [startNew, setStartNew] = useState<{ id: string; startedAt: string } | null>(null);
+  const reuse = () => {
+    const u = saved.gameType === impostor.info.id ? impostor.unfinished(gameStore) : null;
+    if (u && u.id !== saved.id) setStartNew(u);
+    else onReuse();
+  };
   return (
     <div className="row">
-      <button type="button" className="button" onClick={onReuse}>
+      <button type="button" className="button" onClick={reuse}>
         {reuseLabel}
       </button>
+      {startNew && (
+        <StartNewDialog
+          startedAt={startNew.startedAt}
+          onCarryOn={() => onCarryOn(startNew.id)}
+          onStartNew={() => {
+            impostor.endNow(gameStore, impostorUi, startNew.id);
+            onReuse();
+          }}
+        />
+      )}
       {isPast(saved) && (
         <button
           type="button"
@@ -689,31 +710,40 @@ function PickGame({
         ))}
       </div>
       {asking && unfinished && (
-        <div className="backdrop">
-          <div className="dialog" role="dialog" aria-modal="true" aria-labelledby="start-new-text">
-            <p id="start-new-text" className="lead">
-              Start a new game? The game from {unfinished.startedAt} will be ended.
-            </p>
-            {/* IMP-001 (M22): two equal outlined buttons; neither has the main look. */}
-            <div className="row row-equal">
-              <button type="button" className="button button-quiet" onClick={() => onResume(unfinished.id)}>
-                Carry on that game
-              </button>
-              <button
-                type="button"
-                className="button button-quiet"
-                onClick={() => {
-                  impostor.endNow(gameStore, impostorUi, unfinished.id);
-                  onPick(impostor.info.id);
-                }}
-              >
-                Start new
-              </button>
-            </div>
-          </div>
-        </div>
+        <StartNewDialog
+          startedAt={unfinished.startedAt}
+          onCarryOn={() => onResume(unfinished.id)}
+          onStartNew={() => {
+            impostor.endNow(gameStore, impostorUi, unfinished.id);
+            onPick(impostor.info.id);
+          }}
+        />
       )}
     </main>
+  );
+}
+
+/**
+ * IMP-001 (M22): asked once, before a new Impostor game while another is unfinished, from the Impostor card or
+ * History's "Play again": two equal outlined buttons, neither with the main look.
+ */
+function StartNewDialog({ startedAt, onCarryOn, onStartNew }: { startedAt: string; onCarryOn: () => void; onStartNew: () => void }) {
+  return (
+    <div className="backdrop">
+      <div className="dialog" role="dialog" aria-modal="true" aria-labelledby="start-new-text">
+        <p id="start-new-text" className="lead">
+          Start a new game? The game from {startedAt} will be ended.
+        </p>
+        <div className="row row-equal">
+          <button type="button" className="button button-quiet" onClick={onCarryOn}>
+            Carry on that game
+          </button>
+          <button type="button" className="button button-quiet" onClick={onStartNew}>
+            Start new
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 
