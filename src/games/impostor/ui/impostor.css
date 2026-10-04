@@ -14,6 +14,8 @@
 }
 .imp.imp-larger { --imp-body: 21px; --imp-small: 19px; }
 .imp [hidden] { display: none !important; }
+/* The double-tap guard (guideline 20) is laid out as if it were not there. */
+.imp-guard { display: contents; }
 
 .imp-screen {
   box-sizing: border-box;
@@ -394,13 +396,15 @@
 /* IMP-073: 48 px, shrunk to fit one line (to 32 px, then wrapping) by the screen. */
 .imp-pass-name { width: 100%; font-size: 48px; font-weight: 800; line-height: 1.1; white-space: nowrap; overflow-wrap: anywhere; }
 /* ----- Screen B, the hold screen (IMP-010, IMP-012, IMP-073; guideline 45a: nothing moves after the first hold) -----
-   From the bottom: the main button's space (16 + 60), 8, "Tap instead" 48, 8, the pad 160: the pad's top is 300 px
-   above the bottom edge. While held, an opaque layer runs from y = 0 to 8 px above the pad. */
+   From the bottom: the main button's space (16 + 60), 8, "Not Riya? ← Back" 48, 8, the pad 160: the pad's top is 300 px
+   above the bottom edge. "Tap instead" sits under the name, far from the main button (M22b). While held, an opaque
+   layer runs from y = 0 to 8 px above the pad. */
 .imp-room {
   --imp-deal-pad-bottom: calc(max(var(--imp-gutter), env(safe-area-inset-bottom)) + var(--imp-main-h) + 8px);
   --imp-deal-layer-bottom: calc(var(--imp-deal-pad-bottom) + 48px + 8px + 160px + 8px);
 }
-.imp-turn-b { flex: none; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.imp-turn-b { flex: none; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.imp-turn-b .imp-tap-instead { height: 48px; }
 /* IMP-073: 48 px, shrunk by the screen to fit one line (to 32 px; 20 px on short phones); never wraps. */
 .imp-turn-name { width: 100%; text-align: center; font-size: 48px; font-weight: 800; line-height: 1.15; white-space: nowrap; }
 /* Text button (Terms): no outline, no fill, body text, at least 48 × 44. */
@@ -429,7 +433,7 @@
   flex-direction: column;
   gap: 8px;
 }
-.imp-pad-area .imp-quiet { height: 48px; }
+.imp-pad-area .imp-deal-text { height: 48px; align-self: center; }
 /* F4: the full-width pad, 160 px tall at every size. */
 .imp-pad {
   box-sizing: border-box;

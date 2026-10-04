@@ -4,7 +4,7 @@ import { useContext, useEffect, useLayoutEffect, useRef, useState, type PointerE
 import { flushSync } from 'react-dom';
 import type { ImpostorWord } from '../rules';
 import { buzz } from './device';
-import { Caps, Dialog, HideMainButton, MainButton, QuietButton } from './parts';
+import { Caps, Dialog, HideMainButton, MainButton, QuietButton, TapGuard } from './parts';
 
 /**
  * What one player may see: the round's word for the crew; for the impostor only what their mode allows. `lastGuess`
@@ -96,18 +96,26 @@ export function Turn({
     onHoldScreen(true);
     return () => onHoldScreen(false);
   }, [screen, onHoldScreen]);
-  if (screen === 'A') return <ScreenA name={name} progress={progress} banner={banner} onMe={() => setScreen('B')} />;
+  // IMP-010 (guideline 20, M18): a tap on a button within 500 ms of a new deal screen is ignored. The turn is
+  // remounted for every player, "No problem!" and "Welcome back.", so each starts its own 500 ms.
   return (
-    <ScreenB
-      name={name}
-      next={next}
-      progress={progress}
-      secret={secret}
-      tap={tapPref()}
-      seeAgain={seeAgain ?? null}
-      onDone={onDone}
-      {...(onDontKnow ? { onDontKnow } : {})}
-    />
+    <TapGuard screen={screen}>
+      {screen === 'A' ? (
+        <ScreenA name={name} progress={progress} banner={banner} onMe={() => setScreen('B')} />
+      ) : (
+        <ScreenB
+          name={name}
+          next={next}
+          progress={progress}
+          secret={secret}
+          tap={tapPref()}
+          seeAgain={seeAgain ?? null}
+          onDone={onDone}
+          onNotMe={() => setScreen('A')}
+          {...(onDontKnow ? { onDontKnow } : {})}
+        />
+      )}
+    </TapGuard>
   );
 }
 
@@ -177,6 +185,7 @@ function ScreenB({
   tap: tapSetting,
   seeAgain,
   onDone,
+  onNotMe,
   onDontKnow,
 }: {
   name: string;
@@ -186,11 +195,15 @@ function ScreenB({
   tap: boolean;
   seeAgain: SeeAgainFrom | null;
   onDone: () => void;
+  /** IMP-010 (M17): "Not Riya? ← Back", before the first hold: screen A of the same player again. */
+  onNotMe: () => void;
   onDontKnow?: () => void;
 }) {
   const [tapMode, setTapMode] = useState(tapSetting);
   const [shown, setShown] = useState(false);
   const [ready, setReady] = useState(false);
+  /** The block has shown at least once (a hold of any length, or a tap): "Not Riya? ← Back" goes (M17). */
+  const [held, setHeld] = useState(false);
   const shownAt = useRef(0);
   const pointer = useRef<number | null>(null);
   const tapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -213,7 +226,10 @@ function ScreenB({
 
   const show = () => {
     shownAt.current = Date.now();
-    flushSync(() => setShown(true));
+    flushSync(() => {
+      setShown(true);
+      setHeld(true);
+    });
   };
 
   // IMP-018: scrolling, zooming, the page hidden or left: the block goes at once.
@@ -315,6 +331,11 @@ function ScreenB({
         <h1 ref={nameRef} className="imp-turn-name imp-caps" data-testid="pass-name">
           {name}
         </h1>
+        {/* IMP-010 (M22b): "Tap instead" directly under the name, far from the main button. In tap mode (IMP-014) it
+            is not shown; its space stays, so nothing moves. */}
+        <button type="button" className={tapMode ? 'imp-quiet imp-tap-instead imp-reserved' : 'imp-quiet imp-tap-instead'} onClick={() => setTapMode(true)}>
+          Tap instead
+        </button>
         <button
           type="button"
           className={canDontKnow ? 'imp-deal-text' : 'imp-deal-text imp-reserved'}
@@ -357,9 +378,14 @@ function ScreenB({
         >
           {padText}
         </button>
-        {/* IMP-014: in tap mode "Tap instead" is not shown; its space stays, so the pad never moves. */}
-        <button type="button" className={tapMode ? 'imp-quiet imp-reserved' : 'imp-quiet'} onClick={() => setTapMode(true)}>
-          Tap instead
+        {/* IMP-010 (M17): "Not Riya? ← Back" under the pad until the first hold; then hidden, its space kept. Never
+            during "See my word again" (IMP-017). */}
+        <button
+          type="button"
+          className={held || seeAgain ? 'imp-deal-text imp-reserved' : 'imp-deal-text'}
+          onClick={held || seeAgain ? undefined : onNotMe}
+        >
+          Not {name}? ← Back
         </button>
       </div>
       {/* IMP-083: the block in a live region on the player's own turn only, emptied when it hides. */}

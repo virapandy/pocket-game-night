@@ -1,6 +1,6 @@
 // Impostor's shared pieces (specs/impostor/README.md, Terms): the main button, quiet buttons, selected options,
 // switches, toasts, dialogs, sheets and the "··· Menu". The next screens reuse these.
-import { createContext, useCallback, useContext, useEffect, useId, useRef, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 
 /**
  * IMP-080: at most one main button on screen. While a dialog, sheet or the summary covers a screen, that screen's
@@ -232,6 +232,36 @@ export function Menu({ items }: { items: readonly MenuItem[] }) {
         </div>
       )}
     </>
+  );
+}
+
+/** Guideline 20, IMP-010: how long after a new screen shows its buttons ignore taps. */
+export const TAP_GUARD_MS = 500;
+
+/**
+ * Guideline 20 (M18): a tap on a button within 500 ms of `screen` changing (or of this mounting) is ignored: it does
+ * nothing at all, so a double tap never skips a screen. Only buttons are guarded; the hold pad (`hold-pad`) never is.
+ * Laid out as if it were not there (`display: contents`). Uses `Date.now()`, so a fake clock drives it.
+ */
+export function TapGuard({ screen, children }: { screen: unknown; children: ReactNode }) {
+  const shownAt = useRef(Date.now());
+  useLayoutEffect(() => {
+    shownAt.current = Date.now();
+  }, [screen]);
+  return (
+    <div
+      className="imp-guard"
+      onClickCapture={(e) => {
+        if (Date.now() - shownAt.current >= TAP_GUARD_MS) return;
+        const target = e.target as Element;
+        const button = target.closest('button');
+        if (!button || button.closest('[data-testid="hold-pad"]')) return;
+        e.stopPropagation();
+        e.preventDefault();
+      }}
+    >
+      {children}
+    </div>
   );
 }
 
