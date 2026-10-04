@@ -8,8 +8,8 @@ import { readFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { createRng, HOST, play, startMatch, type Match, type Rng } from '../../../src/engine';
 
-/** The moves that deal a word and so carry its `wordId` (Test hooks item 1, scenarios v3.5). */
-export const DEALING = ['startDeal', 'nextRound', 'dealAgain', 'dontKnow', 'allowRepeats', 'setChoices'] as const;
+/** The moves that deal a word and so carry its `wordId` (Test hooks item 1, scenarios v3.5; v3.8 adds `dealAgainWithout`). */
+export const DEALING = ['startDeal', 'nextRound', 'dealAgain', 'dontKnow', 'allowRepeats', 'setChoices', 'dealAgainWithout'] as const;
 
 /**
  * Test hooks item 1 (v3.5): live, `play` accepts a word-dealing move only with the id the rules give for that deal.
