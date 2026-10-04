@@ -576,8 +576,14 @@
 .imp-score-points { flex: none; font-weight: 800; font-variant-numeric: tabular-nums; }
 
 /* ----- The summary and the look back (IMP-092, IMP-095, IMP-105) ----- */
-.imp-fun { font-weight: 700; }
+.imp-summary-body { flex: 1 0 auto; display: flex; flex-direction: column; gap: 12px; }
+/* F9: the lead line, 32 px, centred. */
+.imp-lead { font-size: 32px; font-weight: 800; line-height: 1.2; text-align: center; overflow-wrap: anywhere; }
+.imp-fun { font-weight: 700; text-align: center; }
 .imp-summary-quiet { display: flex; flex-direction: column; gap: 8px; }
+/* "More ›" opens just above the main button. */
+.imp-menu.imp-more-menu { top: auto; bottom: calc(var(--imp-foot) + 4px); }
+.imp-menu-divider { height: 1px; margin: 4px 8px; background: var(--border); }
 .imp-look-rounds { padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
 .imp-look-line { display: block; }
 

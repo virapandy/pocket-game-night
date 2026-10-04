@@ -141,7 +141,7 @@ function top(counter: Map<string, number>, seats: readonly string[]): [string, n
   return best;
 }
 
-/** IMP-095: up to 3 fun lines, counted rounds only. Line 1 alone is also used by Share (IMP-106). */
+/** IMP-095: up to 2 fun lines, counted rounds only. Line 1 alone is also used by Share (IMP-106). */
 export function funLines(state: ImpostorState, story: Story): { best: string | null; lines: string[] } {
   const counted = story.rounds.filter((r) => !r.practice);
   const seats = seatOrder(state, story);
@@ -157,8 +157,37 @@ export function funLines(state: ImpostorState, story: Story): { best: string | n
   if (best) lines.push(best);
   const s = top(suspected, seats);
   if (s && s[1] >= 2) lines.push(`Most suspected: ${s[0]}, picked ${s[1]} times while crew`);
-  if (counted.length >= 1) lines.push(`Rounds played: ${counted.length}`);
   return { best, lines };
+}
+
+/** "Arjun and Meena", "Arjun, Meena and Kabir". */
+const andList = (names: readonly string[]) =>
+  names.length < 2 ? names.join('') : `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}`;
+
+/**
+ * IMP-092, IMP-097, IMP-098: the summary's lead line. Score Yes at any point and a top total of at least 1: "Arjun wins
+ * the night with 2 points!" or, shared, "Arjun and Meena share the night with 2 points!" (names in seat order).
+ * Otherwise "Crew 4 · Impostors 3": rounds the crew won (caught, with no guess or a wrong guess) and rounds the
+ * impostor won (escaped, "Still a tie", or a right guess), counted rounds only.
+ */
+export function leadLine(state: ImpostorState, story: Story): string {
+  const counted = story.rounds.filter((r) => !r.practice);
+  if (story.scoreEver && counted.length > 0) {
+    const totals = Object.entries(state.totals);
+    const best = Math.max(0, ...totals.map(([, n]) => n));
+    if (best >= 1) {
+      const seats = seatOrder(state, story);
+      const at = (name: string) => {
+        const i = seats.findIndex((x) => same(x, name));
+        return i < 0 ? seats.length : i;
+      };
+      const top = totals.filter(([, n]) => n === best).map(([name]) => name).sort((a, b) => at(a) - at(b));
+      const pts = plural(best, 'point');
+      return top.length === 1 ? `${top[0]} wins the night with ${pts}!` : `${andList(top)} share the night with ${pts}!`;
+    }
+  }
+  const crew = counted.filter((r) => isCaught(r) && r.verdict !== true).length;
+  return `Crew ${crew} · Impostors ${counted.length - crew}`;
 }
 
 /** IMP-106: the text Share sends, lines joined by "\n". */
