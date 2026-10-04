@@ -251,6 +251,22 @@ jobs:
           restore-keys: |
             jev-usage-${{ steps.week.outputs.week }}-
             jev-usage-
+      # The cap is a hard limit: every worker checks only its own use, so each of the 16 (8 shards × 2 workers) gets
+      # at most an equal share of what is left this week: min(400, floor((20,000 − count) / 16)). At 0 Jev makes no
+      # calls and the evenings are played by scripted players.
+      - name: Jev budget per worker
+        id: jev
+        env:
+          WEEK: ${{ steps.week.outputs.week }}
+        run: |
+          node -e '
+            const fs = require("fs");
+            let used = 0;
+            try { used = Number(JSON.parse(fs.readFileSync("reports/runs/jev-usage.json", "utf8"))[process.env.WEEK]) || 0; } catch {}
+            const each = Math.max(0, Math.min(400, Math.floor((20000 - used) / 16)));
+            console.log(`Jev decisions used this week: ${used} of 20,000; each worker may use ${each}.`);
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, `decisions=${each}\n`);
+          '
       # A manual 0 means 0 (format() turns "not given" into '' but 0 into '0').
       - name: Screen simulation evenings (shard ${{ matrix.shard }} of 8)
         run: npx playwright test --config tests/playwright.sims.config.ts --shard=${{ matrix.shard }}/8 --workers=2
@@ -258,7 +274,7 @@ jobs:
           SIM_EVENINGS: ${{ format('{0}', inputs.evenings) == '' && 200 || inputs.evenings }}
           SIM_JEV_EVENINGS: ${{ format('{0}', inputs.jev_evenings) == '' && 50 || inputs.jev_evenings }}
           SIM_RUN: w${{ github.run_id }}
-          JEV_DECISIONS: 400
+          JEV_DECISIONS: ${{ steps.jev.outputs.decisions }}
           JEV_API_KEY: ${{ secrets.JEV_API_KEY }}
       - uses: actions/upload-artifact@v4
         if: always()
