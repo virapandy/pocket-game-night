@@ -113,7 +113,8 @@ export function PlayerList({
           enterKeyHint="done"
           // Enter adds at once, even while the "Add" button still looks disabled for a name not yet drawn.
           onKeyDown={(e) => {
-            if (e.key !== 'Enter') return;
+            // An Enter that only ends the keyboard's word suggestion (composing) adds nothing.
+            if (e.key !== 'Enter' || e.nativeEvent.isComposing) return;
             submit(e);
           }}
           onChange={(e) => {
