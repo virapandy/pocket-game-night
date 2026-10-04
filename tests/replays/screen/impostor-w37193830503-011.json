@@ -1,0 +1,526 @@
+{
+ "$comment": "A failing simulated evening (layer 3). Replayed step by step by tests/browser/impostor-sim-replays.spec.ts; never delete.",
+ "expectedToFail": {
+  "scenario": "IMP-020",
+  "platform": "linux",
+  "project": "android",
+  "reason": "Known app bug (reports/latest.md, 4 October 2026, main ce6513c): at 812 x 375 with Larger text the clue order has no height on Linux fonts, so the clues screen is not recognised. Remove this field once fixed."
+ },
+ "seed": "w37193830503-011",
+ "config": {
+  "seed": "w37193830503-011",
+  "width": 812,
+  "height": 375,
+  "players": [
+   "Riya",
+   "Arjun",
+   "Meena",
+   "Kabir"
+  ],
+  "mode": "hard",
+  "talking": "free",
+  "score": true,
+  "lastGuess": false,
+  "practice": false,
+  "larger": true,
+  "rounds": 3,
+  "persona": null
+ },
+ "finished": true,
+ "steps": [
+  {
+   "n": 1,
+   "screen": "deal-A",
+   "action": "button:I'm Riya"
+  },
+  {
+   "n": 2,
+   "screen": "deal-B",
+   "action": "action:hold"
+  },
+  {
+   "n": 3,
+   "screen": "deal-B",
+   "action": "button:Done, pass to Arjun"
+  },
+  {
+   "n": 4,
+   "screen": "deal-A",
+   "action": "button:I'm Arjun"
+  },
+  {
+   "n": 5,
+   "screen": "deal-B",
+   "action": "action:hold"
+  },
+  {
+   "n": 6,
+   "screen": "deal-B",
+   "action": "button:Done, pass to Meena"
+  },
+  {
+   "n": 7,
+   "screen": "deal-A",
+   "action": "button:I'm Meena"
+  },
+  {
+   "n": 8,
+   "screen": "deal-B",
+   "action": "action:hold"
+  },
+  {
+   "n": 9,
+   "screen": "deal-B",
+   "action": "button:Done, pass to Kabir"
+  },
+  {
+   "n": 10,
+   "screen": "deal-A",
+   "action": "button:I'm Kabir"
+  },
+  {
+   "n": 11,
+   "screen": "deal-B",
+   "action": "action:hold"
+  },
+  {
+   "n": 12,
+   "screen": "deal-B",
+   "action": "button:Done, everyone's seen"
+  },
+  {
+   "n": 13,
+   "screen": "unknown",
+   "action": "button:Clues done, talk it over"
+  },
+  {
+   "n": 14,
+   "screen": "talk",
+   "action": "button:Vote now"
+  },
+  {
+   "n": 15,
+   "screen": "countdown",
+   "action": "action:wait6000"
+  },
+  {
+   "n": 16,
+   "screen": "picker",
+   "action": "button:Kabir"
+  },
+  {
+   "n": 17,
+   "screen": "picker",
+   "action": "button:Reveal Kabir"
+  },
+  {
+   "n": 18,
+   "screen": "build-up",
+   "action": "action:wait1500"
+  },
+  {
+   "n": 19,
+   "screen": "result",
+   "action": "button:Next round"
+  },
+  {
+   "n": 20,
+   "screen": "deal-A",
+   "action": "button:I'm Riya"
+  },
+  {
+   "n": 21,
+   "screen": "deal-B",
+   "action": "action:hold"
+  },
+  {
+   "n": 22,
+   "screen": "deal-B",
+   "action": "button:Done, pass to Arjun"
+  },
+  {
+   "n": 23,
+   "screen": "deal-A",
+   "action": "button:\u00b7\u00b7\u00b7 Menu"
+  },
+  {
+   "n": 24,
+   "screen": "menu",
+   "action": "menuitem:Players"
+  },
+  {
+   "n": 25,
+   "screen": "dialog",
+   "action": "button:OK"
+  },
+  {
+   "n": 26,
+   "screen": "deal-A",
+   "action": "button:I'm Arjun"
+  },
+  {
+   "n": 27,
+   "screen": "deal-B",
+   "action": "action:hold"
+  },
+  {
+   "n": 28,
+   "screen": "deal-B",
+   "action": "button:Done, pass to Meena"
+  },
+  {
+   "n": 29,
+   "screen": "deal-A",
+   "action": "button:I'm Meena"
+  },
+  {
+   "n": 30,
+   "screen": "deal-B",
+   "action": "action:hold"
+  },
+  {
+   "n": 31,
+   "screen": "deal-B",
+   "action": "button:Done, pass to Kabir"
+  },
+  {
+   "n": 32,
+   "screen": "deal-A",
+   "action": "button:I'm Kabir"
+  },
+  {
+   "n": 33,
+   "screen": "deal-B",
+   "action": "action:hold"
+  },
+  {
+   "n": 34,
+   "screen": "deal-B",
+   "action": "button:Done, everyone's seen"
+  },
+  {
+   "n": 35,
+   "screen": "unknown",
+   "action": "button:Clues done, talk it over"
+  },
+  {
+   "n": 36,
+   "screen": "talk",
+   "action": "button:Vote now"
+  },
+  {
+   "n": 37,
+   "screen": "countdown",
+   "action": "action:wait6000"
+  },
+  {
+   "n": 38,
+   "screen": "picker",
+   "action": "button:Riya"
+  },
+  {
+   "n": 39,
+   "screen": "picker",
+   "action": "button:Reveal Riya"
+  },
+  {
+   "n": 40,
+   "screen": "build-up",
+   "action": "action:wait1500"
+  },
+  {
+   "n": 41,
+   "screen": "result",
+   "action": "button:Next round"
+  },
+  {
+   "n": 42,
+   "screen": "deal-A",
+   "action": "button:I'm Riya"
+  },
+  {
+   "n": 43,
+   "screen": "deal-B",
+   "action": "action:hold"
+  },
+  {
+   "n": 44,
+   "screen": "deal-B",
+   "action": "button:Done, pass to Arjun"
+  },
+  {
+   "n": 45,
+   "screen": "deal-A",
+   "action": "button:I'm Arjun"
+  },
+  {
+   "n": 46,
+   "screen": "deal-B",
+   "action": "action:hold"
+  },
+  {
+   "n": 47,
+   "screen": "deal-B",
+   "action": "button:Done, pass to Meena"
+  },
+  {
+   "n": 48,
+   "screen": "deal-A",
+   "action": "button:I'm Meena"
+  },
+  {
+   "n": 49,
+   "screen": "deal-B",
+   "action": "action:hold"
+  },
+  {
+   "n": 50,
+   "screen": "deal-B",
+   "action": "button:Done, pass to Kabir"
+  },
+  {
+   "n": 51,
+   "screen": "deal-A",
+   "action": "button:I'm Kabir"
+  },
+  {
+   "n": 52,
+   "screen": "deal-B",
+   "action": "action:hold"
+  },
+  {
+   "n": 53,
+   "screen": "deal-B",
+   "action": "button:Done, everyone's seen"
+  },
+  {
+   "n": 54,
+   "screen": "unknown",
+   "action": "button:Clues done, talk it over"
+  },
+  {
+   "n": 55,
+   "screen": "talk",
+   "action": "button:Vote now"
+  },
+  {
+   "n": 56,
+   "screen": "countdown",
+   "action": "action:wait6000"
+  },
+  {
+   "n": 57,
+   "screen": "picker",
+   "action": "button:Arjun"
+  },
+  {
+   "n": 58,
+   "screen": "picker",
+   "action": "button:Reveal Arjun"
+  },
+  {
+   "n": 59,
+   "screen": "build-up",
+   "action": "action:wait1500"
+  },
+  {
+   "n": 60,
+   "screen": "result",
+   "action": "button:\u00b7\u00b7\u00b7 Menu"
+  },
+  {
+   "n": 61,
+   "screen": "menu",
+   "action": "menuitem:How to play"
+  },
+  {
+   "n": 62,
+   "screen": "dialog",
+   "action": "button:Done"
+  },
+  {
+   "n": 63,
+   "screen": "result",
+   "action": "button:Next round"
+  },
+  {
+   "n": 64,
+   "screen": "deal-A",
+   "action": "button:I'm Riya"
+  },
+  {
+   "n": 65,
+   "screen": "deal-B",
+   "action": "action:hold"
+  },
+  {
+   "n": 66,
+   "screen": "deal-B",
+   "action": "button:Done, pass to Arjun"
+  },
+  {
+   "n": 67,
+   "screen": "deal-A",
+   "action": "button:I'm Arjun"
+  },
+  {
+   "n": 68,
+   "screen": "deal-B",
+   "action": "action:hold"
+  },
+  {
+   "n": 69,
+   "screen": "deal-B",
+   "action": "button:Done, pass to Meena"
+  },
+  {
+   "n": 70,
+   "screen": "deal-A",
+   "action": "button:I'm Meena"
+  },
+  {
+   "n": 71,
+   "screen": "deal-B",
+   "action": "action:hold"
+  },
+  {
+   "n": 72,
+   "screen": "deal-B",
+   "action": "button:Done, pass to Kabir"
+  },
+  {
+   "n": 73,
+   "screen": "deal-A",
+   "action": "button:I'm Kabir"
+  },
+  {
+   "n": 74,
+   "screen": "deal-B",
+   "action": "action:hold"
+  },
+  {
+   "n": 75,
+   "screen": "deal-B",
+   "action": "button:Done, everyone's seen"
+  },
+  {
+   "n": 76,
+   "screen": "unknown",
+   "action": "button:Go round again"
+  },
+  {
+   "n": 77,
+   "screen": "clues",
+   "action": "button:Clues done, talk it over"
+  },
+  {
+   "n": 78,
+   "screen": "talk",
+   "action": "button:Vote now"
+  },
+  {
+   "n": 79,
+   "screen": "countdown",
+   "action": "action:wait6000"
+  },
+  {
+   "n": 80,
+   "screen": "picker",
+   "action": "button:Kabir"
+  },
+  {
+   "n": 81,
+   "screen": "picker",
+   "action": "button:Reveal Kabir"
+  },
+  {
+   "n": 82,
+   "screen": "build-up",
+   "action": "action:wait1500"
+  },
+  {
+   "n": 83,
+   "screen": "result",
+   "action": "button:\u00b7\u00b7\u00b7 Menu"
+  },
+  {
+   "n": 84,
+   "screen": "menu",
+   "action": "menuitem:End the evening"
+  },
+  {
+   "n": 85,
+   "screen": "dialog",
+   "action": "button:End the evening"
+  },
+  {
+   "n": 86,
+   "screen": "summary",
+   "action": "button:Oops, keep playing"
+  },
+  {
+   "n": 87,
+   "screen": "result",
+   "action": "button:\u00b7\u00b7\u00b7 Menu"
+  },
+  {
+   "n": 88,
+   "screen": "menu",
+   "action": "menuitem:End the evening"
+  },
+  {
+   "n": 89,
+   "screen": "dialog",
+   "action": "button:End the evening"
+  },
+  {
+   "n": 90,
+   "screen": "summary",
+   "action": "button:Back to Home"
+  }
+ ],
+ "findings": [
+  {
+   "kind": "not recognised",
+   "step": 13,
+   "screen": "unknown",
+   "detail": "\u00b7\u00b7\u00b7 Menu \u2713 Everyone has seen their word. Phone in the middle, face up. RIYA starts Each say one word about your secret: Riya \u2192 Arjun \u2192 Meena \u2192 Kabir Not "
+  },
+  {
+   "kind": "not recognised",
+   "step": 35,
+   "screen": "unknown",
+   "detail": "\u00b7\u00b7\u00b7 Menu \u2713 Everyone has seen their word. Phone in the middle, face up. MEENA starts Each say one word about your secret: Meena \u2192 Kabir \u2192 Riya \u2192 Arjun Not"
+  },
+  {
+   "kind": "not recognised",
+   "step": 54,
+   "screen": "unknown",
+   "detail": "\u00b7\u00b7\u00b7 Menu \u2713 Everyone has seen their word. Phone in the middle, face up. ARJUN starts Each say one word about your secret: Arjun \u2192 Meena \u2192 Kabir \u2192 Riya Not"
+  },
+  {
+   "kind": "not recognised",
+   "step": 76,
+   "screen": "unknown",
+   "detail": "\u00b7\u00b7\u00b7 Menu \u2713 Everyone has seen their word. Phone in the middle, face up. KABIR starts Each say one word about your secret: Kabir \u2192 Riya \u2192 Arjun \u2192 Meena Not"
+  }
+ ],
+ "flags": [],
+ "rounds": 3,
+ "jevDecisions": 0,
+ "screens": [
+  "deal-A",
+  "deal-B",
+  "unknown",
+  "talk",
+  "countdown",
+  "picker",
+  "build-up",
+  "result",
+  "menu",
+  "dialog",
+  "clues",
+  "summary",
+  "home"
+ ]
+}
