@@ -1,6 +1,6 @@
 // Talk, the countdown and "Who got the most fingers?" (IMP-023, IMP-024, IMP-027, IMP-030, IMP-031, IMP-032).
 // Nothing here moves on by itself except the countdown a tap started (guideline 48).
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import type { Preferences } from '../../../engine';
 import { playSound, speak } from './device';
 import { MainButton, OptionButton, QuietButton } from './parts';
@@ -190,6 +190,15 @@ export function Countdown({ onDone, announce, prefs }: { onDone: () => void; ann
   );
 }
 
+/** Text button (Terms): no outline and no fill, body text, at least 48 px tall and 44 px wide. */
+function TextButton({ children, onClick }: { children: ReactNode; onClick: () => void }) {
+  return (
+    <button type="button" className="imp-text-button" onClick={onClick}>
+      {children}
+    </button>
+  );
+}
+
 /** "Point again: Arjun or Meena", "Point again: Arjun, Meena or Kabir" (IMP-032). */
 const orList = (names: readonly string[]) =>
   names.length < 2 ? names.join('') : `${names.slice(0, -1).join(', ')} or ${names[names.length - 1]}`;
@@ -235,8 +244,9 @@ export function Picker({
   return (
     <>
       <section className="imp-stage imp-picker">
-        <h1 className="imp-title">Who got the most fingers?</h1>
-        <div className="imp-pick-list">
+        <div className="imp-pick-names">
+          <h1 className="imp-title">Who got the most fingers?</h1>
+          <div className="imp-pick-list">
           {names.map((n) => (
             <OptionButton
               key={n}
@@ -249,21 +259,26 @@ export function Picker({
               {n}
             </OptionButton>
           ))}
+          </div>
         </div>
-        <div className="imp-pick-quiet">
-          {!revote && !tieMode && (
-            <QuietButton
-              onClick={() => {
-                setTieMode(true);
-                setPicked(null);
-                setTicked([]);
-              }}
-            >
-              It's a tie
-            </QuietButton>
-          )}
-          {revote && <QuietButton onClick={onStillTie}>Still a tie</QuietButton>}
-          <QuietButton onClick={onCountAgain}>Count again</QuietButton>
+        {/* F8: 24 px below the names, "Not sure?" and two text buttons side by side, so they never look like names. */}
+        <div className="imp-pick-unsure">
+          <p className="imp-body">Not sure?</p>
+          <div className="imp-pick-quiet">
+            {!revote && !tieMode && (
+              <TextButton
+                onClick={() => {
+                  setTieMode(true);
+                  setPicked(null);
+                  setTicked([]);
+                }}
+              >
+                It's a tie
+              </TextButton>
+            )}
+            {revote && <TextButton onClick={onStillTie}>Still a tie</TextButton>}
+            <TextButton onClick={onCountAgain}>Count again</TextButton>
+          </div>
         </div>
       </section>
       {main}

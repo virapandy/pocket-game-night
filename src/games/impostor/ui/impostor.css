@@ -501,8 +501,9 @@
   .imp-count-point { font-size: 72px; }
 }
 
-/* ----- Who got the most fingers? (IMP-031, IMP-082): two columns, scrolling inside when long ----- */
-.imp-picker { gap: 10px; }
+/* ----- Who got the most fingers? (IMP-031, IMP-032, IMP-082; F8): two columns, scrolling inside when long ----- */
+.imp-picker { gap: 24px; }
+.imp-pick-names { flex: 0 1 auto; min-height: 0; display: flex; flex-direction: column; gap: 10px; }
 .imp-pick-list {
   flex: 0 1 auto;
   min-height: 0;
@@ -514,8 +515,23 @@
   gap: 8px;
 }
 .imp-pick-list .imp-option { min-height: 56px; height: 56px; overflow: hidden; }
-.imp-pick-quiet { flex: none; display: flex; flex-wrap: wrap; gap: 8px; }
-.imp-pick-quiet .imp-quiet { flex: 1 1 0; }
+.imp-pick-unsure { flex: none; display: flex; flex-direction: column; gap: 0; }
+/* "It's a tie" (or "Still a tie") and "Count again": equal halves of the row. */
+.imp-pick-quiet { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; }
+/* Text button (Terms): no outline, no fill, body text, at least 48 × 44. */
+.imp-text-button {
+  min-height: 48px;
+  min-width: 44px;
+  padding: 0 8px;
+  font: inherit;
+  font-size: var(--imp-body);
+  font-weight: 700;
+  color: var(--accent);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  touch-action: manipulation;
+}
 
 /* ----- The one result screen (IMP-033 to IMP-039, IMP-073, IMP-081; F1, F2) -----
    The page scrolls as one (guideline 46a): no inner scroll areas; the main button stays pinned and the page's bottom
@@ -623,6 +639,11 @@
   .imp-clues-rest { grid-area: rest; justify-content: flex-start; }
   .imp-count { font-size: 160px; }
   .imp-count-point { font-size: 96px; }
+  /* IMP-031, IMP-082: the heading and the names box (scrolling inside) left; "Not sure?", its text buttons and the
+     main button right. */
+  .imp-picker { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); column-gap: 16px; }
+  .imp-pick-names { min-height: 0; }
+  .imp-pick-unsure { align-self: start; }
   /* IMP-024: the label, the timer and "Time's up!" in the left half; the buttons in the right half. */
   .imp-talk-timer { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 16px; align-items: center; }
   .imp-timer-side { gap: 4px; }
