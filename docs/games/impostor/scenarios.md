@@ -43,7 +43,7 @@ Change classes (`docs/change-sop.md`): rules, secrets and seeds, saved evenings 
   `deal-progress` at 15 px top left, "Everyone else, look away!" at 17 px, `private-word` "fits in 3 lines".
 - New strings in 3.3: "✓ Caught!", "✗ Escaped!", "<NAME> was the impostor", "Still a tie.", "The word was",
   "Let go to hide", "New word for everyone?" / "New word" / "Back", "Each say one word about your secret:",
-  "Clues done, talk it over", "Clues done, start the 2-minute timer", "One more round of clues", "Not sure?",
+  "Clues done, talk it over", "Clues done, start the 2-minute timer", "Go round again", "Not sure?",
   "1 more minute", "Last guess for a caught impostor" / "Off" / "On", "A caught impostor can steal the round by
   guessing the word.", "Same as last time", "Scores since round 4", "Arjun wins the night with 2 points!",
   "Crew 4 · Impostors 3", "More ›".
@@ -161,7 +161,7 @@ U+2192; "✓" is U+2713; "›" is U+203A; "–" in "3–20" is U+2013; apostroph
 | Redeal | "No problem! New word coming." · "Pass the phone back to <NAME>"; main "I'm <Name>" | h1; paragraph | IMP-015 |
 | Clues | "✓ Everyone has seen their word." · "Phone in the middle, face up." · `<NAME>` · "starts" · "Each say one word about your secret:" · "Meena → Kabir → Zoya → Riya → Arjun" | paragraphs; `starter-name`; paragraphs; `clue-order` | IMP-016, 020 |
 | Clues main | "Clues done, talk it over" (Free flow) / "Clues done, start the 2-minute timer" (Timer) | main button | IMP-016 |
-| Second round | quiet "One more round of clues"; then line "Second round: <NAME> starts again" | button; paragraph | IMP-022 |
+| Second round | quiet "Go round again" (in the bottom bar, directly above the main button); then line "Second round: <NAME> starts again" | button; paragraph | IMP-022 |
 | Talk, Free flow | heading "Talk it over"; "Who sounded unsure?"; main "Vote now" | h1 `talk-heading`; paragraph | IMP-023 |
 | Talk, Timer | label "Talk it over" above `timer` "2:00"…"0:00"; main "Vote now"; quiet "Pause" / "Carry on"; small line "Paused · Tap to carry on"; heading "Time's up!"; main "Get ready to point"; quiet "1 more minute" | `timer-label`; `timer`; buttons; small line; h1 | IMP-024, 027 |
 | Countdown | "Get ready to point…" then "3", "2", "1", "Point!" | h1 `countdown-heading` then `countdown-number` | IMP-030 |
@@ -194,7 +194,7 @@ U+2192; "✓" is U+2713; "›" is U+203A; "–" in "3–20" is U+2013; apostroph
 | History, in progress | "In progress" | inside `history-game` | IMP-094 |
 | History rows | "Impostor · 7 rounds"; round rows (IMP-105); "Play again"; "← Back" when opened between rounds | `history-game`; `history-round`; buttons | IMP-103, 105, 092 |
 | Settings | switches "Larger text" and "Tap to show instead of hold"; note "Your screen reader will say the word out loud. Use earphones or turn the volume down."; "Skipped words (3)"; "Bring back" per word (accessible name "Bring back Samosa") | switches; small line; heading; buttons | IMP-014, 107, 109 |
-| Announcements | IMP-083 list | `announcer` (`aria-live="polite"`) | IMP-083 |
+| Announcements | IMP-083 list; `announcer` is emptied when a new deal starts (product owner, 4 October) | `announcer` (`aria-live="polite"`) | IMP-083 |
 
 ---
 
@@ -250,7 +250,7 @@ A test may set exactly these; the build must honour them.
      | "Don't know this word?", and "Back" in its dialog | nothing |
      | "New word" (dialog "New word for everyone?") | `dontKnow` (the new word and impostor are drawn now) |
      | "Clues done, talk it over" / "Clues done, start the 2-minute timer" | `startTalk` |
-     | "One more round of clues" | `anotherRoundOfClues` |
+     | "Go round again" | `anotherRoundOfClues` |
      | "Vote now" / "Get ready to point" | `voteNow` |
      | "Pause", "Carry on", "1 more minute", "Count again", "It's a tie", ticking names, the countdown | nothing |
      | "Point again: …" | `tie {players}` |
@@ -765,7 +765,9 @@ in Hard the starter is never the impostor; tolerance 0 failures
 Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
 Given 3, 4 or 5 players
-Then the clues screen has the quiet button "One more round of clues"
+Then the clues screen has the quiet button "Go round again", placed in the bottom bar directly above the main button
+(not under `clue-order`), with the small line "Not enough clues?" (15 px) directly above it (product owner, 4 October,
+after Jev's confusion flags: the old label in the middle of the screen read as the first step)
 When it is tapped
 Then the line "Second round: MEENA starts again" (the same starter) appears under `clue-order`, the button disappears
 for the rest of the round, and nothing else changes (recorded as `anotherRoundOfClues`)
@@ -916,7 +918,7 @@ And at t = 1.5 s the build-up is replaced, all at once, by, top to bottom:
 6. `round-outcome` "The crew wins!" (h2)
 7. `evening-line` (Score No, IMP-040) or `round-points` and `scoreboard` (Score Yes, IMP-044)
 8. the quiet "This word didn't work" (IMP-107); and the main button "Next round", pinned; the menu button returns
-And sizes: `build-up` 40 px; `result-headline` 56 px, centred (44 px at widths below 360 px, always one line); `result-note` 20 px; `result-impostor` 32 px, centred
+And sizes: `build-up` 40 px; `result-headline` 56 px, centred (44 px at widths below 390 px, always one line); `result-note` 20 px; `result-impostor` 32 px, centred
 (it may wrap onto 3 lines); `word-label` body text; `result-word` 44 px, centred, fitting in 3 lines (a word over 12
 characters may be any size from 32 px to 44 px); `also-called` small line; `word-category` 17 px (21 px with Larger
 text) in an outlined chip directly below the word (and below `also-called` when shown); `round-outcome` 28 px;
@@ -1283,7 +1285,7 @@ Then at every size, these sizes hold (guideline 46):
 | `countdown-number` "Point!" | 96 px | 320 px wide: exactly 72 px | 72 px |
 | `private-word` (box 2 lines tall) | 36 px | Larger text on, or word over 20 characters | 30 px |
 | `build-up` | 40 px | never | 40 px |
-| `result-headline` | 56 px | widths below 360 px, so it stays on one line (product owner, 4 October) | 44 px |
+| `result-headline` | 56 px | widths below 390 px, so it stays on one line on every font (product owner, 4 October) | 44 px |
 | `result-impostor` | 32 px (may wrap onto 3 lines) | never | 32 px |
 | `result-word` | 44 px | word over 12 characters | 32 px (fits in 3 lines) |
 | `result-note`, `guess-line` | 20 px | never | 20 px |
