@@ -97,6 +97,29 @@ changed scenarios into `specs/impostor/` and lists the tests to update or retire
 names them by file). Lanes: A deal and privacy; B result, summary, picker, timer; C setup, choices, how to play;
 C3 in its own lane. Then quick verify, the owner tries the preview, then "release Impostor".
 
+### Impostor round 5 (owner approved 4 October, I25 and I26): before the 1.3.0 release candidate
+**Hold the release-candidate freeze until this round is green.** Binding: `docs/games/impostor/scenarios.md` **v3.8**
+(passed the coder and tester reads; every changed scenario marked "2026-10-04 (changed)", new IMP-077, IMP-078,
+IMP-079). Plain words, from the owner's own play, four player runs and the UX "What next?" pass
+(`docs/room-moments.md`):
+1. **Between rounds:** "Next round" with a visible "End game" beside it and "← Home" (game saved); "Players (5) ›"
+   visible on the result.
+2. **Words:** "game" everywhere (never "evening", "night", "session", "crew", "steal"); "You caught the impostor!",
+   "Arjun wins the round!", "Clues done, start timer", "Done, back to clues".
+3. **End screen:** "That's the game!", main "Play again", then "Play something else", "Home", "More ›".
+4. **People coming and going:** add someone mid-round ("Joining next round: Zoya"); someone leaving mid-round gets
+   "Finish this round first" (main) or "Deal again without Kabir" (one new move `dealAgainWithout`, never revealing
+   roles); "3 players needed." when it would drop below 3; fast Enter keeps every name.
+5. **Breaks and mistakes:** "Home (game is saved)" mid-round; resume rows with names; "Not Riya? ← Back"; a 500 ms
+   double-tap guard on buttons (not the hold pad); "See my word again" visible on clues and talk; settings kept on
+   Back; "Start new?" asked once with equal buttons; tie heading "Tap everyone who is tied" with "Not a tie";
+   "Tap instead" away from "Done"; test seeds that don't fit the players are ignored.
+6. Already in the must-fix list: headline 44 px below 390 px; announcer emptied at each deal (I24).
+Classes: the moves (`dealAgainWithout`, mid-round adds, `leaveAfterRound`) are C3, tests first; the rest C1/C2.
+The tester read of 4 October lists every test file and line to change or retire, and the new tests. Then quick verify,
+a **player run** of the changed flows (`docs/proposals/player-agent.md`, one at a time from cleared app data), then
+the freeze.
+
 ### Impostor round 4 review (product owner with the UX designer, 4 October)
 Built as scenarios v3.5 say; F1–F12 done except F2 at 320 px. **Must fix before release (joins this round):** N1 — `result-headline` 44 px, one line, below **390** px wide
 (IMP-073); and from Jev's flags (I24): "Go round again" in the bottom bar above the main button with "Not enough

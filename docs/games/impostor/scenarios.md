@@ -1,4 +1,4 @@
-# Impostor: scenarios (version 3.7, 4 October 2026)
+# Impostor: scenarios (version 3.8, 4 October 2026)
 
 Status: **IMP-001 to IMP-108 approved by the owner, 3 October 2026.** Version 2 (same day) makes every approved
 scenario exact, from two independent readers (a coder-reader and a tester-reader, `docs/spec-rules.md` rule 12) and
@@ -11,6 +11,9 @@ IMP-200+ are approved as direction, built later.
 then everything at once, the word always shown); the last guess becomes the optional "Last-chance guess" (off by
 default); "How to play" opens only on request (choices screen and menu) and holds the rules; the deal shows
 "Player 2 of 4" and "Everyone else, look away!". Changed IDs carry "Status: approved, owner, 2026-10-04 (changed)".
+**Version 3.8 (same day):** fixes from the coder and tester reads: the move `dealAgainWithout`, every deal deals the
+current players, pending leavers, the clues screen at 320 × 568 and 812 × 375, the no-words screen's buttons, and
+the screen B gaps. Changed: IMP-001, 010, 020, 022, 052, 070, 074, 077, 078, 079.
 **Version 3.7 (owner decision I26, 4 October; `docs/room-moments.md`, every **Must** row):** people joining and
 leaving mid-round (M1, M4, M7), a visible "Players (5) ›" (M2), fast Enter (M3), "Home (game is saved)" (M11), names
 on unfinished games (M12), "Not Riya? ← Back" (M17), no double taps (M18), a visible "See my word again" (M19),
@@ -99,7 +102,7 @@ Every scenario uses these words with exactly these meanings.
 
 | Term | Meaning |
 |---|---|
-| **Main button** | The one element with the solid main look (PLT-301; tests use `hasMainLook`). It carries `data-testid="main-button"` and is 60 px tall. In portrait it spans the screen width minus 16 px gutters and sits fixed at the bottom of the screen, except on the between-rounds screens at widths of 360 px and more, where it is the right half of the bottom row (IMP-077). At 812 × 375 it is 358 px wide, fixed at the bottom right (16 px from the right and bottom edges), and no other content lies under it. At most one is on screen (IMP-080). |
+| **Main button** | The one element with the solid main look (PLT-301; tests use `hasMainLook`). It carries `data-testid="main-button"` and is 60 px tall. In portrait it spans the screen width minus 16 px gutters and sits fixed at the bottom of the screen, except on the between-rounds screens at widths of 360 px and more, in portrait and at 812 × 375, where it is the right half of its bottom row (IMP-077). At 812 × 375 it is 358 px wide, fixed at the bottom right (16 px from the right and bottom edges), and no other content lies under it. At most one is on screen (IMP-080). |
 | **Quiet button** | An outlined button (PLT-301 "outlined"), 48 px tall, never the main look. |
 | **Selected** | An option or name with a visible outline, a "✓" (decorative, `aria-hidden`) and the tint, and `aria-pressed="true"`. Never the main look. Unselected: `aria-pressed="false"`. |
 | **Tint** | A background of the outline colour at 10% opacity. |
@@ -185,7 +188,7 @@ U+2192; "✓" is U+2713; "›" is U+203A; "–" in "3–20" is U+2013; apostroph
 | Joining | "Joining next round: Zoya" ("Joining next round: Zoya, Dev") | small line `joining-line` | IMP-079 |
 | Clues | "✓ Everyone has seen their word." · "Phone in the middle, face up." · `<NAME>` · "starts" · "Each say one word about your secret:" · "Meena → Kabir → Zoya → Riya → Arjun" | paragraphs; `starter-name`; paragraphs; `clue-order` | IMP-016, 020 |
 | Clues main | "Clues done, talk it over" (Free flow) / "Clues done, start timer" (Timer) | main button | IMP-016 |
-| Second round | quiet "Go round again" (in the bottom bar, directly above the main button); then line "Second round: <NAME> starts again" | button; paragraph | IMP-022 |
+| Second round | small line "Not enough clues?" (not at 812 × 375); quiet "Go round again" (in the bottom bar, directly above the main button); then line "Second round: <NAME> starts again" | button; paragraph | IMP-022 |
 | Talk, Free flow | heading "Talk it over"; "Who sounded unsure?"; main "Vote now" | h1 `talk-heading`; paragraph | IMP-023 |
 | Talk, Timer | label "Talk it over" above `timer` "2:00"…"0:00"; main "Vote now"; quiet "Pause" / "Carry on"; small line "Paused · Tap to carry on"; heading "Time's up!"; main "Get ready to point"; quiet "1 more minute" | `timer-label`; `timer`; buttons; small line; h1 | IMP-024, 027 |
 | Countdown | "Get ready to point…" then "3", "2", "1", "Point!" | h1 `countdown-heading` then `countdown-number` | IMP-030 |
@@ -241,13 +244,18 @@ A test may set exactly these; the build must honour them.
    - Moves, all recorded as `MoveRecord`s with `by: 'host'` (`type`, extra fields): `startDeal {practice: boolean}` ·
      `seen` · `dontKnow` · `startTalk` · `anotherRoundOfClues` · `voteNow` · `reveal {player}` ·
      `tie {players: string[]}` · `stillTie` · `showWord` · `verdict {right: boolean}` · `nextRound` · `dealAgain` ·
-     `allowRepeats` · `wordDidntWork {blocked: boolean}` · `setPlayers {players: string[]}` · `leaveAfterRound {player}` · `setChoices {choices}` ·
+     `allowRepeats` · `wordDidntWork {blocked: boolean}` · `setPlayers {players: string[]}` · `leaveAfterRound {player}` · `dealAgainWithout {player}` ·
+     `setChoices {choices}` ·
      `endEvening`. `isOver` is true after `endEvening`.
-   - `setPlayers` mid-round (deal to picker) may add players (they are dealt from the next round, IMP-079); it may
-     remove a player only as the first of the two records of "Deal again without Kabir" (IMP-078), where the next
-     record is `dealAgain`. `leaveAfterRound {player}` (IMP-078) removes that player when the round is completed.
+   - `setPlayers` mid-round (deal to picker) may only add players; a mid-round removal by itself is not a legal move.
+     `dealAgainWithout {player}` (IMP-078) is one atomic move: it removes that player and redeals the round (new word,
+     impostor and starter from the next per-deal seed n). `leaveAfterRound {player}` (IMP-078) marks a pending leaver,
+     removed when the round reaches a result, or when `endEvening` drops the round.
+   - Every new deal, redeals included (`dontKnow`, `dealAgain`, `dealAgainWithout`, the "left halfway" `dealAgain`,
+     `nextRound`), deals the current list: players added during the round are dealt in; pending leavers are still
+     dealt in until a round reaches its result.
    - Every move that deals a word carries the dealt word's id as `wordId`: `startDeal`, `nextRound`, `dealAgain`,
-     `dontKnow`, `allowRepeats`, and `setChoices` when it redeals the same round from the no-words screen (IMP-052).
+     `dealAgainWithout`, `dontKnow`, `allowRepeats`, and `setChoices` when it redeals the same round from the no-words screen (IMP-052).
      `nextRound` that finds no word left carries `wordId: null` (the no-words screen shows). The rules accept any
      recorded id that exists in the shipped list (retired words included, IMP-054), live and on replay alike (the engine
      can't tell them apart); the app always records the id that `pickWord` gives for deal n (or that deal's `testDeals`
@@ -265,7 +273,8 @@ A test may set exactly these; the build must honour them.
      (`wordDidntWork` after it does not end the window).
    - Views: `view(state, { kind: 'player', playerId: name })` → `{ role: 'crew', wordId }` or `{ role: 'impostor' }`
      for the round being dealt or played. Host and room views → `{ round: number | null (null for the practice
-     round), practice: boolean, players: string[], starter: string | null (null until picked) }`, plus `impostor`
+     round), practice: boolean, players: string[] (mid-round: this round's dealt players; joiners and pending leavers
+     follow from the moves), starter: string | null (null until picked) }`, plus `impostor`
      and `wordId` only after that round's `reveal` or `stillTie`.
    - Tap → move, exactly (a tap not listed records nothing):
 
@@ -293,14 +302,14 @@ A test may set exactly these; the build must honour them.
      | "Allow repeats" | `allowRepeats` |
      | "This word didn't work" / its toast's "Undo" | `wordDidntWork {blocked: true}` / `{blocked: false}` |
      | Players sheet "Done" (with a change; between rounds or mid-round adding) | `setPlayers {players}` (one move with the final list) |
-     | "Finish this round first" (IMP-078) | `leaveAfterRound {player}` |
-     | "Deal again without Kabir" (IMP-078) | `setPlayers` (without Kabir), then `dealAgain` |
+     | "Finish this round first" (IMP-078) | `setPlayers` first when names were added in the sheet, then `leaveAfterRound {player}` |
+     | "Deal again without Kabir" (IMP-078) | `setPlayers` first when names were added in the sheet, then `dealAgainWithout {player}` |
      | "Add a player" / "End game" in "3 players needed." (IMP-078) | nothing (the Players sheet / the summary opens) |
      | "Not Riya? ← Back", "See my word again" (button or menu), "Done, back to …", "Not a tie" | nothing |
      | "Home (game is saved)" (mid-round menu) | nothing (Home opens; the game stays unfinished) |
      | "Change how we play", then "Start round" (between rounds) | `setChoices` (only when something changed), then `nextRound` |
      | "Change how we play", then "← Back" (between rounds) | `setChoices` when something changed, else nothing |
-     | "Change categories", then "Start round" (no words left) | `setChoices` only; the same round is dealt again with a new word |
+     | "Change categories", then "Start round" or "← Back" (no words left) | `setChoices` (when something changed) only; the same round is dealt again with a new word |
      | "End game" (between rounds) / "End now" (mid-round dialog) | nothing (the summary shows, IMP-092, IMP-101) |
      | "← Home" (between rounds) | nothing (the game stays unfinished, IMP-077) |
      | "Play again" (end screen) | `endEvening` (the summary is left), then a new evening starts as IMP-103 |
@@ -402,18 +411,21 @@ Then "What shall we play?" shows, above the two cards, the button `resume-card` 
 round 4" and "Tap to resume", and Home's `unfinished-games` shows a row with the same two texts
 And the label names the first two players in the game's current seat order, then "+N" for the others (3 players:
 "Riya, Arjun +1"); names as typed
-And "round 4" is the number of the round in progress, or of the next round when between rounds (a practice round in
-progress shows "round 1")
-And an evening whose summary was showing and not yet left (`summaryShownAt` set, no `endEvening`) is unfinished too,
-and shows the next round's number
+And "round N" is: during a round (deal to reveal), that round's number (the practice round: "round 1"). Between rounds
+it is the number the next deal will carry: after a completed round, that round + 1; on the "left halfway" and
+no-words screens, the round waiting to be dealt. While the summary shows, it is the number for the screen "Oops, keep
+playing" returns to (End now in round 4: "round 4"; End game after round 4: "round 5")
+And an evening whose summary was showing and not yet left is unfinished too
 When either is tapped
 Then the evening reopens at its saved step (IMP-090, IMP-091), or, for such an evening, at the summary (IMP-101)
 When instead the host taps the "Impostor" card while that evening is unfinished
 Then a dialog asks exactly "Start a new game? The game from 8:40 pm will be ended." (8:40 pm = the unfinished game's
 start time) with two equal outlined buttons side by side, "Carry on that game" and "Start new"; neither has the main
 look
-And the dialog shows once per tap of the Impostor card, or of "Play again" (IMP-103) while a game is unfinished;
-"Start new" goes straight on ("Who's playing?") with no second question
+And the dialog shows once per tap of the Impostor card, or of History's "Play again" (IMP-103) while a game is
+unfinished (the summary's "Play again" ends its game first, so it never shows this dialog); "Start new" goes straight
+on with no second question: to an empty or tonight-filled "Who's playing?" (IMP-004) after the card, or to "Who's
+playing?" filled by IMP-103 after "Play again"
 And "Carry on that game" reopens it at its saved step
 And "Start new" records `endEvening` at once, with no summary (a half-played round is dropped; IMP-097 applies:
 with no counted round it is deleted rather than kept), then opens "Who's playing?" for the new evening
@@ -602,7 +614,8 @@ And the last player's button reads "Done, everyone's seen" (IMP-016)
 And no screen A or B ever shows the previous player's block
 And a tap within 500 ms of any screen change on the deal screens (A, B, "No problem!", "Welcome back.") is ignored:
 it records nothing and changes nothing (guideline 20), so a double tap on "Done…" never skips "Pass the phone to
-ARJUN"; the 500 ms run from the moment the new screen is shown
+ARJUN"; the 500 ms run from the moment the new screen is shown; the guard covers buttons only. The pad is not guarded: a
+press within 500 ms works as at any other time
 And inside the layer the block's lines have line-height 1.2, 4 px gaps between the 5 lines and no padding, starting at
 y = 0; when the block would be taller than the layer, first lines 3, 4 and 5 shrink to 15 px, then `private-word`
 shrinks to 30 px
@@ -611,9 +624,11 @@ from the bottom, so the pad's top is at y = 268 and the layer is 260 px tall (y 
 two-line line 3, line 4 and line 5: 22.8 (line 1, 19 px) + 86.4 (`private-word`, 2 × 36 × 1.2) + 2 × 50.4 (lines 3
 and 4 at 21 px) + 45.6 (line 5 at 19 px) + 16 (gaps) = 271.6 px > 260, so lines 3–5 shrink to 15 px: 22.8 + 86.4 +
 2 × 36 + 36 + 16 = 233.2 px, bottom at y ≤ 260; `private-word` stays 36 px. Larger text off: 18 + 86.4 + 2 × 40.8 +
-36 + 16 = 238 px, no shrinking. Above the pad, when the block is hidden: top bar 48 + `deal-progress` 21 + name 28 + "Tap instead" 48 + "Don't know
-this word?" 48 + 3 gaps of 8 = 217 px ≤ 268; "Tap instead" ends at y = 153 and the main button's space starts at
-y = 492 (339 px apart)
+36 + 16 = 238 px, no shrinking. Gaps on screen B (portrait): none between the top bar and `deal-progress`; 8 px between `deal-progress` and the name,
+the name and "Tap instead", and "Tap instead" and "Don't know this word?"; 8 px between the pad and "Not Riya? ← Back"
+and between it and the main button's space; 16 px under the main button. Above the pad, when the block is hidden:
+48 + 21 + 8 + 28 + 8 + 48 + 8 + 48 = 217 px ≤ 268; "Tap instead" ends at y = 161 and the main button's space starts
+at y = 492 (331 px apart)
 
 ## IMP-011: What each role sees: always five lines
 Status: approved, owner, 2026-10-04 (changed)
@@ -798,10 +813,18 @@ And at 812 × 375 `starter-name` and "starts" sit in the left half; "✓ Everyon
 middle, face up.", "Each say one word about your secret:", `clue-order`, the IMP-022 button and the main button sit
 in the right half
 And in **Hard** mode the starter is never the round's impostor; in **Easy** mode the impostor may start
-And at 812 × 375 "One more round of clues" and "See my word again" share one row (two equal halves) in the right half
-Arithmetic (rule 4), 320 × 568, 5 players, Larger text off: top bar 48 + 2 lines of 24 + `starter-name` (32 px, 2
-lines) 77 + "starts" 24 + 24 + `clue-order` 48 + 2 quiet buttons 96 + joining line 21 + main button 76 + 9 gaps of 8
-= 534 px ≤ 568; at 812 × 375 the right half: 48 + 24 + 24 + 24 + 48 + 48 (shared row) + 21 + 76 + 7 × 8 = 369 px ≤ 375
+And at 812 × 375 "Go round again" and "See my word again" share one row (two equal halves) in the right half, and
+"Not enough clues?" is not shown (the button alone)
+And at 320 × 568 the order is: `starter-name`, "starts", then one box that scrolls inside its own height holding
+"✓ Everyone has seen their word.", "Phone in the middle, face up.", "Each say one word about your secret:" and
+`clue-order`; then "Not enough clues?", then "Go round again" and "See my word again" on one row (two equal halves),
+then the joining line (IMP-079), then the main button
+Arithmetic (rule 4), 320 × 568, 5 players, Larger text off: top bar 48 + `starter-name` (32 px, 2 lines) 77 +
+"starts" 24 + the box 120 (5 lines: 24 + 24 + 24 + 48) + "Not enough clues?" 21 + shared row 48 + joining line 21 +
+main button 76 + 8 gaps of 8 = 499 px ≤ 568 (with more players the box scrolls inside); at 360 × 640 and 390 × 844
+the screen keeps the order of IMP-016 with "Go round again" and "See my word again" stacked: 48 + 48 + 77 + 24 + 24
++ 48 + 21 + 48 + 48 + 21 + 76 + 10 × 8 = 563 px ≤ 640; at 812 × 375 the right half: 48 + 24 + 24 + 24 + 48 + 48
+(shared row) + 21 + 76 + 7 × 8 = 369 px ≤ 375
 
 ## IMP-021: The starter moves round, without repeats
 Status: approved, owner, 2026-10-03
@@ -822,7 +845,8 @@ Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
 Given 3, 4 or 5 players
 Then the clues screen has the quiet button "Go round again", placed in the bottom bar directly above the main button
-(not under `clue-order`), with the small line "Not enough clues?" (15 px) directly above it (product owner, 4 October,
+(not under `clue-order`), with the small line "Not enough clues?" (15 px; 19 px with Larger text) directly above
+it, except at 812 × 375 (IMP-020) (product owner, 4 October,
 after Jev's confusion flags: the old label in the middle of the screen read as the first step)
 When it is tapped
 Then the line "Second round: MEENA starts again" (the same starter) appears under `clue-order`, the button disappears
@@ -1175,17 +1199,17 @@ evening join "dealt tonight" as they are dealt
 When both groups are empty at the moment a word is needed
 Then instead of "Pass the phone to…" the screen shows the heading
 "You've played every word in these categories!", the line "Turn on more categories or + Grown-ups.", the main
-button "Allow repeats", the quiet "Change categories" and the outlined "End game", and "← Home" at the top left
-(IMP-077); "Change categories" and "End game" share one row (two equal halves) directly above "Allow repeats"
+button "Change categories" paired with the outlined "End game" in the bottom row exactly like the result's row
+(IMP-077), the quiet "Allow repeats" directly above that row, and "← Home" at the top left
 When "Allow repeats" is tapped (recorded as `allowRepeats`)
 Then for the rest of the evening each deal picks uniformly among all words that pass IMP-050 and are not blocked,
 and the deal starts
 When "Change categories" is tapped
-Then "How do you want to play?" opens with the current choices; its "Start round" records `setChoices` only (no
-`nextRound`) and the same round is dealt again, same round number, with a word drawn under the new choices
+Then "How do you want to play?" opens with the current choices; its "Start round" records `setChoices` (when
+something changed; no `nextRound`) and the same round is dealt again, same round number, with a word drawn under the
+current choices; "← Back" there keeps the changes and does exactly what "Start round" does
 And the menu on this screen is the between-rounds menu (IMP-075)
-And when even "Allow repeats" would find no word (every allowed word blocked), "Allow repeats" is not shown and
-"Change categories" is the main button
+And when even "Allow repeats" would find no word (every allowed word blocked), "Allow repeats" is not shown
 
 ## IMP-053: Both names are shown where a thing has two
 Status: approved, owner, 2026-10-04 (changed)
@@ -1291,7 +1315,7 @@ list, exactly, in this order:
 4. "Whoever gets the most fingers is revealed. Caught: you win. Wrong person: the impostor wins."
 And under the list, one paragraph by mode: Easy "The impostor sees the category and a hint." / Hard "The impostor
 sees nothing and never starts."
-And then, only with the last-chance guess on, the paragraph "A caught impostor can steal the round by guessing the
+And then, only with the last-chance guess on, the paragraph "A caught impostor can win the round by guessing the
 word."
 And then the rules of IMP-072
 And the main button "Done" closes the sheet and returns to the screen it was opened from, with nothing else changed
@@ -1366,7 +1390,8 @@ Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
 Given a round result is showing (between rounds)
 Then a quiet text button "Players (5) ›" (5 = the current number of players) sits on the same row as `evening-line`
-(Score No) or `round-points` (Score Yes), right-aligned; the menu item "Players" does the same
+(Score No) or `round-points` (Score Yes), right-aligned; on the practice round's result (no `evening-line`, no
+points) it sits alone, right-aligned, where `evening-line` would be; the menu item "Players" does the same
 When the host taps it and adds Zoya
 Then the sheet "Players" (the list, field and buttons of IMP-003, with its limits) shows Zoya at the end; ▲ ▼ move
 her to her seat; the main button "Done" closes the sheet and records one `setPlayers` with the final list (nothing
@@ -1377,10 +1402,14 @@ Then he is removed at once and the toast reads "Kabir left · Points kept · Und
 Undo" (not keeping score), for 5 s inside the sheet; "Undo" puts him back in the same seat; tapping "Done" while
 the toast shows closes the toast with the sheet (he stays removed)
 And his points stay on the scoreboard, greyed (IMP-044)
-And with 3 players, tapping ✕ opens IMP-078's "3 players needed." dialog
+And when removing would leave 2 players (pending leavers counted as gone), tapping ✕ opens IMP-078's "3 players
+needed." dialog
+And on the "left halfway" screen (IMP-091) ✕ removes at once as between rounds (no "Finish this round first": there
+is no round to finish)
 When "Players" is opened from the menu during a round (deal, clues, talk or picker)
 Then the same sheet opens for adding only: the field and "Add" work (IMP-079); ▲ ▼ are hidden; ✕ on a player of this
-round opens IMP-078's "Kabir has to leave?" dialog; ✕ on a player added during this round removes them at once
+round opens IMP-078's "Kabir has to leave?" dialog; ✕ on a player added during this round removes them at once; a
+pending leaver ("Finish this round first") is shown greyed, with no ✕, and cannot be cancelled
 
 ## IMP-075: The menu at each moment
 Status: approved, owner, 2026-10-04 (changed; detail of IMP-006, IMP-017, IMP-025, IMP-093)
@@ -1434,8 +1463,8 @@ Status: approved, owner, 2026-10-04 (changed; detail of IMP-075, IMP-092; owner 
 Phase: Impostor 1
 Given a between-rounds screen: a round result once the round is completed (IMP-033, IMP-034, IMP-038, IMP-039),
 the "left halfway" screen (IMP-091) or the no-words screen (IMP-052)
-Then the bottom row shows the main button "Next round" and the outlined "End game" (on the no-words screen: see the
-row with "Change categories" below), and the top bar shows "← Home" at the top left (the menu button stays top
+Then the bottom row shows the main button "Next round" ("Change categories" on the no-words screen) and the outlined
+"End game", and the top bar shows "← Home" at the top left (the menu button stays top
 right)
 And sizes and layout of the bottom row, pinned at the bottom with 16 px gutters and 16 px below:
 - widths of 360 px and more in portrait (360 × 640, 390 × 844): one row, two equal halves 8 px apart, "End game" on
@@ -1444,22 +1473,23 @@ And sizes and layout of the bottom row, pinned at the bottom with 16 px gutters 
 - 320 × 568: "End game" full width (288 px) and 48 px tall, 8 px above the full-width main button: the pinned area is
   16 + 60 + 8 + 48 = 132 px; the rest of the result screen scrolls as one page above it (guideline 46a);
 - 812 × 375: one row in the right half: (406 − 32 − 8) / 2 = 183 px each, 60 px tall
-And on the no-words screen "Change categories" and "End game" share one row (two equal halves) above "Allow repeats"
-at every size
+And on the no-words screen the main button of that row is "Change categories" (IMP-052), with the quiet "Allow repeats"
+above the row
 When "End game" is tapped
 Then the summary (IMP-092) shows at once, with no dialog; nothing is recorded until the summary is left (IMP-101);
 "Oops, keep playing" (in "More ›") comes back to this screen exactly as it was; from the "left halfway" screen the
 half-played round is dropped when `endEvening` is recorded
 When "← Home" is tapped
 Then Home opens; nothing is recorded; the game stays unfinished: Home's `unfinished-games` row and the resume card
-on "What shall we play?" read "Impostor · Riya, Arjun +2 · round 4" and "Tap to resume" (IMP-001; round = the next
-round); resuming
+on "What shall we play?" read "Impostor · Riya, Arjun +2 · round 5" and "Tap to resume" after round 4 (IMP-001: the
+number the next deal will carry); resuming
 returns to the same between-rounds screen (with "Undo" when its window is open, IMP-037)
 And "← Home" and "End game" are never shown mid-round (deal, clues, talk, countdown, picker, build-up, the guess and
 verdict steps); there, "End game" is only in the menu (IMP-093)
 And the practice round's result has both
-And a tap within 500 ms of the result screen's buttons appearing (t = 1.5 s, or the verdict) is ignored on every
-between-rounds screen (guideline 20; IMP-010)
+And a tap on a button within 500 ms of the guard window's start is ignored on every between-rounds screen (guideline
+20; IMP-010); the window starts t = 1.5 s after "Reveal …"; at once after "Still a tie" or the verdict; when the
+"left halfway" or no-words screen shows
 And "End game" and "← Home" are not announced and change nothing else
 
 ## IMP-078: Someone has to leave mid-round; fewer than 3; no dead buttons
@@ -1471,13 +1501,19 @@ Then a dialog asks "Kabir has to leave?" with "Deal again without Kabir" (outlin
 (main); closing it (the phone's Back) changes nothing
 And nothing in it, or after it, shows or hints whether Kabir is the impostor (same text and buttons whatever his role)
 When "Finish this round first" is tapped
-Then `leaveAfterRound {player: "Kabir"}` is recorded; Kabir stays in this round (clues order, vote, picker,
-scoring); when the round is completed (IMP-033, IMP-034, IMP-038, IMP-039) he is removed, his points kept, and the
-result screen shows the toast "Kabir left after this round" (4 s)
+Then `leaveAfterRound {player: "Kabir"}` is recorded; Kabir stays in this round (clues order, vote, picker, scoring,
+and any redeal of this round: "New word", "Deal again"); when a round reaches its result (IMP-033, IMP-034, IMP-038,
+IMP-039) he is removed, his points kept, and the toast "Kabir left after this round" (4 s) shows when the result's
+lines appear: at t = 1.5 s, at once after "Still a tie", or on the verdict when the last-chance guess is on
+And when "End now" drops the round (IMP-093), he is removed too when `endEvening` is recorded, so he is not among
+the final players ("Play again", IMP-103)
 When "Deal again without Kabir" is tapped
-Then `setPlayers` (the list without Kabir) and then `dealAgain` are recorded; the deal starts again from the first
-player with a new word and a new impostor (IMP-025, IMP-061), Kabir not in it; his points are kept, greyed
-Given removing a player (mid-round or between rounds) would leave only 2 players
+Then `dealAgainWithout {player: "Kabir"}` is recorded (one move): Kabir is removed and the deal starts again from the
+first player of the current list with a new word, impostor and starter (IMP-025, IMP-061, the next per-deal seed);
+his points are kept, greyed
+And after either button the Players sheet closes; names added in the sheet before it are recorded first
+(`setPlayers`) and are dealt in by any new deal (IMP-079)
+Given removing a player (mid-round or between rounds) would leave only 2 players, pending leavers counted as gone
 When ✕ is tapped
 Then instead a dialog says "3 players needed. Add someone, or end the game." with "End game" (outlined) and "Add a
 player" (main)
@@ -1492,12 +1528,13 @@ Status: approved, owner, 2026-10-04 (detail of IMP-074; owner decision I26, M1)
 Phase: Impostor 1
 Given a round is in progress
 When the host opens "Players" (menu) and adds Zoya, then taps "Done"
-Then `setPlayers` with Zoya at the end is recorded at once; she is not in this round (no deal, not in the clue order,
-not on the picker, no points this round); she is dealt from the next round, at 0 points
+Then `setPlayers` with Zoya at the end is recorded at once; she is not in the deal in progress (not in its clue order,
+not on its picker, no points from it); she is dealt in by the next deal, whichever comes first: a redeal of this
+round ("New word", "Deal again", "Deal again without …") or the next round; at 0 points
 And the clues, talk and picker screens of this round show `joining-line` "Joining next round: Zoya" (small line: 15 px;
 19 px with Larger text), directly above the main button's area; several names are joined by ", " in the order added
 ("Joining next round: Zoya, Dev")
-And the line is not announced and goes when the next round's deal starts
+And the line is not announced and goes when the deal that includes her starts
 And nothing else in the round changes
 ---
 
