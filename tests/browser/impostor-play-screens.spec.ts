@@ -4,12 +4,15 @@
 // Players (IMP-074), the main button (IMP-080), nothing scrolls at the four sizes (IMP-081), long lists (IMP-082),
 // screen readers (IMP-083), no flashing (IMP-084), kind words (IMP-085), a slipped finger (IMP-086), sounds (IMP-089),
 // after the round (IMP-100 to IMP-108). Every text, name and test id is the one in specs/impostor/README.md.
+// Updated 4 October 2026 to scenarios v3.5 (Impostor round 4). Expected to fail (not built yet): tests marked
+// `test.fail` check what v3.5 changed (the one result screen, the summary's lead line and "More ›", "How to play" in the
+// menu, "1 more minute", the picker's "Not sure?"). A marked test that starts passing turns red: then remove its mark.
 import { expect, test, type Locator, type Page } from './fixtures';
 import {
   HOME, backgroundAndReturn, chooseTicketType, expectOneMainButton, fillPlayers, fromHome, hasMainLook, isOutlined, openTambola, ticketCard, toggle,
 } from './helpers';
 import {
-  CATEGORIES, LONGEST, P4, PANI_PURI, SAMOSA, TZ, T0, WORDS, dealAll, exact, expectNoSecrets, freezeClock, fromMenu,
+  CLUES_DONE, COMMON_CATEGORIES, LONGEST, P4, PANI_PURI, SAMOSA, SCHOOL_TRIP, TZ, T0, WORDS, result, summaryAction, dealAll, exact, expectNoSecrets, freezeClock, fromMenu,
   hold, holdPad, imButton, mainButton, menuButton, onlyEvening, passName, phoneWith, pickerName, press, privateBlock,
   overlapping, release, revealLines, roundMoves, savedEvening, savedEvenings, secretTerms, startEvening, textOf, word, type Move, type StartOptions,
 } from './impostor';
@@ -44,7 +47,7 @@ async function toClues(page: Page, o: StartOptions = {}) {
 }
 /** Clues → talk (Free flow or Timer). */
 async function toTalk(page: Page) {
-  await mainButton(page).filter({ hasText: /^(Talk it over|Start the 2-minute timer)$/ }).click();
+  await mainButton(page).filter({ hasText: CLUES_DONE }).click();
 }
 /** Talk → "Vote now" → the picker, after the 6 s countdown. */
 async function toPickerFromTalk(page: Page) {
@@ -133,6 +136,34 @@ test.describe('IMP-024 and IMP-027: Timer', () => {
     expect(await fontSize(timer(page))).toBe(112);
   });
 
+  test.fail('v3.5: "Talk it over" label (28 px) above the timer; at 0:00 "1 more minute" replaces "Pause"; it gives 1:00 again, "Vote now" returns, no "1 minute left" for an added minute', async ({ page }) => {
+    await toClues(page, { talking: 'timer' });
+    await freezeClock(page);
+    await toTalk(page);
+    const label = page.getByTestId('timer-label');
+    await expect(label).toHaveText(exact('Talk it over', []));
+    expect(await fontSize(label)).toBe(28);
+    const lb = (await label.boundingBox())!, tb = (await timer(page).boundingBox())!;
+    expect(lb.y + lb.height, 'directly above the timer').toBeLessThanOrEqual(tb.y + 1);
+    await page.clock.runFor(120_000);
+    await expect(page.getByRole('heading', { name: "Time's up!" })).toBeVisible();
+    const more = quiet(page, '1 more minute');
+    await expect(more).toBeVisible();
+    expect(await isOutlined(more)).toBe(true);
+    const before = await records(page);
+    await more.click();
+    await expect(timer(page)).toHaveText('1:00');
+    await expect(page.getByRole('heading', { name: "Time's up!" })).toHaveCount(0);
+    await expect(mainButton(page)).toHaveText(exact('Vote now'));
+    await expect(quiet(page, 'Pause')).toBeVisible();
+    expect(await records(page), '"1 more minute" records nothing').toEqual(before);
+    await page.clock.runFor(60_000);
+    await expect(timer(page)).toHaveText('0:00');
+    await expect(page.getByRole('heading', { name: "Time's up!" })).toBeVisible();
+    await expect(quiet(page, '1 more minute')).toBeVisible();
+    expect((await sounds(page)).filter((x) => x.name === 'chime').length, 'a chime each time').toBe(2);
+  });
+
   test('"Pause" at 1:30 holds it, "Paused · Tap to carry on"; "Carry on" resumes from 1:30; the menu never pauses; hidden pauses; timerMs kept', async ({ page }) => {
     await toClues(page, { talking: 'timer' });
     await freezeClock(page);
@@ -182,7 +213,7 @@ test.describe('IMP-025: deal again with a new word', () => {
     await fromMenu(page, 'Deal again with a new word');
     await page.getByRole('dialog', { name: /^Deal again\?/ }).getByRole('button', { name: 'Deal again', exact: true }).click();
     await expect(passName(page)).toHaveText(exact('Riya'));
-    expect((await records(page)).at(-1)).toEqual({ type: 'dealAgain' });
+    expect((await records(page)).at(-1).type).toBe('dealAgain'); // the full record (v3.5, with wordId): impostor-saved-evenings.spec.ts
     await imButton(page, 'Riya').click();
     expect((await hold(page, 600))[1]).toBe(word(PANI_PURI).word);
   });
@@ -322,112 +353,189 @@ test.describe('IMP-031 and IMP-032: the picker and a tie', () => {
   });
 });
 
-/** Reads the reveal lines, with any spaces before the build-up dots taken out. */
-const lines = async (page: Page) => (await textOf(revealLines(page))).map((t) => t.replace(/\s+(\.+)$/, '$1'));
-
-test.describe('IMP-033, IMP-034, IMP-038: the reveals, timed', () => {
-  test('IMP-034 escaped: "Meena was" with dots, "Meena was crew!", "The impostor was ARJUN. Escaped!", the word, then "Arjun escaped!"', async ({ page }) => {
+test.describe('IMP-031 (v3.5): "Not sure?" and its text buttons', () => {
+  test.fail('24 px below the names: "Not sure?", then "It\'s a tie" and "Count again" side by side, equal, 48 px tall, no outline', async ({ page }) => {
     await toClues(page);
     await toTalk(page);
     await toPickerFromTalk(page);
-    await freezeClock(page);
-    await pickerName(page, 'Meena').click();
-    await mainButton(page).filter({ hasText: /^Reveal / }).click();
-    await expect(revealLines(page)).toHaveCount(1);
-    expect((await lines(page))[0]).toBe('Meena was');
-    await page.clock.runFor(600);
-    expect((await lines(page))[0]).toBe('Meena was.');
-    await page.clock.runFor(600);
-    expect((await lines(page))[0]).toBe('Meena was..');
-    await page.clock.runFor(600);
-    expect((await lines(page))[0]).toBe('Meena was...');
-    await page.clock.runFor(700); // 2.5 s
-    await expect(revealLines(page)).toHaveText([exact('Meena was crew!')]);
-    await page.clock.runFor(1500); // 4.0 s
-    await expect(revealLines(page)).toHaveText([exact('Meena was crew!'), exact('The impostor was Arjun. Escaped!')]);
-    await page.clock.runFor(1500); // 5.5 s
-    await expect(revealLines(page).nth(2)).toHaveText(exact('The word was Samosa.'));
-    await expect(outcome(page)).toHaveCount(0);
-    await page.clock.runFor(1500); // 7.0 s
-    await expect(outcome(page)).toHaveText(exact('Arjun escaped!'));
-    await expect(mainButton(page)).toHaveText(exact('Next round'));
-    await expect(quiet(page, 'Undo')).toHaveCount(0);
-    await expect(revealLines(page)).toHaveCount(3);
-    expect(await fontSize(revealLines(page).nth(0)), 'first line of an outcome').toBe(28);
-    expect(await fontSize(revealLines(page).nth(1)), 'other reveal lines').toBe(20);
-    expect(await fontSize(outcome(page))).toBe(28);
+    const label = page.getByText('Not sure?', { exact: true });
+    await expect(label).toBeVisible();
+    const last = (await pickerName(page, 'Kabir').boundingBox())!, l = (await label.boundingBox())!;
+    expect(Math.round(l.y - (last.y + last.height)), '24 px below the last name').toBeGreaterThanOrEqual(23);
+    const tie = quiet(page, "It's a tie"), again = quiet(page, 'Count again');
+    const t = (await tie.boundingBox())!, c = (await again.boundingBox())!;
+    expect(t.y, 'under "Not sure?"').toBeGreaterThanOrEqual(l.y + l.height - 1);
+    expect(Math.abs(t.y - c.y), 'side by side').toBeLessThanOrEqual(1);
+    expect(Math.abs(t.width - c.width), 'equal width').toBeLessThanOrEqual(1);
+    expect(Math.round(t.height)).toBeGreaterThanOrEqual(48);
+    expect(await isOutlined(tie), 'no outline').toBe(false);
+    expect(await isOutlined(again), 'no outline').toBe(false);
   });
+});
 
-  test('IMP-033 caught: build-up 28 px, "Caught red-handed!" at 2.5 s, the guess at 4.0 s; "Show the word", the word, "Also called" 15 px, equal verdict buttons', async ({ page }) => {
-    await startEvening(page, { seeds: { deals: [{ wordId: PANI_PURI, impostor: 'Arjun', starter: 'Riya' }] } });
-    await dealAll(page);
+// v2.2's timed reveals (reveal lines at 2.5 s, 4.0 s, 5.5 s, 7.0 s) are retired: v3 shows one result screen at 1.5 s.
+test.describe('IMP-033, IMP-034, IMP-038, IMP-039, IMP-073: the one result screen', () => {
+  async function toResult(page: Page, o: StartOptions & { word?: string; impostor?: string } = {}) {
+    await startEvening(page, { ...o, seeds: { deals: [{ wordId: o.word ?? SCHOOL_TRIP, impostor: o.impostor ?? 'Arjun', starter: 'Riya' }] } });
+    await dealAll(page, o.players ?? P4);
     await toTalk(page);
     await toPickerFromTalk(page);
     await freezeClock(page);
+  }
+  const order = async (page: Page, ids: string[]) => {
+    let last = -Infinity;
+    for (const id of ids) {
+      const b = (await page.getByTestId(id).boundingBox())!;
+      expect(b, id).not.toBeNull();
+      expect(b.y, `${id} is below the line above`).toBeGreaterThanOrEqual(last - 1);
+      last = b.y + b.height;
+    }
+  };
+
+  test.fail('IMP-033 caught, guess off: "Arjun was…" alone for 1.5 s with a drumroll, no menu, no main button; then everything at once, top to bottom, with these sizes', async ({ page }) => {
+    await toResult(page);
+    const bg = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
     await pickerName(page, 'Arjun').click();
     await mainButton(page).filter({ hasText: /^Reveal / }).click();
-    expect(await fontSize(revealLines(page).first()), 'build-up').toBe(28);
-    await expectOneMainButton(page, 'reveal build-up', null);
-    await page.clock.runFor(2499);
-    expect((await lines(page))[0]).toBe('Arjun was...');
+    await expect(result(page, 'build-up')).toHaveText(exact('Arjun was…'));
+    expect(await fontSize(result(page, 'build-up'))).toBe(40);
+    await expect(menuButton(page)).toHaveCount(0);
+    await expectOneMainButton(page, 'build-up', null);
+    expect((await sounds(page)).filter((x) => x.name === 'drumroll').length).toBe(1);
+    await page.clock.runFor(1499);
+    await expect(result(page, 'result-headline')).toHaveCount(0);
     await page.clock.runFor(1);
-    await expect(revealLines(page)).toHaveText([exact('Caught red-handed! Arjun was the impostor.')]);
-    await page.clock.runFor(1500);
-    await expect(revealLines(page).nth(1)).toHaveText(exact('Arjun, one guess. Say it out loud! (No repeating the clues.)'));
-    expect(await fontSize(revealLines(page).nth(1))).toBe(20);
-    await expect(mainButton(page)).toHaveText(exact('Show the word'));
-    await expectNoSecrets(page, secretTerms(PANI_PURI, 'easy'), 'before "Show the word"');
-    await mainButton(page).click();
-    await expect(revealLines(page).last()).toHaveText(exact('The word was Pani puri.'));
-    await expect(page.getByTestId('also-called')).toHaveText('Also called Golgappa / Puchka');
-    expect(await fontSize(page.getByTestId('also-called'))).toBe(15);
-    const right = quiet(page, 'Guessed right'), wrong = quiet(page, 'Wrong guess');
-    const r = (await right.boundingBox())!, w = (await wrong.boundingBox())!;
-    expect(Math.abs(r.width - w.width), 'equal width').toBeLessThanOrEqual(1);
-    expect(Math.abs(r.height - w.height), 'equal height').toBeLessThanOrEqual(1);
-    expect(Math.abs(r.y - w.y), 'side by side').toBeLessThanOrEqual(1);
-    await expectOneMainButton(page, 'verdict step', null);
-    await wrong.click();
-    await expect(outcome(page)).toHaveText(exact('The crew wins!'));
+    await expect(result(page, 'build-up')).toHaveCount(0);
+    await expect(result(page, 'result-headline')).toHaveText(exact('✓ Caught!', []));
+    await expect(result(page, 'result-note')).toHaveCount(0);
+    await expect(result(page, 'result-impostor')).toHaveText(exact('Arjun was the impostor'));
+    await expect(result(page, 'word-label')).toHaveText(exact('The word was', []));
+    await expect(result(page, 'result-word')).toHaveText(exact('School trip', []));
+    await expect(result(page, 'also-called')).toHaveText(exact('Also called Excursion', []));
+    await expect(result(page, 'word-category')).toHaveText(exact('School and childhood', []));
+    await expect(result(page, 'round-outcome')).toHaveText(exact('The crew wins!'));
+    await expect(page.getByTestId('evening-line')).toHaveText('Tonight: impostor caught 1 · escaped 0');
+    await order(page, ['result-headline', 'result-impostor', 'word-label', 'result-word', 'also-called', 'word-category', 'round-outcome', 'evening-line']);
     await expect(mainButton(page)).toHaveText(exact('Next round'));
-    expect(await fontSize(page.getByTestId('evening-line'))).toBe(17);
+    await expect(quiet(page, "This word didn't work")).toBeVisible();
+    await expect(quiet(page, 'Undo')).toHaveCount(0);
+    await expect(menuButton(page)).toBeVisible();
+    expect(await page.evaluate(() => getComputedStyle(document.body).backgroundColor), 'the body colour never changes').toBe(bg);
+    for (const [id, px] of [['result-headline', 56], ['result-impostor', 32], ['result-word', 44], ['word-category', 17], ['round-outcome', 28], ['evening-line', 17], ['also-called', 15]] as const)
+      expect(await fontSize(page.getByTestId(id)), id).toBe(px);
+    expect(await isOutlined(result(page, 'word-category')), 'the category is an outlined chip').toBe(true);
+    expect(await result(page, 'word-category').evaluate((el) => el.closest('button') === null), 'the chip is not a button').toBe(true);
+    expect((await records(page)).at(-1)).toEqual({ type: 'reveal', player: 'Arjun' });
+    await page.clock.runFor(30_000);
+    await expect(result(page, 'round-outcome'), 'nothing else appears later').toHaveText(exact('The crew wins!'));
   });
 
-  test('IMP-038 "Still a tie": no build-up, no drumroll; the line, the word at 1.5 s, "Arjun escaped!" at 3 s; no "Undo"', async ({ page }) => {
-    await toClues(page);
-    await toTalk(page);
-    await toPickerFromTalk(page);
+  test.fail('IMP-034 escaped: "✗ Escaped!", "Meena was crew.", ARJUN was the impostor, the word, no "Also called", "Food", "Arjun escaped!"; no guess, no "Undo"', async ({ page }) => {
+    await toResult(page, { word: SAMOSA, lastGuess: true });
+    await pickerName(page, 'Meena').click();
+    await mainButton(page).filter({ hasText: /^Reveal / }).click();
+    await expect(result(page, 'build-up')).toHaveText(exact('Meena was…'));
+    await page.clock.runFor(1500);
+    await expect(result(page, 'result-headline')).toHaveText(exact('✗ Escaped!', []));
+    await expect(result(page, 'result-note')).toHaveText(exact('Meena was crew.'));
+    expect(await fontSize(result(page, 'result-note'))).toBe(20);
+    await expect(result(page, 'result-impostor')).toHaveText(exact('Arjun was the impostor'));
+    await expect(result(page, 'result-word')).toHaveText(exact('Samosa', []));
+    await expect(result(page, 'also-called')).toHaveCount(0);
+    await expect(result(page, 'word-category')).toHaveText(exact('Food', []));
+    await expect(result(page, 'round-outcome')).toHaveText(exact('Arjun escaped!'));
+    await order(page, ['result-headline', 'result-note', 'result-impostor', 'word-label', 'result-word', 'word-category', 'round-outcome']);
+    await expect(result(page, 'guess-line')).toHaveCount(0);
+    await expect(quiet(page, 'Undo')).toHaveCount(0);
+    await expect(mainButton(page)).toHaveText(exact('Next round'));
+  });
+
+  test.fail('IMP-038 "Still a tie": at once, no build-up, no drumroll: "✗ Escaped!", "Still a tie.", the word, "Arjun escaped!"; no "Undo"', async ({ page }) => {
+    await toResult(page, { word: SAMOSA });
     await quiet(page, "It's a tie").click();
     await pickerName(page, 'Riya').click();
     await pickerName(page, 'Meena').click();
     await mainButton(page).click();
     await page.clock.runFor(6000);
-    await freezeClock(page);
     const before = (await sounds(page)).length;
     await quiet(page, 'Still a tie').click();
-    await expect(revealLines(page)).toHaveText([exact('Still a tie! The impostor was Arjun. Escaped!')]);
-    expect(await fontSize(revealLines(page).first())).toBe(28);
-    await page.clock.runFor(1499);
-    await expect(revealLines(page)).toHaveCount(1);
-    await page.clock.runFor(1);
-    await expect(revealLines(page).nth(1)).toHaveText(exact('The word was Samosa.'));
-    await page.clock.runFor(1500);
-    await expect(outcome(page)).toHaveText(exact('Arjun escaped!'));
-    await expect(mainButton(page)).toHaveText(exact('Next round'));
+    await expect(result(page, 'build-up')).toHaveCount(0);
+    await expect(result(page, 'result-headline')).toHaveText(exact('✗ Escaped!', []));
+    await expect(result(page, 'result-note')).toHaveText(exact('Still a tie.', []));
+    await expect(result(page, 'result-impostor')).toHaveText(exact('Arjun was the impostor'));
+    await expect(result(page, 'result-word')).toHaveText(exact('Samosa', []));
+    await expect(result(page, 'round-outcome')).toHaveText(exact('Arjun escaped!'));
     await expect(quiet(page, 'Undo')).toHaveCount(0);
-    expect((await sounds(page)).slice(before).map((s) => s.name)).not.toContain('drumroll');
+    expect((await sounds(page)).slice(before).map((x) => x.name)).not.toContain('drumroll');
     expect((await records(page)).at(-1)).toEqual({ type: 'stillTie' });
+  });
+
+  test.fail('IMP-039 guess on: the guess step (no menu, no word), "Arjun guessed. Show the word", equal verdict buttons (no main look), then the outcome, "Undo", "This word didn\'t work", "Next round"; the menu returns', async ({ page }) => {
+    await toResult(page, { lastGuess: true });
+    await pickerName(page, 'Arjun').click();
+    await mainButton(page).filter({ hasText: /^Reveal / }).click();
+    await page.clock.runFor(1500);
+    await expect(result(page, 'guess-line')).toHaveText(exact('Last chance, Arjun! Guess the word out loud. Get it right and you steal the round.'));
+    expect(await fontSize(result(page, 'guess-line'))).toBe(20);
+    await expect(menuButton(page)).toHaveCount(0);
+    await expectNoSecrets(page, secretTerms(SCHOOL_TRIP, 'easy'), 'the guess step');
+    await mainButton(page).filter({ hasText: exact('Arjun guessed. Show the word') }).click();
+    await expect(result(page, 'result-word')).toHaveText(exact('School trip', []));
+    await expect(result(page, 'word-category')).toHaveText(exact('School and childhood', []));
+    const right = quiet(page, 'Guessed right'), wrong = quiet(page, 'Wrong guess');
+    const r = (await right.boundingBox())!, w = (await wrong.boundingBox())!;
+    expect(Math.abs(r.width - w.width), 'equal width').toBeLessThanOrEqual(1);
+    expect(Math.abs(r.y - w.y), 'side by side').toBeLessThanOrEqual(1);
+    await expectOneMainButton(page, 'verdict step', null);
+    await expect(menuButton(page)).toHaveCount(0);
+    await right.click();
+    await expect(result(page, 'round-outcome')).toHaveText(exact('Arjun steals the round!'));
+    await expect(result(page, 'round-outcome')).toBeInViewport({ ratio: 1 });
+    const u = (await quiet(page, 'Undo').boundingBox())!, d = (await quiet(page, "This word didn't work").boundingBox())!;
+    expect(u.y, '"Undo" then "This word didn\'t work"').toBeLessThan(d.y);
+    await expect(mainButton(page)).toHaveText(exact('Next round'));
+    await expect(menuButton(page)).toBeVisible();
+    expect((await records(page)).slice(-3)).toEqual([{ type: 'reveal', player: 'Arjun' }, { type: 'showWord' }, { type: 'verdict', right: true }]);
+  });
+
+  test.fail('IMP-081: the result scrolls as one page: nothing inside has its own scroll area; the main button stays pinned; at 812 × 375 the headline to the outcome sit left, the evening line and quiet buttons right', async ({ page }) => {
+    await toResult(page, { score: true, players: ['Riya', 'Arjun', 'Meena', 'Kabir', 'Zoya', 'Dev', 'Asha', 'Neel', 'Tara', 'Om', 'Isha', 'Ravi'] });
+    await pickerName(page, 'Arjun').click();
+    await mainButton(page).filter({ hasText: /^Reveal / }).click();
+    await page.clock.runFor(1500);
+    await expect(result(page, 'round-outcome')).toBeVisible();
+    for (const [w, h] of [[390, 844], [320, 568], [812, 375]] as const) {
+      await page.setViewportSize({ width: w, height: h });
+      const inner = await page.evaluate(() => Array.from(document.querySelectorAll('body *')).filter((el) => {
+        const cs = getComputedStyle(el);
+        return /auto|scroll/.test(cs.overflowY) && el.scrollHeight > el.clientHeight + 1;
+      }).map((el) => el.getAttribute('data-testid') ?? el.tagName));
+      expect(inner, `${w} × ${h}: no inner scroll area`).toEqual([]);
+      await page.evaluate(() => window.scrollTo(0, 1e6));
+      await expect(mainButton(page), `${w} × ${h}: main button pinned`).toBeInViewport({ ratio: 1 });
+      await page.evaluate(() => window.scrollTo(0, 0));
+    }
+    const half = 406;
+    for (const id of ['result-headline', 'result-impostor', 'result-word', 'word-category', 'round-outcome']) {
+      const b = (await page.getByTestId(id).boundingBox())!;
+      expect(b.x + b.width, `${id} in the left half`).toBeLessThanOrEqual(half + 1);
+    }
+    for (const l of [page.getByTestId('round-points'), page.getByTestId('scoreboard'), quiet(page, "This word didn't work")]) {
+      const b = (await l.boundingBox())!;
+      expect(b.x, 'in the right half').toBeGreaterThanOrEqual(half - 1);
+    }
   });
 });
 
 test.describe('IMP-052: no words left', () => {
   // One category with every word but one skipped on this phone, and that one dealt in an evening earlier tonight.
+  // The smallest of the categories named alike on the old and the 4 October list, counting words that may be dealt.
   const CAT = (() => {
     const counts = new Map<string, number>();
-    for (const w of WORDS) counts.set(w.category, (counts.get(w.category) ?? 0) + 1);
+    for (const w of WORDS) if (w.retired !== 'yes' && COMMON_CATEGORIES.includes(w.category)) counts.set(w.category, (counts.get(w.category) ?? 0) + 1);
     return [...counts.entries()].sort((a, b) => a[1] - b[1])[0]![0];
   })();
-  const inCat = WORDS.filter((w) => w.category === CAT && (w as any).audience !== 'grownups' && (w as any).nonveg !== 'yes' && (w as any).nonveg !== 'true');
+  const inCat = WORDS.filter((w) => w.category === CAT && w.retired !== 'yes' && (w as any).audience !== 'grownups' && (w as any).nonveg !== 'yes' && (w as any).nonveg !== 'true');
   const last = inCat[0]!.id;
   const blocked = WORDS.filter((w) => w.category === CAT && w.id !== last).map((w) => w.id);
 
@@ -439,7 +547,7 @@ test.describe('IMP-052: no words left', () => {
     });
     await phoneWith(page, [earlier], {
       now: T0,
-      storage: { 'pgn.pref.impostor.blockedWords': blocked, 'pgn.pref.impostor.lastChoices': { mode: 'easy', talking: 'free', score: false, words: 'family', categories: [CAT], nonveg: false } },
+      storage: { 'pgn.pref.impostor.blockedWords': blocked, 'pgn.pref.impostor.lastChoices': { mode: 'easy', talking: 'free', score: false, words: 'family', categories: [CAT], nonveg: false, lastGuess: true } },
     });
     await page.getByRole('button', { name: /^Host a game/ }).click();
     await page.getByRole('button', { name: /^Impostor\b/ }).and(page.locator(':not([data-testid="resume-card"])')).click();
@@ -455,18 +563,18 @@ test.describe('IMP-052: no words left', () => {
     await expect(heading).toBeVisible();
   }
 
-  test('the heading, "Turn on more categories or + Grown-ups.", "Allow repeats" (main) and "Change categories"; the between-rounds menu; "Allow repeats" deals', async ({ page }) => {
+  test.fail('the heading, "Turn on more categories or + Grown-ups.", "Allow repeats" (main) and "Change categories"; the between-rounds menu; "Allow repeats" deals', async ({ page }) => {
     await toNoWords(page);
     await expect(page.getByText('Turn on more categories or + Grown-ups.', { exact: true })).toBeVisible();
     await expectOneMainButton(page, 'no words left', 'Allow repeats', true);
     expect(await isOutlined(quiet(page, 'Change categories'))).toBe(true);
     await menuButton(page).click();
-    expect(await textOf(page.getByRole('menuitem'))).toEqual(['Rules', 'Players', 'Change how we play', 'Settings', 'History', 'End the evening']);
+    expect(await textOf(page.getByRole('menuitem'))).toEqual(['How to play', 'Players', 'Change how we play', 'Settings', 'History', 'End the evening']);
     await page.keyboard.press('Escape');
     if (await page.getByRole('menuitem').first().isVisible()) await menuButton(page).click();
     await mainButton(page).filter({ hasText: 'Allow repeats' }).click();
     await expect(passName(page)).toBeVisible();
-    expect(await records(page)).toContainEqual({ type: 'allowRepeats' });
+    expect((await records(page)).map((m: any) => m.type)).toContain('allowRepeats'); // its word id: impostor-saved-evenings.spec.ts
   });
 
   test('"Change categories" opens the current choices; "Start round" records setChoices only and deals', async ({ page }) => {
@@ -475,7 +583,7 @@ test.describe('IMP-052: no words left', () => {
     await expect(page.getByRole('heading', { name: 'How do you want to play?' })).toBeVisible();
     await expect(page.getByRole('button', { name: /^Categories: 1 of 9/ })).toBeVisible();
     await page.getByRole('button', { name: /^Categories: / }).click();
-    for (const c of CATEGORIES) { const s = page.getByRole('switch', { name: c, exact: true }); if (!(await s.isChecked())) await s.click(); }
+    for (let i = 0; i < 9; i++) { const s = page.getByRole('switch').nth(i); if (!(await s.isChecked())) await s.click(); }
     await page.getByRole('button', { name: 'Done', exact: true }).click();
     const before = (await records(page)).length;
     await mainButton(page).filter({ hasText: 'Start round' }).click();
@@ -485,34 +593,38 @@ test.describe('IMP-052: no words left', () => {
   });
 });
 
-test.describe('IMP-072: Rules mid-game never show secrets', () => {
-  const EASY = [
-    '1. Everyone sees the same secret word, except the impostor, who sees only the category and a hint.',
-    '2. Take turns clockwise. Say one word about the secret word.',
-    "3. Not allowed: the word itself, a rhyme, a translation, or 'thing'. Repeating someone's clue is allowed.",
-    '4. Talk it over, then everyone points at once on 3, 2, 1.',
-    '5. Caught? The impostor gets one guess at the word to steal the round.',
-    'Kids may use up to 3 words.',
-  ];
+// v2.2's "Rules" sheet tests are retired: v3 has "How to play" in the menu (IMP-070, IMP-072, IMP-075).
+test.describe('IMP-070 and IMP-072: "How to play" from the menu mid-round never shows secrets', () => {
+  const RULES = ["Not allowed: the word itself, a rhyme, a translation, or 'thing'.", "Repeating someone's clue is allowed.", 'Kids may use up to 3 words.'];
   for (const mode of ['easy', 'hard'] as const) {
-    test(`${mode}: "How to play" with its lines exactly; "Done" returns to the same screen; no secrets`, async ({ page }) => {
+    test.fail(`${mode}: the 4 read-aloud lines, the ${mode} line, the 3 rules; no "Practice round first"; "Done" returns to the same screen; no secrets; nothing recorded`, async ({ page }) => {
       await toClues(page, { mode });
       const recs = await records(page);
-      await fromMenu(page, 'Rules');
+      await fromMenu(page, 'How to play');
       await expect(page.getByRole('heading', { name: 'How to play' })).toBeVisible();
-      const want = mode === 'easy' ? EASY : [
-        '1. Everyone sees the same secret word, except the impostor, who sees nothing.', EASY[1]!, 'The impostor never starts.', ...EASY.slice(2),
-      ];
-      const paras = page.locator('p').filter({ hasText: /^(\d\. |Kids may|The impostor never starts\.)/ });
-      expect(await textOf(paras)).toEqual(want);
-      await expectNoSecrets(page, secretTerms(SAMOSA, mode), 'Rules');
-      await expectOneMainButton(page, 'Rules', 'Done', true);
+      await expect(page.locator('ol > li')).toHaveCount(4);
+      await expect(page.getByText(mode === 'easy' ? 'The impostor sees the category and a hint.' : 'The impostor sees nothing and never starts.', { exact: true })).toBeVisible();
+      await expect(page.getByText('A caught impostor can steal the round by guessing the word.', { exact: true }), 'the guess is off').toHaveCount(0);
+      await expect(page.locator('ul > li')).toHaveText(RULES);
+      await expect(page.getByRole('button', { name: 'Practice round first', exact: true })).toHaveCount(0);
+      await expectNoSecrets(page, secretTerms(SAMOSA, mode), 'How to play');
+      await expectOneMainButton(page, 'How to play', 'Done', true);
       await page.getByRole('button', { name: 'Done', exact: true }).click();
       await expect(page.getByRole('heading', { name: 'How to play' })).toHaveCount(0);
       await expect(page.getByTestId('clue-order')).toBeVisible();
       expect(await records(page)).toEqual(recs);
     });
   }
+
+  test('a running timer keeps running while "How to play" is open', async ({ page }) => {
+    await toClues(page, { talking: 'timer' });
+    await freezeClock(page);
+    await toTalk(page);
+    await fromMenu(page, 'How to play');
+    await page.clock.runFor(5000);
+    await page.getByRole('button', { name: 'Done', exact: true }).click();
+    await expect(timer(page)).toHaveText('1:55');
+  });
 });
 
 test.describe('IMP-074: late joiner and someone leaving', () => {
@@ -584,13 +696,15 @@ test.describe('IMP-080: at most one main button, and never a destructive one', (
     await expectOneMainButton(page, 'End the evening dialog', 'Keep playing', true);
   });
 
-  test('summary: "Discard this evening?" has "Keep it" as the main look', async ({ page }) => {
+  test.fail('summary: "Discard this evening" (in "More ›"); "Discard this evening?" has "Keep it" as the main look', async ({ page }) => {
     await atResult(page);
     await fromMenu(page, 'End the evening');
     await page.getByRole('dialog').getByRole('button', { name: 'End the evening', exact: true }).click();
     await expect(page.getByRole('heading', { name: "That's the night!" })).toBeVisible();
     await expectOneMainButton(page, 'summary', 'Back to Home', true);
-    await quiet(page, 'Discard this evening').click();
+    await expect(page.getByRole('button', { name: 'More ›', exact: true })).toBeVisible();
+    await page.getByRole('button', { name: 'More ›', exact: true }).click();
+    await page.getByRole('menuitem', { name: 'Discard this evening', exact: true }).click();
     await expect(page.getByRole('dialog', { name: /Discard this evening\?/ })).toBeVisible();
     await expectOneMainButton(page, 'Discard dialog', 'Keep it', true);
   });
@@ -600,37 +714,51 @@ test.describe('IMP-081: nothing scrolls during a round, at every size', () => {
   const NAME = 'Alexandrapetrova';
   for (const [width, height] of [[320, 568], [360, 640], [390, 844], [812, 375]] as const) {
     for (const larger of [false, true]) {
-      test(`${width} × ${height}${larger ? ', Larger text' : ''}: talk (timer), countdown, picker, reveal and result with a practice chip and 16-character names`, async ({ page }) => {
-        test.setTimeout(60_000);
+      const where = `${width} × ${height}${larger ? ', Larger text' : ''}`;
+      const start = async (page: Page) => {
         await page.setViewportSize({ width, height });
         const players = [NAME, 'Arjun', 'Meena', 'Kabir', 'Zoya'];
         await startEvening(page, { players, talking: 'timer', practice: true, storage: larger ? { 'pgn.pref.largerText': true } : {}, seeds: { deals: [{ wordId: LONGEST, impostor: 'Arjun', starter: NAME }] } });
-        const check = async (where: string, key?: Locator) => {
-          expect(await noPageScroll(page), `${where}: no page scrolling`).toBe(true);
-          if (await mainButton(page).count()) await expect(mainButton(page), `${where}: main button on screen`).toBeInViewport({ ratio: 1 });
-          if (key) {
-            // wholly on screen, allowing 1 px for sub-pixel rounding
-            const b = (await key.boundingBox())!;
-            expect(b.y >= -1 && b.x >= -1 && b.y + b.height <= height + 1 && b.x + b.width <= width + 1, `${where}: wholly on screen (${JSON.stringify(b)})`).toBe(true);
-          }
-        };
         await dealAll(page, players);
-        await check('clues', page.getByTestId('starter-name'));
+      };
+      const check = async (page: Page, w: string, key?: Locator) => {
+        expect(await noPageScroll(page), `${w}: no page scrolling`).toBe(true);
+        if (await mainButton(page).count()) await expect(mainButton(page), `${w}: main button on screen`).toBeInViewport({ ratio: 1 });
+        if (key) {
+          // wholly on screen, allowing 1 px for sub-pixel rounding
+          const b = (await key.boundingBox())!;
+          expect(b.y >= -1 && b.x >= -1 && b.y + b.height <= height + 1 && b.x + b.width <= width + 1, `${w}: wholly on screen (${JSON.stringify(b)})`).toBe(true);
+        }
+      };
+      test(`${where}: clues, talk (timer), countdown and picker with a practice chip and 16-character names`, async ({ page }) => {
+        test.setTimeout(60_000);
+        await start(page);
+        await check(page, 'clues', page.getByTestId('starter-name'));
         await toTalk(page);
-        await check('timer', timer(page));
+        await check(page, 'timer', timer(page));
         await mainButton(page).filter({ hasText: 'Vote now' }).click();
         await page.clock.runFor(1000);
-        await check('countdown', countdown(page));
+        await check(page, 'countdown', countdown(page));
         await page.clock.runFor(5000);
-        await check('picker', pickerHeading(page));
+        await check(page, 'picker', pickerHeading(page));
         await pickerName(page, 'Arjun').click();
-        await check('picker, one picked', mainButton(page));
+        await check(page, 'picker, one picked', mainButton(page));
+      });
+      test.fail(`${where}: the result screen (v3.5) scrolls as one page: main button pinned, no inner scroll area, scrolled to the top`, async ({ page }) => {
+        test.setTimeout(60_000);
+        await start(page);
+        await toTalk(page);
+        await mainButton(page).filter({ hasText: 'Vote now' }).click();
+        await page.clock.runFor(6000);
+        await pickerName(page, 'Arjun').click();
         await mainButton(page).click();
-        await page.clock.runFor(4500);
-        await mainButton(page).filter({ hasText: 'Show the word' }).click();
-        await check('verdict step', quiet(page, 'Wrong guess'));
-        await quiet(page, 'Wrong guess').click();
-        await check('result', outcome(page));
+        await page.clock.runFor(1500);
+        await expect(result(page, 'result-headline')).toBeVisible();
+        expect(await page.evaluate(() => window.scrollY), 'scrolled to the top').toBe(0);
+        await expect(mainButton(page)).toBeInViewport({ ratio: 1 });
+        const inner = await page.evaluate(() => Array.from(document.querySelectorAll('body *')).filter((el) => /auto|scroll/.test(getComputedStyle(el).overflowY) && el.scrollHeight > el.clientHeight + 1).length);
+        expect(inner, 'no inner scroll area').toBe(0);
+        await expect(page.getByTestId('practice-chip')).toBeVisible();
       });
     }
   }
@@ -640,43 +768,54 @@ test.describe('IMP-081: the room screens at 320 × 568 and 360 × 640: nothing d
   const NAME = 'Alexandrapetrova';
   for (const [width, height] of [[320, 568], [360, 640]] as const) {
     for (const larger of [false, true]) {
-      test(`${width} × ${height}${larger ? ', Larger text' : ''}: deal, clues, talk, countdown, picker, reveal, result and its toast, practice chip and 16-character names`, async ({ page }) => {
-        test.setTimeout(60_000);
+      const where = `${width} × ${height}${larger ? ', Larger text' : ''}`;
+      const start = async (page: Page) => {
         await page.setViewportSize({ width, height });
         const players = [NAME, 'Arjun', 'Meena', 'Kabir', 'Zoya'];
         await startEvening(page, { players, talking: 'timer', practice: true, storage: larger ? { 'pgn.pref.largerText': true } : {}, seeds: { deals: [{ wordId: LONGEST, impostor: 'Arjun', starter: NAME }] } });
-        const check = async (where: string) => {
-          expect(await noPageScroll(page), `${where}: no page scrolling`).toBe(true);
-          if (await mainButton(page).count()) await expect(mainButton(page), `${where}: main button wholly on screen`).toBeInViewport({ ratio: 1 });
-          await expect(page.getByTestId('practice-chip'), `${where}: the practice chip`).toBeVisible();
-          expect(await overlapping(page), `${where}: nothing drawn over anything else`).toEqual([]);
-        };
-        await check('deal, screen A');
+        return players;
+      };
+      const check = async (page: Page, w: string, scrolls = false) => {
+        if (!scrolls) expect(await noPageScroll(page), `${w}: no page scrolling`).toBe(true);
+        if (await mainButton(page).count()) await expect(mainButton(page), `${w}: main button wholly on screen`).toBeInViewport({ ratio: 1 });
+        await expect(page.getByTestId('practice-chip'), `${w}: the practice chip`).toBeVisible();
+        expect(await overlapping(page), `${w}: nothing drawn over anything else`).toEqual([]);
+      };
+      test(`${where}: deal, clues, talk, countdown, picker, practice chip and 16-character names`, async ({ page }) => {
+        test.setTimeout(60_000);
+        const players = await start(page);
+        await check(page, 'deal, screen A');
         await dealAll(page, players);
-        await check('clues');
+        await check(page, 'clues');
         await toTalk(page);
-        await check('talk, timer');
+        await check(page, 'talk, timer');
         await mainButton(page).filter({ hasText: 'Vote now' }).click();
         await page.clock.runFor(1000);
-        await check('countdown');
+        await check(page, 'countdown');
         await page.clock.runFor(5000);
-        await check('picker');
+        await check(page, 'picker');
         await pickerName(page, 'Arjun').click();
-        await check('picker, one picked');
+        await check(page, 'picker, one picked');
+      });
+      test.fail(`${where}: the build-up, the result (v3.5) and its toast: nothing drawn over anything else; the toast above the main button`, async ({ page }) => {
+        test.setTimeout(60_000);
+        const players = await start(page);
+        await dealAll(page, players);
+        await toTalk(page);
+        await mainButton(page).filter({ hasText: 'Vote now' }).click();
+        await page.clock.runFor(6000);
+        await pickerName(page, 'Arjun').click();
         await mainButton(page).click();
-        await page.clock.runFor(2600);
-        await check('reveal, caught');
-        await page.clock.runFor(1900);
-        await check('reveal, the guess');
-        await mainButton(page).filter({ hasText: 'Show the word' }).click();
-        await check('reveal, verdict step');
-        await quiet(page, 'Wrong guess').click();
-        await expect(outcome(page)).toBeVisible();
-        await check('result');
+        await page.clock.runFor(500);
+        await expect(result(page, 'build-up')).toBeVisible();
+        await check(page, 'build-up');
+        await page.clock.runFor(1000);
+        await expect(result(page, 'result-headline')).toBeVisible();
+        await check(page, 'result', true);
         await quiet(page, "This word didn't work").click();
         const toast = page.getByTestId('undo-toast');
         await expect(toast).toBeVisible();
-        await check('result with its toast');
+        await check(page, 'result with its toast', true);
         const t = (await toast.boundingBox())!;
         const m = (await mainButton(page).boundingBox())!;
         expect(t.y >= -1 && t.x >= -1 && t.y + t.height <= height + 1 && t.x + t.width <= width + 1, `the toast wholly on screen (${JSON.stringify(t)})`).toBe(true);
@@ -722,7 +861,8 @@ test.describe('IMP-082: lists of 12 to 20 players', () => {
 });
 
 test.describe('IMP-083 and IMP-084: screen readers, no flashing', () => {
-  test('the announcer gets the countdown and each reveal line, the build-up once as "Arjun was", never dots, never the word early', async ({ page }) => {
+  // v2.2's announcer test (each timed reveal line) is retired: v3.5 IMP-083 lists the result screen's announcements.
+  test.fail('the announcer gets the countdown, "Arjun was…" once at t = 0, then at 1.5 s the headline, the impostor line, "The word was Samosa" and the outcome; never the word early', async ({ page }) => {
     await toClues(page);
     await page.evaluate(() => {
       const w = window as any; w.__ann = [];
@@ -731,26 +871,22 @@ test.describe('IMP-083 and IMP-084: screen readers, no flashing', () => {
     });
     await expect(announcer(page)).toHaveAttribute('aria-live', 'polite');
     await toTalk(page);
-    // One moment at a time, so every announcement is drawn before the next.
     await mainButton(page).filter({ hasText: 'Vote now' }).click();
     for (const n of ['3', '2', '1', 'Point!']) { await page.clock.runFor(1000); await expect(countdown(page)).toHaveText(n); }
     await page.clock.runFor(2000);
     await expect(pickerHeading(page)).toBeVisible();
     await pickerName(page, 'Arjun').click();
     await mainButton(page).click();
-    await expect(revealLines(page)).toHaveCount(1);
-    await page.clock.runFor(2500);
-    await expect(revealLines(page).first()).toHaveText(/Caught red-handed!/);
-    await page.clock.runFor(1500);
-    await expect(revealLines(page)).toHaveCount(2);
+    await page.clock.runFor(1000);
     const beforeWord: string[] = await page.evaluate(() => (window as any).__ann);
-    for (const t of beforeWord) for (const s of secretTerms(SAMOSA, 'hard')) expect(t.toLowerCase(), 'no secret announced').not.toContain(s.toLowerCase());
-    await mainButton(page).filter({ hasText: 'Show the word' }).click();
-    await expect(revealLines(page).last()).toHaveText(exact('The word was Samosa.'));
-    await page.clock.runFor(500);
+    for (const t of beforeWord) for (const x of secretTerms(SAMOSA, 'hard')) expect(t.toLowerCase(), 'no secret announced').not.toContain(x.toLowerCase());
+    await page.clock.runFor(1000);
+    await expect(result(page, 'round-outcome')).toBeVisible();
     const ann: string[] = await page.evaluate(() => (window as any).__ann);
-    const tail = ann.filter((t) => !/clockwise/.test(t));
-    expect(tail).toEqual(['3', '2', '1', 'Point!', 'Arjun was', 'Caught red-handed! Arjun was the impostor.', 'Arjun, one guess. Say it out loud! (No repeating the clues.)', 'The word was Samosa.']);
+    const tail = ann.filter((t) => !/→|starts/.test(t));
+    expect(tail.slice(0, 5)).toEqual(['3', '2', '1', 'Point!', 'Arjun was…']);
+    expect(tail.slice(5).join(' ')).toMatch(/^✓ Caught!.*[Aa][Rr][Jj][Uu][Nn] was the impostor.*The word was Samosa.*The crew wins!$/);
+    expect(tail.join(' '), 'never announced').not.toMatch(/Tonight:|Also called|Food/);
   });
 
   test('private-live is assertive and holds the block only while it shows', async ({ page }) => {
@@ -823,6 +959,7 @@ test.describe('IMP-085, IMP-086, IMP-089: kind words, a slipped finger, sounds',
 
   test('a finger slipping off the pad hides the block at once; the player stays on screen B; nothing else changes', async ({ page }) => {
     await startEvening(page, { seeds: { deals: [DEAL] } });
+    const recs = await records(page);
     await imButton(page, 'Riya').click();
     await press(page);
     await expect(privateBlock(page)).toBeVisible();
@@ -831,8 +968,8 @@ test.describe('IMP-085, IMP-086, IMP-089: kind words, a slipped finger, sounds',
     await expect(privateBlock(page)).toHaveCount(0);
     await page.mouse.up();
     await expect(holdPad(page)).toBeVisible();
-    await expect(passName(page)).toHaveCount(0);
-    expect(await records(page)).toEqual([START]);
+    await expect(holdPad(page)).toHaveAccessibleName('Hold here to see your word');
+    expect(await records(page)).toEqual(recs);
   });
 
   test('sounds: none during the deal; tick ×3 and ding in the countdown, drumroll at the reveal; chime and drumroll no louder than tick', async ({ page }) => {
@@ -872,7 +1009,7 @@ test.describe('IMP-085, IMP-086, IMP-089: kind words, a slipped finger, sounds',
 });
 
 test.describe('IMP-100 to IMP-108: after the round', () => {
-  test('IMP-101: "Oops, keep playing" returns to the same result with "Undo"; nothing recorded; summaryShownAt kept while the summary shows', async ({ page }) => {
+  test.fail('IMP-101 and IMP-092: the summary (lead line, "Oops, keep playing", "Play something else", "More ›"); "Oops, keep playing" returns to the same result with "Undo"; nothing recorded; summaryShownAt kept', async ({ page }) => {
     const e = await atResult(page);
     const recs = await records(page);
     await fromMenu(page, 'End the evening');
@@ -883,12 +1020,19 @@ test.describe('IMP-100 to IMP-108: after the round', () => {
     expect(saved.status).toBe('in-progress');
     expect(await page.evaluate((k) => JSON.parse(localStorage.getItem(k) ?? 'null')?.summaryShownAt, `pgn.impostor-ui.${e.id}`)).toEqual(expect.any(Number));
     await expectOneMainButton(page, 'summary', 'Back to Home', true);
+    await expect(quiet(page, 'More ›')).toBeVisible();
     let lastY = -Infinity;
-    for (const name of ['Oops, keep playing', 'Play something else', 'Share', 'History', 'Discard this evening']) {
+    for (const name of ['Oops, keep playing', 'Play something else', 'More ›']) {
       const y = (await quiet(page, name).boundingBox())!.y;
       expect(y, `"${name}" comes after the button above it`).toBeGreaterThan(lastY);
       lastY = y;
     }
+    await expect(page.getByTestId('summary-line')).toHaveText(exact('Crew 1 · Impostors 0', []));
+    await quiet(page, 'More ›').click();
+    expect(await textOf(page.getByRole('menuitem'))).toEqual(['Share', 'History', 'Discard this evening']);
+    await expect(page.getByRole('menu').getByRole('separator')).toHaveCount(1);
+    await page.keyboard.press('Escape');
+    if (await page.getByRole('menuitem').first().isVisible()) await quiet(page, 'More ›').click();
     await quiet(page, 'Oops, keep playing').click();
     await expect(outcome(page)).toHaveText(exact('The crew wins!'));
     await expect(quiet(page, 'Undo')).toBeVisible();
@@ -949,7 +1093,7 @@ test.describe('IMP-100 to IMP-108: after the round', () => {
     await atResult(page);
     await fromMenu(page, 'End the evening');
     await page.getByRole('dialog').getByRole('button', { name: 'End the evening', exact: true }).click();
-    await quiet(page, 'History').click();
+    await summaryAction(page, 'History');
     const row = page.getByTestId('history-game').filter({ hasText: 'Impostor' });
     await expect(row).toContainText('Impostor · 1 round');
     await row.click();
@@ -965,7 +1109,7 @@ test.describe('IMP-100 to IMP-108: after the round', () => {
     await atResult(page, { score: true });
     await fromMenu(page, 'End the evening');
     await page.getByRole('dialog').getByRole('button', { name: 'End the evening', exact: true }).click();
-    await quiet(page, 'History').click();
+    await summaryAction(page, 'History');
     await page.getByTestId('history-game').filter({ hasText: 'Impostor' }).click();
     await expect(page.getByTestId('history-round').first()).toContainText('Round 1 · Samosa · Arjun caught, wrong guess');
     await expect(page.getByTestId('history-round').first()).toContainText('+1 each: Riya, Meena, Kabir');
@@ -979,7 +1123,7 @@ test.describe('IMP-100 to IMP-108: after the round', () => {
     await atResult(page, { rounds: 2 });
     await fromMenu(page, 'End the evening');
     await page.getByRole('dialog').getByRole('button', { name: 'End the evening', exact: true }).click();
-    await quiet(page, 'Share').click();
+    await summaryAction(page, 'Share');
     await expect.poll(() => page.evaluate(() => (window as any).__shared.length)).toBe(1);
     const shared = await page.evaluate(() => (window as any).__shared[0].text);
     expect(shared).toBe(['Impostor night · 2 rounds', 'Impostor caught 2 · escaped 0', 'Words: Samosa, Pani puri'].join('\n'));
@@ -996,7 +1140,7 @@ test.describe('IMP-100 to IMP-108: after the round', () => {
     await fromMenu(page, 'End the evening');
     await page.getByRole('dialog').getByRole('button', { name: 'End the evening', exact: true }).click();
     await freezeClock(page);
-    await quiet(page, 'Share').click();
+    await summaryAction(page, 'Share');
     await expect.poll(() => page.evaluate(() => (window as any).__copied.length)).toBe(1);
     expect(await page.evaluate(() => (window as any).__copied[0])).toBe(['Impostor night · 1 round', 'Impostor caught 1 · escaped 0', 'Words: Samosa'].join('\n'));
     const toast = page.getByTestId('toast');
@@ -1049,7 +1193,7 @@ test.describe('IMP-100 to IMP-108: after the round', () => {
   });
 });
 
-test('IMP-100: when the result block appears nothing secret is left unrevealed and the wake lock is let go', async ({ page }) => {
+test.fail('IMP-100: when the result appears nothing secret is left unrevealed (the word shown) and the wake lock is let go', async ({ page }) => {
   await page.addInitScript(() => {
     const w = window as any; w.__wake = [];
     Object.defineProperty(navigator, 'wakeLock', { configurable: true, value: { request: (t: string) => { w.__wake.push(`request ${t}`); const l = { released: false, addEventListener() {}, removeEventListener() {}, release() { w.__wake.push('release'); l.released = true; return Promise.resolve(); } }; return Promise.resolve(l); } } });
@@ -1062,5 +1206,6 @@ test('IMP-100: when the result block appears nothing secret is left unrevealed a
   await page.clock.runFor(7500);
   await expect(outcome(page)).toBeVisible();
   await expect.poll(async () => (await page.evaluate(() => (window as any).__wake as string[])).includes('release')).toBe(true);
-  await expect(revealLines(page).filter({ hasText: 'The word was Samosa.' })).toBeVisible();
+  await expect(result(page, 'result-word')).toHaveText(exact('Samosa', []));
+  await expect(result(page, 'result-impostor')).toHaveText(exact('Arjun was the impostor'));
 });
