@@ -415,7 +415,9 @@ export const overlapping = (page: Page): Promise<string[]> => page.evaluate(() =
   type R = { l: number; t: number; r: number; b: number };
   const clip = (el: Element, x: R): R | null => {
     let { l, t, r, b } = x;
-    for (let a = el.parentElement; a && a !== document.documentElement; a = a.parentElement) {
+    // Clipped by every box it scrolls in, its own included (text that scrolls inside its own box, such as a long
+    // clue order, IMP-020, is hidden beyond the box's edge).
+    for (let a: Element | null = el; a && a !== document.documentElement; a = a.parentElement) {
       const cs = getComputedStyle(a);
       if (cs.overflowX === 'visible' && cs.overflowY === 'visible') continue;
       const c = a.getBoundingClientRect();

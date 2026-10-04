@@ -15,7 +15,7 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { expect, type Locator, type Page } from '@playwright/test';
 import {
-  WORDS, holdPad, mainButton, overlapping, passName, press, release, secretsInPage, startEvening,
+  WORDS, holdPad, mainButton, overlapping, passName, press, release, startEvening,
 } from '../browser/impostor';
 import { backgroundAndReturn } from '../browser/helpers';
 import type { Jev } from '../sim/jev';
@@ -113,7 +113,10 @@ export async function optionsOnScreen(page: Page): Promise<Option[]> {
   // An open dialog takes every tap: only what is inside it can be chosen.
   const dialog = page.getByRole('dialog');
   const scope = (await dialog.count()) && (await dialog.first().isVisible().catch(() => false)) ? dialog.first() : page.locator('body');
-  for (const [role, kind] of [['menuitem', 'menuitem'], ['button', 'button'], ['switch', 'switch']] as const) {
+  // An open menu also takes every tap (a tap outside closes it): its items, or Escape, are the choices.
+  const menuOpen = (await page.getByRole('menuitem').count()) > 0 && (await page.getByRole('menuitem').first().isVisible().catch(() => false));
+  const roles = menuOpen ? ([['menuitem', 'menuitem']] as const) : ([['menuitem', 'menuitem'], ['button', 'button'], ['switch', 'switch']] as const);
+  for (const [role, kind] of roles) {
     const all = scope.getByRole(role);
     const n = await all.count();
     for (let i = 0; i < n; i++) {
@@ -139,12 +142,32 @@ export interface Finding { kind: 'dead end' | 'secret shown' | 'layout' | 'main 
 
 /** Screens of a round where the spec allows no main button at all (IMP-080). */
 const NO_MAIN = new Set(['countdown', 'build-up', 'verdict', 'what']);
-/** Room screens that never scroll (IMP-081); the result and summary scroll as one page. */
-const ROOM = new Set(['deal-A', 'no-problem', 'clues', 'talk', 'countdown', 'picker', 'build-up', 'guess']);
+/** Room screens that never scroll (IMP-081); the result screen (its guess and verdict steps included) and the summary
+ * scroll as one page. */
+const ROOM = new Set(['deal-A', 'no-problem', 'clues', 'talk', 'countdown', 'picker', 'build-up']);
 /** Screens on which the round's secret must not be in the page (IMP-013, IMP-062). */
 const SECRET = new Set(['deal-A', 'deal-B', 'no-problem', 'clues', 'talk', 'countdown', 'picker', 'build-up', 'guess', 'menu', 'dialog', 'how-to-play', 'settings', 'players']);
 
-export async function checkStep(page: Page, screen: string | null, step: number, secretTerms: string[], errors: string[]): Promise<Finding[]> {
+/**
+ * IMP-013 for any word: the terms found in the page's text (hidden elements included), its title, or attribute values,
+ * leaving out the app's own markup (class, style, id and test ids) and the words already revealed earlier in the evening
+ * (an announcer still holding "The word was Extra chutney" is not this round's "Chutney").
+ */
+export async function secretsOnPage(page: Page, terms: string[], revealed: string[]): Promise<string[]> {
+  return page.evaluate(([terms, revealed]) => {
+    const parts = [document.documentElement.textContent ?? '', document.title];
+    for (const el of Array.from(document.querySelectorAll('*'))) {
+      if (el.tagName === 'SCRIPT' || el.tagName === 'STYLE') continue;
+      for (const a of Array.from(el.attributes)) if (!['class', 'style', 'id', 'data-testid'].includes(a.name)) parts.push(a.value);
+    }
+    const esc = (t: string) => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    let text = parts.join('\n');
+    for (const w of revealed) text = text.replace(new RegExp(`(?<![\\p{L}\\p{N}])${esc(w)}(?![\\p{L}\\p{N}])`, 'giu'), ' ');
+    return terms.filter((t) => new RegExp(`(?<![\\p{L}\\p{N}])${esc(t)}(?![\\p{L}\\p{N}])`, 'iu').test(text));
+  }, [terms, revealed] as const);
+}
+
+export async function checkStep(page: Page, screen: string | null, step: number, secretTerms: string[], errors: string[], revealed: string[] = []): Promise<Finding[]> {
   const f: Finding[] = [];
   const s = screen ?? 'unknown';
   if (!screen) f.push({ kind: 'not recognised', step, screen: s, detail: (await page.locator('body').innerText()).slice(0, 160).replace(/\s+/g, ' ') });
@@ -156,8 +179,8 @@ export async function checkStep(page: Page, screen: string | null, step: number,
   // screen B (IMP-010, IMP-013): those two checks wait until it hides.
   const blockShown = await page.getByTestId('private-block').isVisible().catch(() => false);
   if (SECRET.has(s) && secretTerms.length && !blockShown) {
-    const found = await secretsInPage(page, secretTerms);
-    if (found.length) f.push({ kind: 'secret shown', step, screen: s, detail: `in the page: ${found.join(', ')}` });
+    const found = await secretsOnPage(page, secretTerms, revealed);
+    if (found.length) f.push({ kind: 'secret shown', step, screen: s, detail: `in the page: ${found.join(', ')} ${await whereInPage(page, found[0]!)}` });
   }
   const scroll = await page.evaluate(() => ({ h: document.scrollingElement!.scrollHeight > window.innerHeight + 1, w: document.scrollingElement!.scrollWidth > window.innerWidth + 1 }));
   if (scroll.w) f.push({ kind: 'layout', step, screen: s, detail: 'the page scrolls sideways' });
@@ -182,6 +205,26 @@ export async function checkStep(page: Page, screen: string | null, step: number,
 let chrome = readFileSync(`${ROOT}specs/impostor/README.md`, 'utf8').toLowerCase();
 export function addChrome(text: string) { chrome += `\n${text.toLowerCase()}`; }
 const inChrome = (t: string) => new RegExp(`(?<![\\p{L}\\p{N}])${t.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?![\\p{L}\\p{N}])`, 'u').test(chrome);
+
+/** Where a term sits in the page: the nearest element with a test id (or its tag), whether it is visible, and the text around it. */
+async function whereInPage(page: Page, term: string): Promise<string> {
+  return page.evaluate((term) => {
+    const re = new RegExp(`(?<![\\p{L}\\p{N}])${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?![\\p{L}\\p{N}])`, 'iu');
+    if (re.test(document.title)) return '(in the page title)';
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+      if (!re.test(n.textContent ?? '')) continue;
+      const el = n.parentElement!;
+      const host = el.closest('[data-testid]');
+      const shown = (el as any).checkVisibility?.({ opacityProperty: true, visibilityProperty: true }) ?? true;
+      return `(text in ${host ? `[${host.getAttribute('data-testid')}]` : el.tagName.toLowerCase()}, ${shown ? 'visible' : 'not visible'}: "${(el.textContent ?? '').trim().slice(0, 200)}")`;
+    }
+    for (const el of Array.from(document.querySelectorAll('*'))) {
+      for (const a of Array.from(el.attributes)) if (re.test(a.value)) return `(in the attribute ${a.name}="${a.value.slice(0, 60)}" of ${el.getAttribute('data-testid') ?? el.tagName.toLowerCase()})`;
+    }
+    return '(in the HTML)';
+  }, term);
+}
 
 /** The round's secret terms, from what the crew saw while holding (word, other names, hint; category in Hard). */
 export function termsFor(word: string | null, mode: 'easy' | 'hard'): string[] {
@@ -299,6 +342,7 @@ export async function playEvening(page: Page, cfg: EveningConfig, opts: { jev?: 
   const shots: Buffer[] = [];
   const rated = new Set<string>();
   let word: string | null = null;
+  const revealed: string[] = [];
   let roundsDone = 0;
   let ended = false;
   let finished = false;
@@ -312,8 +356,12 @@ export async function playEvening(page: Page, cfg: EveningConfig, opts: { jev?: 
     await page.clock.runFor(50);
     const screen = await screenName(page);
     screensSeen.add(screen ?? 'unknown');
-    if (screen === 'result' && (await page.getByTestId('result-word').isVisible().catch(() => false))) word = null;
-    findings.push(...(await checkStep(page, screen, n, termsFor(word, cfg.mode), errors)));
+    if (screen === 'result' && (await page.getByTestId('result-word').isVisible().catch(() => false))) {
+      const shown = (await page.getByTestId('result-word').textContent().catch(() => null))?.trim();
+      if (shown && !revealed.includes(shown)) revealed.push(shown);
+      word = null;
+    }
+    findings.push(...(await checkStep(page, screen, n, termsFor(word, cfg.mode), errors, revealed)));
     shots.push(await page.screenshot().catch(() => Buffer.alloc(0)));
     if (shots.length > 40) shots.shift();
     if (screen === 'home' && ended) { finished = true; break; }
