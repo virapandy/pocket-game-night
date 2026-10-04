@@ -1,4 +1,4 @@
-# Secret Words: scenarios (version 3, 4 October 2026)
+# Secret Words: scenarios (version 3.2, 4 October 2026)
 
 Status: **version 3.2 approved by the owner, 4 October 2026** (SWD-001 to SWD-104; started when release candidate 1.3.0 is
 frozen). SWD-200+ are direction, built later. Decisions K1–K18 decided by the owner (4 October, "follow the
