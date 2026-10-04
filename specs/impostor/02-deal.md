@@ -1,6 +1,6 @@
 # 02-deal.md: passing the phone
 
-Copied unchanged from `docs/games/impostor/scenarios.md` (version 3.5, 4 October 2026), the binding contract. Terms, Canonical strings and Test hooks: [README.md](README.md).
+Copied unchanged from `docs/games/impostor/scenarios.md` (version 3.8, 4 October 2026), the binding contract. Terms, Canonical strings and Test hooks: [README.md](README.md).
 
 ## IMP-010: Each player sees their role privately, in seat order
 Status: approved, owner, 2026-10-04 (changed)
@@ -12,14 +12,18 @@ Then screen A shows, top to bottom: `deal-progress` "Player 1 of 4" (17 px; 21 p
 text), and the main button "I'm Riya"
 When "I'm Riya" is tapped
 Then screen B shows, top to bottom: `deal-progress` "Player 1 of 4" (17 px; 21 px with Larger text); RIYA
-(`pass-name`, the screen's heading) directly under it; a reserved space for the text button "Don't know this word?"
-(IMP-015); the space for the private block; the pad "Hold here to see your word" (`hold-pad`); the quiet "Tap
-instead" directly under the pad; and the reserved space of the main button
+(`pass-name`, the screen's heading) directly under it; the quiet "Tap instead" directly under the name; a reserved
+space for the text button "Don't know this word?" (IMP-015); the space for the private block; the pad "Hold here to
+see your word" (`hold-pad`); the text button "Not Riya? ← Back" directly under the pad (until the first hold); and
+the reserved space of the main button; "Tap instead" is at least 48 px from the main button's space at every size
 And before the first 500 ms hold there is no word and no element with the main look (the pad included), and the two
 reserved spaces are empty (`visibility: hidden`), in hold mode and tap mode alike, and in "See my word again"
 (IMP-017)
 And nothing on screen B moves after the first hold (guideline 45a): the bounding boxes of `pass-name`, `hold-pad`
-and "Tap instead" are the same, to the pixel, before any hold, while held, and after "Done…" appears
+and "Tap instead" are the same, to the pixel, before any hold, while held, and after "Done…" appears; after the
+first hold "Not Riya? ← Back" is hidden (`visibility: hidden`), its space kept
+When "Not Riya? ← Back" is tapped (before the first hold)
+Then screen A of the same player shows again ("Pass the phone to" RIYA); nothing is recorded
 And `hold-pad` spans the screen width minus 32 px (16 px gutters) and is at least 160 px tall at every size: 288 ×
 160 at 320 × 568, 328 × 160 at 360 × 640, 358 × 160 at 390 × 844; at 812 × 375 it spans the right half minus 32 px
 (374 × 160)
@@ -47,17 +51,23 @@ Then screen A shows "Player 2 of 4", "Pass the phone to" ARJUN, "Everyone else, 
 on in seat order
 And the last player's button reads "Done, everyone's seen" (IMP-016)
 And no screen A or B ever shows the previous player's block
-And a double tap on "Done…" may open the next player's screen B; nothing private shows there without a hold
+And a tap within 500 ms of any screen change on the deal screens (A, B, "No problem!", "Welcome back.") is ignored:
+it records nothing and changes nothing (guideline 20), so a double tap on "Done…" never skips "Pass the phone to
+ARJUN"; the 500 ms run from the moment the new screen is shown; the guard covers buttons only. The pad is not guarded: a
+press within 500 ms works as at any other time
 And inside the layer the block's lines have line-height 1.2, 4 px gaps between the 5 lines and no padding, starting at
 y = 0; when the block would be taller than the layer, first lines 3, 4 and 5 shrink to 15 px, then `private-word`
 shrinks to 30 px
-Arithmetic (rule 4), screen B at 320 × 568: pad 160 + 8 + "Tap instead" 48 + 8 + main button 60 + 16 = 300 px from the
-bottom, so the pad's top is at y = 268 and the layer is 260 px tall (y = 0 to 260). Worst case, Larger text on, a
+Arithmetic (rule 4), screen B at 320 × 568: pad 160 + 8 + "Not Riya? ← Back" 48 + 8 + main button 60 + 16 = 300 px
+from the bottom, so the pad's top is at y = 268 and the layer is 260 px tall (y = 0 to 260). Worst case, Larger text on, a
 two-line line 3, line 4 and line 5: 22.8 (line 1, 19 px) + 86.4 (`private-word`, 2 × 36 × 1.2) + 2 × 50.4 (lines 3
 and 4 at 21 px) + 45.6 (line 5 at 19 px) + 16 (gaps) = 271.6 px > 260, so lines 3–5 shrink to 15 px: 22.8 + 86.4 +
 2 × 36 + 36 + 16 = 233.2 px, bottom at y ≤ 260; `private-word` stays 36 px. Larger text off: 18 + 86.4 + 2 × 40.8 +
-36 + 16 = 238 px, no shrinking. The top bar, `deal-progress` (21), the name and the text button (48) fit above the
-pad when the block is hidden
+36 + 16 = 238 px, no shrinking. Gaps on screen B (portrait): none between the top bar and `deal-progress`; 8 px between `deal-progress` and the name,
+the name and "Tap instead", and "Tap instead" and "Don't know this word?"; 8 px between the pad and "Not Riya? ← Back"
+and between it and the main button's space; 16 px under the main button. Above the pad, when the block is hidden:
+48 + 21 + 8 + 28 + 8 + 48 + 8 + 48 = 217 px ≤ 268; "Tap instead" ends at y = 161 and the main button's space starts
+at y = 492 (331 px apart)
 
 ## IMP-011: What each role sees: always five lines
 Status: approved, owner, 2026-10-04 (changed)
@@ -167,25 +177,27 @@ Phase: Impostor 1
 When the last player taps "Done, everyone's seen"
 Then one room screen shows, top to bottom: "✓ Everyone has seen their word.", "Phone in the middle, face up.", the
 starter and the clue order (IMP-020), and the main button "Clues done, talk it over" (Free flow) or
-"Clues done, start the 2-minute timer" (Timer)
-And the 3–5 player button of IMP-022 when it applies
+"Clues done, start timer" (Timer)
+And the 3–5 player button of IMP-022 when it applies, the quiet "See my word again" (IMP-017), and the joining line of
+IMP-079 when someone is waiting
 
 ## IMP-017: See my word again
 Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
 Given the clues screen, the talk screen or the picker is showing
-When the host opens the menu and taps "See my word again"
-Then a dialog "Whose word?" lists one button per player in seat order, and a quiet "Cancel"
+When the host taps the quiet "See my word again" (on the clues and talk screens) or the menu item "See my word again"
+(on all three)
+Then a dialog "Whose word?" lists one button per player of this round in seat order, and a quiet "Cancel"
 And the timer, if running, pauses at once (IMP-027)
 When "Cancel" is tapped
 Then the dialog closes and nothing else changes (the timer stays paused, showing "Carry on")
 When "Meena" is tapped
 Then screen A shows "Pass the phone to" MEENA with "I'm Meena", then screen B exactly as in the deal (IMP-010 to
-IMP-014), and her "Done" button reads "Done, everyone's seen"
+IMP-014), and her main button reads "Done, back to clues" (opened from the clues screen), "Done, back to talking"
+(the talk screen) or "Done, back to the vote" (the picker)
 And neither screen shows `deal-progress` during "See my word again"; screen A still shows "Everyone else, look
-away!"
-And "Don't know this word?" is not shown during "See my word again"
-When she taps it
+away!"; screen B shows no "Don't know this word?" and no "Not Riya? ← Back"
+When she taps "Done, back to …"
 Then the screen it was opened from shows again, unchanged, with the timer paused
 And there is no menu button from "Whose word?" until it returns
 And if the page becomes hidden during it, on return it shows "Pass the phone to" MEENA (screen A) again

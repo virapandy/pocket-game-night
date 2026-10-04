@@ -1,6 +1,6 @@
 # 03-clues-and-talk.md
 
-Copied unchanged from `docs/games/impostor/scenarios.md` (version 3.5, 4 October 2026), the binding contract. Terms, Canonical strings and Test hooks: [README.md](README.md).
+Copied unchanged from `docs/games/impostor/scenarios.md` (version 3.8, 4 October 2026), the binding contract. Terms, Canonical strings and Test hooks: [README.md](README.md).
 
 ## IMP-020: Who starts
 Status: approved, owner, 2026-10-04 (changed)
@@ -18,8 +18,18 @@ And at 812 × 375 `starter-name` and "starts" sit in the left half; "✓ Everyon
 middle, face up.", "Each say one word about your secret:", `clue-order`, the IMP-022 button and the main button sit
 in the right half
 And in **Hard** mode the starter is never the round's impostor; in **Easy** mode the impostor may start
-Arithmetic (rule 4), 320 × 568, 5 players, Larger text off: top bar 48 + 2 lines of 24 + `starter-name` (32 px, 2
-lines) 77 + "starts" 24 + 24 + `clue-order` 48 + quiet button 48 + main button 76 + 7 gaps of 8 = 449 px ≤ 568
+And at 812 × 375 "Go round again" and "See my word again" share one row (two equal halves) in the right half, and
+"Not enough clues?" is not shown (the button alone)
+And at 320 × 568 the order is: `starter-name`, "starts", then one box that scrolls inside its own height holding
+"✓ Everyone has seen their word.", "Phone in the middle, face up.", "Each say one word about your secret:" and
+`clue-order`; then "Not enough clues?", then "Go round again" and "See my word again" on one row (two equal halves),
+then the joining line (IMP-079), then the main button
+Arithmetic (rule 4), 320 × 568, 5 players, Larger text off: top bar 48 + `starter-name` (32 px, 2 lines) 77 +
+"starts" 24 + the box 120 (5 lines: 24 + 24 + 24 + 48) + "Not enough clues?" 21 + shared row 48 + joining line 21 +
+main button 76 + 8 gaps of 8 = 499 px ≤ 568 (with more players the box scrolls inside); at 360 × 640 and 390 × 844
+the screen keeps the order of IMP-016 with "Go round again" and "See my word again" stacked: 48 + 48 + 77 + 24 + 24
++ 48 + 21 + 48 + 48 + 21 + 76 + 10 × 8 = 563 px ≤ 640; at 812 × 375 the right half: 48 + 24 + 24 + 24 + 48 + 48
+(shared row) + 21 + 76 + 7 × 8 = 369 px ≤ 375
 
 ## IMP-021: The starter moves round, without repeats
 Status: approved, owner, 2026-10-03
@@ -40,7 +50,8 @@ Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
 Given 3, 4 or 5 players
 Then the clues screen has the quiet button "Go round again", placed in the bottom bar directly above the main button
-(not under `clue-order`), with the small line "Not enough clues?" (15 px) directly above it (product owner, 4 October,
+(not under `clue-order`), with the small line "Not enough clues?" (15 px; 19 px with Larger text) directly above
+it, except at 812 × 375 (IMP-020) (product owner, 4 October,
 after Jev's confusion flags: the old label in the middle of the screen read as the first step)
 When it is tapped
 Then the line "Second round: MEENA starts again" (the same starter) appears under `clue-order`, the button disappears
@@ -49,12 +60,12 @@ Given 6 or more players
 Then the button is not shown
 
 ## IMP-023: Free flow
-Status: approved, owner, 2026-10-03
+Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
 Given Talking is Free flow
 When "Clues done, talk it over" is tapped on the clues screen
-Then the talk screen shows the heading "Talk it over" (`talk-heading`), "Who sounded unsure?" and the main button
-"Vote now", with no timer
+Then the talk screen shows the heading "Talk it over" (`talk-heading`), "Who sounded unsure?", the quiet "See my word
+again" (IMP-017), the joining line of IMP-079 when someone is waiting, and the main button "Vote now", with no timer
 And `talk-heading` is 56 px at widths of 360 px and up (it may wrap onto 2 lines); at 320 px wide it may be any size
 from 32 px to 56 px
 And nothing on this screen changes by itself (guideline 28)
@@ -63,10 +74,11 @@ And nothing on this screen changes by itself (guideline 28)
 Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
 Given Talking is Timer
-When "Clues done, start the 2-minute timer" is tapped (t = 0)
+When "Clues done, start timer" is tapped (t = 0)
 Then the talk screen shows `timer-label` "Talk it over" (28 px) directly above `timer`, which reads "2:00" (m:ss)
 and counts down once per second: "1:59" at t = 1 s … "0:00" at t = 120 s, with the main button "Vote now" and the
-quiet "Pause"; there is no `talk-heading` and no "Who sounded unsure?"
+quiet "Pause", the quiet "See my word again" (IMP-017) and the joining line of IMP-079 when someone is waiting;
+there is no `talk-heading` and no "Who sounded unsure?"
 And `timer` is 120 px (112 px at 320 px wide)
 And at "1:00" the announcer says "1 minute left"
 And at "0:00": `timer` stays showing "0:00"; the heading "Time's up!" (h1, 40 px, never shrinks) appears directly
@@ -82,7 +94,7 @@ And "Vote now" and "Get ready to point" both start the countdown (IMP-030)
 And there is no menu from t = 0 of the countdown (IMP-075); the menu is available during the timer
 And at 812 × 375 `timer-label`, `timer` and "Time's up!" sit in the left half; the buttons in the right half
 Arithmetic (rule 4), 812 × 375: left half 48 (top bar) + 34 + 132 (`timer`, 120 px) + 40 = 254 px ≤ 375; portrait
-320 × 568: 48 + 34 + 124 + 40 + 21 + 48 + 76 + 6 gaps of 8 = 439 px ≤ 568
+320 × 568: 48 + 34 + 124 + 40 + 21 + 48 + 48 + 21 + 76 + 8 gaps of 8 = 524 px ≤ 568
 
 ## IMP-025: Deal again with a new word
 Status: approved, owner, 2026-10-03

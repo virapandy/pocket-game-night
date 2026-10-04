@@ -1,13 +1,13 @@
 # 05-scoring.md (C3)
 
-Copied unchanged from `docs/games/impostor/scenarios.md` (version 3.5, 4 October 2026), the binding contract. Terms, Canonical strings and Test hooks: [README.md](README.md).
+Copied unchanged from `docs/games/impostor/scenarios.md` (version 3.8, 4 October 2026), the binding contract. Terms, Canonical strings and Test hooks: [README.md](README.md).
 
 ## IMP-040: No points by default
-Status: approved, owner, 2026-10-03
+Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
 Given Score is No
 Then no points, ranks or scoreboard show anywhere in the evening
-And each counted round's result screen shows `evening-line` "Tonight: impostor caught 3 · escaped 2": the counts of
+And each counted round's result screen shows `evening-line` "This game: impostor caught 3 · escaped 2": the counts of
 this evening's counted rounds, this round included
 And the practice round's result shows no `evening-line`
 And `evening-line` is never shown while Score is Yes

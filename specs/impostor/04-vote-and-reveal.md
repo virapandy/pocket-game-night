@@ -1,6 +1,6 @@
 # 04-vote-and-reveal.md
 
-Copied unchanged from `docs/games/impostor/scenarios.md` (version 3.5, 4 October 2026), the binding contract. Terms, Canonical strings and Test hooks: [README.md](README.md).
+Copied unchanged from `docs/games/impostor/scenarios.md` (version 3.8, 4 October 2026), the binding contract. Terms, Canonical strings and Test hooks: [README.md](README.md).
 
 ## IMP-030: The countdown to point
 Status: approved, owner, 2026-10-04 (changed)
@@ -43,12 +43,16 @@ Then the result screen starts (IMP-033, IMP-034 or IMP-039; guideline 47); recor
 Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
 When the host taps "It's a tie"
-Then the picker switches to ticking 2 or more names: "It's a tie" disappears ("Not sure?" and "Count again" stay), any selection is cleared, and the main
+Then the picker switches to ticking 2 or more names: the heading reads "Tap everyone who is tied"; "It's a tie" is
+replaced by the text button "Not a tie" ("Not sure?" and "Count again" stay), any selection is cleared, and the main
 button reads "Point again", disabled
 And tapping a name ticks it (`aria-pressed="true"`); tapping a ticked name unticks it
 And with 2 or more ticked, the main button reads "Point again: " plus the ticked names in seat order, joined by ", "
 with " or " before the last: "Point again: Arjun or Meena", "Point again: Arjun, Meena or Kabir"; every player may be
 ticked
+When "Not a tie" is tapped
+Then the picker goes back to picking one name: the heading reads "Who got the most fingers?", all ticks are cleared,
+"It's a tie" returns, and the main button reads "Reveal", disabled; nothing is recorded
 When "Point again: Arjun or Meena" is tapped
 Then the countdown runs (IMP-030); recorded as `tie`
 And then the re-vote picker shows only Arjun and Meena, "Not sure?" with the text buttons "Still a tie" and "Count
@@ -75,7 +79,7 @@ And at t = 1.5 s the build-up is replaced, all at once, by, top to bottom:
 3. `word-label` "The word was", then `result-word` "School trip"
 4. `also-called` "Also called Excursion" (only when the word has other names; not announced)
 5. `word-category` "School and childhood" (the word's `category` exactly; not a button)
-6. `round-outcome` "The crew wins!" (h2)
+6. `round-outcome` "You caught the impostor!" (h2)
 7. `evening-line` (Score No, IMP-040) or `round-points` and `scoreboard` (Score Yes, IMP-044)
 8. the quiet "This word didn't work" (IMP-107); and the main button "Next round", pinned; the menu button returns
 And sizes: `build-up` 40 px; `result-headline` 56 px, centred (44 px at widths below 390 px, always one line); `result-note` 20 px; `result-impostor` 32 px, centred
@@ -100,7 +104,7 @@ Given Arjun is the impostor and the word is Samosa (category "Food", no other na
 When "Reveal Meena" is tapped (t = 0; recorded as `reveal`, which completes the round)
 Then the build-up "Meena was…" shows from t = 0 to t = 1.5 s exactly as in IMP-033
 And at t = 1.5 s it is replaced, all at once, by, top to bottom: `result-headline` "✗ Escaped!", `result-note` "Meena
-was crew.", `result-impostor` "ARJUN was the impostor", `word-label` "The word was", `result-word` "Samosa", no
+was not the impostor.", `result-impostor` "ARJUN was the impostor", `word-label` "The word was", `result-word` "Samosa", no
 `also-called`, `word-category` "Food", `round-outcome` "Arjun escaped!", then items 7 and 8 of IMP-033, with
 IMP-033's sizes and scrolling
 And there is no guess step and no "Undo", whatever the last-chance guess setting
@@ -110,12 +114,12 @@ Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
 Given the last-chance guess is on, Arjun was caught, the word is Pani puri, and IMP-039's verdict step shows
 When the room agrees Arjun's guess "Samosa" is wrong and the host taps "Wrong guess"
-Then `round-outcome` reads "The crew wins!"
+Then `round-outcome` reads "You caught the impostor!"
 When instead the host taps "Guessed right" (another name counts: "Golgappa" for Pani puri)
-Then `round-outcome` reads "Arjun steals the round!"
+Then `round-outcome` reads "Arjun wins the round!"
 And the app never judges the guess; it records only the tap
 Given the last-chance guess is off
-Then there is no guess, no verdict and no "Arjun steals the round!"
+Then there is no guess, no verdict and no "Arjun wins the round!"
 
 ## IMP-036: Two impostors (after the play-test)
 Status: approved, owner, 2026-10-03
@@ -161,15 +165,15 @@ Given the last-chance guess is on (IMP-076), Arjun is the impostor and the word 
 When "Reveal Arjun" is tapped (t = 0; recorded as `reveal`)
 Then the build-up shows from t = 0 to t = 1.5 s exactly as in IMP-033
 And at t = 1.5 s it is replaced, all at once, by: `result-headline` "✓ Caught!", `result-impostor` "ARJUN was the
-impostor", `guess-line` "Last chance, Arjun! Guess the word out loud. Get it right and you steal the round." (20 px)
+impostor", `guess-line` "Last chance, Arjun! Guess the word out loud. Get it right and you win the round." (20 px)
 and the main button "Arjun guessed. Show the word"; the word is not in the page (IMP-013); there is no menu button
 When "Arjun guessed. Show the word" is tapped (recorded as `showWord`)
 Then that button goes and, under those lines, `word-label` "The word was", `result-word` "School trip",
 `also-called` "Also called Excursion" and `word-category` "School and childhood" appear, with two quiet buttons of
 equal size side by side, "Guessed right" and "Wrong guess"; neither has the main look (IMP-080)
 When a verdict is tapped (recorded as `verdict`, which completes the round)
-Then the two buttons go and these appear under the chip, at once: `round-outcome` "The crew wins!" ("Wrong guess")
-or "Arjun steals the round!" ("Guessed right"), then item 7 of IMP-033, then the quiet "Undo" (IMP-037), the quiet
+Then the two buttons go and these appear under the chip, at once: `round-outcome` "You caught the impostor!" ("Wrong guess")
+or "Arjun wins the round!" ("Guessed right"), then item 7 of IMP-033, then the quiet "Undo" (IMP-037), the quiet
 "This word didn't work" and the main button "Next round"; the menu button returns; the page scrolls so that
 `round-outcome` is wholly in view
 And every line shown stays on the screen until "Next round"; sizes and scrolling as in IMP-033

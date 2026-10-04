@@ -1,6 +1,6 @@
 # 10-lifecycle.md
 
-Copied unchanged from `docs/games/impostor/scenarios.md` (version 3.5, 4 October 2026), the binding contract. Terms, Canonical strings and Test hooks: [README.md](README.md).
+Copied unchanged from `docs/games/impostor/scenarios.md` (version 3.8, 4 October 2026), the binding contract. Terms, Canonical strings and Test hooks: [README.md](README.md).
 
 ## IMP-090: Interrupted during the deal
 Status: approved, owner, 2026-10-03
@@ -31,42 +31,51 @@ lines and that button, with the word not in the page; after it, the word and the
 the full result with "Undo" (IMP-037)
 And a return from hidden (without a reload) during the 1.5 s build-up shows the same as a reopen
 When it is reopened more than 3 hours after the round's last move
-Then the screen shows "This round was left halfway. Start a fresh round?" with the main button "Next round"
+Then the screen shows "This round was left halfway. Start a fresh round?" with the main button "Next round", the
+outlined "End game" and "← Home" (IMP-077)
 And "Next round" deals that round again with a new word and impostor under the same round number (recorded as
 `dealAgain`); the menu is as IMP-075 lists for the "left halfway" screen (no "Change how we play"; choices can be
 changed on the next round result)
 
-## IMP-092: Ending and discarding the evening
+## IMP-092: Ending and discarding the game
 Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
-When the host taps "End the evening" in the menu on a round result
-Then a dialog asks "End the evening?" with "End the evening" and "Keep playing" (main); "Keep playing" closes it
-When "End the evening" is tapped (nothing recorded yet: the evening stays in progress while the summary shows, and
-`endEvening` is recorded when the summary is left, IMP-101)
-Then the summary shows, top to bottom: the heading "That's the night!"; the lead line `summary-line` (32 px,
-centred); the fun lines (IMP-095); the final `scoreboard` (when Score was Yes at any point; with IMP-043's caption;
-columns as IMP-044); the quiet buttons, in this order, "Oops, keep playing", "Play something else", "More ›"; and the
-main button "Back to Home", pinned
+When the host taps the outlined "End game" between rounds (IMP-077), or "End now" in IMP-093's dialog
+Then the summary shows at once (nothing recorded yet: the game stays in progress while the summary shows, and
+`endEvening` is recorded when the summary is left, IMP-101), top to bottom: the heading "That's the game!"; the lead
+line `summary-line` (32 px, centred); the fun lines (IMP-095); the final `scoreboard` (when Score was Yes at any
+point; with IMP-043's caption; columns as IMP-044); the quiet buttons, in this order, "Play something else", "Home"
+and "More ›" (each full width, 48 px tall, 8 px apart); and the main button "Play again", pinned
 And `summary-line` is:
-- when Score was Yes at any point and the top total is at least 1: "Arjun wins the night with 2 points!" ("1 point");
-  with a shared top total, the names in seat order: "Arjun and Meena share the night with 2 points!", "Arjun, Meena
-  and Kabir share the night with 2 points!";
-- otherwise: "Crew 4 · Impostors 3": Crew = counted rounds the crew won (caught, with no guess or a wrong guess);
-  Impostors = counted rounds the impostor won (escaped, "Still a tie", or a right guess)
-And "More ›" opens a menu with "Share", "History", a divider, and "Discard this evening" last
+- when Score was Yes at any point and the top total is at least 1: "Arjun wins the game with 2 points!" ("1 point");
+  with a shared top total, the names in seat order: "Arjun and Meena share the game with 2 points!", "Arjun, Meena
+  and Kabir share the game with 2 points!";
+- otherwise: "Impostor caught 4 · escaped 3": the counts of caught and escaped counted rounds (Terms), as in
+  `evening-line` (IMP-040)
+And "More ›" opens a menu with "Oops, keep playing", "Share", "History", a divider, and "Discard this game" last
 And the summary scrolls as one page (guideline 46a), has no menu button, and has no inner scroll area
-And once `endEvening` is recorded the evening is kept in History (unless IMP-097 applies)
-When "Discard this evening" is tapped
-Then a dialog asks "Discard this evening? Its rounds and scores will be lost." with "Discard" and "Keep it" (main)
+When "Play again" is tapped
+Then `endEvening` is recorded and a new game starts exactly as History's "Play again" does (IMP-103): "Who's
+playing?" with this game's final players, then "How do you want to play?" with its final choices
+When "Home" is tapped
+Then `endEvening` is recorded and Home opens
+When "Play something else" is tapped
+Then `endEvening` is recorded and IMP-102 applies
+And "History" (in "More ›") records `endEvening` and opens History
+And once `endEvening` is recorded the game is kept in History (unless IMP-097 applies)
+When "Discard this game" is tapped
+Then a dialog asks "Discard this game? Its rounds and scores will be lost." with "Discard" and "Keep it" (main)
 When "Discard" is tapped
-Then the evening and its scores are deleted from this phone (no `endEvening`; nothing kept), Home opens, and the
-evening is in neither History nor `unfinished-games`; its words do not count for IMP-052's "last 3 evenings"
-And "Back to Home" opens Home and "History" opens History, each recording `endEvening` first
+Then the game and its scores are deleted from this phone (no `endEvening`; nothing kept), Home opens, and the game
+is in neither History nor `unfinished-games`; its words do not count for IMP-052's "last 3 evenings"
+Arithmetic (rule 4), 390 × 844, Score Yes, 12 players: top 16 + heading 40 + `summary-line` 2 lines 77 + 2 fun lines
+48 + scoreboard 216 + caption 21 + 3 quiet buttons 160 + main button 76 + 6 gaps of 8 = 702 px ≤ 844 (no scroll);
+at 320 × 568 the page scrolls (scoreboard one column: 12 × 36 = 432 px)
 
 ## IMP-093: Ending mid-round
-Status: approved, owner, 2026-10-03
+Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
-When the host taps "End the evening" in the menu during a round (deal, clues, talk or picker)
+When the host taps "End game" in the menu during a round (deal, clues, talk or picker)
 Then a dialog asks "End now? This round won't count." with "End now" and "Keep playing" (main)
 When "End now" is tapped
 Then the summary shows as in IMP-092; when `endEvening` is recorded (IMP-101) that round is dropped (no points,
@@ -90,7 +99,7 @@ Then the summary shows these `fun-line`s, in this order, each only when its cond
 (counted rounds only):
 1. "Best impostor: Arjun, escaped 2 times": the player with the most escapes as impostor, when that is at least 1
    ("escaped 1 time"); equal counts: the first in seat order
-2. "Most suspected: Meena, picked 3 times while crew": the crew member revealed by the vote the most times, when that
+2. "Most suspected: Meena, picked 3 times without being the impostor": the player revealed by the vote the most times while not the impostor, when that
    is at least 2; equal counts: the first in seat order
 And "seat order" is the evening's final seat order, with players who left after everyone still playing, in the
 order they left
@@ -142,19 +151,19 @@ word-dealing move carries `wordId`; a fixture without word ids is unreplayable a
 ## IMP-097: An evening with no counted round is not kept
 Status: approved, owner, 2026-10-04 (changed; detail of IMP-092, IMP-094)
 Phase: Impostor 1
-Given the summary shows (after "End the evening", "End now", or IMP-104) for an evening with no counted round (none,
+Given the summary shows (after "End game", "End now", or IMP-104) for an evening with no counted round (none,
 or only the practice round)
-Then it shows "That's the night!", `summary-line` "Crew 0 · Impostors 0" (whatever the Score choice; no
-scoreboard), no fun lines, and "More ›" without "Share"; "Oops, keep playing", "Play something else", and "History"
-and "Discard this evening" in "More ›" are still offered
+Then it shows "That's the game!", `summary-line` "Impostor caught 0 · escaped 0" (whatever the Score choice; no
+scoreboard), no fun lines, and "More ›" without "Share"; "Play again", "Play something else", "Home", and
+"Oops, keep playing", "History" and "Discard this game" in "More ›" are still offered
 And when `endEvening` is recorded the evening is deleted rather than kept in History, and its words do not count
 for "the last 3 evenings"
 
 ## IMP-098: Plurals on the summary and in Share
 Status: approved, owner, 2026-10-04 (changed; detail of IMP-092, IMP-106)
 Phase: Impostor 1
-Then with 1 counted round Share's first line reads "Impostor night · 1 round"
-And "Arjun wins the night with 1 point!" / "… with 2 points!" in `summary-line`
+Then with 1 counted round Share's first line reads "Impostor game · 1 round"
+And "Arjun wins the game with 1 point!" / "… with 2 points!" in `summary-line`
 And "escaped 1 time" / "escaped 2 times" in fun line 1
 
 ## IMP-099: Time limits, measured exactly

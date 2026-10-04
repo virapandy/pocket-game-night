@@ -1,6 +1,6 @@
 # 06-words.md (C3)
 
-Copied unchanged from `docs/games/impostor/scenarios.md` (version 3.5, 4 October 2026), the binding contract. Terms, Canonical strings and Test hooks: [README.md](README.md).
+Copied unchanged from `docs/games/impostor/scenarios.md` (version 3.8, 4 October 2026), the binding contract. Terms, Canonical strings and Test hooks: [README.md](README.md).
 
 ## IMP-050: Words come from the list with the chosen audience
 Status: approved, owner, 2026-10-03
@@ -20,7 +20,7 @@ Property (sample 1,000 seeded evenings of 30 dealt rounds, random filters, no "A
 twice; tolerance 0
 
 ## IMP-052: Tonight's and recent evenings' words are avoided
-Status: approved, owner, 2026-10-03
+Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
 Then each deal picks, uniformly by the word seed, from the first non-empty group among the words that pass IMP-050
 and are not blocked (IMP-015, IMP-107):
@@ -32,17 +32,18 @@ And the sets are fixed when the evening starts ("Start round", IMP-096 `excluded
 evening join "dealt tonight" as they are dealt
 When both groups are empty at the moment a word is needed
 Then instead of "Pass the phone to…" the screen shows the heading
-"You've played every word in these categories tonight!", the line "Turn on more categories or + Grown-ups.", the main
-button "Allow repeats" and the quiet "Change categories"
+"You've played every word in these categories!", the line "Turn on more categories or + Grown-ups.", the main
+button "Change categories" paired with the outlined "End game" in the bottom row exactly like the result's row
+(IMP-077), the quiet "Allow repeats" directly above that row, and "← Home" at the top left
 When "Allow repeats" is tapped (recorded as `allowRepeats`)
 Then for the rest of the evening each deal picks uniformly among all words that pass IMP-050 and are not blocked,
 and the deal starts
 When "Change categories" is tapped
-Then "How do you want to play?" opens with the current choices; its "Start round" records `setChoices` only (no
-`nextRound`) and the same round is dealt again, same round number, with a word drawn under the new choices
+Then "How do you want to play?" opens with the current choices; its "Start round" records `setChoices` (when
+something changed; no `nextRound`) and the same round is dealt again, same round number, with a word drawn under the
+current choices; "← Back" there keeps the changes and does exactly what "Start round" does
 And the menu on this screen is the between-rounds menu (IMP-075)
-And when even "Allow repeats" would find no word (every allowed word blocked), "Allow repeats" is not shown and
-"Change categories" is the main button
+And when even "Allow repeats" would find no word (every allowed word blocked), "Allow repeats" is not shown
 
 ## IMP-053: Both names are shown where a thing has two
 Status: approved, owner, 2026-10-04 (changed)

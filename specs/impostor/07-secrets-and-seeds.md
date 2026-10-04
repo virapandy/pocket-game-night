@@ -1,6 +1,6 @@
 # 07-secrets-and-seeds.md (C3)
 
-Copied unchanged from `docs/games/impostor/scenarios.md` (version 3.5, 4 October 2026), the binding contract. Terms, Canonical strings and Test hooks: [README.md](README.md).
+Copied unchanged from `docs/games/impostor/scenarios.md` (version 3.8, 4 October 2026), the binding contract. Terms, Canonical strings and Test hooks: [README.md](README.md).
 
 ## IMP-060: The word and the impostor come from their own seed
 Status: approved, owner, 2026-10-03

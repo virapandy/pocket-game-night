@@ -1,6 +1,6 @@
 # 01-setup.md: getting to the first deal
 
-Copied unchanged from `docs/games/impostor/scenarios.md` (version 3.5, 4 October 2026), the binding contract. Terms, Canonical strings and Test hooks: [README.md](README.md).
+Copied unchanged from `docs/games/impostor/scenarios.md` (version 3.8, 4 October 2026), the binding contract. Terms, Canonical strings and Test hooks: [README.md](README.md).
 
 ## IMP-001: "Host a game" offers Tambola and Impostor
 Status: approved, owner, 2026-10-04 (changed)
@@ -14,19 +14,26 @@ Then "What shall we play?" shows two cards of equal size and look (neither has t
 And there is no main button on this screen; tapping a card opens that game's setup at once
 And "3–20 players" is never split across two lines (it sits in a `white-space: nowrap` span) at every size
 Given an Impostor evening is unfinished (not ended, not discarded, not auto-ended by IMP-104)
-Then "What shall we play?" shows, above the two cards, the button "Impostor · round 4 · Tap to resume"
-(`resume-card`), and Home's `unfinished-games` shows a row "Impostor, 8:40 pm, round 4" with "Tap to resume"
-(8:40 pm = the evening's start time, in Tambola's row format)
-And "round 4" is the number of the round in progress, or of the next round when between rounds (a practice round in
-progress shows "round 1")
-And an evening whose summary was showing and not yet left (`summaryShownAt` set, no `endEvening`) is unfinished too,
-and shows the next round's number
+Then "What shall we play?" shows, above the two cards, the button `resume-card` reading "Impostor · Riya, Arjun +2 ·
+round 4" and "Tap to resume", and Home's `unfinished-games` shows a row with the same two texts
+And the label names the first two players in the game's current seat order, then "+N" for the others (3 players:
+"Riya, Arjun +1"); names as typed
+And "round N" is: during a round (deal to reveal), that round's number (the practice round: "round 1"). Between rounds
+it is the number the next deal will carry: after a completed round, that round + 1; on the "left halfway" and
+no-words screens, the round waiting to be dealt. While the summary shows, it is the number for the screen "Oops, keep
+playing" returns to (End now in round 4: "round 4"; End game after round 4: "round 5")
+And an evening whose summary was showing and not yet left is unfinished too
 When either is tapped
 Then the evening reopens at its saved step (IMP-090, IMP-091), or, for such an evening, at the summary (IMP-101)
 When instead the host taps the "Impostor" card while that evening is unfinished
-Then a dialog asks exactly "Start a new evening? The evening from 8:40 pm will be ended." with "Start new" and
-"Carry on that evening" (main)
-And "Carry on that evening" reopens it at its saved step
+Then a dialog asks exactly "Start a new game? The game from 8:40 pm will be ended." (8:40 pm = the unfinished game's
+start time) with two equal outlined buttons side by side, "Carry on that game" and "Start new"; neither has the main
+look
+And the dialog shows once per tap of the Impostor card, or of History's "Play again" (IMP-103) while a game is
+unfinished (the summary's "Play again" ends its game first, so it never shows this dialog); "Start new" goes straight
+on with no second question: to an empty or tonight-filled "Who's playing?" (IMP-004) after the card, or to "Who's
+playing?" filled by IMP-103 after "Play again"
+And "Carry on that game" reopens it at its saved step
 And "Start new" records `endEvening` at once, with no summary (a half-played round is dropped; IMP-097 applies:
 with no counted round it is deleted rather than kept), then opens "Who's playing?" for the new evening
 And only one Impostor evening is ever unfinished at a time
@@ -40,12 +47,14 @@ Then the last paragraph of that screen reads exactly
 And nothing else on that screen changes
 
 ## IMP-003: Players are added in seat order, without dragging
-Status: approved, owner, 2026-10-03
+Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
 Given "Who's playing?" with an empty list
 When the host types "Riya" in "Player name" and taps "Add" (or presses Enter), then Arjun, Meena and Kabir the same way
 Then the list shows 1 Riya, 2 Arjun, 3 Meena, 4 Kabir, in that order: the passing order and the clue order
 And after each add the field is empty and keeps focus (the phone keyboard stays open)
+And every Enter adds the name typed before it, however quickly the names and Enters follow each other (typing
+"Zoya", Enter, "Dev", Enter within 200 ms adds both, in that order); no Enter is dropped or merged
 And each row has ▲ "Move Riya up", ▼ "Move Riya down" and ✕ "Remove Riya", each at least 44 × 44 CSS px
 (guideline 21: nothing needs dragging); row 1's ▲ and the last row's ▼ are disabled
 And names are trimmed of spaces at both ends; an empty or all-space name adds nothing ("Add" is disabled)
@@ -94,15 +103,16 @@ And "Start round" is the one main button; tapping it creates the evening and sta
 And "← Back" returns to "Who's playing?" with the list unchanged
 
 ## IMP-006: Choices stay for the evening and change only between rounds
-Status: approved, owner, 2026-10-03
+Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
 Given the host chose Hard and Timer and round 1 ended
 When the host taps "Next round"
 Then round 2 uses Hard and Timer
 When, on a round result, the host opens the menu and taps "Change how we play"
 Then "How do you want to play?" opens with the evening's current choices selected; "Start round" records
-`setChoices` (even with nothing changed) and then `nextRound`, and the next round's deal starts; "← Back" returns
-to the same result unchanged and records nothing
+`setChoices` (only when something changed) and then `nextRound`, and the next round's deal starts
+And "← Back" (or the phone's Back) keeps the changes: it records `setChoices` when something changed (nothing
+otherwise) and returns to the same result; the changes apply from the next round
 And the evening stays the same evening (same seeds, same round numbering)
 And "Change how we play" is not in the menu during a round (IMP-075)
 

@@ -1,6 +1,6 @@
 # 09-usability.md
 
-Copied unchanged from `docs/games/impostor/scenarios.md` (version 3.5, 4 October 2026), the binding contract. Terms, Canonical strings and Test hooks: [README.md](README.md).
+Copied unchanged from `docs/games/impostor/scenarios.md` (version 3.8, 4 October 2026), the binding contract. Terms, Canonical strings and Test hooks: [README.md](README.md).
 
 ## IMP-080: At most one main button, and it is the next step
 Status: approved, owner, 2026-10-04 (changed)
@@ -9,8 +9,9 @@ Then every Impostor screen has at most one element with the main look, `data-tes
 next step (guideline 17a)
 And exactly these have none: "What shall we play?" (cards), screen B until "Done…" appears (hold mode, tap mode and
 "See my word again"), the countdown,
-the 1.5 s build-up, and the verdict step of the last-chance guess ("Guessed right" / "Wrong guess" look equal)
-And a destructive choice ("End now", "End the evening", "Discard", "Deal again") is never the main button
+the 1.5 s build-up, the verdict step of the last-chance guess ("Guessed right" / "Wrong guess" look equal), and the "Start a new game?"
+dialog (IMP-001)
+And a destructive choice ("End now", "End game", "Discard", "Deal again") is never the main button
 
 ## IMP-081: Nothing scrolls during a round, except the result screen
 Status: approved, owner, 2026-10-04 (changed)
@@ -26,7 +27,8 @@ the bottom; no element inside has its own scroll area; when the screen appears i
 last-chance guess's verdict: scrolled so `round-outcome` is wholly in view)
 And the main button stays wholly on screen and fixed at the bottom on every screen
 And at 812 × 375 the hold screen puts the block on the left (its layer also covers the whole top bar, menu button
-included, IMP-010) and the pad (and "Done…") on the right; the result
+included, IMP-010) and the pad, "Not Riya? ← Back" and "Done…" on the right ("Tap instead" and "Don't know this word?" under the name
+on the left); the result
 screen puts `result-headline`, `result-note`, `result-impostor`, the word, `also-called`, the chip and
 `round-outcome` in the left half, and `evening-line` or `round-points` with the scoreboard, and the quiet buttons, in
 the right half; the guess and verdict steps of IMP-039 do the same (lines and word left; "Arjun guessed. Show the
@@ -80,7 +82,10 @@ Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
 Then no Impostor text (every string in this file, every screen's text) contains, ignoring case, "liar", "loser",
 "fooled", "stupid" or "bad clue"
-And the `round-outcome` lines are exactly "The crew wins!", "Arjun steals the round!" and "Arjun escaped!"; the
+And no Impostor screen shows the words "evening", "night" or "session" (case-insensitive, whole word) in its own
+text; the word list's words, other names and hints (for example the hint "Late night") are not counted
+And no Impostor screen shows the words "crew" or "steal" in its own text (M24)
+And the `round-outcome` lines are exactly "You caught the impostor!", "Arjun wins the round!" and "Arjun escaped!"; the
 `result-headline` is exactly "✓ Caught!" or "✗ Escaped!"
 
 ## IMP-086: A slipped finger costs nothing

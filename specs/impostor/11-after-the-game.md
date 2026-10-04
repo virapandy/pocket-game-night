@@ -1,6 +1,6 @@
 # 11-after-the-game.md (shared rules: `specs/platform/01-lifecycle.md`, PLT-001 to PLT-029)
 
-Copied unchanged from `docs/games/impostor/scenarios.md` (version 3.5, 4 October 2026), the binding contract. Terms, Canonical strings and Test hooks: [README.md](README.md).
+Copied unchanged from `docs/games/impostor/scenarios.md` (version 3.8, 4 October 2026), the binding contract. Terms, Canonical strings and Test hooks: [README.md](README.md).
 
 ## IMP-100: After the round, the phone can rest
 Status: approved, owner, 2026-10-04 (changed)
@@ -12,14 +12,14 @@ impostor are shown by then)
 ## IMP-101: Ended by mistake
 Status: approved, owner, 2026-10-04 (changed; changed 3 October for engine fit; owner informed)
 Phase: Impostor 1
-Given the summary shows after "End the evening" (or "End now")
+Given the summary shows after "End game" (or "End now")
 Then the evening is still in progress (`status` "in-progress", no `endEvening` yet), and `pgn.impostor-ui.<id>`
 holds `summaryShownAt`
-When the host taps "Oops, keep playing"
-Then the summary goes and the evening is exactly where "End the evening" or "End now" was tapped (between rounds:
+When the host taps "Oops, keep playing" (in "More ›")
+Then the summary goes and the game is exactly where "End game" or "End now" was tapped (between rounds:
 the same result screen, with "Undo" when its window is open, IMP-037); nothing is recorded and nothing is lost
-And `endEvening` is recorded when the host leaves the summary screen: "Back to Home", "Play something else",
-"History" (in "More ›"), or "Discard this evening" then "Discard" (which deletes instead). "Share" does not leave it, and a share
+And `endEvening` is recorded when the host leaves the summary screen: "Play again", "Home", "Play something else",
+"History" (in "More ›"), or "Discard this game" then "Discard" (which deletes instead). "Share" does not leave it, and a share
 sheet's return does not count
 And when the app is closed and reopened while the summary was showing, the summary shows again until it is left,
 with "Oops, keep playing" only within 3 hours of `summaryShownAt` (IMP-099); Home and "What shall we play?" list such
@@ -28,10 +28,10 @@ And 3 hours after `summaryShownAt` (IMP-099) `endEvening` is recorded by itself;
 then has no "Oops, keep playing"
 And History never offers to reopen an ended evening (PLT-008)
 
-## IMP-102: Something else tonight, with the same people
-Status: approved, owner, 2026-10-03
+## IMP-102: Something else, with the same people
+Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
-When the host taps "Play something else" on the summary
+When the host taps "Play something else" on the summary (IMP-092)
 Then "What shall we play?" opens, and the next game's players arrive filled in (IMP-004, PLT-024)
 And the Impostor evening belongs to tonight's session (PLT-016) and stays out of any money tally (PLT-023); the
 session screen lists it as one `session-game` reading "Impostor · 7 rounds"
@@ -43,10 +43,10 @@ Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
 Given History lists only evenings that replay (evenings saved before version 3.1 without word ids are hidden,
 IMP-096)
-When the host taps "Play again" on a past evening in History (PLT-009)
+When the host taps "Play again" on a past game in History (PLT-009), or "Play again" on the summary (IMP-092)
 Then "Who's playing?" opens with that evening's players in its final seat order (leavers left out), then "Next"
 opens "How do you want to play?" with that evening's final choices (IMP-009)
-And "Start round" starts a new evening in tonight's session (IMP-009), with the words of the last 3 evenings
+And "Start round" starts a new game in tonight's session, silently (IMP-009), with the words of the last 3 evenings
 avoided (IMP-052)
 
 ## IMP-104: An evening left open ends by itself
@@ -71,19 +71,19 @@ the round was scored, its `round-points` text follows on its own line ("+2 Arjun
 And the fun lines of IMP-095 and, when scored, the final scoreboard
 And it can't be changed (PLT-008); it can be deleted (PLT-010) or cleared with all history (PLT-011)
 
-## IMP-106: Share the night
-Status: approved, owner, 2026-10-03
+## IMP-106: Share the game
+Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
-When the host taps "Share" on the summary
+When the host taps "Share" (in "More ›" on the summary)
 Then `navigator.share({ text })` is called once with this text, lines joined by "\n":
-- "Impostor night · 7 rounds"
+- "Impostor game · 7 rounds"
 - "Impostor caught 4 · escaped 3"
 - fun line 1 of IMP-095, only when it shows ("Best impostor: Arjun, escaped 2 times")
 - "Words: " + the words of the completed rounds in round order (the practice round's first), at most 8, joined by
   ", ", with "…" right after the 8th word when there are more
 Example (7 counted rounds, no practice):
 ```
-Impostor night · 7 rounds
+Impostor game · 7 rounds
 Impostor caught 4 · escaped 3
 Best impostor: Arjun, escaped 2 times
 Words: Samosa, Pet name, Cow on the road, Chai, Dosa, Idli, Mango
