@@ -430,7 +430,7 @@ test.describe('IMP-033, IMP-034, IMP-038, IMP-039, IMP-073: the one result scree
     await expect(result(page, 'round-outcome'), 'nothing else appears later').toHaveText(exact('The crew wins!'));
   });
 
-  test('IMP-073 (I23): the headline is 44 px below 360 px wide, always one line there; 56 px at 360 wide', async ({ page }) => {
+  test('IMP-073, IMP-033 (I24): the headline is 44 px below 390 px wide (320, 359, 360, 375, 389), always one line there; 56 px at 390 wide and at 812 × 375', async ({ page }) => {
     await toResult(page);
     await pickerName(page, 'Riya').click();
     await mainButton(page).filter({ hasText: /^Reveal / }).click();
@@ -441,8 +441,9 @@ test.describe('IMP-033, IMP-034, IMP-038, IMP-039, IMP-073: the one result scree
       const r = document.createRange(); r.selectNodeContents(el);
       return new Set(Array.from(r.getClientRects()).filter((x) => x.width > 1).map((x) => Math.round(x.top))).size === 1 && el.scrollWidth <= el.clientWidth;
     });
-    // "Always one line" is the rule for the 44 px size below 360 px wide; at 360 and up the spec sets only 56 px.
-    for (const [w, ht, px] of [[320, 568, 44], [359, 640, 44], [360, 640, 56]] as const) {
+    // I24 (product owner, 4 October): 44 px at widths below 390 px ("wraps at 360 on Linux fonts"), always one line there;
+    // at 390 and up the spec sets only 56 px. 812 × 375 is 812 wide, so 56 px.
+    for (const [w, ht, px] of [[320, 568, 44], [359, 640, 44], [360, 640, 44], [375, 667, 44], [389, 844, 44], [390, 844, 56], [812, 375, 56]] as const) {
       await page.setViewportSize({ width: w, height: ht });
       expect(await fontSize(h), `${w} wide`).toBe(px);
       if (px === 44) expect(await oneLine(), `${w} wide: one line`).toBe(true);
@@ -912,6 +913,49 @@ test.describe('IMP-083 and IMP-084: screen readers, no flashing', () => {
     expect(tail.slice(0, 5)).toEqual(['3', '2', '1', 'Point!', 'Arjun was…']);
     expect(tail.slice(5).join(' ')).toMatch(/^✓ Caught!.*[Aa][Rr][Jj][Uu][Nn] was the impostor.*The word was Samosa.*The crew wins!$/);
     expect(tail.join(' '), 'never announced').not.toMatch(/Tonight:|Also called|Food/);
+  });
+
+  // I24 (product owner, 4 October): the announcer is emptied when a new deal starts, and only then.
+  test('IMP-083 (I24): a new deal starts with the announcer empty: after "Next round" (screen A of round 2 and through its deal), then the next clue order is announced', async ({ page }) => {
+    const DEAL2 = { wordId: PANI_PURI, impostor: 'Meena', starter: 'Arjun' };
+    await toClues(page, { seeds: { deals: [DEAL, DEAL2] } });
+    await expect(announcer(page)).toHaveText(exact('Riya starts. Each say one word about your secret: Riya, Arjun, Meena, Kabir', P4));
+    await toTalk(page);
+    await toPickerFromTalk(page);
+    await pickerName(page, 'Arjun').click();
+    await mainButton(page).filter({ hasText: /^Reveal / }).click();
+    await page.clock.runFor(1500);
+    await expect(outcome(page)).toHaveText(exact('The crew wins!'));
+    await expect(announcer(page), 'the result was announced').not.toHaveText('');
+    await mainButton(page).filter({ hasText: 'Next round' }).click();
+    await expect(passName(page)).toHaveText(exact('Riya', P4));
+    await expect(announcer(page), 'screen A of the new deal: empty').toHaveText('');
+    for (const [i, n] of P4.entries()) {
+      await imButton(page, n).click();
+      await expect(announcer(page), `${n}'s turn: still empty`).toHaveText('');
+      await hold(page, 600);
+      await mainButton(page).click();
+      if (i < P4.length - 1) await expect(announcer(page), `after ${n}'s "Done": still empty`).toHaveText('');
+    }
+    await expect(page.getByTestId('clue-order')).toHaveText(exact('Arjun → Meena → Kabir → Riya', P4));
+    await expect(announcer(page)).toHaveText(exact('Arjun starts. Each say one word about your secret: Arjun, Meena, Kabir, Riya', P4));
+  });
+
+  test('IMP-083 (I24): "Deal again with a new word" from the clues screen starts a new deal with the announcer empty', async ({ page }) => {
+    await toClues(page, { seeds: { deals: [DEAL, { wordId: PANI_PURI, impostor: 'Meena', starter: 'Arjun' }] } });
+    await expect(announcer(page)).not.toHaveText('');
+    await fromMenu(page, 'Deal again with a new word');
+    await page.getByRole('dialog', { name: /^Deal again\?/ }).getByRole('button', { name: 'Deal again', exact: true }).click();
+    await expect(passName(page)).toHaveText(exact('Riya', P4));
+    await expect(announcer(page), 'the new deal starts empty').toHaveText('');
+  });
+
+  test('IMP-083, IMP-020 (I24): reopening an evening saved on the clues screen still announces the clue order', async ({ page }) => {
+    const e = savedEvening({ deals: [DEAL], moves: [START, ...P4.map(() => ({ type: 'seen' }) as Move)] });
+    await phoneWith(page, [e], { now: e.records.at(-1).at + 60_000 });
+    await openEvening(page);
+    await expect(page.getByTestId('clue-order')).toHaveText(exact('Riya → Arjun → Meena → Kabir', P4));
+    await expect(announcer(page)).toHaveText(exact('Riya starts. Each say one word about your secret: Riya, Arjun, Meena, Kabir', P4));
   });
 
   test('private-live is assertive and holds the block only while it shows', async ({ page }) => {

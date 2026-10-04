@@ -3,6 +3,7 @@
 // Settings (IMP-109, with IMP-014's switch and IMP-107's list) and the hold screen's layout at every size (IMP-081).
 // Every text, name and test id is the one in specs/impostor/README.md (Terms, Canonical strings, Test hooks).
 // Impostor round 4 is built (main df8f362, 4 October 2026): no test here is marked expected-to-fail.
+// I24 (4 October 2026, main ce6513c): IMP-022's quiet button is "Go round again" in the bottom bar under "Not enough clues?".
 import { expect, test, type Locator, type Page } from './fixtures';
 import { backgroundAndReturn, expectOneMainButton, fromHome, isOutlined } from './helpers';
 import {
@@ -27,7 +28,8 @@ const fitsInLines = (l: Locator, n: number) => l.evaluate((el, n) => {
 }, n);
 const starterName = (page: Page) => page.getByTestId('starter-name');
 const clueOrder = (page: Page) => page.getByTestId('clue-order');
-const anotherRound = (page: Page) => page.getByRole('button', { name: 'One more round of clues', exact: true });
+const anotherRound = (page: Page) => page.getByRole('button', { name: 'Go round again', exact: true });
+const notEnough = (page: Page) => page.getByText('Not enough clues?', { exact: true });
 const settingsClose = (page: Page) => page.getByRole('button', { name: /^(← Back|Back|Done|Close)$/ }).last();
 
 test.describe('IMP-016, IMP-020, IMP-022: the clues screen', () => {
@@ -111,11 +113,47 @@ test.describe('IMP-016, IMP-020, IMP-022: the clues screen', () => {
     expect(await fitsInLines(starterName(page), sn > 32 ? 1 : 2), 'starter-name never cut off').toBe(true);
   });
 
-  test('3 to 5 players: "One more round of clues" (quiet) adds "Second round: MEENA starts again" under the clue order, records anotherRoundOfClues, then goes', async ({ page }) => {
+  test('IMP-022 (I24): 3 to 5 players: "Go round again" (quiet) sits in the bottom bar directly above the main button, under the small line "Not enough clues?" (15 px), not under the clue order', async ({ page }) => {
     await startEvening(page, { players: P5, seeds: DEAL5 });
     await dealAll(page, P5);
     await expect(anotherRound(page)).toBeVisible();
-    expect(await isOutlined(anotherRound(page)), '"One more round of clues" is quiet').toBe(true);
+    await expect(notEnough(page)).toBeVisible();
+    expect(await isOutlined(anotherRound(page)), '"Go round again" is quiet').toBe(true);
+    expect(await fontSize(notEnough(page)), '"Not enough clues?" is a small line').toBe(15);
+    await expect(anotherRound(page), 'in the bottom bar: wholly on screen with the main button').toBeInViewport({ ratio: 1 });
+    await expect(mainButton(page)).toBeInViewport({ ratio: 1 });
+    const co = (await clueOrder(page).boundingBox())!, ne = (await notEnough(page).boundingBox())!;
+    const ar = (await anotherRound(page).boundingBox())!, mb = (await mainButton(page).boundingBox())!;
+    expect(ne.y, '"Not enough clues?" is below the clue order').toBeGreaterThanOrEqual(co.y + co.height - 1);
+    expect(ne.y + ne.height, '"Not enough clues?" above "Go round again"').toBeLessThanOrEqual(ar.y + 1);
+    expect(ar.y + ar.height, '"Go round again" above the main button').toBeLessThanOrEqual(mb.y + 1);
+    // "Directly above": no other text or control between the small line and the button, or between the button and the main button.
+    const between = (top: number, bottom: number) => page.evaluate(([t, b]) => Array.from(document.querySelectorAll('body *'))
+      .filter((el) => {
+        if (el.children.length > 0 || !(el.textContent ?? '').trim()) return false;
+        const r = el.getBoundingClientRect();
+        // Screen-reader-only text (1 × 1 px, such as the announcer) is not on screen.
+        return r.height > 1 && r.width > 1 && r.top >= t! - 0.5 && r.bottom <= b! + 0.5;
+      })
+      .map((el) => (el.textContent ?? '').trim()), [top, bottom]);
+    expect(await between(ne.y + ne.height, ar.y), 'nothing between "Not enough clues?" and "Go round again"').toEqual([]);
+    expect(await between(ar.y + ar.height, mb.y), 'nothing between "Go round again" and the main button').toEqual([]);
+    // "Not under clue-order": at 390 × 844 the pair sits with the main button at the bottom, nearer it than the clue order.
+    expect(mb.y - (ar.y + ar.height), 'nearer the main button than the clue order').toBeLessThan(ne.y - (co.y + co.height));
+  });
+
+  test('IMP-022 (I24): with Larger text "Not enough clues?" is 19 px and still directly above "Go round again"', async ({ page }) => {
+    await startEvening(page, { players: P5, seeds: DEAL5, storage: { 'pgn.pref.largerText': true } });
+    await dealAll(page, P5);
+    expect(await fontSize(notEnough(page))).toBe(19);
+    const ne = (await notEnough(page).boundingBox())!, ar = (await anotherRound(page).boundingBox())!, mb = (await mainButton(page).boundingBox())!;
+    expect(ne.y + ne.height).toBeLessThanOrEqual(ar.y + 1);
+    expect(ar.y + ar.height).toBeLessThanOrEqual(mb.y + 1);
+  });
+
+  test('IMP-022: tapping "Go round again" adds "Second round: MEENA starts again" under the clue order, records anotherRoundOfClues, then the button goes', async ({ page }) => {
+    await startEvening(page, { players: P5, seeds: DEAL5 });
+    await dealAll(page, P5);
     const before = (await onlyEvening(page)).records.length;
     await anotherRound(page).click();
     const line = page.getByText(exact('Second round: Meena starts again'));
@@ -131,7 +169,7 @@ test.describe('IMP-016, IMP-020, IMP-022: the clues screen', () => {
     expect(after.records.at(-1).move).toEqual({ type: 'anotherRoundOfClues' });
   });
 
-  test('3 players have "One more round of clues"; 6 players do not', async ({ page }) => {
+  test('IMP-022: 3 players have "Go round again"; 6 players do not', async ({ page }) => {
     const three = ['Riya', 'Arjun', 'Meena'];
     await startEvening(page, { players: three, seeds: { deals: [{ wordId: SAMOSA, impostor: 'Arjun', starter: 'Riya' }] } });
     await dealAll(page, three);

@@ -43,7 +43,7 @@ Change classes (`docs/change-sop.md`): rules, secrets and seeds, saved evenings 
   `deal-progress` at 15 px top left, "Everyone else, look away!" at 17 px, `private-word` "fits in 3 lines".
 - New strings in 3.3: "✓ Caught!", "✗ Escaped!", "<NAME> was the impostor", "Still a tie.", "The word was",
   "Let go to hide", "New word for everyone?" / "New word" / "Back", "Each say one word about your secret:",
-  "Clues done, talk it over", "Clues done, start the 2-minute timer", "One more round of clues", "Not sure?",
+  "Clues done, talk it over", "Clues done, start the 2-minute timer", "Go round again", "Not sure?",
   "1 more minute", "Last guess for a caught impostor" / "Off" / "On", "A caught impostor can steal the round by
   guessing the word.", "Same as last time", "Scores since round 4", "Arjun wins the night with 2 points!",
   "Crew 4 · Impostors 3", "More ›".
@@ -182,7 +182,7 @@ U+2192; "✓" is U+2713; "›" is U+203A; "–" in "3–20" is U+2013; apostroph
 | Redeal | "No problem! New word coming." · "Pass the phone back to <NAME>"; main "I'm <Name>" | h1; paragraph | IMP-015 |
 | Clues | "✓ Everyone has seen their word." · "Phone in the middle, face up." · `<NAME>` · "starts" · "Each say one word about your secret:" · "Meena → Kabir → Zoya → Riya → Arjun" | paragraphs; `starter-name`; paragraphs; `clue-order` | IMP-016, 020 |
 | Clues main | "Clues done, talk it over" (Free flow) / "Clues done, start the 2-minute timer" (Timer) | main button | IMP-016 |
-| Second round | quiet "One more round of clues"; then line "Second round: <NAME> starts again" | button; paragraph | IMP-022 |
+| Second round | quiet "Go round again" (in the bottom bar, directly above the main button); then line "Second round: <NAME> starts again" | button; paragraph | IMP-022 |
 | Talk, Free flow | heading "Talk it over"; "Who sounded unsure?"; main "Vote now" | h1 `talk-heading`; paragraph | IMP-023 |
 | Talk, Timer | label "Talk it over" above `timer` "2:00"…"0:00"; main "Vote now"; quiet "Pause" / "Carry on"; small line "Paused · Tap to carry on"; heading "Time's up!"; main "Get ready to point"; quiet "1 more minute" | `timer-label`; `timer`; buttons; small line; h1 | IMP-024, 027 |
 | Countdown | "Get ready to point…" then "3", "2", "1", "Point!" | h1 `countdown-heading` then `countdown-number` | IMP-030 |
@@ -215,7 +215,7 @@ U+2192; "✓" is U+2713; "›" is U+203A; "–" in "3–20" is U+2013; apostroph
 | History, in progress | "In progress" | inside `history-game` | IMP-094 |
 | History rows | "Impostor · 7 rounds"; round rows (IMP-105); "Play again"; "← Back" when opened between rounds | `history-game`; `history-round`; buttons | IMP-103, 105, 092 |
 | Settings | switches "Larger text" and "Tap to show instead of hold"; note "Your screen reader will say the word out loud. Use earphones or turn the volume down."; "Skipped words (3)"; "Bring back" per word (accessible name "Bring back Samosa") | switches; small line; heading; buttons | IMP-014, 107, 109 |
-| Announcements | IMP-083 list | `announcer` (`aria-live="polite"`) | IMP-083 |
+| Announcements | IMP-083 list; `announcer` is emptied when a new deal starts (product owner, 4 October) | `announcer` (`aria-live="polite"`) | IMP-083 |
 
 ---
 
@@ -271,7 +271,7 @@ A test may set exactly these; the build must honour them.
      | "Don't know this word?", and "Back" in its dialog | nothing |
      | "New word" (dialog "New word for everyone?") | `dontKnow` (the new word and impostor are drawn now) |
      | "Clues done, talk it over" / "Clues done, start the 2-minute timer" | `startTalk` |
-     | "One more round of clues" | `anotherRoundOfClues` |
+     | "Go round again" | `anotherRoundOfClues` |
      | "Vote now" / "Get ready to point" | `voteNow` |
      | "Pause", "Carry on", "1 more minute", "Count again", "It's a tie", ticking names, the countdown | nothing |
      | "Point again: …" | `tie {players}` |

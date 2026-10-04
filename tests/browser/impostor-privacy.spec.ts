@@ -378,7 +378,7 @@ test.describe('IMP-016 and IMP-020: straight to the clues; who starts', () => {
     await expect(page.getByText('Each say one word about your secret:', { exact: true })).toBeVisible();
     await expect(page.getByTestId('clue-order')).toHaveText(exact('Meena → Kabir → Zoya → Riya → Arjun'));
     await expect(mainButton(page)).toHaveText('Clues done, talk it over');
-    await expect(page.getByRole('button', { name: 'One more round of clues', exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Go round again', exact: true })).toBeVisible();
     await expect(page.getByTestId('announcer')).toContainText(phrase('Meena starts. Each say one word about your secret: Meena, Kabir, Zoya, Riya, Arjun'));
   });
 

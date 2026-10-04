@@ -39,7 +39,9 @@ in Hard the starter is never the impostor; tolerance 0 failures
 Status: approved, owner, 2026-10-04 (changed)
 Phase: Impostor 1
 Given 3, 4 or 5 players
-Then the clues screen has the quiet button "One more round of clues"
+Then the clues screen has the quiet button "Go round again", placed in the bottom bar directly above the main button
+(not under `clue-order`), with the small line "Not enough clues?" (15 px) directly above it (product owner, 4 October,
+after Jev's confusion flags: the old label in the middle of the screen read as the first step)
 When it is tapped
 Then the line "Second round: MEENA starts again" (the same starter) appears under `clue-order`, the button disappears
 for the rest of the round, and nothing else changes (recorded as `anotherRoundOfClues`)

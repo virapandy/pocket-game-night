@@ -71,7 +71,7 @@ Then at every size, these sizes hold (guideline 46):
 | `countdown-number` "Point!" | 96 px | 320 px wide: exactly 72 px | 72 px |
 | `private-word` (box 2 lines tall) | 36 px | Larger text on, or word over 20 characters | 30 px |
 | `build-up` | 40 px | never | 40 px |
-| `result-headline` | 56 px | widths below 360 px, so it stays on one line (product owner, 4 October) | 44 px |
+| `result-headline` | 56 px | widths below 390 px, so it stays on one line on every font (product owner, 4 October) | 44 px |
 | `result-impostor` | 32 px (may wrap onto 3 lines) | never | 32 px |
 | `result-word` | 44 px | word over 12 characters | 32 px (fits in 3 lines) |
 | `result-note`, `guess-line` | 20 px | never | 20 px |

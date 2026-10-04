@@ -79,7 +79,7 @@ test('Journey 1: defaults, 4 players, 3 rounds (caught, escaped, still a tie), e
   expect(lines.Riya).toEqual(['Your secret', 'Samosa', 'Category: Food', "Give one-word clues. Don't say it!", '']);
   expect(lines.Arjun!.slice(0, 4)).toEqual(['Your secret', "You're the impostor", 'Category: Food · Hint: Tea time', "Listen and blend in. Don't get caught!"]);
   await expectClues(page, 'Riya', 'Riya → Arjun → Meena → Kabir');
-  await expect(page.getByRole('button', { name: 'One more round of clues', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Go round again', exact: true })).toBeVisible();
   await mainButton(page).click();
   await expect(page.getByTestId('talk-heading')).toHaveText(exact('Talk it over', []));
   await expect(page.getByText('Who sounded unsure?', { exact: true })).toBeVisible();

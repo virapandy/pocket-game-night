@@ -78,7 +78,7 @@ And at t = 1.5 s the build-up is replaced, all at once, by, top to bottom:
 6. `round-outcome` "The crew wins!" (h2)
 7. `evening-line` (Score No, IMP-040) or `round-points` and `scoreboard` (Score Yes, IMP-044)
 8. the quiet "This word didn't work" (IMP-107); and the main button "Next round", pinned; the menu button returns
-And sizes: `build-up` 40 px; `result-headline` 56 px, centred (44 px at widths below 360 px, always one line); `result-note` 20 px; `result-impostor` 32 px, centred
+And sizes: `build-up` 40 px; `result-headline` 56 px, centred (44 px at widths below 390 px, always one line); `result-note` 20 px; `result-impostor` 32 px, centred
 (it may wrap onto 3 lines); `word-label` body text; `result-word` 44 px, centred, fitting in 3 lines (a word over 12
 characters may be any size from 32 px to 44 px); `also-called` small line; `word-category` 17 px (21 px with Larger
 text) in an outlined chip directly below the word (and below `also-called` when shown); `round-outcome` 28 px;
