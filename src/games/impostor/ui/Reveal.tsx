@@ -90,6 +90,8 @@ export function Reveal({
   const guessStep = caught && round.step === 'caught';
   const wordShown = !guessStep;
   const verdictStep = caught && round.step === 'guess';
+  /** The last-chance guess was played in this round (guess step, verdict step, or a verdict tapped). */
+  const lastChance = caught && (guessStep || verdictStep || round.verdict !== null);
   const complete = round.step === 'result' && result !== null;
 
   // IMP-083: what the announcer says, in screen order; each said once, as it appears.
@@ -99,14 +101,14 @@ export function Reveal({
     const first = [caught ? '✓ Caught!' : '✗ Escaped!'];
     if (tie) first.push('Still a tie.');
     else if (!caught) first.push(`${named} was crew.`);
-    first.push(`${round.impostor} was the impostor.`);
-    if (guessStep || verdictStep || (caught && round.verdict !== null)) {
+    first.push(`${round.impostor} was the impostor`);
+    if (lastChance) {
       // The last-chance guess: the caught lines with the guess line, then the word, then the outcome.
       said.push({ key: 'lines', text: [...first, guessLine(round.impostor)].join(' ') });
-      if (wordShown) said.push({ key: 'word', text: `The word was ${wordText}.` });
+      if (wordShown) said.push({ key: 'word', text: `The word was ${wordText}` });
       if (complete) said.push({ key: 'outcome', text: result.outcome });
     } else if (complete) {
-      said.push({ key: 'lines', text: [...first, `The word was ${wordText}.`, result.outcome].join(' ') });
+      said.push({ key: 'lines', text: [...first, `The word was ${wordText}`, result.outcome].join(' ') });
     }
   }
   // Reopened: nothing is said again.
@@ -191,7 +193,8 @@ export function Reveal({
           <p className="imp-result-impostor" data-testid="result-impostor">
             <Caps>{round.impostor}</Caps> was the impostor
           </p>
-          {guessStep && (
+          {/* IMP-039: the guess line stays until "Next round" (also reopened, IMP-091, and after "Undo", IMP-037). */}
+          {lastChance && (
             <p className="imp-result-note" data-testid="guess-line">
               {guessLine(round.impostor)}
             </p>
