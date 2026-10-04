@@ -7,7 +7,7 @@ import {
   tonightsNames, unfinishedEvening, type Evening, type EveningMatch,
 } from './evening';
 import { Game } from './Game';
-import { Dialog, HideMainButton, MainButton, QuietButton } from './parts';
+import { Dialog, HideMainButton, QuietButton } from './parts';
 import { LookBack } from './LookBack';
 import { HowToPlayChoices, WhosPlaying } from './Setup';
 import './impostor.css';
@@ -172,8 +172,20 @@ export function ImpostorScreen({
     <div className={larger ? 'imp imp-larger' : 'imp'}>
       <HideMainButton.Provider value={asking !== null}>{screen}</HideMainButton.Provider>
       {asking && (
-        <Dialog text={`Start a new evening? The evening from ${clock(asking.saved.createdAt)} will be ended.`}>
+        // IMP-001 (M22): two equal outlined buttons; neither has the main look.
+        <Dialog text={`Start a new game? The game from ${clock(asking.saved.createdAt)} will be ended.`}>
           <QuietButton
+            className="imp-equal"
+            onClick={() => {
+              const other = asking;
+              setAsking(null);
+              setRoute({ name: 'game', saved: other.saved, match: other.match, resumed: true, seq: nextSeq() });
+            }}
+          >
+            Carry on that game
+          </QuietButton>
+          <QuietButton
+            className="imp-equal"
             onClick={() => {
               endEvening(store, asking.saved, asking.match);
               clearUi(ui, asking.saved.id);
@@ -183,16 +195,6 @@ export function ImpostorScreen({
           >
             Start new
           </QuietButton>
-          <MainButton
-            inline
-            onClick={() => {
-              const other = asking;
-              setAsking(null);
-              setRoute({ name: 'game', saved: other.saved, match: other.match, resumed: true, seq: nextSeq() });
-            }}
-          >
-            Carry on that evening
-          </MainButton>
         </Dialog>
       )}
     </div>

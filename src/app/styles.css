@@ -148,6 +148,8 @@ body { -webkit-tap-highlight-color: transparent; }
 .stack { display: flex; flex-direction: column; gap: 14px; }
 .stack-tight { display: flex; flex-direction: column; gap: 8px; }
 .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+/* IMP-001 (M22): two equal buttons side by side, neither with the main look. */
+.row-equal > * { flex: 1 1 0; min-width: 0; }
 .chips { display: flex; flex-wrap: wrap; gap: 10px; }
 .top-bar.wrap { flex-wrap: wrap; gap: 8px; }
 .grow { flex: 1; min-width: 0; }

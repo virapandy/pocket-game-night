@@ -127,7 +127,7 @@ function time(t: number): string {
   return `${h % 12 === 0 ? 12 : h % 12}:${String(d.getMinutes()).padStart(2, '0')} ${h < 12 ? 'am' : 'pm'}`;
 }
 
-/** Home's unfinished row: "Tambola, 8:40 pm, 12 numbers called" or "Impostor, 8:40 pm, round 4" (IMP-001). */
+/** Home's unfinished row: "Tambola, 8:40 pm, 12 numbers called" or "Impostor · Riya, Arjun +2 · round 4" (IMP-001). */
 function unfinishedText(g: SavedGame): string {
   if (g.gameType === impostor.info.id) return impostor.unfinishedLine(g);
   const game = gameOf(g.gameType);
@@ -625,7 +625,7 @@ function Home({
 /**
  * IMP-001: "What shall we play?": one equal card per game, none with the main look and no main button; a tap
  * opens that game's setup at once. "← Back" returns to Home. An unfinished Impostor evening shows above the cards
- * ("Impostor · round 4 · Tap to resume"); the Impostor card then asks before starting a new evening.
+ * ("Impostor · Riya, Arjun +2 · round 4", "Tap to resume"); the Impostor card then asks once before starting a new game.
  */
 /**
  * IMP-001, F12: a game's line on its card, where a part with a number ("3–20 players", "2 hrs") never breaks across
@@ -669,7 +669,8 @@ function PickGame({
       <h1 className="step-title">What shall we play?</h1>
       {unfinished && (
         <button type="button" className="choice-card" data-testid="resume-card" onClick={() => onResume(unfinished.id)}>
-          Impostor · round {unfinished.round} · Tap to resume
+          <span className="choice-card-title">{unfinished.label}</span>
+          <span className="choice-card-text">Tap to resume</span>
         </button>
       )}
       <div className="home-choices">
@@ -691,9 +692,13 @@ function PickGame({
         <div className="backdrop">
           <div className="dialog" role="dialog" aria-modal="true" aria-labelledby="start-new-text">
             <p id="start-new-text" className="lead">
-              Start a new evening? The evening from {unfinished.startedAt} will be ended.
+              Start a new game? The game from {unfinished.startedAt} will be ended.
             </p>
-            <div className="row">
+            {/* IMP-001 (M22): two equal outlined buttons; neither has the main look. */}
+            <div className="row row-equal">
+              <button type="button" className="button button-quiet" onClick={() => onResume(unfinished.id)}>
+                Carry on that game
+              </button>
               <button
                 type="button"
                 className="button button-quiet"
@@ -703,9 +708,6 @@ function PickGame({
                 }}
               >
                 Start new
-              </button>
-              <button type="button" className="button" onClick={() => onResume(unfinished.id)}>
-                Carry on that evening
               </button>
             </div>
           </div>

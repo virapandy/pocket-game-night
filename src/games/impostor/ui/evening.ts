@@ -206,10 +206,17 @@ export function clock(t: number): string {
   return `${h % 12 === 0 ? 12 : h % 12}:${String(d.getMinutes()).padStart(2, '0')} ${h < 12 ? 'am' : 'pm'}`;
 }
 
-/** Home's unfinished row (IMP-001): "Impostor, 8:40 pm, round 4". */
+/** IMP-001: the first two players in the current seat order, then "+N" for the others ("Riya, Arjun +2"). */
+export function playersLabel(players: readonly string[]): string {
+  const more = players.length - 2;
+  return players.slice(0, 2).join(', ') + (more > 0 ? ` +${more}` : '');
+}
+
+/** Home's unfinished row and the resume card (IMP-001): "Impostor · Riya, Arjun +2 · round 4". */
 export function unfinishedLine(saved: SavedGame): string {
   const match = loadEvening(saved);
-  return `Impostor, ${clock(saved.createdAt)}, round ${match ? roundToShow(match.state) : 1}`;
+  const players = match ? match.state.players : [];
+  return `Impostor · ${playersLabel(players)} · round ${match ? roundToShow(match.state) : 1}`;
 }
 
 /** History and session rows: players and counted rounds. */

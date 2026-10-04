@@ -35,10 +35,12 @@ export const impostorInfo: GameInfo = {
   tagline: "Find who doesn't know the word · 3–20 players · about 4 min a round",
 };
 
-/** IMP-001: the unfinished evening, for "What shall we play?" (the resume card and the "Start new" dialog). */
-function unfinished(store: SavedGameStore): { id: string; round: number; startedAt: string } | null {
+/** IMP-001: the unfinished game, for "What shall we play?" (the resume card and the "Start new" dialog). */
+function unfinished(store: SavedGameStore): { id: string; round: number; label: string; startedAt: string } | null {
   const u = unfinishedEvening(store);
-  return u ? { id: u.saved.id, round: roundToShow(u.match.state), startedAt: clock(u.saved.createdAt) } : null;
+  return u
+    ? { id: u.saved.id, round: roundToShow(u.match.state), label: unfinishedLine(u.saved), startedAt: clock(u.saved.createdAt) }
+    : null;
 }
 
 /** IMP-001 "Start new": `endEvening` at once, with no summary (deleted when it has no counted round, IMP-097). */
@@ -58,7 +60,7 @@ export const impostor = {
   opens: eveningOpens,
   /** History and session rows: players and counted rounds. */
   describe: describeEvening,
-  /** Home's unfinished row (IMP-001): "Impostor, 8:40 pm, round 4". */
+  /** Home's unfinished row (IMP-001): "Impostor · Riya, Arjun +2 · round 4". */
   unfinishedLine: (saved: SavedGame) => unfinishedLine(saved),
   unfinished,
   endNow,

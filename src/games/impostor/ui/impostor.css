@@ -740,3 +740,6 @@
 .imp-result-line { width: 100%; display: flex; align-items: center; gap: 8px; }
 .imp-result-line > p { flex: 1 1 auto; min-width: 0; text-align: left; }
 .imp-players-link { flex: none; margin-left: auto; white-space: nowrap; }
+/* IMP-001 (M22): "Carry on that game" and "Start new" side by side, equal and outlined. */
+.imp-dialog-buttons:has(> .imp-equal) { flex-direction: row; }
+.imp-equal { flex: 1 1 0; min-width: 0; padding: 0 8px; }
