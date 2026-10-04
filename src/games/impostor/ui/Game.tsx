@@ -86,6 +86,14 @@ export function Game({
   const [seeAgain, setSeeAgain] = useState<{ name: string; key: number } | null>(null);
   const [said, setSaid] = useState('');
   const announce = useCallback((text: string) => setSaid(text), []);
+  // IMP-083 (I24): a new deal empties the announcer, so the last round's result is not kept into the next deal.
+  // Only when the deal counter changes, never on first open (reopening on the clues screen keeps the clue order).
+  const lastDeal = useRef(roundKey);
+  useEffect(() => {
+    if (lastDeal.current === roundKey) return;
+    lastDeal.current = roundKey;
+    setSaid('');
+  }, [roundKey]);
   /** The summary shows (IMP-092, IMP-101); `ended` once `endEvening` is recorded (or the evening deleted) meanwhile. */
   const [summary, setSummary] = useState(() => ui.get<UiState>(initial.saved.id, {}).summaryShownAt !== undefined);
   const [ended, setEnded] = useState(false);
