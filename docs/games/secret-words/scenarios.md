@@ -11,7 +11,8 @@ Change classes (`docs/change-sop.md`): the deal, the map code, the board algorit
 format = **C3** (tests first: sections 02, 04 rules, 05, 06, SWD-099); screens = C1/C2.
 
 **"Inspired by Codenames" (owner, 4 October, K22):** the picker card and How to play say so (SWD-001, SWD-011); the word
-"Codenames" appears nowhere else in the app, never as a name, logo or styling.
+"Codenames" appears nowhere else in the app: never as a name, logo, styling, heading, button, page title or web address
+(`legal.md`).
 
 **Renamed (owner, 4 October, K21):** the game was called Ishaara until 4 October; IDs ISH- became SWD- and word ids ISHW-
 became SWDW-, one for one. Every "Ishaara" on screen reads "Secret Words". Nothing else changed.
@@ -228,8 +229,9 @@ word sits." 3 "Don't say a word that is still face down on the board, or part of
 an English sentence (chai, jugaad), is fine. Names like Taj Mahal count as one word." 5 "No faces, no pointing, no extra
 hints. The other clue giver judges a clue before the first guess." 6 "Guessers take at least one guess, and up to the number
 plus one. 0 or ∞: as many as you like." 7 "Your word: keep going. Nobody's word or the other team's: your turn ends. The
-Bhoot: you lose!" (Family: without "The Bhoot: you lose!") 8 "First team to find all its words wins." Then the small line `credit`: "Inspired by Codenames, designed by Vlaada
-Chvátil. Codenames is a trademark of Czech Games Edition. Secret Words is not made or endorsed by them." Main "Done" returns.
+Bhoot: you lose!" (Family: without "The Bhoot: you lose!") 8 "First team to find all its words wins." Then the small line `credit`: "Secret Words uses game rules inspired by
+Codenames, designed by Vlaada Chvátil. Codenames is a trademark of Czech Games Edition. Secret Words is an independent free
+game and is not made, sponsored or endorsed by Czech Games Edition." (plain text, no styling; `docs/games/secret-words/legal.md`) Main "Done" returns.
 The page may scroll. Nothing about the map appears.
 
 ### SWD-012 The preview board (detail of SWD-010)
