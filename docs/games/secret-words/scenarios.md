@@ -1,6 +1,6 @@
 # Secret Words: scenarios (version 3.4, 4 October 2026)
 
-Status: **version 3.4, draft, for the owner's approval** (version 3.2, SWD-001 to SWD-104, was approved on 4 October; 3.3
+Status: **version 3.4, for the owner's approval** (two-reader check of 3.3 and a final verification pass resolved) (version 3.2, SWD-001 to SWD-104, was approved on 4 October; 3.3
 added the owner's decisions K32–K41 as section 07; 3.4 folds section 07 into every earlier scenario it changes, with the
 product owner's resolutions 1–21, and waits for its two-reader check and approval). SWD-200+ are direction, built later.
 Decisions K1–K18 decided by the owner (4 October, "follow the recommendation"). Version 2 resolves every guess from the
@@ -122,7 +122,7 @@ games", "Guesses only" tag on Make teams, the 180 s map hide (now 60 s).
   budget at 360 × 640 (the change row shares the "End our turn" slot; "Turn" is a 44 × 44 ↻ in the counts row); **"Turn"
   flips the board 180° only** (90° can't fit words in portrait: a deviation from P6's 90° steps); "Keep my clue"; exact
   clue-word matching; layouts for the clue screen, private map and map phone in landscape; Guesses-only edge cases;
-  `nextMapCode`; `dnd-tip`; History's clue line. Retired: "hold", "tap mode", "60 s", "Both have the map" for two phones.
+  `nextMapCode`; `dnd-tip`; History's clue line. Retired: "hold", "tap mode", "60 s" (60 s restored in 3.3 by K36, SWD-121), "Both have the map" for two phones.
 
 **Funny team names (owner, 4 October, K25):** "Mango" and "Peacock" are retired. The teams are the orange team and the
 teal team, with a random pair of funny names each evening (SWD-013, `team-names.csv`); icons are shapes (circle, diamond).
@@ -160,7 +160,7 @@ became SWDW-, one for one. Every "Ishaara" on screen reads "Secret Words". Nothi
 Terms already defined in `docs/games/impostor/scenarios.md` mean exactly the same here: **main button, quiet button,
 selected, tint, greyed, disabled, small line, body text, toast, dialog, Larger text, fits in N lines, no page scrolling,
 names, plurals, t = …, sound on**. Characters: "·" U+00B7 with a space either side; "…" U+2026; "→" U+2192; "✓" U+2713;
-"✗" U+2717; "∞" U+221E; "–" U+2013; "↻" U+21BB; apostrophes and inner quotes U+0027.
+"✗" U+2717; "∞" U+221E; "–" U+2013; "↻" U+21BB; "✕" U+2715; "←" U+2190; apostrophes and inner quotes U+0027.
 
 | Term | Meaning |
 |---|---|
@@ -215,7 +215,7 @@ found".
 | Home, under "Host a game" | "Tambola, Impostor or Secret Words on this phone" (list joined with ", " and " or " before the last) | text inside the button | SWD-001 |
 | Picker card | "Secret Words" · "Inspired by Codenames · team word hunt · 4–20 players · 15–25 min a game" | button, name starts "Secret Words" | SWD-001 |
 | Picker resume card | "Secret Words · Chai Champions v Coffee Commandos · 2–1 · Tap to resume" ("0–0" before any won game) | `resume-card` | SWD-115 |
-| Start new | dialog "Start a new game night? The one from 8:40 pm (Chai Champions v Coffee Commandos, 2–1) will end." with, in this order, two equal quiet buttons "Carry on that one", "Start new (ends that one)"; no main | dialog (named "Start a new game night?"); buttons | SWD-115 |
+| Start new | dialog: heading "Start a new game night?"; paragraph "The one from 8:40 pm (Chai Champions v Coffee Commandos, 2–1) will end." with, in this order, two equal quiet buttons "Carry on that one", "Start new (ends that one)"; no main | dialog (named "Start a new game night?"); buttons | SWD-115 |
 | Home unfinished row | "Secret Words, 8:40 pm · Chai Champions v Coffee Commandos · 2–1" and "Tap to resume" | inside `unfinished-games` | SWD-115 |
 | Home last game night | "Last game night: Chai Champions 2 · Coffee Commandos 1"; button "Play again with these teams" | `last-night` paragraph; button | SWD-115 |
 | Home menu | adds "History" | menu item | SWD-115 |
@@ -234,7 +234,7 @@ found".
 | How to play | heading "How to play"; h2 "Read this aloud" + the 4 lines; h2 "The rules" + 6 lines (SWD-011); h2 "Clue rules" + 4 lines (SWD-131); small line `credit` (SWD-011); main "Done" | h1; h2; `ol`; small line | SWD-011, 131 |
 | Preview board | `turn-line` "Chai Champions start"; counts; main "Start" | paragraphs; main | SWD-012 |
 | Scan screen | heading "Clue givers, scan your map"; two phones: "Riya and Arjun: sit side by side and share one map phone." · three phones: "Riya (Chai Champions, orange) and Arjun (Coffee Commandos, teal): scan on your own phones." (a pair reads "Nana + Aarav"); QR; "or type: 27P-3QX8"; `board-check` (SWD-116); `dnd-tip` (SWD-104); `waiting-line` is not here; small line "Everyone else: look away from their phones."; main "The map phone is ready" (two) / "Both have the map" (three) | h1; paragraph; `map-qr` (`img`, name "Map code 27P-3QX8"); `map-code-text`; small line; main | SWD-033 |
-| Board check (scan screen) | first deal: "The map phone should start with: Cricket · Bat · Monsoon" / three phones "The map phones should start with: Cricket · Bat · Monsoon"; next deal, clue givers changed: "Hand the map phone to Meena and Kabir, tap Next map, and check it starts with: Kite · Tiffin · Rain" / three phones "Meena and Kabir: tap Next map on your phones and check they start with: Kite · Tiffin · Rain"; unchanged: "Tap Next map on the map phone and check it starts with: Kite · Tiffin · Rain" / three phones "Tap Next map on both map phones and check they start with: Kite · Tiffin · Rain"; new deck: "New code: scan again. The map phone should start with: Kite · Tiffin · Rain" / three phones "New code: scan again. The map phones should start with: Kite · Tiffin · Rain" | `board-check` paragraph | SWD-116 |
+| Board check (scan screen) | first deal (or the first after a change of phones): "The map phone should start with: Cricket · Bat · Monsoon" / three phones "The map phones should start with: Cricket · Bat · Monsoon"; next deal, clue givers changed: "Hand the map phone to Meena and Kabir, tap Next map, and check it starts with: Kite · Tiffin · Rain" / three phones "Meena and Kabir: tap Next map on your phones and check they start with: Kite · Tiffin · Rain"; unchanged: "Tap Next map on the map phone and check it starts with: Kite · Tiffin · Rain" / three phones "Tap Next map on both map phones and check they start with: Kite · Tiffin · Rain"; new deck: "New code: scan again. The map phone should start with: Kite · Tiffin · Rain" / three phones "New code: scan again. The map phones should start with: Kite · Tiffin · Rain" | `board-check` paragraph | SWD-116 |
 | Map code again | the scan screen for the current board; main "Back to the game" | main | SWD-129 |
 | Pass screen | heading "Chai Champions, your turn"; "Pass the phone to"; `<NAME>` (pair: two lines "NANA +" / "AARAV"); "Clue giver for Chai Champions (orange)" (pair: "Clue givers for Chai Champions (orange)"); `waiting-line`; `recap-line` (SWD-103); `dnd-tip` (SWD-104); quiet "Start 90-second timer"; main "I'm Riya" (pair: "We're Nana and Aarav") | h1 `turn-heading`; paragraph; `pass-name`; paragraph; small lines; button; main | SWD-030, 123 |
 | Waiting line | "Coffee Commandos: guess how many Riya will say!" (pair: "Coffee Commandos: guess how many Nana and Aarav will say!") | `waiting-line` small line | SWD-126 |
@@ -248,7 +248,7 @@ found".
 | Saved map row (Home) | "Secret Words map 27P-3QX8 · Tap to open" (button) · older: "Secret Words map 27P-3QX8" with "Open" / "Clear" | `saved-map` | SWD-036 |
 | Clue screen | heading "Chai Champions, your turn"; `clue-prompt` "Riya, say your clue out loud. How many words is it for?" (pair: "Nana and Aarav, say your clue out loud. How many words is it for?"); keys "0"…"9", "∞" (with "many" under it); `clue-help` "2 means up to 3 guesses. 0 or ∞: as many as you like."; input labelled "Clue word (optional)" (`clue-word`); `clue-warning` "Heads up: Cricket is on the board."; counts; tip "One word, one number. No faces, no pointing!"; `waiting-line` and `recap-line` (two or three phones); quiet "See the map again" (one phone); from "Change clue" or "Try another clue": quiet "Keep my clue"; quiet "Start 90-second timer"; main "Pick a number" (disabled) / "Clue for 2: start guessing" / "Clue for 0: start guessing" / "Clue for ∞: start guessing" | h1 `turn-heading`; paragraph `clue-prompt`; `clue-key` buttons with `aria-pressed`; small line `clue-help`; input; paragraph; `word-counts`; small lines `tip`, `waiting-line`, `recap-line`; buttons; main | SWD-040, 101, 118 |
 | Counts | circle icon "9 left" · diamond icon "8 left" (visible text "9 left · 8 left"; accessible name "Chai Champions: 9 words left. Coffee Commandos: 8 words left."); landscape board panel: two lines | `word-counts` | SWD-040, 043 |
-| Board status | `turn-line` "Chai Champions guessing" (for the first 3 000 ms of a guessing screen after a confirmed clue: "Riya: poker face, no hints!"; pair "Nana + Aarav: poker face, no hints!"); `clue-line` with a word "CRICKET · 2" (DOM "Cricket · 2" as typed) / "CRICKET · ∞", without "Clue: 2" / "Clue: 0" / "Clue: ∞"; `guess-line` "3 guesses left (2 + 1 extra)" (clue 1: "2 guesses left (1 + 1 extra)"), then "2 guesses left", "1 guess left"; 0 and ∞: "Guess as many as you like"; `clue-history` "Earlier: MONSOON 2 · 1 · RAIN ∞"; quiet "Change clue", "Clue not allowed?"; icon button "↻" (accessible name "Flip the board") | paragraphs; buttons | SWD-041, 102, 118, 125 |
+| Board status | `turn-line` "Chai Champions guessing" (for the first 3 000 ms of a guessing screen after a confirmed clue: "Riya: poker face, no hints!"; pair "Nana + Aarav: poker face, no hints!"); `clue-line` with a word "CRICKET · 2" (DOM "Cricket · 2" as typed) / "CRICKET · ∞", with no word "Clue: 2" ("Clue: 0", "Clue: ∞"); `guess-line` "3 guesses left (2 + 1 extra)" (clue 1: "2 guesses left (1 + 1 extra)"), then "2 guesses left", "1 guess left"; 0 and ∞: "Guess as many as you like"; `clue-history` "Earlier: MONSOON 2 · 1 · RAIN ∞"; quiet "Change clue", "Clue not allowed?"; icon button "↻" (accessible name "Flip the board") | paragraphs; buttons | SWD-041, 102, 118, 125 |
 | First-guess tip | "Tap a word to suggest it. Sunita taps Reveal." | small line `tip` | SWD-122 |
 | Board buttons | quiet "End our turn"; main "Sunita: Reveal" (disabled) / "Sunita: Reveal <WORD>" (DOM "Sunita: Reveal Lamp") | button; main | SWD-042, 044, 122 |
 | Pass the pick | menu item "Pass the pick"; dialog "Who picks this turn?" with one button per guesser (`aria-pressed` on the current picker) and quiet "Cancel" | menu item; dialog; buttons | SWD-122 |
@@ -666,6 +666,9 @@ name "Flip the board") at its right end; the board; the tip or result line (at m
   (main on 2 lines at 17 px). A longer clue word wraps onto a 2nd line at 17 px, and the page may then scroll as one with the
   main fixed. With Larger text on at 360 × 640 the page scrolls as one with the main fixed. No page scrolling at 390 × 844
   (Larger text off and on).
+  `turn-line` is 17 px, weight 600, not grown by Larger text; the poker line shrinks in 1 px steps to 13 px to stay on 1
+  line, and if it still doesn't fit, each name shows its first 8 characters then "…". Longest content adds a pair of
+  16-character names in the poker line.
 **Property:** no turn records more guesses than its allowance (counted from the turn's last `clue`), no `clue` follows a reveal
 in the same turn, and no turn ends by "End our turn" before one guess.
 
@@ -880,7 +883,7 @@ At game over, quiet "← Home" (SWD-112) opens Home. At every other game step fr
 card (SWD-115) at the same step. Phone Back still does nothing during a game.
 
 ### SWD-112 Game over: what next (W2, W4, E13, B4, B8)
-Game over shows, in this order: heading and line (SWD-051, SWD-054); `near-miss` and `best-clue` (SWD-128); the tally;
+Game over shows, in this order: heading and line (SWD-051, SWD-054); the board (SWD-051); `near-miss` and `best-clue` (SWD-128); the tally;
 `next-clue-givers` "Next clue givers: Meena and Kabir" (SWD-007's suggestion, the orange team's first; a pair "Next clue
 givers: Nana + Aarav and Kabir") with quiet "Swap"; quiet "Change players, phones or board"; quiet "End for tonight"; quiet "←
 Home"; main "Play again".
@@ -891,6 +894,9 @@ Home"; main "Play again".
   Nothing changes until "Start the game" (no read-aloud), which records the changes and deals (tap → move table).
 - **"End for tonight"**: SWD-060. **"← Home"**: SWD-111. **"Play again"**: SWD-053.
 
+`next-clue-givers` counts a game ended by "End the game" as ended early from the moment game over shows; it does not
+change when `endGame` is recorded, and "Undo" discards it. Team bar at game over: the winning team's bar; ended early: no team
+bar.
 ### SWD-113 The private map: wrong person and someone looking (E6, E8, E5)
 Before the first show, the private map has quiet "Not Riya? Go back" (pair "Not Nana and Aarav? Go back"): it returns to the
 pass screen (without "Welcome back."); nothing recorded. While the map shows: quiet "Someone saw the map" removes the map from
@@ -909,7 +915,7 @@ t = 300 ms (the word shown turned over, SWD-043). Quiet buttons are not affected
   game) and "Tap to resume". **Picker resume card** `resume-card`: "Secret Words · Chai Champions v Coffee Commandos · 2–1 · Tap
   to resume".
 - **Start new** (tapping the Secret Words picker card with an unfinished game night): dialog `role="dialog"` named "Start a new
-  game night?", text "Start a new game night? The one from 8:40 pm (Chai Champions v Coffee Commandos, 2–1) will end.", with
+  game night?", heading "Start a new game night?" and paragraph "The one from 8:40 pm (Chai Champions v Coffee Commandos, 2–1) will end.", with
   two equal quiet buttons in this order "Carry on that one", "Start new (ends that one)" and no main (Terms: Dialog exception).
   Shown once per tap of the card. "Start new (ends that one)": SWD-067.
 - **Next day:** `last-night` "Last game night: Chai Champions 2 · Coffee Commandos 1" with button "Play again with these teams",
@@ -923,7 +929,7 @@ t = 300 ms (the word shown turned over, SWD-043). Quiet buttons are not affected
 ### SWD-116 Board check by words (W1)
 The map phone shows `first-words` "First words: Cricket · Bat · Monsoon" (the words of cells 0, 1, 2). The host's scan screen
 shows `board-check`, the first wording that applies (example words of the next board: Kite · Tiffin · Rain):
-1. The evening's first deal: two phones "The map phone should start with: Cricket · Bat · Monsoon"; three phones "The map
+1. The evening's first deal, or the first deal after "How many phones?" changed (SWD-112): two phones "The map phone should start with: Cricket · Bat · Monsoon"; three phones "The map
    phones should start with: Cricket · Bat · Monsoon".
 2. A deal with a new deck (SWD-024): two phones "New code: scan again. The map phone should start with: Kite · Tiffin · Rain";
    three phones "New code: scan again. The map phones should start with: Kite · Tiffin · Rain".
@@ -946,7 +952,7 @@ starting team's name). A typed code, or an unknown `t` (ignored), shows no `map-
 ### SWD-118 Clue numbers explained (W6, C3 for the moves' view)
 Under the keys, `clue-help` "2 means up to 3 guesses. 0 or ∞: as many as you like."; the ∞ key shows "∞" over the small word
 "many". The board shows `clue-line` (22 px, weight 700, 1 line, not grown by Larger text; shrinks in 1 px steps to 17 px, SWD-041)
-with a word "CRICKET · 2" (DOM "Cricket · 2", the word as typed, upper case by CSS; ∞ "CRICKET · ∞"), without "Clue: 2" ("Clue:
+with a word "CRICKET · 2" (DOM "Cricket · 2", the word as typed, upper case by CSS; ∞ "CRICKET · ∞"), with no word "Clue: 2" ("Clue:
 0", "Clue: ∞"); and under it, as one block, `guess-line` (15 px, 19 px with Larger text, 1 line): "3 guesses left (2 + 1
 extra)" (clue 1: "2 guesses left (1 + 1 extra)"; clue 9: "10 guesses left (9 + 1 extra)") before the turn's first reveal, then
 "2 guesses left", "1 guess left"; for 0 and ∞ "Guess as many as you like".
@@ -966,7 +972,7 @@ Easy); words in a list can't be tapped to fade; "Whole map" returns to the grid.
 Done with this game, or Next map for the next one." The map hides by SWD-121.
 
 ### SWD-121 Maps hide after 60 seconds (K36)
-On the private map and the map phone, the clock starts when the map is shown (a tap on the pad, opening by scan or link, "Next
+On the private map and the map phone, the clock starts when the map is shown (a tap on the pad, any opening of the map phone (scan, link, typed code, Home's saved map), "Next
 map", "Show map", "See the map again", SWD-037) and restarts on each `pointerdown` on that screen. From 50 000 ms,
 `hide-warning` (`role="status"`) "Still looking? Tap to keep the map" shows over the map; while it shows, the first
 `pointerdown` only restarts the clock (it doesn't press a button or fade a cell) and removes the warning. At 60 000 ms the map
@@ -987,6 +993,8 @@ text may shrink in 1 px steps to 17 px and wrap onto 2 lines. In the landscape p
 font shrinking to fit, floor 15 px. The evening's first guessing turn shows the tip "Tap a word to suggest it. Sunita taps
 Reveal." Anyone may still tap; the name is a social cue, never enforced.
 
+A renamed picker's new name shows at once; a removed picker stays this turn's picker (the name still shows) until the turn
+ends; "Pass the pick" lists only current players.
 ### SWD-123 Pairs of clue givers (B2, K39, C3)
 `Teams` gains `partners: { orange: string | null; teal: string | null }`, carried by `setClueGivers`. In the Clue givers sheet
 each team has quiet "Add a partner": it shows a group "Chai Champions partner" with one button per eligible player of that team
@@ -1040,7 +1048,7 @@ then the adding row; main "Done" closes. Every confirmed change records one `set
 - **Rename:** tap the name (button, accessible name "Rename Kabir") → an input labelled "Player name" holding the name, with
   quiet "Done"; Enter or "Done" saves (team, place and counts kept; Impostor's duplicate message for a name already playing, and
   an empty name keeps the old one). No Undo.
-- **Move** (guessers only; at every step that has the menu): quiet "Move to Coffee Commandos" (accessible name "Move Zoya to
+- **Move** (guessers only; at every step whose menu has "Players"): quiet "Move to Coffee Commandos" (accessible name "Move Zoya to
   Coffee Commandos") moves the player to the end of the other team with the toast "Zoya moved to Coffee Commandos · Undo" (Undo
   restores as before, recording another `setPlayers`). Disabled when the team would be left with fewer than 2 players or with no
   guesser.
@@ -1076,6 +1084,8 @@ credited clue giver, partners included, in order of first credit; "Clues tonight
 Nana"; absent if none); quiet "Oops, keep playing" (until recorded, SWD-060); quiet "← Home"; main "Play something else". No
 Landmine count, no ranking of clue givers.
 
+A game in progress when "End for tonight" was tapped counts as ended early in `summary-line` (players, games, words found)
+and `clue-credit`, although it is recorded only when the summary is left.
 ### SWD-129 Map code again (E9)
 With two or three phones, menu "Show the map code again" at the clue screen, guessing, end-turn line and turn over: the scan
 screen for the current board (no new deal; QR and `map-code-text` as SWD-033, `board-check` as SWD-116, no `dnd-tip`), with
@@ -1122,7 +1132,7 @@ counts (two lines), `result-line`, tip; then pinned at the bottom the action slo
 "Clue not allowed?" stacked, each 200 × 48; then "End our turn" 200 × 48) and the main button (200 × 60) holding 2 lines: the
 picker's name and "Reveal LAMP" (SWD-122), font shrinking to fit, floor 15 px. Height: team bar 8 + timer row 48 + button row
 48 + middle part ≥ 83 + action slot 96 + main 60 + bottom 16 + 4 gaps of 4 px = 375 (the middle part grows by 48 without the
-timer and by 52 after the first reveal). Cells at least 100 × 56 px. 568 × 320: the same with 8 px margins, a 160 px panel
+timer and by 48 after the first reveal). Cells at least 100 × 56 px. 568 × 320: the 48 px action slot stays reserved (empty) until the first reveal; the same with 8 px margins, a 160 px panel
 (main 160 × 60, same 2 lines, floor 15 px) and an 8 px gap, and no change row ("Change clue" and "Clue not allowed?" are menu
 items, SWD-041/046; the slot holds "End our turn" 160 × 48 from the first reveal); height: team bar 8 + timer row 48 + button
 row 48 + middle part ≥ 84 + slot 48 + main 60 + bottom 8 + 4 gaps of 4 px = 320; cells at least 69 × 54 px. No page scrolling.
