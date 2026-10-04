@@ -25,22 +25,22 @@ first build.
 | A. Spy noir ("agents", black) | ✗ | ✗ | ✗ | ~ | ✗ dark | ✗ "assassin" |
 | B. Desi detective ("Jasoos", case files) | ~ still spy | ~ | ✓ | ~ | ~ | ~ |
 | C. Flat minimal, red v blue | ✓ | ~ | ✗ | ✓ | ✗ **red is our main-button colour** (guideline 17a) | ~ |
-| **D. Flat board + two coloured teams with funny names (random each evening), the Ghost** | **✓** | **✓** | **✓** | **✓** | **✓** | **✓** |
+| **D. Flat board + two coloured teams with funny names (random each evening), the Landmine** | **✓** | **✓** | **✓** | **✓** | **✓** | **✓** |
 
 ### Decision (K2, changed by the owner on 4 October: K23, K25)
-**Tambola's clean, flat look for the board, two coloured teams with funny names, and a friendly ghost.**
+**Tambola's clean, flat look for the board, two coloured teams with funny names, and the Landmine.**
 - **The orange team and the teal team.** Each evening they get a random pair of **funny names** from `team-names.csv`
   (Chai Champions v Coffee Commandos, Back Benchers v Front Benchers, Snooze Buttons v Alarm Clocks, Pressure Cookers v Ceiling Fans…);
   "New team names" draws another pair before the first game. Orange and teal stay apart for the common colour-vision
   deficiencies (unlike red and green or red and blue).
 - **Nobody's words:** light sand, with a short dash.
-- **The Ghost** (instead of an assassin): a friendly cartoon ghost on near-black. "Coffee Commandos woke the Ghost!" gets a laugh,
+- **The Landmine** (instead of an assassin): a cartoon landmine on near-black. "Coffee Commandos stepped on the Landmine!" gets a laugh,
   never a put-down. Every name in the game is plain English (K23).
 - **Never colour alone** (guideline 26): every turned-over word and every map cell carries a **shape icon and a word**:
-  circle (orange team), diamond (teal team), dash (nobody), ghost.
+  circle (orange team), diamond (teal team), dash (nobody), landmine.
 - **Red stays for the main button only**; turns are shown by a slim team-coloured bar **and** the team's name, not a
   full-screen colour.
-- **No Codenames vocabulary:** "clue giver", "guessers", "the map", "words", "the Ghost"; never "spymaster", "agent",
+- **No Codenames vocabulary:** "clue giver", "guessers", "the map", "words", "the Landmine"; never "spymaster", "agent",
   "operative", "assassin", "key card", "codename".
 
 ### Colours (to be checked by the coder; text contrast ≥ 4.5:1, guideline 25)
@@ -49,7 +49,7 @@ first build.
 | `--team-orange` | #B45309 | #F59E0B | Orange team cells (white text in light, near-black text in dark) and bar |
 | `--team-teal` | #0F766E | #2DD4BF | Teal team cells and bar |
 | `--nobody` | #E7DFD3 | #3A3632 | Nobody's cells (text `--text`) |
-| `--ghost` | #1C1B1A | #F3EFE9 | The Ghost cell (inverted text) |
+| `--landmine` | #1C1B1A | #F3EFE9 | The Landmine cell (inverted text) |
 Face-down words: `--surface` with a 1 px `--border`. A picked word: Tambola's "selected" look (outline, ✓, tint),
 never the main look and never a team colour.
 
@@ -81,7 +81,7 @@ Tap a name to move it to the other team.
 - Tap a name: it moves to the other team, with "Om moved to Coffee Commandos · Undo".
 - ★ clue giver suggested by rotation (rule 17); "Change clue givers" opens a pick per team.
 - "Next" disabled with "Each team needs at least 2 players." when a team has fewer.
-- Icons in sketches are placeholders: the build uses our own SVG shapes (circle, diamond, dash, ghost), not emoji.
+- Icons in sketches are placeholders: the build uses our own SVG shapes (circle, diamond, dash, landmine), not emoji.
 
 ### 4. How do you want to play?
 ```
@@ -103,7 +103,7 @@ Words   [ Whole family ✓ ][ + Grown-ups ]
 1. "Two teams, Chai Champions and Coffee Commandos. Each has a clue giver who sees the secret map."
 2. "Clue givers: say one word and a number. 'Monsoon, 2' means two of our words go with monsoon."
 3. "Guessers: talk, then turn over words one at a time. Wrong word? Your turn ends."
-4. "Find all your words first. Turn over the Ghost and you lose!"
+4. "Find all your words first. Turn over the Landmine and you lose!"
 Main "Let's play"; quiet "Show me the board first" (opens the board with no turn started, then "Start").
 
 ### 6. Seeing the map
@@ -158,7 +158,7 @@ Landscape (recommended when the phone lies in the middle):
 │ Cricket │ Bat    │ Monsoon│ Kite   │ Tiffin       │ Chai Champions │
 │ Ring    │ Rocket │ Chalk  │ Ganga  │ Match        │ Clue: 2        │
 │ Fan     │ Star   │ Pitch  │ Train  │ Mehendi      │ 3 guesses left │
-│ Cup     │ Bank   │ Lassi  │ Ghost  │ Paneer       │ 🥭 7 · 🪶 8     │
+│ Cup     │ Bank   │ Lassi  │ Landmine  │ Paneer       │ 🥭 7 · 🪶 8     │
 │ Tiger   │ Moon   │ Ticket │ Chain  │ Station      │ [End our turn] │
 │                                                   │ [Reveal KITE]  │
 └───────────────────────────────────────────────────┴────────────────┘
@@ -169,18 +169,18 @@ Landscape (recommended when the phone lies in the middle):
   board." (the longest words can't fit at 12 px).
 - Tap a word: selected look. Main "Reveal KITE" (pick, then confirm). "End our turn" disabled until one guess is made.
 - After a reveal, one result line above the buttons: "✓ Your word! 2 guesses left." · "Nobody's word. Other
-  team's turn next." · "✗ The other team's word! It counts for them."; the Ghost goes straight to game over
+  team's turn next." · "✗ The other team's word! It counts for them."; the Landmine goes straight to game over
 - Menu: see the menu table in `scenarios.md` ("How to play" replaces "Rules").
 
 ### 9. Turn over, game over
 - Turn over: the result line stays, the board stays visible; main "Other team's turn" → screen 6A for the other team (one phone)
   or screen 7 (own phones).
-- Game over: "Chai Champions win! All 9 words found." (Ghost: "Chai Champions win!" with "Coffee Commandos woke the Ghost!"), the **whole map** on the
+- Game over: "Chai Champions win! All 9 words found." (Landmine: "Chai Champions win!" with "Coffee Commandos stepped on the Landmine!"), the **whole map** on the
   board: face-down words now coloured but faded, turned-over words solid. "Tonight: Chai Champions 2 · Coffee Commandos 1". Main
   "Play again"; quiet "Change teams", "End the evening".
 
 ### 10. End of the evening
-"Tonight: Chai Champions 3 · Coffee Commandos 2"; fun lines ("Riya's clues won 2 games", "The Ghost woke up 1 time"); "Play something
+"Tonight: Chai Champions 3 · Coffee Commandos 2"; fun lines ("Riya's clues won 2 games", "The Landmine went off 1 time"); "Play something
 else"; "Back to Home".
 
 ## 3. Lasting rule added to `docs/ux-guidelines.md`
@@ -191,4 +191,4 @@ do over a real board.
 
 ## 4. Play-test questions
 Can 6 people read the board on one phone lying in the middle? Does holding the phone to see the map feel natural for
-a 60-second think? Is "Pass this phone" or "own phones" more popular? Is the Family board too easy for adults?
+a 60-second think? Is "Pass this phone" or "own phones" more popular? Is the Easy board too easy for adults?

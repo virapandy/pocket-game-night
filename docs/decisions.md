@@ -187,11 +187,11 @@ Status: **decided: owner, 4 October 2026, "follow the recommendation"** for K1�
 | # | Question | Options | Recommendation |
 |---|---|---|---|
 | K1 | Name | ~~Ishaara~~ → **Secret Words** (owner, 4 October: an English name, since "Codenames" is a trademark; the rules themselves are free to use) | Secret Words; "Codenames" never as our name (K22: "Inspired by Codenames" allowed) |
-| K2 | Theme | Spy noir (norm, too close to Codenames) · flat minimal red/blue · **flat board with Team Mango and Team Peacock and a friendly Ghost** | ~~Mango v Peacock~~ → orange and teal teams with funny names (K25) + the Ghost; red stays for the main button |
+| K2 | Theme | Spy noir (norm, too close to Codenames) · flat minimal red/blue · **flat board with Team Mango and Team Peacock and the Landmine** | ~~Mango v Peacock~~ → orange and teal teams with funny names (K25) + the Landmine; red stays for the main button |
 | K3 | How clue givers see the map | **Both in the first release**: "Pass this phone" (hold to see) and "Clue givers' own phones" (QR or code, offline); two equal cards, no default | Both; the code makes own phones work offline |
 | K4 | Teams | Shuffled into equal teams the first time; tap to move; last teams after | As recommended |
 | K5 | Board | **Full 25** (norm, default) · Family 16 | Both, Full default |
-| K6 | Family board | 6 / 5 / 5, **no Ghost** (Disney easy mode has no assassin) | As recommended |
+| K6 | Easy board | 6 / 5 / 5, **no Landmine** (Disney easy mode has no assassin) | As recommended |
 | K7 | A clue that breaks a rule | Norm: the other clue giver covers a word of their choice · **the phone turns over a random word of the other team** | Random (keeps the map off the room screen) |
 | K8 | Timer | Norm: sand timer, rarely used · **none by default, a 90-second "Hurry up" anyone can start, never automatic** | As recommended |
 | K9 | Scoring | **Tonight's tally of games won** by Mango and Peacock, fun lines at the end; no points or target | As recommended |
@@ -208,10 +208,13 @@ Status: **decided: owner, 4 October 2026, "follow the recommendation"** for K1�
 | K20 | Secret Words scenarios version 2 (SWD-001 to SWD-099) approved; queued for the tester after Impostor's release | Owner, 4 October |
 | K21 | Renamed Ishaara → **Secret Words**: IDs SWD- (scenarios) and SWDW- (words), folder `docs/games/secret-words/`, game id `secret-words`. A name change only; scenario approval (K20) stands | Owner, 4 October |
 | K22 | The app may say **"Inspired by Codenames"** in plain text: on the Secret Words picker card and in How to play, with the credit line in `docs/games/secret-words/legal.md` (independent, not made, sponsored or endorsed by Czech Games Edition). Never as the game's name, heading, title or address, never their logo or look; legality and precedent checked (Scrabulous, Delhi HC 2008) (SWD-001, SWD-011) | Owner, 4 October |
-| K23 | All game names in English: the losing card is **the Ghost** (was "the Bhoot"); board word Ghost replaced by Shadow. Board words themselves stay India-centric (K10) | Owner, 4 October |
+| K23 | All game names in English: the losing card is **the Ghost** (was "the Bhoot"; now the Landmine, K28); board word Ghost replaced by Shadow. Board words themselves stay India-centric (K10) | Owner, 4 October |
 | K24 | Board words: **English, or an Indian word known everywhere**; test person someone from Tirunelveli or Sivagangai who doesn't speak Hindi. 35 words replaced (Mela, Rangoli, Lassi and others; Mango and Peacock clash with team names); example clue words "chai, dosa" | Owner, 4 October |
 | K25 | **Funny team names, random each evening** from 20 pairs in `docs/games/secret-words/team-names.csv` (e.g. Chai Champions v Coffee Commandos, Back Benchers v Front Benchers, Snooze Buttons v Alarm Clocks); "New team names" before the first deal. Colours stay fixed (orange, teal) with shape icons; replaces Mango v Peacock (K2) | Owner, 4 October |
 | K26 | Word list: add **Geography** (58 words: countries Indians relate to, world cities, Indian states and cities, landmarks); one word of at most 8 letters, nothing political. The rest of the list approved as good | Owner, 4 October |
 | K27 | Secret Words word list (452 words, `words.csv` edition 1) and team names (`team-names.csv`) **approved by the owner**; no separate persona review needed | Owner, 4 October |
 | P1–P9 | Secret Words play modes (`docs/games/secret-words/play-modes.md`): "How many phones?" (one · two, recommended · three); "15–25 min a game"; optional clue word shown big with earlier clues and a board-word warning (**reverses K15**); one phone: tap to see the map, "Our words", "See the map again"; "Change clue" and "Clue broke a rule?" on the board; "Turn" the board; "Guesses only"; "Next map"; recap line, Do Not Disturb tip, bigger timer. P10: "Board on your phone" and connected play designed, built later | Owner, 4 October ("follow the recommendation") |
 | P11 | Home's "Join with my ticket" becomes **"Join a game"** with "Tambola ticket or Secret Words map from the host" (until Secret Words ships: "Tambola ticket from the host"; C1, may ship now) | Owner, 4 October |
+| K28 | The danger word is **the Landmine** (was the Ghost) | Owner, 4 October (product owner noted the real-weapon tone; owner chose it) |
+| K29 | New setup choice for the Full board: **Landmine: Lose the game** (default, the standard rule) or **Lose your turn** (turn ends, the other team gets one word free) | Owner, 4 October |
+| K30 | Boards are **Full** (25 words) and **Easy** (16 words, no Landmine); playing against the phone (2–3 players) is a future extension | Owner, 4 October |

@@ -9,7 +9,7 @@ The list is `words.csv` (edition 1, 452 words). It is our own list, never Codena
 3. **English, or an Indian word known everywhere** (owner, 4 October, K24). The test person: **someone from Tirunelveli or
    Sivagangai who doesn't speak Hindi**, and a 10-year-old and a grandparent. Chai, Diwali, Dosa, Samosa, Auto pass;
    Mela, Rangoli, Lassi, Dhol fail. Words kids or elders may not know are marked `grownups`.
-   The Ghost is never a board word. Team names (`team-names.csv`, K25) follow the same rule: English or known everywhere,
+   The Landmine is never a board word. Team names (`team-names.csv`, K25) follow the same rule: English or known everywhere,
    plural, at most 18 characters, kind to everyone.
 4. **Never:** politics, religion as a joke, gods' names, caste, real living people, brands, alcohol, adult content.
    Festival names are allowed as occasions (Diwali, Eid, Holi, Onam, Christmas words).
@@ -31,7 +31,7 @@ The list is `words.csv` (edition 1, 452 words). It is our own list, never Codena
 | Body and clothes | 34 |
 | School and work | 33 |
 451 family, 1 grown-ups (Climax); 4 non-veg (Egg, Chicken, Kebab, Fish).
-Changes to the first draft: Copy and Fast → Chennai and Kolkata (product owner); Ghost → Shadow (K23); **35 words that a
+Changes to the first draft: Copy and Fast → Chennai and Kolkata (product owner); Landmine → Shadow (K23); **35 words that a
 non-Hindi speaker from a small Tamil town wouldn't know, or that clash with team names, replaced by English words**
 (K24: Pakora, Papad, Kheer, Khichdi, Dal, Roti, Paratha, Lassi, Kulfi, Tawa, Almirah, Dhaba, Dhol, Bhangra, Gully, Onam,
 Pongal, Navratri, Dussehra, Rakhi, Diya, Rangoli, Pichkari, Baraat, Sangeet, Haldi, Mehndi, Mela, Garba, Dandiya, Dhoti,

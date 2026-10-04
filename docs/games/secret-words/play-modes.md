@@ -24,7 +24,7 @@ Companion and Secret Agent; imperialoctopus.com/posts/codenames-offline (full li
 | Group | Mode | Time per game | Phone passes per game | Time each player is idle |
 |---|---|---|---|---|
 | 6 adults and teens, Full board | One phone | **about 28 min** | 18 passes + 14 pick-ups | about 45% |
-| 4 (parents, a 9-year-old, a grandparent), Family board | One phone | about 14 min | 14 | the child about 66% |
+| 4 (parents, a 9-year-old, a grandparent), Easy board | One phone | about 14 min | 14 | the child about 66% |
 | 10 at a family gathering | One phone | **about 40 min** | about 50 handlings | guessers about 67% |
 | 6 adults and teens | Clue givers' own phones | **about 17 min** | none | about 20% (as at a real table) |
 
@@ -65,7 +65,7 @@ A reveal must reach other phones within about 0.3–0.5 s to feel shared; after 
 For 4–6 players, a quick game, or when only one phone is free. **About 25 minutes a game** (Full board), about 14 (Family).
 1. Turn over → **pass screen** with a recap line ("Last turn: …") → the clue giver taps "I'm Riya".
 2. **Private map:** tap to show (hold also works); hides 3 minutes after the last touch, or at once when the screen goes off;
-   "Our words" switch lists their words and the Ghost in large text.
+   "Our words" switch lists their words and the Landmine in large text.
 3. **Clue screen**, still in the clue giver's hands: optional clue word, number keys, "See the map again".
 4. Phone back in the middle: **board** turned to face the guessing team ("Turn ↻"), "CRICKET · 3 · 4 guesses left" in large
    text, earlier clues listed, "Clue broke a rule?" and "Change number" until the first reveal; pick, then "Reveal".
