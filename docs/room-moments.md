@@ -38,6 +38,12 @@ Labels: **Must** = before the Impostor release; **Next** = after it; **Later** =
 | M19 | Someone **forgot their word** | Visible way to see it again | Menu-only | **Must**: small "See my word again" on the clues and talk screens |
 | M20 | Someone **peeked** or **said the word** | Deal again | "Deal again with a new word" in the menu | Covered |
 | M21 | The host **changed a setting** and pressed Back | Keep the change | Back silently threw it away | **Must**: Back keeps the change (records it), applied from the next round |
+| M22a | **"It's a tie"** tapped | Say what to do next | "Point again" greyed with no instruction (player run and UX pass) | **Must**: heading "Tap everyone who is tied"; quiet "Not a tie" goes back |
+| M22b | One hand busy (plate, drink) on the hold screen | Hard to hit the wrong button | "Tap instead" sits right next to the big "Done" | **Must**: "Tap instead" moves up under the name, at least 48 px away from "Done" |
+| M22c | One player's "See my word again" ends | Back to where we were | The button says "Done, everyone's seen" | **Must**: "Done, back to clues" (or "…back to talking") |
+| M22d | Wrong person voted out, impostor escaped | Undo it | Not possible (a reveal can't be undone, guideline 47) | **No change**: "Reveal Arjun" is the safety; explained in How to play |
+| M22e | Switch to Tambola and keep the Impostor scores | Leave without ending | Only "End the evening" | Covered by "← Home" (I25): the game stays saved |
+| M22f | Tambola after Impostor reuses tonight's names | Names carried over | Tambola didn't take them | **Next**: platform (PLT-024) |
 | M22 | "Start new?" when an old game exists | Equal, clear choices, asked once | Asked twice; the risky-looking red button | **Must**: asked once; "Carry on that game" and "Start new" look equal; "Start new" goes straight on |
 
 ## Comfort and words
