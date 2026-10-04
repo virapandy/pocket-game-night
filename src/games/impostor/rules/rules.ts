@@ -5,7 +5,7 @@
 import { createRng, HOST, type GameRules, type MoveContext, type Verdict, type Viewer } from '../../../engine';
 import { pickImpostor, pickStarter, pickWord, scoreRound, wordById, ACTIVE_WORDS } from './picks';
 import {
-  CATEGORIES, type AskedMove, type Choices, type DealtWordId, type ImpostorConfig, type ImpostorMove, type ImpostorState, type ImpostorView, type Round,
+  type AskedMove, type Choices, type DealtWordId, type ImpostorConfig, type ImpostorMove, type ImpostorState, type ImpostorView, type Round,
   type RoundStep,
 } from './types';
 
@@ -41,7 +41,8 @@ function choicesProblem(c: unknown): string | null {
   if (x.words !== 'family' && x.words !== 'grownups') return 'Unknown words choice.';
   if (typeof x.nonveg !== 'boolean') return 'Non-veg must be on or off.';
   if (!Array.isArray(x.categories) || x.categories.length === 0) return 'Keep at least one category.';
-  if (!x.categories.every((k) => (CATEGORIES as readonly unknown[]).includes(k))) return 'Unknown category.';
+  // Any category names: a recorded move replays whatever today's 9 are (IMP-096). Live, the screens offer only the 9.
+  if (!x.categories.every(isString)) return 'Categories must be names.';
   if (x.lastGuess !== undefined && typeof x.lastGuess !== 'boolean') return 'The last-chance guess must be on or off.';
   return null;
 }
@@ -91,7 +92,10 @@ function wordFilter(s: ImpostorState, allowRepeats = s.allowRepeats) {
   };
 }
 
-/** Whether any word could be dealt with "Allow repeats" (IMP-052: otherwise "Allow repeats" is not offered). */
+/**
+ * Whether any word could be dealt with "Allow repeats" (IMP-052: otherwise "Allow repeats" is not offered). Asked only
+ * when listing live moves, never of a recorded move, so a later edit to the word list never stops a replay (IMP-096).
+ */
 const anyWordWithRepeats = (s: ImpostorState) =>
   pickWord(ACTIVE_WORDS, wordFilter(s, true), { int: () => 0 }) !== null;
 
@@ -115,7 +119,8 @@ function wordFor(s: ImpostorState): DealtWordId {
 function deal(s: ImpostorState, practice: boolean, wordId: unknown): Result {
   if (wordId === undefined) return no('A dealt word needs its id.');
   if (wordId === null) {
-    if (wordFor(s) !== null) return no('A word is left to deal.');
+    // A recorded null replays whatever today's list holds (IMP-096); live, `withDealtWord` records null only when
+    // the deal's own pick finds no word.
     return ok({ ...s, phase: 'noWords', pendingPractice: practice, round: null });
   }
   const word = isString(wordId) ? wordById(wordId) : undefined;
@@ -316,7 +321,7 @@ function applyMove(s: ImpostorState, move: ImpostorMove, ctx: MoveContext): Resu
 
     case 'allowRepeats':
       if (s.phase !== 'noWords') return no('Words are left.');
-      if (s.allowRepeats || !anyWordWithRepeats(s)) return no('Even repeats leave no word.');
+      if (s.allowRepeats) return no('Repeats are already allowed.');
       return deal({ ...s, allowRepeats: true }, s.pendingPractice, move.wordId);
 
     case 'wordDidntWork': {
@@ -436,7 +441,8 @@ export const impostorRules: GameRules<ImpostorConfig, ImpostorState, ImpostorMov
   setup: (input) => setup(input.config, input.seeds),
   legalMoves(state, actor) {
     if (state.over || actor !== HOST) return [];
-    return candidates(state).filter((m) => apply(state, m, { by: actor, at: 0 }).ok);
+    return candidates(state).filter((m) =>
+      (m.type !== 'allowRepeats' || anyWordWithRepeats(state)) && apply(state, m, { by: actor, at: 0 }).ok);
   },
   detailMoves: ['tie', 'setPlayers', 'setChoices'],
   apply,
