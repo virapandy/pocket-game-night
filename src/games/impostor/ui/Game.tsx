@@ -4,7 +4,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import type { Preferences, SavedGameStore } from '../../../engine';
 import { HOST } from '../../../engine';
-import { impostorRules, wordById, type AskedMove, type Choices, type PlayerView } from '../rules';
+import { impostorRules, withDealtWord, wordById, type AskedMove, type Choices, type PlayerView } from '../rules';
 import { Clues } from './Clues';
 import { Turn, type SeeAgainFrom, type Secret } from './Deal';
 import { usePageHidden, useWakeLock } from './device';
@@ -90,6 +90,8 @@ export function Game({
 
   const [overlay, setOverlay] = useState<Overlay>(null);
   const [leftHalfway, setLeftHalfway] = useState(() => resumed && leftTooLong(initial.match, ui.get<UiState>(initial.saved.id, {}), Date.now()));
+  /** IMP-074: players of the half-played round the host took off on the "left halfway" screen (recorded at "Next round"). */
+  const [halfwayOut, setHalfwayOut] = useState<string[]>([]);
   const [banner, setBanner] = useState<Banner>(() => (resumed && step === 'deal' ? { turn: turnKey, kind: 'welcome' } : null));
   const [returns, setReturns] = useState(0);
   /** Screen B of the deal is showing (IMP-010: in landscape its top bar runs y = 0 to 48). */
@@ -137,6 +139,13 @@ export function Game({
   const act = (move: AskedMove): EveningMatch | null => {
     const cur = evRef.current;
     return keepEv(record(store, cur.saved, cur.match, move));
+  };
+  /** Records a move; null when it was recorded, otherwise the rules' reason, to show the host (IMP-078: no dead buttons). */
+  const actOrWhy = (move: AskedMove): string | null => {
+    if (act(move)) return null;
+    const st = evRef.current.match.state;
+    const r = impostorRules.apply(st, withDealtWord(st, move), { by: HOST, at: Date.now() });
+    return r.ok ? 'That change could not be saved. Try again.' : r.reason;
   };
   const setUi = (patch: Partial<Record<keyof UiState, number | undefined>>) => {
     const next: Record<string, number> = {};
@@ -248,7 +257,9 @@ export function Game({
           setSummary(false);
         }}
         // IMP-103: the ended game's players; a pending leaver goes when `endEvening` is recorded (IMP-078).
-        onPlayAgain={leave(() => onPlayAgain(state.players.filter((p) => !state.leaving.includes(p)), state.choices))}
+        onPlayAgain={leave(() =>
+          onPlayAgain(state.players.filter((p) => !state.leaving.includes(p) && !halfwayOut.includes(p)), state.choices),
+        )}
         onHome={leave(onHome)}
         onSomethingElse={leave(onSomethingElse)}
         onHistory={leave(() => onHistory(false))}
@@ -378,7 +389,13 @@ export function Game({
         <EndGameButton onClick={guard(showSummary)} />
         <MainButton
           onClick={guard(() => {
-            if (act({ type: 'dealAgain' })) {
+            // IMP-074: each player taken off in the Players sheet is one "Deal again without …" (the last one is the
+            // fresh round); with nobody taken off, one `dealAgain`. So k removals use k deals.
+            let dealt = false;
+            for (const p of halfwayOut) if (act({ type: 'dealAgainWithout', player: p })) dealt = true;
+            if (halfwayOut.length === 0) dealt = act({ type: 'dealAgain' }) !== null;
+            if (dealt) {
+              setHalfwayOut([]);
               setLeftHalfway(false);
               resetRound();
             }
@@ -627,33 +644,39 @@ export function Game({
       )}
       {overlay === 'players' && (
         <PlayersSheet
-          players={state.players}
+          players={state.players.filter((p) => !halfwayOut.includes(p))}
           past={past}
           keepingScore={state.choices.score}
           moment={playersMoment}
           roundPlayers={r?.players ?? []}
           leaving={state.leaving}
           onDone={(players) => {
+            // A refused change keeps the sheet open with the reason (IMP-078: never a silent no).
             if (playersMoment === 'between') {
-              if (!sameList(players, state.players)) act({ type: 'setPlayers', players });
+              const why = sameList(players, state.players) ? null : actOrWhy({ type: 'setPlayers', players });
+              if (why) return why;
               setOverlay(null);
-              return;
+              return null;
             }
-            // Mid-round, names added are recorded at once (IMP-079). On the "left halfway" screen ✕ removes as between
-            // rounds (IMP-074): each player of the round taken off is one "Deal again without" (a fresh deal follows
-            // anyway from "Next round"); the rules never take a player out of a dealt round by `setPlayers`.
+            // Mid-round, names added are recorded at once (IMP-079); the round's players keep their seats.
             const listed = asListed(players);
-            if (!sameList(listed, state.players)) act({ type: 'setPlayers', players: listed });
-            for (const p of r?.players ?? []) if (!players.includes(p)) act({ type: 'dealAgainWithout', player: p });
+            const why = sameList(listed, state.players) ? null : actOrWhy({ type: 'setPlayers', players: listed });
+            if (why) return why;
+            // On the "left halfway" screen ✕ takes a player of the round off (IMP-074); "Next round" records it.
+            if (playersMoment === 'halfway' && r) setHalfwayOut(r.players.filter((p) => !players.includes(p)));
             setOverlay(null);
+            return null;
           }}
           onLeave={(players, player, how) => {
             // IMP-078: names added in the sheet are recorded first, then the leave.
             const listed = asListed(players);
-            if (!sameList(listed, state.players)) act({ type: 'setPlayers', players: listed });
+            const added = sameList(listed, state.players) ? null : actOrWhy({ type: 'setPlayers', players: listed });
+            if (added) return added;
+            const why = actOrWhy(how === 'finish' ? { type: 'leaveAfterRound', player } : { type: 'dealAgainWithout', player });
+            if (why) return why;
             setOverlay(null);
-            if (how === 'finish') act({ type: 'leaveAfterRound', player });
-            else if (act({ type: 'dealAgainWithout', player })) resetRound();
+            if (how === 'without') resetRound();
+            return null;
           }}
           onEndGame={showSummary}
         />

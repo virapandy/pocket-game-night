@@ -385,23 +385,29 @@ function applyMove(s: ImpostorState, move: ImpostorMove, ctx: MoveContext): Resu
     }
 
     case 'dealAgainWithout': {
-      if (!r || step === null || !MID_ROUND_STEPS.includes(step)) return no('There is no round to deal again.');
+      // Wherever "Deal again" is (the "left halfway" screen can sit at the caught or guess step, IMP-091).
+      if (!r || step === null || !REDEAL_STEPS.includes(step)) return no('There is no round to deal again.');
       const problem = leaveProblem(s, r, move.player);
       if (problem) return no(problem);
       return deal(without(s, move.player), r.practice, move.wordId);
     }
 
     case 'setPlayers': {
-      const mid = r !== null && step !== null && MID_ROUND_STEPS.includes(step);
+      // Adding is open wherever the round can still be dealt again (the "left halfway" screen included, IMP-091).
+      const mid = r !== null && step !== null && REDEAL_STEPS.includes(step);
       if (!betweenRounds && !mid) return no('Change players after this round.');
       const problem = playersProblem(move.players);
       if (problem) return no(problem);
       // IMP-079: mid-round the list may only grow: this round's players stay, in their seats, ahead of anyone added.
       if (mid && !r!.players.every((p, i) => move.players[i] === p)) return no('Someone leaves mid-round from their own dialog.');
       const players = [...move.players];
+      // A pending leaver taken off the list (on the no-words screen) is gone already; never fewer than 3 (IMP-078).
+      const leaving = s.leaving.filter((p) => players.includes(p));
+      if (players.length - leaving.length < MIN_PLAYERS) return no('3 players needed.');
       return ok({
         ...s,
         players,
+        leaving,
         totals: totalsFor(s.totals, players),
         startedThisCycle: s.startedThisCycle.filter((p) => players.includes(p)),
         undoVerdictSeq: null, undoVerdictAt: null,

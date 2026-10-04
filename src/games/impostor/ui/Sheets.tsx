@@ -185,15 +185,17 @@ export function PlayersSheet({
   roundPlayers?: readonly string[];
   /** Pending leavers ("Finish this round first"). */
   leaving?: readonly string[];
-  onDone: (players: string[]) => void;
-  /** IMP-078: the host's answer to "Kabir has to leave?", with the sheet's list as it stands. */
-  onLeave?: (players: string[], player: string, how: 'finish' | 'without') => void;
+  /** Null when the change was taken (the sheet closes); otherwise why not, shown in the sheet. */
+  onDone: (players: string[]) => string | null;
+  /** IMP-078: the host's answer to "Kabir has to leave?", with the sheet's list as it stands; null or why not. */
+  onLeave?: (players: string[], player: string, how: 'finish' | 'without') => string | null;
   /** "End game" in "3 players needed.": the summary, nothing recorded. */
   onEndGame: () => void;
 }) {
   const [players, setPlayers] = useState<string[]>(() => [...start]);
   const [ask, setAsk] = useState<'tooFew' | { leave: string } | null>(null);
   const [focusKey, setFocusKey] = useState(0);
+  const [why, setWhy] = useState<string | null>(null);
   const [toast, showToast, clearToast] = useToast();
   // The phone's Back closes a dialog here and changes nothing (IMP-078).
   useEffect(() => {
@@ -202,20 +204,27 @@ export function PlayersSheet({
     window.addEventListener('popstate', back);
     return () => window.removeEventListener('popstate', back);
   }, [ask]);
-  // Pending leavers count as gone; during a round (or its "left halfway" screen) they are greyed, with no ✕.
-  const staying = moment === 'between' ? [] : leaving.filter((p) => players.includes(p));
+  // Pending leavers count as gone, at every moment (the no-words screen included); during a round (or its "left
+  // halfway" screen) they are greyed, with no ✕.
+  const gone = leaving.filter((p) => players.includes(p));
+  const staying = moment === 'between' ? [] : gone;
   return (
-    <Sheet title="Players" onDone={() => onDone(players)}>
+    <Sheet title="Players" onDone={() => setWhy(onDone(players))}>
       <PlayerList
         players={players}
         past={past}
         fixed={moment !== 'between'}
         staying={staying}
         focusKey={focusKey}
-        onChange={(next) => setPlayers(next)}
+        onChange={(next) => {
+          setWhy(null);
+          setPlayers(next);
+        }}
         onRemove={(i) => {
           const name = players[i]!;
-          if (players.length - staying.length - 1 < 3) {
+          setWhy(null);
+          // Taking off someone already leaving leaves the count as it is.
+          if (players.length - gone.length - (gone.includes(name) ? 0 : 1) < 3) {
             setAsk('tooFew');
             return;
           }
@@ -234,6 +243,11 @@ export function PlayersSheet({
           showToast(keepingScore ? `${name} left · Points kept` : `${name} left`, back);
         }}
       />
+      {why && (
+        <p role="alert" className="imp-alert">
+          {why}
+        </p>
+      )}
       <Toast toast={toast} onDone={clearToast} />
       {ask === 'tooFew' && (
         <Dialog text="3 players needed. Add someone, or end the game.">
@@ -254,7 +268,7 @@ export function PlayersSheet({
           <QuietButton
             onClick={() => {
               setAsk(null);
-              onLeave?.(players, ask.leave, 'without');
+              setWhy(onLeave?.(players, ask.leave, 'without') ?? null);
             }}
           >
             Deal again without {ask.leave}
@@ -263,7 +277,7 @@ export function PlayersSheet({
             inline
             onClick={() => {
               setAsk(null);
-              onLeave?.(players, ask.leave, 'finish');
+              setWhy(onLeave?.(players, ask.leave, 'finish') ?? null);
             }}
           >
             Finish this round first
