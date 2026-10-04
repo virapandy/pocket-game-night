@@ -585,8 +585,12 @@ test.describe('IMP-070, IMP-072, IMP-076: How to play and More options, on reque
     expect(Math.abs(m.y - h.y), 'one row').toBeLessThanOrEqual(1);
     expect(m.x, '"More options ›" on the left').toBeLessThan(h.x);
     expect(Math.abs(m.width - h.width), 'equal width').toBeLessThanOrEqual(1);
-    expect(h.y + h.height, 'directly above "Start round"').toBeLessThanOrEqual(s0.y + 1);
-    expect(s0.y - (h.y + h.height), 'directly above "Start round"').toBeLessThanOrEqual(32);
+    expect(h.y + h.height, 'above "Start round"').toBeLessThanOrEqual(s0.y + 1);
+    // "Directly above": no other control between the row and "Start round" (the space between may be empty).
+    const between = await page.evaluate(([top, bottom]) => Array.from(document.querySelectorAll('button, input, [role="switch"], [role="group"]'))
+      .filter((el) => { const r = el.getBoundingClientRect(); return r.height > 0 && r.top >= top! - 0.5 && r.bottom <= bottom! + 0.5; })
+      .map((el) => (el.textContent ?? '').trim()), [h.y + h.height, s0.y]);
+    expect(between, 'nothing between the row and "Start round"').toEqual([]);
   });
 
   test('"How to play" from the choices screen: Read this aloud with its 4 lines, the Easy line, the 3 rules, "Done" (main), "Practice round first"; no menu; nothing recorded', async ({ page }) => {

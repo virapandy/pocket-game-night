@@ -782,6 +782,9 @@ test.describe('IMP-081: the room screens at 320 × 568 and 360 × 640: nothing d
         if (!scrolls) expect(await noPageScroll(page), `${w}: no page scrolling`).toBe(true);
         if (await mainButton(page).count()) await expect(mainButton(page), `${w}: main button wholly on screen`).toBeInViewport({ ratio: 1 });
         await expect(page.getByTestId('practice-chip'), `${w}: the practice chip`).toBeVisible();
+        // A page that scrolls as one (the result) may pass under the pinned main button; scrolled to the end, nothing
+        // may still lie under it.
+        if (scrolls) await page.evaluate(() => window.scrollTo(0, 1e6));
         expect(await overlapping(page), `${w}: nothing drawn over anything else`).toEqual([]);
       };
       test(`${where}: deal, clues, talk, countdown, picker, practice chip and 16-character names`, async ({ page }) => {
