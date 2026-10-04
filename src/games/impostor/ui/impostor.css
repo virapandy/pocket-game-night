@@ -481,13 +481,20 @@
 
 /* ----- Talk and the timer (IMP-023, IMP-024, IMP-027, IMP-073) ----- */
 .imp-talk-heading { font-size: 56px; font-weight: 800; line-height: 1.1; overflow-wrap: anywhere; }
-.imp-timer { font-size: 120px; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
+.imp-timer { font-size: 120px; font-weight: 800; line-height: 1.1; font-variant-numeric: tabular-nums; }
+/* F10: the label 28 px directly above the timer; "Time's up!" 40 px directly under it (IMP-073: neither shrinks). */
+.imp-timer-label { font-size: 28px; font-weight: 800; line-height: 1.2; }
+.imp-times-up { font-size: 40px; font-weight: 800; line-height: 1.2; }
+.imp-timer-side, .imp-timer-buttons { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.imp-talk-timer { gap: 8px; }
 @media (max-width: 340px) {
   .imp-timer { font-size: 112px; }
 }
 
 /* ----- The countdown (IMP-030): numbers swap with no transform or transition ----- */
 .imp-countdown { gap: 8px; }
+/* IMP-030, IMP-073: "Get ready to point…" 40 px, never shrinks. */
+.imp-countdown-heading { font-size: 40px; font-weight: 800; line-height: 1.2; }
 .imp-count { font-size: 200px; font-weight: 800; line-height: 1; }
 .imp-count-point { font-size: 96px; }
 @media (max-width: 340px) {
@@ -616,7 +623,9 @@
   .imp-clues-rest { grid-area: rest; justify-content: flex-start; }
   .imp-count { font-size: 160px; }
   .imp-count-point { font-size: 96px; }
-  .imp-talk-heading { font-size: 48px; }
+  /* IMP-024: the label, the timer and "Time's up!" in the left half; the buttons in the right half. */
+  .imp-talk-timer { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 16px; align-items: center; }
+  .imp-timer-side { gap: 4px; }
   /* IMP-081: the result screen: the headline to the outcome on the left; the evening line or points with the
      scoreboard, the quiet buttons and the verdict buttons on the right. */
   .imp-result-page { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 16px; align-items: start; }

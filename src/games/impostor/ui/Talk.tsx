@@ -28,7 +28,8 @@ export function FreeTalk({ onVote }: { onVote: () => void }) {
 }
 
 /**
- * IMP-024, IMP-027: the 2-minute timer. Starts running only when the host just tapped "Start the 2-minute timer";
+ * IMP-024, IMP-027 (F10): the 2-minute timer, with the label "Talk it over" above it and, at 0:00, "Time's up!" and
+ * "1 more minute". Starts running only when the host just tapped "Start the 2-minute timer";
  * otherwise (reopened, back from "See my word again") it shows paused at its kept value. It pauses when the page is
  * hidden, never catches up, and only "Carry on" resumes it. The remaining time is kept at every change.
  */
@@ -118,15 +119,31 @@ export function TimerTalk({
   }, [secs, announce, prefs]);
 
   const up = remaining <= 0;
+  // F10: "1 more minute" gives the room another minute (nothing recorded; no limit).
+  const oneMore = () => {
+    setRemaining(60_000);
+    setRunning(true);
+  };
   return (
     <>
-      <section className="imp-stage imp-center">
-        <p className="imp-timer" data-testid="timer">
-          {mmss(remaining)}
-        </p>
-        {up && <h1 className="imp-room-title">Time's up!</h1>}
-        {!up && !running && <p className="imp-small">Paused · Tap to carry on</p>}
-        {!up && <QuietButton onClick={running ? pause : () => setRunning(true)}>{running ? 'Pause' : 'Carry on'}</QuietButton>}
+      <section className="imp-stage imp-center imp-talk-timer">
+        <div className="imp-timer-side">
+          <p className="imp-timer-label" data-testid="timer-label">
+            Talk it over
+          </p>
+          <p className="imp-timer" data-testid="timer">
+            {mmss(remaining)}
+          </p>
+          {up && <h1 className="imp-times-up">Time's up!</h1>}
+          {!up && !running && <p className="imp-small">Paused · Tap to carry on</p>}
+        </div>
+        <div className="imp-timer-buttons">
+          {up ? (
+            <QuietButton onClick={oneMore}>1 more minute</QuietButton>
+          ) : (
+            <QuietButton onClick={running ? pause : () => setRunning(true)}>{running ? 'Pause' : 'Carry on'}</QuietButton>
+          )}
+        </div>
       </section>
       <MainButton onClick={onVote}>{up ? 'Get ready to point' : 'Vote now'}</MainButton>
     </>
@@ -161,7 +178,9 @@ export function Countdown({ onDone, announce, prefs }: { onDone: () => void; ann
   }, [announce, prefs]);
   return (
     <section className="imp-stage imp-center imp-countdown">
-      <h1 className="imp-room-title">Get ready to point…</h1>
+      <h1 className="imp-countdown-heading" data-testid="countdown-heading">
+        Get ready to point…
+      </h1>
       {shown !== null && (
         <p key={shown} className={shown === 'Point!' ? 'imp-count imp-count-point' : 'imp-count'} data-testid="countdown-number">
           {shown}
