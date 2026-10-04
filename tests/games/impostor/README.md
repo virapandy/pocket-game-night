@@ -1,7 +1,7 @@
-# What the Impostor tests expect (C3 parts, written before the build, 3 October 2026)
+# What the Impostor tests expect (C3 parts, written before the build, 3 October 2026; updated 4 October 2026 to v3.5)
 
 For the Build workspace. The tests are the definition of done; this page lists what they import and what they
-assume, so nothing has to be reverse-engineered. The contract is `specs/impostor/` (scenarios v2.2, copied unchanged
+assume, so nothing has to be reverse-engineered. The contract is `specs/impostor/` (scenarios v3.5, copied unchanged
 from `docs/games/impostor/scenarios.md`): its **Test hooks the build provides** section is binding. If something
 here is wrong or impossible, write it in `docs/test-questions.md`; don't work around it.
 
@@ -14,7 +14,9 @@ here is wrong or impossible, write it in `docs/test-questions.md`; don't work ar
 | `vote-and-reveal.test.ts` | IMP-031, IMP-032, IMP-033, IMP-034, IMP-035, IMP-037, IMP-038 |
 | `scoring.test.ts` | IMP-041, IMP-042 |
 | `secrets-and-seeds.test.ts` | IMP-060, IMP-061, IMP-062, IMP-064 |
-| `saved-evening.test.ts` | IMP-096 (with `tests/fixtures/impostor-saved-evenings.json`) |
+| `saved-evening.test.ts` | IMP-096 (format fixture `tests/fixtures/impostor-saved-evenings-v3.json`; the v2.2 file `impostor-saved-evenings.json` is now an evening from an earlier preview build, which no longer replays) |
+| `word-ids.test.ts` | Test hooks item 1 (v3.5): `wordId` on every word-dealing move, per-deal seeds, replay of recorded and retired ids; IMP-021, IMP-052, IMP-054, IMP-060, IMP-061, IMP-096 |
+| `last-guess.test.ts` | IMP-033, IMP-035, IMP-037, IMP-039, IMP-041, IMP-071, IMP-076; IMP-096 (no `lastGuess` reads as on) |
 | `../../contract/impostor.test.ts` | the shared contract suite (PLT-100 onwards; IMP-062: views keep every secret) |
 
 Browser tests for the same C3 scenarios: `tests/browser/impostor-privacy.spec.ts`,
@@ -30,6 +32,23 @@ export exists, each test that needs it fails on its own with "… is not exporte
 
 The word list is read from `content/impostor/words.json` (IMP-055) and compared with `docs/games/impostor/words.csv`
 (parsed by a real CSV parser in `helpers.ts`). `pickWord` is called with the CSV rows in the `words.json` shape.
+
+## Round 4 (v3.5) in short
+- **Word ids.** A word-dealing move (`startDeal`, `nextRound`, `dealAgain`, `dontKnow`, `allowRepeats`, and `setChoices`
+  when it redeals from the no-words screen) carries `wordId`. The tests take that id from your `legalMoves` (the
+  contract's complete moves): `helpers.ts` `withWordId` copies the `wordId` of the legal move of the same type. So
+  `legalMoves(state, 'host')` must list each word-dealing move with the id that deal n gives.
+- **Per-deal seeds.** Deal n (every word-dealing move counts, from 1; a `nextRound` with `wordId: null` does not) uses
+  ``createRng(`${word}:word:${n}`)``, ``createRng(`${word}:impostor:${n}`)`` and ``createRng(`${starter}:${n}`)``.
+  `word-ids.test.ts` checks deal 1 and deal 2 against `pickWord(ACTIVE, …)`, `pickImpostor` and `pickStarter`.
+- **Replay** accepts any recorded id in the shipped list (retired included) and refuses a word-dealing move without
+  `wordId` or with an unknown id.
+- **Retired words** are never dealt; `pickWord` tests pass only the active words (`ACTIVE`), the evening tests check
+  that no deal is a retired id.
+- **`lastGuess`.** `DEFAULT_CHOICES` in `helpers.ts` plays with `lastGuess: true` (so v2.2's caught rounds keep their
+  verdict); guess-off rounds pass `lastGuess: false`; choices with no `lastGuess` read as on.
+- `setChoices` moves in tests of other rules use the 6 category names that are the same before and after 4 October
+  (`changedChoices`).
 
 ## How the rule tests play an evening
 `helpers.ts`'s `Evening` plays moves through the engine's `play` (one second apart, `by: 'host'`) exactly as the
@@ -51,7 +70,8 @@ These follow from the scenarios (the buttons do not exist at that moment); a ref
 - `tie` with fewer than 2 players, the same player twice, or someone not playing; a second `tie` (IMP-032);
 - `stillTie` without a `tie` first;
 - `verdict` before `showWord`; `showWord` or `verdict` after a crew member is revealed or after "Still a tie";
-  `nextRound` before a caught round has its verdict (IMP-033, IMP-034, IMP-038).
+  `nextRound` before a caught round has its verdict, with the last-chance guess on (IMP-034, IMP-038, IMP-039);
+- with the guess off: `showWord` and `verdict` after the impostor is revealed (IMP-033, IMP-076).
 
 `canUndo` is true only for the round's latest `verdict` while no `nextRound`, `setPlayers`, `setChoices` or
 `endEvening` came after it (`wordDidntWork` does not end the window); false for every other record (IMP-037).

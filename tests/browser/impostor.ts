@@ -1,5 +1,10 @@
 // Impostor browser helpers. Every name, text and test id comes from specs/impostor/README.md (Terms, Canonical
-// strings, Test hooks) of the scenarios v2.2. Listed for the Build role in tests/browser/README.md, "Impostor".
+// strings, Test hooks) of the scenarios v3.5 (4 October 2026). Listed for the Build role in tests/browser/README.md,
+// "Impostor".
+// Transition (Impostor round 4, lanes A to C and C3 built one after another): the navigation helpers below
+// (`startEvening`, `toPicker`, `toSummaryMenu`) reach the same screen on the v2.2 build and on the v3.5 build, so tests of
+// unchanged scenarios keep checking them while the lanes land. What changed in v3.5 is asserted only by the tests
+// written for it. Remove the v2.2 branches once round 4 is merged (marked "v2.2 build:").
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { expect, type Locator, type Page } from '@playwright/test';
@@ -8,11 +13,19 @@ import { HOME, hostAGame } from './helpers';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export const P4 = ['Riya', 'Arjun', 'Meena', 'Kabir'];
 export const P5 = ['Riya', 'Arjun', 'Meena', 'Kabir', 'Zoya'];
+/** IMP-007 (v3.5): the 9 categories, named and ordered exactly. */
 export const CATEGORIES = [
-  'Food', 'Festivals and occasions', 'Around the house', 'Travel and places', 'Films, music and TV',
-  'Cricket and games', 'School and childhood', 'Weddings and family', 'Desi life',
+  'Food', 'Festivals and occasions', 'Around the house', 'Out and about', 'Films, music and TV',
+  'Sports and games', 'School and childhood', 'Weddings and family', 'Everyday moments',
 ];
-export const DEFAULT_CHOICES = { mode: 'easy', talking: 'free', score: false, words: 'family', categories: CATEGORIES, nonveg: false };
+/** The 6 names that are the same before and after the 4 October rename (valid on either word list). */
+export const COMMON_CATEGORIES = ['Food', 'Festivals and occasions', 'Around the house', 'Films, music and TV', 'School and childhood', 'Weddings and family'];
+/**
+ * Choices for the saved evenings the tests build: the last-chance guess ON (as every evening of v2.2 had it, so caught
+ * rounds keep "Show the word" and a verdict) and categories valid on either word list. A test of the guess-off round
+ * passes `lastGuess: false`.
+ */
+export const DEFAULT_CHOICES: Record<string, unknown> = { mode: 'easy', talking: 'free', score: false, words: 'family', categories: COMMON_CATEGORIES, nonveg: false, lastGuess: true };
 /** India time, as the families play; the evening start times below read in it. */
 export const TZ = 'Asia/Kolkata';
 /** 3 October 2026, 21:30 in India (IMP-096's example time). */
@@ -36,14 +49,15 @@ function parseCsv(text: string): string[][] {
 }
 const csv = parseCsv(readFileSync(fileURLToPath(new URL('../../docs/games/impostor/words.csv', import.meta.url)), 'utf8'));
 const header = csv[0]!;
-export interface Word { id: string; word: string; other_names: string; category: string; hint: string }
+export interface Word { id: string; word: string; other_names: string; category: string; hint: string; retired: string }
 export const WORDS: Word[] = csv.slice(1).filter((r) => r.length > 1).map((r) => Object.fromEntries(header.map((k, i) => [k, r[i] ?? ''])) as any);
 export const word = (id: string): Word => {
   const w = WORDS.find((x) => x.id === id);
   if (!w) throw new Error(`no word ${id}`);
   return w;
 };
-export const SAMOSA = 'IMPW-004', PANI_PURI = 'IMPW-005', KHEER = 'IMPW-007', LONGEST = 'IMPW-402';
+/** LONGEST: "Mummy finding it in two seconds", the longest active word (31 characters; v3.5 Terms). */
+export const SAMOSA = 'IMPW-004', PANI_PURI = 'IMPW-005', KHEER = 'IMPW-007', SCHOOL_TRIP = 'IMPW-203', LONGEST = 'IMPW-396';
 
 /** IMP-013: what must not be in the page during a round, for this word (and its category in Hard). */
 export function secretTerms(id: string, mode: 'easy' | 'hard'): string[] {
@@ -121,12 +135,16 @@ export async function onlyEvening(page: Page): Promise<any> {
 // ---- Building saved evenings (IMP-096) for the tests that reopen one ----
 
 export type Move = { type: string; [k: string]: unknown };
-export type Outcome = { caught: 'right' | 'wrong' } | { escaped: string } | { stillTie: [string, string] };
+/** `caught: 'none'`: the last-chance guess is off, so the reveal completes the round (IMP-033). */
+export type Outcome = { caught: 'right' | 'wrong' | 'none' } | { escaped: string } | { stillTie: [string, string] };
 
 /** The moves of one round's deal and vote (players in seat order; the impostor comes from the forced deal). */
 export function roundMoves(players: string[], impostor: string, outcome: Outcome, first: Move = { type: 'nextRound' }): Move[] {
   const m: Move[] = [first, ...players.map(() => ({ type: 'seen' })), { type: 'startTalk' }, { type: 'voteNow' }];
-  if ('caught' in outcome) m.push({ type: 'reveal', player: impostor }, { type: 'showWord' }, { type: 'verdict', right: outcome.caught === 'right' });
+  if ('caught' in outcome) {
+    m.push({ type: 'reveal', player: impostor });
+    if (outcome.caught !== 'none') m.push({ type: 'showWord' }, { type: 'verdict', right: outcome.caught === 'right' });
+  }
   else if ('escaped' in outcome) m.push({ type: 'reveal', player: outcome.escaped });
   else m.push({ type: 'tie', players: outcome.stillTie }, { type: 'stillTie' });
   return m;
@@ -148,11 +166,21 @@ export interface EveningSpec {
 }
 export const SESSION_ID = 'session-imp-test';
 
-/** A SavedGame of IMP-096's shape (format 2, gameType "impostor"), with forced deals in config.testDeals. */
+const DEALING = ['startDeal', 'nextRound', 'dealAgain', 'dontKnow', 'allowRepeats'];
+/**
+ * A SavedGame of IMP-096's shape (format 2, gameType "impostor"), with forced deals in config.testDeals. v3.5: every
+ * word-dealing move records the dealt word's id; deal n takes the `wordId` of deals[n-1] (Test hooks items 1 and 3).
+ */
 export function savedEvening(s: EveningSpec): any {
   const t0 = s.t0 ?? T0;
   let at = t0;
-  const records = s.moves.map((move, i) => {
+  let n = 0;
+  const moves = s.moves.map((m) => {
+    if (!DEALING.includes(m.type) || 'wordId' in m) return m;
+    const id = s.deals[n++]?.wordId;
+    return id ? { ...m, wordId: id } : m;
+  });
+  const records = moves.map((move, i) => {
     at = s.at?.[i] ?? (i === 0 ? t0 : at + (s.gap ?? 20_000));
     return { v: 1, seq: i + 1, at, by: 'host', move };
   });
@@ -219,13 +247,14 @@ export interface StartOptions {
   seeds?: TestSeeds;
   time?: number;
   storage?: Record<string, unknown>;
-  /** false: stop on the read-aloud card. */
-  deal?: boolean;
+  /** IMP-076: "More options ›" → "On" → "Done" before "Start round" (v3.5 only). */
+  lastGuess?: boolean;
 }
 
 /**
- * A new phone → Home → "Host a game" → "Impostor" → names → choices → "Start round" → the read-aloud card →
- * "Start the deal" (or "Practice round first"), ending on the first "Pass the phone to…" screen.
+ * A new phone → Home → "Host a game" → "Impostor" → names → choices → "Start round" (IMP-008, v3.5: the first deal at
+ * once) or, for a practice round, "How to play" → "Practice round first" (IMP-071), ending on the first "Pass the phone
+ * to…" screen.
  */
 export async function startEvening(page: Page, o: StartOptions = {}) {
   await freshPhone(page, { time: o.time, seeds: o.seeds, storage: o.storage });
@@ -238,11 +267,28 @@ export async function startEvening(page: Page, o: StartOptions = {}) {
   if (o.mode === 'hard') await option(page, 'Mode', 'Hard').click();
   if (o.talking === 'timer') await option(page, 'Talking', 'Timer').click();
   if (o.score) await option(page, 'Score', 'Yes').click();
-  await mainButton(page).filter({ hasText: 'Start round' }).click();
-  await expect(page.getByRole('heading', { name: 'Read this aloud' })).toBeVisible();
-  if (o.deal === false) return;
-  if (o.practice) await page.getByRole('button', { name: 'Practice round first', exact: true }).click();
-  else await mainButton(page).filter({ hasText: 'Start the deal' }).click();
+  if (o.lastGuess !== undefined) {
+    // An assertion first, so a build without "More options ›" fails here at once (not by the test's timeout).
+    await expect(page.getByRole('button', { name: 'More options ›', exact: true })).toBeVisible();
+    await page.getByRole('button', { name: 'More options ›', exact: true }).click();
+    await option(page, 'Last guess for a caught impostor', o.lastGuess ? 'On' : 'Off').click();
+    await page.getByRole('button', { name: 'Done', exact: true }).click();
+  }
+  const howToPlay = page.getByRole('button', { name: 'How to play', exact: true });
+  const practice = page.getByRole('button', { name: 'Practice round first', exact: true });
+  if (o.practice && (await howToPlay.count())) {
+    await howToPlay.click();
+    await practice.click();
+  } else {
+    await mainButton(page).filter({ hasText: 'Start round' }).click();
+    // v2.2 build: the read-aloud card comes first, with "Start the deal" and "Practice round first".
+    const card = mainButton(page).filter({ hasText: 'Start the deal' });
+    await expect(card.or(passName(page)).first()).toBeVisible();
+    if (await card.isVisible()) {
+      if (o.practice) await practice.click();
+      else await card.click();
+    }
+  }
   await expect(passName(page)).toBeVisible();
 }
 
@@ -314,20 +360,36 @@ export async function fromMenu(page: Page, item: string) {
 }
 export const revealLines = (page: Page) => page.getByTestId('reveal-line');
 
-/** From the clues screen (Free flow): "Talk it over" → "Vote now" → the countdown → the picker. */
+/** The clues screen's main button (IMP-016; v2.2 build: "Talk it over" / "Start the 2-minute timer"). */
+export const CLUES_DONE = /^(Clues done, talk it over|Clues done, start the 2-minute timer|Talk it over|Start the 2-minute timer)$/;
+/** From the clues screen: "Clues done, talk it over" → "Vote now" → the countdown → the picker. */
 export async function toPicker(page: Page) {
-  await mainButton(page).filter({ hasText: /^(Talk it over|Start the 2-minute timer)$/ }).click();
+  await mainButton(page).filter({ hasText: CLUES_DONE }).click();
   await mainButton(page).filter({ hasText: 'Vote now' }).click();
   await page.clock.runFor(6000);
   await expect(page.getByRole('heading', { name: 'Who got the most fingers?' })).toBeVisible();
 }
 export const pickerName = (page: Page, name: string) => page.getByRole('button', { name: new RegExp(`^(✓\\s*)?${ci(name)}(\\s*✓)?$`) });
-/** On the picker: tap a name, then "Reveal <Name>", and let the reveal run `ms`. */
-export async function reveal(page: Page, name: string, ms = 4000) {
+/**
+ * On the picker: tap a name, then "Reveal <Name>", and let the reveal run `ms` (7.5 s: past the v3.5 build-up of 1.5 s
+ * and past every timed step of the v2.2 build).
+ */
+export async function reveal(page: Page, name: string, ms = 7500) {
   await pickerName(page, name).click();
   await mainButton(page).filter({ hasText: new RegExp(`^Reveal ${ci(name)}$`) }).click();
   await page.clock.runFor(ms);
 }
+
+/** The summary's "More ›" items (IMP-092, v3.5: "Share", "History", "Discard this evening"); v2.2 build: quiet buttons. */
+export async function summaryAction(page: Page, name: 'Share' | 'History' | 'Discard this evening') {
+  const more = page.getByRole('button', { name: 'More ›', exact: true });
+  if (await more.count()) { await more.click(); await page.getByRole('menuitem', { name, exact: true }).click(); }
+  else await page.getByRole('button', { name, exact: true }).click();
+}
+
+// ---- The result screen (IMP-033, IMP-034, IMP-038, IMP-039; v3.5) ----
+export const result = (page: Page, id: 'result-headline' | 'result-note' | 'result-impostor' | 'word-label' | 'result-word' | 'also-called' | 'word-category' | 'guess-line' | 'round-outcome' | 'build-up') =>
+  page.getByTestId(id);
 
 export const textOf = (l: Locator) => l.evaluateAll((els) => els.map((e) => (e.textContent ?? '').replace(/\s+/g, ' ').trim()));
 

@@ -774,7 +774,9 @@ How the tests drive the game (Test hooks items 3 to 9 and 13):
   "3 hours" and "12 hours" are exact.
 - **Start:** Home → "Host a game…" → the button whose name starts "Impostor" → "Who's playing?" (field "Player name",
   "Add") → "Next" → "How do you want to play?" (option buttons inside `role="group"` named "Mode", "Talking",
-  "Score") → `main-button` "Start round" → "Read this aloud" → `main-button` "Start the deal" or "Practice round first".
+  "Score") → `main-button` "Start round" (v3.5: the first deal at once; a practice round: quiet "How to play" →
+  "Practice round first"; the last-chance guess: "More options ›" → group "Last guess for a caught impostor" → "On" →
+  "Done").
 - **Deal:** `pass-name`, the button "I'm <Name>", `hold-pad` pressed with `page.mouse.down/up` (Pointer Events) while
   the fake clock runs 500 ms, `private-block` (its 5 children read as text), `main-button` "Done, pass to …" /
   "Done, everyone's seen", "Don't know this word?".
@@ -791,3 +793,13 @@ How the tests drive the game (Test hooks items 3 to 9 and 13):
   in `document.documentElement.outerHTML` (script bodies left out) or `document.title`, case-insensitive, as whole
   phrases. The 200-deal outerHTML property of IMP-012 runs as 4 tests of 50 deals ("Deal again with a new word" between
   deals), so it takes a few minutes.
+- **Round 4 (scenarios v3.5, 4 October 2026).** New and updated tests check the one result screen (`build-up`,
+  `result-headline`, `result-note`, `result-impostor`, `word-label`, `result-word`, `also-called`, `word-category`,
+  `guess-line`, `round-outcome`), "How to play" on request and in the menu, `deal-progress` and `look-away`, the
+  full-width pad and the hold layer (nothing on screen B moves), "New word for everyone?", the clue wording,
+  "1 more minute", "Not sure?", the summary's lead line and "More ›" menu, "Scores since round 4", word ids in the saved
+  moves and hidden evenings from earlier preview builds. Those not built yet are marked `test.fail`.
+  Saved evenings built by `savedEvening` record each deal's `wordId` (from its forced deal), play with
+  `lastGuess: true` unless a test says otherwise, and use the 6 category names that are the same before and after
+  4 October. While lanes A to C land, `startEvening`, `toPicker` and `summaryAction` reach the same screen on the old and
+  the new build (marked "v2.2 build:" in `impostor.ts`, to be removed after round 4).
