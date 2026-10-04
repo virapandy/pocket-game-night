@@ -320,8 +320,30 @@
    sits in the corner, out of the text's way. */
 .imp-group { display: grid; grid-template-columns: 56px minmax(0, 1fr) minmax(0, 1fr); gap: 8px; align-items: center; }
 .imp-group-label { font-weight: 800; }
-.imp-group .imp-option { position: relative; padding: 4px; white-space: nowrap; overflow-wrap: normal; }
-.imp-group .imp-tick { position: absolute; top: 1px; right: 5px; font-size: 12px; line-height: 1; }
+/* "Whole family" must fit 104 px inside the borders at 17 px (320 wide, Larger text) and 124 px at 21 px (360 wide,
+   Larger text), so at most 5.9 em: no side padding, the tightest bold system font of each phone (SF, Roboto, Segoe UI,
+   Helvetica or Arial; never the wider fallback some desktops give `system-ui`), letters 0.035 em closer. The ✓ is
+   drawn in the top right corner, out of the text and not read out (the button says `aria-pressed`). */
+.imp-group .imp-option {
+  position: relative;
+  padding: 4px 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Liberation Sans', sans-serif;
+  letter-spacing: -0.035em;
+  white-space: nowrap;
+  overflow-wrap: normal;
+}
+.imp-group .imp-tick { display: none; }
+.imp-group .imp-selected::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  right: 5px;
+  width: 12px;
+  height: 12px;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M1.5 6.5l3 3 6-7' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M1.5 6.5l3 3 6-7' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
+}
 .imp-option-line { padding-left: 64px; }
 .imp-tick { font-weight: 800; }
 @media (max-width: 340px) {
