@@ -10,7 +10,7 @@ The shared steps live in `helpers.ts`.
 `docs/change-sop.md` runs the complete browser suite only before a release. On every push the automation runs
 the **smoke set** plus the specs for the **area** the change touched.
 
-**Smoke set:** 16 tests tagged with Playwright's tag option (`test('…', { tag: '@smoke' }, async …)`). Together they
+**Smoke set:** 17 tests (16 + Impostor golden journey 1, 4 October 2026) tagged with Playwright's tag option (`test('…', { tag: '@smoke' }, async …)`). Together they
 walk the core journeys end to end. About 51 s on Android with one worker (measured 3 October on app b223754).
 ```
 npm run build && npm run test:browser -- --project=android --grep @smoke
