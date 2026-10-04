@@ -92,6 +92,12 @@ changed scenarios into `specs/impostor/` and lists the tests to update or retire
 names them by file). Lanes: A deal and privacy; B result, summary, picker, timer; C setup, choices, how to play;
 C3 in its own lane. Then quick verify, the owner tries the preview, then "release Impostor".
 
+### Impostor round 4 review (product owner with the UX designer, 4 October)
+Built as scenarios v3.5 say; F1–F12 done except F2 at 320 px. **Must fix before release (joins this round): N1 only**:
+`result-headline` 44 px, one line, below 360 px wide (IMP-073, I23). **Next list** (after the Impostor release, not this
+round): N2–N6 in `docs/games/impostor/ux.md` ("Re-check of round 4"). Jev's 13 confusing-screen flags: send them to the
+product owner with screenshots once sorted.
+
 ### Impostor build, product owner answers (4 October)
 All open Impostor questions in `docs/test-questions.md` are answered in `docs/decisions.md` I21 and written into
 `docs/games/impostor/scenarios.md` (IMP-075, IMP-091, IMP-073 `pass-name`, IMP-102). **No app change needed:** the

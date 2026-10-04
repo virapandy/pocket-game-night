@@ -265,3 +265,15 @@ Also: with the last guess off the result has no "Undo" (a reveal can't be undone
 phone to" and on the hold screen; "Everyone else, look away!" 20 px; the setting reads "Last guess for a caught
 impostor" with Off ✓ / On and "A caught impostor can steal the round by guessing the word." New guidelines 45a and 46a.
 Not now: the upside-down "table view".
+
+## Re-check of round 4 (UX designer, 4 October 2026, live preview)
+F1, F3–F9, F11, F12 done; F2 partly (the one must-fix below); F10's "1 more minute" not tried live. The new round end,
+how to play on request and the pass-the-phone touches are built as scenarios v3.5 say.
+| # | Sev | Finding | Label | Decided |
+|---|---|---|---|---|
+| N1 | 3 | "✗ Escaped!" breaks onto two lines at 320 px (headline stays 56 px) | **Must fix before release** | 44 px below 360 px wide, one line (IMP-073, decision I23) |
+| N2 | 2 | Two-column scoreboard: a total sits next to the other column's rank ("Riya 1 1 Chandrasekharan 1") | Next list | 24 px gap with a thin divider; rank as a muted 15 px "1." |
+| N3 | 2 | Long one-word names break mid-word ("VENKATARAGHAV / AN") | Next list | Break lines only at spaces; a one-word name too wide shrinks to fit one line (starter floor 24 px, list floor 15 px) |
+| N4 | 1 | Many players sharing the top score make a wall of names | Next list | More than 3 sharing: "11 players share the night with 1 point!"; round points "+1 each to the crew (11)" |
+| N5 | 1 | "Whose word?" with 12 players hides Cancel at 360 × 640 | Next list | Cancel pinned at the bottom; only names scroll |
+| N6 | 1 | Hold-screen name 2 px past its box at 360 × 640 | Next list | Keep shrinking until it fits |
