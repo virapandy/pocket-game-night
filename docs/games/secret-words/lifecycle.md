@@ -1,5 +1,9 @@
 # Secret Words: the whole evening, stage by stage (draft, 4 October 2026)
 
+> **Version 3 (4 October):** the play modes are now one, two (recommended) or three phones, with an optional clue word,
+> tap-to-see map, "Turn", "Guesses only" and "Next map" (`play-modes.md`, decisions P1–P11). Where this file differs,
+> `scenarios.md` wins.
+
 **Binding details are in scenarios.md; where this file differs, scenarios.md wins.**
 Designed against the five stages in `docs/proposals/next-game-lifecycle.md`, before any build. Rules: `guide.md`.
 Screens: `ux.md`. Words: `words.md`.

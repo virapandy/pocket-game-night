@@ -199,7 +199,7 @@ Status: **decided: owner, 4 October 2026, "follow the recommendation"** for K1�
 | K12 | Players | 4–20, at least 2 per team; 2–3 players later (co-op) | As recommended |
 | K13 | Clue language | Norm: English plus words used in an English sentence (chai, jugaad); groups may agree on more | As norm |
 | K14 | Two-word names as clues (Taj Mahal, Sholay) | Allowed by default (norm: group choice) | Allowed |
-| K15 | The clue word | **Only the number is tapped**; the clue is said aloud, not typed | As recommended (typing slows every turn) |
+| K15 | The clue word (~~reversed by P3~~) | **Only the number is tapped**; the clue is said aloud, not typed | As recommended (typing slows every turn) |
 | K16 | Undo | No undo of a reveal (pick, then confirm); "Oops, keep guessing" after "End our turn"; undo for team moves | As recommended |
 | K17 | Clue giver rotation | Fewest games as clue giver tonight, ties to the earliest in the team list | As recommended |
 | K18 | Resume | Within 12 hours at the same step; the map screen always returns to "Pass the phone to…" | As recommended |
@@ -212,3 +212,5 @@ Status: **decided: owner, 4 October 2026, "follow the recommendation"** for K1�
 | K25 | **Funny team names, random each evening** from 20 pairs in `docs/games/secret-words/team-names.csv` (e.g. Chai Champions v Coffee Commandos, Back Benchers v Front Benchers, Snooze Buttons v Alarm Clocks); "New team names" before the first deal. Colours stay fixed (orange, teal) with shape icons; replaces Mango v Peacock (K2) | Owner, 4 October |
 | K26 | Word list: add **Geography** (58 words: countries Indians relate to, world cities, Indian states and cities, landmarks); one word of at most 8 letters, nothing political. The rest of the list approved as good | Owner, 4 October |
 | K27 | Secret Words word list (452 words, `words.csv` edition 1) and team names (`team-names.csv`) **approved by the owner**; no separate persona review needed | Owner, 4 October |
+| P1–P9 | Secret Words play modes (`docs/games/secret-words/play-modes.md`): "How many phones?" (one · two, recommended · three); "15–25 min a game"; optional clue word shown big with earlier clues and a board-word warning (**reverses K15**); one phone: tap to see the map, "Our words", "See the map again"; "Change clue" and "Clue broke a rule?" on the board; "Turn" the board; "Guesses only"; "Next map"; recap line, Do Not Disturb tip, bigger timer. P10: "Board on your phone" and connected play designed, built later | Owner, 4 October ("follow the recommendation") |
+| P11 | Home's "Join with my ticket" becomes **"Join a game"** with "Tambola ticket or Secret Words map from the host" (until Secret Words ships: "Tambola ticket from the host"; C1, may ship now) | Owner, 4 October |

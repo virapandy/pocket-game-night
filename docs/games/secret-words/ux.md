@@ -1,5 +1,9 @@
 # Secret Words: theme and screens (draft, 4 October 2026)
 
+> **Version 3 (4 October):** the play modes are now one, two (recommended) or three phones, with an optional clue word,
+> tap-to-see map, "Turn", "Guesses only" and "Next map" (`play-modes.md`, decisions P1–P11). Where this file differs,
+> `scenarios.md` wins.
+
 **Binding details are in scenarios.md; where this file differs, scenarios.md wins.**
 Product owner, from the app research in `research.md` §3 and the lessons of Tambola and Impostor. To be reviewed with
 the UX designer at phone sizes before the owner's walk-through (process step 3). Sizes are predicted from Tambola's

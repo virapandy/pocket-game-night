@@ -5,6 +5,11 @@ A new orchestrator session starts here: read this section, then work through **"
 top, reporting to the owner after each. The product owner keeps this section
 current; instructions live here, not in chat. History from Phase 0 and 1a is further down.
 
+### C1 now (owner, 4 October, P11): Home says "Join a game"
+Home's second card: title **"Join a game"**, line **"Tambola ticket from the host"** (replaces "Join with my ticket" / "Got a QR
+or code from the host?"); the Join screen's heading reads "Join a game". When Secret Words ships the line becomes "Tambola ticket
+or Secret Words map from the host" (SWD-002). Update any test that matches the old wording. C1: one commit, screenshot approval.
+
 ### Owner's answers on the overnight checks (4 October, run 37143638539): do these
 1. **TAM-112 (go):** the Android emulator lost the last calls when Android closed Chrome mid-game (42 shown instead of 69).
    The tester confirms it with that one test on GitHub (not on the owner's Mac), **between Impostor rounds** when the Test
@@ -106,7 +111,7 @@ mark (the "left halfway" menu as built is now the spec). Then Impostor waits for
 
 ### Queued: Secret Words, the third game (owner approved scenarios v2, 4 October): start only after Impostor's release
 Design complete in `docs/games/secret-words/` (research, guide, ux, lifecycle, words). **Scenarios SWD-001 to SWD-099 approved by
-the owner, 4 October** (`docs/games/secret-words/scenarios.md` version 2; SWD-200+ are direction only). Decisions K1–K19 in
+the owner, 4 October; version 3 (play modes P1–P9) in its two-reader check, then approval** (`docs/games/secret-words/scenarios.md` version 2; SWD-200+ are direction only). Decisions K1–K19 in
 `docs/decisions.md`. When Impostor is released: the **tester** copies the scenarios into `specs/secret-words/` (file names in each
 section heading), requests a QR decoder for tests (hook 5), and writes tests first for the C3 sections (02 deal, 04 rules,
 05, 06, SWD-099), including the golden boards of SWD-022; then the **coder** builds by `docs/change-sop.md` (screens in lanes,

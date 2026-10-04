@@ -1,5 +1,9 @@
 # Secret Words: the rule book (draft, 4 October 2026)
 
+> **Version 3 (4 October):** the play modes are now one, two (recommended) or three phones, with an optional clue word,
+> tap-to-see map, "Turn", "Guesses only" and "Next map" (`play-modes.md`, decisions P1–P11). Where this file differs,
+> `scenarios.md` wins.
+
 Exact screens, wording and numbers for the build are in `scenarios.md`; where this file differs, `scenarios.md` wins.
 Evidence: `research.md`. Look and screens: `ux.md`. The whole evening: `lifecycle.md`. Decisions: K1–K18 in
 `docs/decisions.md`. Rules marked **ours** differ from the convention; every other rule is the convention.
