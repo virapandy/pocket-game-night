@@ -667,6 +667,16 @@
   .imp-clues-rest { grid-area: rest; justify-content: flex-start; }
   .imp-clues-again { grid-area: again; margin-top: 0; }
   .imp-clues:has(.imp-clues-again) .imp-clues-top { margin-top: 0; }
+  /* IMP-020 with IMP-022 (I24) and Larger text: the right half must hold the three lines (the third may wrap), the
+     clue order (at least one full line, scrolling inside), "Not enough clues?", "Go round again" and the main button.
+     Same font sizes; tighter line heights and gaps, and 8 px (not 16) above the main button. At 812 × 375: 375 - 8 top
+     - 48 bar - 4 - 84 foot = 231 px; need 2 x 26.25 + 4 + 4 + 2 x 26.25 + 4 + 26.25 + 4 + 23.75 + 4 + 48 = 223 px. */
+  .imp-larger .imp-room.imp-screen:has(.imp-clues) { padding-bottom: calc(var(--imp-main-h) + var(--imp-gutter) + 8px); }
+  .imp-larger .imp-screen-inner:has(> .imp-clues) { gap: 4px; }
+  .imp-larger .imp-clues { row-gap: 4px; }
+  .imp-larger .imp-clues-top, .imp-larger .imp-clues-rest { gap: 4px; }
+  .imp-larger .imp-clues .imp-body, .imp-larger .imp-clues .imp-small { line-height: 1.25; }
+  .imp-larger .imp-clue-order { min-height: calc(var(--imp-body) * 1.25); }
   .imp-count { font-size: 160px; }
   .imp-count-point { font-size: 96px; }
   /* IMP-031, IMP-082: the heading and the names box (scrolling inside) left; "Not sure?", its text buttons and the
