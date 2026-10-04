@@ -339,7 +339,7 @@ export function Game({
     body = (
       <>
         <section className="imp-stage imp-center">
-          <h1 className="imp-room-title">You've played every word in these categories tonight!</h1>
+          <h1 className="imp-room-title">You've played every word in these categories!</h1>
           <p className="imp-body">Turn on more categories or + Grown-ups.</p>
           {canRepeat && <QuietButton onClick={change}>Change categories</QuietButton>}
         </section>
@@ -446,7 +446,7 @@ export function Game({
       const c = counts(story);
       result = {
         outcome: outcomeLine(r),
-        eveningLine: r.points === null && !r.practice ? `Tonight: impostor caught ${c.caught} · escaped ${c.escaped}` : null,
+        eveningLine: r.points === null && !r.practice ? `This game: impostor caught ${c.caught} · escaped ${c.escaped}` : null,
         points: pointsText(r),
         rows: r.points !== null ? scoreRows(state, story) : null,
         scoresFrom: story.firstScored,

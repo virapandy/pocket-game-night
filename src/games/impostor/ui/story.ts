@@ -91,7 +91,7 @@ export function pointsText(r: DoneRound): string | null {
 export function outcomeLine(r: Pick<DoneRound, 'impostor' | 'revealed' | 'stillTie' | 'verdict'>): string {
   const caught = !r.stillTie && r.revealed === r.impostor;
   if (!caught) return `${r.impostor} escaped!`;
-  return r.verdict ? `${r.impostor} steals the round!` : 'The crew wins!';
+  return r.verdict ? `${r.impostor} wins the round!` : 'You caught the impostor!';
 }
 
 /** IMP-105: "Round 3 · Samosa · Arjun caught, guessed right", "Practice · Samosa · Arjun escaped". */
@@ -156,7 +156,7 @@ export function funLines(state: ImpostorState, story: Story): { best: string | n
   const best = b ? `Best impostor: ${b[0]}, escaped ${plural(b[1], 'time')}` : null;
   if (best) lines.push(best);
   const s = top(suspected, seats);
-  if (s && s[1] >= 2) lines.push(`Most suspected: ${s[0]}, picked ${s[1]} times while crew`);
+  if (s && s[1] >= 2) lines.push(`Most suspected: ${s[0]}, picked ${s[1]} times without being the impostor`);
   return { best, lines };
 }
 
@@ -166,9 +166,8 @@ const andList = (names: readonly string[]) =>
 
 /**
  * IMP-092, IMP-097, IMP-098: the summary's lead line. Score Yes at any point and a top total of at least 1: "Arjun wins
- * the night with 2 points!" or, shared, "Arjun and Meena share the night with 2 points!" (names in seat order).
- * Otherwise "Crew 4 · Impostors 3": rounds the crew won (caught, with no guess or a wrong guess) and rounds the
- * impostor won (escaped, "Still a tie", or a right guess), counted rounds only.
+ * the game with 2 points!" or, shared, "Arjun and Meena share the game with 2 points!" (names in seat order).
+ * Otherwise "Impostor caught 4 · escaped 3", counted rounds only, as in the result's `evening-line` (IMP-040).
  */
 export function leadLine(state: ImpostorState, story: Story): string {
   const counted = story.rounds.filter((r) => !r.practice);
@@ -183,11 +182,11 @@ export function leadLine(state: ImpostorState, story: Story): string {
       };
       const top = totals.filter(([, n]) => n === best).map(([name]) => name).sort((a, b) => at(a) - at(b));
       const pts = plural(best, 'point');
-      return top.length === 1 ? `${top[0]} wins the night with ${pts}!` : `${andList(top)} share the night with ${pts}!`;
+      return top.length === 1 ? `${top[0]} wins the game with ${pts}!` : `${andList(top)} share the game with ${pts}!`;
     }
   }
-  const crew = counted.filter((r) => isCaught(r) && r.verdict !== true).length;
-  return `Crew ${crew} · Impostors ${counted.length - crew}`;
+  const c = counts(story);
+  return `Impostor caught ${c.caught} · escaped ${c.escaped}`;
 }
 
 /** IMP-106: the text Share sends, lines joined by "\n". */
@@ -197,7 +196,7 @@ export function shareText(state: ImpostorState, story: Story): string {
   const shown = words.slice(0, 8).join(', ') + (words.length > 8 ? '…' : '');
   const best = funLines(state, story).best;
   return [
-    `Impostor night · ${plural(c.rounds, 'round')}`,
+    `Impostor game · ${plural(c.rounds, 'round')}`,
     `Impostor caught ${c.caught} · escaped ${c.escaped}`,
     ...(best ? [best] : []),
     ...(words.length > 0 ? [`Words: ${shown}`] : []),

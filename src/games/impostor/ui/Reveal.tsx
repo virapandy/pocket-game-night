@@ -1,6 +1,6 @@
 // The one result screen (IMP-033, IMP-034, IMP-037, IMP-038, IMP-039; F1, F2): right after "Reveal <Name>" the
 // build-up "Arjun was…" for 1.5 s, then everything at once: "✓ Caught!" / "✗ Escaped!", who the impostor was, the
-// word and its category, the outcome, the evening line or points and scoreboard, and "Next round". With the
+// word and its category, the outcome, the game line or points and scoreboard, and "Next round". With the
 // last-chance guess on, a caught impostor guesses first ("Arjun guessed. Show the word", then the room's verdict).
 // "Still a tie" shows at once. Reopened (or back from hidden) it shows at once, with no build-up (IMP-091).
 // The screen scrolls as one page; only the main button stays pinned (guideline 46a, IMP-081).
@@ -15,7 +15,7 @@ import type { ScoreRow } from './story';
 const BUILD_UP = 1500;
 
 export interface ResultInfo {
-  /** `round-outcome`: "The crew wins!", "Arjun steals the round!" or "Arjun escaped!". */
+  /** `round-outcome`: "You caught the impostor!", "Arjun wins the round!" or "Arjun escaped!". */
   readonly outcome: string;
   readonly eveningLine: string | null;
   readonly points: string | null;
@@ -100,7 +100,7 @@ export function Reveal({
   else {
     const first = [caught ? '✓ Caught!' : '✗ Escaped!'];
     if (tie) first.push('Still a tie.');
-    else if (!caught) first.push(`${named} was crew.`);
+    else if (!caught) first.push(`${named} was not the impostor.`);
     first.push(`${round.impostor} was the impostor`);
     if (lastChance) {
       // The last-chance guess: the caught lines with the guess line, then the word, then the outcome.
@@ -187,7 +187,7 @@ export function Reveal({
           </h1>
           {(tie || !caught) && (
             <p className="imp-result-note" data-testid="result-note">
-              {tie ? 'Still a tie.' : `${named} was crew.`}
+              {tie ? 'Still a tie.' : `${named} was not the impostor.`}
             </p>
           )}
           <p className="imp-result-impostor" data-testid="result-impostor">
@@ -240,7 +240,7 @@ export function Reveal({
 }
 
 /** IMP-039: the caught impostor's last chance. */
-const guessLine = (name: string) => `Last chance, ${name}! Guess the word out loud. Get it right and you steal the round.`;
+const guessLine = (name: string) => `Last chance, ${name}! Guess the word out loud. Get it right and you win the round.`;
 
 /** Item 7 and 8 of IMP-033: the evening line or this round's points and the scoreboard, then the quiet buttons. */
 function ResultBlock({
