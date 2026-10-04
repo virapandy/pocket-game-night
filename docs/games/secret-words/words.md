@@ -6,8 +6,10 @@ The list is `words.csv` (edition 1, 400 words). It is our own list, never Codena
 1. **One word, 3 to 8 letters A–Z** (so 25 fit on a phone; SWD-090, SWD-099).
 2. **Several meanings or many links**, so one clue can join two or three words: Match (cricket, matchbox, rishta),
    Rocket (Diwali rocket, space rocket), Fan (ceiling fan, cricket fan), Kite (Sankranti kite, the bird).
-3. **Known without explanation by a 10-year-old and a grandparent from any region**: the Multicultural fairness rule
-   from Impostor (`docs/games/impostor/words.md`). Words kids or elders may not know are marked `grownups`.
+3. **English, or an Indian word known everywhere** (owner, 4 October, K24). The test person: **someone from Tirunelveli or
+   Sivagangai who doesn't speak Hindi**, and a 10-year-old and a grandparent. Chai, Diwali, Dosa, Samosa, Auto pass;
+   Mela, Rangoli, Lassi, Dhol fail. Words kids or elders may not know are marked `grownups`.
+   Never a team name or the Ghost as a board word (Mango, Peacock, Ghost are out).
 4. **Never:** politics, religion as a joke, gods' names, caste, real living people, brands, alcohol, adult content.
    Festival names are allowed as occasions (Diwali, Eid, Holi, Onam, Christmas words).
 5. **No forms or compounds of each other** on the list (not both Rain and Rainbow).
@@ -26,9 +28,12 @@ The list is `words.csv` (edition 1, 400 words). It is our own list, never Codena
 | Festivals | 35 |
 | Body and clothes | 34 |
 | School and work | 33 |
-396 family, 4 grown-ups (Climax, Pichkari, Baraat, Sangeet); 4 non-veg (Egg, Chicken, Kebab, Fish).
-Product owner changes to the first draft: Copy (Indian English, less used in the South) and Fast (religious sense)
-replaced by Chennai and Kolkata, so the places aren't all north and west.
+399 family, 1 grown-ups (Climax); 4 non-veg (Egg, Chicken, Kebab, Fish).
+Changes to the first draft: Copy and Fast → Chennai and Kolkata (product owner); Ghost → Shadow (K23); **35 words that a
+non-Hindi speaker from a small Tamil town wouldn't know, or that clash with team names, replaced by English words**
+(K24: Pakora, Papad, Kheer, Khichdi, Dal, Roti, Paratha, Lassi, Kulfi, Tawa, Almirah, Dhaba, Dhol, Bhangra, Gully, Onam,
+Pongal, Navratri, Dussehra, Rakhi, Diya, Rangoli, Pichkari, Baraat, Sangeet, Haldi, Mehndi, Mela, Garba, Dandiya, Dhoti,
+Dupatta, Bindi, Mango, Peacock); Ladoo spelt Laddu. Each replaced row says so in `notes`.
 
 ## Editions
 `words.csv` has `edition` and `retired_in` columns (scenarios SWD-023): **any change to the list makes a new edition**;
@@ -37,8 +42,8 @@ retired words stay in the file with `retired_in`, so every old map code still re
 ## To check before release (as Impostor's list)
 - **Persona review** (nine reviewers: North, South, East, West, a grandparent, a 9-year-old, a teen, a strict-veg home,
   a non-Hindi speaker) and then **real readers**.
-- Flagged for that review: Pongal and Onam (regional festivals), Garba and Dandiya, Duster and Almirah (Indian English),
-  Ladoo spelling (Laddu in the South), Googly (kids know only the ball), Santa, Hotel (eatery sense).
+- Flagged for that review: Holi and Eid (Tamil homes may say Ramzan; Diwali is Deepavali there, kept by the owner),
+  Paneer, Naan, Tabla, Sitar, Kurta, Neem, Metro, Googly (kids know only the ball), Santa, Hotel (eatery sense).
 - Look-alikes on one board (Chai/Chain/Chair, Crow/Crown, Goa/Goal): fine by the rules; the play-test says if they
   confuse. Each word's fit in a 57 px cell at 12 px is checked by the build (SWD-099).
-- About 60% general English with an Indian feel, 40% India-specific; aim nearer half-and-half in edition 2.
+- Now mostly English with an Indian feel; India-specific words only where known in every region.

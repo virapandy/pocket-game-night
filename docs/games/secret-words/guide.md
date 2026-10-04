@@ -51,7 +51,7 @@ the map, turns words over, counts words and guesses left, and keeps the night's 
 | 5 | Guesses: at least 1; up to number + 1 for 1–9; **unlimited** for 0 and ∞ | CGE rulebook | |
 | 6 | The clue must be about **meaning**: not about letters, spelling, the number of letters, or where a word sits on the phone | CGE rulebook | |
 | 7 | The clue may not be a word on the board **still face down**, or a form or part of one (while CRICKET is face down: no "cricketer"; while RAILWAY is: no "rail"). Once a word is turned over, it is free to use | CGE rulebook | |
-| 8 | **Language:** an English word, or any word your group would use in an English sentence: chai, jugaad, dhaba, yaar are fine. A whole group may agree to allow Hindi or another shared language | CGE rulebook ("strudel" rule) | Example words: ours |
+| 8 | **Language:** an English word, or any word your group would use in an English sentence: chai, dosa, auto are fine. A whole group may agree to allow Hindi or another shared language | CGE rulebook ("strudel" rule) | Example words: ours |
 | 9 | Names of people, places, films and songs are allowed, including two-word ones like "Taj Mahal" or "Sholay"; made-up names are not | CGE flexible rules | Two-word names allowed by default: ours |
 | 10 | Rhymes, sounds-like and spelling out are allowed only when they point to meaning; a clue giver may spell their clue if asked | CGE rulebook | |
 | 11 | No extra hints: no faces, no "this one's a stretch", no pointing, no reacting while the team guesses | CGE rulebook | |

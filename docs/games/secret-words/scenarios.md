@@ -10,6 +10,9 @@ Phases: **Secret Words 1** = first release. **Secret Words later** = designed no
 Change classes (`docs/change-sop.md`): the deal, the map code, the board algorithm, saved evenings and the word list
 format = **C3** (tests first: sections 02, 04 rules, 05, 06, SWD-099); screens = C1/C2.
 
+**Board words (owner, 4 October, K24):** English, or Indian words known everywhere (test: Tirunelveli or Sivagangai, no Hindi);
+35 words replaced in `words.csv` before edition 1 ships; How to play's example reads "(chai, dosa)".
+
 **All names in English (owner, 4 October, K23):** the losing card is **the Ghost** (was "the Bhoot"); the board word Ghost
 (SWDW-209) is replaced by Shadow. Sounds and icons unchanged.
 
@@ -229,7 +232,7 @@ words first!"). "Let's play" deals; "Show me the board first" deals and opens th
 Menu → "How to play": h2 "Read this aloud" and its 4 lines, then h2 "The rules": 1 "Clue givers see the secret map.
 Everyone else sees only the words." 2 "A clue is one word and one number. It must be about meaning, not spelling or where a
 word sits." 3 "Don't say a word that is still face down on the board, or part of one." 4 "English, or a word you'd use in
-an English sentence (chai, jugaad), is fine. Names like Taj Mahal count as one word." 5 "No faces, no pointing, no extra
+an English sentence (chai, dosa), is fine. Names like Taj Mahal count as one word." 5 "No faces, no pointing, no extra
 hints. The other clue giver judges a clue before the first guess." 6 "Guessers take at least one guess, and up to the number
 plus one. 0 or ∞: as many as you like." 7 "Your word: keep going. Nobody's word or the other team's: your turn ends. The
 Ghost: you lose!" (Family: without "The Ghost: you lose!") 8 "First team to find all its words wins." Then the small line `credit`: "Secret Words uses game rules inspired by

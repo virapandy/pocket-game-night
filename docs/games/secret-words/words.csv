@@ -5,26 +5,26 @@ SWDW-003,Dosa,crispy pancake / masala dosa,Food,family,no,1,,
 SWDW-004,Idli,steamed rice cake / idli-sambar,Food,family,no,1,,
 SWDW-005,Biryani,rice dish / Hyderabadi or Kolkata biryani,Food,family,no,1,,veg and non-veg kinds
 SWDW-006,Pickle,achaar / a tricky spot,Food,family,no,1,,
-SWDW-007,Mango,fruit / king of fruits / mango season,Food,family,no,1,,
-SWDW-008,Ladoo,round sweet / laddu,Food,family,no,1,,also spelt laddu
+SWDW-007,Salt,table salt / salt of the earth,Food,family,no,1,,"replaced Mango (owner, 4 Oct: English or pan-India only)"
+SWDW-008,Laddu,round sweet / laddu,Food,family,no,1,,spelling known in every region
 SWDW-009,Jalebi,spiral sweet / twisted like a jalebi,Food,family,no,1,,
 SWDW-010,Halwa,sweet dish / easy as halwa,Food,family,no,1,,
 SWDW-011,Paneer,cottage cheese / paneer tikka,Food,family,no,1,,
-SWDW-012,Dal,lentils / dal-chawal,Food,family,no,1,,
+SWDW-012,Juice,fruit juice / juicy story,Food,family,no,1,,"replaced Dal (owner, 4 Oct: must be known in Tirunelveli or Sivagangai without Hindi)"
 SWDW-013,Rice,chawal / curd rice / paddy field,Food,family,no,1,,
-SWDW-014,Roti,flatbread / roti kapda makaan,Food,family,no,1,,
-SWDW-015,Paratha,stuffed flatbread / aloo paratha,Food,family,no,1,,
+SWDW-014,Cookie,biscuit / smart cookie,Food,family,no,1,,"replaced Roti (owner, 4 Oct: must be known in Tirunelveli or Sivagangai without Hindi)"
+SWDW-015,Jelly,sweet jelly / jellyfish,Food,family,no,1,,"replaced Paratha (owner, 4 Oct: must be known in Tirunelveli or Sivagangai without Hindi)"
 SWDW-016,Curd,dahi / curd rice,Food,family,no,1,,
 SWDW-017,Ghee,clarified butter / desi ghee,Food,family,no,1,,
-SWDW-018,Lassi,yogurt drink / Punjabi lassi,Food,family,no,1,,
-SWDW-019,Kulfi,frozen dessert / kulfi stick,Food,family,no,1,,
-SWDW-020,Pakora,fritter / bajji / rainy-day snack,Food,family,no,1,,
+SWDW-018,Cream,milk cream / face cream / the best,Food,family,no,1,,"replaced Lassi (owner, 4 Oct: must be known in Tirunelveli or Sivagangai without Hindi)"
+SWDW-019,Nut,cashew nut / nut and bolt / crazy,Food,family,no,1,,"replaced Kulfi (owner, 4 Oct: must be known in Tirunelveli or Sivagangai without Hindi)"
+SWDW-020,Orange,fruit / colour,Food,family,no,1,,"replaced Pakora (owner, 4 Oct: English or pan-India only)"
 SWDW-021,Chutney,green or coconut chutney / sauce,Food,family,no,1,,
-SWDW-022,Papad,crispy wafer / appalam,Food,family,no,1,,
+SWDW-022,Corn,maize / bhutta / corny joke,Food,family,no,1,,"replaced Papad (owner, 4 Oct: English or pan-India only)"
 SWDW-023,Sambar,lentil stew / idli-sambar,Food,family,no,1,,
 SWDW-024,Puri,fried bread / temple town Puri,Food,family,no,1,,
 SWDW-025,Naan,tandoor bread / butter naan,Food,family,no,1,,
-SWDW-026,Kheer,rice pudding / payasam,Food,family,no,1,,also called payasam
+SWDW-026,Soup,tomato soup / in the soup,Food,family,no,1,,"replaced Kheer (owner, 4 Oct: English or pan-India only)"
 SWDW-027,Masala,spice mix / masala film / masala chai,Food,family,no,1,,
 SWDW-028,Pepper,black pepper / bell pepper,Food,family,no,1,,
 SWDW-029,Chilli,green chilli / spicy hot / chilli paneer,Food,family,no,1,,
@@ -47,7 +47,7 @@ SWDW-045,Cake,birthday cake / piece of cake,Food,family,no,1,,
 SWDW-046,Jam,fruit jam / traffic jam,Food,family,no,1,,
 SWDW-047,Coffee,filter coffee / coffee house,Food,family,no,1,,
 SWDW-048,Vada,medu vada / vada pav,Food,family,no,1,,
-SWDW-049,Khichdi,rice-lentil dish / a mix-up,Food,family,no,1,,
+SWDW-049,Toast,bread toast / raise a toast,Food,family,no,1,,"replaced Khichdi (owner, 4 Oct: English or pan-India only)"
 SWDW-050,Mint,pudina / new coins / mint condition,Food,family,no,1,,
 SWDW-051,Tiffin,lunch box / snack time,Food,family,no,1,,
 SWDW-052,Chips,wafers / computer chips,Food,family,no,1,,
@@ -85,7 +85,7 @@ SWDW-083,Racket,badminton racket / loud noise / scam,Cricket and sport,family,no
 SWDW-084,Shuttle,shuttlecock / shuttle bus / space shuttle,Cricket and sport,family,no,1,,
 SWDW-085,Medal,gold medal / award,Cricket and sport,family,no,1,,
 SWDW-086,Coach,trainer / train coach / bus,Cricket and sport,family,no,1,,
-SWDW-087,Gully,gully cricket / narrow lane,Cricket and sport,family,no,1,,
+SWDW-087,Score,match score / twenty,Cricket and sport,family,no,1,,"replaced Gully (owner, 4 Oct: must be known in Tirunelveli or Sivagangai without Hindi)"
 SWDW-088,Keeper,wicketkeeper / goalkeeper / zookeeper,Cricket and sport,family,no,1,,
 SWDW-089,Drive,cover drive / car drive,Cricket and sport,family,no,1,,
 SWDW-090,Sweep,sweep shot / sweeping with a broom,Cricket and sport,family,no,1,,
@@ -94,7 +94,7 @@ SWDW-092,Whistle,referee whistle / cooker whistle,Cricket and sport,family,no,1,
 SWDW-093,Fan,ceiling fan / cricket fan,Home,family,no,1,,
 SWDW-094,Cooker,pressure cooker / whistles,Home,family,no,1,,
 SWDW-095,Mixer,mixer-grinder / DJ mixer,Home,family,no,1,,
-SWDW-096,Tawa,griddle / dosa tawa / roti tawa,Home,family,no,1,,
+SWDW-096,Pan,frying pan / camera pan,Home,family,no,1,,"replaced Tawa (owner, 4 Oct: English or pan-India only)"
 SWDW-097,Bucket,balti / bucket list,Home,family,no,1,,
 SWDW-098,Mug,bathroom mug / coffee mug / mug up for an exam,Home,family,no,1,,
 SWDW-099,Tap,nal / tap on the shoulder / tap the screen,Home,family,no,1,,
@@ -102,7 +102,7 @@ SWDW-100,Pillow,takiya / pillow fight,Home,family,no,1,,
 SWDW-101,Sofa,couch / sofa set,Home,family,no,1,,
 SWDW-102,Chair,kursi / musical chairs / the boss seat,Home,family,no,1,,
 SWDW-103,Table,furniture / times tables / timetable,Home,family,no,1,,
-SWDW-104,Almirah,steel cupboard / wardrobe,Home,family,no,1,,
+SWDW-104,Drawer,desk drawer / one who draws,Home,family,no,1,,"replaced Almirah (owner, 4 Oct: English or pan-India only)"
 SWDW-105,Mirror,aaina / mirror image,Home,family,no,1,,
 SWDW-106,Comb,kanghi / honeycomb / rooster comb,Home,family,no,1,,
 SWDW-107,Broom,jhaadu / witch's broom,Home,family,no,1,,
@@ -162,7 +162,7 @@ SWDW-160,Park,garden / park the car,Out and about,family,no,1,,
 SWDW-161,Zoo,animals / total chaos,Out and about,family,no,1,,
 SWDW-162,Circus,tent show / total chaos,Out and about,family,no,1,,
 SWDW-163,Hotel,restaurant / lodge,Out and about,family,no,1,,in India also means an eatery
-SWDW-164,Dhaba,roadside eatery / truck stop,Out and about,family,no,1,,
+SWDW-164,Mall,shopping mall,Out and about,family,no,1,,"replaced Dhaba (owner, 4 Oct: English or pan-India only)"
 SWDW-165,Canteen,college canteen / water flask,Out and about,family,no,1,,
 SWDW-166,Post,post office / job post / pole,Out and about,family,no,1,,
 SWDW-167,Police,cops / chor-police game,Out and about,family,no,1,,
@@ -190,7 +190,7 @@ SWDW-188,Screen,cinema screen / phone screen,Films and music,family,no,1,,
 SWDW-189,Selfie,phone photo / selfie stick,Films and music,family,no,1,,
 SWDW-190,Trailer,film trailer / truck trailer,Films and music,family,no,1,,
 SWDW-191,Star,film star / sky star,Films and music,family,no,1,,
-SWDW-192,Dhol,wedding drum / dhol beats,Films and music,family,no,1,,
+SWDW-192,Drum,drum beat / oil drum,Films and music,family,no,1,,"replaced Dhol (owner, 4 Oct: English or pan-India only)"
 SWDW-193,Tabla,pair of drums / tabla player,Films and music,family,no,1,,
 SWDW-194,Sitar,string instrument,Films and music,family,no,1,,
 SWDW-195,Flute,bansuri / music,Films and music,family,no,1,,
@@ -216,30 +216,30 @@ SWDW-214,Anchor,TV anchor / ship's anchor,Films and music,family,no,1,,
 SWDW-215,Diwali,festival of lights / crackers,Festivals,family,no,1,,
 SWDW-216,Holi,festival of colours / pichkari,Festivals,family,no,1,,
 SWDW-217,Eid,festival / biryani and sevai,Festivals,family,no,1,,
-SWDW-218,Onam,Kerala festival / sadya feast,Festivals,family,no,1,,
-SWDW-219,Pongal,harvest festival / rice dish,Festivals,family,no,1,,also Sankranti / Lohri
-SWDW-220,Navratri,nine nights / garba,Festivals,family,no,1,,
-SWDW-221,Dussehra,festival / Ramlila,Festivals,family,no,1,,
-SWDW-222,Rakhi,thread / Raksha Bandhan,Festivals,family,no,1,,
+SWDW-218,Lamp,oil lamp / table lamp,Festivals,family,no,1,,"replaced Onam (owner, 4 Oct: English or pan-India only)"
+SWDW-219,Candy,sweet / candy floss,Festivals,family,no,1,,"replaced Pongal (owner, 4 Oct: English or pan-India only)"
+SWDW-220,Card,greeting card / playing card,Festivals,family,no,1,,"replaced Navratri (owner, 4 Oct: English or pan-India only)"
+SWDW-221,Ribbon,gift ribbon / prize ribbon,Festivals,family,no,1,,"replaced Dussehra (owner, 4 Oct: English or pan-India only)"
+SWDW-222,Parade,march / Republic Day parade,Festivals,family,no,1,,"replaced Rakhi (owner, 4 Oct: English or pan-India only)"
 SWDW-223,Santa,Christmas Santa / Secret Santa,Festivals,family,no,1,,
-SWDW-224,Diya,clay lamp / Diwali,Festivals,family,no,1,,
-SWDW-225,Rangoli,floor art / kolam,Festivals,family,no,1,,also called kolam
+SWDW-224,Costume,fancy dress / outfit,Festivals,family,no,1,,"replaced Diya (owner, 4 Oct: English or pan-India only)"
+SWDW-225,Prize,first prize / prized,Festivals,family,no,1,,"replaced Rangoli (owner, 4 Oct: must be known in Tirunelveli or Sivagangai without Hindi)"
 SWDW-226,Cracker,firecracker / biscuit cracker,Festivals,family,no,1,,
 SWDW-227,Rocket,Diwali rocket / space rocket,Festivals,family,no,1,,
 SWDW-228,Sparkler,phuljhadi / sparkly,Festivals,family,no,1,,
 SWDW-229,Kite,Sankranti kite / bird / kite flying,Festivals,family,no,1,,
 SWDW-230,Colour,Holi colours / crayons / colour TV,Festivals,family,no,1,,
-SWDW-231,Pichkari,Holi water gun,Festivals,grownups,no,1,,
-SWDW-232,Bhangra,Punjabi dance / wedding dance,Festivals,family,no,1,,
+SWDW-231,Fair,fun fair / fair play / fair weather,Festivals,family,no,1,,"replaced Pichkari (owner, 4 Oct: English or pan-India only)"
+SWDW-232,Mask,face mask / hide feelings,Festivals,family,no,1,,"replaced Bhangra (owner, 4 Oct: English or pan-India only)"
 SWDW-233,Gift,present / gift of the gab,Festivals,family,no,1,,
 SWDW-234,Sweet,mithai / sweet person,Festivals,family,no,1,,
-SWDW-235,Mehndi,henna / mehndi night,Festivals,family,no,1,,
+SWDW-235,Present,gift / now / attendance,Festivals,family,no,1,,"replaced Mehndi (owner, 4 Oct: must be known in Tirunelveli or Sivagangai without Hindi)"
 SWDW-236,Wedding,shaadi / wedding card,Festivals,family,no,1,,
-SWDW-237,Baraat,wedding procession / groom's party,Festivals,grownups,no,1,,
-SWDW-238,Sangeet,wedding music night / music,Festivals,grownups,no,1,,
-SWDW-239,Haldi,turmeric / haldi ceremony,Festivals,family,no,1,,
+SWDW-237,Feast,big meal / feast your eyes,Festivals,family,no,1,,"replaced Baraat (owner, 4 Oct: English or pan-India only)"
+SWDW-238,Wish,birthday wish / genie wish,Festivals,family,no,1,,"replaced Sangeet (owner, 4 Oct: English or pan-India only)"
+SWDW-239,Guest,house guest / guest star,Festivals,family,no,1,,"replaced Haldi (owner, 4 Oct: English or pan-India only)"
 SWDW-240,Garland,flower mala / welcome,Festivals,family,no,1,,
-SWDW-241,Mela,fair / lost in the mela,Festivals,family,no,1,,
+SWDW-241,Paint,wall paint / painting,Festivals,family,no,1,,"replaced Mela (owner, 4 Oct: English or pan-India only)"
 SWDW-242,Lantern,sky lantern / Christmas star,Festivals,family,no,1,,
 SWDW-243,Party,celebration / search party / party games,Festivals,family,no,1,,
 SWDW-244,Birthday,cake / candles / birthday bumps,Festivals,family,no,1,,
@@ -247,12 +247,12 @@ SWDW-245,Vacation,summer holidays / trip,Festivals,family,no,1,,
 SWDW-246,Picnic,outing / no picnic,Festivals,family,no,1,,
 SWDW-247,Kolkata,city / Howrah bridge / rosogolla,Out and about,family,no,1,,replaced Fast (religious sense)
 SWDW-248,Bride,dulhan / wedding,Festivals,family,no,1,,
-SWDW-249,Garba,Navratri dance,Festivals,family,no,1,,
-SWDW-250,Dandiya,dance / pair of sticks,Festivals,family,no,1,,
+SWDW-249,Bubble,soap bubble / bubble wrap,Festivals,family,no,1,,"replaced Garba (owner, 4 Oct: English or pan-India only)"
+SWDW-250,Holiday,day off / school holiday,Festivals,family,no,1,,"replaced Dandiya (owner, 4 Oct: English or pan-India only)"
 SWDW-251,Tiger,big cat / national animal,Nature and animals,family,no,1,,
 SWDW-252,Lion,big cat / king of the jungle,Nature and animals,family,no,1,,
 SWDW-253,Elephant,haathi / elephant memory,Nature and animals,family,no,1,,
-SWDW-254,Peacock,mor / national bird,Nature and animals,family,no,1,,
+SWDW-254,Eagle,bird / sharp eyes,Nature and animals,family,no,1,,"replaced Peacock (owner, 4 Oct: English or pan-India only)"
 SWDW-255,Monkey,bandar / monkey business,Nature and animals,family,no,1,,
 SWDW-256,Cow,gaay / milk,Nature and animals,family,no,1,,
 SWDW-257,Camel,oont / desert,Nature and animals,family,no,1,,
@@ -345,9 +345,9 @@ SWDW-343,Arm,baazu / arm of a chair,Body and clothes,family,no,1,,
 SWDW-344,Face,chehra / clock face / face the music,Body and clothes,family,no,1,,
 SWDW-345,Saree,six yards / silk saree,Body and clothes,family,no,1,,
 SWDW-346,Kurta,long shirt / kurta pyjama,Body and clothes,family,no,1,,
-SWDW-347,Dhoti,wrap / veshti / mundu,Body and clothes,family,no,1,,
+SWDW-347,Scarf,neck scarf / muffler,Body and clothes,family,no,1,,"replaced Dhoti (owner, 4 Oct: English or pan-India only)"
 SWDW-348,Lungi,wrap / lungi dance,Body and clothes,family,no,1,,
-SWDW-349,Dupatta,stole / chunni,Body and clothes,family,no,1,,
+SWDW-349,Glove,hand glove / cricket glove,Body and clothes,family,no,1,,"replaced Dupatta (owner, 4 Oct: English or pan-India only)"
 SWDW-350,Cap,topi / bottle cap / Test cap,Body and clothes,family,no,1,,
 SWDW-351,Chappal,slipper / flip-flop,Body and clothes,family,no,1,,
 SWDW-352,Sandal,footwear / sandalwood,Body and clothes,family,no,1,,
@@ -356,7 +356,7 @@ SWDW-354,Button,shirt button / press the button,Body and clothes,family,no,1,,
 SWDW-355,Pocket,jeb / pocket money,Body and clothes,family,no,1,,
 SWDW-356,Shirt,kameez / T-shirt,Body and clothes,family,no,1,,
 SWDW-357,Bangle,choodi / glass bangles,Body and clothes,family,no,1,,
-SWDW-358,Bindi,forehead dot / sticker,Body and clothes,family,no,1,,
+SWDW-358,Sock,socks / sock it,Body and clothes,family,no,1,,"replaced Bindi (owner, 4 Oct: must be known in Tirunelveli or Sivagangai without Hindi)"
 SWDW-359,Chain,gold chain / bicycle chain,Body and clothes,family,no,1,,
 SWDW-360,Ring,finger ring / boxing ring / phone ring,Body and clothes,family,no,1,,
 SWDW-361,Watch,wristwatch / to watch,Body and clothes,family,no,1,,
