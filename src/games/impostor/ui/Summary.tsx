@@ -1,6 +1,7 @@
-// "That's the night!" (IMP-092, IMP-095, IMP-097, IMP-098, IMP-101, IMP-106; F9): the lead line, up to 2 fun lines,
-// the final scoreboard, then "Oops, keep playing", "Play something else" and "More ›" (Share, History, and after a
-// divider "Discard this evening"), with the main button "Back to Home". The page scrolls as one (guideline 46a).
+// "That's the game!" (IMP-092, IMP-095, IMP-097, IMP-098, IMP-101, IMP-106; F9): the lead line, up to 2 fun lines,
+// the final scoreboard, then the quiet "Play something else", "Home" and "More ›" ("Oops, keep playing", Share,
+// History, and after a divider "Discard this game"), with the main button "Play again". The page scrolls as one
+// (guideline 46a).
 // Leaving records `endEvening` (the Game does it); "Share" does not leave.
 import { useEffect, useState } from 'react';
 import type { ImpostorState } from '../rules';
@@ -13,6 +14,7 @@ export function Summary({
   story,
   canOops,
   onOops,
+  onPlayAgain,
   onHome,
   onSomethingElse,
   onHistory,
@@ -23,6 +25,8 @@ export function Summary({
   /** "Oops, keep playing": only within 3 hours of the summary first showing, and before `endEvening` (IMP-099). */
   canOops: boolean;
   onOops: () => void;
+  /** IMP-092, IMP-103: a new game with this game's final players and choices. */
+  onPlayAgain: () => void;
   onHome: () => void;
   onSomethingElse: () => void;
   onHistory: () => void;
@@ -61,17 +65,18 @@ export function Summary({
   };
 
   const items: ({ label: string; onSelect: () => void } | 'divider')[] = [
+    ...(canOops ? [{ label: 'Oops, keep playing', onSelect: onOops }] : []),
     ...(none ? [] : [{ label: 'Share', onSelect: share }]),
     { label: 'History', onSelect: onHistory },
     'divider',
-    { label: 'Discard this evening', onSelect: () => setAsking(true) },
+    { label: 'Discard this game', onSelect: () => setAsking(true) },
   ];
 
   return (
     <main className="imp-screen imp-summary imp-page">
       <div className="imp-screen-inner">
         <div className="imp-summary-body">
-          <h1 className="imp-title">That's the night!</h1>
+          <h1 className="imp-title">That's the game!</h1>
           <p className="imp-lead" data-testid="summary-line">
             {leadLine(state, story)}
           </p>
@@ -82,17 +87,17 @@ export function Summary({
           ))}
           {board && <Scoreboard rows={scoreRows(state, story)} scoresFrom={story.firstScored} />}
           <div className="imp-summary-quiet">
-            {canOops && <QuietButton onClick={onOops}>Oops, keep playing</QuietButton>}
             <QuietButton onClick={onSomethingElse}>Play something else</QuietButton>
+            <QuietButton onClick={onHome}>Home</QuietButton>
             <QuietButton onClick={() => setMore(!more)}>More ›</QuietButton>
           </div>
         </div>
       </div>
       {more && <MoreMenu items={items} onClose={() => setMore(false)} />}
       <Toast toast={toast} onDone={clearToast} />
-      {!asking && <MainButton onClick={onHome}>Back to Home</MainButton>}
+      {!asking && <MainButton onClick={onPlayAgain}>Play again</MainButton>}
       {asking && (
-        <Dialog text="Discard this evening? Its rounds and scores will be lost.">
+        <Dialog text="Discard this game? Its rounds and scores will be lost.">
           <QuietButton onClick={onDiscard}>Discard</QuietButton>
           <MainButton inline onClick={() => setAsking(false)}>
             Keep it

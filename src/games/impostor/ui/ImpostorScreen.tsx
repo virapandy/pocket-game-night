@@ -81,7 +81,7 @@ export function ImpostorScreen({
   const [players, setPlayers] = useState<string[]>(() => start.players ?? (kept ? [...kept] : null) ?? tonightsNames(store, sessions, Date.now()));
   const [choices, setChoices] = useState<Choices>(() => start.choices ?? lastChoices(prefs));
   /** IMP-009: the choices carried over (last time's, or "Play again"); null on a phone that has never played. */
-  const [carried] = useState<Choices | null>(() => (start.choices || prefs.get<unknown>(PREF.lastChoices, null) !== null ? choices : null));
+  const [carried, setCarried] = useState<Choices | null>(() => (start.choices || prefs.get<unknown>(PREF.lastChoices, null) !== null ? choices : null));
   const [past] = useState(() => pastNames(store));
   /** The evening made by "Start round" with nothing recorded yet (reused by the next "Start round"). */
   const [created, setCreated] = useState<Evening | null>(start.created ?? null);
@@ -144,6 +144,15 @@ export function ImpostorScreen({
           past={past}
           onHome={onExit}
           onHistory={(fromMenu) => onHistory(fromMenu ? route.saved.id : undefined)}
+          onPlayAgain={(names, last) => {
+            // IMP-092, IMP-103: the game just ended, so no "Start a new game?" follows.
+            const c = readChoices(last, { savedEvening: true });
+            setPlayers(names);
+            setChoices(c);
+            setCarried(c);
+            setCreated(null);
+            setRoute({ name: 'players' });
+          }}
           onSomethingElse={() => {
             const s = store.get(route.saved.id);
             const m = s && loadEvening(s);

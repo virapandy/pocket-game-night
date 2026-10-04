@@ -45,6 +45,7 @@ export function Game({
   onHome,
   onHistory,
   onSomethingElse,
+  onPlayAgain,
   onBackToChoices,
   onSettingsClosed,
 }: {
@@ -62,6 +63,8 @@ export function Game({
   onHistory: (fromMenu: boolean) => void;
   /** "Play something else" (IMP-102). */
   onSomethingElse: () => void;
+  /** "Play again" on the summary (IMP-092, IMP-103): "Who's playing?" with these players, then these choices. */
+  onPlayAgain: (players: string[], choices: Choices) => void;
   /** "← Back" on the read-aloud card: the choices again, with the evening kept (IMP-070). */
   onBackToChoices: (saved: Evening) => void;
   onSettingsClosed: () => void;
@@ -219,6 +222,7 @@ export function Game({
           setUi({ summaryShownAt: undefined });
           setSummary(false);
         }}
+        onPlayAgain={leave(() => onPlayAgain([...state.players], state.choices))}
         onHome={leave(onHome)}
         onSomethingElse={leave(onSomethingElse)}
         onHistory={leave(() => onHistory(false))}
