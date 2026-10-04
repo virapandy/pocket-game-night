@@ -194,7 +194,7 @@ Status: **decided: owner, 4 October 2026, "follow the recommendation"** for K1�
 | K7 | A clue that breaks a rule | Norm: the other clue giver covers a word of their choice · **the phone turns over a random word of the other team** | Random (keeps the map off the room screen) |
 | K8 | Timer | Norm: sand timer, rarely used · **none by default, a 90-second "Hurry up" anyone can start, never automatic** | As recommended |
 | K9 | Scoring | **Tonight's tally of games won** by Mango and Peacock, fun lines at the end; no points or target | As recommended |
-| K10 | Words | Our own list, 400 words, 3–8 letters, India-centric and fair to every region; Whole family default, + Grown-ups option; non-veg words included (they are only words on a board) | As recommended; persona and real-reader checks as Impostor's |
+| K10 | Words | Our own list, 400 words (452 with K26), 3–8 letters, India-centric and fair to every region; Whole family default, + Grown-ups option; non-veg words included (they are only words on a board) | As recommended; persona and real-reader checks as Impostor's |
 | K11 | Clue numbers | 0–9 and ∞ (norm's expert clues included) | As recommended |
 | K12 | Players | 4–20, at least 2 per team; 2–3 players later (co-op) | As recommended |
 | K13 | Clue language | Norm: English plus words used in an English sentence (chai, jugaad); groups may agree on more | As norm |
@@ -210,3 +210,4 @@ Status: **decided: owner, 4 October 2026, "follow the recommendation"** for K1�
 | K23 | All game names in English: the losing card is **the Ghost** (was "the Bhoot"); board word Ghost replaced by Shadow. Board words themselves stay India-centric (K10) | Owner, 4 October |
 | K24 | Board words: **English, or an Indian word known everywhere**; test person someone from Tirunelveli or Sivagangai who doesn't speak Hindi. 35 words replaced (Mela, Rangoli, Lassi and others; Mango and Peacock clash with team names); example clue words "chai, dosa" | Owner, 4 October |
 | K25 | **Funny team names, random each evening** from 20 pairs in `docs/games/secret-words/team-names.csv` (e.g. Chai Champions v Coffee Commandos, Back Benchers v Front Benchers, Snooze Buttons v Alarm Clocks); "New team names" before the first deal. Colours stay fixed (orange, teal) with shape icons; replaces Mango v Peacock (K2) | Owner, 4 October |
+| K26 | Word list: add **Geography** (58 words: countries Indians relate to, world cities, Indian states and cities, landmarks); one word of at most 8 letters, nothing political. The rest of the list approved as good | Owner, 4 October |

@@ -170,10 +170,10 @@ SWDW-168,Map,naksha / road map,Out and about,family,no,1,,
 SWDW-169,Village,gaon / global village,Out and about,family,no,1,,
 SWDW-170,Beach,seaside / Marina or Juhu,Out and about,family,no,1,,
 SWDW-171,Hill,pahaad / hill station,Out and about,family,no,1,,
-SWDW-172,Goa,beach state / holiday,Out and about,family,no,1,,
-SWDW-173,Delhi,capital / Delhi winter,Out and about,family,no,1,,
-SWDW-174,Mumbai,city / home of Bollywood,Out and about,family,no,1,,
-SWDW-175,Agra,Taj Mahal city / petha,Out and about,family,no,1,,
+SWDW-172,Goa,beach state / holiday,Geography,family,no,1,,
+SWDW-173,Delhi,capital / Delhi winter,Geography,family,no,1,,
+SWDW-174,Mumbai,city / home of Bollywood,Geography,family,no,1,,
+SWDW-175,Agra,Taj Mahal city / petha,Geography,family,no,1,,
 SWDW-176,Lift,elevator / give a lift / lift weights,Out and about,family,no,1,,
 SWDW-177,Hero,film hero / real-life hero,Films and music,family,no,1,,
 SWDW-178,Villain,bad guy / film villain,Films and music,family,no,1,,
@@ -245,7 +245,7 @@ SWDW-243,Party,celebration / search party / party games,Festivals,family,no,1,,
 SWDW-244,Birthday,cake / candles / birthday bumps,Festivals,family,no,1,,
 SWDW-245,Vacation,summer holidays / trip,Festivals,family,no,1,,
 SWDW-246,Picnic,outing / no picnic,Festivals,family,no,1,,
-SWDW-247,Kolkata,city / Howrah bridge / rosogolla,Out and about,family,no,1,,replaced Fast (religious sense)
+SWDW-247,Kolkata,city / Howrah bridge / rosogolla,Geography,family,no,1,,replaced Fast (religious sense)
 SWDW-248,Bride,dulhan / wedding,Festivals,family,no,1,,
 SWDW-249,Bubble,soap bubble / bubble wrap,Festivals,family,no,1,,"replaced Garba (owner, 4 Oct: English or pan-India only)"
 SWDW-250,Holiday,day off / school holiday,Festivals,family,no,1,,"replaced Dandiya (owner, 4 Oct: English or pan-India only)"
@@ -310,7 +310,7 @@ SWDW-308,Bag,school bag / bag a prize,School and work,family,no,1,,
 SWDW-309,Uniform,school dress / same for everyone,School and work,family,no,1,,
 SWDW-310,Tie,school tie / tied match,School and work,family,no,1,,
 SWDW-311,Homework,after-school work / preparation,School and work,family,no,1,,
-SWDW-312,Chennai,city / Marina beach / filter coffee,Out and about,family,no,1,,replaced Copy (regional balance)
+SWDW-312,Chennai,city / Marina beach / filter coffee,Geography,family,no,1,,replaced Copy (regional balance)
 SWDW-313,Book,kitaab / book a ticket,School and work,family,no,1,,
 SWDW-314,Class,classroom / first class / classy,School and work,family,no,1,,
 SWDW-315,Mark,exam marks / stain / on your mark,School and work,family,no,1,,
@@ -399,3 +399,55 @@ SWDW-397,Flag,jhanda / flag off / red flag,Things and ideas,family,no,1,,
 SWDW-398,Bow,bow and arrow / bow down / hair bow,Things and ideas,family,no,1,,
 SWDW-399,Current,electric current / water current / current affairs,Things and ideas,family,no,1,,
 SWDW-400,Power,bijli / power cut / superpower,Things and ideas,family,no,1,,
+SWDW-401,America,USA / continent,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
+SWDW-402,England,country / English cricket team,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
+SWDW-403,Japan,country / bullet train,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
+SWDW-404,China,country / china plates,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
+SWDW-405,France,country / Eiffel Tower,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
+SWDW-406,Germany,country / football,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
+SWDW-407,Italy,country / pizza and pasta,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
+SWDW-408,Egypt,pyramids / mummies,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
+SWDW-409,Brazil,football / Amazon forest,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
+SWDW-410,Canada,country / maple leaf,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
+SWDW-411,Africa,continent / safari,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
+SWDW-412,Nepal,neighbour / Himalayas,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
+SWDW-413,Bhutan,neighbour / happy country,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
+SWDW-414,Turkey,country / bird,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
+SWDW-415,Malaysia,country / twin towers,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
+SWDW-416,Thailand,country / beaches,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
+SWDW-417,Mexico,country / sombrero,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
+SWDW-418,Spain,country / bullfight,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
+SWDW-419,Greece,country / sounds like grease,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
+SWDW-420,London,city / London Bridge,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
+SWDW-421,Paris,city / Eiffel Tower,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
+SWDW-422,Dubai,city / tallest building,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
+SWDW-423,Tokyo,city / Japan,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
+SWDW-424,Sydney,city / opera house / cricket ground,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
+SWDW-425,Rome,city / Romans,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
+SWDW-426,Venice,city / boats on canals,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
+SWDW-427,Cairo,city / Egypt,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
+SWDW-428,Berlin,city / Germany,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
+SWDW-429,Bangkok,city / Thailand,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
+SWDW-430,Kerala,state / backwaters,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
+SWDW-431,Punjab,state / Punjab cricket team,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
+SWDW-432,Bihar,state / Patna,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
+SWDW-433,Assam,state / tea gardens,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
+SWDW-434,Gujarat,state / Gujarati food,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
+SWDW-435,Sikkim,state / mountains,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
+SWDW-436,Odisha,state / Puri beach,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
+SWDW-437,Jaipur,pink city / Rajasthan,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
+SWDW-438,Pune,city / Maharashtra,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
+SWDW-439,Mysore,palace / Mysore pak / Dasara,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
+SWDW-440,Madurai,temple city / Tamil Nadu,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
+SWDW-441,Ooty,hill station / toy train,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
+SWDW-442,Shimla,hill station / snow,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
+SWDW-443,Kochi,city / Kerala port,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
+SWDW-444,Lucknow,city / nawabs,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
+SWDW-445,Amritsar,Golden Temple / city,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
+SWDW-446,Patna,city / Bihar,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
+SWDW-447,Surat,diamond city / Gujarat,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
+SWDW-448,Everest,highest mountain / climb,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
+SWDW-449,Sahara,desert / sand,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
+SWDW-450,Nile,river / Egypt,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
+SWDW-451,Himalaya,mountains / snow,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
+SWDW-452,Ganga,river / Ganges,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"

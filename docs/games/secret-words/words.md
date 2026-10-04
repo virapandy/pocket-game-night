@@ -1,6 +1,6 @@
 # Secret Words: the word list (draft v1, 4 October 2026)
 
-The list is `words.csv` (edition 1, 400 words). It is our own list, never Codenames'. Decision K10.
+The list is `words.csv` (edition 1, 452 words). It is our own list, never Codenames'. Decision K10.
 
 ## What makes a good board word
 1. **One word, 3 to 8 letters A–Z** (so 25 fit on a phone; SWD-090, SWD-099).
@@ -19,22 +19,29 @@ The list is `words.csv` (edition 1, 400 words). It is our own list, never Codena
 ## Edition 1 at a glance
 | Category | Words |
 |---|---|
+| **Geography** | 58 |
 | Food | 52 |
 | Home | 44 |
 | Nature and animals | 44 |
-| Out and about | 42 |
+| Out and about | 36 |
 | Cricket and sport | 40 |
 | Films and music | 38 |
 | Things and ideas | 38 |
 | Festivals | 35 |
 | Body and clothes | 34 |
 | School and work | 33 |
-399 family, 1 grown-ups (Climax); 4 non-veg (Egg, Chicken, Kebab, Fish).
+451 family, 1 grown-ups (Climax); 4 non-veg (Egg, Chicken, Kebab, Fish).
 Changes to the first draft: Copy and Fast → Chennai and Kolkata (product owner); Ghost → Shadow (K23); **35 words that a
 non-Hindi speaker from a small Tamil town wouldn't know, or that clash with team names, replaced by English words**
 (K24: Pakora, Papad, Kheer, Khichdi, Dal, Roti, Paratha, Lassi, Kulfi, Tawa, Almirah, Dhaba, Dhol, Bhangra, Gully, Onam,
 Pongal, Navratri, Dussehra, Rakhi, Diya, Rangoli, Pichkari, Baraat, Sangeet, Haldi, Mehndi, Mela, Garba, Dandiya, Dhoti,
 Dupatta, Bindi, Mango, Peacock); Ladoo spelt Laddu. Each replaced row says so in `notes`.
+
+**Geography** (owner, 4 October, K26), as in the original game's mix: 19 countries Indians relate to (America, England,
+Japan, China, Turkey, Greece…), 10 world cities (London, Paris, Dubai, Tokyo, Sydney…), 7 Indian states (Kerala, Punjab,
+Assam, Gujarat…), 17 Indian cities (Delhi, Mumbai, Chennai, Kolkata moved here; Jaipur, Madurai, Ooty, Mysore…) and 5
+landmarks (Everest, Sahara, Nile, Himalaya, Ganga). One word of at most 8 letters, so Australia, Rajasthan and Bengaluru
+can't fit; nothing political (no Pakistan, no Kashmir). The owner called the rest of the list good (4 October).
 
 ## Editions
 `words.csv` has `edition` and `retired_in` columns (scenarios SWD-023): **any change to the list makes a new edition**;
