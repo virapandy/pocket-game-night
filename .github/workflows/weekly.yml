@@ -218,7 +218,11 @@ jobs:
   # Screen simulation evenings (report-only): whole evenings played through the app's screens, split over 8
   # machines. About 2 minutes an evening; 25 per shard at 2 workers is about 30 minutes. Jev plays some evenings
   # as a persona, inside the weekly decision cap (the same jev-usage count as the simulation job).
+  # It waits for the simulation job (when that runs), so it starts from the Jev count that job saved; with
+  # only_sims the simulation job is skipped and this still runs.
   screen-sims:
+    needs: simulation
+    if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
     timeout-minutes: 120
     continue-on-error: true
@@ -238,19 +242,21 @@ jobs:
       - name: ISO week
         id: week
         run: echo "week=$(date -u +%G-W%V)" >> "$GITHUB_OUTPUT"
-      # Same as the simulation job: this week's Jev decision count is kept between runs.
-      - uses: actions/cache@v4
+      # This week's Jev decision count (PLT-113): the shards only read it, so each worker stops calling Jev once the
+      # count is at the weekly cap. They never save it; screen-sims-report adds the whole run's use and saves once.
+      - uses: actions/cache/restore@v4
         with:
           path: reports/runs/jev-usage.json
-          key: jev-usage-${{ steps.week.outputs.week }}-${{ github.run_id }}-sims-${{ matrix.shard }}
+          key: jev-usage-${{ steps.week.outputs.week }}-${{ github.run_id }}-sims
           restore-keys: |
             jev-usage-${{ steps.week.outputs.week }}-
             jev-usage-
+      # A manual 0 means 0 (format() turns "not given" into '' but 0 into '0').
       - name: Screen simulation evenings (shard ${{ matrix.shard }} of 8)
         run: npx playwright test --config tests/playwright.sims.config.ts --shard=${{ matrix.shard }}/8 --workers=2
         env:
-          SIM_EVENINGS: ${{ inputs.evenings || 200 }}
-          SIM_JEV_EVENINGS: ${{ inputs.jev_evenings || 50 }}
+          SIM_EVENINGS: ${{ format('{0}', inputs.evenings) == '' && 200 || inputs.evenings }}
+          SIM_JEV_EVENINGS: ${{ format('{0}', inputs.jev_evenings) == '' && 50 || inputs.jev_evenings }}
           SIM_RUN: w${{ github.run_id }}
           JEV_DECISIONS: 400
           JEV_API_KEY: ${{ secrets.JEV_API_KEY }}
@@ -283,6 +289,46 @@ jobs:
         run: |
           node tests/sims/summary.mjs sims/reports/sim/screen
           cat reports/sim/screen-summary.md >> "$GITHUB_STEP_SUMMARY"
+      # PLT-113: record the whole run's Jev use once. Restore the newest count (the one the shards started from),
+      # add every evening's jevDecisions from the result files, and save it as a new copy for the week.
+      - name: ISO week
+        id: week
+        if: always()
+        run: echo "week=$(date -u +%G-W%V)" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache/restore@v4
+        if: always()
+        with:
+          path: reports/runs/jev-usage.json
+          key: jev-usage-${{ steps.week.outputs.week }}-${{ github.run_id }}-sims
+          restore-keys: |
+            jev-usage-${{ steps.week.outputs.week }}-
+            jev-usage-
+      - name: Add this run's Jev decisions to the weekly count
+        if: always()
+        env:
+          WEEK: ${{ steps.week.outputs.week }}
+        run: |
+          node -e '
+            const fs = require("fs");
+            const dir = "sims/reports/sim/screen", file = "reports/runs/jev-usage.json", week = process.env.WEEK;
+            let used = 0;
+            if (fs.existsSync(dir))
+              for (const f of fs.readdirSync(dir, { recursive: true }).filter((f) => String(f).endsWith(".json"))) {
+                try { used += Number(JSON.parse(fs.readFileSync(`${dir}/${f}`, "utf8")).jevDecisions) || 0; } catch {}
+              }
+            let all = {};
+            try { all = JSON.parse(fs.readFileSync(file, "utf8")); } catch {}
+            const before = Number(all[week]) || 0;
+            all[week] = before + used;
+            fs.mkdirSync("reports/runs", { recursive: true });
+            fs.writeFileSync(file, JSON.stringify(all, null, 1));
+            console.log(`Jev decisions this week: ${before} before this run + ${used} in it = ${all[week]} of 20,000.`);
+          '
+      - uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: reports/runs/jev-usage.json
+          key: jev-usage-${{ steps.week.outputs.week }}-${{ github.run_id }}-sims
       - uses: actions/upload-artifact@v4
         if: always()
         with:
