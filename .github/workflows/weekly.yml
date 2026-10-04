@@ -53,10 +53,26 @@ jobs:
             tests/replays/
           if-no-files-found: warn
 
+  # Mutation testing is split into four groups of files that run side by side, so each finishes well inside its
+  # limit (one job for every file ran past 300 minutes). Together the groups cover exactly the files listed under
+  # `mutate` in tests/stryker.config.mjs (the command line's --mutate replaces that list for one group). If that
+  # list changes, change the groups here to match.
   mutation:
     runs-on: ubuntu-latest
-    timeout-minutes: 300
+    timeout-minutes: 240
     continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - group: tambola-rules
+            files: src/games/tambola/rules/rules.ts
+          - group: tambola-prizes-check
+            files: src/games/tambola/rules/prizes.ts,src/games/tambola/rules/check.ts
+          - group: tambola-codes-tickets
+            files: src/games/tambola/rules/codes.ts,src/games/tambola/rules/tickets.ts:1-91,src/games/tambola/rules/tickets.ts:94-120,src/games/tambola/rules/tickets.ts:122-9999
+          - group: engine-money-tally
+            files: src/engine/money.ts,src/engine/tally.ts
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -64,15 +80,16 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
-      - name: Mutation testing
-        run: npm run test:mutation
-      - name: Mutation summary
+      # GitHub's standard runners have 4 processor cores; the config's 2 suits a laptop.
+      - name: Mutation testing (${{ matrix.group }})
+        run: npm run test:mutation -- --mutate "${{ matrix.files }}" --concurrency 4
+      - name: Mutation summary (${{ matrix.group }})
         if: always()
         run: npm run test:mutation:summary
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: mutation
+          name: mutation-${{ matrix.group }}
           path: |
             reports/mutation-latest.md
             reports/stryker/
@@ -111,7 +128,7 @@ jobs:
           path: test-results/android/
           if-no-files-found: warn
 
-  # Collects the three jobs' results and summaries into one artifact and the run's summary page.
+  # Collects the jobs' results and summaries into one artifact and the run's summary page.
   # It does not commit: the Test role copies what it needs into reports/.
   report:
     needs: [simulation, mutation, android]
@@ -137,14 +154,43 @@ jobs:
             echo "| Job | Result |"
             echo "|---|---|"
             echo "| Mass simulation and Jev smoke run | $SIMULATION |"
-            echo "| Mutation testing | $MUTATION |"
+            echo "| Mutation testing (four groups; shows failure if any group failed) | $MUTATION |"
             echo "| Android emulator | $ANDROID |"
             echo
             echo "## Simulation summary"
             cat artifacts/simulation/reports/sim/summary-latest.md 2>/dev/null || echo "No simulation summary."
             echo
             echo "## Mutation summary"
-            cat artifacts/mutation/mutation-latest.md 2>/dev/null || cat artifacts/mutation/reports/mutation-latest.md 2>/dev/null || echo "No mutation summary."
+            echo
+            echo "Mutation testing runs as four groups of files at once. Each group's score is below; the overall line adds up the groups that finished."
+            echo
+            node -e '
+              const fs = require("fs");
+              let c = 0, m = 0, groups = 0;
+              for (const d of fs.readdirSync("artifacts").filter((d) => d.startsWith("mutation-")).sort()) {
+                for (const f of [`artifacts/${d}/stryker/mutation.json`, `artifacts/${d}/reports/stryker/mutation.json`]) {
+                  if (!fs.existsSync(f)) continue;
+                  groups++;
+                  for (const { mutants } of Object.values(JSON.parse(fs.readFileSync(f, "utf8")).files))
+                    for (const mu of mutants) {
+                      if (["Killed", "Timeout"].includes(mu.status)) c++;
+                      else if (["Survived", "NoCoverage"].includes(mu.status)) m++;
+                    }
+                  break;
+                }
+              }
+              const s = c + m ? (100 * c) / (c + m) : 100;
+              console.log(groups
+                ? `Overall (${groups} of 4 groups finished): **${s.toFixed(1)}%** of deliberate mistakes caught (${c} of ${c + m}); target 80%.`
+                : "No group finished, so there is no overall score.");
+            ' 2>/dev/null || echo "The overall score could not be worked out."
+            echo
+            for g in tambola-rules tambola-prizes-check tambola-codes-tickets engine-money-tally; do
+              echo "### Group: $g"
+              echo
+              cat "artifacts/mutation-$g/mutation-latest.md" 2>/dev/null || cat "artifacts/mutation-$g/reports/mutation-latest.md" 2>/dev/null || echo "No summary for this group: it did not finish."
+              echo
+            done
           } > "$out"
           cat "$out" >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@v4
