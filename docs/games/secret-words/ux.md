@@ -21,18 +21,19 @@ first build.
 | A. Spy noir ("agents", black) | ✗ | ✗ | ✗ | ~ | ✗ dark | ✗ "assassin" |
 | B. Desi detective ("Jasoos", case files) | ~ still spy | ~ | ✓ | ~ | ~ | ~ |
 | C. Flat minimal, red v blue | ✓ | ~ | ✗ | ✓ | ✗ **red is our main-button colour** (guideline 17a) | ~ |
-| **D. Flat board + Indian festive teams: Mango v Peacock, the Ghost** | **✓** | **✓** | **✓** | **✓** | **✓** | **✓** |
+| **D. Flat board + two coloured teams with funny names (random each evening), the Ghost** | **✓** | **✓** | **✓** | **✓** | **✓** | **✓** |
 
-### Decision (product owner; owner may overrule, K2)
-**Option D: Tambola's clean, flat look for the board, with two Indian team identities and a friendly ghost.**
-- **Team Mango** (deep mango orange) and **Team Peacock** (peacock teal): the national fruit and the national bird,
-  known to every region and every age, no politics, no religion. Orange and teal stay apart for the common colour-vision
+### Decision (K2, changed by the owner on 4 October: K23, K25)
+**Tambola's clean, flat look for the board, two coloured teams with funny names, and a friendly ghost.**
+- **The orange team and the teal team.** Each evening they get a random pair of **funny names** from `team-names.csv`
+  (Chai Champions v Coffee Commandos, Back Benchers v Front Benchers, Snooze Buttons v Alarm Clocks, Pressure Cookers v Ceiling Fans…);
+  "New team names" draws another pair before the first game. Orange and teal stay apart for the common colour-vision
   deficiencies (unlike red and green or red and blue).
-- **Nobody's words:** light sand, with a plain dot.
-- **The Ghost** (instead of an assassin): a friendly cartoon ghost on near-black. "You woke the Ghost!" gets a laugh,
-  never a put-down. Plain English, like every name in the game (owner, 4 October, K23).
-- **Never colour alone** (guideline 26): every turned-over word and every map cell carries an **icon and a word**:
-  mango, feather, dot, ghost; "Mango", "Peacock", "Nobody", "Ghost".
+- **Nobody's words:** light sand, with a short dash.
+- **The Ghost** (instead of an assassin): a friendly cartoon ghost on near-black. "Coffee Commandos woke the Ghost!" gets a laugh,
+  never a put-down. Every name in the game is plain English (K23).
+- **Never colour alone** (guideline 26): every turned-over word and every map cell carries a **shape icon and a word**:
+  circle (orange team), diamond (teal team), dash (nobody), ghost.
 - **Red stays for the main button only**; turns are shown by a slim team-coloured bar **and** the team's name, not a
   full-screen colour.
 - **No Codenames vocabulary:** "clue giver", "guessers", "the map", "words", "the Ghost"; never "spymaster", "agent",
@@ -41,8 +42,8 @@ first build.
 ### Colours (to be checked by the coder; text contrast ≥ 4.5:1, guideline 25)
 | Token | Light | Dark | Used for |
 |---|---|---|---|
-| `--mango` | #B45309 | #F59E0B | Mango cells (white text in light, near-black text in dark), Mango bar |
-| `--peacock` | #0F766E | #2DD4BF | Peacock cells, Peacock bar |
+| `--team-orange` | #B45309 | #F59E0B | Orange team cells (white text in light, near-black text in dark) and bar |
+| `--team-teal` | #0F766E | #2DD4BF | Teal team cells and bar |
 | `--nobody` | #E7DFD3 | #3A3632 | Nobody's cells (text `--text`) |
 | `--ghost` | #1C1B1A | #F3EFE9 | The Ghost cell (inverted text) |
 Face-down words: `--surface` with a 1 px `--border`. A picked word: Tambola's "selected" look (outline, ✓, tint),
@@ -63,7 +64,7 @@ The shared names step (PLT-024), tonight's names filled in. "Next" needs at leas
 ```
 ← Back                         ··· Menu
 Make teams
- Mango 🥭 (4)          Peacock 🪶 (3)
+ Chai Champions ● (4)    Coffee Commandos ◆ (3)
  Riya  ★ clue giver     Arjun ★ clue giver
  Meena                  Kabir
  Zoya                   Dev
@@ -73,10 +74,10 @@ Tap a name to move it to the other team.
 [               Next               ]
 ```
 - First time tonight: shuffled into teams differing by at most one. Later games: last game's teams.
-- Tap a name: it moves to the other team, with "Om moved to Peacock · Undo".
+- Tap a name: it moves to the other team, with "Om moved to Coffee Commandos · Undo".
 - ★ clue giver suggested by rotation (rule 17); "Change clue givers" opens a pick per team.
 - "Next" disabled with "Each team needs at least 2 players." when a team has fewer.
-- Icons in sketches are placeholders: the build uses our own SVG mango and feather, not emoji.
+- Icons in sketches are placeholders: the build uses our own SVG shapes (circle, diamond, dash, ghost), not emoji.
 
 ### 4. How do you want to play?
 ```
@@ -95,7 +96,7 @@ Words   [ Whole family ✓ ][ + Grown-ups ]
 ```
 
 ### 5. Read this aloud (first Secret Words game of tonight's session, once)
-1. "Two teams, Mango and Peacock. Each has a clue giver who sees the secret map."
+1. "Two teams, Chai Champions and Coffee Commandos. Each has a clue giver who sees the secret map."
 2. "Clue givers: say one word and a number. 'Monsoon, 2' means two of our words go with monsoon."
 3. "Guessers: talk, then turn over words one at a time. Wrong word? Your turn ends."
 4. "Find all your words first. Turn over the Ghost and you lose!"
@@ -106,10 +107,10 @@ Main "Let's play"; quiet "Show me the board first" (opens the board with no turn
 ```
 A (room)                    B (private, held)                  B (released)
 ┌────────────────────┐    ┌──────────────────────────┐     ┌──────────────────────┐
-│ Mango's turn       │    │ RIYA · Mango's map       │     │ RIYA · Mango's map   │
+│ Chai Champions,    │    │ RIYA (orange team)       │     │ RIYA (orange team)   │
 │ Pass the phone to  │    │ ┌──┬──┬──┬──┬──┐          │     │ (map hidden)         │
 │      RIYA          │    │ │🥭│· │🪶│👻│🥭│  5 × 5    │     │                      │
-│ Mango's clue giver │    │ ... words in their colour │     │ [Hold here to see]   │
+│ your turn          │    │ ... words in their colour │     │ [Hold here to see]   │
 │ [ I'm Riya ]       │    │ found words faded         │     │ Tap instead          │
 └────────────────────┘    │ [ holding … ]            │     │ [ I have my clue ]   │
                           └──────────────────────────┘     └──────────────────────┘
@@ -122,7 +123,7 @@ A (room)                    B (private, held)                  B (released)
 **Clue givers' own phones** (once per game, after the deal):
 ```
 Clue givers, scan your map
- Riya (Mango) and Arjun (Peacock)
+ Riya (Chai Champions, orange) and Arjun (Coffee Commandos, teal)
      ┌────────┐
      │   QR   │      or type: K7P-3QX4
      └────────┘
@@ -134,13 +135,13 @@ only), "Done with this game" at the end. Opening the link also works with no int
 
 ### 7. The clue
 ```
-Mango's turn  ▌(mango bar)          ··· Menu
+Chai Champions, your turn  ▌(orange bar)   ··· Menu
 Riya, say your clue out loud.
 How many words is it for?
  [0][1][2][3][4]
  [5][6][7][8][9]
  [   ∞  as many as you like   ]
- Mango 9 left · Peacock 8 left
+ ● 9 left · ◆ 8 left
  [ Hurry up: 90 s ]
 [       Clue for 2: start guessing     ]   (disabled "Pick a number" until one is picked)
 ```
@@ -150,7 +151,7 @@ Keys 56 × 56 px, selected look on the chosen number.
 Landscape (recommended when the phone lies in the middle):
 ```
 ┌───────────────────────────────────────────────────┬────────────────┐
-│ Cricket │ Bat    │ Monsoon│ Kite   │ Tiffin       │ Mango guessing │
+│ Cricket │ Bat    │ Monsoon│ Kite   │ Tiffin       │ Chai Champions │
 │ Ring    │ Rocket │ Chalk  │ Ganga  │ Match        │ Clue: 2        │
 │ Fan     │ Star   │ Pitch  │ Train  │ Mehendi      │ 3 guesses left │
 │ Cup     │ Bank   │ Lassi  │ Ghost  │ Paneer       │ 🥭 7 · 🪶 8     │
@@ -163,19 +164,19 @@ Landscape (recommended when the phone lies in the middle):
 - Portrait works at 360 px wide and up; at 320 px wide in portrait the board asks "Turn your phone sideways to see the
   board." (the longest words can't fit at 12 px).
 - Tap a word: selected look. Main "Reveal KITE" (pick, then confirm). "End our turn" disabled until one guess is made.
-- After a reveal, one result line above the buttons: "✓ Mango's word! 2 guesses left." · "Nobody's word. Peacock's
-  turn next." · "✗ Peacock's word! It counts for them."; the Ghost goes straight to game over
+- After a reveal, one result line above the buttons: "✓ Your word! 2 guesses left." · "Nobody's word. Other
+  team's turn next." · "✗ The other team's word! It counts for them."; the Ghost goes straight to game over
 - Menu: see the menu table in `scenarios.md` ("How to play" replaces "Rules").
 
 ### 9. Turn over, game over
-- Turn over: the result line stays, the board stays visible; main "Peacock's turn" → screen 6A for Peacock (one phone)
+- Turn over: the result line stays, the board stays visible; main "Other team's turn" → screen 6A for the other team (one phone)
   or screen 7 (own phones).
-- Game over: "Mango wins! All 9 words found." (Ghost: "Mango wins!" with "Peacock woke the Ghost!"), the **whole map** on the
-  board: face-down words now coloured but faded, turned-over words solid. "Tonight: Mango 2 · Peacock 1". Main
+- Game over: "Chai Champions win! All 9 words found." (Ghost: "Chai Champions win!" with "Coffee Commandos woke the Ghost!"), the **whole map** on the
+  board: face-down words now coloured but faded, turned-over words solid. "Tonight: Chai Champions 2 · Coffee Commandos 1". Main
   "Play again"; quiet "Change teams", "End the evening".
 
 ### 10. End of the evening
-"Tonight: Mango 3 · Peacock 2"; fun lines ("Riya's clues won 2 games", "The Ghost woke up 1 time"); "Play something
+"Tonight: Chai Champions 3 · Coffee Commandos 2"; fun lines ("Riya's clues won 2 games", "The Ghost woke up 1 time"); "Play something
 else"; "Back to Home".
 
 ## 3. Lasting rule added to `docs/ux-guidelines.md`

@@ -77,7 +77,7 @@ next team.
 | Play again | Same teams, the next clue givers (rule 17), new board with no word used tonight, starting team random |
 | Change teams | Back to "Make teams" with the current teams |
 | Own phones afterwards | The clue giver's phone shows "Done with this game" (clears the map); a map more than 6 hours old opens on Home with "Open" / "Clear", as Tambola tickets |
-| End the evening | "Tonight: Mango 3 · Peacock 2"; fun lines; "Play something else" / "Back to Home" |
+| End the evening | "Tonight: Chai Champions 3 · Coffee Commandos 2"; fun lines; "Play something else" / "Back to Home" |
 | History | Each game: teams, clue givers, the board, the map, the winner, how it ended; replayable from the seed |
 | Words afterwards | No word repeats in an evening; words of the last 3 evenings are avoided when possible |
 
@@ -96,5 +96,5 @@ next team.
    9 for the starting team, 8 for the other, 7 nobody's, 1 Ghost, and hands it to both clue givers.
 2. Play one Full game and one Family game (16 slips, 6/5/5, no Ghost). Try one game where the map is shown on a phone
    held privately, passed between clue givers.
-3. Note afterwards: did anyone not know a word? Was 8 letters too short? Were Mango and Peacock fun? How long did clue
+3. Note afterwards: did anyone not know a word? Was 8 letters too short? Were the funny team names fun? Did a name ever clash with a word on the board? How long did clue
    givers think? Did anyone want a timer? Did the kids enjoy being clue giver? Was passing the map phone annoying?

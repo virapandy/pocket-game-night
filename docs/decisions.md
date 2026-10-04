@@ -185,7 +185,7 @@ Status: **decided: owner, 4 October 2026, "follow the recommendation"** for K1�
 | # | Question | Options | Recommendation |
 |---|---|---|---|
 | K1 | Name | ~~Ishaara~~ → **Secret Words** (owner, 4 October: an English name, since "Codenames" is a trademark; the rules themselves are free to use) | Secret Words; "Codenames" never as our name (K22: "Inspired by Codenames" allowed) |
-| K2 | Theme | Spy noir (norm, too close to Codenames) · flat minimal red/blue · **flat board with Team Mango and Team Peacock and a friendly Ghost** | Mango v Peacock + Ghost (`ux.md` §1); red stays for the main button |
+| K2 | Theme | Spy noir (norm, too close to Codenames) · flat minimal red/blue · **flat board with Team Mango and Team Peacock and a friendly Ghost** | ~~Mango v Peacock~~ → orange and teal teams with funny names (K25) + the Ghost; red stays for the main button |
 | K3 | How clue givers see the map | **Both in the first release**: "Pass this phone" (hold to see) and "Clue givers' own phones" (QR or code, offline); two equal cards, no default | Both; the code makes own phones work offline |
 | K4 | Teams | Shuffled into equal teams the first time; tap to move; last teams after | As recommended |
 | K5 | Board | **Full 25** (norm, default) · Family 16 | Both, Full default |
@@ -208,3 +208,4 @@ Status: **decided: owner, 4 October 2026, "follow the recommendation"** for K1�
 | K22 | The app may say **"Inspired by Codenames"** in plain text: on the Secret Words picker card and in How to play, with the credit line in `docs/games/secret-words/legal.md` (independent, not made, sponsored or endorsed by Czech Games Edition). Never as the game's name, heading, title or address, never their logo or look; legality and precedent checked (Scrabulous, Delhi HC 2008) (SWD-001, SWD-011) | Owner, 4 October |
 | K23 | All game names in English: the losing card is **the Ghost** (was "the Bhoot"); board word Ghost replaced by Shadow. Board words themselves stay India-centric (K10) | Owner, 4 October |
 | K24 | Board words: **English, or an Indian word known everywhere**; test person someone from Tirunelveli or Sivagangai who doesn't speak Hindi. 35 words replaced (Mela, Rangoli, Lassi and others; Mango and Peacock clash with team names); example clue words "chai, dosa" | Owner, 4 October |
+| K25 | **Funny team names, random each evening** from 20 pairs in `docs/games/secret-words/team-names.csv` (e.g. Chai Champions v Coffee Commandos, Back Benchers v Front Benchers, Snooze Buttons v Alarm Clocks); "New team names" before the first deal. Colours stay fixed (orange, teal) with shape icons; replaces Mango v Peacock (K2) | Owner, 4 October |

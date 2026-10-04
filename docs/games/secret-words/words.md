@@ -9,7 +9,8 @@ The list is `words.csv` (edition 1, 400 words). It is our own list, never Codena
 3. **English, or an Indian word known everywhere** (owner, 4 October, K24). The test person: **someone from Tirunelveli or
    Sivagangai who doesn't speak Hindi**, and a 10-year-old and a grandparent. Chai, Diwali, Dosa, Samosa, Auto pass;
    Mela, Rangoli, Lassi, Dhol fail. Words kids or elders may not know are marked `grownups`.
-   Never a team name or the Ghost as a board word (Mango, Peacock, Ghost are out).
+   The Ghost is never a board word. Team names (`team-names.csv`, K25) follow the same rule: English or known everywhere,
+   plural, at most 18 characters, kind to everyone.
 4. **Never:** politics, religion as a joke, gods' names, caste, real living people, brands, alcohol, adult content.
    Festival names are allowed as occasions (Diwali, Eid, Holi, Onam, Christmas words).
 5. **No forms or compounds of each other** on the list (not both Rain and Rainbow).

@@ -5,8 +5,9 @@ Evidence: `research.md`. Look and screens: `ux.md`. The whole evening: `lifecycl
 `docs/decisions.md`. Rules marked **ours** differ from the convention; every other rule is the convention.
 
 ## Overview
-Two teams, **Team Mango** and **Team Peacock**, race to find their secret words among 25 words on the phone. In each
-team one player, the **clue giver**, sees the **secret map**: which words are Mango's, which are Peacock's, which are
+Two teams, the **orange team** and the **teal team**, each with a funny name picked at random for the evening (say
+**Chai Champions** and **Coffee Commandos**), race to find their secret words among 25 words on the phone. In each
+team one player, the **clue giver**, sees the **secret map**: which words are orange, which are teal, which are
 nobody's, and which one is the **Ghost**. The clue giver says **one word and a number** ("Cricket, 3!") to point their
 team at several of their words at once. The team talks it over and turns words over one at a time. Find all your
 words first and you win; wake the Ghost and you lose at once.
@@ -22,7 +23,7 @@ all out. **With the app: one phone** (or one phone plus the clue givers' own pho
 the map, turns words over, counts words and guesses left, and keeps the night's tally.
 
 ## How to play
-1. **Teams.** Split into Mango and Peacock (the phone can shuffle). Each team picks a clue giver; the phone suggests
+1. **Teams.** Split into two teams; the phone gives them funny names and can shuffle players. Each team picks a clue giver; the phone suggests
    one and gives everyone a turn over the evening.
 2. **Deal.** The phone lays out 25 words and secretly picks which team starts. The starting team has **9** words,
    the other **8**; **7** are nobody's; **1** is the Ghost.
@@ -75,7 +76,7 @@ room's to judge.
 
 ## Scoring
 None inside a game: a game is won or lost. **Tonight's tally** counts games won by each team colour
-("Tonight: Mango 2 · Peacock 1"), plus fun lines at the end of the evening (most games won as clue giver, the Ghost
+("Tonight: Chai Champions 2 · Coffee Commandos 1"), plus fun lines at the end of the evening (most games won as clue giver, the Ghost
 count). No points, no target: the evening ends when the host ends it. (Sources: no scoring across games in the rules;
 casual groups tally wins informally, `research.md`.)
 
@@ -98,7 +99,7 @@ casual groups tally wins informally, `research.md`.)
 ## Contract check (for the builders)
 | Question | Secret Words's answer |
 |---|---|
-| Setup | Players, teams (Mango list, Peacock list), clue giver per team, map mode, board size, words audience, excluded words (used tonight), board seed |
+| Setup | Players, teams (orange list, teal list, the evening's names), clue giver per team, map mode, board size, words audience, excluded words (used tonight), board seed |
 | Legal moves | show map (one phone) · give clue (number 0–9 or ∞) · pick word · reveal picked word · end turn · clue broke a rule · start/stop hurry-up timer · next team's turn · play again · change teams · change clue giver · end the evening: a finite list |
 | Apply | Pure: each move gives the next state |
 | View | Room view: words, turned-over colours, whose turn, clue number, guesses left, words left. **Map view: clue givers only.** The room view never contains the map of a face-down word (not in the page at all) |
