@@ -227,3 +227,7 @@ Status: **decided: owner, 4 October 2026, "follow the recommendation"** for K1�
 | K35 | Q3: a Reveal stays final; every main button ignores taps for 800 ms after its screen appears (1.5 s after a turn-ending reveal) | Owner, 4 October |
 | K36 | Q4: the secret map hides 60 s after the last touch, with "Still looking? Tap to keep the map" from 50 s | Owner, 4 October |
 | K37 | Q5: next day, Home offers "Play again with last night's teams" (names and teams filled in, new tally); last night stays in History | Owner, 4 October |
+| K38 | A rotating **picker** makes the final Reveal tap each turn, named on screen ("Sunita picks this turn"); every game; "Pass the pick" hands it on (`behaviour.md` B1) | Owner, 4 October |
+| K39 | **Pairs of clue givers** allowed ("Nana + Aarav"), set in the Clue givers sheet (B2) | Owner, 4 October |
+| K40 | Disputes: "Clue not allowed?" offers **Let it go · Try another clue · Turn ends, they get a word**, with "Both clue givers decide together." (B3) | Owner, 4 October |
+| K41 | Behaviour proposals B4–B12 (ask before making someone clue giver; credit people, blame the board; poker-face line; a job for the waiting team; end on a high; fair shuffles; "Our words" on the map phone; "tap to suggest"; easy joining) and the never-do list of `behaviour.md` §3 | Owner, 4 October ("follow the recommendation") |
