@@ -13,7 +13,7 @@ const mmss = (ms: number) => {
 };
 
 /** IMP-023: Free flow. Nothing on this screen changes by itself. */
-export function FreeTalk({ onVote }: { onVote: () => void }) {
+export function FreeTalk({ onVote, onSeeAgain }: { onVote: () => void; onSeeAgain: () => void }) {
   return (
     <>
       <section className="imp-stage imp-center">
@@ -21,6 +21,8 @@ export function FreeTalk({ onVote }: { onVote: () => void }) {
           Talk it over
         </h1>
         <p className="imp-body">Who sounded unsure?</p>
+        {/* IMP-017 (M19): visible, not only in the menu. */}
+        <QuietButton onClick={onSeeAgain}>See my word again</QuietButton>
       </section>
       <MainButton onClick={onVote}>Vote now</MainButton>
     </>
@@ -37,6 +39,8 @@ export function TimerTalk({
   initialMs,
   autoStart,
   onVote,
+  onSeeAgain,
+  hold,
   keep,
   announce,
   prefs,
@@ -44,6 +48,10 @@ export function TimerTalk({
   initialMs: number;
   autoStart: boolean;
   onVote: () => void;
+  /** IMP-017 (M19): the quiet "See my word again" opens "Whose word?". */
+  onSeeAgain: () => void;
+  /** IMP-017, IMP-027: "Whose word?" is open: the timer pauses at once and stays paused until "Carry on". */
+  hold: boolean;
   keep: (ms: number) => void;
   announce: (text: string) => void;
   prefs: Preferences;
@@ -79,6 +87,9 @@ export function TimerTalk({
   };
   const pauseRef = useRef(pause);
   pauseRef.current = pause;
+  useEffect(() => {
+    if (hold) pauseRef.current();
+  }, [hold]);
 
   // IMP-027: the page hidden pauses it, exactly like "Pause".
   useEffect(() => {
@@ -143,6 +154,7 @@ export function TimerTalk({
           ) : (
             <QuietButton onClick={running ? pause : () => setRunning(true)}>{running ? 'Pause' : 'Carry on'}</QuietButton>
           )}
+          <QuietButton onClick={onSeeAgain}>See my word again</QuietButton>
         </div>
       </section>
       <MainButton onClick={onVote}>{up ? 'Get ready to point' : 'Vote now'}</MainButton>

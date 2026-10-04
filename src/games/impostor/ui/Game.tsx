@@ -415,6 +415,7 @@ export function Game({
         talking={state.choices.talking}
         secondClues={r.secondClues}
         onSecondClues={() => act({ type: 'anotherRoundOfClues' })}
+        onSeeAgain={() => setOverlay('whose')}
         onTalk={() => {
           if (act({ type: 'startTalk' })) {
             setUi({ timerMs: undefined });
@@ -432,12 +433,14 @@ export function Game({
           initialMs={ui.get<UiState>(id, {}).timerMs ?? TIMER_MS}
           autoStart={talkRun === roundKey}
           onVote={onVote}
+          onSeeAgain={() => setOverlay('whose')}
+          hold={overlay === 'whose'}
           keep={keepTimer}
           announce={announce}
           prefs={prefs}
         />
       ) : (
-        <FreeTalk onVote={onVote} />
+        <FreeTalk onVote={onVote} onSeeAgain={() => setOverlay('whose')} />
       );
   } else if (r && (step === 'vote' || step === 'revote')) {
     body = counting ? (
