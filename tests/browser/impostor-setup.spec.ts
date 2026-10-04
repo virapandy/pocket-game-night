@@ -77,6 +77,23 @@ async function secondEveningOfTonight(page: Page): Promise<any> {
   return first;
 }
 
+/** Whether a ✓ shows in this element: in its text, as CSS content, or drawn as a tick shape (::before / ::after). */
+const tick = (l: Locator) => l.evaluate((el) => {
+  const shown = (e: Element) => getComputedStyle(e).display !== 'none' && getComputedStyle(e).visibility !== 'hidden';
+  if ((el as HTMLElement).innerText.includes('✓')) return true;
+  for (const e of [el, ...Array.from(el.querySelectorAll('*'))]) {
+    if (!shown(e)) continue;
+    for (const p of ['::before', '::after']) {
+      const cs = getComputedStyle(e, p);
+      if (cs.content.includes('✓')) return true;
+      // A tick drawn as a shape (a masked mark, as since 7af8f9e), of a visible size.
+      const drawn = cs.content !== 'none' && /url\(/.test(`${cs.maskImage} ${cs.webkitMaskImage} ${cs.backgroundImage}`);
+      if (drawn && parseFloat(cs.width) >= 8 && parseFloat(cs.height) >= 8) return true;
+    }
+  }
+  return false;
+});
+
 async function storageJson(page: Page, key: string): Promise<any> {
   return page.evaluate((k) => { const v = localStorage.getItem(k); return v === null ? null : JSON.parse(v); }, key);
 }
@@ -329,8 +346,9 @@ test.describe('IMP-005: the four choices, with these defaults', () => {
       const a = option(page, group, first), b = option(page, group, second);
       await expect(a, `${group}: ${first}`).toHaveAttribute('aria-pressed', 'true');
       await expect(b, `${group}: ${second}`).toHaveAttribute('aria-pressed', 'false');
-      expect(await a.innerText(), `${group}: the selected option shows a ✓`).toContain('✓');
-      expect(await b.innerText(), `${group}: the other option has no ✓`).not.toContain('✓');
+      // Terms "Selected": a decorative ✓, in the button's text or drawn by CSS (::before / ::after, as since 7af8f9e).
+      expect(await tick(a), `${group}: the selected option shows a ✓`).toBe(true);
+      expect(await tick(b), `${group}: the other option has no ✓`).toBe(false);
       expect(await hasMainLook(a), `${group}: ${first} is not the main look`).toBe(false);
       expect(await hasMainLook(b), `${group}: ${second} is not the main look`).toBe(false);
       expect(await isOutlined(a), `${group}: ${first} has an outline`).toBe(true);
@@ -694,6 +712,43 @@ test.describe('IMP-071: practice round', () => {
   });
 });
 
+test.describe('IMP-007, IMP-070 (orchestrator, 4 October, like IMP-076): Back closes the Categories and How to play sheets without saving', () => {
+  async function toChoices(page: Page) {
+    await phoneWith(page, [], { now: T0 });
+    await toWhosPlaying(page);
+    await addPlayers(page, P4);
+    await nextButton(page).click();
+    await expect(choicesHeading(page)).toBeVisible();
+  }
+
+  test('Categories: two switched off, then the browser\'s Back: back on the choices with "Categories: all 9 ›", the switches unchanged', async ({ page }) => {
+    await toChoices(page);
+    await categoriesRow(page).click();
+    await expect(page.getByRole('heading', { name: 'Categories', exact: true })).toBeVisible();
+    await page.getByRole('switch', { name: 'Food', exact: true }).click();
+    await page.getByRole('switch', { name: 'Everyday moments', exact: true }).click();
+    await page.goBack();
+    await expect(choicesHeading(page)).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Categories', exact: true })).toHaveCount(0);
+    await expect(categoriesRow(page)).toHaveText(/^\s*Categories: all 9 ›\s*$/);
+    await categoriesRow(page).click();
+    await expect(page.getByRole('switch', { name: 'Food', exact: true })).toBeChecked();
+    await expect(page.getByRole('switch', { name: 'Everyday moments', exact: true })).toBeChecked();
+  });
+
+  test('How to play: the browser\'s Back returns to the choices with nothing changed and nothing recorded', async ({ page }) => {
+    await toChoices(page);
+    await option(page, 'Mode', 'Hard').click();
+    await howToPlayButton(page).click();
+    await expect(page.getByRole('heading', { name: 'How to play' })).toBeVisible();
+    await page.goBack();
+    await expect(choicesHeading(page)).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'How to play' })).toHaveCount(0);
+    await expect(option(page, 'Mode', 'Hard')).toHaveAttribute('aria-pressed', 'true');
+    expect(await savedEvenings(page)).toEqual([]);
+  });
+});
+
 test.describe('IMP-088: the choices screen at 320 × 568 and in landscape', () => {
   async function toChoicesAt(page: Page, width: number, height: number, larger = false) {
     await page.setViewportSize({ width, height });
@@ -776,6 +831,8 @@ test.describe('IMP-088: the choices screen at 320 × 568 and in landscape', () =
         expect(fit.sw, 'scrollWidth ≤ clientWidth').toBeLessThanOrEqual(fit.cw);
         expect(fit.lines, 'one line').toBeLessThanOrEqual(1);
         expect(fit.h, '48 px tall').toBeGreaterThanOrEqual(47.5);
+        // For the reviewer: the corner ✓ next to "family" (picture kept with the test results).
+        await b.screenshot({ path: test.info().outputPath(`whole-family-${w}x${h}${larger ? '-larger' : ''}.png`) });
       });
     }
   }
