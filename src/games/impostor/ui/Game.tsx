@@ -267,7 +267,8 @@ export function Game({
           const noWords = state.phase === 'noWords';
           const changed = !sameChoices(draft, state.choices);
           if (!changed || act({ type: 'setChoices', choices: draft })) {
-            if (changed) prefs.set(PREF.lastChoices, draft);
+            // IMP-009: the last-used choices are saved at every "Start round", changed or not ("Same as last time").
+            prefs.set(PREF.lastChoices, draft);
             // Between rounds the next deal follows; on the no-words screen the same round is dealt again by itself.
             if (!noWords) act({ type: 'nextRound' });
             resetRound();
