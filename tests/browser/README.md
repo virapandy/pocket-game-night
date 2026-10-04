@@ -752,6 +752,7 @@ the approved pictures once the product owner or UX designer has checked them at 
 | `host-verdict-proof` | a ticket-number check, Top Line bogey, with its proof line | 24, 5 |
 | `host-settings-in-game` | Settings opened during a game, "Back" at the top | 18 |
 | `history-clear-one` | "Clear all history" with one past game in an unsettled tally | 5, 19 |
+| `impostor-clues-larger` | Impostor clues screen, 5 players, Larger text on: MEENA starts, the clue order, "Not enough clues?" and "Go round again" above "Clues done, talk it over" (I24) | IMP-016, 020, 022, 109 |
 | `player-tickets-cue` | Riya's 3 tickets, cue on, ticket 1's top row filled | 1, 2, 3 |
 | `player-quick-mark` | quick mark with those marks | 3 |
 | `player-which-ticket` | "Which ticket?" with the small pictures, the cue's ticket marked | 12 |

@@ -19,6 +19,7 @@ import {
   closePhones, enterTicketNumber, fakeCamera, gridOf, handOutScreen, newPhone, notHandedOutQuestion, openQuickMark, phoneGame,
   phoneTicket, rowOf, scanAll, tapCell, ticketChoice, type HandOut, type PhonePlayer,
 } from './phone';
+import { P5, SAMOSA, dealAll, startEvening } from './impostor';
 
 const TZ = 'Asia/Kolkata';
 const T0 = new Date('2026-10-03T19:00:00+05:30');
@@ -227,6 +228,17 @@ for (const size of SIZES) {
       await riya.getByRole('menuitem', { name: done }).or(riya.getByRole('button', { name: done })).first().click();
       await expect(riya.getByText('Clear your tickets from this phone?')).toBeVisible();
       await shot(riya, 'player-done-with-this-game', size.name);
+    });
+
+    // ---------------------------------------------------------------- Impostor (C1, I24)
+
+    test('Impostor clues screen with Larger text: MEENA starts, the clue order, "Not enough clues?" and "Go round again" directly above the main button (IMP-016, IMP-020, IMP-022, IMP-109)', async ({ page }) => {
+      // Steady without steady(): the deal is forced (Test hooks, config.testDeals) and the Impostor helpers set the clock.
+      await startEvening(page, { players: P5, seeds: { deals: [{ wordId: SAMOSA, impostor: 'Arjun', starter: 'Meena' }] }, storage: { 'pgn.pref.largerText': true } });
+      await dealAll(page, P5);
+      await expect(page.getByTestId('clue-order')).toBeVisible();
+      await expect(page.getByRole('button', { name: 'Go round again', exact: true })).toBeVisible();
+      await shot(page, 'impostor-clues-larger', size.name);
     });
 
     test('player: Home with tickets more than 6 hours old, "Your tickets from 7:00 pm · Open · Clear" (row 21)', async ({ page, browser }, testInfo) => {
