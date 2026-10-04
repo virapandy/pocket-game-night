@@ -1,4 +1,64 @@
 # Test report
+Progress (2026-10-04, tester, Impostor round 4 on main df8f362, app eb3ef8f, all lanes D, E, F, G merged): every
+expected-to-fail mark removed (20 rule, all browser); whole Impostor round run. Rule tests 649 of 649. Browser: the
+complete run on both phones (37171594652, tests 91a1748) and quick verify on cb2846f (37172433872) leave 5 real failures
+per phone (IMP-088 "Whole family" ×4 sizes, IMP-076 Back on "More options"); 3 test faults found there are fixed
+(cb2846f, 4d90864). Quick verify on this report's push: named in the hand-back.
+
+Commit tested: app eb3ef8f (main df8f362); tests 4d90864   Date: 2026-10-04
+Result: RED (2 real failures, 5 tests per phone)
+
+## Layers (app eb3ef8f)
+| Layer | Tests | Passing | Failing |
+|---|---|---|---|
+| Rule tests (`npm test`, local and quick verify 37172433872) | 649 | 649 | 0 |
+| Impostor browser, per phone (complete run 37171594652; quick verify 37172433872, Android) | 230 | 223 | 7 on 91a1748: 5 real + 2 test faults (fixed); quick verify on cb2846f: 5 real + 2 (toast's Undo, test fault, fixed in 4d90864) |
+| Tambola and platform browser incl. Home, picker, Settings, History, Sessions, per phone (complete run 37171594652) | about 300 | all, except Android screenshots | 4 Android screenshot references (`screens.spec.ts`, the other session's, as before) |
+
+## Failing (real bugs only)
+- impostor-setup.spec.ts IMP-088 ""Whole family" fits on one line inside its 48 px button" at 320 × 568, 320 × 568 Larger
+  text, 360 × 640, 360 × 640 Larger text (both phones; also the reviewer's note a): expected `scrollWidth ≤ clientWidth`;
+  got 114 > 104, 129 > 104, 129 > 124, 159 > 124. The selected "Whole family ✓" spills out of its button.
+- impostor-setup.spec.ts IMP-076 "More options: Off selected on a first evening; a change applies only on "Done"; Back
+  discards it" (both phones): expected the browser's Back to close the sheet, back on "How do you want to play?" with
+  "Off" still selected; got the "More options" sheet still open with "On" pressed.
+
+## Test faults fixed this round (before any verdict; no assertion loosened)
+- IMP-005 row "directly above Start round": the test demanded a gap of 32 px or less, which the spec does not say; now
+  "no control between the row and Start round".
+- IMP-081 overlap on the result screen: a page that scrolls as one may pass under the pinned main button; now checked
+  scrolled to the end. And a toast's own "Undo" is part of the toast (allowed over text, never over a control).
+- IMP-052 set-up blocked the category by both word lists; word-ids `no-words-2` left Festivals words open and writes the
+  expected id of deal 3 for `setChoices` (reviewer); helper's legal-move fill does not cover `setChoices`.
+
+## Expected to fail
+- None. Impostor round 4 is built; every mark is removed (rule 20, browser all). IMP-075's open-question mark is gone:
+  the "left halfway" menu as built is the spec and passes.
+
+## Notes
+- Live and replay word ids: the rules accept any listed word id live as well as on replay (the engine cannot tell them
+  apart); the orchestrator accepted this, no engine change. The tests check the replay side and take live ids from the
+  legal moves (or write the expected id for `setChoices`).
+- Reviewer note b: evenings saved before word ids (the v2.2 fixture) are hidden, as IMP-096 v3.5 says, and that test
+  passes; evenings saved with word ids by the round-4 builds reopen (IMP-001 resume, 090, 091, 096 tests pass).
+- Hidden reserved buttons on screen B are checked as not visible.
+
+## Questions
+- None new. (Earlier: old `setChoices` moves without `lastGuess`: no test assumes either reading.)
+
+## Flaky or setup problems (not for the Build workspace)
+- Android screenshot references in `screens.spec.ts` (4) fail as before; the other session's, left alone.
+
+## Requests for the Build workspace
+- None.
+
+## Notes for the owner (plain English)
+- All of Impostor round 4 now works in the tests on both phones: the new result screen, summary with the winner line,
+  How to play on request, the new pass-the-phone screens, the word list of 4 October and the optional last guess.
+- Two small things to fix: "Whole family" does not fit its button on the two smallest phones, and the phone's Back button
+  does not close the "More options" sheet.
+
+# Round 4 step 1 report (9d0709f), kept for reference
 Progress (2026-10-04, tester, Impostor round 4 step 1 on main at 9d0709f, lanes D and F merged): specs/impostor copied
 from scenarios v3.5; C3 rule tests written first and marked expected-to-fail; every Impostor browser test brought to
 v3.5, with those waiting for the C3 lane or the result screen marked expected-to-fail. Quick verify on b575a29 (run
