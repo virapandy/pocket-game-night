@@ -17,7 +17,7 @@ const atVote = (seed: string, choices: Record<string, unknown> = OFF, practice =
 const canUndoAny = (e: Evening) => e.match.records.some((record) => e.rules.canUndo(e.state, { record, by: HOST, now: e.at + 1 }));
 
 describe('IMP-033 and IMP-076: with the last-chance guess off, revealing the impostor completes the round', () => {
-  it.fails('no "Show the word" and no verdict after the impostor is revealed', () => {
+  it('no "Show the word" and no verdict after the impostor is revealed', () => {
     for (const s of seedList(20, 'off-refuse')) {
       const e = atVote(s);
       e.must({ type: 'reveal', player: e.impostor() });
@@ -27,7 +27,7 @@ describe('IMP-033 and IMP-076: with the last-chance guess off, revealing the imp
     }
   });
 
-  it.fails('"Next round" follows the reveal at once; the views name the impostor and the word; nothing can be undone', () => {
+  it('"Next round" follows the reveal at once; the views name the impostor and the word; nothing can be undone', () => {
     for (const s of seedList(20, 'off-next')) {
       const e = atVote(s);
       const imp = e.impostor();
@@ -41,13 +41,13 @@ describe('IMP-033 and IMP-076: with the last-chance guess off, revealing the imp
     }
   });
 
-  it.fails('"This word didn\'t work" is legal on that result, and its undo too (IMP-107)', () => {
+  it('"This word didn\'t work" is legal on that result, and its undo too (IMP-107)', () => {
     const e = atVote('off-wdw');
     e.must({ type: 'reveal', player: e.impostor() });
     e.must({ type: 'wordDidntWork', blocked: true }).must({ type: 'wordDidntWork', blocked: false }).must({ type: 'nextRound' });
   });
 
-  it.fails('the practice round with the guess off: a caught impostor completes it the same way (IMP-071)', () => {
+  it('the practice round with the guess off: a caught impostor completes it the same way (IMP-071)', () => {
     const e = atVote('off-practice', OFF, true);
     expect(e.host()).toMatchObject({ round: null, practice: true });
     e.must({ type: 'reveal', player: e.impostor() });
@@ -76,7 +76,7 @@ describe('IMP-039: with the last-chance guess on, the caught round waits for "Sh
 });
 
 describe('IMP-076 and IMP-006: the setting changes between rounds with "Change how we play"', () => {
-  it.fails('switched on after a round: the next caught round has the guess; switched off again: the one after has none', () => {
+  it('switched on after a round: the next caught round has the guess; switched off again: the one after has none', () => {
     const e = new Evening({ seed: 'switch', choices: OFF });
     e.startDeal().dealAll().toVote();
     e.must({ type: 'reveal', player: e.impostor() });
@@ -98,7 +98,7 @@ describe('IMP-041: points with the guess off', () => {
     expect(scoreRound({ impostor: 'Arjun', caught: true, guessedRight: null }, P4)).toEqual({ Riya: 1, Arjun: 0, Meena: 1, Kabir: 1 });
   });
 
-  it.fails('property (300 seeded evenings, guess off, Score Yes, 3 to 12 players): every round completes without a verdict and scores by scoreRound', () => {
+  it('property (300 seeded evenings, guess off, Score Yes, 3 to 12 players): every round completes without a verdict and scores by scoreRound', () => {
     for (let i = 0; i < 300; i++) {
       const rng = createRng(`off-score-${i}`);
       const players = NAMES.slice(0, 3 + rng.int(10));

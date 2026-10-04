@@ -53,7 +53,7 @@ describe('IMP-096: saved evenings carry a format version', () => {
     }
   });
 
-  it.fails('the ended evening (last-chance guess off) replays with the rules, using its recorded word ids and forced deals exactly as live', () => {
+  it('the ended evening (last-chance guess off) replays with the rules, using its recorded word ids and forced deals exactly as live', () => {
     const r = replay(rules(), fixture.ended.setup, fixture.ended.records);
     expect(r.ok, !r.ok ? r.reason : '').toBe(true);
     if (r.ok) expect(rules().isOver(r.value.state)).toBe(true);
@@ -81,7 +81,7 @@ describe('IMP-096: saved evenings carry a format version', () => {
     expect(P4).toContain(e.host().starter);
   });
 
-  it.fails('later moves (setPlayers, setChoices) are moves, never changes to the saved setup', () => {
+  it('later moves (setPlayers, setChoices) are moves, never changes to the saved setup', () => {
     // Up to round 2's result (its reveal of Riya, record 16): between rounds.
     const r = replay(rules(), fixture.ended.setup, fixture.ended.records.slice(0, 16));
     expect(r.ok, !r.ok ? r.reason : '').toBe(true);
@@ -93,7 +93,7 @@ describe('IMP-096: saved evenings carry a format version', () => {
     expect(readImpostorEvening({ ...fixture.ended, records: e.match.records, status: 'in-progress' }).players).toEqual(P4);
   });
 
-  it.fails('an evening saved before 3.1, without word ids (the v2.2 fixture), no longer replays: the rules refuse it, so the app hides it', () => {
+  it('an evening saved before 3.1, without word ids (the v2.2 fixture), no longer replays: the rules refuse it, so the app hides it', () => {
     for (const g of [old.ended, old.inProgress]) {
       const r = replay(rules(), g.setup, g.records);
       expect(r.ok, `${g.id} replays`).toBe(false);

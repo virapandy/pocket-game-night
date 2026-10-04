@@ -214,7 +214,7 @@ describe('IMP-051: no word repeats in an evening', () => {
 });
 
 describe('IMP-053: both names are shown where a thing has two', () => {
-  it.fails('"Kheer / Payasam" is one word of the list, with "Payesh" as its other name', () => {
+  it('"Kheer / Payasam" is one word of the list, with "Payesh" as its other name', () => {
     const w = wordById('IMPW-007');
     expect(w.word).toBe('Kheer / Payasam');
     expect(w.other_names).toBe('Payesh');
@@ -269,14 +269,14 @@ describe('IMP-054: every word in the list is valid', () => {
     expect(wordById('IMPW-404')).toMatchObject({ word: 'Screen time', retired: false });
   });
 
-  it.fails('words.json has exactly the rows of words.csv, in the same order, with retired true/false, and passes the same checks', () => {
+  it('words.json has exactly the rows of words.csv, in the same order, with retired true/false, and passes the same checks', () => {
     const json = shippedWords();
     expect(Array.isArray(json)).toBe(true);
     checkRows(json, 'words.json');
     expect(json).toEqual(WORDS);
   });
 
-  it.fails('property (300 seeded evenings of 30 dealt rounds, random choices): a retired word is never dealt', () => {
+  it('property (300 seeded evenings of 30 dealt rounds, random choices): a retired word is never dealt', () => {
     let evenings = 0;
     for (let i = 0; evenings < 300; i++) {
       const rng = createRng(`retired-${i}`);
@@ -302,7 +302,7 @@ describe('IMP-054: every word in the list is valid', () => {
 });
 
 describe('IMP-055: the shipped word list file', () => {
-  it.fails('each entry is exactly { id, word, other_names, category, audience, nonveg, hint, retired }, with nonveg and retired true/false and other_names as in the CSV', () => {
+  it('each entry is exactly { id, word, other_names, category, audience, nonveg, hint, retired }, with nonveg and retired true/false and other_names as in the CSV', () => {
     const json = shippedWords();
     for (const e of json) expect(Object.keys(e).sort()).toEqual(['audience', 'category', 'hint', 'id', 'nonveg', 'other_names', 'retired', 'word']);
     expect(json.find((e: any) => e.id === 'IMPW-004')).toEqual({

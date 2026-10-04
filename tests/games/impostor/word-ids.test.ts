@@ -22,7 +22,7 @@ const isDealing = (m: { type: string; wordId?: unknown }) => (DEALING as readonl
 const dealRecords = (e: Evening) => e.match.records.filter((r) => isDealing(r.move as any));
 
 describe('Test hooks item 1 and IMP-096: every word-dealing move records the dealt word id', () => {
-  it.fails('startDeal, "New word" (dontKnow), dealAgain and nextRound each record the word the crew then sees', () => {
+  it('startDeal, "New word" (dontKnow), dealAgain and nextRound each record the word the crew then sees', () => {
     for (const s of seedList(20, 'ids')) {
       const e = new Evening({ seed: s });
       const check = (type: string) => {
@@ -37,10 +37,11 @@ describe('Test hooks item 1 and IMP-096: every word-dealing move records the dea
     }
   });
 
-  it.fails('no word left: nextRound records wordId null; "Allow repeats" and "Change categories" (setChoices) record the word they deal', () => {
-    // Every allowed word but two blocked: two rounds use them up, the third finds none (IMP-052).
+  it('no word left: nextRound records wordId null; "Allow repeats" and "Change categories" (setChoices) record the word they deal', () => {
+    // Every Food word but two blocked: two rounds use them up, the third finds none (IMP-052). Other categories stay
+    // open, so "Change categories" to Food + Festivals can deal again.
     const allowed = ACTIVE.filter((w) => w.audience === 'family' && !w.nonveg && w.category === 'Food').map((w) => w.id);
-    const blocked = ACTIVE.map((w) => w.id).filter((id) => !allowed.slice(0, 2).includes(id));
+    const blocked = ACTIVE.filter((w) => w.category === 'Food').map((w) => w.id).filter((id) => !allowed.slice(0, 2).includes(id));
     const e = new Evening({ seed: 'no-words', choices: { categories: ['Food'] }, excludedWords: { blocked } });
     e.startDeal(); e.playRound({ kind: 'escaped' }); e.nextRound(); e.playRound({ kind: 'escaped' });
     e.must({ type: 'nextRound' });
@@ -51,16 +52,24 @@ describe('Test hooks item 1 and IMP-096: every word-dealing move records the dea
 
     const f = new Evening({ seed: 'no-words-2', choices: { categories: ['Food'] }, excludedWords: { blocked } });
     f.startDeal(); f.playRound({ kind: 'escaped' }); f.nextRound(); f.playRound({ kind: 'escaped' });
+    const dealt = new Set(dealRecords(f).map((r) => (r.move as any).wordId as string));
     f.must({ type: 'nextRound' });
-    f.must({ type: 'setChoices', choices: changedChoices({ categories: ['Food', 'Festivals and occasions'] }) });
+    // setChoices is not a listed legal move (its choices come from the screen), so the test writes the expected id:
+    // the 3rd deal (the no-words nextRound does not count) under the new choices (Test hooks item 1).
+    const choices = changedChoices({ categories: ['Food', 'Festivals and occasions'] });
+    const expected = pickWord(ACTIVE, {
+      words: 'family', categories: choices.categories, nonveg: false, usedTonight: dealt, recent: none, blocked: new Set(blocked), allowRepeats: false,
+    }, createRng('no-words-2:word:3'))!.id;
+    f.must({ type: 'setChoices', choices, wordId: expected });
     const last = f.match.records.at(-1)!.move as any;
     expect(last.type).toBe('setChoices');
-    expect(last.wordId).toBe(f.wordId());
+    expect(last.wordId).toBe(expected);
+    expect(f.wordId()).toBe(expected);
   });
 });
 
 describe('Test hooks item 1, IMP-060, IMP-061, IMP-021: each deal draws from its own seeds', () => {
-  it.fails('deal 1: the word, the impostor and the starter are the picks of `${word}:word:1`, `${word}:impostor:1` and `${starter}:1`', () => {
+  it('deal 1: the word, the impostor and the starter are the picks of `${word}:word:1`, `${word}:impostor:1` and `${starter}:1`', () => {
     for (const s of seedList(50, 'per-deal')) {
       const e = new Evening({ seed: s, starterSeed: `${s}-st` });
       e.startDeal();
@@ -71,7 +80,7 @@ describe('Test hooks item 1, IMP-060, IMP-061, IMP-021: each deal draws from its
     }
   });
 
-  it.fails('a redeal is deal 2: "New word" draws from `${word}:word:2` and `${word}:impostor:2`, and the starter from `${starter}:2`', () => {
+  it('a redeal is deal 2: "New word" draws from `${word}:word:2` and `${word}:impostor:2`, and the starter from `${starter}:2`', () => {
     for (const s of seedList(30, 'per-deal-2')) {
       const e = new Evening({ seed: s, starterSeed: `${s}-st` });
       e.startDeal();
@@ -85,7 +94,7 @@ describe('Test hooks item 1, IMP-060, IMP-061, IMP-021: each deal draws from its
     }
   });
 
-  it.fails('property (200 seeded evenings): other recorded word ids replay with exactly the same impostors and starters, and the recorded words', () => {
+  it('property (200 seeded evenings): other recorded word ids replay with exactly the same impostors and starters, and the recorded words', () => {
     for (let i = 0; i < 200; i++) {
       const rng = createRng(`swap-${i}`);
       const players = NAMES.slice(0, 3 + rng.int(8));
@@ -132,14 +141,14 @@ describe('IMP-054 and IMP-096: which recorded word ids replay', () => {
   const withFirstDeal = (e: Evening, change: (m: any) => any) =>
     e.match.records.map((r, i) => (i === 0 ? { ...r, move: change(r.move) } : r));
 
-  it.fails('a retired word id replays, and the crew sees that word', () => {
+  it('a retired word id replays, and the crew sees that word', () => {
     const e = played();
     const r = replay(e.rules, e.match.setup, withFirstDeal(e, (m) => ({ ...m, wordId: RETIRED_IDS[0] })));
     expect(r.ok, !r.ok ? r.reason : '').toBe(true);
     if (r.ok) expect(e.rules.view(r.value.state, { kind: 'host' }).wordId).toBe(RETIRED_IDS[0]);
   });
 
-  it.fails('a word-dealing move without wordId, or with an id not in the list, does not replay', () => {
+  it('a word-dealing move without wordId, or with an id not in the list, does not replay', () => {
     const e = played();
     const { wordId: _w, ...bare } = e.match.records[0]!.move as any;
     expect(replay(e.rules, e.match.setup, withFirstDeal(e, () => bare)).ok, 'no wordId').toBe(false);
