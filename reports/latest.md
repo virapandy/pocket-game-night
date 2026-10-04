@@ -1,4 +1,101 @@
 # Test report
+Progress (2026-10-04, tester, Impostor round 4 step 1 on main at 9d0709f, lanes D and F merged): specs/impostor copied
+from scenarios v3.5; C3 rule tests written first and marked expected-to-fail; every Impostor browser test brought to
+v3.5, with those waiting for the C3 lane or the result screen marked expected-to-fail. Quick verify on b575a29 (run
+37167564844): rule tests 629 passed + 20 expected-to-fail, smoke 16 of 16, Impostor browser 218 passed, 6 failed (4 real,
+2 test faults fixed since). The run on this report's push is named in the hand-back.
+
+Commit tested: app 9d0709f (tests b575a29 and this push)   Date: 2026-10-04
+Result: RED (1 real failure: "Whole family" overflows its button at 320 and 360 wide, IMP-088)
+
+## Layers (app 9d0709f)
+| Layer | Tests | Passing | Expected to fail (not built) | Failing |
+|---|---|---|---|---|
+| Rule tests (quick verify 37167564844) | 649 | 629 | 20 (C3: word list, word ids, per-deal seeds, last-chance guess setting, v3 fixture) | 0 |
+| Impostor browser, Android (same run) | 224 | 218, incl. marked tests that failed as expected | see the list below | 6 on b575a29: 4 real (IMP-088), 2 test faults, fixed in this push |
+| Local Android run (3 workers, Mac load 3 to 5) | 220 | used only to set the marks; many timeouts from the Mac's load, not counted | | |
+
+## Failing (real bugs only)
+- impostor-setup.spec.ts "IMP-088 … 320 × 568 / 320 × 568 Larger text / 360 × 640 / 360 × 640 Larger text: "Whole family"
+  fits on one line inside its 48 px button" (IMP-088, F12; also the reviewer's note): expected `scrollWidth ≤ clientWidth`;
+  got 114 > 104 (320), 129 > 104 (320 Larger text), 129 > 124 (360), 159 > 124 (360 Larger text). The selected option
+  ("Whole family ✓") is cut off or spills out of its button. The spec's label column is 56 px + 8 px gap (64 px); the
+  test allows the options to start 63 to 80 px after the label.
+
+## Test faults fixed in this push (before any verdict)
+- IMP-052 "Change categories …": the set-up blocked the category's words by words.csv only; the shipped list still has
+  the categories of before 4 October, so a word was left and the no-words screen never showed. Now blocked by both lists.
+- IMP-075 "a round result has the between-rounds menu": marked expected-to-fail but passes (lane F built "How to play").
+  Mark removed. Same for IMP-052 "the heading … Allow repeats deals".
+
+## Expected to fail (marked; they wait for the C3 lane or the result screen)
+- Rule (it.fails, 20): words.test IMP-053 json entry, IMP-054 words.json = words.csv, retired never dealt (property),
+  IMP-055 shape with `retired`; word-ids.test (7): word id on every dealing move, wordId null with no word, `Allow
+  repeats` / `Change categories` ids, deal 1 and deal 2 per-deal seeds, swapped ids replay with the same impostors and
+  starters (property), retired id replays, missing or unknown id refused; last-guess.test (6): guess off refuses
+  showWord and verdict, Next round straight after the reveal, wordDidntWork after it, practice round, switching the
+  setting between rounds, guess-off points (property); saved-evening.test (3): v3 fixture's ended evening replays,
+  later moves on it, the v2.2 fixture no longer replays.
+- Browser (test.fail): the one result screen (IMP-033, 034, 038, 039, 073, 081 result scroll and landscape, 083
+  announcer, 084 no build-up flash, 087 release at 1.5 s, 100); More options and the guess setting (IMP-009, 011 line 4,
+  070 guess paragraph, 076); summary lead line and "More ›" (IMP-092, 095, 097, 098, 101); "1 more minute" and timer label
+  (IMP-024); "Not sure?" (IMP-031); "How to play" from the menu with the 3 rules (IMP-070, 072) and from the choices
+  screen; "New word for everyone?" record with word id (IMP-015); v3 fixture, hidden pre-3.1 evenings and word ids in
+  saved moves (IMP-096); reopened result screens (IMP-091, 037); "Scores since round 4" and guess-off points (IMP-043,
+  041); IMP-007 switch names (v3.5 names: lane C3 renames the list) ; IMP-088 Larger text 17 px at 320; IMP-053 result.
+- IMP-075 open-question mark: removed. The "left halfway" menu as built is the spec (decisions I21) and the test passes.
+
+## Tests updated or retired because of v3.x (scenario ID: what and why)
+Rule tests (helpers: word ids filled from `legalMoves`; `DEFAULT_CHOICES` plays with `lastGuess: true`; `setChoices` in
+tests of other rules uses the 6 category names common to both lists; `ACTIVE` words for pickWord):
+- IMP-050, 051, 052 (words.test): pickWord given the active list; category "Cricket and games" → "Sports and games";
+  IMP-051 random categories and the IMP-052 frozen-set evening use the 6 common names (changed list, same checks).
+- IMP-054, 055: 311 rows / 291 active / 20 retired, retired categories allowed on retired rows, renamed words, `retired`
+  in words.json (scenario changed 4 October).
+- IMP-033 → IMP-039 (vote-and-reveal.test): the "guess before the word" tests now name IMP-039 (guess on); new guess-off
+  tests in last-guess.test.
+- IMP-015 (deal.test "not dealt again"): blocked set = every id but the two (retired words would otherwise slip in).
+- IMP-096 (saved-evening.test): new format fixture `tests/fixtures/impostor-saved-evenings-v3.json` (word ids, lastGuess,
+  new names); the v2.2 fixture is kept unedited as "an evening from an earlier preview build", now expected not to replay.
+- Contract driver: word-dealing moves take their `wordId` from the legal moves.
+Browser:
+- Retired: IMP-070 read-aloud card (3 tests), IMP-075 "no menu on the read-aloud card", IMP-081/IMP-010 "block clears
+  the name" hold screen (8), IMP-033/034/038 timed reveal lines (3), IMP-072 "Rules" sheet (2), IMP-083 announcer of
+  reveal lines, IMP-031/033 caught flow with "Caught red-handed!" — each replaced by a v3.5 test (scenarios changed).
+- Updated: IMP-016, 020, 022 clue wording; IMP-075 menus ("How to play"); IMP-014 note shown only while on; IMP-011
+  impostor line 4 split by the guess setting; IMP-012 property ignores the deal-progress text, private-word 2 lines;
+  IMP-013 checks the build-up, not the guess step; IMP-015 dialog; IMP-017 look-away; IMP-007 v3.5 names and colour;
+  IMP-008 three taps; IMP-009 7 choices, "Same as last time", mapping; IMP-088 sizes, inner scroll, Whole family;
+  IMP-091, 092, 093, 095, 097, 098, 101, 105, 106 summary and reopen; IMP-043 caption; IMP-100 word on the result.
+- Hidden reserved buttons on screen B ("Done…", "Don't know this word?", "Tap instead" in tap mode) checked as not
+  visible instead of not in the page (reviewer note).
+- Unchanged-scenario tests whose record check met the new `wordId` (IMP-025, 052, 071, 091) now check the move type;
+  the full record with `wordId` is checked in the IMP-096 browser test.
+- Navigation helpers reach the same screens on the old and the new build while lanes land (marked "v2.2 build:").
+
+## Questions
+- Test hooks item 1: "Live, play accepts only the id that pickWord gives for deal n; replay accepts any recorded id".
+  The engine's `play` and `replay` both call the rules' `apply`, so the rules cannot tell them apart. The tests check
+  only the replay side and fill live ids from `legalMoves`. Product owner or coder: how is the live check meant to work?
+- Reviewer note (b) "evenings saved by the previous build reopen correctly": the current preview build saves moves
+  without `wordId`. By IMP-096 v3.5 such evenings no longer replay and are hidden once the C3 lane lands. Is that
+  intended for evenings saved by today's preview, or should a move without `wordId` be read once from the list?
+- Old evenings whose `setChoices` moves have no `lastGuess`: do those read as on as well (IMP-096 names only the saved
+  choices)? No test assumes either.
+
+## Flaky or setup problems (not for the Build workspace)
+- Local browser run took 1.9 h at 3 workers; about 15 tests timed out on the owner's Mac (load) and passed on GitHub.
+
+## Requests for the Build workspace
+- None.
+
+## Notes for the owner (plain English)
+- The new Impostor rules (word list of 4 October, last guess as a setting, saved evenings that stay the same when the
+  word list changes) now have tests waiting for the build. The screens already built today (passing the phone, setup,
+  How to play on request, clue wording) pass their updated tests.
+- One real problem: on the two smallest phones "Whole family" does not fit inside its button.
+
+# Round 3 report (f01d78b), kept for reference
 Progress (2026-10-03, tester, Impostor round 3 on main at f01d78b, the fix for round 2's one failure): the hold screen
 at 320 × 568 with Larger text (IMP-081 / IMP-010) now passes on both phones. Nothing else regressed: every Impostor and
 Tambola browser test passes on both phones, except the IMP-075 mark (open question) and the same 4 Android screenshot
