@@ -231,3 +231,4 @@ Status: **decided: owner, 4 October 2026, "follow the recommendation"** for K1�
 | K39 | **Pairs of clue givers** allowed ("Nana + Aarav"), set in the Clue givers sheet (B2) | Owner, 4 October |
 | K40 | Disputes: "Clue not allowed?" offers **Let it go · Try another clue · Turn ends, they get a word**, with "Both clue givers decide together." (B3) | Owner, 4 October |
 | K41 | Behaviour proposals B4–B12 (ask before making someone clue giver; credit people, blame the board; poker-face line; a job for the waiting team; end on a high; fair shuffles; "Our words" on the map phone; "tap to suggest"; easy joining) and the never-do list of `behaviour.md` §3 | Owner, 4 October ("follow the recommendation") |
+| K42 | Secret Words scenarios **version 3.4 approved** (SWD-001 to SWD-133); the build starts when Impostor's release candidate 1.3.0 is frozen | Owner, 4 October |
