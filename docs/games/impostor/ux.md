@@ -277,3 +277,15 @@ how to play on request and the pass-the-phone touches are built as scenarios v3.
 | N4 | 1 | Many players sharing the top score make a wall of names | Next list | More than 3 sharing: "11 players share the night with 1 point!"; round points "+1 each to the crew (11)" |
 | N5 | 1 | "Whose word?" with 12 players hides Cancel at 360 × 640 | Next list | Cancel pinned at the bottom; only names scroll |
 | N6 | 1 | Hold-screen name 2 px past its box at 360 × 640 | Next list | Keep shrinking until it fits |
+
+## Owner's play, 4 October: how do I stop? (product owner decision)
+The owner found that the round result offers only "Next round"; ending is hidden in the menu as "End the evening", there
+is no Home between rounds, and "evening" clashes with the app's "session". Missed by both reviews because they checked
+the screens against the spec (which put ending in the menu) instead of asking what a player wants next. Fixed in the
+process: playbook pass 12a ("What next?") and guideline 47a.
+| Where | Decided |
+|---|---|
+| Round result | Main "Next round"; visible outlined "End game" beside it (same row at widths ≥ 360 px, above it at 320 px); "← Home" at top left |
+| Between rounds | "← Home" keeps the game saved; Home and "What shall we play?" show "Impostor · round 4 · Tap to resume" |
+| Words on screen | Only "game" in Impostor: "End game", "That's the game!", "Discard this game", "This game: caught 3 · escaped 2", "Start a new game? The game from 8:40 pm will be ended." No "evening", "night" or "session" on any Impostor screen; the session stays behind the scenes (History groups tonight's games) |
+| End screen | "That's the game!", winner line, fun lines; main "Play again" (same players and choices, a new game); quiet "Play something else" and "Home"; "More ›" holds Oops, Share, History and, last, "Discard this game" |

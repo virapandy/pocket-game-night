@@ -128,6 +128,9 @@ speed [8]. Our users:
     something new (Impostor review, 4 October 2026).
 46a. **Result and summary screens scroll as one page** with only the main button pinned; never a scroll area inside a
     scroll area; lists are one column at widths of 360 px or less.
+47a. **Every between-rounds screen shows both "carry on" and "stop".** The next round is the main button; "End game"
+    is a visible outlined button beside it; "← Home" leaves the game saved to resume. Stopping is never only in a menu
+    (owner, 4 October 2026).
 48. **Shared screens stop at decision points.** A countdown started by a tap is fine; a timer ending never starts the
     next step by itself (extends 28).
 
