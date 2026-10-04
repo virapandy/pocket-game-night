@@ -500,6 +500,10 @@
 .imp-starter { width: 100%; font-size: 56px; font-weight: 800; line-height: 1.1; white-space: nowrap; overflow-wrap: anywhere; }
 .imp-starts { font-size: 1.35rem; font-weight: 700; }
 .imp-clue-order { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+/* IMP-022 (I24): "Not enough clues?" (15 px) and "Go round again" at the bottom, directly above the main button; the
+   auto margins keep the rest centred in the space above. */
+.imp-clues-again { flex: none; width: 100%; display: flex; flex-direction: column; align-items: center; gap: 4px; margin-top: auto; }
+.imp-clues:has(.imp-clues-again) .imp-clues-top { margin-top: auto; }
 
 /* ----- Talk and the timer (IMP-023, IMP-024, IMP-027, IMP-073) ----- */
 .imp-talk-heading { font-size: 56px; font-weight: 800; line-height: 1.1; overflow-wrap: anywhere; }
@@ -652,8 +656,8 @@
   .imp-clues {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    grid-template-rows: auto minmax(0, 1fr);
-    grid-template-areas: "who top" "who rest";
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    grid-template-areas: "who top" "who rest" "who again";
     column-gap: 16px;
     row-gap: 8px;
     align-items: stretch;
@@ -661,6 +665,8 @@
   .imp-clues-who { grid-area: who; justify-content: center; }
   .imp-clues-top { grid-area: top; }
   .imp-clues-rest { grid-area: rest; justify-content: flex-start; }
+  .imp-clues-again { grid-area: again; margin-top: 0; }
+  .imp-clues:has(.imp-clues-again) .imp-clues-top { margin-top: 0; }
   .imp-count { font-size: 160px; }
   .imp-count-point { font-size: 96px; }
   /* IMP-031, IMP-082: the heading and the names box (scrolling inside) left; "Not sure?", its text buttons and the

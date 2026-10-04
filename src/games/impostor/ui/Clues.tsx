@@ -32,6 +32,7 @@ export function Clues({
   const said = order.join(', ');
   useEffect(() => announce(`${starter} starts. Each say one word about your secret: ${said}`), [announce, starter, said]);
   // IMP-020: in landscape the starter sits in the left half; everything else, buttons included, in the right half.
+  // IMP-022: "Go round again" sits at the bottom, directly above the main button (bottom right in landscape).
   return (
     <>
       <section className="imp-stage imp-clues">
@@ -55,8 +56,14 @@ export function Clues({
               Second round: <Caps>{starter}</Caps> starts again
             </p>
           )}
-          {!secondClues && players.length <= 5 && <QuietButton onClick={onSecondClues}>One more round of clues</QuietButton>}
         </div>
+        {/* IMP-022 (I24): in the bottom bar, directly above the main button, with its small line above it. */}
+        {!secondClues && players.length <= 5 && (
+          <div className="imp-clues-again">
+            <p className="imp-small">Not enough clues?</p>
+            <QuietButton onClick={onSecondClues}>Go round again</QuietButton>
+          </div>
+        )}
       </section>
       <MainButton onClick={onTalk}>{talking === 'timer' ? 'Clues done, start the 2-minute timer' : 'Clues done, talk it over'}</MainButton>
     </>
