@@ -104,7 +104,7 @@ the owner, 4 October** (`docs/games/secret-words/scenarios.md` version 2; SWD-20
 `docs/decisions.md`. When Impostor is released: the **tester** copies the scenarios into `specs/secret-words/` (file names in each
 section heading), requests a QR decoder for tests (hook 5), and writes tests first for the C3 sections (02 deal, 04 rules,
 05, 06, SWD-099), including the golden boards of SWD-022; then the **coder** builds by `docs/change-sop.md` (screens in lanes,
-C3 in its own lane). The word list `words.csv` still needs the persona and real-reader review (product owner) before release.
+C3 in its own lane). The word list `words.csv` (452 words) and `team-names.csv` are owner-approved (K27).
 
 ### Queued: Impostor, the next game (product owner, 3 October): start only after the Tambola release
 Design done (owner-approved direction; scenarios await the owner's approval): `docs/games/impostor/` (guide,

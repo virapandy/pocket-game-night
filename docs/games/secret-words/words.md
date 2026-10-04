@@ -47,6 +47,9 @@ can't fit; nothing political (no Pakistan, no Kashmir). The owner called the res
 `words.csv` has `edition` and `retired_in` columns (scenarios SWD-023): **any change to the list makes a new edition**;
 retired words stay in the file with `retired_in`, so every old map code still rebuilds the same board.
 
+## Approved
+**The owner approved the list and the team names on 4 October (K27).** The notes below were the planned review, now not needed.
+
 ## To check before release (as Impostor's list)
 - **Persona review** (nine reviewers: North, South, East, West, a grandparent, a 9-year-old, a teen, a strict-veg home,
   a non-Hindi speaker) and then **real readers**.
