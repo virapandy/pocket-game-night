@@ -7,6 +7,8 @@
 // Updated 4 October 2026 to scenarios v3.5 (Impostor round 4). Expected to fail (not built yet): tests marked
 // `test.fail` check what v3.5 changed (the one result screen, the summary's lead line and "More ›", "How to play" in the
 // menu, "1 more minute", the picker's "Not sure?"). A marked test that starts passing turns red: then remove its mark.
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { expect, test, type Locator, type Page } from './fixtures';
 import {
   HOME, backgroundAndReturn, chooseTicketType, expectOneMainButton, fillPlayers, fromHome, hasMainLook, isOutlined, openTambola, ticketCard, toggle,
@@ -537,7 +539,10 @@ test.describe('IMP-052: no words left', () => {
   })();
   const inCat = WORDS.filter((w) => w.category === CAT && w.retired !== 'yes' && (w as any).audience !== 'grownups' && (w as any).nonveg !== 'yes' && (w as any).nonveg !== 'true');
   const last = inCat[0]!.id;
-  const blocked = WORDS.filter((w) => w.category === CAT && w.id !== last).map((w) => w.id);
+  // Every other word of the category skipped on this phone, by words.csv and by the shipped list (Test hooks item 2),
+  // so none is left while the shipped list still has the categories of before 4 October.
+  const shipped: { id: string; category: string }[] = JSON.parse(readFileSync(fileURLToPath(new URL('../../content/impostor/words.json', import.meta.url)), 'utf8'));
+  const blocked = [...new Set([...WORDS.filter((w) => w.category === CAT).map((w) => w.id), ...shipped.filter((w) => w.category === CAT).map((w) => w.id)])].filter((id) => id !== last);
 
   async function toNoWords(page: Page) {
     const earlier = savedEvening({
@@ -563,7 +568,7 @@ test.describe('IMP-052: no words left', () => {
     await expect(heading).toBeVisible();
   }
 
-  test.fail('the heading, "Turn on more categories or + Grown-ups.", "Allow repeats" (main) and "Change categories"; the between-rounds menu; "Allow repeats" deals', async ({ page }) => {
+  test('the heading, "Turn on more categories or + Grown-ups.", "Allow repeats" (main) and "Change categories"; the between-rounds menu; "Allow repeats" deals', async ({ page }) => {
     await toNoWords(page);
     await expect(page.getByText('Turn on more categories or + Grown-ups.', { exact: true })).toBeVisible();
     await expectOneMainButton(page, 'no words left', 'Allow repeats', true);
