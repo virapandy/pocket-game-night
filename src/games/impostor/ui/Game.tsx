@@ -254,7 +254,9 @@ export function Game({
         onBack={() => {
           // IMP-006 (M21): "← Back" (or the phone's Back) keeps the changes: `setChoices` when something changed,
           // applied from the next round (on the no-words screen the same round is dealt again with them, IMP-052).
-          if (!sameChoices(draft, state.choices) && act({ type: 'setChoices', choices: draft })) {
+          // The screen closes only once the change is recorded (or nothing changed), so no change is lost.
+          if (!sameChoices(draft, state.choices)) {
+            if (!act({ type: 'setChoices', choices: draft })) return;
             prefs.set(PREF.lastChoices, draft);
             if (state.phase === 'noWords') resetRound();
           }
