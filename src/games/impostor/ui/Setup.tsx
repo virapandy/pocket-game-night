@@ -233,6 +233,7 @@ export function HowToPlayChoices({
   lastGuess,
   onLastGuess,
   sameAsLast = false,
+  phoneBack = false,
 }: {
   choices: Choices;
   onChange: (next: Choices) => void;
@@ -248,6 +249,8 @@ export function HowToPlayChoices({
   onLastGuess?: (on: boolean) => void;
   /** IMP-009: the choices were carried over and nothing has changed yet: "Same as last time". */
   sameAsLast?: boolean;
+  /** IMP-006: the browser's or phone's Back, with no sheet open, does what "← Back" does ("Change how we play"). */
+  phoneBack?: boolean;
 }) {
   const [sheet, setSheet] = useState<'categories' | 'howTo' | 'more' | null>(null);
   const n = choices.categories.length;
@@ -260,6 +263,14 @@ export function HowToPlayChoices({
     window.addEventListener('popstate', back);
     return () => window.removeEventListener('popstate', back);
   }, [sheet]);
+  const backRef = useRef(onBack);
+  backRef.current = onBack;
+  useEffect(() => {
+    if (!phoneBack || sheet !== null) return;
+    const back = () => backRef.current();
+    window.addEventListener('popstate', back);
+    return () => window.removeEventListener('popstate', back);
+  }, [phoneBack, sheet]);
   return (
     <main className="imp-screen imp-setup">
       <div className="imp-screen-inner" hidden={sheet !== null}>

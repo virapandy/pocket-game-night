@@ -34,6 +34,14 @@ function leftTooLong(match: EveningMatch, ui: UiState, now: number): boolean {
 }
 
 const sameList = (a: readonly string[], b: readonly string[]) => a.length === b.length && a.every((x, i) => x === b[i]);
+const sameChoices = (a: Choices, b: Choices) =>
+  a.mode === b.mode &&
+  a.talking === b.talking &&
+  a.score === b.score &&
+  a.words === b.words &&
+  a.nonveg === b.nonveg &&
+  a.lastGuess === b.lastGuess &&
+  sameList(a.categories, b.categories);
 
 export function Game({
   store,
@@ -243,11 +251,21 @@ export function Game({
         onChange={setDraft}
         lastGuess={draft.lastGuess}
         onLastGuess={(on) => on !== draft.lastGuess && setDraft({ ...draft, lastGuess: on })}
-        onBack={() => setOverlay(null)}
+        onBack={() => {
+          // IMP-006 (M21): "← Back" (or the phone's Back) keeps the changes: `setChoices` when something changed,
+          // applied from the next round (on the no-words screen the same round is dealt again with them, IMP-052).
+          if (!sameChoices(draft, state.choices) && act({ type: 'setChoices', choices: draft })) {
+            prefs.set(PREF.lastChoices, draft);
+            if (state.phase === 'noWords') resetRound();
+          }
+          setOverlay(null);
+        }}
+        phoneBack
         onStart={() => {
           const noWords = state.phase === 'noWords';
-          if (act({ type: 'setChoices', choices: draft })) {
-            prefs.set(PREF.lastChoices, draft);
+          const changed = !sameChoices(draft, state.choices);
+          if (!changed || act({ type: 'setChoices', choices: draft })) {
+            if (changed) prefs.set(PREF.lastChoices, draft);
             // Between rounds the next deal follows; on the no-words screen the same round is dealt again by itself.
             if (!noWords) act({ type: 'nextRound' });
             resetRound();
