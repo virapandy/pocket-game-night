@@ -13,7 +13,7 @@ import {
   type Evening, type EveningMatch, type UiState,
 } from './evening';
 import { Dialog, HideMainButton, MainButton, Menu, QuietButton, Toast, useToast, type MenuItem } from './parts';
-import { Reveal, type ResultInfo } from './Reveal';
+import { EndGameButton, Reveal, useTapGuard, type ResultInfo } from './Reveal';
 import { HowToPlayChoices } from './Setup';
 import { PlayersSheet, RulesSheet, SettingsSheet } from './Sheets';
 import { counts, outcomeLine, pointsText, scoreRows, storyOf } from './story';
@@ -157,6 +157,9 @@ export function Game({
     step === 'result' && (r!.stillTie || revealLive !== roundKey || revealDone === roundKey || r!.verdict !== null);
   /** The one result screen (with its build-up and guess steps): it scrolls as one page (guideline 46a). */
   const resultScreen = !leftHalfway && !seeAgain && (step === 'caught' || step === 'guess' || step === 'result');
+  /** IMP-077: a between-rounds screen ("Next round", "End game", "← Home"). */
+  const betweenRounds = leftHalfway || state.phase === 'noWords' || (step === 'result' && resultShown);
+  const guard = useTapGuard(betweenRounds ? `${roundKey}|${state.phase}|${leftHalfway}` : null);
 
   // IMP-087, IMP-100: the screen stays on from a round's first screen A until the round's result shows.
   useWakeLock(state.phase === 'round' && !resultShown && !leftHalfway && !summary, roundKey);
@@ -267,13 +270,21 @@ export function Game({
     return { role: view?.role === 'impostor' ? 'impostor' : 'crew', word: wordById(r!.wordId)!, mode: state.choices.mode, lastGuess: state.choices.lastGuess };
   };
   const tapPref = () => prefs.get<boolean>(PREF.tapToShow, false) === true;
-  const midRound = !!r && step !== 'result';
-  const betweenRounds = leftHalfway || state.phase === 'noWords' || (step === 'result' && resultShown);
+
+  /** The summary shows at once; nothing is recorded until it is left (IMP-077, IMP-093, IMP-101). */
+  const showSummary = () => {
+    setOverlay(null);
+    if (ui.get<UiState>(id, {}).summaryShownAt === undefined) setUi({ summaryShownAt: Date.now() });
+    setTalkRun(null);
+    setSeeAgain(null);
+    clearToast();
+    setSummary(true);
+  };
 
   // IMP-075: the menu at each moment.
   const rules: MenuItem = { label: 'How to play', onSelect: () => setOverlay('rules') };
   const settings: MenuItem = { label: 'Settings', onSelect: () => setOverlay('settings') };
-  const end: MenuItem = { label: 'End the evening', onSelect: () => setOverlay('end') };
+  const end: MenuItem = { label: 'End game', onSelect: () => setOverlay('end') };
   const dealAgain: MenuItem = { label: 'Deal again with a new word', onSelect: () => setOverlay('dealAgain') };
   const playersMid: MenuItem = { label: 'Players', onSelect: () => setOverlay('playersMid') };
   let menu: MenuItem[] | null = null;
@@ -295,7 +306,6 @@ export function Game({
           ]),
       settings,
       { label: 'History', onSelect: () => onHistory(true) },
-      end,
     ];
   } else if (step === 'deal') menu = [rules, playersMid, dealAgain, settings, end];
   else if ((step === 'clues' || step === 'talk' || step === 'vote' || step === 'revote') && !counting) {
@@ -318,13 +328,14 @@ export function Game({
         <section className="imp-stage imp-center">
           <h1 className="imp-room-title">This round was left halfway. Start a fresh round?</h1>
         </section>
+        <EndGameButton onClick={guard(showSummary)} />
         <MainButton
-          onClick={() => {
+          onClick={guard(() => {
             if (act({ type: 'dealAgain' })) {
               setLeftHalfway(false);
               resetRound();
             }
-          }}
+          })}
         >
           Next round
         </MainButton>
@@ -341,13 +352,14 @@ export function Game({
         <section className="imp-stage imp-center">
           <h1 className="imp-room-title">You've played every word in these categories!</h1>
           <p className="imp-body">Turn on more categories or + Grown-ups.</p>
-          {canRepeat && <QuietButton onClick={change}>Change categories</QuietButton>}
+          {canRepeat && (
+            <QuietButton className="imp-allow-repeats" onClick={guard(() => act({ type: 'allowRepeats' }))}>
+              Allow repeats
+            </QuietButton>
+          )}
         </section>
-        {canRepeat ? (
-          <MainButton onClick={() => act({ type: 'allowRepeats' })}>Allow repeats</MainButton>
-        ) : (
-          <MainButton onClick={change}>Change categories</MainButton>
-        )}
+        <EndGameButton onClick={guard(showSummary)} />
+        <MainButton onClick={guard(change)}>Change categories</MainButton>
       </>
     );
   } else if (seeAgain && r) {
@@ -471,6 +483,10 @@ export function Game({
         onNext={() => {
           if (act({ type: 'nextRound' })) resetRound();
         }}
+        playerCount={state.players.length}
+        onPlayers={() => setOverlay('players')}
+        onEndGame={showSummary}
+        guard={guard}
         onUndo={() => {
           const cur = evRef.current;
           if (keepEv(undoVerdict(store, cur.saved, cur.match))) {
@@ -501,10 +517,17 @@ export function Game({
   const sheet = overlay === 'rules' || overlay === 'settings' || overlay === 'players';
   const dialog = overlay === 'dealAgain' || overlay === 'end' || overlay === 'playersMid' || overlay === 'whose';
   return (
-    <main className={`imp-screen imp-room${holdScreen ? ' imp-hold-screen' : ''}${resultScreen ? ' imp-page' : ''}`}>
+    <main
+      className={`imp-screen imp-room${holdScreen ? ' imp-hold-screen' : ''}${resultScreen ? ' imp-page' : ''}${betweenRounds ? ' imp-between' : ''}`}
+    >
       <HideMainButton.Provider value={dialog || sheet}>
         <div className="imp-screen-inner" hidden={sheet}>
           <header className="imp-bar">
+            {betweenRounds && (
+              <QuietButton className="imp-home" onClick={guard(onHome)}>
+                ← Home
+              </QuietButton>
+            )}
             {r?.practice && !leftHalfway && (
               <span className="imp-practice" data-testid="practice-chip">
                 Practice
@@ -558,20 +581,9 @@ export function Game({
         </Dialog>
       )}
       {overlay === 'end' && (
-        <Dialog text={midRound && !leftHalfway ? "End now? This round won't count." : 'End the evening?'}>
-          <QuietButton
-            onClick={() => {
-              // Nothing is recorded yet: the summary shows, and `endEvening` follows when it is left (IMP-101).
-              setOverlay(null);
-              if (ui.get<UiState>(id, {}).summaryShownAt === undefined) setUi({ summaryShownAt: Date.now() });
-              setTalkRun(null);
-              setSeeAgain(null);
-              clearToast();
-              setSummary(true);
-            }}
-          >
-            {midRound && !leftHalfway ? 'End now' : 'End the evening'}
-          </QuietButton>
+        <Dialog text="End now? This round won't count.">
+          {/* Nothing is recorded yet: the summary shows, and `endEvening` follows when it is left (IMP-101). */}
+          <QuietButton onClick={showSummary}>End now</QuietButton>
           <MainButton inline onClick={() => setOverlay(null)}>
             Keep playing
           </MainButton>

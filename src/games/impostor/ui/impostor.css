@@ -691,3 +691,52 @@
      scoreboard, the quiet buttons and the verdict buttons on the right. */
   .imp-result-page { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 16px; align-items: start; }
 }
+
+/* ----- Between rounds (IMP-077, IMP-074): "← Home" top left; the bottom row with the outlined "End game" and the main
+   button, pinned 16 px from the sides and the bottom; "Players (5) ›" on the game line's row ----- */
+.imp-home { min-height: 48px; padding: 0 12px; }
+.imp-end-game {
+  position: fixed;
+  z-index: 5;
+  box-sizing: border-box;
+  bottom: max(var(--imp-gutter), env(safe-area-inset-bottom));
+  left: max(var(--imp-gutter), env(safe-area-inset-left));
+  height: var(--imp-main-h);
+  padding: 0 8px;
+  background: var(--bg, #fff);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* 360 px and wider in portrait: two equal halves 8 px apart, "End game" left, the main button right (160 px each at
+   360 × 640, 175 px at 390 × 844). */
+.imp-between > .imp-screen-inner .imp-main:not(.imp-main-inline) { left: calc(50% + 4px); }
+.imp-end-game { right: calc(50% + 4px); }
+/* 320 × 568: "End game" full width and 48 px tall, 8 px above the full-width main button; the pinned area is 132 px. */
+@media (max-width: 359.98px) and (orientation: portrait) {
+  .imp-between > .imp-screen-inner .imp-main:not(.imp-main-inline) { left: max(var(--imp-gutter), env(safe-area-inset-left)); }
+  .imp-end-game {
+    right: max(var(--imp-gutter), env(safe-area-inset-right));
+    height: 48px;
+    bottom: calc(max(var(--imp-gutter), env(safe-area-inset-bottom)) + var(--imp-main-h) + 8px);
+  }
+  .imp-room.imp-screen.imp-between { --imp-foot: calc(var(--imp-main-h) + 48px + 8px + var(--imp-gutter) + 8px); }
+}
+/* 812 × 375: one row in the right half, (406 − 32 − 8) / 2 = 183 px each. */
+@media (orientation: landscape) and (max-height: 600px) {
+  .imp-between > .imp-screen-inner .imp-main:not(.imp-main-inline) {
+    left: auto;
+    width: calc((50vw - 2 * var(--imp-gutter) - 8px) / 2);
+  }
+  .imp-end-game {
+    left: auto;
+    right: calc(max(var(--imp-gutter), env(safe-area-inset-right)) + (50vw - 2 * var(--imp-gutter) - 8px) / 2 + 8px);
+    width: calc((50vw - 2 * var(--imp-gutter) - 8px) / 2);
+  }
+}
+/* IMP-052: "Allow repeats" directly above the bottom row. */
+.imp-allow-repeats { margin-top: auto; align-self: stretch; }
+/* IMP-074: the game line (or this round's points) and "Players (5) ›" on one row, the link right-aligned. */
+.imp-result-line { width: 100%; display: flex; align-items: center; gap: 8px; }
+.imp-result-line > p { flex: 1 1 auto; min-width: 0; text-align: left; }
+.imp-players-link { flex: none; margin-left: auto; white-space: nowrap; }

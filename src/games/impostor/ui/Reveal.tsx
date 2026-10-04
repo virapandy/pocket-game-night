@@ -4,11 +4,13 @@
 // last-chance guess on, a caught impostor guesses first ("Arjun guessed. Show the word", then the room's verdict).
 // "Still a tie" shows at once. Reopened (or back from hidden) it shows at once, with no build-up (IMP-091).
 // The screen scrolls as one page; only the main button stays pinned (guideline 46a, IMP-081).
-import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
+// Between rounds (IMP-077, IMP-074): "Next round" with the outlined "End game" beside it, "Players (5) ›" on the game
+// line's row, and a 500 ms tap guard from the moment the lines appear.
+import { useCallback, useContext, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import type { Preferences } from '../../../engine';
 import { wordById, type Round } from '../rules';
 import { playSound } from './device';
-import { Caps, MainButton, QuietButton } from './parts';
+import { Caps, HideMainButton, MainButton, QuietButton } from './parts';
 import type { ScoreRow } from './story';
 
 /** IMP-033: the build-up lasts 1.5 s. */
@@ -23,6 +25,41 @@ export interface ResultInfo {
   readonly scoresFrom: number | null;
   readonly canUndo: boolean;
   readonly canSkipWord: boolean;
+}
+
+/** IMP-077 (guideline 20): a tap within 500 ms of a between-rounds screen appearing is ignored. */
+const GUARD_MS = 500;
+
+/**
+ * IMP-077: the tap guard of the between-rounds screens. The window starts each time `key` turns to a new value that is
+ * not null (the result's lines appear, the "left halfway" or no-words screen shows); `guard(fn)` ignores taps inside it.
+ */
+export function useTapGuard(key: string | null): (fn: () => void) => () => void {
+  const since = useRef(0);
+  useLayoutEffect(() => {
+    if (key !== null) since.current = Date.now();
+  }, [key]);
+  return useCallback(
+    (fn: () => void) => () => {
+      if (Date.now() - since.current < GUARD_MS) return;
+      fn();
+    },
+    [],
+  );
+}
+
+/**
+ * IMP-077: the outlined "End game" of the between-rounds screens, beside the main button (left half), or above it at
+ * 320 px wide; hidden with the main button while a dialog or sheet covers the screen.
+ */
+export function EndGameButton({ onClick }: { onClick: () => void }) {
+  const hide = useContext(HideMainButton);
+  if (hide) return null;
+  return (
+    <button type="button" className="imp-quiet imp-end-game" onClick={onClick}>
+      End game
+    </button>
+  );
 }
 
 /** One announcement (IMP-083) and the key that makes sure it is said once. */
@@ -44,6 +81,10 @@ export function Reveal({
   onNext,
   onUndo,
   onSkipWord,
+  playerCount,
+  onPlayers,
+  onEndGame,
+  guard,
 }: {
   round: Round;
   /** Just tapped: the build-up first (none after "Still a tie"). Otherwise everything at once. */
@@ -61,6 +102,13 @@ export function Reveal({
   onNext: () => void;
   onUndo: () => void;
   onSkipWord: () => void;
+  /** IMP-074: "Players (5) ›", the current number of players. */
+  playerCount: number;
+  onPlayers: () => void;
+  /** IMP-077: the outlined "End game" beside "Next round". */
+  onEndGame: () => void;
+  /** IMP-077: the between-rounds tap guard. */
+  guard: (fn: () => void) => () => void;
 }) {
   const tie = round.stillTie;
   const [building, setBuilding] = useState(() => live && !tie);
@@ -175,7 +223,16 @@ export function Reveal({
       </div>
     );
   } else if (complete) {
-    right = <ResultBlock result={result} practice={round.practice} onUndo={onUndo} onSkipWord={onSkipWord} />;
+    right = (
+      <ResultBlock
+        result={result}
+        practice={round.practice}
+        playerCount={playerCount}
+        onPlayers={guard(onPlayers)}
+        onUndo={guard(onUndo)}
+        onSkipWord={guard(onSkipWord)}
+      />
+    );
   }
 
   return (
@@ -234,7 +291,12 @@ export function Reveal({
           {round.impostor} guessed. Show the word
         </MainButton>
       )}
-      {complete && <MainButton onClick={onNext}>Next round</MainButton>}
+      {complete && (
+        <>
+          <EndGameButton onClick={guard(onEndGame)} />
+          <MainButton onClick={guard(onNext)}>Next round</MainButton>
+        </>
+      )}
     </>
   );
 }
@@ -242,30 +304,42 @@ export function Reveal({
 /** IMP-039: the caught impostor's last chance. */
 const guessLine = (name: string) => `Last chance, ${name}! Guess the word out loud. Get it right and you win the round.`;
 
-/** Item 7 and 8 of IMP-033: the evening line or this round's points and the scoreboard, then the quiet buttons. */
+/**
+ * Item 7 and 8 of IMP-033: the game line or this round's points (with "Players (5) ›" on the same row, right-aligned,
+ * IMP-074) and the scoreboard, then the quiet buttons.
+ */
 function ResultBlock({
   result,
   practice,
+  playerCount,
+  onPlayers,
   onUndo,
   onSkipWord,
 }: {
   result: ResultInfo;
   practice: boolean;
+  playerCount: number;
+  onPlayers: () => void;
   onUndo: () => void;
   onSkipWord: () => void;
 }) {
   return (
     <>
-      {!practice && result.eveningLine !== null && (
-        <p className="imp-body" data-testid="evening-line">
-          {result.eveningLine}
-        </p>
-      )}
-      {result.points !== null && (
-        <p className="imp-body" data-testid="round-points">
-          {result.points}
-        </p>
-      )}
+      <div className="imp-result-line">
+        {!practice && result.eveningLine !== null && (
+          <p className="imp-body" data-testid="evening-line">
+            {result.eveningLine}
+          </p>
+        )}
+        {result.points !== null && (
+          <p className="imp-body" data-testid="round-points">
+            {result.points}
+          </p>
+        )}
+        <button type="button" className="imp-text-button imp-players-link" onClick={onPlayers}>
+          Players ({playerCount}) ›
+        </button>
+      </div>
       {result.rows && <Scoreboard rows={result.rows} scoresFrom={result.scoresFrom} />}
       {(result.canUndo || result.canSkipWord) && (
         <div className="imp-result-quiet">
