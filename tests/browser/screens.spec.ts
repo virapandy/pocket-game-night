@@ -236,7 +236,9 @@ for (const size of SIZES) {
       // Steady without steady(): the deal is forced (Test hooks, config.testDeals) and the Impostor helpers set the clock.
       await startEvening(page, { players: P5, seeds: { deals: [{ wordId: SAMOSA, impostor: 'Arjun', starter: 'Meena' }] }, storage: { 'pgn.pref.largerText': true } });
       await dealAll(page, P5);
-      await expect(page.getByTestId('clue-order')).toBeVisible();
+      // Waits for the screen only; whether the clue order is shown at 812 × 375 is IMP-020's own test
+      // (impostor-round-screens.spec.ts), so the picture is still taken for the product owner where it is not.
+      await expect(page.getByTestId('starter-name')).toBeVisible();
       await expect(page.getByRole('button', { name: 'Go round again', exact: true })).toBeVisible();
       await shot(page, 'impostor-clues-larger', size.name);
     });
