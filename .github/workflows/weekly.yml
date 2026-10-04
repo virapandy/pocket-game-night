@@ -68,8 +68,9 @@ jobs:
             tests/replays/
           if-no-files-found: warn
 
-  # Mutation testing is split into four groups of files that run side by side, so each finishes well inside its
-  # limit (one job for every file ran past 300 minutes). Together the groups cover exactly the files listed under
+  # Mutation testing is split into six groups of files that run side by side, so each finishes well inside its
+  # limit (one job for every file ran past 300 minutes; rules.ts alone ran past 240, so it is split into three line
+  # ranges at function boundaries: if that file grows, move the last range's end to match). Together the groups cover exactly the files listed under
   # `mutate` in tests/stryker.config.mjs (the command line's --mutate replaces that list for one group). If that
   # list changes, change the groups here to match.
   mutation:
@@ -81,8 +82,12 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - group: tambola-rules
-            files: src/games/tambola/rules/rules.ts
+          - group: tambola-rules-1
+            files: src/games/tambola/rules/rules.ts:1-276
+          - group: tambola-rules-2
+            files: src/games/tambola/rules/rules.ts:277-560
+          - group: tambola-rules-3
+            files: src/games/tambola/rules/rules.ts:561-882
           - group: tambola-prizes-check
             files: src/games/tambola/rules/prizes.ts,src/games/tambola/rules/check.ts
           - group: tambola-codes-tickets
@@ -171,7 +176,7 @@ jobs:
             echo "| Job | Result |"
             echo "|---|---|"
             echo "| Mass simulation and Jev smoke run | $SIMULATION |"
-            echo "| Mutation testing (four groups; shows failure if any group failed) | $MUTATION |"
+            echo "| Mutation testing (six groups; shows failure if any group failed) | $MUTATION |"
             echo "| Android emulator | $ANDROID |"
             echo
             echo "## Simulation summary"
@@ -179,7 +184,7 @@ jobs:
             echo
             echo "## Mutation summary"
             echo
-            echo "Mutation testing runs as four groups of files at once. Each group's score is below; the overall line adds up the groups that finished."
+            echo "Mutation testing runs as six groups of files at once. Each group's score is below; the overall line adds up the groups that finished."
             echo
             node -e '
               const fs = require("fs");
@@ -198,11 +203,11 @@ jobs:
               }
               const s = c + m ? (100 * c) / (c + m) : 100;
               console.log(groups
-                ? `Overall (${groups} of 4 groups finished): **${s.toFixed(1)}%** of deliberate mistakes caught (${c} of ${c + m}); target 80%.`
+                ? `Overall (${groups} of 6 groups finished): **${s.toFixed(1)}%** of deliberate mistakes caught (${c} of ${c + m}); target 80%.`
                 : "No group finished, so there is no overall score.");
             ' 2>/dev/null || echo "The overall score could not be worked out."
             echo
-            for g in tambola-rules tambola-prizes-check tambola-codes-tickets engine-money-tally; do
+            for g in tambola-rules-1 tambola-rules-2 tambola-rules-3 tambola-prizes-check tambola-codes-tickets engine-money-tally; do
               echo "### Group: $g"
               echo
               cat "artifacts/mutation-$g/mutation-latest.md" 2>/dev/null || cat "artifacts/mutation-$g/reports/mutation-latest.md" 2>/dev/null || echo "No summary for this group: it did not finish."
