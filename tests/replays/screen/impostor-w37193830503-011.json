@@ -1,10 +1,5 @@
 {
  "$comment": "A failing simulated evening (layer 3). Replayed step by step by tests/browser/impostor-sim-replays.spec.ts; never delete.",
- "expectedToFail": {
-  "scenario": "IMP-020",
-  "platform": "linux",
-  "reason": "Known app bug (reports/latest.md, 4 October 2026, main ce6513c): at 812 x 375 with Larger text the clue order has no height on Linux fonts (both phones, complete run 37194847819), so the clues screen is not recognised. Remove this field once fixed."
- },
  "seed": "w37193830503-011",
  "config": {
   "seed": "w37193830503-011",
