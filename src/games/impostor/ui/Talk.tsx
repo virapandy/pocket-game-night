@@ -29,7 +29,7 @@ export function FreeTalk({ onVote }: { onVote: () => void }) {
 
 /**
  * IMP-024, IMP-027 (F10): the 2-minute timer, with the label "Talk it over" above it and, at 0:00, "Time's up!" and
- * "1 more minute". Starts running only when the host just tapped "Start the 2-minute timer";
+ * "1 more minute". Starts running only when the host just tapped "Clues done, start timer";
  * otherwise (reopened, back from "See my word again") it shows paused at its kept value. It pauses when the page is
  * hidden, never catches up, and only "Carry on" resumes it. The remaining time is kept at every change.
  */

@@ -6,7 +6,7 @@ import type { Preferences, SavedGameStore } from '../../../engine';
 import { HOST } from '../../../engine';
 import { impostorRules, wordById, type AskedMove, type Choices, type PlayerView } from '../rules';
 import { Clues } from './Clues';
-import { Turn, type Secret } from './Deal';
+import { Turn, type SeeAgainFrom, type Secret } from './Deal';
 import { usePageHidden, useWakeLock } from './device';
 import {
   clearUi, endEvening, LEFT_HALFWAY_MS, PREF, record, undoableVerdict, undoVerdict,
@@ -86,7 +86,7 @@ export function Game({
   const [returns, setReturns] = useState(0);
   /** Screen B of the deal is showing (IMP-010: in landscape its top bar runs y = 0 to 48). */
   const [holdScreen, setHoldScreen] = useState(false);
-  const [seeAgain, setSeeAgain] = useState<{ name: string; key: number } | null>(null);
+  const [seeAgain, setSeeAgain] = useState<{ name: string; key: number; from: SeeAgainFrom } | null>(null);
   const [said, setSaid] = useState('');
   const announce = useCallback((text: string) => setSaid(text), []);
   // IMP-083 (I24): a new deal empties the announcer, so the last round's result is not kept into the next deal.
@@ -377,7 +377,7 @@ export function Game({
         banner={null}
         tapPref={tapPref}
         onHoldScreen={setHoldScreen}
-        seeAgain
+        seeAgain={seeAgain.from}
         onDone={() => setSeeAgain(null)}
       />
     );
@@ -609,7 +609,7 @@ export function Game({
                 setOverlay(null);
                 // IMP-027: the timer pauses while a word is seen again (kept, shown paused on return).
                 setTalkRun(null);
-                setSeeAgain({ name: p, key: 0 });
+                setSeeAgain({ name: p, key: 0, from: step === 'clues' ? 'clues' : step === 'talk' ? 'talking' : 'the vote' });
               }}
             >
               {p}

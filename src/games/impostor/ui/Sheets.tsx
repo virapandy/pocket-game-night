@@ -35,12 +35,12 @@ export function RulesSheet({
           <li>Everyone sees the secret word except one impostor.</li>
           <li>Clockwise, say one word about it. Don't say the word!</li>
           <li>Talk, then on 3, 2, 1 everyone points.</li>
-          <li>Most fingers is revealed. Caught: the crew wins. Wrong person: the impostor wins.</li>
+          <li>Whoever gets the most fingers is revealed. Caught: you win. Wrong person: the impostor wins.</li>
         </ol>
         <p>
           {choices.mode === 'easy' ? 'The impostor sees the category and a hint.' : 'The impostor sees nothing and never starts.'}
         </p>
-        {guessOn(choices) && <p>A caught impostor can steal the round by guessing the word.</p>}
+        {guessOn(choices) && <p>A caught impostor can win the round by guessing the word.</p>}
         <ul className="imp-read">
           <li>Not allowed: the word itself, a rhyme, a translation, or 'thing'.</li>
           <li>Repeating someone's clue is allowed.</li>
@@ -76,7 +76,7 @@ export function MoreOptionsSheet({ lastGuess, onDone }: { lastGuess: boolean; on
             On
           </OptionButton>
         </div>
-        <p className="imp-small">A caught impostor can steal the round by guessing the word.</p>
+        <p className="imp-small">A caught impostor can win the round by guessing the word.</p>
       </div>
     </Sheet>
   );

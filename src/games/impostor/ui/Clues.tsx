@@ -65,7 +65,7 @@ export function Clues({
           </div>
         )}
       </section>
-      <MainButton onClick={onTalk}>{talking === 'timer' ? 'Clues done, start the 2-minute timer' : 'Clues done, talk it over'}</MainButton>
+      <MainButton onClick={onTalk}>{talking === 'timer' ? 'Clues done, start timer' : 'Clues done, talk it over'}</MainButton>
     </>
   );
 }

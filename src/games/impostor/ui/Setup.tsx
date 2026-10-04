@@ -207,7 +207,7 @@ const GROUPS = [
     label: 'Score',
     options: [
       { value: false, text: 'No', line: 'Just play. We count catches and escapes.' },
-      { value: true, text: 'Yes', line: 'Points every round, totals for the night.' },
+      { value: true, text: 'Yes', line: 'Points every round, totals for the game.' },
     ],
   },
   {

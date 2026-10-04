@@ -83,8 +83,8 @@ export function Turn({
   banner: 'welcome' | 'noProblem' | null;
   /** The Settings switch "Tap to show instead of hold" (IMP-014), read when screen B opens. */
   tapPref: () => boolean;
-  /** "See my word again" (IMP-017): no "Don't know this word?". */
-  seeAgain?: boolean;
+  /** "See my word again" (IMP-017), opened from this screen: "Done, back to clues"; no "Don't know this word?". */
+  seeAgain?: SeeAgainFrom;
   onDone: () => void;
   onDontKnow?: () => void;
   /** Told when screen B shows and when it goes (the screen marks itself `imp-hold-screen`, IMP-010 landscape). */
@@ -104,12 +104,15 @@ export function Turn({
       progress={progress}
       secret={secret}
       tap={tapPref()}
-      seeAgain={!!seeAgain}
+      seeAgain={seeAgain ?? null}
       onDone={onDone}
       {...(onDontKnow ? { onDontKnow } : {})}
     />
   );
 }
+
+/** IMP-017: where "See my word again" was opened: its "Done, back to …" button returns there. */
+export type SeeAgainFrom = 'clues' | 'talking' | 'the vote';
 
 /** IMP-019: the current player's place in this round's seat order, from 1. */
 export type Progress = { readonly n: number; readonly of: number };
@@ -181,7 +184,7 @@ function ScreenB({
   progress: Progress | null;
   secret: Secret;
   tap: boolean;
-  seeAgain: boolean;
+  seeAgain: SeeAgainFrom | null;
   onDone: () => void;
   onDontKnow?: () => void;
 }) {
@@ -364,7 +367,7 @@ function ScreenB({
         {shown ? lines.filter(Boolean).join(' ') : ''}
       </div>
       <HideMainButton.Provider value={hideMain}>
-        {ready && <MainButton onClick={onDone}>{next === null || seeAgain ? "Done, everyone's seen" : `Done, pass to ${next}`}</MainButton>}
+        {ready && <MainButton onClick={onDone}>{seeAgain ? `Done, back to ${seeAgain}` : next === null ? "Done, everyone's seen" : `Done, pass to ${next}`}</MainButton>}
       </HideMainButton.Provider>
       {asking && onDontKnow && (
         <Dialog text="New word for everyone?">
