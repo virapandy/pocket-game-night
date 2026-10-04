@@ -5,6 +5,8 @@ import type { ImpostorWord, WordFilter } from './types';
 
 /** The shipped word list, built from docs/games/impostor/words.csv (IMP-055). */
 export const WORDS = wordsJson as unknown as readonly ImpostorWord[];
+/** The words that may be dealt (IMP-054: never a retired one). */
+export const ACTIVE_WORDS: readonly ImpostorWord[] = WORDS.filter((w) => !w.retired);
 
 const byId = new Map(WORDS.map((w) => [w.id, w]));
 export const wordById = (id: string): ImpostorWord | undefined => byId.get(id);

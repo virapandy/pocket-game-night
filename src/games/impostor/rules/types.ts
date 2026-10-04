@@ -1,10 +1,17 @@
 // Impostor's shapes: setup, moves, state and views (specs/impostor/README.md, Test hooks item 1).
 
-/** The 9 categories, named and ordered exactly as IMP-007. */
+/** The 9 categories, named and ordered exactly as IMP-007 (4 October 2026). */
 export const CATEGORIES = [
-  'Food', 'Festivals and occasions', 'Around the house', 'Travel and places', 'Films, music and TV',
-  'Cricket and games', 'School and childhood', 'Weddings and family', 'Desi life',
+  'Food', 'Festivals and occasions', 'Around the house', 'Out and about', 'Films, music and TV',
+  'Sports and games', 'School and childhood', 'Weddings and family', 'Everyday moments',
 ] as const;
+
+/** IMP-009: category names from before 4 October, and the names they became. */
+export const RENAMED_CATEGORIES: Readonly<Record<string, string>> = {
+  'Travel and places': 'Out and about',
+  'Cricket and games': 'Sports and games',
+  'Desi life': 'Everyday moments',
+};
 
 /** One word of content/impostor/words.json (IMP-055). */
 export interface ImpostorWord {
@@ -15,6 +22,8 @@ export interface ImpostorWord {
   readonly audience: 'family' | 'grownups';
   readonly nonveg: boolean;
   readonly hint: string;
+  /** IMP-054: a retired word is never dealt, but still resolves for replay and History. */
+  readonly retired: boolean;
 }
 
 export interface Choices {

@@ -6,7 +6,7 @@ import {
   type Match, type Preferences, type SavedGame, type SavedGameStore, type Session, type SessionPicker,
 } from '../../../engine';
 import {
-  CATEGORIES, DEFAULT_CHOICES, impostorRules, readTestSeeds,
+  CATEGORIES, DEFAULT_CHOICES, impostorRules, readTestSeeds, RENAMED_CATEGORIES,
   type Choices, type ExcludedWords, type ImpostorConfig, type ImpostorMove, type ImpostorState,
 } from '../rules';
 
@@ -252,13 +252,17 @@ export function pastNames(store: SavedGameStore): string[] {
 
 // ---- Choices (IMP-009) ----
 
-/** A stored choices object, checked; the defaults when missing or damaged. */
-export function readChoices(raw: unknown): Choices {
+/**
+ * A stored choices object, checked; the defaults when missing or damaged. Category names not among the 9 are dropped
+ * (all 9 when none is left); with `renamed`, names from before 4 October are mapped first (IMP-009, `lastChoices` only).
+ */
+export function readChoices(raw: unknown, opts: { renamed?: boolean } = {}): Choices {
   if (typeof raw !== 'object' || raw === null) return DEFAULT_CHOICES;
   const c = raw as Partial<Record<keyof Choices, unknown>>;
-  const categories = Array.isArray(c.categories)
-    ? CATEGORIES.filter((k) => (c.categories as unknown[]).includes(k))
-    : [...CATEGORIES];
+  const stored = Array.isArray(c.categories)
+    ? (c.categories as unknown[]).map((k) => (opts.renamed && typeof k === 'string' ? RENAMED_CATEGORIES[k] ?? k : k))
+    : null;
+  const categories = stored ? CATEGORIES.filter((k) => stored.includes(k)) : [...CATEGORIES];
   return {
     mode: c.mode === 'hard' ? 'hard' : 'easy',
     talking: c.talking === 'timer' ? 'timer' : 'free',
@@ -269,7 +273,7 @@ export function readChoices(raw: unknown): Choices {
   };
 }
 
-export const lastChoices = (prefs: Preferences): Choices => readChoices(prefs.get<unknown>(PREF.lastChoices, null));
+export const lastChoices = (prefs: Preferences): Choices => readChoices(prefs.get<unknown>(PREF.lastChoices, null), { renamed: true });
 
 // ---- Starting an evening (IMP-009, IMP-052, IMP-060, IMP-064, IMP-096) ----
 

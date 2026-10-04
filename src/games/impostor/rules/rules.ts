@@ -3,7 +3,7 @@
 // Every word and impostor comes from the word seed; every starter from the starter seed (IMP-060). Each deal and each
 // starter pick derives its own generator from its seed and its count, so the state stays plain data and replays exactly.
 import { createRng, deriveSeed, HOST, type GameRules, type MoveContext, type Verdict, type Viewer } from '../../../engine';
-import { pickImpostor, pickStarter, pickWord, scoreRound, wordById, WORDS } from './picks';
+import { pickImpostor, pickStarter, pickWord, scoreRound, wordById, ACTIVE_WORDS } from './picks';
 import {
   CATEGORIES, type Choices, type ImpostorConfig, type ImpostorMove, type ImpostorState, type ImpostorView, type Round,
   type RoundStep,
@@ -92,7 +92,7 @@ function wordFilter(s: ImpostorState, allowRepeats = s.allowRepeats) {
 
 /** Whether any word could be dealt with "Allow repeats" (IMP-052: otherwise "Allow repeats" is not offered). */
 const anyWordWithRepeats = (s: ImpostorState) =>
-  pickWord(WORDS, wordFilter(s, true), { int: () => 0 }) !== null;
+  pickWord(ACTIVE_WORDS, wordFilter(s, true), { int: () => 0 }) !== null;
 
 /**
  * Deals a round (a new one, or a redeal under the same number): the next forced deal if any, else the word and the
@@ -102,7 +102,7 @@ function deal(s: ImpostorState, practice: boolean): ImpostorState {
   const forced = s.testDeals[s.dealCount];
   const rng = createRng(deriveSeed(s.seeds.word, `deal-${s.dealCount}`));
   const forcedWord = forced?.wordId !== undefined ? wordById(forced.wordId) : undefined;
-  const word = forcedWord ?? pickWord(WORDS, wordFilter(s), rng);
+  const word = forcedWord ?? pickWord(ACTIVE_WORDS, wordFilter(s), rng);
   if (!word) return { ...s, phase: 'noWords', pendingPractice: practice, round: null };
   const impostor = forced?.impostor ?? pickImpostor(s.players, s.recentImpostors, rng);
   const round: Round = {

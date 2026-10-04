@@ -9,20 +9,22 @@ const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..')
 const source = path.join(root, 'docs/games/impostor/words.csv');
 const target = path.join(root, 'content/impostor/words.json');
 
-// IMP-007: the 9 categories, named exactly.
+// IMP-007: the 9 categories, named exactly (4 October 2026).
 const CATEGORIES = [
   'Food',
   'Festivals and occasions',
   'Around the house',
-  'Travel and places',
+  'Out and about',
   'Films, music and TV',
-  'Cricket and games',
+  'Sports and games',
   'School and childhood',
   'Weddings and family',
-  'Desi life',
+  'Everyday moments',
 ];
+// IMP-054: retired rows may still carry a category name from before 4 October.
+const RETIRED_CATEGORIES = ['Travel and places', 'Cricket and games', 'Desi life'];
 // IMP-055: only these columns go into the file; difficulty, close_cousin, change and notes stay out.
-const COLUMNS = ['id', 'word', 'other_names', 'category', 'audience', 'nonveg', 'hint'];
+const COLUMNS = ['id', 'word', 'other_names', 'category', 'audience', 'nonveg', 'hint', 'retired'];
 
 /** A real CSV parser: quoted fields, doubled quotes, commas and line breaks inside quotes. */
 function parseCsv(text) {
@@ -69,6 +71,8 @@ const words = lines.map((cells, i) => {
   const audience = get('audience');
   const nonveg = get('nonveg');
   const hint = get('hint');
+  const retired = get('retired');
+  if (retired !== 'yes' && retired !== '') problems.push(`line ${line}: retired must be yes or empty, got "${retired}"`);
   if (!/^IMPW-\d{3}$/.test(id)) problems.push(`line ${line}: id "${id}" is not IMPW- and 3 digits`);
   if (ids.has(id)) problems.push(`line ${line}: id ${id} appears twice`);
   ids.add(id);
@@ -76,13 +80,14 @@ const words = lines.map((cells, i) => {
   const key = word.trim().toLowerCase();
   if (key && seenWords.has(key)) problems.push(`line ${line}: "${word}" appears twice`);
   seenWords.add(key);
-  if (!CATEGORIES.includes(category)) problems.push(`line ${line}: unknown category "${category}"`);
+  const allowed = retired === 'yes' ? [...CATEGORIES, ...RETIRED_CATEGORIES] : CATEGORIES;
+  if (!allowed.includes(category)) problems.push(`line ${line}: unknown category "${category}"`);
   if (audience !== 'family' && audience !== 'grownups') problems.push(`line ${line}: audience must be family or grownups, got "${audience}"`);
   if (nonveg !== 'yes' && nonveg !== 'no') problems.push(`line ${line}: nonveg must be yes or no, got "${nonveg}"`);
   const h = hint.trim().toLowerCase();
   if (!h) problems.push(`line ${line}: empty hint`);
   else if (h === key || names(word).includes(h) || names(other).includes(h)) problems.push(`line ${line}: hint "${hint}" gives the word away`);
-  return { id, word, other_names: other, category, audience, nonveg: nonveg === 'yes', hint };
+  return { id, word, other_names: other, category, audience, nonveg: nonveg === 'yes', hint, retired: retired === 'yes' };
 });
 
 if (problems.length) {
@@ -92,4 +97,4 @@ if (problems.length) {
 
 // One word per line keeps changes easy to review. Same rows, same order as the CSV (IMP-054).
 writeFileSync(target, `[\n${words.map((w) => '  ' + JSON.stringify(w)).join(',\n')}\n]\n`);
-console.log(`Wrote ${path.relative(root, target)}: ${words.length} words.`);
+console.log(`Wrote ${path.relative(root, target)}: ${words.length} words (${words.filter((w) => !w.retired).length} active).`);
