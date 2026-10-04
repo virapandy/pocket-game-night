@@ -257,7 +257,8 @@ export function Picker({
     <>
       <section className="imp-stage imp-picker">
         <div className="imp-pick-names">
-          <h1 className="imp-title">Who got the most fingers?</h1>
+          {/* IMP-032 (M22a): in tie mode the heading says what to do. */}
+          <h1 className="imp-title">{tieMode ? 'Tap everyone who is tied' : 'Who got the most fingers?'}</h1>
           <div className="imp-pick-list">
           {names.map((n) => (
             <OptionButton
@@ -286,6 +287,18 @@ export function Picker({
                 }}
               >
                 It's a tie
+              </TextButton>
+            )}
+            {/* IMP-032: "Not a tie" goes back to picking one name; nothing is recorded. */}
+            {!revote && tieMode && (
+              <TextButton
+                onClick={() => {
+                  setTieMode(false);
+                  setTicked([]);
+                  setPicked(null);
+                }}
+              >
+                Not a tie
               </TextButton>
             )}
             {revote && <TextButton onClick={onStillTie}>Still a tie</TextButton>}
