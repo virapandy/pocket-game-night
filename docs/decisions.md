@@ -149,6 +149,8 @@
 Claude to follow game conventions. Every Tambola rule above is also a host setting with this default.
 | 2026-10-03 | **What makes us different:** one app for the whole fun night, in the room, with games the phone makes possible that normally need a box, cards, tokens or a moderator who sits out. New games must pass this "replaces the box" test; games that need nothing (Dumb Charades, Antakshari) are out. Shortlist: Impostor, Mafia, a Codenames-style word game (own name and words, never a copy). Lessons and lifecycle in `docs/proposals/next-game-lifecycle.md` approved. | Owner |
 
+| 2026-10-04 | **Next game after Impostor: a Codenames-style team word game**, our own name, words and look (never a copy). Design starts now in the product clone; building waits until Impostor 1.3.0 is released (release train). | Owner |
+
 ## Open
 - iPhone check by hand, later (owner has only Android for now): open the preview once, turn on Airplane Mode, reopen, and check Tambola opens. The automated iPhone offline tests are skipped until Playwright issue #42775 is fixed.
 - Before wider public release: replace the "Report a problem" stub with a real destination (PLT-208)
