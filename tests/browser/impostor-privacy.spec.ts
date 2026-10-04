@@ -1,9 +1,7 @@
-// Expected to fail (not built yet): tests marked `test.fail` check what scenarios v3.5 changed (Impostor round 4,
-// 4 October 2026: the one result screen, the last-chance guess off by default, "New word for everyone?", clue wording).
-// A marked test that starts passing turns red: then remove its `.fail` mark.
 // Impostor on screen: the deal and its privacy (specs/impostor/02-deal.md, 04-vote-and-reveal.md, 06-words.md,
 // 07-secrets-and-seeds.md). C3 browser tests written before the screens exist (Test hooks items 3 to 9).
 // IMP-010 to IMP-017, IMP-020, IMP-031, IMP-033, IMP-053, IMP-060, IMP-062, IMP-064.
+// Impostor round 4 is built (main df8f362, 4 October 2026): no test here is marked expected-to-fail.
 import { expect, test, type Page } from './fixtures';
 import { expectOneMainButton } from './helpers';
 import {
@@ -99,12 +97,12 @@ test.describe('IMP-011: what each role sees: always five lines', () => {
   });
 
   for (const [mode, off, on] of [['easy', "Listen and blend in. Don't get caught!", 'Listen, blend in, guess the word.'], ['hard', "Don't get caught!", 'Guess the word if caught.']] as const) {
-    test.fail(`${mode}: the impostor's line 4 with the last-chance guess off (the default): "${off}"`, async ({ page }) => {
+    test(`${mode}: the impostor's line 4 with the last-chance guess off (the default): "${off}"`, async ({ page }) => {
       await startEvening(page, { mode, seeds: { deals: [{ wordId: SAMOSA, impostor: 'Riya', starter: 'Arjun' }] } });
       await imButton(page, 'Riya').click();
       expect((await hold(page, 600))[3]).toBe(off);
     });
-    test.fail(`${mode}: the impostor's line 4 with the last-chance guess on: "${on}"`, async ({ page }) => {
+    test(`${mode}: the impostor's line 4 with the last-chance guess on: "${on}"`, async ({ page }) => {
       await startEvening(page, { mode, lastGuess: true, seeds: { deals: [{ wordId: SAMOSA, impostor: 'Riya', starter: 'Arjun' }] } });
       await imButton(page, 'Riya').click();
       expect((await hold(page, 600))[3]).toBe(on);
@@ -128,7 +126,7 @@ test.describe('IMP-011: what each role sees: always five lines', () => {
     expect(Math.abs(heights.Arjun![1]! - heights.Arjun![0]!)).toBeLessThanOrEqual(1);
   });
 
-  test.fail('IMP-053: "Kheer / Payasam" shows both names, "Also called Payesh", and the result reads "The word was" "Kheer / Payasam"', async ({ page }) => {
+  test('IMP-053: "Kheer / Payasam" shows both names, "Also called Payesh", and the result reads "The word was" "Kheer / Payasam"', async ({ page }) => {
     await startEvening(page, { seeds: { deals: [{ wordId: KHEER, impostor: 'Arjun', starter: 'Riya' }] } });
     const lines = await dealAll(page);
     expect(lines.Riya![1]).toBe('Kheer / Payasam');
@@ -224,7 +222,7 @@ test.describe('IMP-012: the impostor\'s turn looks exactly like everyone else\'s
 
 test.describe('IMP-013 and IMP-062: the word is never in the page except while held', () => {
   for (const mode of ['easy', 'hard'] as const) {
-    test.fail(`${mode}: no word, other name, hint, role${mode === 'hard' ? ' or category' : ''} on any screen of the round before the result shows the word`, async ({ page }) => {
+    test(`${mode}: no word, other name, hint, role${mode === 'hard' ? ' or category' : ''} on any screen of the round before the result shows the word`, async ({ page }) => {
       test.setTimeout(90_000);
       await startEvening(page, { mode, seeds: { deals: [{ wordId: PANI_PURI, impostor: 'Arjun', starter: 'Meena' }] } });
       const terms = secretTerms(PANI_PURI, mode);
@@ -333,7 +331,7 @@ test.describe('IMP-014: tap to show, for players who can\'t hold', () => {
 });
 
 test.describe('IMP-015: "Don\'t know this word?" redeals without giving anything away', () => {
-  test.fail('"New word for everyone?": "Back" (main) changes nothing; "New word" records dontKnow, then "No problem! New word coming." and back to the first player, with a new word', async ({ page }) => {
+  test('"New word for everyone?": "Back" (main) changes nothing; "New word" records dontKnow, then "No problem! New word coming." and back to the first player, with a new word', async ({ page }) => {
     await startEvening(page, { seeds: { deals: [{ wordId: SAMOSA, impostor: 'Arjun' }, { wordId: PANI_PURI, impostor: 'Kabir', starter: 'Riya' }] } });
     await turn(page, 'Riya');
     await turn(page, 'Arjun');
@@ -433,7 +431,7 @@ test.describe('IMP-017: see my word again', () => {
 
 // v2.2's caught flow ("Caught red-handed!", the guess before "Show the word") is retired: v3.5 IMP-033 and IMP-039.
 test.describe('IMP-031, IMP-033, IMP-039: pick, then reveal; the word stays secret until the result shows it', () => {
-  test.fail('the picker, then (guess off) only "Arjun was…" for 1.5 s with no secret, then the result with the word', async ({ page }) => {
+  test('the picker, then (guess off) only "Arjun was…" for 1.5 s with no secret, then the result with the word', async ({ page }) => {
     await startEvening(page, { seeds: { deals: [{ wordId: PANI_PURI, impostor: 'Arjun', starter: 'Riya' }] } });
     await dealAll(page);
     await toPicker(page);
@@ -454,7 +452,7 @@ test.describe('IMP-031, IMP-033, IMP-039: pick, then reveal; the word stays secr
     await expect(result(page, 'result-word')).toHaveText(exact('Pani puri', []));
   });
 
-  test.fail('guess on: "✓ Caught!", ARJUN was the impostor and the guess line, with no word in the page; "Arjun guessed. Show the word" shows it and the verdict buttons', async ({ page }) => {
+  test('guess on: "✓ Caught!", ARJUN was the impostor and the guess line, with no word in the page; "Arjun guessed. Show the word" shows it and the verdict buttons', async ({ page }) => {
     await startEvening(page, { lastGuess: true, seeds: { deals: [{ wordId: PANI_PURI, impostor: 'Arjun', starter: 'Riya' }] } });
     await dealAll(page);
     await toPicker(page);

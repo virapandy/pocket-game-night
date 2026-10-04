@@ -1,9 +1,7 @@
-// Expected to fail (not built yet): tests marked `test.fail` check what scenarios v3.5 changed (Impostor round 4:
-// "Scores since round 4", the caught round with the last-chance guess off). A marked test that starts passing turns
-// red: then remove its `.fail` mark.
 // Impostor scoring on the round result (specs/impostor/05-scoring.md, C3; IMP-035's headlines): IMP-040, IMP-041,
 // IMP-042 (an example evening on screen), IMP-043, IMP-044. Each test reopens a saved evening at a round result
 // (IMP-091) with forced deals, so every outcome is known.
+// Impostor round 4 is built (main df8f362, 4 October 2026): no test here is marked expected-to-fail.
 import { expect, silence, test, type Page } from './fixtures';
 import {
   DEFAULT_CHOICES, P4, SAMOSA, PANI_PURI, KHEER, TZ, exact, mainButton, phoneWith, roundMoves, savedEvening, type Move,
@@ -89,7 +87,7 @@ test.describe('IMP-041 and IMP-044: points when keeping score; the scoreboard', 
     expect(r.map((x) => x.rank)).toEqual([1, 2, 2, 2]);
   });
 
-  test.fail('caught with the last-chance guess off: "+1 each: Riya, Meena, Kabir", the impostor 0 (IMP-041, IMP-044, v3.5)', async ({ page }) => {
+  test('caught with the last-chance guess off: "+1 each: Riya, Meena, Kabir", the impostor 0 (IMP-041, IMP-044, v3.5)', async ({ page }) => {
     await openAt(page, savedEvening({ deals: DEALS, choices: { score: true, lastGuess: false }, moves: [...R1, ...roundMoves(P4, 'Arjun', { caught: 'none' })] }));
     await expect(page.getByTestId('round-points')).toHaveText(exact('+1 each: Riya, Meena, Kabir'));
     const r = await rows(page);
@@ -155,7 +153,7 @@ test.describe('IMP-043: turning score on or off mid-evening', () => {
   const r6 = [{ type: 'setChoices', choices: choices(true) }, ...roundMoves(P4, 'Meena', { caught: 'right' })];
   const ev = (moves: Move[]) => savedEvening({ deals: DEALS, moves });
 
-  test.fail('switched on before round 4: rounds from 4 score, with "Scores since round 4"', async ({ page }) => {
+  test('switched on before round 4: rounds from 4 score, with "Scores since round 4"', async ({ page }) => {
     await openAt(page, ev([...first3, ...r4]));
     await expect(page.getByTestId('scoreboard')).toContainText('Scores since round 4');
     await expect(page.getByTestId('round-points')).toHaveText(exact('+1 each: Arjun, Meena, Kabir'));
@@ -171,7 +169,7 @@ test.describe('IMP-043: turning score on or off mid-evening', () => {
     await expect(page.getByTestId('evening-line')).toHaveText('Tonight: impostor caught 3 · escaped 2');
   });
 
-  test.fail('switched on once more: scoring resumes from the next round, adding to the kept totals', async ({ page }) => {
+  test('switched on once more: scoring resumes from the next round, adding to the kept totals', async ({ page }) => {
     await openAt(page, ev([...first3, ...r4, ...r5, ...r6]));
     await expect(page.getByTestId('round-points')).toHaveText(exact('+1 Meena'));
     const r = await rows(page);

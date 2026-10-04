@@ -2,9 +2,7 @@
 // the clues screen (IMP-016, IMP-020, IMP-022), the menu at each moment (IMP-075), the screen staying awake (IMP-087),
 // Settings (IMP-109, with IMP-014's switch and IMP-107's list) and the hold screen's layout at every size (IMP-081).
 // Every text, name and test id is the one in specs/impostor/README.md (Terms, Canonical strings, Test hooks).
-// Expected to fail (not built yet): tests marked `test.fail` check what v3.5 changed (Impostor round 4: clue wording,
-// "How to play" in the menu, the deal's progress line and look-away line, the hold layer). A marked test that starts
-// passing turns red: then remove its `.fail` mark.
+// Impostor round 4 is built (main df8f362, 4 October 2026): no test here is marked expected-to-fail.
 import { expect, test, type Locator, type Page } from './fixtures';
 import { backgroundAndReturn, expectOneMainButton, fromHome, isOutlined } from './helpers';
 import {
@@ -320,7 +318,7 @@ test.describe('IMP-087: the screen stays awake during a round', () => {
     });
   }
 
-  test.fail('v3.5 timing: not released during the 1.5 s build-up; released at t = 1.5 s (IMP-033, IMP-034); with the last-chance guess, on the verdict; "Undo" requests it again', async ({ page }) => {
+  test('v3.5 timing: not released during the 1.5 s build-up; released at t = 1.5 s (IMP-033, IMP-034); with the last-chance guess, on the verdict; "Undo" requests it again', async ({ page }) => {
     await stubWakeLock(page, 'ok');
     await startEvening(page, { lastGuess: true, seeds: { deals: [{ wordId: SAMOSA, impostor: 'Arjun', starter: 'Riya' }, { wordId: PANI_PURI, impostor: 'Meena', starter: 'Arjun' }] } });
     await dealAll(page);

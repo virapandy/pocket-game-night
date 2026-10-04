@@ -4,9 +4,7 @@
 // Players (IMP-074), the main button (IMP-080), nothing scrolls at the four sizes (IMP-081), long lists (IMP-082),
 // screen readers (IMP-083), no flashing (IMP-084), kind words (IMP-085), a slipped finger (IMP-086), sounds (IMP-089),
 // after the round (IMP-100 to IMP-108). Every text, name and test id is the one in specs/impostor/README.md.
-// Updated 4 October 2026 to scenarios v3.5 (Impostor round 4). Expected to fail (not built yet): tests marked
-// `test.fail` check what v3.5 changed (the one result screen, the summary's lead line and "More ›", "How to play" in the
-// menu, "1 more minute", the picker's "Not sure?"). A marked test that starts passing turns red: then remove its mark.
+// Updated 4 October 2026 to scenarios v3.5 (Impostor round 4). Impostor round 4 is built (main df8f362, 4 October 2026): no test here is marked expected-to-fail.
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { expect, test, type Locator, type Page } from './fixtures';
@@ -138,7 +136,7 @@ test.describe('IMP-024 and IMP-027: Timer', () => {
     expect(await fontSize(timer(page))).toBe(112);
   });
 
-  test.fail('v3.5: "Talk it over" label (28 px) above the timer; at 0:00 "1 more minute" replaces "Pause"; it gives 1:00 again, "Vote now" returns, no "1 minute left" for an added minute', async ({ page }) => {
+  test('v3.5: "Talk it over" label (28 px) above the timer; at 0:00 "1 more minute" replaces "Pause"; it gives 1:00 again, "Vote now" returns, no "1 minute left" for an added minute', async ({ page }) => {
     await toClues(page, { talking: 'timer' });
     await freezeClock(page);
     await toTalk(page);
@@ -356,7 +354,7 @@ test.describe('IMP-031 and IMP-032: the picker and a tie', () => {
 });
 
 test.describe('IMP-031 (v3.5): "Not sure?" and its text buttons', () => {
-  test.fail('24 px below the names: "Not sure?", then "It\'s a tie" and "Count again" side by side, equal, 48 px tall, no outline', async ({ page }) => {
+  test('24 px below the names: "Not sure?", then "It\'s a tie" and "Count again" side by side, equal, 48 px tall, no outline', async ({ page }) => {
     await toClues(page);
     await toTalk(page);
     await toPickerFromTalk(page);
@@ -394,7 +392,7 @@ test.describe('IMP-033, IMP-034, IMP-038, IMP-039, IMP-073: the one result scree
     }
   };
 
-  test.fail('IMP-033 caught, guess off: "Arjun was…" alone for 1.5 s with a drumroll, no menu, no main button; then everything at once, top to bottom, with these sizes', async ({ page }) => {
+  test('IMP-033 caught, guess off: "Arjun was…" alone for 1.5 s with a drumroll, no menu, no main button; then everything at once, top to bottom, with these sizes', async ({ page }) => {
     await toResult(page);
     const bg = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
     await pickerName(page, 'Arjun').click();
@@ -432,7 +430,7 @@ test.describe('IMP-033, IMP-034, IMP-038, IMP-039, IMP-073: the one result scree
     await expect(result(page, 'round-outcome'), 'nothing else appears later').toHaveText(exact('The crew wins!'));
   });
 
-  test.fail('IMP-034 escaped: "✗ Escaped!", "Meena was crew.", ARJUN was the impostor, the word, no "Also called", "Food", "Arjun escaped!"; no guess, no "Undo"', async ({ page }) => {
+  test('IMP-034 escaped: "✗ Escaped!", "Meena was crew.", ARJUN was the impostor, the word, no "Also called", "Food", "Arjun escaped!"; no guess, no "Undo"', async ({ page }) => {
     await toResult(page, { word: SAMOSA, lastGuess: true });
     await pickerName(page, 'Meena').click();
     await mainButton(page).filter({ hasText: /^Reveal / }).click();
@@ -452,7 +450,7 @@ test.describe('IMP-033, IMP-034, IMP-038, IMP-039, IMP-073: the one result scree
     await expect(mainButton(page)).toHaveText(exact('Next round'));
   });
 
-  test.fail('IMP-038 "Still a tie": at once, no build-up, no drumroll: "✗ Escaped!", "Still a tie.", the word, "Arjun escaped!"; no "Undo"', async ({ page }) => {
+  test('IMP-038 "Still a tie": at once, no build-up, no drumroll: "✗ Escaped!", "Still a tie.", the word, "Arjun escaped!"; no "Undo"', async ({ page }) => {
     await toResult(page, { word: SAMOSA });
     await quiet(page, "It's a tie").click();
     await pickerName(page, 'Riya').click();
@@ -472,7 +470,7 @@ test.describe('IMP-033, IMP-034, IMP-038, IMP-039, IMP-073: the one result scree
     expect((await records(page)).at(-1)).toEqual({ type: 'stillTie' });
   });
 
-  test.fail('IMP-039 guess on: the guess step (no menu, no word), "Arjun guessed. Show the word", equal verdict buttons (no main look), then the outcome, "Undo", "This word didn\'t work", "Next round"; the menu returns', async ({ page }) => {
+  test('IMP-039 guess on: the guess step (no menu, no word), "Arjun guessed. Show the word", equal verdict buttons (no main look), then the outcome, "Undo", "This word didn\'t work", "Next round"; the menu returns', async ({ page }) => {
     await toResult(page, { lastGuess: true });
     await pickerName(page, 'Arjun').click();
     await mainButton(page).filter({ hasText: /^Reveal / }).click();
@@ -500,7 +498,7 @@ test.describe('IMP-033, IMP-034, IMP-038, IMP-039, IMP-073: the one result scree
     expect((await records(page)).slice(-3)).toEqual([{ type: 'reveal', player: 'Arjun' }, { type: 'showWord' }, { type: 'verdict', right: true }]);
   });
 
-  test.fail('IMP-081: the result scrolls as one page: nothing inside has its own scroll area; the main button stays pinned; at 812 × 375 the headline to the outcome sit left, the evening line and quiet buttons right', async ({ page }) => {
+  test('IMP-081: the result scrolls as one page: nothing inside has its own scroll area; the main button stays pinned; at 812 × 375 the headline to the outcome sit left, the evening line and quiet buttons right', async ({ page }) => {
     await toResult(page, { score: true, players: ['Riya', 'Arjun', 'Meena', 'Kabir', 'Zoya', 'Dev', 'Asha', 'Neel', 'Tara', 'Om', 'Isha', 'Ravi'] });
     await pickerName(page, 'Arjun').click();
     await mainButton(page).filter({ hasText: /^Reveal / }).click();
@@ -602,7 +600,7 @@ test.describe('IMP-052: no words left', () => {
 test.describe('IMP-070 and IMP-072: "How to play" from the menu mid-round never shows secrets', () => {
   const RULES = ["Not allowed: the word itself, a rhyme, a translation, or 'thing'.", "Repeating someone's clue is allowed.", 'Kids may use up to 3 words.'];
   for (const mode of ['easy', 'hard'] as const) {
-    test.fail(`${mode}: the 4 read-aloud lines, the ${mode} line, the 3 rules; no "Practice round first"; "Done" returns to the same screen; no secrets; nothing recorded`, async ({ page }) => {
+    test(`${mode}: the 4 read-aloud lines, the ${mode} line, the 3 rules; no "Practice round first"; "Done" returns to the same screen; no secrets; nothing recorded`, async ({ page }) => {
       await toClues(page, { mode });
       const recs = await records(page);
       await fromMenu(page, 'How to play');
@@ -701,7 +699,7 @@ test.describe('IMP-080: at most one main button, and never a destructive one', (
     await expectOneMainButton(page, 'End the evening dialog', 'Keep playing', true);
   });
 
-  test.fail('summary: "Discard this evening" (in "More ›"); "Discard this evening?" has "Keep it" as the main look', async ({ page }) => {
+  test('summary: "Discard this evening" (in "More ›"); "Discard this evening?" has "Keep it" as the main look', async ({ page }) => {
     await atResult(page);
     await fromMenu(page, 'End the evening');
     await page.getByRole('dialog').getByRole('button', { name: 'End the evening', exact: true }).click();
@@ -749,7 +747,7 @@ test.describe('IMP-081: nothing scrolls during a round, at every size', () => {
         await pickerName(page, 'Arjun').click();
         await check(page, 'picker, one picked', mainButton(page));
       });
-      test.fail(`${where}: the result screen (v3.5) scrolls as one page: main button pinned, no inner scroll area, scrolled to the top`, async ({ page }) => {
+      test(`${where}: the result screen (v3.5) scrolls as one page: main button pinned, no inner scroll area, scrolled to the top`, async ({ page }) => {
         test.setTimeout(60_000);
         await start(page);
         await toTalk(page);
@@ -802,7 +800,7 @@ test.describe('IMP-081: the room screens at 320 × 568 and 360 × 640: nothing d
         await pickerName(page, 'Arjun').click();
         await check(page, 'picker, one picked');
       });
-      test.fail(`${where}: the build-up, the result (v3.5) and its toast: nothing drawn over anything else; the toast above the main button`, async ({ page }) => {
+      test(`${where}: the build-up, the result (v3.5) and its toast: nothing drawn over anything else; the toast above the main button`, async ({ page }) => {
         test.setTimeout(60_000);
         const players = await start(page);
         await dealAll(page, players);
@@ -867,7 +865,7 @@ test.describe('IMP-082: lists of 12 to 20 players', () => {
 
 test.describe('IMP-083 and IMP-084: screen readers, no flashing', () => {
   // v2.2's announcer test (each timed reveal line) is retired: v3.5 IMP-083 lists the result screen's announcements.
-  test.fail('the announcer gets the countdown, "Arjun was…" once at t = 0, then at 1.5 s the headline, the impostor line, "The word was Samosa" and the outcome; never the word early', async ({ page }) => {
+  test('the announcer gets the countdown, "Arjun was…" once at t = 0, then at 1.5 s the headline, the impostor line, "The word was Samosa" and the outcome; never the word early', async ({ page }) => {
     await toClues(page);
     await page.evaluate(() => {
       const w = window as any; w.__ann = [];
@@ -1014,7 +1012,7 @@ test.describe('IMP-085, IMP-086, IMP-089: kind words, a slipped finger, sounds',
 });
 
 test.describe('IMP-100 to IMP-108: after the round', () => {
-  test.fail('IMP-101 and IMP-092: the summary (lead line, "Oops, keep playing", "Play something else", "More ›"); "Oops, keep playing" returns to the same result with "Undo"; nothing recorded; summaryShownAt kept', async ({ page }) => {
+  test('IMP-101 and IMP-092: the summary (lead line, "Oops, keep playing", "Play something else", "More ›"); "Oops, keep playing" returns to the same result with "Undo"; nothing recorded; summaryShownAt kept', async ({ page }) => {
     const e = await atResult(page);
     const recs = await records(page);
     await fromMenu(page, 'End the evening');
@@ -1198,7 +1196,7 @@ test.describe('IMP-100 to IMP-108: after the round', () => {
   });
 });
 
-test.fail('IMP-100: when the result appears nothing secret is left unrevealed (the word shown) and the wake lock is let go', async ({ page }) => {
+test('IMP-100: when the result appears nothing secret is left unrevealed (the word shown) and the wake lock is let go', async ({ page }) => {
   await page.addInitScript(() => {
     const w = window as any; w.__wake = [];
     Object.defineProperty(navigator, 'wakeLock', { configurable: true, value: { request: (t: string) => { w.__wake.push(`request ${t}`); const l = { released: false, addEventListener() {}, removeEventListener() {}, release() { w.__wake.push('release'); l.released = true; return Promise.resolve(); } }; return Promise.resolve(l); } } });

@@ -1,8 +1,7 @@
 // Impostor setup screens (C1/C2, specs/impostor/01-setup.md and 08-room-host-and-teach.md), written 3 October 2026
 // from the approved scenarios v2.2 and updated 4 October 2026 to v3.5: IMP-003 to IMP-009, IMP-070, IMP-071, IMP-076,
 // IMP-088. Every text, name and test id is the one in specs/impostor/README.md (Terms, Canonical strings, Test hooks).
-// Expected to fail (not built yet): tests marked `test.fail` check what v3.5 changed (Impostor round 4, lane C: setup,
-// choices, how to play). A marked test that starts passing turns red: then remove its `.fail` mark.
+// Impostor round 4 is built (main df8f362, 4 October 2026): no test here is marked expected-to-fail.
 import { expect, test, type Locator, type Page } from './fixtures';
 import { HOME, expectOneMainButton, hasMainLook, hostAGame, isOutlined } from './helpers';
 import {
@@ -374,7 +373,7 @@ test.describe('IMP-007: categories, non-veg', () => {
   const sw = (page: Page, name: string) => page.getByRole('switch', { name, exact: true });
   const done = (page: Page) => page.getByRole('button', { name: 'Done', exact: true });
 
-  test.fail('9 category switches, named and ordered exactly (v3.5 names), all on; "Include non-veg food" off; 2 off → "Categories: 7 of 9 ›"', async ({ page }) => {
+  test('9 category switches, named and ordered exactly (v3.5 names), all on; "Include non-veg food" off; 2 off → "Categories: 7 of 9 ›"', async ({ page }) => {
     await phoneWith(page, [], { now: T0 });
     await toWhosPlaying(page);
     await addPlayers(page, P4);
@@ -464,7 +463,7 @@ test.describe('IMP-008 and IMP-009: taps to the first deal; choices from last ti
     expect(moves.map((m: any) => [m.type, m.practice])).toEqual([['startDeal', false]]);
   });
 
-  test.fail('lastChoices opens with exactly those 7 choices and "Same as last time"; "Start round" writes the screen\'s choices back; a new session "Saturday 3 Oct" with no question', async ({ page }) => {
+  test('lastChoices opens with exactly those 7 choices and "Same as last time"; "Start round" writes the screen\'s choices back; a new session "Saturday 3 Oct" with no question', async ({ page }) => {
     const seven = CATEGORIES.filter((c) => c !== 'Food' && c !== 'Everyday moments');
     const last = { mode: 'hard', talking: 'timer', score: true, words: 'grownups', categories: seven, nonveg: true, lastGuess: true };
     await phoneWith(page, [], { now: T0, storage: { 'pgn.pref.impostor.lastChoices': last } });
@@ -501,7 +500,7 @@ test.describe('IMP-008 and IMP-009: taps to the first deal; choices from last ti
     expect(sess.name).toBe('Saturday 3 Oct');
   });
 
-  test.fail('a stored lastChoices without lastGuess reads as the guess off; category names from before 4 October are mapped, unknown names dropped', async ({ page }) => {
+  test('a stored lastChoices without lastGuess reads as the guess off; category names from before 4 October are mapped, unknown names dropped', async ({ page }) => {
     const old = { mode: 'easy', talking: 'free', score: false, words: 'family', categories: ['Food', 'Travel and places', 'Cricket and games', 'Desi life', 'Nonsense'], nonveg: false };
     await phoneWith(page, [], { now: T0, storage: { 'pgn.pref.impostor.lastChoices': old } });
     await toWhosPlaying(page);
@@ -536,7 +535,7 @@ test.describe('IMP-008 and IMP-009: taps to the first deal; choices from last ti
       await expect(option(page, g, o), `${g}: ${o}`).toHaveAttribute('aria-pressed', 'true');
   });
 
-  test.fail('a phone that has never played: no "Same as last time"; the last-chance guess is off', async ({ page }) => {
+  test('a phone that has never played: no "Same as last time"; the last-chance guess is off', async ({ page }) => {
     await phoneWith(page, [], { now: T0 });
     await toWhosPlaying(page);
     await addPlayers(page, P4);
@@ -577,7 +576,7 @@ test.describe('IMP-070, IMP-072, IMP-076: How to play and More options, on reque
   const RULES = ["Not allowed: the word itself, a rhyme, a translation, or 'thing'.", "Repeating someone's clue is allowed.", 'Kids may use up to 3 words.'];
   const GUESS = 'A caught impostor can steal the round by guessing the word.';
 
-  test.fail('the choices screen: "More options ›" and "How to play", equal quiet buttons on one row directly above "Start round"', async ({ page }) => {
+  test('the choices screen: "More options ›" and "How to play", equal quiet buttons on one row directly above "Start round"', async ({ page }) => {
     await toChoices(page);
     await expect(moreOptions(page)).toBeVisible();
     const m = (await moreOptions(page).boundingBox())!, h = (await howToPlayButton(page).boundingBox())!, s0 = (await mainButton(page).boundingBox())!;
@@ -590,7 +589,7 @@ test.describe('IMP-070, IMP-072, IMP-076: How to play and More options, on reque
     expect(s0.y - (h.y + h.height), 'directly above "Start round"').toBeLessThanOrEqual(32);
   });
 
-  test.fail('"How to play" from the choices screen: Read this aloud with its 4 lines, the Easy line, the 3 rules, "Done" (main), "Practice round first"; no menu; nothing recorded', async ({ page }) => {
+  test('"How to play" from the choices screen: Read this aloud with its 4 lines, the Easy line, the 3 rules, "Done" (main), "Practice round first"; no menu; nothing recorded', async ({ page }) => {
     await toChoices(page);
     await howToPlayButton(page).click();
     await expect(page.getByRole('heading', { name: 'How to play' })).toBeVisible();
@@ -610,7 +609,7 @@ test.describe('IMP-070, IMP-072, IMP-076: How to play and More options, on reque
     expect(await savedEvenings(page)).toEqual([]);
   });
 
-  test.fail('the text follows the choices on screen: Hard, and the guess paragraph only with the last-chance guess on', async ({ page }) => {
+  test('the text follows the choices on screen: Hard, and the guess paragraph only with the last-chance guess on', async ({ page }) => {
     await toChoices(page);
     await option(page, 'Mode', 'Hard').click();
     await expect(moreOptions(page)).toBeVisible();
@@ -626,7 +625,7 @@ test.describe('IMP-070, IMP-072, IMP-076: How to play and More options, on reque
     await expect(page.locator('ul > li')).toHaveText(RULES);
   });
 
-  test.fail('More options: Off selected on a first evening; a change applies only on "Done"; Back discards it', async ({ page }) => {
+  test('More options: Off selected on a first evening; a change applies only on "Done"; Back discards it', async ({ page }) => {
     await toChoices(page);
     await expect(moreOptions(page)).toBeVisible();
     await moreOptions(page).click();
