@@ -141,6 +141,7 @@
 
 | 2026-10-03 | Release 1.2.0 only (branch `release/1.2`): the complete run leaves out Impostor's tests (Impostor is not in this release) and the screenshot comparison (main's reference pictures show the Impostor picker); the product owner approves the 1.2.0 pictures from the release branch's own Screenshots run. Every Tambola rule and browser test still runs on both phones. Not a precedent for main. | Owner (explicit) |
 
+| 2026-10-04 | Overnight checks (run 37143638539): TAM-112 confirmed on the emulator between Impostor rounds, then fixed (save every call at once); the weekly mutation run split into parallel jobs under 5 hours; Impostor's unbuilt tests marked expected-to-fail so `main` is green | Owner |
 "Convention" means the established Tambola rule in `docs/games/tambola/guide.md`, chosen because the owner asked
 Claude to follow game conventions. Every Tambola rule above is also a host setting with this default.
 | 2026-10-03 | **What makes us different:** one app for the whole fun night, in the room, with games the phone makes possible that normally need a box, cards, tokens or a moderator who sits out. New games must pass this "replaces the box" test; games that need nothing (Dumb Charades, Antakshari) are out. Shortlist: Impostor, Mafia, a Codenames-style word game (own name and words, never a copy). Lessons and lifecycle in `docs/proposals/next-game-lifecycle.md` approved. | Owner |

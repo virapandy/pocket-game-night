@@ -5,6 +5,16 @@ A new orchestrator session starts here: read this section, then work through **"
 top, reporting to the owner after each. The product owner keeps this section
 current; instructions live here, not in chat. History from Phase 0 and 1a is further down.
 
+### Owner's answers on the overnight checks (4 October, run 37143638539): do these
+1. **TAM-112 (go):** the Android emulator lost the last calls when Android closed Chrome mid-game (42 shown instead of 69).
+   The tester confirms it with that one test on GitHub (not on the owner's Mac), **between Impostor rounds** when the Test
+   clone is free; then a coder fixes it (likely: save every call at once, not in batches). C3 (saved data): test first.
+2. **Mutation testing (yes):** a coder splits the weekly full mutation run into smaller parallel jobs, each under GitHub's
+   5-hour limit. Automation only; nothing changes for families.
+3. **Impostor tests (ok):** remind the Impostor chat to mark its tests for unbuilt features "expected to fail" (decision of
+   3 October) so quick verify on `main` goes green again and the preview link updates. Red since about 20:00 on IMP-052,
+   IMP-075, IMP-088; Tambola is not failing.
+
 ### SPEED FIRST (owner, 3 October): read before anything else
 The owner: the loop has run for days on simple changes; progress must be much faster. No app change has landed since
 1 October afternoon. **New way of working: `docs/change-sop.md`** (owner approved). In short: sort every change into
