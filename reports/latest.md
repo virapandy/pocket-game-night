@@ -1,4 +1,69 @@
 # Test report
+Progress (2026-10-04, tester, end-to-end and Jev testing, owner approved "for 200"; main b67eea5, tests 34b9f05 and
+this push): IMP-088 and IMP-076 fixes confirmed on both phones; main is green (quick verify 37174659561 on 34b9f05).
+Layer 2: 12 Impostor golden journeys pass on both phones (journey 1 in the smoke set). Layer 3 and 4: the screen
+simulation runner is written and played 16 evenings locally (4 by Jev personas): no finding. The 200 wait for the
+weekly workflow job requested below (`.github/` is Build-only).
+
+Commit tested: app b67eea5   Date: 2026-10-04
+Result: GREEN (quick verify 37174659561 on 34b9f05: rule tests 649 of 649, smoke 16 of 16, Impostor and changed-area
+browser tests all passed). Complete run 37174663182 (34b9f05, both phones): everything passed except the same 4
+Android screenshot references in screens.spec.ts (the other session's).
+
+## IMP-088 and IMP-076 on b67eea5
+- "Whole family" fits on one line at 320 × 568 and 360 × 640, Larger text off and on: passes on both phones.
+- More options, Categories and How to play: the browser's Back closes the sheet without saving: passes on both
+  phones (the Categories and How to play tests are new, orchestrator's call of 4 October).
+- Picture for the reviewer, 320 × 568 with Larger text and "Whole family" selected:
+  `reports/screens/imp-088-whole-family-320x568-larger-android.png` and `…-iphone.png`. The corner ✓ touches the
+  top of the "y" of "family" (Android: it crosses the "y"; iPhone: it touches the top of the "y"). No scenario
+  number fixes that gap, so no test checks it; for the product owner.
+- Test changed: IMP-005 "one selected per group … shows a ✓" read the ✓ from the button's text; since 7af8f9e the ✓
+  is drawn by CSS. The check now accepts a ✓ in the text, as CSS content, or drawn as a tick shape of at least 8 px
+  (Terms "Selected"). What it checks is unchanged.
+
+## Layer 2: golden journeys (`tests/browser/impostor-journeys.spec.ts`)
+12 journeys, both phones, all pass locally (Android 12 of 12, iPhone 12 of 12) and in quick verify: 1 defaults with
+caught, escaped and still a tie, summary and History (smoke); 2 Hard + Timer + Score; 3 last-chance guess, Undo of a
+verdict; 4 "Don't know this word?" and "Deal again"; 5 close and reopen at every step; 6 How to play and practice;
+7 12 long names at 812 × 375; 8 320 × 568 Larger text and tap to show; 9 late joiner and leaver; 10 Oops, Share,
+Play something else into Tambola; 11 out of words, "Allow repeats"; 12 screen-reader announcements.
+
+## Layers 3 and 4: screen simulations (`tests/sims/`, README there)
+- Runner: `tests/sims/impostor-runner.ts`, run by `tests/playwright.sims.config.ts`; summary `tests/sims/summary.mjs`;
+  failing evenings saved in `tests/replays/screen/` and replayed by `tests/browser/impostor-sim-replays.spec.ts`
+  (both phones, complete run). It reuses the Jev client (`tests/sim/jev.ts`) and the persona idea of
+  `tests/sim/player.ts`; options are the buttons on screen, not engine moves, so `decideAll` itself is not used.
+- Local sample (Mac, 3 workers, not the verdict): 12 scripted evenings (360, 390 and 812 wide; 3 to 12 players) and
+  4 persona evenings (2 played by Jev, 400 decisions, before the per-evening limit of 30 was added): "16 evenings
+  played (2 with Jev people): 0 dead ends, 0 secrets shown, 0 screens flagged confusing, 0 layout breaks".
+- Runner faults found and fixed while building it (not app bugs): a tapped-open block counted as a secret, the guess
+  line still on screen after the verdict, buttons behind an open dialog offered, Back past the app's first page, and
+  hints such as "Cover" matching the app's own `privacy-cover`.
+
+## Requests for the Build workspace
+- `.github/workflows/weekly.yml`: please add a job `screen-sims` and inputs, so the orchestrator can run 200 evenings
+  on request:
+  - `workflow_dispatch` inputs: `evenings` (default 200), `jev_evenings` (default 50), `only_sims` (boolean, default
+    false: when true the simulation, mutation and android jobs are skipped).
+  - Job `screen-sims` (report-only, `continue-on-error: true`, timeout 120 min), matrix `shard: [1..8]`,
+    `fail-fast: false`: checkout, setup-node 24 with npm cache, `npm ci`, `npm run build`,
+    `npx playwright install --with-deps chromium`, the same `jev-usage` cache step as the simulation job, then
+    `npx playwright test --config tests/playwright.sims.config.ts --shard=${{ matrix.shard }}/8 --workers=2` with env
+    `SIM_EVENINGS: ${{ inputs.evenings || 200 }}`, `SIM_JEV_EVENINGS: ${{ inputs.jev_evenings || 50 }}`,
+    `SIM_RUN: w${{ github.run_id }}`, `JEV_DECISIONS: 400`, `JEV_API_KEY: ${{ secrets.JEV_API_KEY }}`; always upload
+    `reports/sim/screen/` and `tests/replays/screen/` as artifact `screen-sims-${{ matrix.shard }}`.
+  - Job `screen-sims-report` (needs `screen-sims`, `if: always()`): checkout, setup-node, download artifacts with
+    `pattern: screen-sims-*` and `merge-multiple: true` into `sims/`, `node tests/sims/summary.mjs sims/reports/sim/screen`,
+    append `reports/sim/screen-summary.md` to `$GITHUB_STEP_SUMMARY`, upload it with the replays as `screen-sims-report`.
+  - Each evening takes about 2 minutes; 25 per shard at 2 workers is about 30 minutes. Jev: about 30 decisions per
+    persona evening, about 1,500 a week, inside the cap; $0.
+  - Not now (owner's approval needed first): the proposal's smaller mass engine simulation and `npm test` counts.
+
+## Questions
+- None.
+
+# Impostor round 4 report (df8f362), kept for reference
 Progress (2026-10-04, tester, Impostor round 4 on main df8f362, app eb3ef8f, all lanes D, E, F, G merged): every
 expected-to-fail mark removed (20 rule, all browser); whole Impostor round run. Rule tests 649 of 649. Browser: the
 complete run on both phones (37171594652, tests 91a1748) and quick verify on cb2846f (37172433872) leave 5 real failures
