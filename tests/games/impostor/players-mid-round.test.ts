@@ -3,9 +3,7 @@
 // IMP-079 (someone arrives: `setPlayers` mid-round only adds), Test hooks items 1 and 3 (v3.8: every new deal deals the
 // current list; pending leavers are dealt in until a round reaches its result; an entry naming someone who is not in
 // that round is ignored as a whole).
-// Written before the build (C3, tests first): the tests of what is not built yet are expected to fail (`it.fails`)
-// until the C3 lane is on main; then the tester removes the marks. The refusals (a mid-round removal by setPlayers; a
-// leaver with 3 players) already hold and stay unmarked: they must keep holding once the moves exist.
+// Written before the build (C3, tests first, 4 October 2026); the C3 lane is on main (728f6cc, 5 October): marks removed.
 import { describe, expect, it } from 'vitest';
 import { HOST } from '../../../src/engine';
 import { Evening, P4, P5, need, randomOutcome, seedList, seeded } from './helpers';
@@ -36,7 +34,7 @@ function finishCaught(e: Evening) {
 
 describe('IMP-079: someone arrives mid-round', () => {
   for (const m of MOMENTS) {
-    it.fails(`at the ${m}: setPlayers with Dev at the end is accepted; Dev is not in the deal in progress, nor on its picker`, () => {
+    it(`at the ${m}: setPlayers with Dev at the end is accepted; Dev is not in the deal in progress, nor on its picker`, () => {
       const e = new Evening({ players: P5, seed: `join-${m}`, choices: { lastGuess: false } });
       e.startDeal();
       toMoment(e, m);
@@ -52,7 +50,7 @@ describe('IMP-079: someone arrives mid-round', () => {
     });
   }
 
-  it.fails('Dev is dealt in by the next round, at the end of the seat order, with 0 points; no points from the round he joined in', () => {
+  it('Dev is dealt in by the next round, at the end of the seat order, with 0 points; no points from the round he joined in', () => {
     const e = new Evening({ players: P5, seed: 'join-next', choices: { score: true, lastGuess: false } });
     e.startDeal();
     toMoment(e, 'clues');
@@ -65,7 +63,7 @@ describe('IMP-079: someone arrives mid-round', () => {
   });
 
   for (const redeal of ['dontKnow', 'dealAgain', 'dealAgainWithout'] as const) {
-    it.fails(`a redeal of this round (${redeal}) deals Dev in`, () => {
+    it(`a redeal of this round (${redeal}) deals Dev in`, () => {
       const e = new Evening({ players: P5, seed: `join-redeal-${redeal}`, choices: { lastGuess: false } });
       e.startDeal();
       toMoment(e, redeal === 'dontKnow' ? 'deal' : 'clues');
@@ -92,7 +90,7 @@ describe('IMP-079: someone arrives mid-round', () => {
 
 describe('IMP-078: "Finish this round first" (leaveAfterRound)', () => {
   for (const m of MOMENTS) {
-    it.fails(`at the ${m}: leaveAfterRound Kabir is recorded; Kabir stays in this round, is removed at its result with his points kept`, () => {
+    it(`at the ${m}: leaveAfterRound Kabir is recorded; Kabir stays in this round, is removed at its result with his points kept`, () => {
       const e = new Evening({ players: P5, seed: `leave-${m}`, choices: { score: true, lastGuess: false } });
       e.startDeal();
       toMoment(e, m);
@@ -110,7 +108,7 @@ describe('IMP-078: "Finish this round first" (leaveAfterRound)', () => {
     });
   }
 
-  it.fails('Kabir may still be revealed by the vote in the round he finishes', () => {
+  it('Kabir may still be revealed by the vote in the round he finishes', () => {
     const e = new Evening({ players: P5, seed: 'leave-vote', choices: { lastGuess: false } });
     e.startDeal();
     toMoment(e, 'clues');
@@ -120,7 +118,7 @@ describe('IMP-078: "Finish this round first" (leaveAfterRound)', () => {
   });
 
   for (const redeal of ['dontKnow', 'dealAgain'] as const) {
-    it.fails(`a pending leaver is dealt in by a redeal of this round (${redeal}) and removed at its result`, () => {
+    it(`a pending leaver is dealt in by a redeal of this round (${redeal}) and removed at its result`, () => {
       const e = new Evening({ players: P5, seed: `leave-redeal-${redeal}`, choices: { lastGuess: false } });
       e.startDeal();
       toMoment(e, redeal === 'dontKnow' ? 'deal' : 'clues');
@@ -133,7 +131,7 @@ describe('IMP-078: "Finish this round first" (leaveAfterRound)', () => {
     });
   }
 
-  it.fails('when "End now" drops the round, the pending leaver is removed when endEvening is recorded (not among the final players)', () => {
+  it('when "End now" drops the round, the pending leaver is removed when endEvening is recorded (not among the final players)', () => {
     const e = new Evening({ players: P5, seed: 'leave-end' });
     e.startDeal();
     toMoment(e, 'talk');
@@ -142,7 +140,7 @@ describe('IMP-078: "Finish this round first" (leaveAfterRound)', () => {
     expect(e.players()).toEqual(['Riya', 'Arjun', 'Meena', 'Zoya']);
   });
 
-  it.fails('leaveAfterRound is refused for someone not in this round, twice for the same player, and between rounds', () => {
+  it('leaveAfterRound is refused for someone not in this round, twice for the same player, and between rounds', () => {
     const e = new Evening({ players: P5, seed: 'leave-refused', choices: { lastGuess: false } });
     e.startDeal();
     toMoment(e, 'clues');
@@ -157,7 +155,7 @@ describe('IMP-078: "Finish this round first" (leaveAfterRound)', () => {
 
 describe('IMP-078: "Deal again without Kabir" (dealAgainWithout)', () => {
   for (const m of MOMENTS) {
-    it.fails(`at the ${m}: one move removes Kabir and deals the round again from the first player, with his points kept`, () => {
+    it(`at the ${m}: one move removes Kabir and deals the round again from the first player, with his points kept`, () => {
       const e = new Evening({ players: P5, seed: `without-${m}`, choices: { score: true, lastGuess: false } });
       e.startDeal();
       // A round 1 with points first, so Kabir has something to keep.
@@ -183,7 +181,7 @@ describe('IMP-078: "Deal again without Kabir" (dealAgainWithout)', () => {
     });
   }
 
-  it.fails('property (300 seeded rounds, 4 to 12 players, any moment): dealAgainWithout never reveals roles: it is offered for every player of the round, and what it records and shows is the same whether the leaver is the impostor or not', () => {
+  it('property (300 seeded rounds, 4 to 12 players, any moment): dealAgainWithout never reveals roles: it is offered for every player of the round, and what it records and shows is the same whether the leaver is the impostor or not', () => {
     for (const s of seedList(300, 'no-reveal')) {
       const rng = seeded(s);
       const n = 4 + rng.int(9);
@@ -215,7 +213,7 @@ describe('IMP-078: fewer than 3 players never happens', () => {
     expect(e.refuses({ type: 'dealAgainWithout', player: 'Meena' })).toBe(true);
   });
 
-  it.fails('with 4 players and a pending leaver (counted as gone), a second leaver is refused either way', () => {
+  it('with 4 players and a pending leaver (counted as gone), a second leaver is refused either way', () => {
     const e = new Evening({ players: P4, seed: 'four-pending' });
     e.startDeal();
     toMoment(e, 'talk');
@@ -226,7 +224,7 @@ describe('IMP-078: fewer than 3 players never happens', () => {
 });
 
 describe('Test hooks item 3 (v3.8, IMP-078 "no dead buttons"): test seeds that do not fit the players are ignored', () => {
-  it.fails('a forced deal naming an impostor who is not playing is ignored as a whole: the round starts with seeded picks', () => {
+  it('a forced deal naming an impostor who is not playing is ignored as a whole: the round starts with seeded picks', () => {
     const e = new Evening({ players: P4, seed: 'unfit-imp', testDeals: [{ wordId: 'IMPW-004', impostor: 'Zoya', starter: 'Riya' }] });
     expect(e.try({ type: 'startDeal', practice: false }), 'the round can start').toBe(true);
     e.dealAll();
@@ -234,13 +232,13 @@ describe('Test hooks item 3 (v3.8, IMP-078 "no dead buttons"): test seeds that d
     expect(P4).toContain(e.host().starter);
   });
 
-  it.fails('a forced deal naming a starter who is not playing is ignored as a whole', () => {
+  it('a forced deal naming a starter who is not playing is ignored as a whole', () => {
     const e = new Evening({ players: P4, seed: 'unfit-starter', testDeals: [{ wordId: 'IMPW-004', impostor: 'Arjun', starter: 'Zoya' }] });
     e.startDeal().dealAll();
     expect(P4).toContain(e.host().starter);
   });
 
-  it.fails('a forced deal for round 2 naming a player who left after round 1 is ignored; round 2 still starts', () => {
+  it('a forced deal for round 2 naming a player who left after round 1 is ignored; round 2 still starts', () => {
     const e = new Evening({ players: P5, seed: 'unfit-left', choices: { lastGuess: false }, testDeals: [{}, { impostor: 'Kabir', starter: 'Kabir' }] });
     e.startDeal();
     toMoment(e, 'clues');
@@ -254,7 +252,7 @@ describe('Test hooks item 3 (v3.8, IMP-078 "no dead buttons"): test seeds that d
 });
 
 describe('Test hooks item 1 (v3.8): every new deal deals the current list', () => {
-  it.fails('property (200 seeded evenings of up to 8 rounds): after every deal, the dealt players are the current list (joiners in at the end, pending leavers still in); at each result pending leavers go; never fewer than 3', () => {
+  it('property (200 seeded evenings of up to 8 rounds): after every deal, the dealt players are the current list (joiners in at the end, pending leavers still in); at each result pending leavers go; never fewer than 3', () => {
     const POOL = ['Dev', 'Asha', 'Neel', 'Tara', 'Om', 'Isha', 'Ravi', 'Sana'];
     for (const s of seedList(200, 'current-list')) {
       const rng = seeded(s);
