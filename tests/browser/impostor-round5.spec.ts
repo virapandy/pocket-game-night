@@ -408,7 +408,9 @@ test.describe('Lanes N and O: IMP-085 plain words (M24): "game", never "evening"
       for (const w of listWords) text = text.split(w).join(' ');
       expect(text.match(banned)?.[0] ?? null, `${where}: "${text.replace(/\s+/g, ' ').slice(0, 200)}"`).toBeNull();
     };
-    await phoneWith(page, [], { now: T0 });
+    // A forced deal (Test hooks item 3): Arjun is the impostor, so revealing Riya always reaches the result (with the
+    // last-chance guess on, revealing the impostor would stop at the guess step first).
+    await phoneWith(page, [], { now: T0, storage: { 'pgn.test.seeds': { deals: [{ wordId: SAMOSA, impostor: 'Arjun', starter: 'Riya' }] } } });
     await hostAGame(page).click();
     await check('What shall we play?');
     await impostorCard(page).click();
