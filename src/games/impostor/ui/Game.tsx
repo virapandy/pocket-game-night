@@ -592,6 +592,11 @@ export function Game({
     r && playersMoment !== 'between' ? [...r.players, ...list.filter((p) => !r.players.includes(p))] : [...list];
   const showJoining =
     joining.length > 0 && !leftHalfway && !seeAgain && !counting && (step === 'clues' || step === 'talk' || step === 'vote' || step === 'revote');
+  const practiceChip = r?.practice && !leftHalfway && (
+    <span className="imp-practice" data-testid="practice-chip">
+      Practice
+    </span>
+  );
   return (
     <main
       className={`imp-screen imp-room${holdScreen ? ' imp-hold-screen' : ''}${resultScreen ? ' imp-page' : ''}${betweenRounds ? ' imp-between' : ''}`}
@@ -599,15 +604,17 @@ export function Game({
       <HideMainButton.Provider value={dialog || sheet}>
         <div className="imp-screen-inner" hidden={sheet}>
           <header className="imp-bar">
-            {betweenRounds && (
-              <QuietButton className="imp-home" onClick={guard(onHome)}>
-                ← Home
-              </QuietButton>
-            )}
-            {r?.practice && !leftHalfway && (
-              <span className="imp-practice" data-testid="practice-chip">
-                Practice
-              </span>
+            {/* IMP-071 with IMP-077 (orchestrator's call): between rounds "← Home" first, top left, and the practice
+                chip on its own line directly under it, left-aligned, so both stay in the left half at every size. */}
+            {betweenRounds ? (
+              <div className="imp-bar-stack">
+                <QuietButton className="imp-home" onClick={guard(onHome)}>
+                  ← Home
+                </QuietButton>
+                {practiceChip}
+              </div>
+            ) : (
+              practiceChip
             )}
             <span className="imp-grow" />
             {/* IMP-010 (guideline 20): on the deal screens the menu button is guarded like the screen's own buttons. */}

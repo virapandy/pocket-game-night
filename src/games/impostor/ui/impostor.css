@@ -750,11 +750,10 @@
 /* ----- Between rounds (IMP-077, IMP-074): "← Home" top left; the bottom row with the outlined "End game" and the main
    button, pinned 16 px from the sides and the bottom; "Players (5) ›" on the game line's row ----- */
 .imp-home { min-height: 48px; padding: 0 12px; }
-/* IMP-071 with IMP-077: on a practice result "← Home" comes first and the practice chip directly to its right, both
-   within the left half of the screen (tighter padding and gap on that row only). */
-.imp-between .imp-bar:has(> .imp-practice) { gap: 6px; }
-.imp-between .imp-bar:has(> .imp-practice) .imp-home { padding: 0 6px; }
-.imp-between .imp-bar > .imp-practice { flex: none; padding: 4px 8px; white-space: nowrap; }
+/* IMP-071 with IMP-077: on a practice result "← Home" first, top left, and the practice chip on its own line directly
+   under it, left-aligned, so both stay in the left half at every size and with Larger text. */
+.imp-bar-stack { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+.imp-bar-stack > .imp-practice { white-space: nowrap; }
 .imp-end-game {
   position: fixed;
   z-index: 5;
