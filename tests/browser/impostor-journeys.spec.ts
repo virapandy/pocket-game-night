@@ -351,6 +351,7 @@ test('Journey 8: 320 × 568 with Larger text and tap to show', async ({ page }) 
     await expect(page.getByTestId('private-word')).toHaveText(p === 'Arjun' ? "You're the impostor" : 'Samosa');
     await holdPad(page).click();
     await expect(page.getByTestId('private-word')).toHaveCount(0);
+    await settle(page); // screen B's buttons are guarded for 500 ms (v3.8); a tap-mode turn can be that quick
     await doneButton(page).click();
   }
   await expect(page.getByTestId('clue-order')).toHaveText(exact('Riya → Arjun → Meena → Kabir'));

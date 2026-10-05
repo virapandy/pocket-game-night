@@ -252,6 +252,7 @@ test.describe('IMP-013 and IMP-062: the word is never in the page except while h
       await expect(page.getByRole('dialog', { name: /Whose word\?/ })).toBeVisible();
       await check('"Whose word?"');
       await page.getByRole('button', { name: 'Cancel', exact: true }).click();
+      await settle(page); // the clues screen's buttons are guarded for 500 ms after it shows again (v3.8)
       await mainButton(page).filter({ hasText: CLUES_DONE }).click();
       await check('the talk');
       await mainButton(page).filter({ hasText: 'Vote now' }).click();
