@@ -7,7 +7,10 @@ Runs:
 - Quick verify 37269157361 on f998d78: 374 passed, 8 failed. 5 are the real failures below. 3 were test timing
   against the new 500 ms tap guard (Journey 8, IMP-013 easy and hard), fixed in the next push. The next run's ID is in the
   hand-back.
-- Complete run on that next commit: see the hand-back (started after this report).
+- Quick verify 37270079397 on fd82be1: 377 passed, 5 failed, exactly the 5 real failures below.
+- Complete run 37270113272 on fd82be1: 1,290 passed; failed only on the real failures below (Android 5, iPhone 5) and 2
+  Android screenshots: `impostor-clues-larger` at 360 × 640 and 390 × 844 changed because round 5 added "See my word again"
+  to the clues screen (C1). They need new references from the Screenshots workflow and the product owner's approval.
 - Rule tests (local, 2118820): 695 of 695 (668 earlier tests, 27 round 5 tests). Of the 32 C3 rule tests, all 32 now pass;
   the 32nd is endEvening after leaveAfterRound, which failed on 728f6cc and was fixed in 2118820.
 - Local browser runs on both phones (Mac, low priority, alongside a 10-hour mutation run): every touched Impostor file.
