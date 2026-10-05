@@ -194,18 +194,38 @@ export function Dialog({ text, children }: { text: ReactNode; children: ReactNod
   );
 }
 
-/** A sheet over the screen, with its own heading and its own main button "Done" (fixed at the bottom). */
-export function Sheet({ title, children, onDone, doneLabel = 'Done' }: { title: string; children: ReactNode; onDone: () => void; doneLabel?: string }) {
+/**
+ * A sheet over the screen, with its own heading and its own main button "Done" (fixed at the bottom). `cover` is a
+ * dialog over the sheet: while it shows, the sheet behind it is inert, so neither a keyboard nor a screen reader
+ * reaches the sheet's list or its "Done".
+ */
+export function Sheet({
+  title,
+  children,
+  onDone,
+  doneLabel = 'Done',
+  cover,
+}: {
+  title: string;
+  children: ReactNode;
+  onDone: () => void;
+  doneLabel?: string;
+  cover?: ReactNode;
+}) {
   const id = useId();
+  const covered = cover !== undefined && cover !== null && cover !== false;
   return (
     <div className="imp-sheet" role="dialog" aria-modal="true" aria-labelledby={id}>
-      <div className="imp-sheet-body">
+      <div className="imp-sheet-body" inert={covered}>
         <h1 id={id} className="imp-title">
           {title}
         </h1>
         {children}
       </div>
-      <MainButton onClick={onDone}>{doneLabel}</MainButton>
+      <div style={{ display: 'contents' }} inert={covered}>
+        <MainButton onClick={onDone}>{doneLabel}</MainButton>
+      </div>
+      {covered && cover}
     </div>
   );
 }

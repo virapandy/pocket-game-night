@@ -208,8 +208,44 @@ export function PlayersSheet({
   // halfway" screen) they are greyed, with no ✕.
   const gone = leaving.filter((p) => players.includes(p));
   const staying = moment === 'between' ? [] : gone;
+  // "3 players needed." and "Kabir has to leave?" cover the sheet; the sheet behind them is inert.
+  const cover =
+    ask === null ? null : ask === 'tooFew' ? (
+      <Dialog text="3 players needed. Add someone, or end the game.">
+        <QuietButton onClick={onEndGame}>End game</QuietButton>
+        <MainButton
+          inline
+          onClick={() => {
+            setAsk(null);
+            setFocusKey((k) => k + 1);
+          }}
+        >
+          Add a player
+        </MainButton>
+      </Dialog>
+    ) : (
+      <Dialog text={`${ask.leave} has to leave?`}>
+        <QuietButton
+          onClick={() => {
+            setAsk(null);
+            setWhy(onLeave?.(players, ask.leave, 'without') ?? null);
+          }}
+        >
+          Deal again without {ask.leave}
+        </QuietButton>
+        <MainButton
+          inline
+          onClick={() => {
+            setAsk(null);
+            setWhy(onLeave?.(players, ask.leave, 'finish') ?? null);
+          }}
+        >
+          Finish this round first
+        </MainButton>
+      </Dialog>
+    );
   return (
-    <Sheet title="Players" onDone={() => setWhy(onDone(players))}>
+    <Sheet title="Players" onDone={() => setWhy(onDone(players))} cover={cover}>
       <PlayerList
         players={players}
         past={past}
@@ -249,41 +285,6 @@ export function PlayersSheet({
         </p>
       )}
       <Toast toast={toast} onDone={clearToast} />
-      {ask === 'tooFew' && (
-        <Dialog text="3 players needed. Add someone, or end the game.">
-          <QuietButton onClick={onEndGame}>End game</QuietButton>
-          <MainButton
-            inline
-            onClick={() => {
-              setAsk(null);
-              setFocusKey((k) => k + 1);
-            }}
-          >
-            Add a player
-          </MainButton>
-        </Dialog>
-      )}
-      {ask !== null && ask !== 'tooFew' && (
-        <Dialog text={`${ask.leave} has to leave?`}>
-          <QuietButton
-            onClick={() => {
-              setAsk(null);
-              setWhy(onLeave?.(players, ask.leave, 'without') ?? null);
-            }}
-          >
-            Deal again without {ask.leave}
-          </QuietButton>
-          <MainButton
-            inline
-            onClick={() => {
-              setAsk(null);
-              setWhy(onLeave?.(players, ask.leave, 'finish') ?? null);
-            }}
-          >
-            Finish this round first
-          </MainButton>
-        </Dialog>
-      )}
     </Sheet>
   );
 }
