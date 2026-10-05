@@ -1,42 +1,32 @@
 # Test report
-Commit tested: app 2118820 (main: Impostor round 5, lanes N, O and P, plus the endEvening fix)   Date: 2026-10-05
-Result: RED: three real failures in what lanes N and O built (below). Everything else passes or is a load timeout on
-the Mac that GitHub passes.
+Commit tested: app 5b1a46b (main: round 5 with lane R's fixes); tests 29eaff7   Date: 2026-10-05
+Result: RED: two real failures, both seen only with Linux fonts (GitHub's); everything else passes.
 
 Runs:
-- Quick verify 37269157361 on f998d78: 374 passed, 8 failed. 5 are the real failures below. 3 were test timing
-  against the new 500 ms tap guard (Journey 8, IMP-013 easy and hard), fixed in the next push. The next run's ID is in the
-  hand-back.
-- Quick verify 37270079397 on fd82be1: 377 passed, 5 failed, exactly the 5 real failures below.
-- Complete run 37270113272 on fd82be1: 1,290 passed; failed only on the real failures below (Android 5, iPhone 5) and 2
-  Android screenshots: `impostor-clues-larger` at 360 × 640 and 390 × 844 changed because round 5 added "See my word again"
-  to the clues screen (C1). They need new references from the Screenshots workflow and the product owner's approval.
-- Rule tests (local, 2118820): 695 of 695 (668 earlier tests, 27 round 5 tests). Of the 32 C3 rule tests, all 32 now pass;
-  the 32nd is endEvening after leaveAfterRound, which failed on 728f6cc and was fixed in 2118820.
-- Local browser runs on both phones (Mac, low priority, alongside a 10-hour mutation run): every touched Impostor file.
-  The single-phone timeouts seen there (IMP-023/024 timers, IMP-081 12 players, IMP-090, IMP-087) were load; they
-  pass when run alone and on GitHub.
+- Quick verify 37272095858 on 29eaff7: 380 passed and 17 smoke passed; 2 failed (below).
+- Complete run 37272117633 on 29eaff7, both phones: failed only on the same 2 tests on each phone; everything else passed,
+  the Impostor screenshot comparisons included.
+- Rule tests: 705 of 705 (new: `tests/games/impostor/views-and-totals.test.ts`, 10 tests aimed at surviving mutants).
+- Screenshots run 37271506802: new Impostor clues references (round 5's "See my word again"), **not yet approved**:
+  Linux and Mac at 360 × 640 and 390 × 844, Mac at 812 × 375. No Linux 812 reference: the clue order's second line is cut off
+  by the button row there (`reports/screens/imp-020-round5-812x375-linux.png`).
 
 ## Failing (real bugs only)
-- **IMP-081 (lane N): the undo toast lies over "Players (5) ›".** `impostor-play-screens.spec.ts`, "IMP-081: the room screens at
-  320 × 568 and 360 × 640 … result with its toast", at 320 × 568, 320 × 568 with Larger text, and 360 × 640 with Larger text, both
-  phones. Expected: nothing drawn over a button (the toast is a bar above the main button's row). Got: after "This word
-  didn't work", the toast "Samosa won't come up again · Undo" covers the quiet "Players (5) ›" (and its "Undo" overlaps it).
-- **IMP-020 / IMP-022 (lane O): "Not enough clues?" still shows at 812 × 375.** `impostor-round5.spec.ts`, "812 × 375: 'Go round
-  again' and 'See my word again' share one row …", both phones. Expected (v3.8): at 812 × 375 the two buttons share one row
-  and "Not enough clues?" is not shown. Got: "Not enough clues?" is on screen.
-- **IMP-001 (lane O): the "Start a new game?" buttons aren't equal.** `impostor-setup.spec.ts`, "IMP-001 (v3.8, M22) …", both phones.
-  Expected: two equal outlined buttons side by side. Got: "Carry on that game" wraps onto 2 lines (53.3 px tall), "Start new"
-  is 48 px, so their tops differ by 2.6 px (Android: x 36 / 211, width 165 each at 390 wide).
+- **IMP-020 (812 × 375), Linux fonts:** `impostor-round5.spec.ts`, "812 × 375: 'Go round again' and 'See my word again' share one
+  row (two equal halves) …", both phones. "Not enough clues?" is now left out (fixed). Expected: one row, two equal halves.
+  Got: "See my word again" wraps onto two lines, so it is taller and the two tops are 2.6 px apart (on Mac fonts it also
+  wraps; see the Mac reference picture).
+- **IMP-071 with IMP-077, Linux fonts:** `impostor-setup.spec.ts`, "after the practice result, 'Next round' deals round 1 …", both
+  phones. Expected (orchestrator's call): "← Home" then the practice chip, both in the left half. Got at 390 wide, normal text:
+  the chip ends at x = 202 (half = 195). Measured on Mac fonts (Android): 390 normal text ends at 188 (fits); 360 and 320 end
+  at 188 (half 180 / 160: crosses); Larger text crosses at every width (390: ends at 217; 360: 217; 320: 203).
 
-Fixed during the round: endEvening refused after leaveAfterRound (IMP-078, IMP-093), found by the C3 rule test on
-728f6cc, fixed in 2118820.
+Fixed by lane R and passing: IMP-081 toast vs "Players (5) ›"; "Not enough clues?" left out at 812 × 375; IMP-001 equal
+buttons in "Start a new game?"; `inert` behind the leave and "3 players needed." dialogs.
 
 ## Question for the product owner (test marked expected-to-fail until answered)
-- **IMP-071 vs IMP-077:** both put something "at the top left" of the round result: the practice chip (IMP-071) and "← Home"
-  (IMP-077). The build shows the chip right of "← Home", ending 15 px into the right half at 390 px wide. The test "after the
-  practice result, 'Next round' deals round 1 …" (`impostor-setup.spec.ts`) checks "wholly in the left half" and is marked
-  expected-to-fail with this reason. Which wins?
+- **IMP-071 vs IMP-077:** answered by the orchestrator ("← Home" first, chip to its right, left half); see the failure above for
+  the sizes where it does not fit. Should the chip fit at 320/360 and with Larger text too?
 - **IMP-022 vs IMP-020/IMP-079:** IMP-022 says "Go round again" is directly above the main button. v3.8 stacks "See my
   word again" with it, and IMP-079 puts the joining line directly above the main button's area. The test now allows those two
   between "Go round again" and the main button.
@@ -78,7 +68,11 @@ Fixed during the round: endEvening refused after leaveAfterRound (IMP-078, IMP-0
   whose saved tap no longer exists carries on scripted, and only the front dialog's main button counts. Both permanent
   replays (128, 011) pass on both phones; 011 is no longer marked expected-to-fail.
 
-## Mutation testing (Impostor rules, v1.2.0 → ce6513c; run before round 5's rule changes)
+## Mutation testing
+**After (round 5 rules, 2118820, with the new tests):** running locally (1,196 mutants; 75 done at 5 October 12:55, about
+10 hours at low priority). Scores per file follow when it ends.
+
+### Before (Impostor rules, v1.2.0 → ce6513c; run before round 5's rule changes)
 Local, 3 workers at low priority, 9 h 40 min, scratch Stryker config pointing at the Impostor rule, property and contract
 tests (the committed mutation config is another session's uncommitted work and leaves Impostor out). 1,035 mutants:
 **70.2 % caught** (650 killed, 77 timed out; 237 survived, 71 not reached); 75.4 % of the mutants the tests reach. Target 80 %.
