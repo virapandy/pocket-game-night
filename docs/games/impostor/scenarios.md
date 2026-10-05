@@ -2011,3 +2011,12 @@ Then a rare optional twist: no impostor, or everyone an impostor, revealed at th
 Status: approved as direction, owner, 2026-10-03 (built later)
 Phase: Impostor later
 Then the impostor gets the word's close cousin instead of nothing, and may not know they are the impostor
+
+## Note, 5 October (decision I27): the "left halfway" Players sheet
+Detail of IMP-074, IMP-075 and IMP-078, as built: on the "left halfway" screen ▲ ▼ are hidden; ✕ on a player of the
+half-played round takes them off in the sheet at once with the toast "Kabir left · Undo"; "Done" records `setPlayers`
+only for names added; "Next round" then records one `dealAgainWithout {player}` for each player taken off (the last of
+these is the fresh round), or `dealAgain` when nobody was taken off. "End game" from that screen before "Next round"
+records nothing for those taken off, so the ended game still lists them; the summary's "Play again" leaves them out.
+Two or more leavers after a round: one toast, "Kabir, Zoya left after this round".
+
