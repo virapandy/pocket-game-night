@@ -538,8 +538,8 @@
   .imp-clues-box .imp-clue-order { overflow: visible; }
   .imp-clues .imp-clues-top { margin-top: 0; }
   .imp-clues-who { margin-top: auto; }
-  .imp-clues-two .imp-clues-buttons { width: 100%; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-  .imp-clues-two .imp-clues-buttons .imp-quiet { min-width: 0; padding: 0 8px; }
+  .imp-clues-two .imp-clues-buttons { width: 100%; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: stretch; }
+  .imp-clues-two .imp-clues-buttons .imp-quiet { min-width: 0; padding: 0 8px; line-height: 1.15; }
 }
 
 /* ----- Talk and the timer (IMP-023, IMP-024, IMP-027, IMP-073) ----- */
@@ -696,7 +696,8 @@
   .imp-clues {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    grid-template-rows: auto minmax(0, 1fr) auto;
+    /* The middle row always keeps "Each say…" and one full line of the clue order (which scrolls inside its box). */
+    grid-template-rows: auto minmax(calc(var(--imp-body) * 2.8 + 8px), 1fr) auto;
     grid-template-areas: "who top" "who rest" "who again";
     column-gap: 16px;
     row-gap: 8px;
@@ -705,13 +706,21 @@
   .imp-clues-who { grid-area: who; justify-content: center; }
   .imp-clues-top { grid-area: top; }
   .imp-clues-rest { grid-area: rest; justify-content: flex-start; }
+  .imp-clues-rest > * { flex: none; }
+  .imp-clues-rest > .imp-clue-order {
+    flex: 0 1 auto;
+    min-height: calc(var(--imp-body) * 1.4);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
   .imp-clues-again { grid-area: again; margin-top: 0; }
   .imp-clues .imp-clues-top { margin-top: 0; }
   /* IMP-020: "Go round again" and "See my word again" share one row (two equal halves); no "Not enough clues?". */
   .imp-clues-unsure { display: none; }
   .imp-clues-buttons { width: 100%; }
-  .imp-clues-two .imp-clues-buttons { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-  .imp-clues-two .imp-clues-buttons .imp-quiet { min-width: 0; padding: 0 8px; }
+  /* Both halves the same height with their tops aligned, whether "See my word again" fits on one line or wraps. */
+  .imp-clues-two .imp-clues-buttons { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: stretch; }
+  .imp-clues-two .imp-clues-buttons .imp-quiet { min-width: 0; padding: 0 8px; line-height: 1.15; }
   /* IMP-020 with IMP-022 (I24) and Larger text: the right half must hold the three lines (the third may wrap), the
      clue order (at least one full line, scrolling inside), "Not enough clues?", "Go round again" and the main button.
      Same font sizes; tighter line heights and gaps, and 8 px (not 16) above the main button. At 812 × 375: 375 - 8 top
@@ -722,6 +731,7 @@
   .imp-larger .imp-clues-top, .imp-larger .imp-clues-rest { gap: 4px; }
   .imp-larger .imp-clues .imp-body, .imp-larger .imp-clues .imp-small { line-height: 1.25; }
   .imp-larger .imp-clue-order { min-height: calc(var(--imp-body) * 1.25); }
+  .imp-larger .imp-clues { grid-template-rows: auto minmax(calc(var(--imp-body) * 2.5 + 4px), 1fr) auto; }
   .imp-count { font-size: 160px; }
   .imp-count-point { font-size: 96px; }
   /* IMP-031, IMP-082: the heading and the names box (scrolling inside) left; "Not sure?", its text buttons and the
