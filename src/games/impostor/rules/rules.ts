@@ -441,7 +441,8 @@ function view(s: ImpostorState, viewer: Viewer): ImpostorView {
   }
   const practice = r ? r.practice : s.phase === 'noWords' ? s.pendingPractice : false;
   // Mid-round, this round's dealt players (joiners and pending leavers follow from the moves); else the current list.
-  const dealt = r && r.step !== 'result' ? r.players : s.players;
+  // Once the evening has ended, a round in progress is dropped (IMP-093): the final players are the current list.
+  const dealt = r && r.step !== 'result' && !s.over ? r.players : s.players;
   const table = {
     round: r ? r.number : practice ? null : s.counted + 1,
     practice,
@@ -466,7 +467,8 @@ function invariants(s: ImpostorState): string[] {
       if (r.seen > r.players.length) problems.push('More players have seen their word than are playing.');
       if (r.starter !== null && !r.players.includes(r.starter)) problems.push('The starter is not playing.');
       if (r.revealed !== null && !r.players.includes(r.revealed)) problems.push('The revealed player is not playing.');
-      if (r.step !== 'result' && !r.players.every((p) => s.players.includes(p))) problems.push('A player of this round is not on the list.');
+      // After `endEvening` the round in progress is dropped and its pending leavers are gone (IMP-078, IMP-093).
+      if (r.step !== 'result' && !s.over && !r.players.every((p) => s.players.includes(p))) problems.push('A player of this round is not on the list.');
     }
   }
   if (!s.leaving.every((p) => s.players.includes(p))) problems.push('A pending leaver is not on the list.');
