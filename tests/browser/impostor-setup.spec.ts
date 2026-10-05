@@ -719,6 +719,18 @@ test.describe('IMP-071: practice round', () => {
     await reveal(page, 'Riya');
     await expect(page.getByTestId('round-outcome')).toBeVisible();
     await expectChipTopLeft(page, 'result');
+    // Orchestrator's decision (5 October, IMP-071 with IMP-077): between rounds the chip sits on its own line directly
+    // under "← Home", both in the left half.
+    const home = (await page.getByRole('button', { name: '← Home', exact: true }).boundingBox())!;
+    const chip = (await page.getByTestId('practice-chip').boundingBox())!;
+    expect(chip.y, 'result: the chip is under "← Home"').toBeGreaterThanOrEqual(home.y + home.height - 1);
+    expect(chip.y - (home.y + home.height), 'result: directly under').toBeLessThanOrEqual(16);
+    expect(home.x + home.width, 'result: "← Home" in the left half').toBeLessThanOrEqual(page.viewportSize()!.width / 2);
+    for (const [w, h] of [[320, 568], [360, 640]] as const) {
+      await page.setViewportSize({ width: w, height: h });
+      await expectChipTopLeft(page, `result at ${w} × ${h}`);
+    }
+    await page.setViewportSize({ width: 390, height: 844 });
     await expect(page.getByTestId('round-points')).toHaveCount(0);
     await expect(page.getByTestId('scoreboard')).toHaveCount(0);
     await mainButton(page).filter({ hasText: 'Next round' }).click();
