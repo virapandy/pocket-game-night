@@ -149,7 +149,10 @@ body { -webkit-tap-highlight-color: transparent; }
 .stack-tight { display: flex; flex-direction: column; gap: 8px; }
 .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
 /* IMP-001 (M22): two equal buttons side by side, neither with the main look. */
-.row-equal > * { flex: 1 1 0; min-width: 0; }
+.row-equal { flex-wrap: nowrap; align-items: stretch; }
+/* Same height with tops aligned even when one label wraps; 10 px side padding keeps "Carry on that game" on one line
+   on most phones. */
+.row-equal > * { flex: 1 1 0; min-width: 0; padding: 0 10px; }
 .chips { display: flex; flex-wrap: wrap; gap: 10px; }
 .top-bar.wrap { flex-wrap: wrap; gap: 8px; }
 .grow { flex: 1; min-width: 0; }
