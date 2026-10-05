@@ -207,6 +207,23 @@ test.describe('Lane O: IMP-020 the clues screen at 812 × 375 and 320 × 568 (v3
     expect(Math.min(g.x, s.x), 'in the right half').toBeGreaterThanOrEqual(406 - 1);
     await expect(page.getByText('Not enough clues?', { exact: true })).toHaveCount(0);
     await expect(mainButton(page)).toBeInViewport({ ratio: 1 });
+    // The reviewer's check (5 October): the row is clear of the main button, and the clue order ends above the row.
+    const m = (await mainButton(page).boundingBox())!;
+    expect(Math.max(g.y + g.height, s.y + s.height), 'the row ends above the main button').toBeLessThanOrEqual(m.y);
+    const co = (await page.getByTestId('clue-order').boundingBox())!;
+    expect(co.y, 'the clue order starts above the row').toBeLessThan(Math.min(g.y, s.y));
+  });
+
+  test('812 × 375 with Larger text: the row is clear of the main button and the two buttons are equal in height, tops aligned', async ({ page }) => {
+    await page.setViewportSize({ width: 812, height: 375 });
+    await startEvening(page, { players: P5, seeds: DEAL5, storage: { 'pgn.pref.largerText': true } });
+    await dealAll(page, P5);
+    const g = (await quiet(page, 'Go round again').boundingBox())!, s = (await quiet(page, 'See my word again').boundingBox())!;
+    const m = (await mainButton(page).boundingBox())!;
+    expect(Math.abs(g.y - s.y), 'tops aligned').toBeLessThanOrEqual(1);
+    expect(Math.abs(g.height - s.height), 'equal height').toBeLessThanOrEqual(1);
+    expect(Math.max(g.y + g.height, s.y + s.height), 'the row ends above the main button').toBeLessThanOrEqual(m.y);
+    await expect(page.getByText('Not enough clues?', { exact: true })).toHaveCount(0);
   });
 
   test('320 × 568: MEENA, "starts", one box (scrolling inside) with the three lines and the clue order, then "Not enough clues?", then "Go round again" and "See my word again" on one row, then the main button; no page scrolling', async ({ page }) => {

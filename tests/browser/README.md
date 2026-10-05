@@ -752,7 +752,7 @@ the approved pictures once the product owner or UX designer has checked them at 
 | `host-verdict-proof` | a ticket-number check, Top Line bogey, with its proof line | 24, 5 |
 | `host-settings-in-game` | Settings opened during a game, "Back" at the top | 18 |
 | `history-clear-one` | "Clear all history" with one past game in an unsettled tally | 5, 19 |
-| `impostor-clues-larger` | Impostor clues screen, 5 players, Larger text on: MEENA starts, the clue order, "Not enough clues?" and "Go round again" above "Clues done, talk it over" (I24). Round 5 (5 October, Screenshots run 37271506802): new pictures with "See my word again" at 360 × 640 and 390 × 844 (Linux and Mac) and 812 × 375 (Mac only), **not yet approved**: for the product owner's release review. No Linux 812 reference: there the clue order's second line is cut off by the button row (`reports/screens/imp-020-round5-812x375-linux.png`) | IMP-016, 020, 022, 109 |
+| `impostor-clues-larger` | Impostor clues screen, 5 players, Larger text on: MEENA starts, the clue order, "Not enough clues?" and "Go round again" above "Clues done, talk it over" (I24). Round 5 (5 October, Screenshots run 37271506802): new pictures with "See my word again" at 360 × 640 and 390 × 844 (Linux and Mac) and 812 × 375 (Mac; Linux from Screenshots run 37274027980 after lane S, fbfedea: the whole clue order shows and the row is clear of the main button), **not yet approved**: for the product owner's release review | IMP-016, 020, 022, 109 |
 | `player-tickets-cue` | Riya's 3 tickets, cue on, ticket 1's top row filled | 1, 2, 3 |
 | `player-quick-mark` | quick mark with those marks | 3 |
 | `player-which-ticket` | "Which ticket?" with the small pictures, the cue's ticket marked | 12 |
