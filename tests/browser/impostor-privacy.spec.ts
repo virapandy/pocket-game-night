@@ -8,6 +8,8 @@ import {
   CLUES_DONE, KHEER, LONGEST, P4, P5, PANI_PURI, SAMOSA, SCHOOL_TRIP, ci, phrase, result, dealAll, dontKnow, doneButton, exact, expectNoSecrets, freezeClock, fromMenu,
   hold, holdPad, imButton, mainButton, menuButton, onlyEvening, passName, pickerName, press, privateBlock, privateWord,
   release, revealLines, reveal, secretTerms, startEvening, textOf, toPicker, turn, word,
+  aheadOfRound5,
+  settle,
 } from './impostor';
 
 test.use({ viewport: { width: 390, height: 844 } });
@@ -20,7 +22,7 @@ test.describe('IMP-010: each player sees their role privately, in seat order', (
     await expect(page.getByText('Pass the phone to', { exact: true })).toBeVisible();
     await expect(passName(page)).toHaveText(exact('Riya'));
     await expect(mainButton(page)).toHaveText(exact("I'm Riya"));
-    await imButton(page, 'Riya').click();
+    await settle(page); await imButton(page, 'Riya').click();
     // Screen B: RIYA at the top, the pad, "Tap instead"; no word and no main look until "Done…".
     await expect(page.getByRole('heading', { name: new RegExp(`^${ci('Riya')}$`) })).toBeVisible();
     await expect(holdPad(page)).toHaveAccessibleName('Hold here to see your word');
@@ -59,7 +61,7 @@ test.describe('IMP-010: each player sees their role privately, in seat order', (
     await expect(privateWord(page)).toHaveCount(0);
     await turn(page, 'Arjun');
     await turn(page, 'Meena');
-    await imButton(page, 'Kabir').click();
+    await settle(page); await imButton(page, 'Kabir').click();
     await hold(page, 600);
     await expect(doneButton(page)).toHaveText(exact("Done, everyone's seen"));
   });
@@ -67,7 +69,7 @@ test.describe('IMP-010: each player sees their role privately, in seat order', (
   test('at 812 × 375 the block is wholly left of the pad', async ({ page }) => {
     await page.setViewportSize({ width: 812, height: 375 });
     await startEvening(page, { seeds: { deals: [{ wordId: SAMOSA, impostor: 'Arjun' }] } });
-    await imButton(page, 'Riya').click();
+    await settle(page); await imButton(page, 'Riya').click();
     await press(page);
     await expect(privateBlock(page)).toBeVisible();
     const b = (await privateBlock(page).boundingBox())!;
@@ -99,12 +101,12 @@ test.describe('IMP-011: what each role sees: always five lines', () => {
   for (const [mode, off, on] of [['easy', "Listen and blend in. Don't get caught!", 'Listen, blend in, guess the word.'], ['hard', "Don't get caught!", 'Guess the word if caught.']] as const) {
     test(`${mode}: the impostor's line 4 with the last-chance guess off (the default): "${off}"`, async ({ page }) => {
       await startEvening(page, { mode, seeds: { deals: [{ wordId: SAMOSA, impostor: 'Riya', starter: 'Arjun' }] } });
-      await imButton(page, 'Riya').click();
+      await settle(page); await imButton(page, 'Riya').click();
       expect((await hold(page, 600))[3]).toBe(off);
     });
     test(`${mode}: the impostor's line 4 with the last-chance guess on: "${on}"`, async ({ page }) => {
       await startEvening(page, { mode, lastGuess: true, seeds: { deals: [{ wordId: SAMOSA, impostor: 'Riya', starter: 'Arjun' }] } });
-      await imButton(page, 'Riya').click();
+      await settle(page); await imButton(page, 'Riya').click();
       expect((await hold(page, 600))[3]).toBe(on);
     });
   }
@@ -113,7 +115,7 @@ test.describe('IMP-011: what each role sees: always five lines', () => {
     await startEvening(page, { seeds: { deals: [{ wordId: PANI_PURI, impostor: 'Arjun' }] } });
     const heights: Record<string, number[]> = {};
     for (const p of ['Riya', 'Arjun']) {
-      await imButton(page, p).click();
+      await settle(page); await imButton(page, p).click();
       await press(page);
       await expect(privateBlock(page)).toBeVisible();
       heights[p] = await privateBlock(page).evaluate((el) => [0, 4].map((i) => (el.children[i] as HTMLElement).getBoundingClientRect().height));
@@ -152,15 +154,16 @@ test.describe('IMP-012: the impostor\'s turn looks exactly like everyone else\'s
   /** One deal: Riya's and Arjun's screens A and B before any hold; one of them is the impostor. */
   async function compareOneDeal(page: Page, where: string) {
     const aRiya = await screen(page);
-    await imButton(page, 'Riya').click();
+    await settle(page); await imButton(page, 'Riya').click();
     const bRiya = await screen(page);
     await hold(page, 600);
     await doneButton(page).click();
     const aArjun = await screen(page);
-    await imButton(page, 'Arjun').click();
+    await settle(page); await imButton(page, 'Arjun').click();
     const bArjun = await screen(page);
     expect(aArjun, `${where}: screen A`).toBe(aRiya);
     expect(bArjun, `${where}: screen B`).toBe(bRiya);
+    await settle(page); // the "··· Menu" button is guarded on the deal screens too (v3.8)
     await fromMenu(page, 'Deal again with a new word');
     await page.getByRole('dialog').getByRole('button', { name: 'Deal again', exact: true }).click();
     await expect(passName(page)).toHaveText(exact('Riya'));
@@ -186,7 +189,7 @@ test.describe('IMP-012: the impostor\'s turn looks exactly like everyone else\'s
     });
     await startEvening(page, { seeds: { deals: [{ wordId: SAMOSA, impostor: 'Arjun' }] } });
     for (const p of ['Riya', 'Arjun']) {
-      await imButton(page, p).click();
+      await settle(page); await imButton(page, p).click();
       await freezeClock(page); // fake time only, so 499 ms is exactly 499 ms
       await press(page, 499);
       await release(page);
@@ -205,7 +208,7 @@ test.describe('IMP-012: the impostor\'s turn looks exactly like everyone else\'s
   test('private-word is a box exactly 2 lines tall; the longest word fits in 2 lines, 30 to 36 px, at 320 wide (v3.5, F11)', async ({ page }) => {
     await page.setViewportSize({ width: 320, height: 568 });
     await startEvening(page, { seeds: { deals: [{ wordId: LONGEST, impostor: 'Kabir' }] } });
-    await imButton(page, 'Riya').click();
+    await settle(page); await imButton(page, 'Riya').click();
     await press(page);
     await expect(privateWord(page)).toHaveText(word(LONGEST).word);
     const fit = await privateWord(page).evaluate((el) => {
@@ -228,7 +231,7 @@ test.describe('IMP-013 and IMP-062: the word is never in the page except while h
       const terms = secretTerms(PANI_PURI, mode);
       const check = (where: string) => expectNoSecrets(page, terms, where);
       await check('screen A');
-      await imButton(page, 'Riya').click();
+      await settle(page); await imButton(page, 'Riya').click();
       await check('screen B before a hold');
       await hold(page, 600);
       await check('screen B between holds');
@@ -268,7 +271,7 @@ test.describe('IMP-013 and IMP-062: the word is never in the page except while h
 
   test('nothing on the pad or the block can be selected, copied, looked up or dragged', async ({ page }) => {
     await startEvening(page, { seeds: { deals: [{ wordId: SAMOSA, impostor: 'Arjun' }] } });
-    await imButton(page, 'Riya').click();
+    await settle(page); await imButton(page, 'Riya').click();
     await press(page);
     await expect(privateBlock(page)).toBeVisible();
     const bad = await page.evaluate(() => {
@@ -298,7 +301,7 @@ test.describe('IMP-013 and IMP-062: the word is never in the page except while h
 test.describe('IMP-014: tap to show, for players who can\'t hold', () => {
   test('with the setting on: "Tap to see your word", "Tap to hide", hidden again after 8 s, then "Done…"', async ({ page }) => {
     await startEvening(page, { storage: { 'pgn.pref.impostor.tapToShow': true }, seeds: { deals: [{ wordId: SAMOSA, impostor: 'Kabir' }] } });
-    await imButton(page, 'Riya').click();
+    await settle(page); await imButton(page, 'Riya').click();
     await expect(holdPad(page)).toHaveAccessibleName('Tap to see your word');
     await expect(page.getByRole('button', { name: 'Tap instead', exact: true })).toBeHidden();
     await expectOneMainButton(page, 'tap mode before a tap', null);
@@ -317,7 +320,8 @@ test.describe('IMP-014: tap to show, for players who can\'t hold', () => {
 
   test('"Tap instead" switches only this player\'s turn; the next player starts in hold mode', async ({ page }) => {
     await startEvening(page, { seeds: { deals: [{ wordId: SAMOSA, impostor: 'Kabir' }] } });
-    await imButton(page, 'Riya').click();
+    await settle(page); await imButton(page, 'Riya').click();
+    await settle(page); // screen B's buttons are guarded for 500 ms (v3.8)
     await page.getByRole('button', { name: 'Tap instead', exact: true }).click();
     await expect(holdPad(page)).toHaveAccessibleName('Tap to see your word');
     await holdPad(page).click();
@@ -325,7 +329,7 @@ test.describe('IMP-014: tap to show, for players who can\'t hold', () => {
     await holdPad(page).click(); // "Tap to hide"
     await expect(privateWord(page)).toHaveCount(0);
     await doneButton(page).click();
-    await imButton(page, 'Arjun').click();
+    await settle(page); await imButton(page, 'Arjun').click();
     await expect(holdPad(page)).toHaveAccessibleName('Hold here to see your word');
   });
 });
@@ -335,7 +339,7 @@ test.describe('IMP-015: "Don\'t know this word?" redeals without giving anything
     await startEvening(page, { seeds: { deals: [{ wordId: SAMOSA, impostor: 'Arjun' }, { wordId: PANI_PURI, impostor: 'Kabir', starter: 'Riya' }] } });
     await turn(page, 'Riya');
     await turn(page, 'Arjun');
-    await imButton(page, 'Meena').click();
+    await settle(page); await imButton(page, 'Meena').click();
     await hold(page, 600);
     const before = (await onlyEvening(page)).records.length;
     await dontKnow(page).click();
@@ -355,14 +359,14 @@ test.describe('IMP-015: "Don\'t know this word?" redeals without giving anything
     const after = await onlyEvening(page);
     expect(after.records.length).toBe(before + 1);
     expect(after.records.at(-1).move).toEqual({ type: 'dontKnow', wordId: PANI_PURI });
-    await imButton(page, 'Riya').click();
+    await settle(page); await imButton(page, 'Riya').click();
     const lines = await hold(page, 600);
     expect(lines[1]).toBe('Pani puri');
   });
 
   test('the button is the same on the impostor\'s screen B', async ({ page }) => {
     await startEvening(page, { seeds: { deals: [{ wordId: SAMOSA, impostor: 'Riya' }] } });
-    await imButton(page, 'Riya').click();
+    await settle(page); await imButton(page, 'Riya').click();
     await hold(page, 600);
     await expect(dontKnow(page)).toBeVisible();
   });
@@ -382,15 +386,15 @@ test.describe('IMP-016 and IMP-020: straight to the clues; who starts', () => {
     await expect(page.getByTestId('announcer')).toContainText(phrase('Meena starts. Each say one word about your secret: Meena, Kabir, Zoya, Riya, Arjun'));
   });
 
-  test('Timer: the clues screen\'s main button is "Clues done, start the 2-minute timer"', async ({ page }) => {
+  test('Timer: the clues screen\'s main button is "Clues done, start timer" (IMP-016, v3.8)', async ({ page }) => {
     await startEvening(page, { talking: 'timer', seeds: { deals: [{ wordId: SAMOSA, impostor: 'Arjun' }] } });
     await dealAll(page);
-    await expect(mainButton(page)).toHaveText('Clues done, start the 2-minute timer');
+    await expect(mainButton(page)).toHaveText(exact('Clues done, start timer', []));
   });
 });
 
 test.describe('IMP-017: see my word again', () => {
-  test('from the clues: "Whose word?", Meena\'s turn again with "Done, everyone\'s seen", then the same screen; nothing recorded', async ({ page }) => {
+  test('from the clues: "Whose word?", Meena\'s turn again with "Done, back to clues" (v3.8), then the same screen; nothing recorded', async ({ page }) => {
     await startEvening(page, { seeds: { deals: [{ wordId: SAMOSA, impostor: 'Arjun', starter: 'Riya' }] } });
     await dealAll(page);
     const before = (await onlyEvening(page)).records;
@@ -406,13 +410,14 @@ test.describe('IMP-017: see my word again', () => {
     await page.getByRole('dialog', { name: /Whose word\?/ }).getByRole('button', { name: 'Meena', exact: true }).click();
     await expect(passName(page)).toHaveText(exact('Meena'));
     await expect(menuButton(page)).toHaveCount(0);
-    await imButton(page, 'Meena').click();
+    await settle(page); await imButton(page, 'Meena').click();
     await expect(menuButton(page)).toHaveCount(0);
     const lines = await hold(page, 600);
     expect(lines[1]).toBe('Samosa');
     await expect(dontKnow(page)).toBeHidden();
-    await expect(doneButton(page)).toHaveText(exact("Done, everyone's seen"));
-    await doneButton(page).click();
+    // v3.8 (IMP-017): opened from the clues screen, her main button reads "Done, back to clues".
+    await expect(mainButton(page)).toHaveText(exact('Done, back to clues', []));
+    await mainButton(page).click();
     await expect(page.getByTestId('clue-order')).toHaveText(order!);
     expect((await onlyEvening(page)).records).toEqual(before);
   });
@@ -424,7 +429,7 @@ test.describe('IMP-017: see my word again', () => {
     await page.getByRole('dialog', { name: /Whose word\?/ }).getByRole('button', { name: 'Meena', exact: true }).click();
     await expect(page.getByTestId('look-away')).toHaveText(exact('Everyone else, look away!', []));
     await expect(page.getByTestId('deal-progress')).toHaveCount(0);
-    await imButton(page, 'Meena').click();
+    await settle(page); await imButton(page, 'Meena').click();
     await expect(page.getByTestId('deal-progress')).toHaveCount(0);
   });
 });
@@ -459,7 +464,7 @@ test.describe('IMP-031, IMP-033, IMP-039: pick, then reveal; the word stays secr
     await reveal(page, 'Arjun', 1500);
     await expect(result(page, 'result-headline')).toHaveText(exact('✓ Caught!', []));
     await expect(result(page, 'result-impostor')).toHaveText(exact('Arjun was the impostor'));
-    await expect(result(page, 'guess-line')).toHaveText(exact('Last chance, Arjun! Guess the word out loud. Get it right and you steal the round.'));
+    await expect(result(page, 'guess-line')).toHaveText(exact('Last chance, Arjun! Guess the word out loud. Get it right and you win the round.'));
     await expectNoSecrets(page, secretTerms(PANI_PURI, 'easy'), 'the guess step');
     await mainButton(page).filter({ hasText: exact('Arjun guessed. Show the word') }).click();
     expect((await onlyEvening(page)).records.at(-1).move).toEqual({ type: 'showWord' });
@@ -497,7 +502,7 @@ test.describe('IMP-060 and IMP-064: seeds made on the phone; test seeds honoured
 
 test('IMP-010: screens A and B never show the previous player\'s block, even after a quick double tap on "Done…"', async ({ page }) => {
   await startEvening(page, { seeds: { deals: [{ wordId: SAMOSA, impostor: 'Kabir' }] } });
-  await imButton(page, 'Riya').click();
+  await settle(page); await imButton(page, 'Riya').click();
   await hold(page, 600);
   await doneButton(page).dblclick();
   await expect(privateWord(page)).toHaveCount(0);

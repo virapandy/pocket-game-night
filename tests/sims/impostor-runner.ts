@@ -78,7 +78,7 @@ export async function screenName(page: Page): Promise<string | null> {
   const id = (t: string) => page.getByTestId(t);
   if (await vis(page.getByRole('dialog'))) return 'dialog';
   if (await vis(page.getByRole('menuitem'))) return 'menu';
-  if (await vis(h("That's the night!"))) return 'summary';
+  if (await vis(h(/^That's the (night|game)!$/))) return 'summary';
   if (await vis(h('How to play'))) return 'how-to-play';
   if (await vis(h('More options'))) return 'more-options';
   if (await vis(h('Categories'))) return 'categories';
@@ -91,10 +91,10 @@ export async function screenName(page: Page): Promise<string | null> {
   if (await vis(id('guess-line'))) return 'guess';
   if (await vis(id('result-headline'))) return 'result';
   if (await vis(id('countdown-heading'))) return 'countdown';
-  if (await vis(h('Who got the most fingers?'))) return 'picker';
+  if (await vis(h('Who got the most fingers?')) || await vis(h('Tap everyone who is tied'))) return 'picker';
   if (await vis(id('timer')) || await vis(id('talk-heading'))) return 'talk';
   if (await vis(id('clue-order'))) return 'clues';
-  if (await vis(h("You've played every word in these categories tonight!"))) return 'no-words';
+  if (await vis(h(/^You've played every word in these categories( tonight)?!$/))) return 'no-words';
   if (await vis(h('This round was left halfway. Start a fresh round?'))) return 'left-halfway';
   if (await vis(h('No problem! New word coming.'))) return 'no-problem';
   if (await vis(holdPad(page))) return 'deal-B';
@@ -171,9 +171,19 @@ export async function checkStep(page: Page, screen: string | null, step: number,
   const f: Finding[] = [];
   const s = screen ?? 'unknown';
   if (!screen) f.push({ kind: 'not recognised', step, screen: s, detail: (await page.locator('body').innerText()).slice(0, 160).replace(/\s+/g, ' ') });
-  const mains = await mainButton(page).filter({ visible: true }).count();
+  // While dialogs are open, only the topmost one (the last open in page order) is in front: a main button behind it, such
+  // as the Players sheet's "Done" under "Kabir has to leave?", is not a second main look on screen (IMP-080).
+  const mains = await mainButton(page).filter({ visible: true }).evaluateAll((els) => {
+    const D = '[role="dialog"], [role="alertdialog"]';
+    const open = Array.from(document.querySelectorAll(D)).filter((d) => d.getBoundingClientRect().height > 0);
+    const front = open.at(-1);
+    return els.filter((el) => !front || front.contains(el)).length;
+  });
   const doneShown = screen === 'deal-B' && (await mainButton(page).filter({ hasText: /^Done, / }).isVisible().catch(() => false));
-  if (mains > 1) f.push({ kind: 'main button', step, screen: s, detail: `${mains} main buttons` });
+  if (mains > 1) {
+    const labels = await mainButton(page).filter({ visible: true }).allTextContents().catch(() => [] as string[]);
+    f.push({ kind: 'main button', step, screen: s, detail: `${mains} main buttons: ${labels.map((t) => t.trim()).join(' / ')}` });
+  }
   if ((NO_MAIN.has(s) || (screen === 'deal-B' && !doneShown)) && mains > 0) f.push({ kind: 'main button', step, screen: s, detail: 'a main button where the spec has none (IMP-080)' });
   // While a player's block is shown (tap mode, tapped open), the word is in it by design and its layer covers the top of
   // screen B (IMP-010, IMP-013): those two checks wait until it hides.
@@ -186,7 +196,14 @@ export async function checkStep(page: Page, screen: string | null, step: number,
   if (scroll.w) f.push({ kind: 'layout', step, screen: s, detail: 'the page scrolls sideways' });
   if (ROOM.has(s) && scroll.h) f.push({ kind: 'layout', step, screen: s, detail: 'a room screen scrolls (IMP-081)' });
   if (mains === 1) {
-    const box = await mainButton(page).filter({ visible: true }).boundingBox();
+    const box = await mainButton(page).filter({ visible: true }).evaluateAll((els) => {
+      const open = Array.from(document.querySelectorAll('[role="dialog"], [role="alertdialog"]')).filter((d) => d.getBoundingClientRect().height > 0);
+      const front = open.at(-1);
+      const el = els.find((e) => !front || front.contains(e));
+      if (!el) return null;
+      const r = el.getBoundingClientRect();
+      return { x: r.x, y: r.y, width: r.width, height: r.height };
+    });
     const vp = page.viewportSize()!;
     if (box && (box.y + box.height > vp.height + 1 || box.y < -1 || box.x < -1 || box.x + box.width > vp.width + 1)) f.push({ kind: 'layout', step, screen: s, detail: 'the main button is not wholly on screen' });
   }
@@ -270,7 +287,9 @@ export function scriptedPick(screen: string, opts: Option[], r: Rng, ctx: { roun
     }
     case 'verdict': return any(by(/^(Guessed right|Wrong guess)$/))!;
     case 'result': {
-      if (ctx.roundsDone >= ctx.target) return by(/Menu/)[0]?.key ?? main!.key; // then "End the evening"
+      // v3.8: the outlined "End game" beside "Next round" (IMP-077); v3.5: the menu, then "End the evening".
+      if (ctx.roundsDone >= ctx.target) return by(/^End game$/)[0]?.key ?? by(/Menu/)[0]?.key ?? main!.key;
+      if (r.chance(0.03) && by(/^← Home$/).length) return by(/^← Home$/)[0]!.key;
       if (r.chance(0.04) && by(/^This word didn't work$/).length) return by(/^This word didn't work$/)[0]!.key;
       if (r.chance(0.03) && by(/^Undo$/).length) return by(/^Undo$/)[0]!.key;
       if (r.chance(0.07)) return by(/Menu/)[0]?.key ?? main!.key;
@@ -278,21 +297,22 @@ export function scriptedPick(screen: string, opts: Option[], r: Rng, ctx: { roun
       return main!.key;
     }
     case 'menu': {
-      if (ctx.roundsDone >= ctx.target && by(/^End the evening$/).length) return by(/^End the evening$/)[0]!.key;
-      const safe = opts.filter((o) => o.kind === 'menuitem' && o.label !== 'End the evening');
+      if (ctx.roundsDone >= ctx.target && by(/^(End the evening|End game)$/).length) return by(/^(End the evening|End game)$/)[0]!.key;
+      const safe = opts.filter((o) => o.kind === 'menuitem' && !/^(End the evening|End game)$/.test(o.label));
       if (r.chance(0.1)) return 'action:escape';
       return any(safe) ?? 'action:escape';
     }
     case 'dialog': {
-      if (ctx.roundsDone >= ctx.target && by(/^(End the evening|End now)$/).length) return by(/^(End the evening|End now)$/)[0]!.key;
-      const keep = by(/^(Keep playing|Keep it|Back|OK|Cancel|Carry on that evening)$/)[0];
+      if (ctx.roundsDone >= ctx.target && by(/^(End the evening|End game|End now)$/).length) return by(/^(End the evening|End game|End now)$/)[0]!.key;
+      const keep = by(/^(Keep playing|Keep it|Back|OK|Cancel|Carry on that evening|Carry on that game|Finish this round first|Add a player)$/)[0];
       if (keep && r.chance(0.7)) return keep.key;
       const other = opts.filter((o) => o.kind === 'button' && !/^(Discard)$/.test(o.label));
       return any(other) ?? keep?.key ?? 'action:escape';
     }
     case 'summary': {
       if (!ctx.ended && r.chance(0.1) && by(/^Oops, keep playing$/).length) return by(/^Oops, keep playing$/)[0]!.key;
-      return main?.key ?? 'action:escape';
+      // v3.8: the main button is "Play again" (a new game); the host goes Home instead to end the evening.
+      return by(/^Home$/)[0]?.key ?? main?.key ?? 'action:escape';
     }
     case 'how-to-play': case 'more-options': case 'categories': case 'players':
       if (screen === 'players' && r.chance(0.2)) return any(opts.filter((o) => /^Remove /.test(o.label))) ?? main?.key ?? 'action:back';
@@ -353,6 +373,7 @@ export async function playEvening(page: Page, cfg: EveningConfig, opts: { jev?: 
   let same = 0;
   let last = '';
   let jevDecisions = 0;
+  let diverged = false;
   const maxSteps = opts.maxSteps ?? 500;
   const screensSeen = new Set<string>();
 
@@ -375,7 +396,13 @@ export async function playEvening(page: Page, cfg: EveningConfig, opts: { jev?: 
     let key: string;
     // A replay repeats the saved steps; once they run out (an evening saved at a crash ends there), the scripted host
     // carries on from the same seed, so a fixed evening can still reach its end and the replay can pass.
-    const saved = opts.replay?.[n - 1];
+    // A saved tap whose button no longer exists (an approved screen change since the evening was saved, such as v3.8's
+    // "End game" leaving the between-rounds menu) ends the exact replay there: the scripted host carries on.
+    if (opts.replay && !diverged) {
+      const s0 = opts.replay[n - 1];
+      if (s0 && !s0.action.startsWith('action:') && !opts2.some((o) => o.key === s0.action)) diverged = true;
+    }
+    const saved = diverged ? undefined : opts.replay?.[n - 1];
     if (saved) {
       key = saved.action;
     } else if (opts.replay) {
@@ -403,7 +430,7 @@ export async function playEvening(page: Page, cfg: EveningConfig, opts: { jev?: 
       break;
     }
     if (screen === 'result' && /^button:Next round/.test(key)) roundsDone++;
-    if (screen === 'summary' && /Back to Home|Play something else/.test(key)) ended = true;
+    if (screen === 'summary' && /Back to Home|Play something else|:Home$/.test(key)) ended = true;
     if (screen === 'dialog' && /Discard$/.test(key)) ended = true;
   }
   if (!finished) findings.push({ kind: 'did not finish', step: steps.length, screen: steps.at(-1)?.screen ?? 'start', detail: `no summary left after ${steps.length} steps` });
@@ -458,6 +485,9 @@ async function act(page: Page, key: string, opts: Option[]): Promise<string | nu
   const o = opts.find((x) => x.key === key);
   if (!o?.locator) throw new Error(`no option ${key} on screen`);
   const tapToSee = o.label === 'Tap to see your word';
+  // v3.8 (IMP-010, IMP-077, guideline 20): buttons ignore taps within 500 ms of a screen change. A person never taps
+  // that fast; with the clock frozen (playEvening), the runner lets 500 ms pass before every tap.
+  await page.clock.runFor(500);
   await waitOutCoveringToast(page, o.locator);
   await o.locator.click({ timeout: 3000 });
   if (tapToSee) {

@@ -11,6 +11,8 @@ import {
   expectNoSecrets, freezeClock, fromMenu, hold, holdPad, imButton, mainButton, menuButton, noPageScrollAt, onlyEvening,
   passName, pickerName, result, reveal, savedEvening, secretTerms, startEvening, summaryAction, textOf,
   toPicker, turn, word,
+  aheadOfRound5,
+  settle,
 } from './impostor';
 
 test.use({ timezoneId: TZ, viewport: { width: 390, height: 844 } });
@@ -22,7 +24,7 @@ const DEALS3 = [
 ];
 const quiet = (page: Page, name: string) => page.getByRole('button', { name, exact: true });
 const pickerHeading = (page: Page) => page.getByRole('heading', { name: 'Who got the most fingers?' });
-const summaryHeading = (page: Page) => page.getByRole('heading', { name: "That's the night!" });
+const summaryHeading = (page: Page) => page.getByRole('heading', { name: "That's the game!" });
 const moves = async (page: Page) => (await onlyEvening(page)).records.map((r: any) => r.move);
 
 /** The clues screen after the deal: the v3.5 lines (IMP-016, IMP-020). */
@@ -32,7 +34,7 @@ async function expectClues(page: Page, starter: string, order: string, timer = f
   await expect(page.getByTestId('starter-name')).toHaveText(exact(starter));
   await expect(page.getByText('Each say one word about your secret:', { exact: true })).toBeVisible();
   await expect(page.getByTestId('clue-order')).toHaveText(exact(order));
-  await expect(mainButton(page)).toHaveText(timer ? 'Clues done, start the 2-minute timer' : 'Clues done, talk it over');
+  await expect(mainButton(page)).toHaveText(timer ? 'Clues done, start timer' : 'Clues done, talk it over');
 }
 
 /** The result screen's lines (IMP-033, IMP-034, IMP-038). */
@@ -46,6 +48,7 @@ async function expectResult(page: Page, r: { headline: '✓ Caught!' | '✗ Esca
   await expect(result(page, 'word-category')).toHaveText(exact(word(r.wordId).category, []));
   await expect(result(page, 'round-outcome')).toHaveText(exact(r.outcome));
   await expect(mainButton(page)).toHaveText('Next round');
+  await settle(page); // between-rounds buttons are guarded for 500 ms (IMP-077)
 }
 
 /** Picker → "It's a tie" with two names → "Point again: …" → re-vote → "Still a tie" (IMP-032, IMP-038). */
@@ -60,11 +63,10 @@ async function stillTie(page: Page, a: string, b: string, label: string) {
   await quiet(page, 'Still a tie').click();
 }
 
+/** v3.8 (IMP-077, IMP-092): between rounds, the outlined "End game" beside "Next round" opens the summary at once. */
 async function endEvening(page: Page) {
-  await fromMenu(page, 'End the evening');
-  const d = page.getByRole('dialog', { name: /End the evening\?/ });
-  await expect(d).toBeVisible();
-  await d.getByRole('button', { name: 'End the evening', exact: true }).click();
+  await quiet(page, 'End game').click();
+  await expect(page.getByRole('dialog')).toHaveCount(0);
   await expect(summaryHeading(page)).toBeVisible();
 }
 
@@ -93,8 +95,8 @@ test('Journey 1: defaults, 4 players, 3 rounds (caught, escaped, still a tie), e
   await mainButton(page).click();
   await expect(result(page, 'build-up')).toHaveText(exact('Arjun was…'));
   await page.clock.runFor(1500);
-  await expectResult(page, { headline: '✓ Caught!', impostor: 'Arjun', wordId: SAMOSA, outcome: 'The crew wins!' });
-  await expect(page.getByTestId('evening-line')).toHaveText('Tonight: impostor caught 1 · escaped 0');
+  await expectResult(page, { headline: '✓ Caught!', impostor: 'Arjun', wordId: SAMOSA, outcome: 'You caught the impostor!' });
+  await expect(page.getByTestId('evening-line')).toHaveText('This game: impostor caught 1 · escaped 0');
   await mainButton(page).click();
 
   await expect(page.getByTestId('deal-progress')).toHaveText(exact('Player 1 of 4', []));
@@ -102,9 +104,9 @@ test('Journey 1: defaults, 4 players, 3 rounds (caught, escaped, still a tie), e
   await expectClues(page, 'Arjun', 'Arjun → Meena → Kabir → Riya');
   await toPicker(page);
   await reveal(page, 'Riya', 1500);
-  await expectResult(page, { headline: '✗ Escaped!', note: 'Riya was crew.', impostor: 'Meena', wordId: PANI_PURI, outcome: 'Meena escaped!' });
+  await expectResult(page, { headline: '✗ Escaped!', note: 'Riya was not the impostor.', impostor: 'Meena', wordId: PANI_PURI, outcome: 'Meena escaped!' });
   await expect(result(page, 'also-called')).toHaveText(exact('Also called Golgappa / Puchka', []));
-  await expect(page.getByTestId('evening-line')).toHaveText('Tonight: impostor caught 1 · escaped 1');
+  await expect(page.getByTestId('evening-line')).toHaveText('This game: impostor caught 1 · escaped 1');
   await mainButton(page).click();
 
   await dealAll(page);
@@ -112,13 +114,13 @@ test('Journey 1: defaults, 4 players, 3 rounds (caught, escaped, still a tie), e
   await toPicker(page);
   await stillTie(page, 'Riya', 'Kabir', 'Riya or Kabir');
   await expectResult(page, { headline: '✗ Escaped!', note: 'Still a tie.', impostor: 'Kabir', wordId: KHEER, outcome: 'Kabir escaped!' });
-  await expect(page.getByTestId('evening-line')).toHaveText('Tonight: impostor caught 1 · escaped 2');
+  await expect(page.getByTestId('evening-line')).toHaveText('This game: impostor caught 1 · escaped 2');
 
   await endEvening(page);
-  await expect(page.getByTestId('summary-line')).toHaveText('Crew 1 · Impostors 2');
+  await expect(page.getByTestId('summary-line')).toHaveText('Impostor caught 1 · escaped 2');
   expect(await textOf(page.getByTestId('fun-line'))).toEqual([expect.stringMatching(exact('Best impostor: Meena, escaped 1 time'))]);
-  await expect(mainButton(page)).toHaveText('Back to Home');
-  await mainButton(page).click();
+  await expect(mainButton(page)).toHaveText(exact('Play again', []));
+  await quiet(page, 'Home').click();
   await expect(hostAGame(page)).toBeVisible();
   const saved = await onlyEvening(page);
   expect(saved.status).toBe('ended');
@@ -145,7 +147,7 @@ test('Journey 2: Hard, Timer and Score: the impostor never starts, the timer run
   expect(lines.Riya).toEqual(['Your secret', 'Samosa', 'Give one-word clues.', "Don't say it!", '']);
   expect(lines.Arjun!.slice(0, 4)).toEqual(['Your secret', "You're the impostor", 'Listen and blend in.', "Don't get caught!"]);
   expect((await page.getByTestId('starter-name').textContent())!.toLowerCase(), 'Hard: the impostor never starts').not.toBe('arjun');
-  await mainButton(page).filter({ hasText: 'Clues done, start the 2-minute timer' }).click();
+  await mainButton(page).filter({ hasText: 'Clues done, start timer' }).click();
   await expect(page.getByTestId('timer-label')).toHaveText(exact('Talk it over', []));
   await expect(page.getByTestId('timer')).toHaveText('2:00');
   await page.clock.runFor(120_000);
@@ -155,7 +157,7 @@ test('Journey 2: Hard, Timer and Score: the impostor never starts, the timer run
   await mainButton(page).filter({ hasText: 'Get ready to point' }).click();
   await page.clock.runFor(6000);
   await reveal(page, 'Arjun', 1500);
-  await expect(result(page, 'round-outcome')).toHaveText(exact('The crew wins!'));
+  await expect(result(page, 'round-outcome')).toHaveText(exact('You caught the impostor!'));
   await expect(page.getByTestId('round-points')).toHaveText(exact('+1 each: Riya, Meena, Kabir'));
   await expect(page.getByTestId('evening-line')).toHaveCount(0);
   await expect(page.getByTestId('score-row')).toHaveCount(4);
@@ -171,7 +173,7 @@ test('Journey 2: Hard, Timer and Score: the impostor never starts, the timer run
   const rows = await page.getByTestId('score-row').evaluateAll((els) => els.map((e) => [e.getAttribute('data-name')!.toLowerCase(), Number(e.getAttribute('data-points'))]));
   expect(rows[0]).toEqual(['meena', 3]);
   await endEvening(page);
-  await expect(page.getByTestId('summary-line')).toHaveText(exact('Meena wins the night with 3 points!'));
+  await expect(page.getByTestId('summary-line')).toHaveText(exact('Meena wins the game with 3 points!'));
   await expect(page.getByTestId('scoreboard')).toBeVisible();
 });
 
@@ -183,28 +185,30 @@ test('Journey 3: last-chance guess on: a right guess, its Undo, then a wrong gue
   await toPicker(page);
   await reveal(page, 'Arjun', 1500);
   await expect(result(page, 'result-headline')).toHaveText(exact('✓ Caught!', []));
-  await expect(result(page, 'guess-line')).toHaveText(exact('Last chance, Arjun! Guess the word out loud. Get it right and you steal the round.'));
+  await expect(result(page, 'guess-line')).toHaveText(exact('Last chance, Arjun! Guess the word out loud. Get it right and you win the round.'));
   await expectNoSecrets(page, secretTerms(SAMOSA, 'easy'), 'the guess step');
   await expect(menuButton(page)).toHaveCount(0);
   await mainButton(page).filter({ hasText: exact('Arjun guessed. Show the word') }).click();
   await expect(result(page, 'result-word')).toHaveText(exact('Samosa', []));
   await quiet(page, 'Guessed right').click();
-  await expect(result(page, 'round-outcome')).toHaveText(exact('Arjun steals the round!'));
+  await expect(result(page, 'round-outcome')).toHaveText(exact('Arjun wins the round!'));
   await expect(page.getByTestId('round-points')).toHaveText(exact('+1 Arjun'));
+  await settle(page);
   await quiet(page, 'Undo').click();
   await expect(result(page, 'round-outcome')).toHaveCount(0);
   await expect(quiet(page, 'Guessed right')).toBeVisible();
   await quiet(page, 'Wrong guess').click();
-  await expect(result(page, 'round-outcome')).toHaveText(exact('The crew wins!'));
+  await expect(result(page, 'round-outcome')).toHaveText(exact('You caught the impostor!'));
   await expect(page.getByTestId('round-points')).toHaveText(exact('+1 each: Riya, Meena, Kabir'));
   expect((await moves(page)).filter((m: any) => m.type === 'verdict')).toEqual([{ type: 'verdict', right: false }]);
+  await settle(page); // between-rounds buttons are guarded for 500 ms after the verdict (IMP-077)
   await mainButton(page).click();
   await dealAll(page);
   await toPicker(page);
   await reveal(page, 'Meena', 1500);
   await mainButton(page).filter({ hasText: exact('Meena guessed. Show the word') }).click();
   await quiet(page, 'Guessed right').click();
-  await expect(result(page, 'round-outcome')).toHaveText(exact('Meena steals the round!'));
+  await expect(result(page, 'round-outcome')).toHaveText(exact('Meena wins the round!'));
   await expect(quiet(page, 'Undo')).toBeVisible();
 });
 
@@ -213,7 +217,7 @@ test('Journey 4: "Don\'t know this word?" (New word for everyone?) and "Deal aga
   await startEvening(page, { seeds: { deals: [{ wordId: SAMOSA, impostor: 'Arjun', starter: 'Riya' }, { wordId: PANI_PURI, impostor: 'Kabir', starter: 'Riya' }, { wordId: KHEER, impostor: 'Meena', starter: 'Riya' }] } });
   await turn(page, 'Riya');
   await turn(page, 'Arjun');
-  await imButton(page, 'Meena').click();
+  await settle(page); await imButton(page, 'Meena').click();
   await hold(page, 600);
   await dontKnow(page).click();
   const d = page.getByRole('dialog', { name: /New word for everyone\?/ });
@@ -222,7 +226,7 @@ test('Journey 4: "Don\'t know this word?" (New word for everyone?) and "Deal aga
   await expect(page.getByRole('heading', { name: 'No problem! New word coming.' })).toBeVisible();
   await expect(page.getByText(exact('Pass the phone back to Riya'))).toBeVisible();
   await expect(page.getByTestId('deal-progress')).toHaveCount(0);
-  await imButton(page, 'Riya').click();
+  await settle(page); await imButton(page, 'Riya').click();
   expect((await hold(page, 600))[1]).toBe('Pani puri');
   await doneButton(page).click();
   await expect(page.getByTestId('deal-progress')).toHaveText(exact('Player 2 of 4', []));
@@ -259,6 +263,7 @@ test('Journey 5: close and reopen at every step: deal, clues, talk, countdown, p
   await dealAll(page, P4.slice(1));
   await reopen(page);
   await expectClues(page, 'Riya', 'Riya → Arjun → Meena → Kabir');
+  await settle(page); // the clues screen's buttons are guarded for 500 ms after it shows (reopened too)
   await mainButton(page).click();
   await reopen(page);
   await expect(page.getByTestId('talk-heading')).toHaveText(exact('Talk it over', []));
@@ -275,12 +280,13 @@ test('Journey 5: close and reopen at every step: deal, clues, talk, countdown, p
   await reveal(page, 'Arjun', 1500);
   await reopen(page);
   await expect(result(page, 'build-up')).toHaveCount(0);
-  await expectResult(page, { headline: '✓ Caught!', impostor: 'Arjun', wordId: SAMOSA, outcome: 'The crew wins!' });
+  await expectResult(page, { headline: '✓ Caught!', impostor: 'Arjun', wordId: SAMOSA, outcome: 'You caught the impostor!' });
   await endEvening(page);
   await reopen(page);
   await expect(summaryHeading(page)).toBeVisible();
-  await expect(quiet(page, 'Oops, keep playing')).toBeVisible();
-  await expect(page.getByTestId('summary-line')).toHaveText('Crew 1 · Impostors 0');
+  await expect(quiet(page, 'More ›')).toBeVisible();
+  await expect(mainButton(page)).toHaveText(exact('Play again', []));
+  await expect(page.getByTestId('summary-line')).toHaveText('Impostor caught 1 · escaped 0');
 });
 
 test('Journey 6: "How to play" on request and a practice round, then round 1; "How to play" from the menu mid-round', async ({ page }) => {
@@ -294,7 +300,7 @@ test('Journey 6: "How to play" on request and a practice round, then round 1; "H
   await expect(page.getByRole('heading', { name: 'Read this aloud' })).toBeVisible();
   await expect(page.locator('ol > li')).toHaveText([
     'Everyone sees the secret word except one impostor.', "Clockwise, say one word about it. Don't say the word!",
-    'Talk, then on 3, 2, 1 everyone points.', 'Most fingers is revealed. Caught: the crew wins. Wrong person: the impostor wins.',
+    'Talk, then on 3, 2, 1 everyone points.', 'Whoever gets the most fingers is revealed. Caught: you win. Wrong person: the impostor wins.',
   ]);
   await expect(page.getByRole('button', { name: 'Practice round first', exact: true })).toHaveCount(0);
   await page.getByRole('button', { name: 'Done', exact: true }).click();
@@ -308,7 +314,7 @@ test('Journey 6: "How to play" on request and a practice round, then round 1; "H
   await dealAll(page);
   await toPicker(page);
   await reveal(page, 'Meena', 1500);
-  await expect(page.getByTestId('evening-line')).toHaveText('Tonight: impostor caught 1 · escaped 0');
+  await expect(page.getByTestId('evening-line')).toHaveText('This game: impostor caught 1 · escaped 0');
 });
 
 test('Journey 7: 12 players with long names, in landscape (812 × 375)', async ({ page }) => {
@@ -337,7 +343,7 @@ test('Journey 8: 320 × 568 with Larger text and tap to show', async ({ page }) 
   await page.setViewportSize({ width: 320, height: 568 });
   await startEvening(page, { storage: { 'pgn.pref.largerText': true, 'pgn.pref.impostor.tapToShow': true }, seeds: { deals: DEALS3 } });
   for (const p of P4) {
-    await imButton(page, p).click();
+    await settle(page); await imButton(page, p).click();
     await expect(holdPad(page)).toHaveAccessibleName('Tap to see your word');
     await expect(page.getByRole('button', { name: 'Tap instead', exact: true })).toBeHidden();
     await holdPad(page).click();
@@ -352,7 +358,7 @@ test('Journey 8: 320 × 568 with Larger text and tap to show', async ({ page }) 
   await toPicker(page);
   expect(await noPageScrollAt(page)).toBe(true);
   await reveal(page, 'Arjun', 1500);
-  await expect(result(page, 'round-outcome')).toHaveText(exact('The crew wins!'));
+  await expect(result(page, 'round-outcome')).toHaveText(exact('You caught the impostor!'));
   await expect(mainButton(page)).toBeInViewport({ ratio: 1 });
 });
 
@@ -394,12 +400,12 @@ test('Journey 10: "Oops, keep playing", Share, History, then "Play something els
   await toPicker(page);
   await reveal(page, 'Arjun', 1500);
   await endEvening(page);
-  await quiet(page, 'Oops, keep playing').click();
-  await expect(result(page, 'round-outcome')).toHaveText(exact('The crew wins!'));
+  await summaryAction(page, 'Oops, keep playing');
+  await expect(result(page, 'round-outcome')).toHaveText(exact('You caught the impostor!'));
   await endEvening(page);
   await summaryAction(page, 'Share');
   await expect.poll(() => page.evaluate(() => (window as any).__shared.length)).toBe(1);
-  expect(await page.evaluate(() => (window as any).__shared[0])).toBe(['Impostor night · 1 round', 'Impostor caught 1 · escaped 0', 'Words: Samosa'].join('\n'));
+  expect(await page.evaluate(() => (window as any).__shared[0])).toBe(['Impostor game · 1 round', 'Impostor caught 1 · escaped 0', 'Words: Samosa'].join('\n'));
   await expect(summaryHeading(page)).toBeVisible();
   await quiet(page, 'Play something else').click();
   await expect(page.getByRole('heading', { name: 'What shall we play?' })).toBeVisible();
@@ -427,10 +433,12 @@ test('Journey 11: out of words in a category: "Allow repeats" deals again', asyn
     await reveal(page, 'Riya', 1500);
     await mainButton(page).click();
   }
-  await expect(page.getByRole('heading', { name: "You've played every word in these categories tonight!" })).toBeVisible();
+  await expect(page.getByRole('heading', { name: "You've played every word in these categories!" })).toBeVisible();
   await expect(page.getByText('Turn on more categories or + Grown-ups.', { exact: true })).toBeVisible();
-  await expect(mainButton(page)).toHaveText('Allow repeats');
-  await mainButton(page).click();
+  // v3.8 (IMP-052, IMP-077): main "Change categories" beside the outlined "End game"; "Allow repeats" is quiet above them.
+  await expect(mainButton(page)).toHaveText(exact('Change categories', []));
+  await settle(page);
+  await quiet(page, 'Allow repeats').click();
   await expect(passName(page)).toHaveText(exact('Riya'));
   const third = await dealAll(page);
   expect([word(a!).word, word(b!).word]).toContain(third.Riya![1]);
@@ -462,6 +470,6 @@ test('Journey 12: screen-reader announcements through one full round', async ({ 
   const ann: string[] = await page.evaluate(() => (window as any).__ann);
   const fromCount = ann.slice(ann.indexOf('3'));
   expect(fromCount.slice(0, 5)).toEqual(['3', '2', '1', 'Point!', 'Arjun was…']);
-  expect(fromCount.slice(5).join(' ')).toMatch(/^✓ Caught!.*[Aa][Rr][Jj][Uu][Nn] was the impostor.*The word was Samosa.*The crew wins!$/);
+  expect(fromCount.slice(5).join(' ')).toMatch(/^✓ Caught!.*[Aa][Rr][Jj][Uu][Nn] was the impostor.*The word was Samosa.*You caught the impostor!$/);
   for (const t of ann) for (const banned of ['Tonight:', 'Category:', 'Player 1 of 4', 'look away']) expect(t).not.toContain(banned);
 });

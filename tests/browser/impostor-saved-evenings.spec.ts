@@ -10,6 +10,8 @@ import {
   KHEER, P4, PANI_PURI, SAMOSA, TZ, T0, ci, result, summaryAction, exact, expectNoSecrets, fromMenu, hold, imButton, mainButton, menuButton,
   onlyEvening, passName, phoneWith, revealLines, roundMoves, savedEvening, savedEvenings, secretTerms, startEvening, textOf, turn,
   type Move,
+  aheadOfRound5,
+  settle,
 } from './impostor';
 
 test.use({ timezoneId: TZ, viewport: { width: 390, height: 844 } });
@@ -37,11 +39,16 @@ const lastAt = (e: any) => e.records.at(-1).at as number;
 /** Whatever opens first: the evening itself, or Home with its unfinished row (then "Tap to resume"). */
 async function openEvening(page: Page) {
   const row = page.getByTestId('unfinished-games').filter({ hasText: /Impostor/ });
-  const inGame = page.getByTestId('main-button').or(page.getByRole('heading', { name: "That's the night!" }));
+  const inGame = page.getByTestId('main-button').or(page.getByRole('heading', { name: /^That's the (night|game)!$/ }));
   await expect(row.or(inGame).first()).toBeVisible();
   if (await row.first().isVisible()) await row.getByText('Tap to resume').first().click();
 }
-const summaryHeading = (page: Page) => page.getByRole('heading', { name: "That's the night!" });
+const summaryHeading = (page: Page) => page.getByRole('heading', { name: "That's the game!" });
+/** v3.8 (IMP-077): between rounds, the outlined "End game" beside "Next round" opens the summary at once. */
+async function endGame(page: Page) {
+  await page.getByRole('button', { name: 'End game', exact: true }).click();
+  await expect(summaryHeading(page)).toBeVisible();
+}
 const leftHalfway = (page: Page) => page.getByRole('heading', { name: 'This round was left halfway. Start a fresh round?' });
 const quiet = (page: Page, name: string) => page.getByRole('button', { name, exact: true });
 const historyRows = (page: Page) => page.getByTestId('history-game');
@@ -62,14 +69,14 @@ test.describe('IMP-090: interrupted during the deal', () => {
   test('a return from hidden while Arjun holds his word: "Welcome back.", his screen A again, never a block', async ({ page }) => {
     await startEvening(page, { seeds: { deals: [{ wordId: SAMOSA, impostor: 'Kabir' }] } });
     await turn(page, 'Riya');
-    await imButton(page, 'Arjun').click();
+    await settle(page); await imButton(page, 'Arjun').click();
     await hold(page, 600);
     await backgroundAndReturn(page);
     await expect(page.getByText('Welcome back.', { exact: true })).toBeVisible();
     await expect(passName(page)).toHaveText(exact('Arjun'));
     await expect(page.getByTestId('private-block')).toHaveCount(0);
     // Every return during the deal, and Riya is not asked again.
-    await imButton(page, 'Arjun').click();
+    await settle(page); await imButton(page, 'Arjun').click();
     await backgroundAndReturn(page);
     await expect(page.getByText('Welcome back.', { exact: true })).toBeVisible();
     await expect(passName(page)).toHaveText(exact('Arjun'));
@@ -144,7 +151,7 @@ test.describe('IMP-091: interrupted later in a round', () => {
     await expect(result(page, 'build-up')).toHaveCount(0);
     await expect(result(page, 'result-headline')).toHaveText(exact('✓ Caught!', []));
     await expect(result(page, 'result-word')).toHaveText(exact('Samosa', []));
-    await expect(result(page, 'round-outcome')).toHaveText(exact('The crew wins!'));
+    await expect(result(page, 'round-outcome')).toHaveText(exact('You caught the impostor!'));
     await expect(quiet(page, 'Undo')).toHaveCount(0);
     await expect(mainButton(page)).toHaveText('Next round');
   });
@@ -158,7 +165,7 @@ test.describe('IMP-091: interrupted later in a round', () => {
 
   test('IMP-037: after a verdict: the result with "Undo"; "Undo" brings the verdict buttons back under the word and takes the verdict out of the record', async ({ page }) => {
     await reopen(page, R1_CAUGHT_WRONG);
-    await expect(page.getByTestId('round-outcome')).toHaveText('The crew wins!');
+    await expect(page.getByTestId('round-outcome')).toHaveText('You caught the impostor!');
     await expect(mainButton(page)).toHaveText('Next round');
     await quiet(page, 'Undo').click();
     await expect(quiet(page, 'Guessed right')).toBeVisible();
@@ -173,7 +180,7 @@ test.describe('IMP-091: interrupted later in a round', () => {
   test('an escaped reveal reopens on the full result (as at t = 1.5 s), with no "Undo"', async ({ page }) => {
     await reopen(page, R1_CAUGHT_WRONG.slice(0, 7).concat([{ type: 'reveal', player: 'Meena' }]));
     await expect(result(page, 'result-headline')).toHaveText(exact('✗ Escaped!', []));
-    await expect(result(page, 'result-note')).toHaveText(exact('Meena was crew.'));
+    await expect(result(page, 'result-note')).toHaveText(exact('Meena was not the impostor.'));
     await expect(result(page, 'result-word')).toHaveText(exact('Samosa', []));
     await expect(page.getByTestId('round-outcome')).toHaveText(exact('Arjun escaped!'));
     await expect(quiet(page, 'Undo')).toHaveCount(0);
@@ -182,6 +189,7 @@ test.describe('IMP-091: interrupted later in a round', () => {
   test('more than 3 hours later: "left halfway"; "Next round" deals the round again (dealAgain), from the first player', async ({ page }) => {
     await reopen(page, [START, ...seen(4), { type: 'startTalk' }], { after: 3 * H + 1 });
     await expect(leftHalfway(page)).toBeVisible();
+    await settle(page); // between-rounds buttons are guarded for 500 ms (IMP-077)
     await mainButton(page).click();
     await expect(passName(page)).toHaveText(exact('Riya'));
     const recs = (await onlyEvening(page)).records;
@@ -192,45 +200,45 @@ test.describe('IMP-091: interrupted later in a round', () => {
 test.describe('IMP-092: ending and discarding the evening', () => {
   const atRound2Result = () => savedEvening({ deals: DEALS, moves: [...R1_CAUGHT_WRONG, ...R2_ESCAPED] });
 
-  test('"End the evening" asks first; the summary shows with nothing recorded yet ("Crew 1 · Impostors 1", "More ›"); "Discard" deletes the evening', async ({ page }) => {
+  test('IMP-077, IMP-092 (v3.8): "End game" opens the summary at once with nothing recorded yet ("Impostor caught 1 · escaped 1", main "Play again", then "Play something else", "Home", "More ›"); "Discard this game" deletes it', async ({ page }) => {
     const e = atRound2Result();
     await phoneWith(page, [e], { now: lastAt(e) + 60_000 });
     await openEvening(page);
-    await fromMenu(page, 'End the evening');
-    const dialog = page.getByRole('dialog', { name: /End the evening\?/ });
-    await expect(dialog).toBeVisible();
-    await expectOneMainButton(page, '"End the evening?"', 'Keep playing', true);
-    await dialog.getByRole('button', { name: 'Keep playing', exact: true }).click();
-    await expect(dialog).toHaveCount(0);
-    await fromMenu(page, 'End the evening');
-    await page.getByRole('dialog', { name: /End the evening\?/ }).getByRole('button', { name: 'End the evening', exact: true }).click();
-    await expect(summaryHeading(page)).toBeVisible();
-    await expect(page.getByTestId('summary-line')).toHaveText('Crew 1 · Impostors 1');
+    await expect(menuButton(page)).toBeVisible();
+    await endGame(page);
+    await expect(page.getByRole('dialog')).toHaveCount(0);
+    await expect(page.getByTestId('summary-line')).toHaveText(exact('Impostor caught 1 · escaped 1', []));
     expect(await page.getByTestId('summary-line').evaluate((el) => parseFloat(getComputedStyle(el).fontSize))).toBe(32);
-    await expect(mainButton(page)).toHaveText('Back to Home');
+    await expect(mainButton(page)).toHaveText(exact('Play again', []));
     await expect(menuButton(page)).toHaveCount(0);
-    const quietOrder = await textOf(page.getByRole('button').filter({ hasText: /^(Oops, keep playing|Play something else|More ›)$/ }));
-    expect(quietOrder).toEqual(['Oops, keep playing', 'Play something else', 'More ›']);
+    const quietOrder = await textOf(page.getByRole('button').filter({ hasText: /^(Oops, keep playing|Play something else|Home|More ›)$/ }));
+    expect(quietOrder).toEqual(['Play something else', 'Home', 'More ›']);
+    for (const name of ['Play something else', 'Home', 'More ›']) {
+      const b = (await quiet(page, name).boundingBox())!;
+      expect(b.height, `${name}: 48 px tall`).toBeGreaterThanOrEqual(47.5);
+    }
     const saved = await onlyEvening(page);
     expect(saved.status).toBe('in-progress');
     expect(saved.records.map((r: any) => r.move.type)).not.toContain('endEvening');
-    await summaryAction(page, 'Discard this evening');
-    const discard = page.getByRole('dialog', { name: /Discard this evening\? Its rounds and scores will be lost\./ });
+    await quiet(page, 'More ›').click();
+    expect(await textOf(page.getByRole('menuitem'))).toEqual(['Oops, keep playing', 'Share', 'History', 'Discard this game']);
+    await expect(page.getByRole('separator')).toHaveCount(1);
+    await page.getByRole('menuitem', { name: 'Discard this game', exact: true }).click();
+    const discard = page.getByRole('dialog', { name: /Discard this game\? Its rounds and scores will be lost\./ });
     await expect(discard).toBeVisible();
-    await expectOneMainButton(page, '"Discard this evening?"', 'Keep it', true);
+    await expectOneMainButton(page, '"Discard this game?"', 'Keep it', true);
     await discard.getByRole('button', { name: 'Discard', exact: true }).click();
     await expect(page.getByRole('button', { name: /^Host a game/ })).toBeVisible();
     expect(await savedEvenings(page)).toEqual([]);
     await expect(page.getByTestId('unfinished-games').filter({ hasText: /Impostor/ })).toHaveCount(0);
   });
 
-  test('"Back to Home" records endEvening; the evening is kept in History', async ({ page }) => {
+  test('IMP-092 (v3.8): "Home" on the summary records endEvening; the game is kept in History', async ({ page }) => {
     const e = atRound2Result();
     await phoneWith(page, [e], { now: lastAt(e) + 60_000 });
     await openEvening(page);
-    await fromMenu(page, 'End the evening');
-    await page.getByRole('dialog', { name: /End the evening\?/ }).getByRole('button', { name: 'End the evening', exact: true }).click();
-    await mainButton(page).filter({ hasText: 'Back to Home' }).click();
+    await endGame(page);
+    await quiet(page, 'Home').click();
     await expect(page.getByRole('button', { name: /^Host a game/ })).toBeVisible();
     const saved = await onlyEvening(page);
     expect(saved.status).toBe('ended');
@@ -238,26 +246,45 @@ test.describe('IMP-092: ending and discarding the evening', () => {
     await openHistory(page);
     await expect(historyRows(page).filter({ hasText: 'Impostor · 2 rounds' })).toHaveCount(1);
   });
+
+  test('IMP-092, IMP-103 (v3.8): "Play again" on the summary records endEvening, then "Who\'s playing?" with this game\'s players and "How do you want to play?" with its choices', async ({ page }) => {
+    const e = savedEvening({ deals: DEALS, choices: { mode: 'hard', score: true }, moves: [...R1_CAUGHT_WRONG, ...R2_ESCAPED] });
+    await phoneWith(page, [e], { now: lastAt(e) + 60_000 });
+    await openEvening(page);
+    await endGame(page);
+    await mainButton(page).filter({ hasText: 'Play again' }).click();
+    await expect(page.getByRole('heading', { name: "Who's playing?" })).toBeVisible();
+    await expect(page.getByRole('dialog'), 'never the "Start a new game?" dialog').toHaveCount(0);
+    const old = (await savedEvenings(page)).find((x: any) => x.id === e.id);
+    expect(old.status).toBe('ended');
+    expect(old.records.at(-1).move).toEqual({ type: 'endEvening' });
+    const names = await page.getByRole('button', { name: /^Remove / }).evaluateAll((els) => els.map((el) => el.getAttribute('aria-label')));
+    expect(names, 'this game\'s final players, in seat order').toEqual(P4.map((p) => `Remove ${p}`));
+    await page.getByRole('button', { name: 'Next', exact: true }).click();
+    await expect(page.getByRole('heading', { name: 'How do you want to play?' })).toBeVisible();
+    await expect(page.getByRole('group', { name: 'Mode', exact: true }).getByRole('button', { name: /Hard/ })).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.getByRole('group', { name: 'Score', exact: true }).getByRole('button', { name: /Yes/ })).toHaveAttribute('aria-pressed', 'true');
+  });
 });
 
 test.describe('IMP-093: ending mid-round', () => {
-  test('"End now? This round won\'t count."; "Oops, keep playing" returns to the round; leaving drops the round', async ({ page }) => {
+  test('"End game" in the round menu (v3.8): "End now? This round won\'t count."; "Oops, keep playing" (in "More ›") returns to the round; leaving drops the round', async ({ page }) => {
     const e = savedEvening({ deals: DEALS, moves: [...R1_CAUGHT_WRONG, { type: 'nextRound' }, ...seen(4)] });
     await phoneWith(page, [e], { now: lastAt(e) + 60_000 });
     await openEvening(page);
     await expect(page.getByTestId('clue-order')).toBeVisible();
-    await fromMenu(page, 'End the evening');
+    await fromMenu(page, 'End game');
     const dialog = page.getByRole('dialog', { name: /End now\? This round won't count\./ });
     await expect(dialog).toBeVisible();
     await expectOneMainButton(page, '"End now?"', 'Keep playing', true);
     await dialog.getByRole('button', { name: 'End now', exact: true }).click();
     await expect(summaryHeading(page)).toBeVisible();
-    await expect(page.getByTestId('summary-line')).toHaveText('Crew 1 · Impostors 0');
-    await quiet(page, 'Oops, keep playing').click();
+    await expect(page.getByTestId('summary-line')).toHaveText(exact('Impostor caught 1 · escaped 0', []));
+    await summaryAction(page, 'Oops, keep playing');
     await expect(page.getByTestId('clue-order')).toHaveText(exact('Arjun → Meena → Kabir → Riya'));
-    await fromMenu(page, 'End the evening');
+    await fromMenu(page, 'End game');
     await page.getByRole('dialog', { name: /End now\?/ }).getByRole('button', { name: 'End now', exact: true }).click();
-    await mainButton(page).filter({ hasText: 'Back to Home' }).click();
+    await quiet(page, 'Home').click();
     const saved = await onlyEvening(page);
     expect(saved.status).toBe('ended');
     expect(saved.records.at(-1).move).toEqual({ type: 'endEvening' });
@@ -278,7 +305,7 @@ test.describe('IMP-094: what History keeps', () => {
 
   test('IMP-096: the v3 format fixture opens: the ended evening in History with its 3 rounds, the other resumes at Meena\'s turn', async ({ page }) => {
     await phoneWith(page, [fixture.ended, fixture.inProgress], { now: lastAt(fixture.inProgress) + 30 * 60_000 });
-    await expect(page.getByTestId('unfinished-games').filter({ hasText: 'Impostor, 9:30 pm, round 3' })).toBeVisible();
+    await expect(page.getByTestId('unfinished-games').filter({ hasText: 'Impostor · Riya, Arjun +2 · round 3' })).toBeVisible();
     await openEvening(page);
     await expect(page.getByText('Welcome back.', { exact: true })).toBeVisible();
     await expect(passName(page)).toHaveText(exact('Meena'));
@@ -313,12 +340,12 @@ test.describe('IMP-094: what History keeps', () => {
   test('IMP-096 (v3.5): every word-dealing move is saved with the dealt word id: startDeal, dontKnow, dealAgain, nextRound, allowRepeats', async ({ page }) => {
     await startEvening(page, { seeds: { word: 'w96b', starter: 's96b', deals: [{ wordId: SAMOSA, impostor: 'Arjun', starter: 'Riya' }, { wordId: PANI_PURI, impostor: 'Kabir', starter: 'Riya' }, { wordId: KHEER, impostor: 'Meena', starter: 'Riya' }, { wordId: 'IMPW-006', impostor: 'Riya', starter: 'Arjun' }] } });
     expect((await onlyEvening(page)).records[0].move).toEqual({ type: 'startDeal', practice: false, wordId: SAMOSA });
-    await imButton(page, 'Riya').click();
+    await settle(page); await imButton(page, 'Riya').click();
     await hold(page, 600);
     await page.getByRole('button', { name: "Don't know this word?", exact: true }).click();
     await page.getByRole('dialog', { name: /New word for everyone\?/ }).getByRole('button', { name: 'New word', exact: true }).click();
     expect((await onlyEvening(page)).records.at(-1).move).toEqual({ type: 'dontKnow', wordId: PANI_PURI });
-    await imButton(page, 'Riya').click();
+    await settle(page); await imButton(page, 'Riya').click();
     await hold(page, 600);
     await fromMenu(page, 'Deal again with a new word');
     await page.getByRole('dialog', { name: /^Deal again\?/ }).getByRole('button', { name: 'Deal again', exact: true }).click();
@@ -363,46 +390,45 @@ test.describe('IMP-095, IMP-097, IMP-098: the summary', () => {
     });
     await phoneWith(page, [e], { now: lastAt(e) + 60_000 });
     await openEvening(page);
-    await fromMenu(page, 'End the evening');
-    await page.getByRole('dialog', { name: /End the evening\?/ }).getByRole('button', { name: 'End the evening', exact: true }).click();
-    await expect(summaryHeading(page)).toBeVisible();
+    await endGame(page);
   };
 
-  test('IMP-095: best impostor and most suspected, in this order, at most 2; the lead line "Crew 3 · Impostors 4"', async ({ page }) => {
+  test('IMP-095 (v3.7): best impostor and most suspected, in this order, at most 2; the lead line "Impostor caught 4 · escaped 3"', async ({ page }) => {
     await toSummary(page, savedEvening({ deals: SEVEN, moves: sevenRounds }));
     expect(await textOf(page.getByTestId('fun-line'))).toEqual([
       expect.stringMatching(exact('Best impostor: Arjun, escaped 2 times')),
-      expect.stringMatching(exact('Most suspected: Meena, picked 3 times while crew')),
+      expect.stringMatching(exact('Most suspected: Meena, picked 3 times without being the impostor')),
     ]);
-    // Crew: caught with a wrong guess (3); Impostors: escaped (3) and a right guess (1).
-    await expect(page.getByTestId('summary-line')).toHaveText('Crew 3 · Impostors 4');
+    // Caught (Terms): the vote revealed the impostor, whatever the guess: 3 wrong guesses and 1 right guess; escaped 3.
+    await expect(page.getByTestId('summary-line')).toHaveText(exact('Impostor caught 4 · escaped 3', []));
   });
 
-  test('IMP-097: an evening with only the practice round: "Crew 0 · Impostors 0", no fun lines, "More ›" without "Share"; leaving deletes it', async ({ page }) => {
+  test('IMP-097 (v3.8): a game with only the practice round: "Impostor caught 0 · escaped 0", no fun lines, "More ›" without "Share"; leaving deletes it', async ({ page }) => {
     const e = savedEvening({ deals: DEALS, moves: roundMoves(P4, 'Arjun', { escaped: 'Meena' }, { type: 'startDeal', practice: true }) });
     await toSummary(page, e);
-    await expect(page.getByTestId('summary-line')).toHaveText('Crew 0 · Impostors 0');
+    await expect(page.getByTestId('summary-line')).toHaveText(exact('Impostor caught 0 · escaped 0', []));
     await expect(page.getByTestId('fun-line')).toHaveCount(0);
     await expect(page.getByTestId('scoreboard')).toHaveCount(0);
-    for (const b of ['Oops, keep playing', 'Play something else']) await expect(quiet(page, b)).toBeVisible();
+    await expect(mainButton(page)).toHaveText(exact('Play again', []));
+    for (const b of ['Play something else', 'Home']) await expect(quiet(page, b)).toBeVisible();
     await expect(quiet(page, 'More ›')).toBeVisible();
     await quiet(page, 'More ›').click();
-    expect(await textOf(page.getByRole('menuitem'))).toEqual(['History', 'Discard this evening']);
+    expect(await textOf(page.getByRole('menuitem'))).toEqual(['Oops, keep playing', 'History', 'Discard this game']);
     await page.keyboard.press('Escape');
     if (await page.getByRole('menuitem').first().isVisible()) await quiet(page, 'More ›').click();
-    await mainButton(page).filter({ hasText: 'Back to Home' }).click();
+    await quiet(page, 'Home').click();
     await expect(page.getByRole('button', { name: /^Host a game/ })).toBeVisible();
     expect(await savedEvenings(page)).toEqual([]);
   });
 
-  test('IMP-098: one counted round: "Crew 1 · Impostors 0", no fun line, Share\'s first line "Impostor night · 1 round"', async ({ page }) => {
+  test('IMP-098 (v3.8): one counted round: "Impostor caught 1 · escaped 0", no fun line, Share\'s first line "Impostor game · 1 round"', async ({ page }) => {
     await toSummary(page, savedEvening({ deals: DEALS, moves: R1_CAUGHT_WRONG }));
-    await expect(page.getByTestId('summary-line')).toHaveText('Crew 1 · Impostors 0');
+    await expect(page.getByTestId('summary-line')).toHaveText(exact('Impostor caught 1 · escaped 0', []));
     await expect(page.getByTestId('fun-line')).toHaveCount(0);
     await summaryAction(page, 'Share');
     const shared: string[] = await page.evaluate(() => (window as any).__shared);
     expect(shared.length).toBe(1);
-    expect(shared[0]!.split('\n')[0]).toBe('Impostor night · 1 round');
+    expect(shared[0]!.split('\n')[0]).toBe('Impostor game · 1 round');
   });
 
   test('IMP-098: "escaped 1 time"', async ({ page }) => {
@@ -410,15 +436,15 @@ test.describe('IMP-095, IMP-097, IMP-098: the summary', () => {
     await expect(page.getByTestId('fun-line').first()).toHaveText(exact('Best impostor: Arjun, escaped 1 time'));
   });
 
-  test('IMP-092 and IMP-098: Score Yes: "Arjun wins the night with 1 point!" / "… with 2 points!"', async ({ page, browser }) => {
+  test('IMP-092 and IMP-098 (v3.6): Score Yes: "Arjun wins the game with 1 point!" / "… with 2 points!"', async ({ page, browser }) => {
     await toSummary(page, savedEvening({ deals: DEALS, choices: { score: true }, moves: roundMoves(P4, 'Arjun', { caught: 'right' }, START) }));
-    await expect(page.getByTestId('summary-line')).toHaveText(exact('Arjun wins the night with 1 point!'));
+    await expect(page.getByTestId('summary-line')).toHaveText(exact('Arjun wins the game with 1 point!'));
     const ctx = await browser.newContext({ timezoneId: TZ, viewport: { width: 390, height: 844 } });
     await silence(ctx);
     const p2 = await ctx.newPage();
     await toSummary(p2, savedEvening({ deals: DEALS, choices: { score: true }, moves: [...roundMoves(P4, 'Arjun', { caught: 'right' }, START), ...roundMoves(P4, 'Meena', { caught: 'wrong' })] }));
     // Round 1: +1 Arjun; round 2: +1 each to Riya, Arjun, Kabir: Arjun 2, Riya 1, Kabir 1.
-    await expect(p2.getByTestId('summary-line')).toHaveText(exact('Arjun wins the night with 2 points!'));
+    await expect(p2.getByTestId('summary-line')).toHaveText(exact('Arjun wins the game with 2 points!'));
     await ctx.close();
   });
 });
@@ -439,20 +465,22 @@ test.describe('IMP-099: time limits, measured exactly', () => {
     await ctx.close();
   });
 
-  test('the summary\'s 3 hours: at exactly 3 hours it still offers "Oops, keep playing"; 1 ms later endEvening is recorded at that moment and "Oops" is gone', async ({ page, browser }) => {
+  test('the summary\'s 3 hours: at exactly 3 hours it still offers "Oops, keep playing" (in "More ›", v3.8); 1 ms later endEvening is recorded at that moment and "Oops" is gone', async ({ page, browser }) => {
     const e = savedEvening({ deals: DEALS, moves: [...R1_CAUGHT_WRONG, ...R2_ESCAPED] });
     const shownAt = lastAt(e) + 5 * 60_000;
     await phoneWith(page, [e], { now: shownAt + 3 * H, ui: { [e.id]: { summaryShownAt: shownAt } }, fixed: true });
     await openEvening(page);
     await expect(summaryHeading(page)).toBeVisible();
-    await expect(quiet(page, 'Oops, keep playing')).toBeVisible();
+    await quiet(page, 'More ›').click();
+    await expect(page.getByRole('menuitem', { name: 'Oops, keep playing', exact: true })).toBeVisible();
     const ctx = await browser.newContext({ timezoneId: TZ, viewport: { width: 390, height: 844 } });
     await silence(ctx);
     const later = await ctx.newPage();
     const now = shownAt + 3 * H + 1;
     await phoneWith(later, [e], { now, ui: { [e.id]: { summaryShownAt: shownAt } }, fixed: true });
     await expect(summaryHeading(later)).toBeVisible();
-    await expect(quiet(later, 'Oops, keep playing')).toHaveCount(0);
+    await quiet(later, 'More ›').click();
+    await expect(later.getByRole('menuitem', { name: 'Oops, keep playing', exact: true })).toHaveCount(0);
     const saved = await onlyEvening(later);
     expect(saved.status).toBe('ended');
     expect(saved.records.at(-1).move).toEqual({ type: 'endEvening' });

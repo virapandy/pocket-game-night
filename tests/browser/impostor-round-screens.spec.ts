@@ -10,6 +10,8 @@ import {
   CLUES_DONE, LONGEST, P4, P5, PANI_PURI, KHEER, SAMOSA, TZ, T0, dealAll, doneButton, dontKnow, exact, expectNoSecrets, fromMenu, hold,
   holdPad, imButton, mainButton, menuButton, onlyEvening, passName, phoneWith, press, privateBlock, privateWord,
   release, reveal, savedEvening, secretTerms, startEvening, textOf, toPicker, turn, word, type Move,
+  aheadOfRound5,
+  settle,
 } from './impostor';
 
 test.use({ timezoneId: TZ, viewport: { width: 390, height: 844 } });
@@ -111,7 +113,7 @@ test.describe('IMP-016, IMP-020, IMP-022: the clues screen', () => {
     expect(await noPageScroll(page), 'no page scrolling').toBe(true);
   });
 
-  test('20 names of 16 characters at 320 × 568 with Larger text: clue-order scrolls inside its own box; the main button stays wholly on screen', async ({ page }) => {
+  test('20 names of 16 characters at 320 × 568 with Larger text: the clue order scrolls inside its box (v3.8 at 320 × 568: one box with the three lines and the clue order); the main button stays wholly on screen', async ({ page }) => {
     test.setTimeout(120_000);
     await page.setViewportSize({ width: 320, height: 568 });
     const players = Array.from({ length: 20 }, (_, i) => `${String.fromCharCode(65 + i)}layernamesixteen`.slice(0, 16));
@@ -119,9 +121,17 @@ test.describe('IMP-016, IMP-020, IMP-022: the clues screen', () => {
     await dealAll(page, players);
     expect(await noPageScroll(page), 'no page scrolling').toBe(true);
     await expect(mainButton(page)).toBeInViewport({ ratio: 1 });
-    const co = (await clueOrder(page).boundingBox())!, mb = (await mainButton(page).boundingBox())!;
-    expect(co.y + co.height, 'clue-order ends above the main button').toBeLessThanOrEqual(mb.y + 0.5);
-    const box = await clueOrder(page).evaluate((el) => ({ sh: el.scrollHeight, ch: el.clientHeight, oy: getComputedStyle(el).overflowY }));
+    // v3.8 (IMP-020): at 320 × 568 the box that scrolls is the one holding the three lines and `clue-order` (or, at other
+    // sizes, `clue-order` itself): the nearest box, from `clue-order` up, that scrolls or clips vertically.
+    const box = await clueOrder(page).evaluate((el) => {
+      let a: Element | null = el;
+      while (a && a !== document.body && !/auto|scroll|hidden/.test(getComputedStyle(a).overflowY)) a = a.parentElement;
+      const b = a && a !== document.body ? a : el;
+      const r = b.getBoundingClientRect();
+      return { bottom: r.bottom, sh: b.scrollHeight, ch: b.clientHeight, oy: getComputedStyle(b).overflowY };
+    });
+    const mb = (await mainButton(page).boundingBox())!;
+    expect(box.bottom, 'the clue order\'s box ends above the main button').toBeLessThanOrEqual(mb.y + 0.5);
     if (box.sh > box.ch) expect(box.oy, 'a clue order taller than its box scrolls inside it').toMatch(/auto|scroll/);
     const sn = await fontSize(starterName(page));
     expect(await fitsInLines(starterName(page), sn > 32 ? 1 : 2), 'starter-name never cut off').toBe(true);
@@ -151,7 +161,9 @@ test.describe('IMP-016, IMP-020, IMP-022: the clues screen', () => {
       })
       .map((el) => (el.textContent ?? '').trim()), [top, bottom]);
     expect(await between(ne.y + ne.height, ar.y), 'nothing between "Not enough clues?" and "Go round again"').toEqual([]);
-    expect(await between(ar.y + ar.height, mb.y), 'nothing between "Go round again" and the main button').toEqual([]);
+    // v3.8: IMP-020 stacks "See my word again" with "Go round again" at 360 and 390 px wide, and IMP-079's joining line
+    // sits directly above the main button's area; both may come between (asked in reports/latest.md).
+    expect((await between(ar.y + ar.height, mb.y)).filter((t) => t !== 'See my word again' && !/^Joining next round: /.test(t)), 'nothing else between "Go round again" and the main button').toEqual([]);
     // "Not under clue-order": at 390 × 844 the pair sits with the main button at the bottom, nearer it than the clue order.
     expect(mb.y - (ar.y + ar.height), 'nearer the main button than the clue order').toBeLessThan(ne.y - (co.y + co.height));
   });
@@ -196,13 +208,16 @@ test.describe('IMP-016, IMP-020, IMP-022: the clues screen', () => {
 });
 
 test.describe('IMP-075: the menu at each moment', () => {
-  const DEAL_MENU = ['How to play', 'Players', 'Deal again with a new word', 'Settings', 'End the evening'];
-  const ROUND_MENU = ['How to play', 'Players', 'See my word again', 'Deal again with a new word', 'Settings', 'End the evening'];
-  const BETWEEN_MENU = ['How to play', 'Players', 'Change how we play', 'Settings', 'History', 'End the evening'];
-  const HALFWAY_MENU = ['How to play', 'Players', 'Settings', 'History', 'End the evening'];
+  // v3.8 (I25, I26): mid-round menus end with "Home (game is saved)" and "End game"; between rounds "End game" is the
+  // outlined button beside "Next round" (IMP-077), not a menu item.
+  const DEAL_MENU = ['How to play', 'Players', 'Deal again with a new word', 'Settings', 'Home (game is saved)', 'End game'];
+  const ROUND_MENU = ['How to play', 'Players', 'See my word again', 'Deal again with a new word', 'Settings', 'Home (game is saved)', 'End game'];
+  const BETWEEN_MENU = ['How to play', 'Players', 'Change how we play', 'Settings', 'History'];
+  const HALFWAY_MENU = ['How to play', 'Players', 'Settings', 'History'];
 
   async function menuItems(page: Page, where: string): Promise<string[]> {
     await expect(menuButton(page), `${where}: the menu button`).toBeVisible();
+    await settle(page); // the menu button is guarded on the deal screens (v3.8)
     await expect(menuButton(page)).toHaveText(/··· ?Menu/);
     await menuButton(page).click();
     const items = page.getByRole('menuitem');
@@ -217,14 +232,14 @@ test.describe('IMP-075: the menu at each moment', () => {
   test('the deal: screen A, screen B, "No problem!" and "Welcome back." have the deal menu', async ({ page }) => {
     await startEvening(page, { seeds: { deals: [{ wordId: SAMOSA, impostor: 'Arjun' }, { wordId: PANI_PURI, impostor: 'Kabir' }] } });
     expect(await menuItems(page, 'screen A')).toEqual(DEAL_MENU);
-    await imButton(page, 'Riya').click();
+    await settle(page); await imButton(page, 'Riya').click();
     expect(await menuItems(page, 'screen B')).toEqual(DEAL_MENU);
     await hold(page, 600);
     await dontKnow(page).click();
     await page.getByRole('dialog', { name: /New word for everyone\?/ }).getByRole('button', { name: 'New word', exact: true }).click();
     await expect(page.getByRole('heading', { name: 'No problem! New word coming.' })).toBeVisible();
     expect(await menuItems(page, '"No problem!"')).toEqual(DEAL_MENU);
-    await imButton(page, 'Riya').click();
+    await settle(page); await imButton(page, 'Riya').click();
     await hold(page, 600);
     await doneButton(page).click();
     await backgroundAndReturn(page);
@@ -266,9 +281,9 @@ test.describe('IMP-075: the menu at each moment', () => {
     expect((await onlyEvening(page)).records).toEqual(atClues);
   });
 
-  // The open question is answered (decisions I21, IMP-075 v3.5): no "Change how we play" here; the menu as built is the
-  // spec. Still marked only for the v3 rename "Rules" → "How to play" (lane C), and "Players" here shows the dialog.
-  test('the "left halfway" screen: How to play · Players · Settings · History · End the evening; "Players" shows only "Change players after this round." and "OK"', async ({ page }) => {
+  // v3.8: "End game" left the menu (IMP-077); "Players" opens the Players sheet instead of v3.5's "Change players after
+  // this round." dialog (retired in v3.7). What ✕ does there is asked in reports/latest.md (IMP-074 and IMP-075 differ).
+  test('the "left halfway" screen: How to play · Players · Settings · History; "Players" opens the sheet, where a name can be added', async ({ page }) => {
     const START: Move = { type: 'startDeal', practice: false };
     const e = savedEvening({ deals: [{ wordId: SAMOSA, impostor: 'Arjun', starter: 'Riya' }], moves: [START, { type: 'seen' }, { type: 'seen' }] });
     await phoneWith(page, [e], { now: e.records.at(-1).at + 3 * H + 1 });
@@ -279,10 +294,13 @@ test.describe('IMP-075: the menu at each moment', () => {
     await expect(heading).toBeVisible();
     expect(await menuItems(page, '"left halfway"')).toEqual(HALFWAY_MENU);
     await fromMenu(page, 'Players');
-    const dialog = page.getByRole('dialog', { name: /Change players after this round\./ });
-    await expect(dialog).toBeVisible();
-    await dialog.getByRole('button', { name: 'OK', exact: true }).click();
+    await expect(page.getByRole('heading', { name: 'Players' })).toBeVisible();
+    await expect(page.getByText('Change players after this round.', { exact: true })).toHaveCount(0);
+    await page.getByLabel('Player name', { exact: true }).fill('Zoya');
+    await page.getByRole('button', { name: 'Add', exact: true }).click();
+    await page.getByRole('button', { name: 'Done', exact: true }).click();
     await expect(heading).toBeVisible();
+    expect((await onlyEvening(page)).records.at(-1).move).toEqual({ type: 'setPlayers', players: [...P4, 'Zoya'] });
   });
 
   test('a round result has the between-rounds menu; History there has "← Back" to the same screen', async ({ page }) => {
@@ -297,7 +315,7 @@ test.describe('IMP-075: the menu at each moment', () => {
     await expect(page.getByTestId('round-outcome')).toBeVisible();
   });
 
-  test('IMP-006: "Change how we play" on a result opens the current choices; "← Back" records nothing; "Start round" records setChoices then nextRound', async ({ page }) => {
+  test('IMP-006 (v3.8): "Change how we play" on a result opens the current choices; "← Back" with nothing changed records nothing; "Start round" with nothing changed records only nextRound', async ({ page }) => {
     await startEvening(page, { mode: 'hard', talking: 'timer', seeds: { deals: [{ wordId: SAMOSA, impostor: 'Arjun', starter: 'Riya' }, { wordId: 'IMPW-006', impostor: 'Meena', starter: 'Arjun' }] } });
     await dealAll(page);
     await mainButton(page).filter({ hasText: CLUES_DONE }).click();
@@ -316,6 +334,29 @@ test.describe('IMP-075: the menu at each moment', () => {
     await mainButton(page).filter({ hasText: 'Start round' }).click();
     await expect(passName(page)).toBeVisible();
     const moves = (await onlyEvening(page)).records.slice(atResult.length).map((r: any) => r.move.type);
+    expect(moves).toEqual(['nextRound']);
+  });
+
+  test('IMP-006 (v3.8, M21): "← Back" keeps the changes: Free flow chosen, then "← Back", records setChoices and returns to the same result; "Start round" after a change records setChoices then nextRound', async ({ page }) => {
+    await startEvening(page, { talking: 'timer', seeds: { deals: [{ wordId: SAMOSA, impostor: 'Arjun', starter: 'Riya' }, { wordId: 'IMPW-006', impostor: 'Meena', starter: 'Arjun' }] } });
+    await dealAll(page);
+    await toPicker(page);
+    await reveal(page, 'Riya', 7500);
+    await expect(page.getByTestId('round-outcome')).toBeVisible();
+    const atResult = (await onlyEvening(page)).records;
+    await fromMenu(page, 'Change how we play');
+    await page.getByRole('group', { name: 'Talking', exact: true }).getByRole('button', { name: /Free flow/ }).click();
+    await page.getByRole('button', { name: /^(← )?Back$/ }).click();
+    await expect(page.getByTestId('round-outcome')).toBeVisible();
+    const back = (await onlyEvening(page)).records.slice(atResult.length).map((r: any) => r.move);
+    expect(back.map((m: any) => m.type)).toEqual(['setChoices']);
+    expect(back[0].choices.talking).toBe('free');
+    await fromMenu(page, 'Change how we play');
+    await expect(page.getByRole('group', { name: 'Talking', exact: true }).getByRole('button', { name: /Free flow/ })).toHaveAttribute('aria-pressed', 'true');
+    await page.getByRole('group', { name: 'Mode', exact: true }).getByRole('button', { name: /Hard/ }).click();
+    await mainButton(page).filter({ hasText: 'Start round' }).click();
+    await expect(passName(page)).toBeVisible();
+    const moves = (await onlyEvening(page)).records.slice(atResult.length + 1).map((r: any) => r.move.type);
     expect(moves).toEqual(['setChoices', 'nextRound']);
   });
 });
@@ -349,7 +390,7 @@ test.describe('IMP-087: the screen stays awake during a round', () => {
     const n = (await wakeCalls(page)).filter((c) => c === 'request screen').length;
     await backgroundAndReturn(page);
     await expect.poll(async () => (await wakeCalls(page)).filter((c) => c === 'request screen').length, 'again on return during the deal').toBeGreaterThanOrEqual(n + 1);
-    await imButton(page, 'Riya').click();
+    await settle(page); await imButton(page, 'Riya').click();
     await hold(page, 600);
     await doneButton(page).click();
     const m = (await wakeCalls(page)).filter((c) => c === 'request screen').length;
@@ -381,6 +422,7 @@ test.describe('IMP-087: the screen stays awake during a round', () => {
     expect(await wakeCalls(page), 'during the build-up').not.toContain('release');
     await page.clock.runFor(100);
     await expect.poll(async () => (await wakeCalls(page)).includes('release'), 'released at 1.5 s').toBe(true);
+    await settle(page); // between-rounds buttons are guarded for 500 ms (IMP-077)
     await mainButton(page).filter({ hasText: 'Next round' }).click();
     await dealAll(page);
     await toPicker(page);
@@ -391,6 +433,7 @@ test.describe('IMP-087: the screen stays awake during a round', () => {
     await page.getByRole('button', { name: 'Wrong guess', exact: true }).click();
     await expect.poll(async () => (await wakeCalls(page)).includes('release'), 'released on the verdict').toBe(true);
     await page.locator('body').evaluate(() => { (window as any).__wake = []; });
+    await settle(page); // between-rounds buttons are guarded for 500 ms after the verdict (IMP-077)
     await page.getByRole('button', { name: 'Undo', exact: true }).click();
     await expect.poll(async () => (await wakeCalls(page)).filter((c) => c === 'request screen').length, 'requested again on "Undo"').toBeGreaterThanOrEqual(1);
   });
@@ -480,18 +523,19 @@ test.describe('IMP-109: Settings for Impostor', () => {
     await startEvening(page, { seeds: { deals: [{ wordId: SAMOSA, impostor: 'Arjun', starter: 'Riya' }] } });
     await turn(page, 'Riya');
     await expect(passName(page)).toHaveText(exact('Arjun'));
+    await settle(page); // the "··· Menu" button is guarded on the deal screens (v3.8)
     await fromMenu(page, 'Settings');
     await tapToShow(page).click();
     await settingsClose(page).click();
     await expect(passName(page)).toHaveText(exact('Arjun'));
-    await imButton(page, 'Arjun').click();
+    await settle(page); await imButton(page, 'Arjun').click();
     await expect(holdPad(page)).toHaveAccessibleName('Tap to see your word');
     await expect(page.getByRole('button', { name: 'Tap instead', exact: true })).toBeHidden();
   });
 
   test('with Larger text: the private block\'s small lines are 19 px and its body lines 21 px; the word 30 to 36 px', async ({ page }) => {
     await startEvening(page, { storage: { 'pgn.pref.largerText': true }, seeds: { deals: [{ wordId: PANI_PURI, impostor: 'Arjun', starter: 'Riya' }] } });
-    await imButton(page, 'Riya').click();
+    await settle(page); await imButton(page, 'Riya').click();
     await press(page);
     await expect(privateBlock(page)).toBeVisible();
     const sizes = await privateBlock(page).evaluate((el) => Array.from(el.children).map((c) => parseFloat(getComputedStyle(c).fontSize)));
@@ -521,7 +565,7 @@ test.describe('IMP-010, IMP-019, IMP-081: screen B at every size: the pad, the h
           players, storage: largerText ? { 'pgn.pref.largerText': true } : {},
           seeds: { deals: [{ wordId: LONGEST, impostor: 'Arjun', starter: NAME }] },
         });
-        await imButton(page, NAME).click();
+        await settle(page); await imButton(page, NAME).click();
         const tapInstead = page.getByRole('button', { name: 'Tap instead', exact: true });
         const boxes = async () => Promise.all([passName(page), holdPad(page), tapInstead].map(async (l) => JSON.stringify(await l.boundingBox())));
         const before = await boxes();
@@ -563,7 +607,7 @@ test.describe('IMP-010, IMP-019, IMP-081: screen B at every size: the pad, the h
     const p = (await progress.boundingBox())!, t = (await page.getByText('Pass the phone to', { exact: true }).boundingBox())!, n = (await passName(page).boundingBox())!, l = (await look.boundingBox())!;
     expect(p.y + p.height).toBeLessThanOrEqual(t.y + 1);
     expect(n.y + n.height).toBeLessThanOrEqual(l.y + 1);
-    await imButton(page, 'Riya').click();
+    await settle(page); await imButton(page, 'Riya').click();
     await expect(progress).toHaveText(exact('Player 1 of 4', []));
     const p2 = (await progress.boundingBox())!, n2 = (await passName(page).boundingBox())!;
     expect(p2.y + p2.height, 'directly above the name').toBeLessThanOrEqual(n2.y + 1);

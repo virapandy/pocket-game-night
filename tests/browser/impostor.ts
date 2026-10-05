@@ -5,9 +5,21 @@
 // (`startEvening`, `toPicker`, `toSummaryMenu`) reach the same screen on the v2.2 build and on the v3.5 build, so tests of
 // unchanged scenarios keep checking them while the lanes land. What changed in v3.5 is asserted only by the tests
 // written for it. Remove the v2.2 branches once round 4 is merged (marked "v2.2 build:").
+// Round 5 (scenarios v3.8, I25 and I26, 4 October 2026; lanes N, O and C3): navigation helpers accept the v3.5 and
+// the v3.8 wording; tests of what v3.8 changed call `aheadOfRound5` until their lane is on main.
+
+/**
+ * Marks the running test as written ahead of Impostor round 5 (scenarios v3.8): expected to fail until its lane is on
+ * main (N: result, between rounds, end screen, History, Home resume rows; O: setup, deal, clues, talk, picker, double-tap
+ * guard; C3: the moves `dealAgainWithout`, mid-round adds, `leaveAfterRound`). When it then passes, Playwright reports
+ * "expected to fail, but passed": the tester removes the call.
+ */
+export function aheadOfRound5(lane: 'N' | 'O' | 'C3', what: string) {
+  pwTest.fail(true, `Impostor round 5 (v3.8), lane ${lane}, not built yet: ${what}`);
+}
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { expect, type Locator, type Page } from '@playwright/test';
+import { expect, test as pwTest, type Locator, type Page } from '@playwright/test';
 import { HOME, hostAGame } from './helpers';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -308,7 +320,12 @@ export const dontKnow = (page: Page) => page.getByRole('button', { name: "Don't 
  * hold of 499 ms is exactly 499 ms of the app's time. `page.clock.resume()` lets it run naturally again.
  */
 export async function freezeClock(page: Page) {
-  await page.clock.pauseAt((await page.evaluate(() => Date.now())) + 50);
+  // The clock runs on while the page is asked for its time; under load it can pass now + 50 before pauseAt arrives
+  // ("Cannot fast-forward to the past"), so ask again.
+  for (let i = 0; ; i++) {
+    try { await page.clock.pauseAt((await page.evaluate(() => Date.now())) + 50); return; }
+    catch (e) { if (i >= 4 || !/to the past/.test(String(e))) throw e; }
+  }
 }
 
 /** Presses the pad (pointerdown) and keeps it pressed for `ms` of fake time; `release` lets go (pointerup). */
@@ -334,9 +351,16 @@ export async function blockLines(page: Page): Promise<string[]> {
   return privateBlock(page).evaluate((el) => Array.from(el.children).map((c) => (c.textContent ?? '').replace(/\s+/g, ' ').trim()));
 }
 
+/**
+ * v3.8 (IMP-010, IMP-077, guideline 20): a tap within 500 ms of a screen change on the deal and between-rounds screens
+ * is ignored. A person never taps that fast; the tests let 500 ms of the app's time pass first.
+ */
+export async function settle(page: Page) { await page.clock.runFor(500); }
+
 /** One player's whole turn: "I'm <Name>", a 600 ms hold, "Done…". Returns the block lines they saw. */
 export async function turn(page: Page, name: string): Promise<string[]> {
   await expect(passName(page)).toHaveText(new RegExp(`^\\s*${ci(name)}\\s*$`));
+  await settle(page);
   await imButton(page, name).click();
   const lines = await hold(page, 600);
   await doneButton(page).click();
@@ -347,6 +371,7 @@ export async function dealAll(page: Page, players: string[] = P4): Promise<Recor
   const out: Record<string, string[]> = {};
   for (const p of players) out[p] = await turn(page, p);
   await expect(page.getByText('✓ Everyone has seen their word.', { exact: true })).toBeVisible();
+  await settle(page); // the clues screen's buttons are guarded for 500 ms too (lane O, 4 October)
   return out;
 }
 
@@ -360,10 +385,11 @@ export async function fromMenu(page: Page, item: string) {
 }
 export const revealLines = (page: Page) => page.getByTestId('reveal-line');
 
-/** The clues screen's main button (IMP-016; v2.2 build: "Talk it over" / "Start the 2-minute timer"). */
-export const CLUES_DONE = /^(Clues done, talk it over|Clues done, start the 2-minute timer|Talk it over|Start the 2-minute timer)$/;
+/** The clues screen's main button (IMP-016; v3.8 "Clues done, start timer"; v3.5 and v2.2 wordings while round 5 lands). */
+export const CLUES_DONE = /^(Clues done, talk it over|Clues done, start timer|Clues done, start the 2-minute timer|Talk it over|Start the 2-minute timer)$/;
 /** From the clues screen: "Clues done, talk it over" → "Vote now" → the countdown → the picker. */
 export async function toPicker(page: Page) {
+  await settle(page);
   await mainButton(page).filter({ hasText: CLUES_DONE }).click();
   await mainButton(page).filter({ hasText: 'Vote now' }).click();
   await page.clock.runFor(6000);
@@ -378,10 +404,12 @@ export async function reveal(page: Page, name: string, ms = 7500) {
   await pickerName(page, name).click();
   await mainButton(page).filter({ hasText: new RegExp(`^Reveal ${ci(name)}$`) }).click();
   await page.clock.runFor(ms);
+  // v3.8 (IMP-077): the result's buttons are guarded for 500 ms from t = 1.5 s.
+  if (ms >= 1500) await settle(page);
 }
 
-/** The summary's "More ›" items (IMP-092, v3.5: "Share", "History", "Discard this evening"); v2.2 build: quiet buttons. */
-export async function summaryAction(page: Page, name: 'Share' | 'History' | 'Discard this evening') {
+/** The summary's "More ›" items (IMP-092; v3.8: "Oops, keep playing", "Share", "History", "Discard this game"). */
+export async function summaryAction(page: Page, name: 'Share' | 'History' | 'Discard this evening' | 'Discard this game' | 'Oops, keep playing') {
   const more = page.getByRole('button', { name: 'More ›', exact: true });
   if (await more.count()) { await more.click(); await page.getByRole('menuitem', { name, exact: true }).click(); }
   else await page.getByRole('button', { name, exact: true }).click();

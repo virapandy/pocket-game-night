@@ -8,6 +8,8 @@ import {
   CATEGORIES, P4, SAMOSA, TZ, T0, addPlayers, dealAll, doneButton, exact, hold, holdPad, imButton, impostorCard,
   mainButton, menuButton, onlyEvening, option, overlapping, passName, phoneWith, playerField, reveal, roundMoves, savedEvening,
   savedEvenings, startEvening, toPicker, freezeClock, type Move,
+  aheadOfRound5,
+  settle,
 } from './impostor';
 
 test.use({ timezoneId: TZ, viewport: { width: 390, height: 844 } });
@@ -69,8 +71,9 @@ async function secondEveningOfTonight(page: Page): Promise<any> {
   await page.goto(HOME);
   await hostAGame(page).click();
   await impostorCard(page).click();
-  const dialog = page.getByRole('dialog', { name: /Start a new evening\?/ });
-  await expect(dialog).toBeVisible(); // its exact words: IMP-001's test below
+  // v3.5 "Start a new evening?" / v3.8 "Start a new game?" (navigation only; the words: IMP-001's test below).
+  const dialog = page.getByRole('dialog', { name: /Start a new (evening|game)\?/ });
+  await expect(dialog).toBeVisible();
   await dialog.getByRole('button', { name: 'Start new', exact: true }).click();
   await expect(whoHeading(page)).toBeVisible();
   if ((await removeButtons(page).count()) === 0) await addPlayers(page, P4);
@@ -328,7 +331,7 @@ test.describe('IMP-005: the four choices, with these defaults', () => {
   const GROUPS: [string, string, string, string, string][] = [
     ['Mode', 'Easy', 'Hard', 'The impostor gets the category and a hint.', 'The impostor gets nothing and never starts.'],
     ['Talking', 'Free flow', 'Timer', 'Talk as long as you like, then tap Vote now.', 'Two minutes to talk, then a chime.'],
-    ['Score', 'No', 'Yes', 'Just play. We count catches and escapes.', 'Points every round, totals for the night.'],
+    ['Score', 'No', 'Yes', 'Just play. We count catches and escapes.', 'Points every round, totals for the game.'],
     ['Words', 'Whole family', '+ Grown-ups', 'Words kids and grandparents know.', 'Adds words kids or elders may not know.'],
   ];
 
@@ -565,15 +568,27 @@ test.describe('IMP-008 and IMP-009: taps to the first deal; choices from last ti
   });
 });
 
-test('IMP-001: with an evening unfinished, the Impostor card asks "Start a new evening? The evening from 9:30 pm will be ended."', async ({ page }) => {
+test('IMP-001 (v3.8, M22): with a game unfinished, the Impostor card asks once "Start a new game? The game from 9:30 pm will be ended." with two equal outlined buttons; "Start new" goes straight to "Who\'s playing?"', async ({ page }) => {
   await startEvening(page);
   await page.goto(HOME);
   await hostAGame(page).click();
   await impostorCard(page).click();
-  const dialog = page.getByRole('dialog', { name: /Start a new evening\?/ });
-  await expect(dialog).toContainText(/^\s*Start a new evening\? The evening from 9:3\d pm will be ended\./);
-  await expect(dialog.getByRole('button', { name: 'Start new', exact: true })).toBeVisible();
-  await expectOneMainButton(page, 'Start new dialog', 'Carry on that evening', true);
+  const dialog = page.getByRole('dialog', { name: /Start a new game\?/ });
+  await expect(dialog).toContainText(/^\s*Start a new game\? The game from 9:3\d pm will be ended\./);
+  const carry = dialog.getByRole('button', { name: 'Carry on that game', exact: true });
+  const fresh = dialog.getByRole('button', { name: 'Start new', exact: true });
+  await expect(carry).toBeVisible();
+  await expect(fresh).toBeVisible();
+  await expectOneMainButton(page, 'Start a new game? dialog', null);
+  expect(await isOutlined(carry), '"Carry on that game" is outlined').toBe(true);
+  expect(await isOutlined(fresh), '"Start new" is outlined').toBe(true);
+  const c = (await carry.boundingBox())!, f = (await fresh.boundingBox())!;
+  expect(Math.abs(c.y - f.y), 'side by side').toBeLessThanOrEqual(1);
+  expect(Math.abs(c.width - f.width), 'equal width').toBeLessThanOrEqual(1);
+  expect(Math.abs(c.height - f.height), 'equal height').toBeLessThanOrEqual(1);
+  await fresh.click();
+  await expect(page.getByRole('heading', { name: "Who's playing?" })).toBeVisible();
+  await expect(page.getByRole('dialog')).toHaveCount(0);
 });
 
 // v2.2's read-aloud card tests are retired (IMP-070 changed in v3: "How to play" opens only on request).
@@ -589,10 +604,10 @@ test.describe('IMP-070, IMP-072, IMP-076: How to play and More options, on reque
     'Everyone sees the secret word except one impostor.',
     "Clockwise, say one word about it. Don't say the word!",
     'Talk, then on 3, 2, 1 everyone points.',
-    'Most fingers is revealed. Caught: the crew wins. Wrong person: the impostor wins.',
+    'Whoever gets the most fingers is revealed. Caught: you win. Wrong person: the impostor wins.',
   ];
   const RULES = ["Not allowed: the word itself, a rhyme, a translation, or 'thing'.", "Repeating someone's clue is allowed.", 'Kids may use up to 3 words.'];
-  const GUESS = 'A caught impostor can steal the round by guessing the word.';
+  const GUESS = 'A caught impostor can win the round by guessing the word.';
 
   test('the choices screen: "More options ›" and "How to play", equal quiet buttons on one row directly above "Start round"', async ({ page }) => {
     await toChoices(page);
@@ -686,7 +701,7 @@ test.describe('IMP-071: practice round', () => {
     // The record's word id (v3.5) is checked in impostor-saved-evenings.spec.ts (IMP-096).
     expect((await onlyEvening(page)).records.map((r: any) => [r.move.type, r.move.practice])).toEqual([['startDeal', true]]);
     await expectChipTopLeft(page, 'screen A');
-    await imButton(page, 'Riya').click();
+    await settle(page); await imButton(page, 'Riya').click();
     await expect(holdPad(page)).toBeVisible();
     await expectChipTopLeft(page, 'screen B');
     await hold(page, 600);
@@ -696,6 +711,9 @@ test.describe('IMP-071: practice round', () => {
   });
 
   test('after the practice result, "Next round" deals round 1 with no card and no chip; the practice result has no points', async ({ page }) => {
+    // Question for the product owner (reports/latest.md): IMP-071 puts the chip "at the top left" of the result and
+    // IMP-077 puts "← Home" there; the build shows the chip right of "← Home", ending 15 px into the right half at 390 px.
+    test.fail(true, 'IMP-071 vs IMP-077: the practice chip on the result is no longer wholly in the left half (question open)');
     await startEvening(page, { practice: true, score: true, seeds: { deals: [{ wordId: SAMOSA, impostor: 'Arjun', starter: 'Riya' }, { wordId: 'IMPW-006', impostor: 'Meena', starter: 'Arjun' }] } });
     await dealAll(page);
     await toPicker(page);

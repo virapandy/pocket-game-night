@@ -5,6 +5,7 @@
 import { expect, silence, test, type Page } from './fixtures';
 import {
   DEFAULT_CHOICES, P4, SAMOSA, PANI_PURI, KHEER, TZ, exact, mainButton, phoneWith, roundMoves, savedEvening, type Move,
+  aheadOfRound5,
 } from './impostor';
 
 test.use({ timezoneId: TZ, viewport: { width: 390, height: 844 } });
@@ -26,17 +27,17 @@ const lower = (r: { name: string | null }[]) => r.map((x) => (x.name ?? '').toLo
 test.describe('IMP-040: no points by default', () => {
   const DEALS = [{ wordId: SAMOSA, impostor: 'Arjun', starter: 'Riya' }, { wordId: PANI_PURI, impostor: 'Meena', starter: 'Arjun' }];
 
-  test('each counted round shows "Tonight: impostor caught … · escaped …", this round included; no points, ranks or scoreboard', async ({ page }) => {
+  test('each counted round shows "This game: impostor caught … · escaped …" (v3.6), this round included; no points, ranks or scoreboard', async ({ page }) => {
     await openAt(page, savedEvening({ deals: DEALS, moves: roundMoves(P4, 'Arjun', { caught: 'wrong' }, START) }));
-    await expect(page.getByTestId('evening-line')).toHaveText('Tonight: impostor caught 1 · escaped 0');
+    await expect(page.getByTestId('evening-line')).toHaveText('This game: impostor caught 1 · escaped 0');
     await expect(page.getByTestId('scoreboard')).toHaveCount(0);
     await expect(page.getByTestId('round-points')).toHaveCount(0);
     await expect(page.getByTestId('score-row')).toHaveCount(0);
   });
 
-  test('after a second, escaped round: "Tonight: impostor caught 1 · escaped 1"', async ({ page }) => {
+  test('after a second, escaped round: "This game: impostor caught 1 · escaped 1"', async ({ page }) => {
     await openAt(page, savedEvening({ deals: DEALS, moves: [...roundMoves(P4, 'Arjun', { caught: 'right' }, START), ...roundMoves(P4, 'Meena', { escaped: 'Kabir' })] }));
-    await expect(page.getByTestId('evening-line')).toHaveText('Tonight: impostor caught 1 · escaped 1');
+    await expect(page.getByTestId('evening-line')).toHaveText('This game: impostor caught 1 · escaped 1');
   });
 
   test('the practice round\'s result has no evening line', async ({ page }) => {
@@ -45,11 +46,11 @@ test.describe('IMP-040: no points by default', () => {
     await expect(page.getByTestId('evening-line')).toHaveCount(0);
   });
 
-  test('IMP-035: the headlines are exactly "The crew wins!", "<Name> steals the round!" and "<Name> escaped!"', async ({ page, browser }) => {
+  test('IMP-035 (v3.7): the headlines are exactly "You caught the impostor!", "<Name> wins the round!" and "<Name> escaped!"', async ({ page, browser }) => {
     await openAt(page, savedEvening({ deals: DEALS, moves: roundMoves(P4, 'Arjun', { caught: 'wrong' }, START) }));
-    await expect(page.getByTestId('round-outcome')).toHaveText('The crew wins!');
+    await expect(page.getByTestId('round-outcome')).toHaveText('You caught the impostor!');
     for (const [moves, headline] of [
-      [roundMoves(P4, 'Arjun', { caught: 'right' }, START), "Arjun steals the round!"],
+      [roundMoves(P4, 'Arjun', { caught: 'right' }, START), "Arjun wins the round!"],
       [roundMoves(P4, 'Arjun', { escaped: 'Meena' }, START), 'Arjun escaped!'],
       [roundMoves(P4, 'Arjun', { stillTie: ['Arjun', 'Meena'] }, START), 'Arjun escaped!'],
     ] as [Move[], string][]) {
@@ -166,7 +167,7 @@ test.describe('IMP-043: turning score on or off mid-evening', () => {
     await openAt(page, ev([...first3, ...r4, ...r5]));
     await expect(page.getByTestId('scoreboard')).toHaveCount(0);
     await expect(page.getByTestId('round-points')).toHaveCount(0);
-    await expect(page.getByTestId('evening-line')).toHaveText('Tonight: impostor caught 3 · escaped 2');
+    await expect(page.getByTestId('evening-line')).toHaveText('This game: impostor caught 3 · escaped 2');
   });
 
   test('switched on once more: scoring resumes from the next round, adding to the kept totals', async ({ page }) => {
