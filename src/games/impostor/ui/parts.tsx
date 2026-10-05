@@ -130,19 +130,37 @@ export function useToast(): [ToastState | null, (text: string, undo?: () => void
   return [toast, show, clear];
 }
 
-/** The toast bar, above the main button. */
+/**
+ * The toast bar, above the main button. It tells the screen holding it its height (`--imp-toast-h`), so a page that
+ * scrolls as one (the result, IMP-081) can leave room for it at the end and nothing stays under it.
+ */
 export function Toast({ toast, onDone }: { toast: ToastState | null; onDone: () => void }) {
+  const ref = useRef<HTMLElement | null>(null);
+  const shown = toast !== null;
+  useLayoutEffect(() => {
+    const el = ref.current;
+    const host = el?.parentElement;
+    if (!el || !host) return;
+    const set = () => host.style.setProperty('--imp-toast-h', `${Math.ceil(el.getBoundingClientRect().height)}px`);
+    set();
+    const ro = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(set);
+    ro?.observe(el);
+    return () => {
+      ro?.disconnect();
+      host.style.removeProperty('--imp-toast-h');
+    };
+  }, [shown, toast?.undo]);
   if (!toast) return null;
   if (!toast.undo) {
     return (
-      <p className="imp-toast" role="status" data-testid="toast">
+      <p ref={(e) => { ref.current = e; }} className="imp-toast" role="status" data-testid="toast">
         {toast.text}
       </p>
     );
   }
   const text = toast.text.replace(/ · Undo$/, '');
   return (
-    <div className="imp-toast" data-testid="undo-toast" role="status">
+    <div ref={(e) => { ref.current = e; }} className="imp-toast" data-testid="undo-toast" role="status">
       <span>{text} · </span>
       <button
         type="button"

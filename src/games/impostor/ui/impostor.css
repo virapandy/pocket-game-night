@@ -601,6 +601,9 @@
    padding keeps the last line clear of it. */
 .imp-screen.imp-page { height: auto; min-height: 100dvh; overflow: visible; }
 .imp-page .imp-screen-inner { flex: 1 0 auto; }
+/* IMP-081: while a toast shows over a page that scrolls as one, the page ends above the toast, so scrolled to the end
+   nothing (such as "Players (5) ›") lies under it. */
+.imp-screen.imp-page:has(> .imp-toast) { padding-bottom: calc(var(--imp-foot) + var(--imp-toast-h, 48px) + 4px); }
 .imp-build-up { font-size: 40px; font-weight: 800; line-height: 1.2; overflow-wrap: anywhere; }
 .imp-result-page { flex: 1 0 auto; display: flex; flex-direction: column; gap: 8px; }
 .imp-result-left, .imp-result-right { display: flex; flex-direction: column; gap: 8px; }
