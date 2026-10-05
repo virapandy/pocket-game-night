@@ -1,6 +1,6 @@
 // Impostor's shared pieces (specs/impostor/README.md, Terms): the main button, quiet buttons, selected options,
 // switches, toasts, dialogs, sheets and the "··· Menu". The next screens reuse these.
-import { createContext, useCallback, useContext, useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useId, useLayoutEffect, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 
 /**
  * IMP-080: at most one main button on screen. While a dialog, sheet or the summary covers a screen, that screen's
@@ -284,4 +284,20 @@ export function TapGuard({ screen, children }: { screen: unknown; children: Reac
 }
 
 /** A name shown in capitals by CSS only (Terms, "Names"): the page text stays as typed. */
+/** True while the CSS media query matches (kept up to date as the phone turns). */
+export function useMediaQuery(query: string): boolean {
+  const subscribe = useCallback(
+    (onChange: () => void) => {
+      const m = window.matchMedia?.(query);
+      m?.addEventListener('change', onChange);
+      return () => m?.removeEventListener('change', onChange);
+    },
+    [query],
+  );
+  return useSyncExternalStore(subscribe, () => window.matchMedia?.(query).matches ?? false, () => false);
+}
+
+/** The phone sideways (812 × 375), as the landscape layouts in impostor.css. */
+export const LANDSCAPE = '(orientation: landscape) and (max-height: 600px)';
+
 export const Caps = ({ children }: { children: ReactNode }) => <span className="imp-caps">{children}</span>;

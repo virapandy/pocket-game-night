@@ -1,7 +1,7 @@
 // After the last "Done": straight to the clues (IMP-016, IMP-020, IMP-022). The phone goes in the middle, face up.
 import { useEffect, useRef } from 'react';
 import { useFitText } from './Deal';
-import { Caps, MainButton, QuietButton, TapGuard } from './parts';
+import { Caps, LANDSCAPE, MainButton, QuietButton, TapGuard, useMediaQuery } from './parts';
 
 /** The seat order from the starter, wrapping round (IMP-020). */
 export function clueOrder(players: readonly string[], starter: string): string[] {
@@ -35,6 +35,8 @@ export function Clues({
   const said = order.join(', ');
   useEffect(() => announce(`${starter} starts. Each say one word about your secret: ${said}`), [announce, starter, said]);
   const again = !secondClues && players.length <= 5;
+  // IMP-020 (v3.8): at 812 × 375 there is no "Not enough clues?" at all (not drawn, not read out).
+  const sideways = useMediaQuery(LANDSCAPE);
   // IMP-020: the starter, then the lines and the clue order, then the buttons. The order on screen comes from the CSS:
   // 360 px and up, the order of IMP-016 ("✓ Everyone…", "Phone…", the starter, "Each say…", the clue order), with "Go
   // round again" and "See my word again" stacked; at 320 px wide the starter first, then one box scrolling inside
@@ -71,7 +73,7 @@ export function Clues({
         {/* IMP-022 (I24): "Go round again" in the bottom bar, directly above the main button, with its small line
             above it; IMP-017: the quiet "See my word again" with it. */}
         <div className={again ? 'imp-clues-again imp-clues-two' : 'imp-clues-again'}>
-          {again && <p className="imp-small imp-clues-unsure">Not enough clues?</p>}
+          {again && !sideways && <p className="imp-small imp-clues-unsure">Not enough clues?</p>}
           <div className="imp-clues-buttons">
             {again && <QuietButton onClick={onSecondClues}>Go round again</QuietButton>}
             <QuietButton onClick={onSeeAgain}>See my word again</QuietButton>
