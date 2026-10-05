@@ -711,9 +711,7 @@ test.describe('IMP-071: practice round', () => {
   });
 
   test('after the practice result, "Next round" deals round 1 with no card and no chip; the practice result has no points', async ({ page }) => {
-    // Question for the product owner (reports/latest.md): IMP-071 puts the chip "at the top left" of the result and
-    // IMP-077 puts "← Home" there; the build shows the chip right of "← Home", ending 15 px into the right half at 390 px.
-    test.fail(true, 'IMP-071 vs IMP-077: the practice chip on the result is no longer wholly in the left half (question open)');
+    // Orchestrator's call (5 October): "← Home" first, the practice chip directly to its right, both in the left half.
     await startEvening(page, { practice: true, score: true, seeds: { deals: [{ wordId: SAMOSA, impostor: 'Arjun', starter: 'Riya' }, { wordId: 'IMPW-006', impostor: 'Meena', starter: 'Arjun' }] } });
     await dealAll(page);
     await toPicker(page);
