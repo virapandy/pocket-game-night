@@ -1,28 +1,22 @@
 # Test report
-Commit tested: app 5b1a46b (main: round 5 with lane R's fixes); tests 29eaff7   Date: 2026-10-05
-Result: RED: two real failures, both seen only with Linux fonts (GitHub's); everything else passes.
+Commit tested: app fbfedea (main: round 5 with lanes R and S); tests 858848e   Date: 2026-10-05
+Result: GREEN
 
 Runs:
-- Quick verify 37272095858 on 29eaff7: 380 passed and 17 smoke passed; 2 failed (below).
-- Complete run 37272117633 on 29eaff7, both phones: failed only on the same 2 tests on each phone; everything else passed,
-  the Impostor screenshot comparisons included.
-- Rule tests: 705 of 705 (new: `tests/games/impostor/views-and-totals.test.ts`, 10 tests aimed at surviving mutants).
-- Screenshots run 37271506802: new Impostor clues references (round 5's "See my word again"), **not yet approved**:
-  Linux and Mac at 360 × 640 and 390 × 844, Mac at 812 × 375. No Linux 812 reference: the clue order's second line is cut off
-  by the button row there (`reports/screens/imp-020-round5-812x375-linux.png`).
+- Quick verify 37276708670 on 858848e: green (smoke 17 passed; changed areas 286 passed). Earlier green: 37274027922 (0157c97),
+  37276076807 (7bfcddc).
+- Complete run 37276733013 on 858848e, both phones: green, every job (Android and iPhone: 304 + 332 + 334 + 335 passed).
+  The earlier complete run 37274031425 (0157c97) failed one iPhone test only: a fault in my IMP-085 plain-words test (a random
+  deal could make Riya the impostor, so the reveal stopped at the guess step); fixed with a forced deal in 858848e.
+- Screenshots run 37274027980 (0157c97): the Linux 812 × 375 Larger-text clues picture now shows the whole clue order and the
+  button row clear of the main button (about 8 px above it); added as the Linux reference. All Impostor clues references
+  (360, 390, 812; Linux and Mac) are **not yet approved**: for the product owner's release review.
+- Rule tests: 705 of 705.
 
 ## Failing (real bugs only)
-- **IMP-020 (812 × 375), Linux fonts:** `impostor-round5.spec.ts`, "812 × 375: 'Go round again' and 'See my word again' share one
-  row (two equal halves) …", both phones. "Not enough clues?" is now left out (fixed). Expected: one row, two equal halves.
-  Got: "See my word again" wraps onto two lines, so it is taller and the two tops are 2.6 px apart (on Mac fonts it also
-  wraps; see the Mac reference picture).
-- **IMP-071 with IMP-077, Linux fonts:** `impostor-setup.spec.ts`, "after the practice result, 'Next round' deals round 1 …", both
-  phones. Expected (orchestrator's call): "← Home" then the practice chip, both in the left half. Got at 390 wide, normal text:
-  the chip ends at x = 202 (half = 195). Measured on Mac fonts (Android): 390 normal text ends at 188 (fits); 360 and 320 end
-  at 188 (half 180 / 160: crosses); Larger text crosses at every width (390: ends at 217; 360: 217; 320: 203).
-
-Fixed by lane R and passing: IMP-081 toast vs "Players (5) ›"; "Not enough clues?" left out at 812 × 375; IMP-001 equal
-buttons in "Start a new game?"; `inert` behind the leave and "3 players needed." dialogs.
+None. Lane S fixed the last two: IMP-020/022 at 812 × 375 (equal heights, tops aligned, row clear of the main button; new
+Larger-text test proves it) and IMP-071 with IMP-077 (practice chip on its own line directly under "← Home", both in the left
+half; the test now checks "under" at 390, 360 and 320).
 
 ## Question for the product owner (test marked expected-to-fail until answered)
 - **IMP-071 vs IMP-077:** answered by the orchestrator ("← Home" first, chip to its right, left half); see the failure above for
@@ -69,8 +63,8 @@ buttons in "Start a new game?"; `inert` behind the leave and "3 players needed."
   replays (128, 011) pass on both phones; 011 is no longer marked expected-to-fail.
 
 ## Mutation testing
-**After (round 5 rules, 2118820, with the new tests):** running locally (1,196 mutants; 75 done at 5 October 12:55, about
-10 hours at low priority). Scores per file follow when it ends.
+**After (round 5 rules, 2118820, with the new tests):** running locally (1,196 mutants; 176 done, 3 survived and 3 timed out
+so far, at 5 October 15:20; several more hours at low priority). Scores per file follow when it ends.
 
 ### Before (Impostor rules, v1.2.0 → ce6513c; run before round 5's rule changes)
 Local, 3 workers at low priority, 9 h 40 min, scratch Stryker config pointing at the Impostor rule, property and contract
