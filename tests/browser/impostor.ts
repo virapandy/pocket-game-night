@@ -17,6 +17,13 @@
 export function aheadOfRound5(lane: 'N' | 'O' | 'C3', what: string) {
   pwTest.fail(true, `Impostor round 5 (v3.8), lane ${lane}, not built yet: ${what}`);
 }
+
+/** As `aheadOfRound5`, for Impostor round 6 (scenarios v3.9, decision I28, P1–P11; lane T). */
+export function aheadOfRound6(item: string, what: string) {
+  // PGN_IGNORE_AHEAD=1 runs these tests unmarked, to check them against a lane's branch before it merges.
+  if (process.env.PGN_IGNORE_AHEAD) return;
+  pwTest.fail(true, `Impostor round 6 (v3.9), ${item}, not built yet (lane T): ${what}`);
+}
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { expect, test as pwTest, type Locator, type Page } from '@playwright/test';
@@ -273,9 +280,12 @@ export async function startEvening(page: Page, o: StartOptions = {}) {
   await hostAGame(page).click();
   await impostorCard(page).click();
   await expect(page.getByRole('heading', { name: "Who's playing?" })).toBeVisible();
+  // v3.9 (IMP-010, P2): the setup screens' buttons are guarded for 500 ms after each screen shows.
+  await settle(page);
   await addPlayers(page, o.players ?? P4);
   await page.getByRole('button', { name: 'Next', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'How do you want to play?' })).toBeVisible();
+  await settle(page);
   if (o.mode === 'hard') await option(page, 'Mode', 'Hard').click();
   if (o.talking === 'timer') await option(page, 'Talking', 'Timer').click();
   if (o.score) await option(page, 'Score', 'Yes').click();
@@ -283,13 +293,16 @@ export async function startEvening(page: Page, o: StartOptions = {}) {
     // An assertion first, so a build without "More options ›" fails here at once (not by the test's timeout).
     await expect(page.getByRole('button', { name: 'More options ›', exact: true })).toBeVisible();
     await page.getByRole('button', { name: 'More options ›', exact: true }).click();
+    await settle(page);
     await option(page, 'Last guess for a caught impostor', o.lastGuess ? 'On' : 'Off').click();
     await page.getByRole('button', { name: 'Done', exact: true }).click();
+    await settle(page);
   }
   const howToPlay = page.getByRole('button', { name: 'How to play', exact: true });
   const practice = page.getByRole('button', { name: 'Practice round first', exact: true });
   if (o.practice && (await howToPlay.count())) {
     await howToPlay.click();
+    await settle(page);
     await practice.click();
   } else {
     await mainButton(page).filter({ hasText: 'Start round' }).click();
@@ -408,8 +421,13 @@ export async function reveal(page: Page, name: string, ms = 7500) {
   if (ms >= 1500) await settle(page);
 }
 
-/** The summary's "More ›" items (IMP-092; v3.8: "Oops, keep playing", "Share", "History", "Discard this game"). */
+/**
+ * The summary's actions (IMP-092): "Share", "History", "Discard this game" in "More ›"; v3.9 puts "Oops, keep playing" at
+ * the top of the summary (v3.8: in "More ›"). Navigation only: either place is accepted for "Oops".
+ */
 export async function summaryAction(page: Page, name: 'Share' | 'History' | 'Discard this evening' | 'Discard this game' | 'Oops, keep playing') {
+  const top = page.getByRole('button', { name, exact: true });
+  if (name === 'Oops, keep playing' && await top.isVisible().catch(() => false)) { await top.click(); return; }
   const more = page.getByRole('button', { name: 'More ›', exact: true });
   if (await more.count()) { await more.click(); await page.getByRole('menuitem', { name, exact: true }).click(); }
   else await page.getByRole('button', { name, exact: true }).click();
