@@ -1,7 +1,11 @@
 # Test report
-**Round 6 tap-guard fixes (6 October), progress: four test faults fixed, IMP-088 fix confirmed locally; quick verify and complete run on GitHub follow (results below once read).**
+**Round 6 (6 October), progress: round 6 is GREEN on both phones (quick verify 37441309625 and complete run 37441347272 on 6edd1e8).**
 
-Commit tested: app b1e589b (round 6 43f1c97 + IMP-088 fix); tests: this push   Date: 2026-10-06
+Commit tested: 6edd1e8 (app b1e589b = round 6 43f1c97 + IMP-088 fix; tests 6edd1e8)   Date: 2026-10-06
+Result: GREEN
+- Quick verify 37441309625 on 6edd1e8: green (rule tests 692 of 692; smoke 17 passed; changed areas 428 passed, Android).
+- Complete run 37441347272 on 6edd1e8, both phones: green, every job (Android 345 + 344, iPhone 342 + 314 passed).
+- Failing (real bugs): none. No expected-to-fail marks left from this round.
 - Quick verify 37432370177 (9895f8b) failed 6 Android tests. Four were test faults: the tests tapped a setup button within
   500 ms of the choices screen or a sheet showing again, which IMP-010 v3.9 ignores. Each now waits 500 ms first (nothing
   checked was changed): IMP-052 "Change categories" (after the choices screen shows, and after the Categories sheet opens),
