@@ -48,6 +48,9 @@ complete test only before a release; up to 3 coders in parallel, each on its own
 - **Paused until rows 1–25 are released:** new UX rows and reviews (product owner), mutation, emulator, simulation and
   Jev work (weekly unattended run only). Exception: the C3 batch (step 3) gets mutation **only on the rules and money
   lines it changed** (owner, 3 October); setting that up is part of the tester's setup round.
+  When simulation and Jev work resumes: the owner clarified on 6 October what the Jev test is for (decision of 6 October;
+  note at the top of `docs/proposals/e2e-and-jev-testing.md`): random taps on every button through the real screens to check
+  every flow ends rationally; it hunts breakage in game play, flow and navigation first, confusion ratings second.
 - C1/C2 questions don't stop work (pick by the UX guidelines, note it); C3 questions go to the owner in one list.
 - Stuck after 3 rounds or half a day: tell the owner. One progress line at the top of `reports/latest.md` per step.
 

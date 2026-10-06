@@ -3,6 +3,9 @@
 For the owner's approval. Owner: "strategise on the e2e testing and simulations using Jev; it can be 50–200, not
 some tens of thousands."
 
+
+> **Owner's clarification (6 October 2026, `docs/decisions.md`):** the Jev test exists to **tap every button at random through the real screens and check that every flow ends rationally**: no dead ends, no stuck screens, no game that carries on after it should have ended, no Back or Home that goes nowhere. Weeding out breakage in game play, flow and navigation is job 1 for layers 3 and 4 below. Playing people realistically and rating confusing screens are secondary and must never shrink the random coverage: every button on every screen gets pressed, including quiet buttons, the menu, Back, Home, close-and-reopen, mid-round taps and taps that make no sense for that moment.
+
 ## Why change
 - Today's simulations play **100,000 Tambola games inside the rules engine** (no screens), plus 2,000 and 300 on every
   test run. They prove the maths, but they have never found the kind of problem the owner found by playing:
@@ -18,7 +21,7 @@ some tens of thousands."
 |---|---|---|---|---|
 | 1. Rule tests and properties | Today's rule tests; property checks ("points always add up") | As now; property checks at the tool's normal run counts | Every push | Rule and money bugs |
 | 2. Golden journeys | A fixed set of complete evenings through the real app, each covering a path: per game about 12 (Impostor list below) | ~12 per game, both phones | Every release; journey 1 on every push | Broken flows, wrong words on screen |
-| 3. Screen simulations | A simulated host plays full evenings through the real app in a hidden browser, choosing among the buttons on screen, with checks after every step | **50 per release, 200 a week** | Release; weekly | Dead ends, stuck screens, secrets showing, layout breaks, crashes |
+| 3. Screen simulations | A simulated host plays full evenings through the real app in a hidden browser, pressing **every button on every screen at random** (main, quiet, menu, Back, Home, close-and-reopen, taps that make no sense right then), with checks after every step | **50 per release, 200 a week** | Release; weekly | Dead ends, stuck screens, secrets showing, layout breaks, crashes |
 | 4. Jev people | Jev plays the people in layer 3 (a slow grandparent, an over-eager child, a distracted host, a group that keeps tying) and rates how obvious each screen's next step is | **50 of the weekly 200** | Weekly | Confusing screens, content that doesn't make sense |
 The mass engine simulation drops from 100,000 to **200** games a week (properties already cover the maths), and the
 2,000 and 300 on every test run drop to **50**, so ordinary runs get faster too.
@@ -40,7 +43,8 @@ The mass engine simulation drops from 100,000 to **200** games a week (propertie
 ## Layer 3: screen simulations, how they work
 - A hidden browser opens the preview build with a fixed seed (the test hooks already in the spec).
 - At each screen the simulated host lists the buttons on screen and picks one (scripted rules: mostly the main button,
-  sometimes a quiet one, sometimes the menu, sometimes "close the app and reopen").
+  sometimes a quiet one, sometimes the menu, sometimes "close the app and reopen"). Over a run, **every button on every screen is
+  pressed at least once**, and the report says which were never reached (owner, 6 October).
 - **After every step, the same checks:** exactly one main button (or none where the spec says); no secret word in the
   page outside the hold; nothing off screen or overlapping; no error in the browser console; the screen matches a known
   screen of the spec; the evening can always reach "Next round" or the summary (no dead end).

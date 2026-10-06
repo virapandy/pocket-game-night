@@ -147,6 +147,7 @@
 
 "Convention" means the established Tambola rule in `docs/games/tambola/guide.md`, chosen because the owner asked
 Claude to follow game conventions. Every Tambola rule above is also a host setting with this default.
+| 2026-10-06 | **What the Jev test is for:** tap every button, at random, through the real screens, and check that every flow ends rationally. Its job is to weed out breakage in game play, flow and navigation (dead ends, stuck screens, a game that carries on when it should have ended, a Back or Home that goes nowhere). Realistic personas and the "confusing screen" rating are secondary; a run that finds no breakage is the pass. | Owner |
 | 2026-10-03 | **What makes us different:** one app for the whole fun night, in the room, with games the phone makes possible that normally need a box, cards, tokens or a moderator who sits out. New games must pass this "replaces the box" test; games that need nothing (Dumb Charades, Antakshari) are out. Shortlist: Impostor, Mafia, a Codenames-style word game (own name and words, never a copy). Lessons and lifecycle in `docs/proposals/next-game-lifecycle.md` approved. | Owner |
 
 ## Open
