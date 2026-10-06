@@ -305,6 +305,7 @@ test('Journey 6: "How to play" on request and a practice round, then round 1; "H
   ]);
   await expect(page.getByRole('button', { name: 'Practice round first', exact: true })).toHaveCount(0);
   await page.getByRole('button', { name: 'Done', exact: true }).click();
+  await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
   await toPicker(page);
   await reveal(page, 'Riya', 1500);
   await expect(result(page, 'round-outcome')).toHaveText(exact('Arjun escaped!'));

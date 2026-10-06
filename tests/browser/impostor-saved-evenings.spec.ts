@@ -258,6 +258,7 @@ test.describe('IMP-092: ending and discarding the evening', () => {
     await openEvening(page);
     await endGame(page);
     await mainButton(page).filter({ hasText: 'Play again' }).click();
+    await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     await expect(page.getByRole('heading', { name: "Who's playing?" })).toBeVisible();
     await expect(page.getByRole('dialog'), 'never the "Start a new game?" dialog').toHaveCount(0);
     const old = (await savedEvenings(page)).find((x: any) => x.id === e.id);

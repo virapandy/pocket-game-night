@@ -262,6 +262,7 @@ test.describe('IMP-075: the menu at each moment', () => {
     await expect(menuButton(page)).toHaveCount(0);
     await expect(page.getByRole('button', { name: 'Practice round first', exact: true })).toHaveCount(0);
     await page.getByRole('button', { name: 'Done', exact: true }).click();
+    await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     await expect(clueOrder(page)).toBeVisible();
   });
 
@@ -300,6 +301,7 @@ test.describe('IMP-075: the menu at each moment', () => {
     await page.getByLabel('Player name', { exact: true }).fill('Zoya');
     await page.getByRole('button', { name: 'Add', exact: true }).click();
     await page.getByRole('button', { name: 'Done', exact: true }).click();
+    await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     await expect(heading).toBeVisible();
     expect((await onlyEvening(page)).records.at(-1).move).toEqual({ type: 'setPlayers', players: [...P4, 'Zoya'] });
   });
@@ -313,6 +315,7 @@ test.describe('IMP-075: the menu at each moment', () => {
     expect(await menuItems(page, 'result')).toEqual(BETWEEN_MENU);
     await fromMenu(page, 'History');
     await page.getByRole('button', { name: /^(← )?Back$/ }).click();
+    await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     await expect(page.getByTestId('round-outcome')).toBeVisible();
   });
 
@@ -326,12 +329,15 @@ test.describe('IMP-075: the menu at each moment', () => {
     await expect(page.getByTestId('round-outcome')).toBeVisible();
     const atResult = (await onlyEvening(page)).records;
     await fromMenu(page, 'Change how we play');
+    await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     await expect(page.getByRole('heading', { name: 'How do you want to play?' })).toBeVisible();
     await expect(page.getByRole('group', { name: 'Mode', exact: true }).getByRole('button', { name: /Hard/ })).toHaveAttribute('aria-pressed', 'true');
     await page.getByRole('button', { name: /^(← )?Back$/ }).click();
+    await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     await expect(page.getByTestId('round-outcome')).toBeVisible();
     expect((await onlyEvening(page)).records).toEqual(atResult);
     await fromMenu(page, 'Change how we play');
+    await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     await mainButton(page).filter({ hasText: 'Start round' }).click();
     await expect(passName(page)).toBeVisible();
     const moves = (await onlyEvening(page)).records.slice(atResult.length).map((r: any) => r.move.type);
@@ -346,13 +352,16 @@ test.describe('IMP-075: the menu at each moment', () => {
     await expect(page.getByTestId('round-outcome')).toBeVisible();
     const atResult = (await onlyEvening(page)).records;
     await fromMenu(page, 'Change how we play');
+    await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     await page.getByRole('group', { name: 'Talking', exact: true }).getByRole('button', { name: /Free flow/ }).click();
     await page.getByRole('button', { name: /^(← )?Back$/ }).click();
+    await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     await expect(page.getByTestId('round-outcome')).toBeVisible();
     const back = (await onlyEvening(page)).records.slice(atResult.length).map((r: any) => r.move);
     expect(back.map((m: any) => m.type)).toEqual(['setChoices']);
     expect(back[0].choices.talking).toBe('free');
     await fromMenu(page, 'Change how we play');
+    await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     await expect(page.getByRole('group', { name: 'Talking', exact: true }).getByRole('button', { name: /Free flow/ })).toHaveAttribute('aria-pressed', 'true');
     await page.getByRole('group', { name: 'Mode', exact: true }).getByRole('button', { name: /Hard/ }).click();
     await mainButton(page).filter({ hasText: 'Start round' }).click();
@@ -514,6 +523,7 @@ test.describe('IMP-109: Settings for Impostor', () => {
     const order = await clueOrder(page).textContent();
     await larger(page).click();
     await settingsClose(page).click();
+    await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     await expect(clueOrder(page)).toHaveText(order!);
     await expect(starterName(page)).toHaveText(exact('Meena'));
     expect(await fontSize(clueOrder(page)), 'body text with Larger text').toBe(21);
@@ -528,6 +538,7 @@ test.describe('IMP-109: Settings for Impostor', () => {
     await fromMenu(page, 'Settings');
     await tapToShow(page).click();
     await settingsClose(page).click();
+    await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     await expect(passName(page)).toHaveText(exact('Arjun'));
     await settle(page); await imButton(page, 'Arjun').click();
     await expect(holdPad(page)).toHaveAccessibleName('Tap to see your word');

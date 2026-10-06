@@ -607,6 +607,7 @@ test.describe('IMP-052: no words left', () => {
     });
     await page.getByRole('button', { name: /^Host a game/ }).click();
     await page.getByRole('button', { name: /^Impostor\b/ }).and(page.locator(':not([data-testid="resume-card"])')).click();
+    await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     if ((await page.getByRole('button', { name: /^Remove / }).count()) === 0) {
       for (const n of P4) { await page.getByLabel('Player name', { exact: true }).fill(n); await page.getByRole('button', { name: 'Add', exact: true }).click(); }
     }
@@ -652,6 +653,7 @@ test.describe('IMP-052: no words left', () => {
     await page.getByRole('button', { name: /^Categories: / }).click();
     for (let i = 0; i < 9; i++) { const s = page.getByRole('switch').nth(i); if (!(await s.isChecked())) await s.click(); }
     await page.getByRole('button', { name: 'Done', exact: true }).click();
+    await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     const before = (await records(page)).length;
     await mainButton(page).filter({ hasText: 'Start round' }).click();
     await expect(passName(page)).toBeVisible();
@@ -678,6 +680,7 @@ test.describe('IMP-070 and IMP-072: "How to play" from the menu mid-round never 
       await expectNoSecrets(page, secretTerms(SAMOSA, mode), 'How to play');
       await expectOneMainButton(page, 'How to play', 'Done', true);
       await page.getByRole('button', { name: 'Done', exact: true }).click();
+      await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
       await expect(page.getByRole('heading', { name: 'How to play' })).toHaveCount(0);
       await expect(page.getByTestId('clue-order')).toBeVisible();
       expect(await records(page)).toEqual(recs);
@@ -706,6 +709,7 @@ test.describe('IMP-074: late joiner and someone leaving', () => {
     await page.getByRole('button', { name: 'Add', exact: true }).click();
     await expectOneMainButton(page, 'Players sheet', 'Done', true);
     await page.getByRole('button', { name: 'Done', exact: true }).click();
+    await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     const after = await records(page);
     expect(after.slice(before)).toEqual([{ type: 'setPlayers', players: [...P4, 'Zoya'] }]);
     await mainButton(page).filter({ hasText: 'Next round' }).click();
@@ -751,6 +755,7 @@ test.describe('IMP-074: late joiner and someone leaving', () => {
     await fromMenu(page, 'Players');
     await page.getByRole('button', { name: 'Remove Kabir', exact: true }).click();
     await page.getByRole('button', { name: 'Done', exact: true }).click();
+    await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     const recs = await records(page);
     await fromMenu(page, 'Players');
     await page.getByRole('button', { name: 'Remove Meena', exact: true }).click();
@@ -771,6 +776,7 @@ test.describe('IMP-074: late joiner and someone leaving', () => {
     await page.getByLabel('Player name', { exact: true }).fill('Zoya');
     await page.getByRole('button', { name: 'Add', exact: true }).click();
     await page.getByRole('button', { name: 'Done', exact: true }).click();
+    await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     await expect(page.getByTestId('clue-order')).toHaveText(order!);
     expect((await records(page)).slice(recs.length)).toEqual([{ type: 'setPlayers', players: [...P4, 'Zoya'] }]);
     await expect(page.getByTestId('joining-line')).toHaveText(exact('Joining next round: Zoya', ['Zoya']));
@@ -1239,6 +1245,7 @@ test.describe('IMP-100 to IMP-108: after the round', () => {
     await row.click();
     await expect(page.getByTestId('history-round')).toHaveText([exact('Round 1 · Samosa · Arjun caught, wrong guess')]);
     await page.getByRole('button', { name: 'Play again', exact: true }).click();
+    await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     await expect(page.getByRole('heading', { name: "Who's playing?" })).toBeVisible();
     for (const n of P4) await expect(page.getByRole('button', { name: `Remove ${n}`, exact: true })).toBeVisible();
     await page.getByRole('button', { name: 'Next', exact: true }).click();

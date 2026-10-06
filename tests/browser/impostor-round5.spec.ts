@@ -390,9 +390,11 @@ test.describe('Lane N: IMP-103 History "Play again" while a game is unfinished a
     await openHistory(page);
     await page.getByTestId('history-game').filter({ hasText: 'Impostor · 1 round' }).click();
     await page.getByRole('button', { name: 'Play again', exact: true }).click();
+    await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     const dialog = page.getByRole('dialog', { name: /Start a new game\?/ });
     await expect(dialog).toBeVisible();
     await dialog.getByRole('button', { name: 'Start new', exact: true }).click();
+    await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     await expect(page.getByRole('heading', { name: "Who's playing?" })).toBeVisible();
     await expect(page.getByRole('dialog')).toHaveCount(0);
     const names = await page.getByRole('button', { name: /^Remove / }).evaluateAll((els) => els.map((el) => el.getAttribute('aria-label')));
@@ -424,13 +426,16 @@ test.describe('Lanes N and O: IMP-085 plain words (M24): "game", never "evening"
     await page.getByRole('group', { name: 'Score', exact: true }).getByRole('button', { name: /Yes/ }).click();
     await check('How do you want to play? (Score Yes)');
     await page.getByRole('button', { name: 'More options ›', exact: true }).click();
+    await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     await check('More options');
     await page.getByRole('group', { name: 'Last guess for a caught impostor', exact: true }).getByRole('button', { name: /On/ }).click();
     await page.getByRole('button', { name: 'Done', exact: true }).click();
+    await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     await page.getByRole('button', { name: 'How to play', exact: true }).click();
     await settle(page); // v3.9: setup and How to play buttons are guarded for 500 ms (P2)
     await check('How to play');
     await page.getByRole('button', { name: 'Done', exact: true }).click();
+    await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     await mainButton(page).filter({ hasText: 'Start round' }).click();
     await check('screen A');
     await settle(page);
@@ -503,6 +508,7 @@ test.describe('C3: IMP-078 someone has to leave mid-round', () => {
     await fromMenu(page, 'Players');
     await expect(page.getByRole('button', { name: 'Remove Kabir', exact: true })).toHaveCount(0);
     await page.getByRole('button', { name: 'Done', exact: true }).click();
+    await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     await toPicker(page);
     await freezeClock(page);
     await pickerName(page, 'Arjun').click();
@@ -558,6 +564,7 @@ test.describe('C3: IMP-079 someone arrives mid-round', () => {
       await playerField(page).fill(n);
       await page.getByRole('button', { name: 'Add', exact: true }).click();
       await page.getByRole('button', { name: 'Done', exact: true }).click();
+      await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     }
     const line = page.getByTestId('joining-line');
     const expectLine = async (where: string) => {

@@ -42,6 +42,7 @@ test.describe('P2, IMP-010: the 500 ms tap guard on the setup screens', () => {
     await phoneWith(page, [], { now: T0 });
     await hostAGame(page).click();
     await page.getByRole('button', { name: /^Impostor\b/ }).and(page.locator(':not([data-testid="resume-card"])')).click();
+    await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     for (const n of P4) { await playerField(page).fill(n); await page.getByRole('button', { name: 'Add', exact: true }).click(); }
     await freezeClock(page);
     await page.clock.runFor(500);
@@ -173,7 +174,11 @@ test.describe('IMP-010 (v3.9): the private block starts 8 px below the top, so "
       const first = await privateBlock(page).evaluate((el) => el.children[0]!.getBoundingClientRect().top);
       expect(Math.abs(block.y - 8), 'the block starts 8 px below the top').toBeLessThanOrEqual(1);
       expect(first, '"Your secret" is not cut at the top').toBeGreaterThanOrEqual(7.5);
-      expect(block.y + block.height, 'and ends above the pad').toBeLessThanOrEqual(pad.y - 8 + 0.5);
+      if (w === 812) {
+        // At 812 × 375 the block is in the left half and runs from y = 8 to at most y = 254 (IMP-010).
+        expect(block.y + block.height, 'ends by y = 254').toBeLessThanOrEqual(254.5);
+        expect(block.x + block.width, 'in the left half').toBeLessThanOrEqual(406 + 0.5);
+      } else expect(block.y + block.height, 'and ends above the pad').toBeLessThanOrEqual(pad.y - 8 + 0.5);
       await page.mouse.up();
     });
   }
@@ -187,6 +192,7 @@ test.describe('P11, IMP-109: Larger text applies on every Impostor screen', () =
     await phoneWith(page, [], { now: T0, storage: { 'pgn.pref.largerText': true, 'pgn.test.seeds': { deals: [DEAL, { wordId: PANI_PURI, impostor: 'Meena', starter: 'Arjun' }] } } });
     await hostAGame(page).click();
     await page.getByRole('button', { name: /^Impostor\b/ }).and(page.locator(':not([data-testid="resume-card"])')).click();
+    await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     expect(await fontSize(page, page.getByText('Add at least 3 players.', { exact: true })), '"Who\'s playing?" small line').toBe(19);
     for (const n of P4) { await playerField(page).fill(n); await page.getByRole('button', { name: 'Add', exact: true }).click(); }
     expect(await quiet(page, 'Clear list').evaluate((el) => parseFloat(getComputedStyle(el).fontSize)), 'quiet "Clear list"').toBe(21);

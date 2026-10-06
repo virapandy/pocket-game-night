@@ -246,6 +246,7 @@ test.describe('IMP-013 and IMP-062: the word is never in the page except while h
       await fromMenu(page, 'Settings');
       await check('Settings');
       await settingsClose(page).click();
+      await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
       await doneButton(page).click();
       for (const p of ['Arjun', 'Meena', 'Kabir']) { await check(`${p}'s screen A`); await turn(page, p); }
       await check('the clues');

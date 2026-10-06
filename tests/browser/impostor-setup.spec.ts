@@ -78,6 +78,7 @@ async function secondEveningOfTonight(page: Page): Promise<any> {
   const dialog = page.getByRole('dialog', { name: /Start a new (evening|game)\?/ });
   await expect(dialog).toBeVisible();
   await dialog.getByRole('button', { name: 'Start new', exact: true }).click();
+  await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
   await expect(whoHeading(page)).toBeVisible();
   if ((await removeButtons(page).count()) === 0) await addPlayers(page, P4);
   return first;
@@ -228,6 +229,7 @@ test.describe('IMP-003: players are added in seat order, without dragging', () =
     await settle(page); // v3.9: setup and How to play buttons are guarded for 500 ms (P2)
     await expect(choicesHeading(page)).toBeVisible();
     await backButton(page).click();
+    await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     await expect(whoHeading(page)).toBeVisible();
     await expectList(page, P4);
     await expect(playerField(page)).toHaveValue('');
@@ -238,6 +240,7 @@ test.describe('IMP-003: players are added in seat order, without dragging', () =
     await toWhosPlaying(page);
     await addPlayers(page, ['Riya', 'Arjun']);
     await backButton(page).click();
+    await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     await expect(page.getByRole('heading', { name: 'What shall we play?' })).toBeVisible();
     await impostorCard(page).click();
     await settle(page); // v3.9: setup and How to play buttons are guarded for 500 ms (P2)
@@ -394,6 +397,7 @@ test.describe('IMP-005: the four choices, with these defaults', () => {
   test('"← Back" returns to "Who\'s playing?" with the list unchanged', async ({ page }) => {
     await toChoices(page);
     await backButton(page).click();
+    await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     await expect(whoHeading(page)).toBeVisible();
     await expectList(page, P4);
   });
@@ -402,6 +406,7 @@ test.describe('IMP-005: the four choices, with these defaults', () => {
 test.describe('IMP-007: categories, non-veg', () => {
   async function openSheet(page: Page): Promise<Locator> {
     await categoriesRow(page).click();
+    await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     await expect(page.getByRole('heading', { name: 'Categories', exact: true })).toBeVisible();
     return page.getByRole('switch');
   }
@@ -518,14 +523,18 @@ test.describe('IMP-008 and IMP-009: taps to the first deal; choices from last ti
       await expect(option(page, g, o), `${g}: ${o}`).toHaveAttribute('aria-pressed', 'true');
     await expect(categoriesRow(page)).toHaveText(/^\s*Categories: 7 of 9 ›\s*$/);
     await categoriesRow(page).click();
+    await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     await expect(page.getByRole('switch', { name: 'Food', exact: true })).not.toBeChecked();
     await expect(page.getByRole('switch', { name: 'Everyday moments', exact: true })).not.toBeChecked();
     await expect(page.getByRole('switch', { name: 'Include non-veg food', exact: true })).toBeChecked();
     await page.getByRole('button', { name: 'Done', exact: true }).click();
+    await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     await expect(moreOptions(page)).toBeVisible();
     await moreOptions(page).click();
+    await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     await expect(option(page, 'Last guess for a caught impostor', 'On')).toHaveAttribute('aria-pressed', 'true');
     await page.getByRole('button', { name: 'Done', exact: true }).click();
+    await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     await expect(sameAsLastTime(page)).toBeVisible();
     const before = (await sameAsLastTime(page).boundingBox())!;
     await option(page, 'Words', 'Whole family').click();
@@ -554,11 +563,14 @@ test.describe('IMP-008 and IMP-009: taps to the first deal; choices from last ti
     await settle(page); // v3.9: setup and How to play buttons are guarded for 500 ms (P2)
     await expect(categoriesRow(page)).toHaveText(/^\s*Categories: 4 of 9 ›\s*$/);
     await categoriesRow(page).click();
+    await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     for (const c of ['Food', 'Out and about', 'Sports and games', 'Everyday moments']) await expect(page.getByRole('switch', { name: c, exact: true }), c).toBeChecked();
     for (const c of ['Festivals and occasions', 'Around the house', 'Films, music and TV', 'School and childhood', 'Weddings and family']) await expect(page.getByRole('switch', { name: c, exact: true }), c).not.toBeChecked();
     await page.getByRole('button', { name: 'Done', exact: true }).click();
+    await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     await expect(moreOptions(page)).toBeVisible();
     await moreOptions(page).click();
+    await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     await expect(option(page, 'Last guess for a caught impostor', 'Off')).toHaveAttribute('aria-pressed', 'true');
   });
 
@@ -592,6 +604,7 @@ test.describe('IMP-008 and IMP-009: taps to the first deal; choices from last ti
     await expect(sameAsLastTime(page)).toHaveCount(0);
     await expect(moreOptions(page)).toBeVisible();
     await moreOptions(page).click();
+    await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     await expect(option(page, 'Last guess for a caught impostor', 'Off')).toHaveAttribute('aria-pressed', 'true');
   });
 });
@@ -679,6 +692,7 @@ test.describe('IMP-070, IMP-072, IMP-076: How to play and More options, on reque
     await expect(menuButton(page)).toHaveCount(0);
     expect(await savedEvenings(page)).toEqual([]);
     await page.getByRole('button', { name: 'Done', exact: true }).click();
+    await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     await expect(choicesHeading(page)).toBeVisible();
     expect(await savedEvenings(page)).toEqual([]);
   });
@@ -688,10 +702,12 @@ test.describe('IMP-070, IMP-072, IMP-076: How to play and More options, on reque
     await option(page, 'Mode', 'Hard').click();
     await expect(moreOptions(page)).toBeVisible();
     await moreOptions(page).click();
+    await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     await expect(page.getByRole('heading', { name: 'More options' })).toBeVisible();
     await expect(page.getByText(GUESS, { exact: true })).toBeVisible();
     await option(page, 'Last guess for a caught impostor', 'On').click();
     await page.getByRole('button', { name: 'Done', exact: true }).click();
+    await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     await expect(moreOptions(page), 'its text does not change').toBeVisible();
     await howToPlayButton(page).click();
     await settle(page); // v3.9: setup and How to play buttons are guarded for 500 ms (P2)
@@ -704,6 +720,7 @@ test.describe('IMP-070, IMP-072, IMP-076: How to play and More options, on reque
     await toChoices(page);
     await expect(moreOptions(page)).toBeVisible();
     await moreOptions(page).click();
+    await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     const off = option(page, 'Last guess for a caught impostor', 'Off'), on = option(page, 'Last guess for a caught impostor', 'On');
     await expect(off).toHaveAttribute('aria-pressed', 'true');
     expect(await hasMainLook(on)).toBe(false);
@@ -713,9 +730,11 @@ test.describe('IMP-070, IMP-072, IMP-076: How to play and More options, on reque
     await expect(choicesHeading(page)).toBeVisible();
     await expect(moreOptions(page)).toBeVisible();
     await moreOptions(page).click();
+    await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     await expect(off, 'closed by Back: the change is discarded').toHaveAttribute('aria-pressed', 'true');
     await on.click();
     await page.getByRole('button', { name: 'Done', exact: true }).click();
+    await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     await mainButton(page).filter({ hasText: 'Start round' }).click();
     await expect(passName(page)).toBeVisible();
     expect((await onlyEvening(page)).setup.config.choices.lastGuess).toBe(true);
@@ -791,6 +810,7 @@ test.describe('IMP-007, IMP-070 (orchestrator, 4 October, like IMP-076): Back cl
   test('Categories: two switched off, then the browser\'s Back: back on the choices with "Categories: all 9 ›", the switches unchanged', async ({ page }) => {
     await toChoices(page);
     await categoriesRow(page).click();
+    await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     await expect(page.getByRole('heading', { name: 'Categories', exact: true })).toBeVisible();
     await page.getByRole('switch', { name: 'Food', exact: true }).click();
     await page.getByRole('switch', { name: 'Everyday moments', exact: true }).click();
@@ -799,6 +819,7 @@ test.describe('IMP-007, IMP-070 (orchestrator, 4 October, like IMP-076): Back cl
     await expect(page.getByRole('heading', { name: 'Categories', exact: true })).toHaveCount(0);
     await expect(categoriesRow(page)).toHaveText(/^\s*Categories: all 9 ›\s*$/);
     await categoriesRow(page).click();
+    await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     await expect(page.getByRole('switch', { name: 'Food', exact: true })).toBeChecked();
     await expect(page.getByRole('switch', { name: 'Everyday moments', exact: true })).toBeChecked();
   });
