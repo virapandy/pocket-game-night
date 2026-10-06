@@ -269,8 +269,7 @@ describe('IMP-054: every word in the list is valid', () => {
     expect(wordById('IMPW-404')).toMatchObject({ word: 'Screen time', retired: false });
   });
 
-  it.fails('words.json has exactly the rows of words.csv, in the same order, with retired true/false, and passes the same checks', () => {
-    // Expected to fail until lane T is on main: words.json not yet rebuilt from the 6 October words.csv (Bharatanatyam grown-ups, Iron box hint 'Wrinkles'; lane T).
+  it('words.json has exactly the rows of words.csv, in the same order, with retired true/false, and passes the same checks', () => {
     const json = shippedWords();
     expect(Array.isArray(json)).toBe(true);
     checkRows(json, 'words.json');
@@ -321,8 +320,7 @@ describe('IMP-055: the shipped word list file', () => {
 });
 
 describe('words.csv of 6 October (decision I28): Bharatanatyam for grown-ups, Iron box hint "Wrinkles"', () => {
-  it.fails('the shipped list has IMPW-146 Bharatanatyam as + Grown-ups (never dealt with Whole family) and IMPW-086 Iron box with the hint "Wrinkles"', () => {
-    // Expected to fail until lane T is on main: words.json not yet rebuilt from the 6 October words.csv.
+  it('the shipped list has IMPW-146 Bharatanatyam as + Grown-ups (never dealt with Whole family) and IMPW-086 Iron box with the hint "Wrinkles"', () => {
     const shipped = shippedWords();
     const b = shipped.find((w: any) => w.id === 'IMPW-146');
     const i = shipped.find((w: any) => w.id === 'IMPW-086');

@@ -69,8 +69,7 @@ describe('Test hooks item 1 and IMP-096: every word-dealing move records the dea
 });
 
 describe('Test hooks item 1, IMP-060, IMP-061, IMP-021: each deal draws from its own seeds', () => {
-  it.fails('deal 1: the word, the impostor and the starter are the picks of `${word}:word:1`, `${word}:impostor:1` and `${starter}:1`', () => {
-    // Expected to fail until lane T is on main: words.json not yet rebuilt from the 6 October words.csv (Bharatanatyam grown-ups, Iron box hint 'Wrinkles'; lane T).
+  it('deal 1: the word, the impostor and the starter are the picks of `${word}:word:1`, `${word}:impostor:1` and `${starter}:1`', () => {
     for (const s of seedList(50, 'per-deal')) {
       const e = new Evening({ seed: s, starterSeed: `${s}-st` });
       e.startDeal();
@@ -81,8 +80,7 @@ describe('Test hooks item 1, IMP-060, IMP-061, IMP-021: each deal draws from its
     }
   });
 
-  it.fails('a redeal is deal 2: "New word" draws from `${word}:word:2` and `${word}:impostor:2`, and the starter from `${starter}:2`', () => {
-    // Expected to fail until lane T is on main: words.json not yet rebuilt from the 6 October words.csv (Bharatanatyam grown-ups, Iron box hint 'Wrinkles'; lane T).
+  it('a redeal is deal 2: "New word" draws from `${word}:word:2` and `${word}:impostor:2`, and the starter from `${starter}:2`', () => {
     for (const s of seedList(30, 'per-deal-2')) {
       const e = new Evening({ seed: s, starterSeed: `${s}-st` });
       e.startDeal();
