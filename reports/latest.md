@@ -1,4 +1,9 @@
 # Test report
+**Round 6, P1 for the orchestrator (6 October): the P1 test is pushed, commit f5f8ead** (`tests/browser/impostor-round6-p1.spec.ts`,
+both phones). It is expected to fail on main and **passes unmarked on lane-t 63c42aa** (all 10 tests, run with
+`PGN_IGNORE_AHEAD=1` against a lane-t build). Lane T can merge. The shared helpers now wait out the setup tap guard (P2),
+which lane T adds. The remaining P2–P11 tests follow; their report replaces this note.
+
 Commit tested: app fbfedea (main: round 5 with lanes R and S); tests 858848e   Date: 2026-10-05
 Result: GREEN
 
