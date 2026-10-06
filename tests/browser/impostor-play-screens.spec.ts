@@ -17,6 +17,7 @@ import {
   overlapping, release, revealLines, roundMoves, savedEvening, savedEvenings, secretTerms, startEvening, textOf, word, type Move, type StartOptions,
   aheadOfRound5,
   settle,
+  aheadOfRound6,
 } from './impostor';
 
 test.use({ timezoneId: TZ, viewport: { width: 390, height: 844 } });
@@ -610,6 +611,7 @@ test.describe('IMP-052: no words left', () => {
       for (const n of P4) { await page.getByLabel('Player name', { exact: true }).fill(n); await page.getByRole('button', { name: 'Add', exact: true }).click(); }
     }
     await page.getByRole('button', { name: 'Next', exact: true }).click();
+    await settle(page); // v3.9: setup and How to play buttons are guarded for 500 ms (P2)
     await mainButton(page).filter({ hasText: 'Start round' }).click();
     const card = mainButton(page).filter({ hasText: 'Start the deal' });
     // Navigation: the v3.5 heading ("… tonight!") or the v3.8 one; the exact words are asserted by the test below.
@@ -666,6 +668,7 @@ test.describe('IMP-070 and IMP-072: "How to play" from the menu mid-round never 
       await toClues(page, { mode });
       const recs = await records(page);
       await fromMenu(page, 'How to play');
+      await settle(page); // v3.9: setup and How to play buttons are guarded for 500 ms (P2)
       await expect(page.getByRole('heading', { name: 'How to play' })).toBeVisible();
       await expect(page.locator('ol > li')).toHaveCount(4);
       await expect(page.getByText(mode === 'easy' ? 'The impostor sees the category and a hint.' : 'The impostor sees nothing and never starts.', { exact: true })).toBeVisible();
@@ -686,6 +689,7 @@ test.describe('IMP-070 and IMP-072: "How to play" from the menu mid-round never 
     await freezeClock(page);
     await toTalk(page);
     await fromMenu(page, 'How to play');
+    await settle(page); // v3.9: setup and How to play buttons are guarded for 500 ms (P2)
     await page.clock.runFor(5000);
     await page.getByRole('button', { name: 'Done', exact: true }).click();
     await expect(timer(page)).toHaveText('1:55');
@@ -1147,7 +1151,7 @@ test.describe('IMP-085, IMP-086, IMP-089: kind words, a slipped finger, sounds',
 });
 
 test.describe('IMP-100 to IMP-108: after the round', () => {
-  test('IMP-101 and IMP-092 (v3.8): the summary (lead line, main "Play again", "Play something else", "Home", "More ›"); "Oops, keep playing" (in "More ›") returns to the same result with "Undo"; nothing recorded; summaryShownAt kept', async ({ page }) => {
+  test('IMP-101 and IMP-092 (v3.9): the summary ("Oops, keep playing" at the top, lead line, main "Play again", "Play something else", "Home", "More ›"); "Oops, keep playing" returns to the same result with "Undo"; nothing recorded; summaryShownAt kept', async ({ page }) => {
     const e = await atResult(page);
     const recs = await records(page);
     await endGame(page);
@@ -1159,16 +1163,18 @@ test.describe('IMP-100 to IMP-108: after the round', () => {
     await expectOneMainButton(page, 'summary', 'Play again', true);
     await expect(quiet(page, 'More ›')).toBeVisible();
     let lastY = -Infinity;
-    for (const name of ['Play something else', 'Home', 'More ›']) {
+    for (const name of ['Oops, keep playing', 'Play something else', 'Home', 'More ›']) {
       const y = (await quiet(page, name).boundingBox())!.y;
       expect(y, `"${name}" comes after the button above it`).toBeGreaterThan(lastY);
       lastY = y;
     }
     await expect(page.getByTestId('summary-line')).toHaveText(exact('Impostor caught 1 · escaped 0', []));
     await quiet(page, 'More ›').click();
-    expect(await textOf(page.getByRole('menuitem'))).toEqual(['Oops, keep playing', 'Share', 'History', 'Discard this game']);
+    expect(await textOf(page.getByRole('menuitem'))).toEqual(['Share', 'History', 'Discard this game']);
     await expect(page.getByRole('menu').getByRole('separator')).toHaveCount(1);
-    await page.getByRole('menuitem', { name: 'Oops, keep playing', exact: true }).click();
+    await page.keyboard.press('Escape');
+    if (await page.getByRole('menuitem').first().isVisible()) await quiet(page, 'More ›').click();
+    await quiet(page, 'Oops, keep playing').click();
     await expect(outcome(page)).toHaveText(exact('You caught the impostor!'));
     await expect(quiet(page, 'Undo')).toBeVisible();
     expect(await records(page)).toEqual(recs);
@@ -1185,6 +1191,7 @@ test.describe('IMP-100 to IMP-108: after the round', () => {
     const paper = page.getByRole('button', { name: /^Paper tickets/ }).or(page.getByRole('radio', { name: /^Paper tickets/ })).first();
     await paper.click();
     await page.getByRole('button', { name: 'Next', exact: true }).click();
+    await settle(page); // v3.9: setup and How to play buttons are guarded for 500 ms (P2)
     for (const [i, n] of P4.entries()) await expect(page.getByLabel(`Name of player ${i + 1}`, { exact: true })).toHaveValue(n);
     await page.goto(HOME);
     await fromHome(page, 'Sessions');
@@ -1208,6 +1215,7 @@ test.describe('IMP-100 to IMP-108: after the round', () => {
     await chooseTicketType(page, 'paper');
     await fillPlayers(page, ['Zoya', 'Farhan', 'Ira']);
     await page.getByRole('button', { name: 'Next', exact: true }).click();
+    await settle(page); // v3.9: setup and How to play buttons are guarded for 500 ms (P2)
     // The host leaves Tambola's setup unconfirmed and goes back to the Impostor evening.
     await page.goto(HOME);
     await openEvening(page);
@@ -1234,6 +1242,7 @@ test.describe('IMP-100 to IMP-108: after the round', () => {
     await expect(page.getByRole('heading', { name: "Who's playing?" })).toBeVisible();
     for (const n of P4) await expect(page.getByRole('button', { name: `Remove ${n}`, exact: true })).toBeVisible();
     await page.getByRole('button', { name: 'Next', exact: true }).click();
+    await settle(page); // v3.9: setup and How to play buttons are guarded for 500 ms (P2)
     await expect(page.getByRole('group', { name: 'Mode', exact: true }).getByRole('button', { name: /Easy/ })).toHaveAttribute('aria-pressed', 'true');
   });
 

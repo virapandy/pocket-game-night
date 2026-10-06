@@ -10,6 +10,7 @@ import {
   savedEvenings, startEvening, toPicker, freezeClock, type Move,
   aheadOfRound5,
   settle,
+  aheadOfRound6,
 } from './impostor';
 
 test.use({ timezoneId: TZ, viewport: { width: 390, height: 844 } });
@@ -47,6 +48,7 @@ async function expectList(page: Page, names: string[]) {
 async function toWhosPlaying(page: Page) {
   await hostAGame(page).click();
   await impostorCard(page).click();
+  await settle(page); // v3.9: setup and How to play buttons are guarded for 500 ms (P2)
   await expect(whoHeading(page)).toBeVisible();
 }
 
@@ -71,6 +73,7 @@ async function secondEveningOfTonight(page: Page): Promise<any> {
   await page.goto(HOME);
   await hostAGame(page).click();
   await impostorCard(page).click();
+  await settle(page); // v3.9: setup and How to play buttons are guarded for 500 ms (P2)
   // v3.5 "Start a new evening?" / v3.8 "Start a new game?" (navigation only; the words: IMP-001's test below).
   const dialog = page.getByRole('dialog', { name: /Start a new (evening|game)\?/ });
   await expect(dialog).toBeVisible();
@@ -189,23 +192,31 @@ test.describe('IMP-003: players are added in seat order, without dragging', () =
     await expect(removeButtons(page)).toHaveCount(20);
   });
 
-  test('under 3 players "Next" is disabled with "Add at least 3 players."; ✕ removes at once with no toast, even below 3', async ({ page }) => {
+  test('IMP-003 (v3.9, P9): under 3 players a grey hint "Add at least 3 players." (15 px, not an alert); "Next" stays enabled; tapped with fewer than 3 it does not move on and the hint turns into an alert; adding or removing a name turns it back; ✕ removes at once with no toast', async ({ page }) => {
     await phoneWith(page, [], { now: T0 });
     await toWhosPlaying(page);
-    await expect(nextButton(page)).toBeDisabled();
-    await expect(alertWith(page, 'Add at least 3 players.')).toHaveText(exact('Add at least 3 players.', []));
-    await addPlayers(page, ['Riya', 'Arjun']);
-    await expect(nextButton(page)).toBeDisabled();
-    await expect(alertWith(page, 'Add at least 3 players.')).toBeVisible();
-    await addPlayers(page, ['Meena']);
+    const hint = page.getByText('Add at least 3 players.', { exact: true });
+    await expect(hint).toBeVisible();
+    await expect(alertWith(page, 'Add at least 3 players.')).toHaveCount(0);
+    expect(await hint.evaluate((el) => parseFloat(getComputedStyle(el).fontSize)), 'a small line').toBe(15);
     await expect(nextButton(page)).toBeEnabled();
+    await addPlayers(page, ['Riya', 'Arjun']);
+    await expect(nextButton(page)).toBeEnabled();
+    await settle(page);
+    await nextButton(page).click();
+    await settle(page); // v3.9: setup and How to play buttons are guarded for 500 ms (P2)
+    await expect(whoHeading(page), 'does not move on').toBeVisible();
+    await expect(alertWith(page, 'Add at least 3 players.')).toHaveText(exact('Add at least 3 players.', []));
+    const errorColour = await alertWith(page, 'Add at least 3 players.').evaluate((el) => getComputedStyle(el).color);
+    await addPlayers(page, ['Meena']);
     await expect(page.getByText('Add at least 3 players.', { exact: true })).toHaveCount(0);
     await page.getByRole('button', { name: 'Remove Arjun', exact: true }).click();
     await expectList(page, ['Riya', 'Meena']);
     await expect(page.getByTestId('undo-toast')).toHaveCount(0);
     await expect(page.getByTestId('toast')).toHaveCount(0);
-    await expect(nextButton(page)).toBeDisabled();
-    await expect(alertWith(page, 'Add at least 3 players.')).toBeVisible();
+    await expect(hint, 'back to the grey hint').toBeVisible();
+    await expect(alertWith(page, 'Add at least 3 players.')).toHaveCount(0);
+    expect(await hint.evaluate((el) => getComputedStyle(el).color), 'not the error colour').not.toBe(errorColour);
   });
 
   test('text left in the field when "Next" is tapped is not added and is cleared; "← Back" keeps the list', async ({ page }) => {
@@ -214,6 +225,7 @@ test.describe('IMP-003: players are added in seat order, without dragging', () =
     await addPlayers(page, P4);
     await playerField(page).fill('Zoya');
     await nextButton(page).click();
+    await settle(page); // v3.9: setup and How to play buttons are guarded for 500 ms (P2)
     await expect(choicesHeading(page)).toBeVisible();
     await backButton(page).click();
     await expect(whoHeading(page)).toBeVisible();
@@ -228,6 +240,7 @@ test.describe('IMP-003: players are added in seat order, without dragging', () =
     await backButton(page).click();
     await expect(page.getByRole('heading', { name: 'What shall we play?' })).toBeVisible();
     await impostorCard(page).click();
+    await settle(page); // v3.9: setup and How to play buttons are guarded for 500 ms (P2)
     await expect(whoHeading(page)).toBeVisible();
     await expectList(page, ['Riya', 'Arjun']);
   });
@@ -340,6 +353,7 @@ test.describe('IMP-005: the four choices, with these defaults', () => {
     await toWhosPlaying(page);
     await addPlayers(page, P4);
     await nextButton(page).click();
+    await settle(page); // v3.9: setup and How to play buttons are guarded for 500 ms (P2)
     await expect(choicesHeading(page)).toBeVisible();
   }
 
@@ -399,6 +413,7 @@ test.describe('IMP-007: categories, non-veg', () => {
     await toWhosPlaying(page);
     await addPlayers(page, P4);
     await nextButton(page).click();
+    await settle(page); // v3.9: setup and How to play buttons are guarded for 500 ms (P2)
     const switches = await openSheet(page);
     await expect(switches).toHaveCount(10);
     let lastY = -Infinity;
@@ -429,6 +444,7 @@ test.describe('IMP-007: categories, non-veg', () => {
     await toWhosPlaying(page);
     await addPlayers(page, P4);
     await nextButton(page).click();
+    await settle(page); // v3.9: setup and How to play buttons are guarded for 500 ms (P2)
     await openSheet(page);
     await expect(page.getByText('Keep at least one category.', { exact: true })).toHaveCount(0);
     // Every category switch but the last, by their order in the sheet (the names are checked in the test above).
@@ -447,6 +463,7 @@ test.describe('IMP-007: categories, non-veg', () => {
     await toWhosPlaying(page);
     await addPlayers(page, P4);
     await nextButton(page).click();
+    await settle(page); // v3.9: setup and How to play buttons are guarded for 500 ms (P2)
     await openSheet(page);
     const colours = await sw(page, 'Food').evaluate((el) => {
       const all = [el, ...Array.from(el.querySelectorAll('*'))].map((e) => getComputedStyle(e as Element).backgroundColor);
@@ -461,6 +478,7 @@ test.describe('IMP-008 and IMP-009: taps to the first deal; choices from last ti
   test('a later evening of tonight\'s session: after "Start new", "Next" → "Start round" is the first "Pass the phone to…", with no session question', async ({ page }) => {
     const first = await secondEveningOfTonight(page);
     await nextButton(page).click();
+    await settle(page); // v3.9: setup and How to play buttons are guarded for 500 ms (P2)
     await mainButton(page).filter({ hasText: 'Start round' }).click();
     await expect(passName(page)).toBeVisible();
     await expect(cardHeading(page)).toHaveCount(0);
@@ -476,6 +494,7 @@ test.describe('IMP-008 and IMP-009: taps to the first deal; choices from last ti
     await toWhosPlaying(page);
     await addPlayers(page, P4);
     await nextButton(page).click();
+    await settle(page); // v3.9: setup and How to play buttons are guarded for 500 ms (P2)
     await mainButton(page).filter({ hasText: 'Start round' }).click();
     await expect(passName(page)).toBeVisible();
     await expect(cardHeading(page)).toHaveCount(0);
@@ -491,6 +510,7 @@ test.describe('IMP-008 and IMP-009: taps to the first deal; choices from last ti
     await toWhosPlaying(page);
     await addPlayers(page, P4);
     await nextButton(page).click();
+    await settle(page); // v3.9: setup and How to play buttons are guarded for 500 ms (P2)
     await expect(sameAsLastTime(page)).toBeVisible();
     const h = (await choicesHeading(page).boundingBox())!, l = (await sameAsLastTime(page).boundingBox())!;
     expect(l.y, '"Same as last time" directly under the heading').toBeGreaterThanOrEqual(h.y + h.height - 1);
@@ -507,8 +527,12 @@ test.describe('IMP-008 and IMP-009: taps to the first deal; choices from last ti
     await expect(option(page, 'Last guess for a caught impostor', 'On')).toHaveAttribute('aria-pressed', 'true');
     await page.getByRole('button', { name: 'Done', exact: true }).click();
     await expect(sameAsLastTime(page)).toBeVisible();
+    const before = (await sameAsLastTime(page).boundingBox())!;
     await option(page, 'Words', 'Whole family').click();
-    await expect(sameAsLastTime(page), 'it goes as soon as a choice changes').toHaveCount(0);
+    // v3.9 (IMP-009, P6): once shown it stays, unmoved, until the choices screen is left (nothing on the screen moves).
+    await expect(sameAsLastTime(page), 'it stays after a change').toBeVisible();
+    const after = (await sameAsLastTime(page).boundingBox())!;
+    expect(Math.abs(after.y - before.y), 'unmoved').toBeLessThanOrEqual(0.5);
     await mainButton(page).filter({ hasText: 'Start round' }).click();
     await expect(passName(page)).toBeVisible();
     await expect(page.getByLabel('Session name', { exact: true })).toHaveCount(0);
@@ -527,6 +551,7 @@ test.describe('IMP-008 and IMP-009: taps to the first deal; choices from last ti
     await toWhosPlaying(page);
     await addPlayers(page, P4);
     await nextButton(page).click();
+    await settle(page); // v3.9: setup and How to play buttons are guarded for 500 ms (P2)
     await expect(categoriesRow(page)).toHaveText(/^\s*Categories: 4 of 9 ›\s*$/);
     await categoriesRow(page).click();
     for (const c of ['Food', 'Out and about', 'Sports and games', 'Everyday moments']) await expect(page.getByRole('switch', { name: c, exact: true }), c).toBeChecked();
@@ -543,6 +568,7 @@ test.describe('IMP-008 and IMP-009: taps to the first deal; choices from last ti
     await toWhosPlaying(page);
     await addPlayers(page, P4);
     await nextButton(page).click();
+    await settle(page); // v3.9: setup and How to play buttons are guarded for 500 ms (P2)
     await expect(categoriesRow(page)).toHaveText(/^\s*Categories: all 9 ›\s*$/);
     await expect(sameAsLastTime(page)).toBeVisible();
   });
@@ -552,6 +578,7 @@ test.describe('IMP-008 and IMP-009: taps to the first deal; choices from last ti
     await toWhosPlaying(page);
     await addPlayers(page, P4);
     await nextButton(page).click();
+    await settle(page); // v3.9: setup and How to play buttons are guarded for 500 ms (P2)
     for (const [g, o] of [['Mode', 'Easy'], ['Talking', 'Free flow'], ['Score', 'No'], ['Words', 'Whole family']] as const)
       await expect(option(page, g, o), `${g}: ${o}`).toHaveAttribute('aria-pressed', 'true');
   });
@@ -561,6 +588,7 @@ test.describe('IMP-008 and IMP-009: taps to the first deal; choices from last ti
     await toWhosPlaying(page);
     await addPlayers(page, P4);
     await nextButton(page).click();
+    await settle(page); // v3.9: setup and How to play buttons are guarded for 500 ms (P2)
     await expect(sameAsLastTime(page)).toHaveCount(0);
     await expect(moreOptions(page)).toBeVisible();
     await moreOptions(page).click();
@@ -573,6 +601,7 @@ test('IMP-001 (v3.8, M22): with a game unfinished, the Impostor card asks once "
   await page.goto(HOME);
   await hostAGame(page).click();
   await impostorCard(page).click();
+  await settle(page); // v3.9: setup and How to play buttons are guarded for 500 ms (P2)
   const dialog = page.getByRole('dialog', { name: /Start a new game\?/ });
   await expect(dialog).toContainText(/^\s*Start a new game\? The game from 9:3\d pm will be ended\./);
   const carry = dialog.getByRole('button', { name: 'Carry on that game', exact: true });
@@ -598,6 +627,7 @@ test.describe('IMP-070, IMP-072, IMP-076: How to play and More options, on reque
     await toWhosPlaying(page);
     await addPlayers(page, P4);
     await nextButton(page).click();
+    await settle(page); // v3.9: setup and How to play buttons are guarded for 500 ms (P2)
     await expect(choicesHeading(page)).toBeVisible();
   }
   const LINES = [
@@ -629,8 +659,15 @@ test.describe('IMP-070, IMP-072, IMP-076: How to play and More options, on reque
   test('"How to play" from the choices screen: Read this aloud with its 4 lines, the Easy line, the 3 rules, "Done" (main), "Practice round first"; no menu; nothing recorded', async ({ page }) => {
     await toChoices(page);
     await howToPlayButton(page).click();
+    await settle(page); // v3.9: setup and How to play buttons are guarded for 500 ms (P2)
     await expect(page.getByRole('heading', { name: 'How to play' })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Read this aloud' })).toBeVisible();
+    // v3.9 (IMP-070, P10): the paragraph under "How to play", above "Read this aloud".
+    const first = page.getByText("One player is the impostor: they don't know the secret word.", { exact: true });
+    await expect(first).toBeVisible();
+    const fb = (await first.boundingBox())!, hb = (await page.getByRole('heading', { name: 'Read this aloud' }).boundingBox())!, tb = (await page.getByRole('heading', { name: 'How to play' }).boundingBox())!;
+    expect(fb.y, 'under "How to play"').toBeGreaterThanOrEqual(tb.y + tb.height - 1);
+    expect(fb.y + fb.height, 'above "Read this aloud"').toBeLessThanOrEqual(hb.y + 1);
     await expect(page.locator('ol > li')).toHaveText(LINES);
     await expect(page.locator('ul > li')).toHaveText(RULES);
     await expect(page.getByText('The impostor sees the category and a hint.', { exact: true })).toBeVisible();
@@ -657,6 +694,7 @@ test.describe('IMP-070, IMP-072, IMP-076: How to play and More options, on reque
     await page.getByRole('button', { name: 'Done', exact: true }).click();
     await expect(moreOptions(page), 'its text does not change').toBeVisible();
     await howToPlayButton(page).click();
+    await settle(page); // v3.9: setup and How to play buttons are guarded for 500 ms (P2)
     await expect(page.getByText('The impostor sees nothing and never starts.', { exact: true })).toBeVisible();
     await expect(page.getByText(GUESS, { exact: true })).toBeVisible();
     await expect(page.locator('ul > li')).toHaveText(RULES);
@@ -746,6 +784,7 @@ test.describe('IMP-007, IMP-070 (orchestrator, 4 October, like IMP-076): Back cl
     await toWhosPlaying(page);
     await addPlayers(page, P4);
     await nextButton(page).click();
+    await settle(page); // v3.9: setup and How to play buttons are guarded for 500 ms (P2)
     await expect(choicesHeading(page)).toBeVisible();
   }
 
@@ -768,6 +807,7 @@ test.describe('IMP-007, IMP-070 (orchestrator, 4 October, like IMP-076): Back cl
     await toChoices(page);
     await option(page, 'Mode', 'Hard').click();
     await howToPlayButton(page).click();
+    await settle(page); // v3.9: setup and How to play buttons are guarded for 500 ms (P2)
     await expect(page.getByRole('heading', { name: 'How to play' })).toBeVisible();
     await page.goBack();
     await expect(choicesHeading(page)).toBeVisible();
@@ -784,12 +824,16 @@ test.describe('IMP-088: the choices screen at 320 × 568 and in landscape', () =
     await toWhosPlaying(page);
     await addPlayers(page, P4);
     await nextButton(page).click();
+    await settle(page); // v3.9: setup and How to play buttons are guarded for 500 ms (P2)
     await expect(choicesHeading(page)).toBeVisible();
   }
   const GROUP_NAMES = ['Mode', 'Talking', 'Score', 'Words'];
   const FIRST = { Mode: ['Easy', 'Hard'], Talking: ['Free flow', 'Timer'], Score: ['No', 'Yes'], Words: ['Whole family', '+ Grown-ups'] } as Record<string, [string, string]>;
 
+  /** v3.9 (IMP-088, P5): the label column and each option's width at each size. */
+  const COLUMNS: Record<number, { label: number; option: number }> = { 390: { label: 88, option: 127 }, 360: { label: 88, option: 112 }, 320: { label: 72, option: 100 }, 812: { label: 88, option: 139 } };
   async function expectRows(page: Page, where: string) {
+    const col = COLUMNS[page.viewportSize()!.width]!;
     for (const g of GROUP_NAMES) {
       const group = page.getByRole('group', { name: g, exact: true });
       const label = group.getByText(g, { exact: true }).first();
@@ -800,8 +844,13 @@ test.describe('IMP-088: the choices screen at 320 × 568 and in landscape', () =
       expect(Math.abs(a.width - b.width), `${where} ${g}: the options share the row equally`).toBeLessThanOrEqual(1);
       expect(a.height, `${where} ${g}: option height`).toBeGreaterThanOrEqual(48);
       expect(b.height, `${where} ${g}: option height`).toBeGreaterThanOrEqual(48);
-      expect(a.x - lb.x, `${where} ${g}: the label takes a 64 px column`).toBeGreaterThanOrEqual(63);
-      expect(a.x - lb.x, `${where} ${g}: the options start right after the 64 px label column`).toBeLessThanOrEqual(80);
+      expect(a.x - lb.x, `${where} ${g}: the label takes a ${col.label} px column (then 8 px)`).toBeGreaterThanOrEqual(col.label + 8 - 1.5);
+      expect(a.x - lb.x, `${where} ${g}: the options start right after the label column`).toBeLessThanOrEqual(col.label + 8 + 1.5);
+      expect(Math.abs(a.width - col.option), `${where} ${g}: each option ${col.option} px wide`).toBeLessThanOrEqual(1.5);
+      expect(b.x - (a.x + a.width), `${where} ${g}: the options 8 px apart`).toBeGreaterThanOrEqual(7);
+      expect(lb.x + lb.width, `${where} ${g}: the label never sits behind an option`).toBeLessThanOrEqual(a.x);
+      const oneLine = await label.evaluate((el) => { const r = document.createRange(); r.selectNodeContents(el); return new Set(Array.from(r.getClientRects()).filter((x) => x.width > 1).map((x) => Math.round(x.top))).size <= 1; });
+      expect(oneLine, `${where} ${g}: the label fits on one line`).toBe(true);
       expect(lb.y + lb.height / 2, `${where} ${g}: the label is on the options' row`).toBeGreaterThanOrEqual(a.y);
       expect(lb.y + lb.height / 2, `${where} ${g}: the label is on the options' row`).toBeLessThanOrEqual(a.y + a.height);
     }
@@ -812,13 +861,28 @@ test.describe('IMP-088: the choices screen at 320 × 568 and in landscape', () =
     return s.scrollHeight <= window.innerHeight && s.scrollWidth <= window.innerWidth;
   });
 
-  test('390 × 844: each group is one row, label column then two equal options; option text 17 px', async ({ page }) => {
+  test('390 × 844 (v3.9): each group is one row, an 88 px label column, then two 127 px options 8 px apart; label and option text 17 px', async ({ page }) => {
     await toChoicesAt(page, 390, 844);
     await expectRows(page, '390');
-    for (const g of GROUP_NAMES) expect(await fontSize(option(page, g, FIRST[g]![0])), `${g} option text`).toBe(17);
+    for (const g of GROUP_NAMES) {
+      expect(await fontSize(option(page, g, FIRST[g]![0])), `${g} option text`).toBe(17);
+      expect(await fontSize(page.getByRole('group', { name: g, exact: true }).getByText(g, { exact: true }).first()), `${g} label text`).toBe(17);
+    }
   });
 
-  test('320 × 568: one row per group, option text 15 px; no page scrolling; "Start round" fixed at the bottom; the content above it may scroll inside its own box (v3.5)', async ({ page }) => {
+  test('320 × 568 with Larger text (v3.9, P5): every label on one line in its 72 px column, never behind an option; options 100 px', async ({ page }) => {
+    await toChoicesAt(page, 320, 568, true);
+    await expectRows(page, '320, Larger text');
+  });
+
+  for (const [w, h] of [[360, 640], [812, 375]] as const) {
+    test(`${w} × ${h} (v3.9): the label column and the options (${w === 360 ? '88 + 112 + 112' : '88 + 139 + 139 in each grid cell'})`, async ({ page }) => {
+      await toChoicesAt(page, w, h);
+      await expectRows(page, `${w}`);
+    });
+  }
+
+  test('320 × 568 (v3.9: 72 px label column, 100 px options): one row per group, option text 15 px; no page scrolling; "Start round" fixed at the bottom; the content above it may scroll inside its own box (v3.5)', async ({ page }) => {
     await toChoicesAt(page, 320, 568);
     await expectRows(page, '320');
     for (const g of GROUP_NAMES) expect(await fontSize(option(page, g, FIRST[g]![1])), `${g} option text`).toBe(15);
@@ -831,9 +895,12 @@ test.describe('IMP-088: the choices screen at 320 × 568 and in landscape', () =
     expect(box, 'content taller than its box scrolls inside it').toMatch(/fits|auto|scroll/);
   });
 
-  test('Larger text: option text 21 px (17 px at 320 wide, v3.5); "Start round" stays fixed at the bottom', async ({ page }) => {
+  test('Larger text (v3.9): label and option text 19 px (17 px at 320 wide); "Start round" stays fixed at the bottom', async ({ page }) => {
     await toChoicesAt(page, 390, 844, true);
-    for (const g of GROUP_NAMES) expect(await fontSize(option(page, g, FIRST[g]![0])), `${g} option text, 390`).toBe(21);
+    for (const g of GROUP_NAMES) {
+      expect(await fontSize(option(page, g, FIRST[g]![0])), `${g} option text, 390`).toBe(19);
+      expect(await fontSize(page.getByRole('group', { name: g, exact: true }).getByText(g, { exact: true }).first()), `${g} label text, 390`).toBe(19);
+    }
     await page.setViewportSize({ width: 320, height: 568 });
     for (const g of GROUP_NAMES) expect(await fontSize(option(page, g, FIRST[g]![0])), `${g} option text, 320`).toBe(17);
     await expect(mainButton(page)).toBeInViewport({ ratio: 1 });

@@ -6,7 +6,7 @@
 import { expect, test, type Page } from './fixtures';
 import { HOME, expectOneMainButton, hostAGame, isOutlined, openHistory } from './helpers';
 import {
-  CLUES_DONE, P4, P5, PANI_PURI, SAMOSA, T0, TZ, WORDS, aheadOfRound5, dealAll, doneButton, exact, freezeClock, fromMenu,
+  CLUES_DONE, P4, P5, PANI_PURI, SAMOSA, T0, TZ, WORDS, aheadOfRound5, aheadOfRound6, dealAll, doneButton, exact, freezeClock, fromMenu,
   hold, holdPad, imButton, impostorCard, mainButton, onlyEvening, passName, phoneWith, pickerName, playerField, press,
   release, reveal, roundMoves, savedEvening, settle, startEvening, textOf, toPicker, turn, type Move,
 } from './impostor';
@@ -43,6 +43,7 @@ test.describe('Lane O: IMP-003 fast Enter (M3)', () => {
     await phoneWith(page, [], { now: T0 });
     await hostAGame(page).click();
     await impostorCard(page).click();
+    await settle(page); // v3.9: setup and How to play buttons are guarded for 500 ms (P2)
     await expect(page.getByRole('heading', { name: "Who's playing?" })).toBeVisible();
     await playerField(page).click();
     await page.keyboard.type('Zoya', { delay: 0 });
@@ -145,7 +146,7 @@ test.describe('Lane O: IMP-010 the 500 ms double-tap guard (M18, guideline 20)',
 });
 
 test.describe('Lane O: IMP-017 "See my word again" visible on clues and talk (M19, M22c)', () => {
-  test('the clues screen has the quiet "See my word again"; it opens "Whose word?"; Meena\'s screen B has no "Not Meena? ← Back" and no "Don\'t know this word?"', async ({ page }) => {
+  test('the clues screen has the quiet "See my word again"; it opens "Whose word?"; Meena\'s screen B shows "Not Meena? ← Back" until the first hold (v3.9, P1) and no "Don\'t know this word?"', async ({ page }) => {
     await startEvening(page, { seeds: { deals: [DEAL] } });
     await dealAll(page);
     const btn = quiet(page, 'See my word again');
@@ -157,8 +158,9 @@ test.describe('Lane O: IMP-017 "See my word again" visible on clues and talk (M1
     await dialog.getByRole('button', { name: 'Meena', exact: true }).click();
     await settle(page);
     await imButton(page, 'Meena').click();
-    await expect(notRiyaBack(page, 'Meena')).toHaveCount(0);
+    await expect(notRiyaBack(page, 'Meena')).toBeVisible();
     await hold(page, 600);
+    await expect(notRiyaBack(page, 'Meena')).toBeHidden();
     await expect(page.getByRole('button', { name: "Don't know this word?", exact: true })).toBeHidden();
     await expect(mainButton(page)).toHaveText(exact('Done, back to clues', []));
   });
@@ -251,7 +253,7 @@ test.describe('Lane O: IMP-075 "Home (game is saved)" mid-round (M11)', () => {
     await expect(hostAGame(page)).toBeVisible();
     expect(await records(page)).toEqual(before);
     const row = page.getByTestId('unfinished-games').filter({ hasText: /Impostor/ });
-    await expect(row).toContainText('Impostor · Riya, Arjun +2 · round 1');
+    await expect(row).toContainText('Impostor · Riya, Arjun and 2 more · round 1');
     await row.getByText('Tap to resume').first().click();
     await expect(page.getByTestId('clue-order')).toHaveText(exact('Riya → Arjun → Meena → Kabir', P4));
   });
@@ -292,7 +294,7 @@ test.describe('Lane N: IMP-077 between rounds: "Next round", outlined "End game"
     expect(Math.round(m.y - (e.y + e.height)), '8 px above the main button').toBe(8);
   });
 
-  test('"← Home" at the top left opens Home; nothing recorded; the row reads "Impostor · Riya, Arjun +2 · round 2" with "Tap to resume", and resuming returns to the same result', async ({ page }) => {
+  test('"← Home" at the top left opens Home; nothing recorded; the row reads "Impostor · Riya, Arjun and 2 more · round 2" with "Tap to resume", and resuming returns to the same result', async ({ page }) => {
     await atRound1Result(page);
     const before = await records(page);
     const home = quiet(page, '← Home');
@@ -303,11 +305,11 @@ test.describe('Lane N: IMP-077 between rounds: "Next round", outlined "End game"
     await expect(hostAGame(page)).toBeVisible();
     expect(await records(page)).toEqual(before);
     const row = page.getByTestId('unfinished-games').filter({ hasText: /Impostor/ });
-    await expect(row).toContainText('Impostor · Riya, Arjun +2 · round 2');
+    await expect(row).toContainText('Impostor · Riya, Arjun and 2 more · round 2');
     await expect(row).toContainText('Tap to resume');
     await hostAGame(page).click();
     const card = page.getByTestId('resume-card');
-    await expect(card).toContainText('Impostor · Riya, Arjun +2 · round 2');
+    await expect(card).toContainText('Impostor · Riya, Arjun and 2 more · round 2');
     await expect(card).toContainText('Tap to resume');
     await card.click();
     await expect(page.getByTestId('round-outcome')).toBeVisible();
@@ -345,19 +347,19 @@ test.describe('Lane N: IMP-077 between rounds: "Next round", outlined "End game"
 });
 
 test.describe('Lane N: IMP-001 resume rows with names (M12)', () => {
-  test('3 players: "Impostor · Riya, Arjun +1 · round 1" during the first round', async ({ page }) => {
+  test('3 players: "Impostor · Riya, Arjun and 1 more · round 1" during the first round', async ({ page }) => {
     const players = ['Riya', 'Arjun', 'Meena'];
     const e = savedEvening({ players, deals: [DEAL], moves: [START, { type: 'seen' }] });
     await phoneWith(page, [e], { now: e.records.at(-1).at + 60_000 });
     await page.goto(HOME);
-    await expect(page.getByTestId('unfinished-games').filter({ hasText: /Impostor/ })).toContainText('Impostor · Riya, Arjun +1 · round 1');
+    await expect(page.getByTestId('unfinished-games').filter({ hasText: /Impostor/ })).toContainText('Impostor · Riya, Arjun and 1 more · round 1');
   });
 
   test('during round 2 the label carries that round\'s number; names in the current seat order', async ({ page }) => {
     const e = savedEvening({ deals: [DEAL, { wordId: PANI_PURI, impostor: 'Meena', starter: 'Arjun' }], moves: [...roundMoves(P4, 'Arjun', { caught: 'wrong' }, START), { type: 'nextRound' }, { type: 'seen' }] });
     await phoneWith(page, [e], { now: e.records.at(-1).at + 60_000 });
     await page.goto(HOME);
-    await expect(page.getByTestId('unfinished-games').filter({ hasText: /Impostor/ })).toContainText('Impostor · Riya, Arjun +2 · round 2');
+    await expect(page.getByTestId('unfinished-games').filter({ hasText: /Impostor/ })).toContainText('Impostor · Riya, Arjun and 2 more · round 2');
   });
 });
 
@@ -414,9 +416,11 @@ test.describe('Lanes N and O: IMP-085 plain words (M24): "game", never "evening"
     await hostAGame(page).click();
     await check('What shall we play?');
     await impostorCard(page).click();
+    await settle(page); // v3.9: setup and How to play buttons are guarded for 500 ms (P2)
     await check('Who\'s playing?');
     for (const n of P4) { await playerField(page).fill(n); await page.getByRole('button', { name: 'Add', exact: true }).click(); }
     await page.getByRole('button', { name: 'Next', exact: true }).click();
+    await settle(page); // v3.9: setup and How to play buttons are guarded for 500 ms (P2)
     await page.getByRole('group', { name: 'Score', exact: true }).getByRole('button', { name: /Yes/ }).click();
     await check('How do you want to play? (Score Yes)');
     await page.getByRole('button', { name: 'More options ›', exact: true }).click();
@@ -424,6 +428,7 @@ test.describe('Lanes N and O: IMP-085 plain words (M24): "game", never "evening"
     await page.getByRole('group', { name: 'Last guess for a caught impostor', exact: true }).getByRole('button', { name: /On/ }).click();
     await page.getByRole('button', { name: 'Done', exact: true }).click();
     await page.getByRole('button', { name: 'How to play', exact: true }).click();
+    await settle(page); // v3.9: setup and How to play buttons are guarded for 500 ms (P2)
     await check('How to play');
     await page.getByRole('button', { name: 'Done', exact: true }).click();
     await mainButton(page).filter({ hasText: 'Start round' }).click();

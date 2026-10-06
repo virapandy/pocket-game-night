@@ -257,6 +257,7 @@ test.describe('IMP-075: the menu at each moment', () => {
     await startEvening(page, { seeds: { deals: [{ wordId: SAMOSA, impostor: 'Arjun', starter: 'Riya' }] } });
     await dealAll(page);
     await fromMenu(page, 'How to play');
+    await settle(page); // v3.9: setup and How to play buttons are guarded for 500 ms (P2)
     await expect(page.getByRole('heading', { name: 'How to play' })).toBeVisible();
     await expect(menuButton(page)).toHaveCount(0);
     await expect(page.getByRole('button', { name: 'Practice round first', exact: true })).toHaveCount(0);

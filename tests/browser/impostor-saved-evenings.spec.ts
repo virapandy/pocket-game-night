@@ -12,6 +12,7 @@ import {
   type Move,
   aheadOfRound5,
   settle,
+  aheadOfRound6,
 } from './impostor';
 
 test.use({ timezoneId: TZ, viewport: { width: 390, height: 844 } });
@@ -200,7 +201,7 @@ test.describe('IMP-091: interrupted later in a round', () => {
 test.describe('IMP-092: ending and discarding the evening', () => {
   const atRound2Result = () => savedEvening({ deals: DEALS, moves: [...R1_CAUGHT_WRONG, ...R2_ESCAPED] });
 
-  test('IMP-077, IMP-092 (v3.8): "End game" opens the summary at once with nothing recorded yet ("Impostor caught 1 · escaped 1", main "Play again", then "Play something else", "Home", "More ›"); "Discard this game" deletes it', async ({ page }) => {
+  test('IMP-077, IMP-092 (v3.9): "End game" opens the summary at once with nothing recorded yet ("Oops, keep playing" at the top, "Impostor caught 1 · escaped 1", main "Play again", then "Play something else", "Home", "More ›"); "Discard this game" deletes it', async ({ page }) => {
     const e = atRound2Result();
     await phoneWith(page, [e], { now: lastAt(e) + 60_000 });
     await openEvening(page);
@@ -212,8 +213,12 @@ test.describe('IMP-092: ending and discarding the evening', () => {
     await expect(mainButton(page)).toHaveText(exact('Play again', []));
     await expect(menuButton(page)).toHaveCount(0);
     const quietOrder = await textOf(page.getByRole('button').filter({ hasText: /^(Oops, keep playing|Play something else|Home|More ›)$/ }));
-    expect(quietOrder).toEqual(['Play something else', 'Home', 'More ›']);
-    for (const name of ['Play something else', 'Home', 'More ›']) {
+    expect(quietOrder).toEqual(['Oops, keep playing', 'Play something else', 'Home', 'More ›']);
+    // v3.9 (IMP-092): "Oops, keep playing" full width, 48 px tall, directly under the top bar, above the heading.
+    const oops = (await quiet(page, 'Oops, keep playing').boundingBox())!, head = (await summaryHeading(page).boundingBox())!;
+    expect(oops.y + oops.height, '"Oops" above the heading').toBeLessThanOrEqual(head.y + 1);
+    expect(oops.width, 'full width (16 px gutters)').toBeGreaterThanOrEqual(390 - 32 - 1);
+    for (const name of ['Oops, keep playing', 'Play something else', 'Home', 'More ›']) {
       const b = (await quiet(page, name).boundingBox())!;
       expect(b.height, `${name}: 48 px tall`).toBeGreaterThanOrEqual(47.5);
     }
@@ -221,7 +226,7 @@ test.describe('IMP-092: ending and discarding the evening', () => {
     expect(saved.status).toBe('in-progress');
     expect(saved.records.map((r: any) => r.move.type)).not.toContain('endEvening');
     await quiet(page, 'More ›').click();
-    expect(await textOf(page.getByRole('menuitem'))).toEqual(['Oops, keep playing', 'Share', 'History', 'Discard this game']);
+    expect(await textOf(page.getByRole('menuitem'))).toEqual(['Share', 'History', 'Discard this game']);
     await expect(page.getByRole('separator')).toHaveCount(1);
     await page.getByRole('menuitem', { name: 'Discard this game', exact: true }).click();
     const discard = page.getByRole('dialog', { name: /Discard this game\? Its rounds and scores will be lost\./ });
@@ -261,6 +266,7 @@ test.describe('IMP-092: ending and discarding the evening', () => {
     const names = await page.getByRole('button', { name: /^Remove / }).evaluateAll((els) => els.map((el) => el.getAttribute('aria-label')));
     expect(names, 'this game\'s final players, in seat order').toEqual(P4.map((p) => `Remove ${p}`));
     await page.getByRole('button', { name: 'Next', exact: true }).click();
+    await settle(page); // v3.9: setup and How to play buttons are guarded for 500 ms (P2)
     await expect(page.getByRole('heading', { name: 'How do you want to play?' })).toBeVisible();
     await expect(page.getByRole('group', { name: 'Mode', exact: true }).getByRole('button', { name: /Hard/ })).toHaveAttribute('aria-pressed', 'true');
     await expect(page.getByRole('group', { name: 'Score', exact: true }).getByRole('button', { name: /Yes/ })).toHaveAttribute('aria-pressed', 'true');
@@ -268,7 +274,7 @@ test.describe('IMP-092: ending and discarding the evening', () => {
 });
 
 test.describe('IMP-093: ending mid-round', () => {
-  test('"End game" in the round menu (v3.8): "End now? This round won\'t count."; "Oops, keep playing" (in "More ›") returns to the round; leaving drops the round', async ({ page }) => {
+  test('"End game" in the round menu (v3.8): "End now? This round won\'t count."; "Oops, keep playing" returns to the round; leaving drops the round', async ({ page }) => {
     const e = savedEvening({ deals: DEALS, moves: [...R1_CAUGHT_WRONG, { type: 'nextRound' }, ...seen(4)] });
     await phoneWith(page, [e], { now: lastAt(e) + 60_000 });
     await openEvening(page);
@@ -305,7 +311,7 @@ test.describe('IMP-094: what History keeps', () => {
 
   test('IMP-096: the v3 format fixture opens: the ended evening in History with its 3 rounds, the other resumes at Meena\'s turn', async ({ page }) => {
     await phoneWith(page, [fixture.ended, fixture.inProgress], { now: lastAt(fixture.inProgress) + 30 * 60_000 });
-    await expect(page.getByTestId('unfinished-games').filter({ hasText: 'Impostor · Riya, Arjun +2 · round 3' })).toBeVisible();
+    await expect(page.getByTestId('unfinished-games').filter({ hasText: 'Impostor · Riya, Arjun and 2 more · round 3' })).toBeVisible();
     await openEvening(page);
     await expect(page.getByText('Welcome back.', { exact: true })).toBeVisible();
     await expect(passName(page)).toHaveText(exact('Meena'));
@@ -403,17 +409,17 @@ test.describe('IMP-095, IMP-097, IMP-098: the summary', () => {
     await expect(page.getByTestId('summary-line')).toHaveText(exact('Impostor caught 4 · escaped 3', []));
   });
 
-  test('IMP-097 (v3.8): a game with only the practice round: "Impostor caught 0 · escaped 0", no fun lines, "More ›" without "Share"; leaving deletes it', async ({ page }) => {
+  test('IMP-097 (v3.9): a game with only the practice round: "Impostor caught 0 · escaped 0", no fun lines, "Oops, keep playing" at the top, "More ›" without "Share"; leaving deletes it', async ({ page }) => {
     const e = savedEvening({ deals: DEALS, moves: roundMoves(P4, 'Arjun', { escaped: 'Meena' }, { type: 'startDeal', practice: true }) });
     await toSummary(page, e);
     await expect(page.getByTestId('summary-line')).toHaveText(exact('Impostor caught 0 · escaped 0', []));
     await expect(page.getByTestId('fun-line')).toHaveCount(0);
     await expect(page.getByTestId('scoreboard')).toHaveCount(0);
     await expect(mainButton(page)).toHaveText(exact('Play again', []));
-    for (const b of ['Play something else', 'Home']) await expect(quiet(page, b)).toBeVisible();
+    for (const b of ['Oops, keep playing', 'Play something else', 'Home']) await expect(quiet(page, b)).toBeVisible();
     await expect(quiet(page, 'More ›')).toBeVisible();
     await quiet(page, 'More ›').click();
-    expect(await textOf(page.getByRole('menuitem'))).toEqual(['Oops, keep playing', 'History', 'Discard this game']);
+    expect(await textOf(page.getByRole('menuitem'))).toEqual(['History', 'Discard this game']);
     await page.keyboard.press('Escape');
     if (await page.getByRole('menuitem').first().isVisible()) await quiet(page, 'More ›').click();
     await quiet(page, 'Home').click();
@@ -465,20 +471,20 @@ test.describe('IMP-099: time limits, measured exactly', () => {
     await ctx.close();
   });
 
-  test('the summary\'s 3 hours: at exactly 3 hours it still offers "Oops, keep playing" (in "More ›", v3.8); 1 ms later endEvening is recorded at that moment and "Oops" is gone', async ({ page, browser }) => {
+  test('the summary\'s 3 hours: at exactly 3 hours it still offers "Oops, keep playing" (at the top, v3.9); 1 ms later endEvening is recorded at that moment and "Oops" is gone', async ({ page, browser }) => {
     const e = savedEvening({ deals: DEALS, moves: [...R1_CAUGHT_WRONG, ...R2_ESCAPED] });
     const shownAt = lastAt(e) + 5 * 60_000;
     await phoneWith(page, [e], { now: shownAt + 3 * H, ui: { [e.id]: { summaryShownAt: shownAt } }, fixed: true });
     await openEvening(page);
     await expect(summaryHeading(page)).toBeVisible();
-    await quiet(page, 'More ›').click();
-    await expect(page.getByRole('menuitem', { name: 'Oops, keep playing', exact: true })).toBeVisible();
+    await expect(quiet(page, 'Oops, keep playing')).toBeVisible();
     const ctx = await browser.newContext({ timezoneId: TZ, viewport: { width: 390, height: 844 } });
     await silence(ctx);
     const later = await ctx.newPage();
     const now = shownAt + 3 * H + 1;
     await phoneWith(later, [e], { now, ui: { [e.id]: { summaryShownAt: shownAt } }, fixed: true });
     await expect(summaryHeading(later)).toBeVisible();
+    await expect(quiet(later, 'Oops, keep playing')).toHaveCount(0);
     await quiet(later, 'More ›').click();
     await expect(later.getByRole('menuitem', { name: 'Oops, keep playing', exact: true })).toHaveCount(0);
     const saved = await onlyEvening(later);

@@ -32,7 +32,6 @@ const cardsSeen = (page: Page): Promise<string[]> => page.evaluate(() => (window
 test.describe('P1, IMP-017: "See my word again", a wrong name goes back without seeing a card', () => {
   for (const who of ['Arjun', 'Meena'] as const) {
     test(`the wrong name ${who}${who === 'Arjun' ? ' (the impostor)' : ''} on screen A: "Not ${who}? ← Back" directly under "Everyone else, look away!" returns to "Whose word?"; no card was ever shown; nothing recorded`, async ({ page }) => {
-      aheadOfRound6('P1', `"Not ${who}? ← Back" on screen A of "See my word again"`);
       await startEvening(page, { seeds: { deals: [DEAL] } });
       await dealAll(page);
       const before = await records(page);
@@ -54,7 +53,6 @@ test.describe('P1, IMP-017: "See my word again", a wrong name goes back without 
     });
 
     test(`the wrong name ${who}${who === 'Arjun' ? ' (the impostor)' : ''} on screen B before any hold: "Not ${who}? ← Back" directly under the pad returns to "Whose word?"; no card was ever shown; nothing recorded`, async ({ page }) => {
-      aheadOfRound6('P1', `"Not ${who}? ← Back" on screen B of "See my word again"`);
       await startEvening(page, { seeds: { deals: [DEAL] } });
       await dealAll(page);
       const before = await records(page);
@@ -89,7 +87,6 @@ test.describe('P1, IMP-017: "See my word again", a wrong name goes back without 
   }
 
   test('Timer: from the talk screen, a wrong name and "Not Meena? ← Back" return to "Whose word?" with the timer still paused', async ({ page }) => {
-    aheadOfRound6('P1', '"Not Meena? ← Back" keeps the timer paused');
     await startEvening(page, { talking: 'timer', seeds: { deals: [DEAL] } });
     await dealAll(page);
     await mainButton(page).filter({ hasText: CLUES_DONE }).click();

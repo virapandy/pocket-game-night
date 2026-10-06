@@ -239,6 +239,7 @@ test.describe('IMP-013 and IMP-062: the word is never in the page except while h
       await menuButton(page).click();
       await check('the deal menu');
       await page.getByRole('menuitem', { name: 'How to play', exact: true }).click();
+      await settle(page); // v3.9: setup and How to play buttons are guarded for 500 ms (P2)
       await expect(page.getByRole('heading', { name: 'How to play' })).toBeVisible();
       await check('How to play');
       await mainButton(page).filter({ hasText: /^Done$/ }).click();

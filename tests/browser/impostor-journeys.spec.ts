@@ -297,6 +297,7 @@ test('Journey 6: "How to play" on request and a practice round, then round 1; "H
   await dealAll(page);
   await expect(page.getByTestId('practice-chip')).toBeVisible();
   await fromMenu(page, 'How to play');
+  await settle(page); // v3.9: setup and How to play buttons are guarded for 500 ms (P2)
   await expect(page.getByRole('heading', { name: 'Read this aloud' })).toBeVisible();
   await expect(page.locator('ol > li')).toHaveText([
     'Everyone sees the secret word except one impostor.', "Clockwise, say one word about it. Don't say the word!",
