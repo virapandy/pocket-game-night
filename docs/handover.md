@@ -100,6 +100,13 @@ changed scenarios into `specs/impostor/` and lists the tests to update or retire
 names them by file). Lanes: A deal and privacy; B result, summary, picker, timer; C setup, choices, how to play;
 C3 in its own lane. Then quick verify, the owner tries the preview, then "release Impostor".
 
+### Impostor round 6b (6 October, I29): before the freeze
+Player re-run: P1 and P3 pass. Fix R1–R4 (scenarios.md, "Note, 6 October (player re-run; decision I29)"): the in-round
+menu must reach "End game" sideways; the 500 ms tap guard on every button of every Impostor screen plus Home and
+"What shall we play?"; no text selection by tapping; option labels keep their spaces. Tester checks R5 (tonight's names
+after going Home, IMP-004) and R10 (fast and slow Enter, IMP-003). C1/C2, one lane; then a short child re-run of R1–R2
+sideways; then freeze.
+
 ### Impostor round 6, the last before the 1.3.0 freeze (6 October, I28)
 From the three player runs (`docs/room-moments.md`, "Player runs before the 1.3.0 freeze"). Binding: scenarios **v3.9**
 (changes marked "2026-10-06 (changed)": IMP-001, 003, 009, 010, 017, 070, 077, 078, 081, 088, 092, 097, 101, 109) and

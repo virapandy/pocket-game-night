@@ -81,3 +81,19 @@ Verdicts: party host "yes, without help"; grandmother "almost"; child in landsca
 | P16 | Players sheet doesn't say when a newcomer plays | Next: "Isha joins next round" inside the sheet |
 | P17 | "Play something else" / Tambola don't reuse tonight's names | Next (platform) |
 | P18 | "I'm Golu" ignored for about a second after a pass, with no sign | Next: a brief pressed look |
+
+## Player re-run after round 6 (6 October)
+P1 (wrong name in "See my word again") and P3 (visible "Oops, keep playing") **pass**; P2 passes on "Who's playing?";
+P4 passes on the vote, result, Players and "Whose word?" screens.
+| # | Finding | Decided |
+|---|---|---|
+| R1 | Sideways (812 × 375), the in-round "··· Menu" cuts off its last item "End game" and doesn't scroll (child) | **Must**: menus scroll inside the screen and every item is reachable at 812 × 375 and 320 × 568 |
+| R2 | The double-tap guard is not everywhere: a double tap on "End game" hits "Play again" (winner screen skipped), on "Clues done…" hits "Vote now" (talk skipped), on Home's "Host a game" opens Tambola | **Must**: the 500 ms guard applies to every button on every Impostor screen and on Home and "What shall we play?" (Tambola's own fast buttons keep TAM-101) |
+| R3 | A double tap selects all the screen's text (it turns blue) | **Must**: app text is not selectable by tapping (except text fields) |
+| R4 | "Freeflow", "Wholefamily": the space squeezed out | **Must**: option labels keep their spaces (tighter spacing only within words) |
+| R5 | "Who's playing?" empty after going Home and starting again (child) | **Must-check**: tester confirms IMP-004 (tonight's names filled) |
+| R6 | "Play again" vs "Oops, keep playing": unclear which keeps the score (grandmother) | Next: "Play again" gets the line "New game, same players" |
+| R7 | Long phrase secrets ("Dancing uncle at the wedding") and hard hints ("Signature step") | Next: word-list pass |
+| R8 | Tapping a name during "Get ready to point…" does nothing, with no sign | Next |
+| R9 | The impostor also sees "Don't know this word?" (by design) | Next: friendlier wording, same for everyone |
+| R10 | One Enter after a name didn't add it (grandmother, slow typing) | **Must-check**: tester confirms M3 |
