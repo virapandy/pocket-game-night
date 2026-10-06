@@ -37,6 +37,12 @@ for twice.
 | Competitive uncle | Ties, undo, deal again, "someone said the word" |
 After each step the layer 1 rules run. A failing game saves its seed, steps and screenshots and becomes a permanent test.
 
+**Coverage is the measure (owner, 6 October, `docs/decisions.md`):** the point of these runs is to tap every button at
+random through the real screens and check that every flow ends rationally. Over a release run, every button on every screen
+is pressed at least once, including quiet buttons, the menu, Back, Home, close-and-reopen and taps that make no sense at that
+moment; the report lists any button never reached. Personas shape *how* the taps happen; they never narrow *which* buttons
+get pressed. This is the same requirement as layer 3 of `docs/proposals/e2e-and-jev-testing.md`; the tester builds it once.
+
 ## Making the AI players cheaper when we do use them
 - Read the page as text first (accessibility tree), and take screenshots only when something looks wrong.
 - Give each run a short checklist of the moments to try, and a cap of about 60 steps.
