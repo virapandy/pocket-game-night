@@ -1,14 +1,14 @@
 # 08-room-host-and-teach.md
 
-Copied unchanged from `docs/games/impostor/scenarios.md` (version 3.8, 4 October 2026), the binding contract. Terms, Canonical strings and Test hooks: [README.md](README.md).
+Copied unchanged from `docs/games/impostor/scenarios.md` (version 3.9, 4 October 2026), the binding contract. Terms, Canonical strings and Test hooks: [README.md](README.md).
 
 ## IMP-070: How to play, on request
-Status: approved, owner, 2026-10-04 (changed)
+Status: approved, owner, 2026-10-06 (changed)
 Phase: Impostor 1
 Then "How to play" never opens by itself
 When the host taps the quiet "How to play" on "How do you want to play?", or the menu item "How to play" (IMP-075)
-Then a sheet shows the heading "How to play", then the heading "Read this aloud" with these 4 lines in an ordered
-list, exactly, in this order:
+Then a sheet shows the heading "How to play", then the paragraph "One player is the impostor: they don't know the
+secret word.", then the heading "Read this aloud" with these 4 lines in an ordered list, exactly, in this order:
 1. "Everyone sees the secret word except one impostor."
 2. "Clockwise, say one word about it. Don't say the word!"
 3. "Talk, then on 3, 2, 1 everyone points."
@@ -159,7 +159,7 @@ win the round by guessing the word." in "How to play" (IMP-070)
 
 
 ## IMP-077: Between rounds: carry on, stop, or go Home
-Status: approved, owner, 2026-10-04 (changed; detail of IMP-075, IMP-092; owner decision I25, guideline 47a)
+Status: approved, owner, 2026-10-06 (changed; detail of IMP-075, IMP-092; owner decision I25, guideline 47a)
 Phase: Impostor 1
 Given a between-rounds screen: a round result once the round is completed (IMP-033, IMP-034, IMP-038, IMP-039),
 the "left halfway" screen (IMP-091) or the no-words screen (IMP-052)
@@ -177,11 +177,11 @@ And on the no-words screen the main button of that row is "Change categories" (I
 above the row
 When "End game" is tapped
 Then the summary (IMP-092) shows at once, with no dialog; nothing is recorded until the summary is left (IMP-101);
-"Oops, keep playing" (in "More ›") comes back to this screen exactly as it was; from the "left halfway" screen the
+"Oops, keep playing" (at the top of the summary) comes back to this screen exactly as it was; from the "left halfway" screen the
 half-played round is dropped when `endEvening` is recorded
 When "← Home" is tapped
 Then Home opens; nothing is recorded; the game stays unfinished: Home's `unfinished-games` row and the resume card
-on "What shall we play?" read "Impostor · Riya, Arjun +2 · round 5" and "Tap to resume" after round 4 (IMP-001: the
+on "What shall we play?" read "Impostor · Riya, Arjun and 2 more · round 5" and "Tap to resume" after round 4 (IMP-001: the
 number the next deal will carry); resuming
 returns to the same between-rounds screen (with "Undo" when its window is open, IMP-037)
 And "← Home" and "End game" are never shown mid-round (deal, clues, talk, countdown, picker, build-up, the guess and
@@ -193,12 +193,13 @@ And a tap on a button within 500 ms of the guard window's start is ignored on ev
 And "End game" and "← Home" are not announced and change nothing else
 
 ## IMP-078: Someone has to leave mid-round; fewer than 3; no dead buttons
-Status: approved, owner, 2026-10-04 (detail of IMP-074, IMP-025; owner decision I26, M4, M7, M26)
+Status: approved, owner, 2026-10-06 (changed; detail of IMP-074, IMP-025; owner decision I26, M4, M7, M26)
 Phase: Impostor 1
 Given a round is in progress (deal, clues, talk or picker) with Riya, Arjun, Meena, Kabir and Zoya
 When the host opens "Players" (menu) and taps ✕ next to Kabir
-Then a dialog asks "Kabir has to leave?" with "Deal again without Kabir" (outlined) and "Finish this round first"
-(main); closing it (the phone's Back) changes nothing
+Then a dialog asks "Kabir has to leave?" with "Deal again without Kabir" (outlined), "Finish this round first"
+(main) and the quiet "Cancel" under them; "Cancel" (or the phone's Back) closes it and changes nothing (the Players
+sheet stays open)
 And nothing in it, or after it, shows or hints whether Kabir is the impostor (same text and buttons whatever his role)
 When "Finish this round first" is tapped
 Then `leaveAfterRound {player: "Kabir"}` is recorded; Kabir stays in this round (clues order, vote, picker, scoring,
@@ -220,7 +221,7 @@ player" (main)
 And "Add a player" closes the dialog and focuses the Players sheet's name field; "End game" opens the summary
 (mid-round: as "End now", IMP-093; between rounds: as IMP-077); nothing is recorded by either tap
 And no enabled button on any Impostor screen silently does nothing: a tap either moves on or shows why not (a
-disabled button shows its reason line, as "Add at least 3 players."); test seeds that do not fit the players are
+disabled button shows its reason line; "Next" with fewer than 3 players shows "Add at least 3 players." as an alert); test seeds that do not fit the players are
 ignored (Test hooks item 3), so a round can always start
 
 ## IMP-079: Someone arrives mid-round

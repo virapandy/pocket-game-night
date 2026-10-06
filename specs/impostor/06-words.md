@@ -1,6 +1,6 @@
 # 06-words.md (C3)
 
-Copied unchanged from `docs/games/impostor/scenarios.md` (version 3.8, 4 October 2026), the binding contract. Terms, Canonical strings and Test hooks: [README.md](README.md).
+Copied unchanged from `docs/games/impostor/scenarios.md` (version 3.9, 4 October 2026), the binding contract. Terms, Canonical strings and Test hooks: [README.md](README.md).
 
 ## IMP-050: Words come from the list with the chosen audience
 Status: approved, owner, 2026-10-03

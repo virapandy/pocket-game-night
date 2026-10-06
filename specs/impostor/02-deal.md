@@ -1,9 +1,9 @@
 # 02-deal.md: passing the phone
 
-Copied unchanged from `docs/games/impostor/scenarios.md` (version 3.8, 4 October 2026), the binding contract. Terms, Canonical strings and Test hooks: [README.md](README.md).
+Copied unchanged from `docs/games/impostor/scenarios.md` (version 3.9, 4 October 2026), the binding contract. Terms, Canonical strings and Test hooks: [README.md](README.md).
 
 ## IMP-010: Each player sees their role privately, in seat order
-Status: approved, owner, 2026-10-04 (changed)
+Status: approved, owner, 2026-10-06 (changed)
 Phase: Impostor 1
 Given Riya, Arjun, Meena and Kabir; Arjun is the impostor; the word is Samosa; hold mode (IMP-014 off)
 When the round's deal starts
@@ -33,8 +33,9 @@ is drawn at once, at every size, over the top part of screen B on an opaque laye
 `deal-progress`, the name and "Don't know this word?" (they return, unmoved, on release); it is never under the
 finger and never off-screen
 And the layer's top edge is the top of the viewport (y = 0) and its bottom edge is 8 px above the pad's top edge;
-the block lies wholly inside it: at 320 × 568 the pad's top is at y = 268, so the layer runs from y = 0 to y = 260
-and the block's bottom edge is at y ≤ 260; at 360 × 640, y = 0 to y = 332; at 390 × 844, y = 0 to y = 536 (the pad's
+the block lies wholly inside it, starting 8 px below the layer's top, so line 1 "Your secret" is never cut at the top
+(its top edge at y = 8, inside the viewport): at 320 × 568 the pad's top is at y = 268, so the layer runs from y = 0
+to y = 260 and the block runs from y = 8 to y ≤ 260; at 360 × 640, y = 0 to y = 332; at 390 × 844, y = 0 to y = 536 (the pad's
 top is 300 px above the bottom edge: 160 + 8 + 48 + 8 + 60 + 16)
 And at 812 × 375 the layer covers the whole top bar across the full width (y = 0 to 48, x = 0 to 812; the menu
 button cannot be tapped while held) and the left half, x = 0 to x = 406, y = 0 to y = 375 (the block's right edge ≤
@@ -53,17 +54,19 @@ And the last player's button reads "Done, everyone's seen" (IMP-016)
 And no screen A or B ever shows the previous player's block
 And a tap within 500 ms of any screen change on the deal screens (A, B, "No problem!", "Welcome back.") is ignored:
 it records nothing and changes nothing (guideline 20), so a double tap on "Done…" never skips "Pass the phone to
-ARJUN"; the 500 ms run from the moment the new screen is shown; the guard covers buttons only. The pad is not guarded: a
+ARJUN"; the same guard covers the buttons of "Who's playing?", "How do you want to play?" and "How to play" (a double
+tap on "Next" never lands on "Start round"); the 500 ms run from the moment the new screen is shown; the guard covers buttons only. The pad is not guarded: a
 press within 500 ms works as at any other time
 And inside the layer the block's lines have line-height 1.2, 4 px gaps between the 5 lines and no padding, starting at
-y = 0; when the block would be taller than the layer, first lines 3, 4 and 5 shrink to 15 px, then `private-word`
+y = 8; when the block would be taller than the layer, first lines 3, 4 and 5 shrink to 15 px, then `private-word`
 shrinks to 30 px
 Arithmetic (rule 4), screen B at 320 × 568: pad 160 + 8 + "Not Riya? ← Back" 48 + 8 + main button 60 + 16 = 300 px
 from the bottom, so the pad's top is at y = 268 and the layer is 260 px tall (y = 0 to 260). Worst case, Larger text on, a
 two-line line 3, line 4 and line 5: 22.8 (line 1, 19 px) + 86.4 (`private-word`, 2 × 36 × 1.2) + 2 × 50.4 (lines 3
 and 4 at 21 px) + 45.6 (line 5 at 19 px) + 16 (gaps) = 271.6 px > 260, so lines 3–5 shrink to 15 px: 22.8 + 86.4 +
-2 × 36 + 36 + 16 = 233.2 px, bottom at y ≤ 260; `private-word` stays 36 px. Larger text off: 18 + 86.4 + 2 × 40.8 +
-36 + 16 = 238 px, no shrinking. Gaps on screen B (portrait): none between the top bar and `deal-progress`; 8 px between `deal-progress` and the name,
+2 × 36 + 36 + 16 = 233.2 px, from y = 8 to y = 241.2 ≤ 260; `private-word` stays 36 px. Larger text off: 18 + 86.4 +
+2 × 40.8 + 36 + 16 = 238 px, from y = 8 to y = 246 ≤ 260, no shrinking. At 812 × 375 the block runs from y = 8 to at
+most y = 254 in the left half. Gaps on screen B (portrait): none between the top bar and `deal-progress`; 8 px between `deal-progress` and the name,
 the name and "Tap instead", and "Tap instead" and "Don't know this word?"; 8 px between the pad and "Not Riya? ← Back"
 and between it and the main button's space; 16 px under the main button. Above the pad, when the block is hidden:
 48 + 21 + 8 + 28 + 8 + 48 + 8 + 48 = 217 px ≤ 268; "Tap instead" ends at y = 161 and the main button's space starts
@@ -182,7 +185,7 @@ And the 3–5 player button of IMP-022 when it applies, the quiet "See my word a
 IMP-079 when someone is waiting
 
 ## IMP-017: See my word again
-Status: approved, owner, 2026-10-04 (changed)
+Status: approved, owner, 2026-10-06 (changed)
 Phase: Impostor 1
 Given the clues screen, the talk screen or the picker is showing
 When the host taps the quiet "See my word again" (on the clues and talk screens) or the menu item "See my word again"
@@ -196,7 +199,11 @@ Then screen A shows "Pass the phone to" MEENA with "I'm Meena", then screen B ex
 IMP-014), and her main button reads "Done, back to clues" (opened from the clues screen), "Done, back to talking"
 (the talk screen) or "Done, back to the vote" (the picker)
 And neither screen shows `deal-progress` during "See my word again"; screen A still shows "Everyone else, look
-away!"; screen B shows no "Don't know this word?" and no "Not Riya? ← Back"
+away!"; screen B shows no "Don't know this word?"
+And screen A shows the text button "Not Meena? ← Back" directly under "Everyone else, look away!", and screen B shows
+it directly under the pad until the first hold (as "Not Riya? ← Back", IMP-010)
+When "Not Meena? ← Back" is tapped
+Then the dialog "Whose word?" shows again (with the timer still paused); nothing is recorded and no block was shown
 When she taps "Done, back to …"
 Then the screen it was opened from shows again, unchanged, with the timer paused
 And there is no menu button from "Whose word?" until it returns

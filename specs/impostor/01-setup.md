@@ -1,9 +1,9 @@
 # 01-setup.md: getting to the first deal
 
-Copied unchanged from `docs/games/impostor/scenarios.md` (version 3.8, 4 October 2026), the binding contract. Terms, Canonical strings and Test hooks: [README.md](README.md).
+Copied unchanged from `docs/games/impostor/scenarios.md` (version 3.9, 4 October 2026), the binding contract. Terms, Canonical strings and Test hooks: [README.md](README.md).
 
 ## IMP-001: "Host a game" offers Tambola and Impostor
-Status: approved, owner, 2026-10-04 (changed)
+Status: approved, owner, 2026-10-06 (changed)
 Phase: Impostor 1
 Given Home (PLT-300: still "Host a game" and "Join with my ticket")
 Then the "Host a game" button's second line reads exactly "Tambola or Impostor on this phone"
@@ -14,10 +14,10 @@ Then "What shall we play?" shows two cards of equal size and look (neither has t
 And there is no main button on this screen; tapping a card opens that game's setup at once
 And "3–20 players" is never split across two lines (it sits in a `white-space: nowrap` span) at every size
 Given an Impostor evening is unfinished (not ended, not discarded, not auto-ended by IMP-104)
-Then "What shall we play?" shows, above the two cards, the button `resume-card` reading "Impostor · Riya, Arjun +2 ·
-round 4" and "Tap to resume", and Home's `unfinished-games` shows a row with the same two texts
-And the label names the first two players in the game's current seat order, then "+N" for the others (3 players:
-"Riya, Arjun +1"); names as typed
+Then "What shall we play?" shows, above the two cards, the button `resume-card` reading "Impostor · Riya, Arjun and 2
+more · round 4" and "Tap to resume", and Home's `unfinished-games` shows a row with the same two texts
+And the label names the first two players in the game's current seat order, then "and N more" for the others (3
+players: "Riya, Arjun and 1 more"); names as typed
 And "round N" is: during a round (deal to reveal), that round's number (the practice round: "round 1"). Between rounds
 it is the number the next deal will carry: after a completed round, that round + 1; on the "left halfway" and
 no-words screens, the round waiting to be dealt. While the summary shows, it is the number for the screen "Oops, keep
@@ -47,7 +47,7 @@ Then the last paragraph of that screen reads exactly
 And nothing else on that screen changes
 
 ## IMP-003: Players are added in seat order, without dragging
-Status: approved, owner, 2026-10-04 (changed)
+Status: approved, owner, 2026-10-06 (changed)
 Phase: Impostor 1
 Given "Who's playing?" with an empty list
 When the host types "Riya" in "Player name" and taps "Add" (or presses Enter), then Arjun, Meena and Kabir the same way
@@ -62,7 +62,11 @@ And the field has `maxlength="16"`, so a 17th character cannot be typed
 And a name equal to one in the list, ignoring case ("riya"), is not added and shows
 "Riya is already playing. Add an initial, like Riya S." (the name as already listed) until the field changes
 And with 20 players "Add" is disabled and "20 players is the most." shows
-And while fewer than 3 players are listed, "Next" is disabled and "Add at least 3 players." shows
+And while fewer than 3 players are listed, the hint "Add at least 3 players." shows under the list as a grey small line
+(15 px; 19 px with Larger text; the app's muted text colour, not an alert); "Next" stays enabled
+When "Next" is tapped with fewer than 3 players
+Then the screen does not move on and the same text turns into the error style (`role="alert"`, the error colour of
+"Riya is already playing. …"); it returns to the grey hint when a name is added or removed
 And past names show under the field as buttons, one tap adding that name at the end: the last 8 distinct names used
 in any game on this phone, newest game first; within one game, in that game's seat order; names that differ only in
 case count as one, shown as most recently typed; a name already in the list (ignoring case) is not offered
@@ -142,7 +146,7 @@ And no session-name question is asked (IMP-009)
 (Time is a usability target, not a test: 30 s for a group that played tonight; under 90 s when typing names.)
 
 ## IMP-009: Choices start from last time; the evening joins tonight's session silently
-Status: approved, owner, 2026-10-04 (changed; detail of IMP-005, IMP-006, IMP-008)
+Status: approved, owner, 2026-10-06 (changed; detail of IMP-005, IMP-006, IMP-008)
 Phase: Impostor 1
 Given `pgn.pref.impostor.lastChoices` (written at every first "Start round" and every `setChoices`: the most
 recently started evening's latest choices, whether ended or discarded) holds Hard, Timer, Yes, + Grown-ups,
@@ -152,7 +156,8 @@ Then "How do you want to play?" opens with exactly those 7 choices selected (the
 and the last-chance guess in "More options", IMP-076), and the small line "Same as last time" directly under the
 heading
 And "Same as last time" shows whenever the choices were carried over (from `lastChoices`, or "Play again"); it is
-not shown on a phone that has never played, nor in "Change how we play"; it goes as soon as any choice is changed
+not shown on a phone that has never played, nor in "Change how we play"; once shown it stays, unmoved, until the
+choices screen is left, even when a choice is changed (nothing on the screen moves; guideline 45a)
 And a stored `lastChoices` without `lastGuess` reads as the last-chance guess off
 And stored category names from before 4 October are mapped: "Travel and places" → "Out and about",
 "Cricket and games" → "Sports and games", "Desi life" → "Everyday moments"; any other name not among the 9 is

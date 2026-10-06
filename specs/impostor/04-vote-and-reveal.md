@@ -1,6 +1,6 @@
 # 04-vote-and-reveal.md
 
-Copied unchanged from `docs/games/impostor/scenarios.md` (version 3.8, 4 October 2026), the binding contract. Terms, Canonical strings and Test hooks: [README.md](README.md).
+Copied unchanged from `docs/games/impostor/scenarios.md` (version 3.9, 4 October 2026), the binding contract. Terms, Canonical strings and Test hooks: [README.md](README.md).
 
 ## IMP-030: The countdown to point
 Status: approved, owner, 2026-10-04 (changed)

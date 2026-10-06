@@ -1,6 +1,6 @@
 # 11-after-the-game.md (shared rules: `specs/platform/01-lifecycle.md`, PLT-001 to PLT-029)
 
-Copied unchanged from `docs/games/impostor/scenarios.md` (version 3.8, 4 October 2026), the binding contract. Terms, Canonical strings and Test hooks: [README.md](README.md).
+Copied unchanged from `docs/games/impostor/scenarios.md` (version 3.9, 4 October 2026), the binding contract. Terms, Canonical strings and Test hooks: [README.md](README.md).
 
 ## IMP-100: After the round, the phone can rest
 Status: approved, owner, 2026-10-04 (changed)
@@ -10,12 +10,12 @@ Then the wake lock is released exactly as IMP-087 says, and nothing still secret
 impostor are shown by then)
 
 ## IMP-101: Ended by mistake
-Status: approved, owner, 2026-10-04 (changed; changed 3 October for engine fit; owner informed)
+Status: approved, owner, 2026-10-06 (changed; changed 3 October for engine fit; owner informed)
 Phase: Impostor 1
 Given the summary shows after "End game" (or "End now")
 Then the evening is still in progress (`status` "in-progress", no `endEvening` yet), and `pgn.impostor-ui.<id>`
 holds `summaryShownAt`
-When the host taps "Oops, keep playing" (in "More ›")
+When the host taps "Oops, keep playing" (at the top of the summary)
 Then the summary goes and the game is exactly where "End game" or "End now" was tapped (between rounds:
 the same result screen, with "Undo" when its window is open, IMP-037); nothing is recorded and nothing is lost
 And `endEvening` is recorded when the host leaves the summary screen: "Play again", "Home", "Play something else",
@@ -122,11 +122,17 @@ And players, words and results leave the phone only through "Share" (IMP-106) or
 send (PLT-200) (PLT-013)
 
 ## IMP-109: Settings for Impostor
-Status: approved, owner, 2026-10-04 (changed; detail of IMP-014, IMP-107)
+Status: approved, owner, 2026-10-06 (changed; detail of IMP-014, IMP-107)
 Phase: Impostor 1
 Then the app's Settings (as reached today, or "Settings" in the menu) has the switch "Larger text" (off by default, kept on this
-phone; body text 21 px and small lines 19 px when on, Terms), the switch "Tap to show instead of hold" with its
+phone; Terms), the switch "Tap to show instead of hold" with its
 small line, shown only while it is on (IMP-014), and "Skipped words (N)" when N ≥ 1 (IMP-107)
+And "Larger text" applies on every Impostor screen, setup, deal, room, result, summary, sheets and dialogs included:
+body text 17 → 21 px, small lines 15 → 19 px, quiet and text button labels 17 → 21 px, choice labels and options
+(IMP-088) 17 → 19 px (15 → 17 px at 320 px wide), `deal-progress` and `word-category` 17 → 21 px, `look-away` 20 →
+24 px; `private-word` may shrink to 30 px (IMP-012); the room sizes of IMP-073 (`starter-name`, `timer`,
+`countdown-number`, `result-headline`, `result-word` and the others listed there) do not change
+And the tester checks these computed sizes on every Impostor screen with Larger text on and off
 And changing a setting mid-round takes effect when Settings closes ("Larger text") or on the next screen B (tap
 mode), and never shows a word on any other screen
 And closing Settings returns to the same screen with nothing else changed; opening the menu, "How to play" or Settings

@@ -1,6 +1,6 @@
 # 10-lifecycle.md
 
-Copied unchanged from `docs/games/impostor/scenarios.md` (version 3.8, 4 October 2026), the binding contract. Terms, Canonical strings and Test hooks: [README.md](README.md).
+Copied unchanged from `docs/games/impostor/scenarios.md` (version 3.9, 4 October 2026), the binding contract. Terms, Canonical strings and Test hooks: [README.md](README.md).
 
 ## IMP-090: Interrupted during the deal
 Status: approved, owner, 2026-10-03
@@ -38,11 +38,12 @@ And "Next round" deals that round again with a new word and impostor under the s
 changed on the next round result)
 
 ## IMP-092: Ending and discarding the game
-Status: approved, owner, 2026-10-04 (changed)
+Status: approved, owner, 2026-10-06 (changed)
 Phase: Impostor 1
 When the host taps the outlined "End game" between rounds (IMP-077), or "End now" in IMP-093's dialog
 Then the summary shows at once (nothing recorded yet: the game stays in progress while the summary shows, and
-`endEvening` is recorded when the summary is left, IMP-101), top to bottom: the heading "That's the game!"; the lead
+`endEvening` is recorded when the summary is left, IMP-101), top to bottom: the quiet "Oops, keep playing" (full
+width, 48 px tall, directly under the top bar); the heading "That's the game!"; the lead
 line `summary-line` (32 px, centred); the fun lines (IMP-095); the final `scoreboard` (when Score was Yes at any
 point; with IMP-043's caption; columns as IMP-044); the quiet buttons, in this order, "Play something else", "Home"
 and "More ›" (each full width, 48 px tall, 8 px apart); and the main button "Play again", pinned
@@ -52,7 +53,8 @@ And `summary-line` is:
   and Kabir share the game with 2 points!";
 - otherwise: "Impostor caught 4 · escaped 3": the counts of caught and escaped counted rounds (Terms), as in
   `evening-line` (IMP-040)
-And "More ›" opens a menu with "Oops, keep playing", "Share", "History", a divider, and "Discard this game" last
+And "More ›" opens a menu with "Share", "History", a divider, and "Discard this game" last
+And "End game" and "End now" lead to this summary with no extra confirmation ("Oops, keep playing" is the way back)
 And the summary scrolls as one page (guideline 46a), has no menu button, and has no inner scroll area
 When "Play again" is tapped
 Then `endEvening` is recorded and a new game starts exactly as History's "Play again" does (IMP-103): "Who's
@@ -149,13 +151,13 @@ after every later change (PLT-001, PLT-014). Note for the tester: regenerate the
 word-dealing move carries `wordId`; a fixture without word ids is unreplayable and hidden
 
 ## IMP-097: An evening with no counted round is not kept
-Status: approved, owner, 2026-10-04 (changed; detail of IMP-092, IMP-094)
+Status: approved, owner, 2026-10-06 (changed; detail of IMP-092, IMP-094)
 Phase: Impostor 1
 Given the summary shows (after "End game", "End now", or IMP-104) for an evening with no counted round (none,
 or only the practice round)
 Then it shows "That's the game!", `summary-line` "Impostor caught 0 · escaped 0" (whatever the Score choice; no
-scoreboard), no fun lines, and "More ›" without "Share"; "Play again", "Play something else", "Home", and
-"Oops, keep playing", "History" and "Discard this game" in "More ›" are still offered
+scoreboard), no fun lines, and "More ›" without "Share"; "Oops, keep playing", "Play again", "Play something else",
+"Home", and "History" and "Discard this game" in "More ›" are still offered
 And when `endEvening` is recorded the evening is deleted rather than kept in History, and its words do not count
 for "the last 3 evenings"
 
