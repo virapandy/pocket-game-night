@@ -211,11 +211,23 @@ export function ImpostorScreen({
 }
 
 /** A past evening, read-only (PLT-008): IMP-105's look back. */
-export function ImpostorPastGame({ saved, onBack, actions }: { saved: SavedGame; onBack: () => void; actions?: ReactNode }) {
+export function ImpostorPastGame({
+  saved,
+  onBack,
+  actions,
+  prefs,
+}: {
+  saved: SavedGame;
+  onBack: () => void;
+  actions?: ReactNode;
+  /** IMP-109 (P11): "Larger text" applies here too. */
+  prefs?: Preferences;
+}) {
   const match = loadEvening(saved);
   const d = describeEvening(saved);
+  const larger = prefs?.get<boolean>(PREF.largerText, false) === true;
   return (
-    <div className="imp">
+    <div className={larger ? 'imp imp-larger' : 'imp'}>
       <main className="imp-screen imp-setup">
         <header className="imp-bar">
           <QuietButton onClick={onBack}>← Back</QuietButton>

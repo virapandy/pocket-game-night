@@ -834,3 +834,16 @@
   .imp-pick-list { grid-auto-rows: 56px; }
   .imp-room.imp-screen:has(.imp-picker) .imp-joining { width: calc(50% - 8px); }
 }
+
+/* ----- Larger text on every Impostor screen (IMP-109, P11): quiet and text button labels, menu items, chips, the
+   name field, switches and toasts follow body text (17 → 21 px) everywhere, setup, deal, room, result, summary,
+   sheets and dialogs included. Room sizes (IMP-073) stay as they are. ----- */
+.imp .imp-quiet,
+.imp .imp-menu-item,
+.imp .imp-menu-button,
+.imp .imp-row-button,
+.imp .imp-chip,
+.imp .imp-input,
+.imp .imp-switch,
+.imp .imp-toast,
+.imp .imp-toast-button { font-size: var(--imp-body); }

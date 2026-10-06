@@ -1,6 +1,6 @@
 import { Fragment, useCallback, useEffect, useRef, useState, type ReactNode, type RefObject } from 'react';
 import { useRegisterSW } from 'virtual:pwa-register/react';
-import { makePlayerReport, makeReport, type Report, type ReportSubject, type SavedGame } from '../engine';
+import { makePlayerReport, makeReport, type Preferences, type Report, type ReportSubject, type SavedGame } from '../engine';
 import { games, hostGames, impostor, phoneGames, tambola, type GameId, type HostGameId, type PhoneGameId } from './games';
 import { History, isPast, unsettledSessionName, type Deleted } from './History';
 import { CrashNotice, ReportForm, ReportToast, WaitingReports } from './Report';
@@ -370,10 +370,11 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
     const saved = gameStore.get(route.id);
     const game = saved && gameOf(saved.gameType);
     if (saved && game) {
-      const PastGame = game.PastGame as (p: { saved: SavedGame; onBack: () => void; actions?: ReactNode }) => ReactNode;
+      const PastGame = game.PastGame as (p: { saved: SavedGame; onBack: () => void; actions?: ReactNode; prefs?: Preferences }) => ReactNode;
       return (
         <PastGame
           saved={saved}
+          prefs={preferences}
           onBack={() => setRoute({ name: 'history' })}
           actions={
             <PastGameActions
