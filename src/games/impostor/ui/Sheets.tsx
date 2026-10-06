@@ -30,6 +30,8 @@ export function RulesSheet({
   return (
     <Sheet title="How to play" onDone={onDone}>
       <div className="imp-rules">
+        {/* IMP-070 (P10): the impostor explained first. */}
+        <p>One player is the impostor: they don't know the secret word.</p>
         <h2 className="imp-subtitle">Read this aloud</h2>
         <ol className="imp-read">
           <li>Everyone sees the secret word except one impostor.</li>
