@@ -100,7 +100,12 @@ changed scenarios into `specs/impostor/` and lists the tests to update or retire
 names them by file). Lanes: A deal and privacy; B result, summary, picker, timer; C setup, choices, how to play;
 C3 in its own lane. Then quick verify, the owner tries the preview, then "release Impostor".
 
-### Impostor round 6b (6 October, I29): before the freeze
+### Freeze 1.3.0 now (owner, 6 October)
+Owner: R1–R4 can wait. Only stuck or privacy problems hold a release; none are left. **Freeze 1.3.0 now**, run the
+complete check, and ask the owner to try it and say "release Impostor". Then do round 6b below as **1.3.1** straight
+after, together with the next-list items the owner picks.
+
+### Impostor round 6b → 1.3.1, right after the release (6 October, I29)
 Player re-run: P1 and P3 pass. Fix R1–R4 (scenarios.md, "Note, 6 October (player re-run; decision I29)"): the in-round
 menu must reach "End game" sideways; the 500 ms tap guard on every button of every Impostor screen plus Home and
 "What shall we play?"; no text selection by tapping; option labels keep their spaces. Tester checks R5 (tonight's names
