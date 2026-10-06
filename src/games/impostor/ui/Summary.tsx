@@ -1,6 +1,6 @@
-// "That's the game!" (IMP-092, IMP-095, IMP-097, IMP-098, IMP-101, IMP-106; F9): the lead line, up to 2 fun lines,
-// the final scoreboard, then the quiet "Play something else", "Home" and "More ›" ("Oops, keep playing", Share,
-// History, and after a divider "Discard this game"), with the main button "Play again". The page scrolls as one
+// "That's the game!" (IMP-092, IMP-095, IMP-097, IMP-098, IMP-101, IMP-106; F9): the quiet "Oops, keep playing" at the
+// top (P3), the lead line, up to 2 fun lines, the final scoreboard, then the quiet "Play something else", "Home" and
+// "More ›" (Share, History, and after a divider "Discard this game"), with the main button "Play again". The page scrolls as one
 // (guideline 46a).
 // Leaving records `endEvening` (the Game does it); "Share" does not leave.
 import { useEffect, useState } from 'react';
@@ -65,7 +65,6 @@ export function Summary({
   };
 
   const items: ({ label: string; onSelect: () => void } | 'divider')[] = [
-    ...(canOops ? [{ label: 'Oops, keep playing', onSelect: onOops }] : []),
     ...(none ? [] : [{ label: 'Share', onSelect: share }]),
     { label: 'History', onSelect: onHistory },
     'divider',
@@ -76,6 +75,12 @@ export function Summary({
     <main className="imp-screen imp-summary imp-page">
       <div className="imp-screen-inner">
         <div className="imp-summary-body">
+          {/* IMP-092, IMP-101 (P3): the way back, visible at the top, full width; no extra confirmation on "End game". */}
+          {canOops && (
+            <QuietButton className="imp-oops" onClick={onOops}>
+              Oops, keep playing
+            </QuietButton>
+          )}
           <h1 className="imp-title">That's the game!</h1>
           <p className="imp-lead" data-testid="summary-line">
             {leadLine(state, story)}

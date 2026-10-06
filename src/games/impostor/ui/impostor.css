@@ -802,3 +802,5 @@
 /* IMP-001 (M22): "Carry on that game" and "Start new" side by side, equal and outlined. */
 .imp-dialog-buttons:has(> .imp-equal) { flex-direction: row; }
 .imp-equal { flex: 1 1 0; min-width: 0; padding: 0 8px; }
+/* IMP-092 (P3): "Oops, keep playing" full width, 48 px tall, at the top of the summary. */
+.imp-oops { width: 100%; height: 48px; flex: none; }
