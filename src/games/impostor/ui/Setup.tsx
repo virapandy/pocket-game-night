@@ -282,7 +282,7 @@ export function HowToPlayChoices({
    */
   lastGuess?: boolean;
   onLastGuess?: (on: boolean) => void;
-  /** IMP-009: the choices were carried over and nothing has changed yet: "Same as last time". */
+  /** IMP-009: the choices were carried over when this screen opened: "Same as last time" (stays until it is left). */
   sameAsLast?: boolean;
   /** IMP-006: the browser's or phone's Back, with no sheet open, does what "← Back" does ("Change how we play"). */
   phoneBack?: boolean;

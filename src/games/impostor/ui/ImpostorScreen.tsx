@@ -82,6 +82,11 @@ export function ImpostorScreen({
   const [choices, setChoices] = useState<Choices>(() => start.choices ?? lastChoices(prefs));
   /** IMP-009: the choices carried over (last time's, or "Play again"); null on a phone that has never played. */
   const [carried, setCarried] = useState<Choices | null>(() => (start.choices || prefs.get<unknown>(PREF.lastChoices, null) !== null ? choices : null));
+  /**
+   * IMP-009 (P6): "Same as last time" is decided when the choices screen opens and then stays, unmoved, until the
+   * screen is left, even when a choice changes (guideline 45a).
+   */
+  const [sameShown, setSameShown] = useState(() => start.route.name === 'choices' && carried !== null && choices === carried);
   const [past] = useState(() => pastNames(store));
   /** The evening made by "Start round" with nothing recorded yet (reused by the next "Start round"). */
   const [created, setCreated] = useState<Evening | null>(start.created ?? null);
@@ -114,7 +119,10 @@ export function ImpostorScreen({
           onChange={setPlayers}
           past={past}
           onBack={() => onBack(players)}
-          onNext={() => setRoute({ name: 'choices' })}
+          onNext={() => {
+            setSameShown(carried !== null && choices === carried);
+            setRoute({ name: 'choices' });
+          }}
         />
       );
       break;
@@ -128,7 +136,7 @@ export function ImpostorScreen({
           onPractice={() => startRound(true)}
           lastGuess={choices.lastGuess}
           onLastGuess={(on) => on !== choices.lastGuess && setChoices({ ...choices, lastGuess: on })}
-          sameAsLast={carried !== null && choices === carried}
+          sameAsLast={sameShown}
         />
       );
       break;
@@ -159,6 +167,7 @@ export function ImpostorScreen({
             onSomethingElse(m ? [...m.state.players] : [...route.saved.setup.config.players]);
           }}
           onBackToChoices={(saved) => {
+            setSameShown(false);
             setCreated(saved);
             setPlayers([...saved.setup.config.players]);
             setChoices(readChoices(saved.setup.config.choices, { savedEvening: true }));
