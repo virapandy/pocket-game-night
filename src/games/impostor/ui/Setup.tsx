@@ -2,7 +2,7 @@
 // IMP-009, IMP-088), with "How to play" on request (IMP-070).
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { CATEGORIES, type Choices } from '../rules';
-import { MainButton, OptionButton, QuietButton, Sheet, Switch, Toast, useToast } from './parts';
+import { MainButton, OptionButton, QuietButton, Sheet, Switch, TapGuard, Toast, useToast } from './parts';
 import { MoreOptionsSheet, RulesSheet } from './Sheets';
 
 const MAX_PLAYERS = 20;
@@ -187,8 +187,10 @@ export function WhosPlaying({
   onNext: () => void;
 }) {
   const [toast, showToast, clearToast] = useToast();
+  // IMP-010 (P2): the 500 ms tap guard covers this screen's buttons too, from the moment it shows.
   return (
     <main className="imp-screen imp-setup">
+      <TapGuard screen="players">
       <header className="imp-bar">
         <QuietButton onClick={onBack}>← Back</QuietButton>
       </header>
@@ -213,6 +215,7 @@ export function WhosPlaying({
       <MainButton disabled={players.length < MIN_PLAYERS} onClick={onNext}>
         Next
       </MainButton>
+      </TapGuard>
     </main>
   );
 }
@@ -303,8 +306,11 @@ export function HowToPlayChoices({
     window.addEventListener('popstate', back);
     return () => window.removeEventListener('popstate', back);
   }, [phoneBack, sheet]);
+  // IMP-010 (P2): the 500 ms tap guard on this screen and on "How to play", each time one of them shows, so a double
+  // tap on "Next" never lands on "Start round".
   return (
     <main className="imp-screen imp-setup">
+      <TapGuard screen={sheet}>
       <div className="imp-screen-inner" hidden={sheet !== null}>
         {/* IMP-088: the heading shares the bar's row on short phones (320 × 568), so everything fits unscrolled. */}
         <header className="imp-bar imp-bar-title">
@@ -356,6 +362,14 @@ export function HowToPlayChoices({
         </div>
         <MainButton onClick={onStart}>Start round</MainButton>
       </div>
+      {sheet === 'howTo' && (
+        <RulesSheet
+          choices={lastGuess === undefined ? choices : { ...choices, lastGuess }}
+          onDone={() => setSheet(null)}
+          {...(onPractice ? { onPractice } : {})}
+        />
+      )}
+      </TapGuard>
       {sheet === 'categories' && (
         <CategoriesSheet
           choices={choices}
@@ -363,13 +377,6 @@ export function HowToPlayChoices({
             onChange(next);
             setSheet(null);
           }}
-        />
-      )}
-      {sheet === 'howTo' && (
-        <RulesSheet
-          choices={lastGuess === undefined ? choices : { ...choices, lastGuess }}
-          onDone={() => setSheet(null)}
-          {...(onPractice ? { onPractice } : {})}
         />
       )}
       {sheet === 'more' && (

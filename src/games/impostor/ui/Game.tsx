@@ -644,7 +644,12 @@ export function Game({
         {said}
       </div>
 
-      {overlay === 'rules' && <RulesSheet choices={state.choices} onDone={() => setOverlay(null)} />}
+      {/* IMP-010 (P2): "How to play" has the 500 ms tap guard wherever it opens. */}
+      {overlay === 'rules' && (
+        <TapGuard screen="rules">
+          <RulesSheet choices={state.choices} onDone={() => setOverlay(null)} />
+        </TapGuard>
+      )}
       {overlay === 'settings' && (
         <SettingsSheet
           prefs={prefs}
