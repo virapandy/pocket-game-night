@@ -53,3 +53,8 @@ Labels: **Must** = before the Impostor release; **Next** = after it; **Later** =
 | M24 | Words families don't use | Plain words | "crew", "steal the round", "Most fingers is revealed", "evening" | **Must**: "game" everywhere (I25); "The crew wins!" → "You caught the impostor!"; "steal the round" → "win the round"; "Whoever gets the most fingers is revealed." |
 | M25 | A button label cut off | Whole label visible | "Clues done, start the 2-minute ti…" at 360–375 px | **Must**: "Clues done, start timer" |
 | M26 | Bad test data on a phone (preview only) | Never a silent dead button | "Start round" did nothing | **Must**: test seeds that don't fit the players are ignored; any round that can't start says why |
+
+## After round 5 (6 October)
+| # | Moment | Finding | Decided |
+|---|---|---|---|
+| M27 | Talk screen | Jev (60-evening run 37278246923) would tap "See my word again" (0.65) over "Vote now" | **Next**: show "See my word again" as a smaller text link so "Vote now" stands out; harmless meanwhile (it returns to talking) |
