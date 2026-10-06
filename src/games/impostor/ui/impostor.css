@@ -321,11 +321,14 @@
 /* ----- How do you want to play? (IMP-005, IMP-088) ----- */
 .imp-groups { display: flex; flex-direction: column; gap: 10px; }
 .imp-group-wrap { display: flex; flex-direction: column; gap: 4px; }
-/* IMP-088: the label in a 64 px column (56 px and its 8 px gap), the two options sharing the rest equally: at 320 px
-   wide each option is (320 − 32 − 64 − 8) / 2 = 108 px. Option text on one line ("Whole family" included): the ✓
-   sits in the corner, out of the text's way. */
-.imp-group { display: grid; grid-template-columns: 56px minmax(0, 1fr) minmax(0, 1fr); gap: 8px; align-items: center; }
-.imp-group-label { font-weight: 800; }
+/* IMP-088 (P5): the label in its own 88 px column (72 px at 320 px wide), then the two options sharing the rest
+   equally, 8 px apart: 127 px each at 390 wide, 112 at 360, 100 at 320, 139 in each 382 px cell at 812 × 375. Every
+   label fits on one line and never sits behind an option. Label and option text 17 px (15 at 320 wide); with Larger
+   text 19 px (17 at 320 wide). Option text on one line ("Whole family" included): the ✓ sits in the corner. */
+.imp-group { display: grid; grid-template-columns: 88px minmax(0, 1fr) minmax(0, 1fr); gap: 8px; align-items: center; }
+.imp-group-label { font-weight: 800; font-size: 17px; line-height: 1.2; white-space: nowrap; min-width: 0; }
+.imp-group .imp-option { font-size: 17px; }
+.imp-larger .imp-group-label, .imp-larger .imp-group .imp-option { font-size: 19px; }
 /* "Whole family" must fit 104 px inside the borders at 17 px (320 wide, Larger text) and 124 px at 21 px (360 wide,
    Larger text), so at most 5.9 em: no side padding, the tightest bold system font of each phone (SF, Roboto, Segoe UI,
    Helvetica or Arial; never the wider fallback some desktops give `system-ui`), letters 0.035 em closer. The ✓ is
@@ -350,12 +353,15 @@
   -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M1.5 6.5l3 3 6-7' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M1.5 6.5l3 3 6-7' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
 }
-.imp-option-line { padding-left: 64px; }
+.imp-option-line { padding-left: 96px; }
 .imp-tick { font-weight: 800; }
 @media (max-width: 340px) {
   .imp-option { font-size: var(--imp-small); }
+  .imp-group { grid-template-columns: 72px minmax(0, 1fr) minmax(0, 1fr); }
+  .imp-option-line { padding-left: 80px; }
+  .imp-group-label, .imp-group .imp-option { font-size: 15px; }
   /* IMP-088: with Larger text, 17 px at 320 px wide. */
-  .imp-larger .imp-group .imp-option { font-size: 17px; }
+  .imp-larger .imp-group-label, .imp-larger .imp-group .imp-option { font-size: 17px; }
 }
 /* The choices heading sits on its own line under "← Back"; on short phones it shares the bar's row (below). */
 .imp-bar-title { flex-wrap: wrap; row-gap: 12px; }
@@ -383,6 +389,7 @@
 .imp-choice-row .imp-quiet { min-width: 0; padding: 0 8px; }
 /* IMP-076: a group whose label is too long for the 64 px column sits above its two options. */
 .imp-group-wide { grid-template-columns: 1fr 1fr; }
+.imp-group-wide .imp-group-label { white-space: normal; }
 .imp-group-wide .imp-group-label { grid-column: 1 / -1; }
 
 /* ----- How to play (IMP-070, IMP-072) ----- */
@@ -462,11 +469,12 @@
   right: 0;
   bottom: var(--imp-deal-layer-bottom);
   box-sizing: border-box;
-  padding: 0 var(--imp-gutter);
+  /* IMP-010 (P5): the block starts 8 px below the layer's top, so "Your secret" is never cut at the top. */
+  padding: 8px var(--imp-gutter) 0;
   overflow: hidden;
   background: var(--bg);
 }
-/* IMP-010: line-height 1.2, 4 px gaps, no padding, from the layer's top. Lines 1 and 5 small, 3 and 4 body text. */
+/* IMP-010: line-height 1.2, 4 px gaps, no padding, from y = 8. Lines 1 and 5 small, 3 and 4 body text. */
 .imp-block { display: flex; flex-direction: column; gap: 4px; padding: 0; text-align: center; }
 .imp-block > p { line-height: 1.2; overflow-wrap: anywhere; }
 .imp-block-small { font-size: var(--imp-small); color: var(--muted); }
