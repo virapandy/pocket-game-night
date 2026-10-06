@@ -723,20 +723,23 @@ export function Game({
         </Dialog>
       )}
       {overlay === 'whose' && r && (
-        <Dialog text="Whose word?">
-          {r.players.map((p) => (
-            <QuietButton
-              key={p}
-              onClick={() => {
-                setOverlay(null);
-                // IMP-027: the timer pauses while a word is seen again (kept, shown paused on return).
-                setTalkRun(null);
-                setSeeAgain({ name: p, key: 0, from: step === 'clues' ? 'clues' : step === 'talk' ? 'talking' : 'the vote' });
-              }}
-            >
-              {p}
-            </QuietButton>
-          ))}
+        // IMP-081 (P4): the names in a box that scrolls inside (two columns sideways), "Cancel" pinned at the bottom.
+        <Dialog text="Whose word?" className="imp-whose">
+          <div className="imp-whose-list">
+            {r.players.map((p) => (
+              <QuietButton
+                key={p}
+                onClick={() => {
+                  setOverlay(null);
+                  // IMP-027: the timer pauses while a word is seen again (kept, shown paused on return).
+                  setTalkRun(null);
+                  setSeeAgain({ name: p, key: 0, from: step === 'clues' ? 'clues' : step === 'talk' ? 'talking' : 'the vote' });
+                }}
+              >
+                {p}
+              </QuietButton>
+            ))}
+          </div>
           <QuietButton onClick={() => setOverlay(null)}>Cancel</QuietButton>
         </Dialog>
       )}

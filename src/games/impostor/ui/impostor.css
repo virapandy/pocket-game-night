@@ -804,3 +804,25 @@
 .imp-equal { flex: 1 1 0; min-width: 0; padding: 0 8px; }
 /* IMP-092 (P3): "Oops, keep playing" full width, 48 px tall, at the top of the summary. */
 .imp-oops { width: 100%; height: 48px; flex: none; }
+
+/* ----- Nothing under the pinned buttons (IMP-081, P4) ----- */
+/* Sheets scroll as one page, so the Players sheet's field and "Add" (and every last line) can be scrolled above the
+   pinned "Done"; a focused field is kept clear of it too. */
+.imp-sheet { overflow-y: auto; overscroll-behavior: contain; scroll-padding-bottom: var(--imp-foot); }
+.imp-sheet-body { flex: 1 0 auto; min-height: auto; overflow: visible; }
+/* "Whose word?": the names scroll inside their own box; "Cancel" stays pinned at the dialog's bottom. */
+.imp-dialog.imp-whose { overflow: hidden; }
+.imp-whose .imp-dialog-buttons { flex: 0 1 auto; min-height: 0; }
+.imp-whose-list { flex: 0 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; display: flex; flex-direction: column; gap: 8px; }
+.imp-whose-list > .imp-quiet { flex: none; overflow-wrap: anywhere; }
+.imp-whose .imp-dialog-buttons > .imp-quiet { flex: none; }
+@media (orientation: landscape) and (max-height: 600px) {
+  /* 812 × 375: two columns of 56 px rows, 8 px apart (5 players: 3 rows × 64 = 192 px; 12 players scroll inside). */
+  .imp-whose-list { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-auto-rows: 56px; }
+  .imp-whose-list > .imp-quiet { min-height: 56px; height: 56px; overflow: hidden; }
+  /* The picker's heading and names use the left half's full height (the main button sits in the right half, under
+     "Not sure?" and its text buttons): 48 + 70 + 3 rows × 64 = 310 px ≤ 375 with 5 players. */
+  .imp-room.imp-screen:has(.imp-picker) { padding-bottom: var(--imp-gutter); }
+  .imp-pick-list { grid-auto-rows: 56px; }
+  .imp-room.imp-screen:has(.imp-picker) .imp-joining { width: calc(50% - 8px); }
+}

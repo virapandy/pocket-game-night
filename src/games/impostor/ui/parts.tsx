@@ -180,11 +180,11 @@ export function Toast({ toast, onDone }: { toast: ToastState | null; onDone: () 
  * Dialog (Terms): `role="dialog"`, named by its words; buttons listed main last ("A" / "B (main)"). A destructive
  * choice is never the main one (IMP-080).
  */
-export function Dialog({ text, children }: { text: ReactNode; children: ReactNode }) {
+export function Dialog({ text, children, className }: { text: ReactNode; children: ReactNode; className?: string }) {
   const id = useId();
   return (
     <div className="imp-backdrop">
-      <div className="imp-dialog" role="dialog" aria-modal="true" aria-labelledby={id}>
+      <div className={className ? `imp-dialog ${className}` : 'imp-dialog'} role="dialog" aria-modal="true" aria-labelledby={id}>
         <p id={id} className="imp-dialog-text">
           {text}
         </p>
