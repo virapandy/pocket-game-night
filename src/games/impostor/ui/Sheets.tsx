@@ -242,6 +242,8 @@ export function PlayersSheet({
         >
           Finish this round first
         </MainButton>
+        {/* IMP-078 (P7): the quiet "Cancel" under them closes it and changes nothing; the Players sheet stays open. */}
+        <QuietButton onClick={() => setAsk(null)}>Cancel</QuietButton>
       </Dialog>
     );
   return (
