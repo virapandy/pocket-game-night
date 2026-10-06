@@ -206,13 +206,13 @@ export function clock(t: number): string {
   return `${h % 12 === 0 ? 12 : h % 12}:${String(d.getMinutes()).padStart(2, '0')} ${h < 12 ? 'am' : 'pm'}`;
 }
 
-/** IMP-001: the first two players in the current seat order, then "+N" for the others ("Riya, Arjun +2"). */
+/** IMP-001 (P8): the first two players in the current seat order, then "and N more" ("Riya, Arjun and 2 more"). */
 export function playersLabel(players: readonly string[]): string {
   const more = players.length - 2;
-  return players.slice(0, 2).join(', ') + (more > 0 ? ` +${more}` : '');
+  return players.slice(0, 2).join(', ') + (more > 0 ? ` and ${more} more` : '');
 }
 
-/** Home's unfinished row and the resume card (IMP-001): "Impostor · Riya, Arjun +2 · round 4". */
+/** Home's unfinished row and the resume card (IMP-001): "Impostor · Riya, Arjun and 2 more · round 4". */
 export function unfinishedLine(saved: SavedGame): string {
   const match = loadEvening(saved);
   const players = match ? match.state.players : [];
