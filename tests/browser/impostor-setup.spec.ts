@@ -405,6 +405,7 @@ test.describe('IMP-005: the four choices, with these defaults', () => {
 
 test.describe('IMP-007: categories, non-veg', () => {
   async function openSheet(page: Page): Promise<Locator> {
+    await settle(page); // v3.9: the choices screen's buttons are guarded for 500 ms each time it shows, also after the sheet closes (P2)
     await categoriesRow(page).click();
     await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     await expect(page.getByRole('heading', { name: 'Categories', exact: true })).toBeVisible();
@@ -728,6 +729,7 @@ test.describe('IMP-070, IMP-072, IMP-076: How to play and More options, on reque
     await on.click();
     await page.goBack();
     await expect(choicesHeading(page)).toBeVisible();
+    await settle(page); // v3.9: the choices screen shows again when Back closes the sheet, so its buttons are guarded for 500 ms (P2)
     await expect(moreOptions(page)).toBeVisible();
     await moreOptions(page).click();
     await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
@@ -818,6 +820,7 @@ test.describe('IMP-007, IMP-070 (orchestrator, 4 October, like IMP-076): Back cl
     await expect(choicesHeading(page)).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Categories', exact: true })).toHaveCount(0);
     await expect(categoriesRow(page)).toHaveText(/^\s*Categories: all 9 ›\s*$/);
+    await settle(page); // v3.9: the choices screen shows again when Back closes the sheet, so its buttons are guarded for 500 ms (P2)
     await categoriesRow(page).click();
     await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     await expect(page.getByRole('switch', { name: 'Food', exact: true })).toBeChecked();

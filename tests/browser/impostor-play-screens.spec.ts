@@ -650,7 +650,10 @@ test.describe('IMP-052: no words left', () => {
     await quiet(page, 'Change categories').click();
     await expect(page.getByRole('heading', { name: 'How do you want to play?' })).toBeVisible();
     await expect(page.getByRole('button', { name: /^Categories: 1 of 9/ })).toBeVisible();
+    await settle(page); // v3.9: the choices screen's buttons are guarded for 500 ms whenever it shows (P2)
     await page.getByRole('button', { name: /^Categories: / }).click();
+    await expect(page.getByRole('heading', { name: 'Categories', exact: true })).toBeVisible();
+    await settle(page); // v3.9: the sheet's buttons are guarded for 500 ms too (P2)
     for (let i = 0; i < 9; i++) { const s = page.getByRole('switch').nth(i); if (!(await s.isChecked())) await s.click(); }
     await page.getByRole('button', { name: 'Done', exact: true }).click();
     await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)

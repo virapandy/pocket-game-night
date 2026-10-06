@@ -1,4 +1,16 @@
 # Test report
+**Round 6 tap-guard fixes (6 October), progress: four test faults fixed, IMP-088 fix confirmed locally; quick verify and complete run on GitHub follow (results below once read).**
+
+Commit tested: app b1e589b (round 6 43f1c97 + IMP-088 fix); tests: this push   Date: 2026-10-06
+- Quick verify 37432370177 (9895f8b) failed 6 Android tests. Four were test faults: the tests tapped a setup button within
+  500 ms of the choices screen or a sheet showing again, which IMP-010 v3.9 ignores. Each now waits 500 ms first (nothing
+  checked was changed): IMP-052 "Change categories" (after the choices screen shows, and after the Categories sheet opens),
+  IMP-007 reopening the Categories sheet after "Done", IMP-070/072/076 More options after Back, IMP-007/IMP-070 Categories
+  after Back. The other two (IMP-088 "Whole family" with Larger text at 320 and 360: text 98 > 96 px and 109 > 108 px) were a
+  real app failure; b1e589b fixes it and both pass on both phones, unmarked.
+- Local on b1e589b: rule tests 706 of 706; impostor-setup + impostor-play-screens on both phones 248 passed (on 43f1c97, with
+  the IMP-088 marks) and IMP-088 22 of 22 on b1e589b (no marks).
+
 **Round 6, P1 for the orchestrator (6 October): the P1 test is pushed, commit f5f8ead** (`tests/browser/impostor-round6-p1.spec.ts`,
 both phones). It is expected to fail on main and **passes unmarked on lane-t 63c42aa** (all 10 tests, run with
 `PGN_IGNORE_AHEAD=1` against a lane-t build). Lane T can merge. The shared helpers now wait out the setup tap guard (P2),
