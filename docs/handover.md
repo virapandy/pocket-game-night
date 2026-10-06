@@ -97,6 +97,15 @@ changed scenarios into `specs/impostor/` and lists the tests to update or retire
 names them by file). Lanes: A deal and privacy; B result, summary, picker, timer; C setup, choices, how to play;
 C3 in its own lane. Then quick verify, the owner tries the preview, then "release Impostor".
 
+### Impostor round 6, the last before the 1.3.0 freeze (6 October, I28)
+From the three player runs (`docs/room-moments.md`, "Player runs before the 1.3.0 freeze"). Binding: scenarios **v3.9**
+(changes marked "2026-10-06 (changed)": IMP-001, 003, 009, 010, 017, 070, 077, 078, 081, 088, 092, 097, 101, 109) and
+`words.csv` (Bharatanatyam grown-ups; Iron box hint "Wrinkles"). P1 ("See my word again" wrong name: "Not Pinky? ←
+Back") first; then P2–P11 (setup double-tap guard, visible "Oops, keep playing", nothing hidden under the pinned
+buttons incl. 812 × 375 with 5 players, cut labels, no jumping on the choices screen, Cancel on leaving, "and 3 more",
+grey hint, impostor explained in How to play, Larger text on every Impostor screen). C1/C2, one lane. After quick
+verify: a player re-run of P1–P4 (one at a time, cleared data), then freeze 1.3.0.
+
 ### Impostor round 5 (owner approved 4 October, I25 and I26): before the 1.3.0 release candidate
 **Hold the release-candidate freeze until this round is green.** Binding: `docs/games/impostor/scenarios.md` **v3.8**
 (passed the coder and tester reads; every changed scenario marked "2026-10-04 (changed)", new IMP-077, IMP-078,
