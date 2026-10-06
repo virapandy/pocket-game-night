@@ -329,15 +329,18 @@
 .imp-group-label { font-weight: 800; font-size: 17px; line-height: 1.2; white-space: nowrap; min-width: 0; }
 .imp-group .imp-option { font-size: 17px; }
 .imp-larger .imp-group-label, .imp-larger .imp-group .imp-option { font-size: 19px; }
-/* "Whole family" must fit 104 px inside the borders at 17 px (320 wide, Larger text) and 124 px at 21 px (360 wide,
-   Larger text), so at most 5.9 em: no side padding, the tightest bold system font of each phone (SF, Roboto, Segoe UI,
-   Helvetica or Arial; never the wider fallback some desktops give `system-ui`), letters 0.035 em closer. The ✓ is
-   drawn small (10 px) tight in the top right corner, above the letters even at 320 wide with Larger text, and not read out (the button says `aria-pressed`). */
+/* "Whole family" must fit inside the borders: 96 px at 17 px (320 wide, Larger text: 100 px option) and 108 px at
+   19 px (360 wide, Larger text: 112 px option), so at most 5.64 em. Bold Arial/Liberation measures 6.17 em, so: no side
+   padding, the tightest bold system font of each phone (SF, Roboto, Segoe UI, Helvetica or Arial; never the wider
+   fallback some desktops give `system-ui`), letters 0.05 em closer and the space 0.1 em narrower (about 5.45 em:
+   93 px at 17 px, 104 px at 19 px). The ✓ is drawn small (10 px) tight in the top right corner, above the letters,
+   and not read out (the button says `aria-pressed`). */
 .imp-group .imp-option {
   position: relative;
   padding: 4px 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Liberation Sans', sans-serif;
-  letter-spacing: -0.035em;
+  letter-spacing: -0.05em;
+  word-spacing: -0.1em;
   white-space: nowrap;
   overflow-wrap: normal;
 }
