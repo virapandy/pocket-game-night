@@ -19,6 +19,7 @@ export function PlayerList({
   fixed = false,
   staying = [],
   focusKey = 0,
+  tooFewTried = false,
 }: {
   players: readonly string[];
   onChange: (next: string[]) => void;
@@ -31,6 +32,8 @@ export function PlayerList({
   staying?: readonly string[];
   /** IMP-078 "Add a player": each change focuses the name field. */
   focusKey?: number;
+  /** IMP-003 (P9): "Next" was tapped with fewer than 3: the grey hint becomes an alert. */
+  tooFewTried?: boolean;
 }) {
   const [text, setText] = useState('');
   const [dupOf, setDupOf] = useState<string | null>(null);
@@ -154,11 +157,15 @@ export function PlayerList({
           20 players is the most.
         </p>
       )}
-      {players.length < MIN_PLAYERS && (
-        <p role="alert" className="imp-alert">
-          Add at least 3 players.
-        </p>
-      )}
+      {/* IMP-003 (P9): a grey small line while fewer than 3 are listed; an alert only after "Next" was tapped. */}
+      {players.length < MIN_PLAYERS &&
+        (tooFewTried ? (
+          <p role="alert" className="imp-alert">
+            Add at least 3 players.
+          </p>
+        ) : (
+          <p className="imp-small imp-hint">Add at least 3 players.</p>
+        ))}
       {!full && offered.length > 0 && (
         <div className="imp-past">
           {offered.map((n) => (
@@ -187,6 +194,11 @@ export function WhosPlaying({
   onNext: () => void;
 }) {
   const [toast, showToast, clearToast] = useToast();
+  // IMP-003 (P9): "Next" stays enabled; with fewer than 3 it stays here and the hint turns into an alert, back to the
+  // grey hint when a name is added or removed.
+  const [tried, setTried] = useState(false);
+  const count = players.length;
+  useEffect(() => setTried(false), [count]);
   // IMP-010 (P2): the 500 ms tap guard covers this screen's buttons too, from the moment it shows.
   return (
     <main className="imp-screen imp-setup">
@@ -197,7 +209,7 @@ export function WhosPlaying({
       <div className="imp-scroll">
         <h1 className="imp-title">Who's playing?</h1>
         <p className="imp-body">Sit in a circle. This is the passing and clue order.</p>
-        <PlayerList players={players} onChange={onChange} past={past} />
+        <PlayerList players={players} onChange={onChange} past={past} tooFewTried={tried} />
         {players.length > 0 && (
           <QuietButton
             className="imp-clear"
@@ -212,7 +224,7 @@ export function WhosPlaying({
         )}
       </div>
       <Toast toast={toast} onDone={clearToast} />
-      <MainButton disabled={players.length < MIN_PLAYERS} onClick={onNext}>
+      <MainButton onClick={() => (players.length < MIN_PLAYERS ? setTried(true) : onNext())}>
         Next
       </MainButton>
       </TapGuard>

@@ -60,7 +60,7 @@ export const impostor = {
   opens: eveningOpens,
   /** History and session rows: players and counted rounds. */
   describe: describeEvening,
-  /** Home's unfinished row (IMP-001): "Impostor · Riya, Arjun +2 · round 4". */
+  /** Home's unfinished row (IMP-001): "Impostor · Riya, Arjun and 2 more · round 4". */
   unfinishedLine: (saved: SavedGame) => unfinishedLine(saved),
   unfinished,
   endNow,
