@@ -471,7 +471,7 @@ Then the screen does not move on and the same text turns into the error style (`
 And past names show under the field as buttons, one tap adding that name at the end: the last 8 distinct names used
 in any game on this phone, newest game first; within one game, in that game's seat order; names that differ only in
 case count as one, shown as most recently typed; a name already in the list (ignoring case) is not offered
-And ✕ during setup removes the player at once, with no toast; removing below 3 is allowed during setup (Next disables)
+And ✕ during setup removes the player at once, with no toast; removing below 3 is allowed during setup ("Next" stays enabled and shows the IMP-003 alert when tapped)
 And a tap on "Add" (or Enter) with a refused name (duplicate, or 20 players listed) leaves the field as typed
 And text left in the field when "Next" is tapped is not added and is cleared
 And "← Back" on "Who's playing?" returns to "What shall we play?"; the list is kept if the host comes back within the
@@ -1586,12 +1586,12 @@ the bottom; no element inside has its own scroll area; when the screen appears i
 last-chance guess's verdict: scrolled so `round-outcome` is wholly in view)
 And the main button stays wholly on screen and fixed at the bottom on every screen
 And every Impostor screen with pinned buttons gives its scrolling content a bottom padding equal to the pinned area's
-height (main button 60 + 16 = 76 px; the stacked "End game" row at 320 px wide 132 px; the summary 76 px), so the
+height, at least (main button 60 + 16 = 76 px; the stacked "End game" row at 320 px wide 132 px; the summary 76 px; a little more is fine, product owner 6 October), so the
 last line of content can always be scrolled fully above the pinned buttons; nothing is ever hidden under them
 And at 812 × 375 with 5 and with 12 players: the picker shows its heading and names in the left half (5 players: 48 +
 70 + 3 rows × 64 = 310 px ≤ 375; 12 players: the names box scrolls inside) and "Not sure?", the text buttons and the
 main button in the right half (48 + 24 + 48 + 76 + 2 × 8 = 212 px); the result screen and the summary scroll as one
-page with the 76 px bottom padding, so every scoreboard row, a `round-outcome` with a 16-character name, and "Home" can be scrolled
+page with at least the 76 px bottom padding, so every scoreboard row, a `round-outcome` with a 16-character name, and "Home" can be scrolled
 into view; the Players sheet scrolls as one page with the field and "Add" reachable above its pinned "Done"; "Whose
 word?" shows its names in two columns in a box that scrolls inside (5 players: 3 rows × 64 = 192 px; 12 players: 6
 rows, scrolls) with "Cancel" pinned at the dialog's bottom, always visible
@@ -2062,4 +2062,9 @@ only for names added; "Next round" then records one `dealAgainWithout {player}` 
 these is the fresh round), or `dealAgain` when nobody was taken off. "End game" from that screen before "Next round"
 records nothing for those taken off, so the ended game still lists them; the summary's "Play again" leaves them out.
 Two or more leavers after a round: one toast, "Kabir, Zoya left after this round".
+
+## Note, 6 October (after round 6)
+- In landscape on the picker, "Joining next round: Zoya" sits at the bottom of the left half: accepted as built.
+- "Whole family" with Larger text fits by slightly tighter letter spacing: accepted; the owner checks it on a real
+  Android phone before release.
 
