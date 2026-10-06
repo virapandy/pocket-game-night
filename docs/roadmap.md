@@ -8,6 +8,7 @@ Phase numbers match the `Phase:` lines in `specs/`; the **order** below is the r
 |---|---|---|
 | 0 | Foundation: app skeleton, engine, automation, hosting | Done |
 | **1a** | **Tambola, paper tickets, one host phone** | **Done: green and live** at https://virapandy.github.io/pocket-game-night/ |
+| **Impostor 1** | **Impostor, one phone, 291 India-centric words** | **Released by the owner as app 1.3.0, 6 October 2026** (`docs/games/impostor/release-1.3.0.md`); 1.3.1 follows with the known issues and the owner's pick from the next list |
 
 Left over from 1a: the coder still has to update a note (`src/games/tambola/CLAUDE.md`, "End of game"
 row). The owner has Android only, so iPhone is covered by automated checks, not by hand.

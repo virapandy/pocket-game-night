@@ -100,6 +100,10 @@ changed scenarios into `specs/impostor/` and lists the tests to update or retire
 names them by file). Lanes: A deal and privacy; B result, summary, picker, timer; C setup, choices, how to play;
 C3 in its own lane. Then quick verify, the owner tries the preview, then "release Impostor".
 
+### Impostor 1.3.0: the owner releases it (6 October)
+Owner, 6 October: "I will release." Product owner's record: `docs/games/impostor/release-1.3.0.md` (what families
+get, known issues with workarounds, the 1.3.1 plan). After the release: round 6b as 1.3.1, then the next list.
+
 ### Freeze 1.3.0 now (owner, 6 October)
 Owner: R1–R4 can wait. Only stuck or privacy problems hold a release; none are left. **Freeze 1.3.0 now**, run the
 complete check, and ask the owner to try it and say "release Impostor". Then do round 6b below as **1.3.1** straight

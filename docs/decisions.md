@@ -187,6 +187,7 @@ Claude to follow game conventions. Every Tambola rule above is also a host setti
 | I28 | Player runs before the freeze (6 October): P1–P11 in `docs/room-moments.md` are must-fix in one small last round (C1/C2 except P1, which touches the deal flow); P13–P18 next list | Product owner |
 | I29 | Player re-run after round 6: P1 and P3 pass; must-fix R1–R4 (menu reachable sideways, tap guard on every button of every Impostor screen and Home, no text selection by tapping, labels keep spaces) and must-check R5, R10; R6–R9 next list | Product owner, 6 October |
 | I30 | Release rule: only "stuck" (someone can't continue) or privacy problems (someone sees a secret) hold a release; everything else goes to the next release. Applied now: freeze 1.3.0; R1–R4 move to 1.3.1 | Owner, 6 October |
+| I31 | Impostor released as app 1.3.0 by the owner with four known, non-blocking issues (release-1.3.0.md); 1.3.1 next | Owner, 6 October |
 | I15 | Later, rarely: twist rounds (no impostor; everyone an impostor) | Players love them used sparingly (BGG) — later |
 
 ## Secret Words (Codenames-style word game): decisions (4 October 2026; evidence in `docs/games/secret-words/research.md`)
