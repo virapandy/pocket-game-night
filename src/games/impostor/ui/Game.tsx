@@ -439,6 +439,11 @@ export function Game({
         onHoldScreen={setHoldScreen}
         seeAgain={seeAgain.from}
         onDone={() => setSeeAgain(null)}
+        // IMP-017 (P1): the wrong name: "Whose word?" again, timer still paused; nothing recorded, nothing shown.
+        onBack={() => {
+          setSeeAgain(null);
+          setOverlay('whose');
+        }}
       />
     );
   } else if (r && step === 'deal') {

@@ -71,6 +71,7 @@ export function Turn({
   seeAgain,
   onDone,
   onDontKnow,
+  onBack,
   onHoldScreen,
 }: {
   name: string;
@@ -87,6 +88,8 @@ export function Turn({
   seeAgain?: SeeAgainFrom;
   onDone: () => void;
   onDontKnow?: () => void;
+  /** IMP-017 (P1): "Not Meena? ← Back" during "See my word again": back to "Whose word?", nothing shown or recorded. */
+  onBack?: () => void;
   /** Told when screen B shows and when it goes (the screen marks itself `imp-hold-screen`, IMP-010 landscape). */
   onHoldScreen?: (shown: boolean) => void;
 }) {
@@ -101,7 +104,13 @@ export function Turn({
   return (
     <TapGuard screen={screen}>
       {screen === 'A' ? (
-        <ScreenA name={name} progress={progress} banner={banner} onMe={() => setScreen('B')} />
+        <ScreenA
+          name={name}
+          progress={progress}
+          banner={banner}
+          onMe={() => setScreen('B')}
+          {...(seeAgain && onBack ? { onBack } : {})}
+        />
       ) : (
         <ScreenB
           name={name}
@@ -111,7 +120,7 @@ export function Turn({
           tap={tapPref()}
           seeAgain={seeAgain ?? null}
           onDone={onDone}
-          onNotMe={() => setScreen('A')}
+          onNotMe={seeAgain && onBack ? onBack : () => setScreen('A')}
           {...(onDontKnow ? { onDontKnow } : {})}
         />
       )}
@@ -140,11 +149,14 @@ function ScreenA({
   progress,
   banner,
   onMe,
+  onBack,
 }: {
   name: string;
   progress: Progress | null;
   banner: 'welcome' | 'noProblem' | null;
   onMe: () => void;
+  /** IMP-017 (P1): "See my word again" only: "Not Meena? ← Back" directly under "Everyone else, look away!". */
+  onBack?: () => void;
 }) {
   const nameRef = useRef<HTMLParagraphElement>(null);
   useFitText(nameRef, 48, 32, name);
@@ -169,6 +181,11 @@ function ScreenA({
             <p className="imp-look-away" data-testid="look-away">
               Everyone else, look away!
             </p>
+            {onBack && (
+              <button type="button" className="imp-deal-text" onClick={onBack}>
+                Not {name}? ← Back
+              </button>
+            )}
           </>
         )}
       </section>
@@ -195,7 +212,8 @@ function ScreenB({
   tap: boolean;
   seeAgain: SeeAgainFrom | null;
   onDone: () => void;
-  /** IMP-010 (M17): "Not Riya? ← Back", before the first hold: screen A of the same player again. */
+  /** IMP-010 (M17): "Not Riya? ← Back", before the first hold: screen A of the same player again; during "See my word
+   * again" (IMP-017, P1) back to "Whose word?". */
   onNotMe: () => void;
   onDontKnow?: () => void;
 }) {
@@ -378,12 +396,12 @@ function ScreenB({
         >
           {padText}
         </button>
-        {/* IMP-010 (M17): "Not Riya? ← Back" under the pad until the first hold; then hidden, its space kept. Never
-            during "See my word again" (IMP-017). */}
+        {/* IMP-010 (M17): "Not Riya? ← Back" under the pad until the first hold; then hidden, its space kept. The same
+            in "See my word again" (IMP-017, P1), where it goes back to "Whose word?". Identical for every role. */}
         <button
           type="button"
-          className={held || seeAgain ? 'imp-deal-text imp-reserved' : 'imp-deal-text'}
-          onClick={held || seeAgain ? undefined : onNotMe}
+          className={held ? 'imp-deal-text imp-reserved' : 'imp-deal-text'}
+          onClick={held ? undefined : onNotMe}
         >
           Not {name}? ← Back
         </button>
