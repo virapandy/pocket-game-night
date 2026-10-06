@@ -58,3 +58,26 @@ Labels: **Must** = before the Impostor release; **Next** = after it; **Later** =
 | # | Moment | Finding | Decided |
 |---|---|---|---|
 | M27 | Talk screen | Jev (60-evening run 37278246923) would tap "See my word again" (0.65) over "Vote now" | **Next**: show "See my word again" as a smaller text link so "Vote now" stands out; harmless meanwhile (it returns to talking) |
+
+## Player runs before the 1.3.0 freeze (6 October; three players, one at a time, cleared data)
+Verdicts: party host "yes, without help"; grandmother "almost"; child in landscape "fun and mostly clear".
+| # | Finding (players) | Decided |
+|---|---|---|
+| P1 | "See my word again" → wrong name: no way back; one run saw "You're the impostor" (all 3) | **Must**: "Not Pinky? ← Back" on its screen A and on screen B until the first hold, back to "Whose word?" (as M17) |
+| P2 | Double tap on "Next" lands on "Start round" in the same spot and skips the choices (child) | **Must**: the 500 ms tap guard also on the setup screens ("Who's playing?", choices, How to play) |
+| P3 | "Oops, keep playing" hidden under "More ›"; two players expected "Are you sure?" after End game | **Must**: "Oops, keep playing" back as a visible quiet button at the top of the summary (no confirmation added) |
+| P4 | Content under the pinned buttons: score rows, "Home" under "Play again"; sideways: a vote name, "Golu escaped!", help text, the Players Add box, "More ›" squeezed | **Must**: every screen leaves room above the pinned buttons so everything scrolls into view; sideways layouts re-checked at 812 × 375 with 5 players |
+| P5 | Labels cut off: "Talking" behind "Free flow", "Your secret" at the top of the hold screen | **Must** |
+| P6 | Tapping Hard removed "Same as last time" and the page jumped, so the next tap missed (child) | **Must**: the line stays until the screen is left (nothing moves, as 45a) |
+| P7 | No "Cancel" when removing a player | **Must**: quiet "Cancel" in "Kabir has to leave?" |
+| P8 | "Hansa, Raju +3" unclear | **Must**: "Hansa, Raju and 3 more" |
+| P9 | Red "Add at least 3 players." before typing | **Must**: grey hint until someone tries "Next" |
+| P10 | "Impostor" never explained | **Must**: How to play starts "One player is the impostor: they don't know the secret word." |
+| P11 | "Larger text" made no visible difference (grandmother) | **Must**: tester checks IMP-109 on every Impostor screen; fix if not applied |
+| P12 | Words: "Bharatanatyam" under Whole family; hint "Creases" | Done in words.csv: Bharatanatyam → grown-ups; Iron box hint "Wrinkles" |
+| P13 | Settings from Home full of Tambola words; menus look different | Next |
+| P14 | Can't switch to Hard mid-round (only between rounds) | Next: say so in the mid-round menu ("Change how we play after this round") |
+| P15 | Resume card pushes Tambola down; "Unfinished games" below the fold sideways | Next |
+| P16 | Players sheet doesn't say when a newcomer plays | Next: "Isha joins next round" inside the sheet |
+| P17 | "Play something else" / Tambola don't reuse tonight's names | Next (platform) |
+| P18 | "I'm Golu" ignored for about a second after a pass, with no sign | Next: a brief pressed look |

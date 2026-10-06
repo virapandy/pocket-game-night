@@ -80,7 +80,7 @@ IMPW-082,Mosquito net,,Around the house,family,no,easy,Bedtime,,Mosquito coil,ke
 IMPW-083,Mosquito racket,,Around the house,family,no,easy,Evening,,Mosquito net,kept,Grandmother reader: killing insects goes against Jain ahimsa; host can switch the category off
 IMPW-084,Terrace,Roof,Around the house,family,no,easy,Upstairs,,Balcony,kept,
 IMPW-085,Clothesline,Dori,Around the house,family,no,easy,Sunny,,Iron box,other names changed; grownups,
-IMPW-086,Iron box,Press / Istri / Iron,Around the house,family,no,easy,Creases,,Clothesline,hint rewritten; other names changed,
+IMPW-086,Iron box,Press / Istri / Iron,Around the house,family,no,easy,Wrinkles,,Clothesline,hint rewritten; other names changed; hint 6 Oct,
 IMPW-087,Sofa set,,Around the house,family,no,easy,Guests,,Diwan,kept,
 IMPW-088,Almirah,Steel cupboard / Bureau / Beeruva,Around the house,grownups,no,easy,Bedroom,,Suitcase,other names changed; grownups,
 IMPW-089,Calendar,,Around the house,family,no,easy,Wall,,Clock,kept,
@@ -132,7 +132,7 @@ IMPW-141,Indian Idol,,"Films, music and TV",grownups,no,easy,Sunday TV,,Kaun Ban
 IMPW-142,Doordarshan,DD,"Films, music and TV",grownups,no,medium,Antenna,,All India Radio,hint rewritten; grownups,kids may not know it
 IMPW-144,Shaktimaan,,"Films, music and TV",grownups,no,medium,90s,,Krrish,cousin updated; grownups,kids may not know it
 IMPW-145,Radio,,"Films, music and TV",family,no,easy,Car,,Television,kept,
-IMPW-146,Bharatanatyam,,"Films, music and TV",family,no,easy,Classical,,Kathak,kept,
+IMPW-146,Bharatanatyam,,"Films, music and TV",grownups,no,easy,Classical,,Kathak,kept; grownups after player run 6 Oct,
 IMPW-147,Tabla,,"Films, music and TV",family,no,easy,Pair,,Dholak,kept,
 IMPW-148,Veena,,"Films, music and TV",grownups,no,medium,Strings,,Sitar,grownups,
 IMPW-149,Sitar,,"Films, music and TV",grownups,no,easy,Concert,,Veena,grownups,
