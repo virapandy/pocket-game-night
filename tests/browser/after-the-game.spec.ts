@@ -216,6 +216,7 @@ test.describe('PLT-300 and TAM-171: tickets more than 6 hours old open on Home, 
     expect(await hasMainLook(clear), '"Clear" is quiet, never the main look').toBe(false);
     await expectOneMainButton(riya, 'Home with saved tickets', null);
 
+    await waitOutTapGuard(riya); // 1.3.1 (I29, R2): Home's buttons are guarded for 500 ms after it shows
     await open.click();
     await expect(phoneTicket(riya, 1)).toBeVisible();
     await expect(phoneTicket(riya, 2)).toBeVisible();

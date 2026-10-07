@@ -2,7 +2,7 @@
 // PLT-002, PLT-003, PLT-004, PLT-005, PLT-007, PLT-008, PLT-012, PLT-013. End game and Discard are in the menu (TAM-124).
 import { expect, test } from './fixtures';
 import {
-  call, callMany, calledNumbers, confirmPrizes, currentNumber, endGame, fromMenu, HOME, menuButton, menuItem, nextNumber, openTambola, recordWin, setUpPaperGame, fromHome,
+  call, callMany, calledNumbers, confirmPrizes, currentNumber, endGame, fromMenu, HOME, menuButton, menuItem, nextNumber, openTambola, recordWin, setUpPaperGame, fromHome,  waitOutTapGuard,
 } from './helpers';
 
 test('TAM-065, TAM-111, PLT-003: a refresh or reopen resumes the game exactly where it was', async ({ page }) => {
@@ -10,6 +10,7 @@ test('TAM-065, TAM-111, PLT-003: a refresh or reopen resumes the game exactly wh
   const calls = await callMany(page, 5);
   await page.reload();
   const resume = page.getByRole('button', { name: /Tap to resume|Resume/ });
+  await waitOutTapGuard(page); // 1.3.1 (I29, R2): Home's buttons are guarded for 500 ms after it shows
   if (await resume.first().isVisible()) await resume.first().click();
   await expect(currentNumber(page)).toHaveText(String(calls[4]));
   expect((await calledNumbers(page)).sort((a, b) => a - b)).toEqual([...calls].sort((a, b) => a - b));
@@ -24,6 +25,7 @@ test('TAM-112: after the phone discards the app, it reopens at the same number w
   await again.goto(url);
   await expect(again.getByText(/Game resumed|Tap to resume/)).toBeVisible();
   const resume = again.getByRole('button', { name: /Tap to resume|Resume/ });
+  await waitOutTapGuard(again); // 1.3.1 (I29, R2): Home's buttons are guarded for 500 ms after it shows
   if (await resume.first().isVisible()) await resume.first().click();
   await expect(currentNumber(again)).toHaveText(String(n));
 });
@@ -125,6 +127,7 @@ test('PLT-004: within 12 hours the home screen shows the game with "Tap to resum
   // The after-12-hours question is not asked yet.
   for (const name of [/^End it/, /^Discard it/]) await expect(page.getByRole('button', { name })).toHaveCount(0);
   // One tap goes straight back into the game, exactly where it was left.
+  await waitOutTapGuard(page); // 1.3.1 (I29, R2): Home's buttons are guarded for 500 ms after it shows
   await tap.click();
   await expect(nextNumber(page)).toBeVisible();
   await expect(currentNumber(page)).toHaveText(String(calls[1]));

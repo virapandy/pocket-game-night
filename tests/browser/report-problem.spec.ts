@@ -5,7 +5,7 @@
 // reports waiting to send. Names, test ids and the sending hook: tests/browser/README.md, "Phase 7: Report a problem".
 import { expect, test, type BrowserContext, type Page } from './fixtures';
 import {
-  call, calledCount, callMany, confirmPrizes, currentNumber, endGame, HOME, menuButton, nextNumber, recordWin, setUpPaperGame,
+  call, calledCount, callMany, confirmPrizes, currentNumber, endGame, HOME, menuButton, nextNumber, recordWin, setUpPaperGame,  waitOutTapGuard,
 } from './helpers';
 import { closePhones, gridOf, newPhone, numbersOf, phoneGame, phoneTicket, PORTRAIT, scanAll, tapCell } from './phone';
 
@@ -30,6 +30,7 @@ const WAITS_FOR_END = /Your report will be sent when this game ends/;
 
 /** "Report a problem": straight from the screen, or from its Menu (PLT-200). */
 async function openReport(page: Page) {
+  await waitOutTapGuard(page); // 1.3.1 (I29, R2): Home's buttons are guarded for 500 ms after it shows
   if (!(await reportItem(page).isVisible())) await menuButton(page).first().click();
   await reportItem(page).click();
   await expect(whatField(page)).toBeVisible();
@@ -118,12 +119,14 @@ async function openWaiting(page: Page) {
   const settings = page.getByRole('menuitem', { name: 'Settings', exact: true }).or(page.getByRole('button', { name: 'Settings', exact: true })).first();
   const menu = page.getByRole('button', { name: /Menu/ }).first();
   if (!(await settings.isVisible()) && (await menu.isVisible())) {
+    await waitOutTapGuard(page); // 1.3.1 (I29, R2): Home's buttons are guarded for 500 ms after it shows
     await menu.click();
     await settings.waitFor({ state: 'visible', timeout: 1000 }).catch(() => {});
     if (!(await settings.isVisible())) await page.keyboard.press('Escape');
   }
   if (!(await settings.isVisible())) {
     const host = page.getByRole('button', { name: /^Host a game/ });
+    await waitOutTapGuard(page); // 1.3.1 (I29, R2)
     await ((await host.isVisible()) ? host : page.getByRole('button', { name: /^Tambola/ })).click();
   }
   await settings.click();
@@ -349,6 +352,7 @@ test.describe('PLT-203: crashes are caught, the game is safe, and a report is on
 
     await page.reload();
     const resume = page.getByRole('button', { name: /Tap to resume|Resume/ });
+    await waitOutTapGuard(page); // 1.3.1 (I29, R2): Home's buttons are guarded for 500 ms after it shows
     if (await resume.first().isVisible()) await resume.first().click();
     await expect(currentNumber(page)).toHaveText(String(calls[2]));
     expect(await calledCount(page)).toBe(3);

@@ -4,7 +4,7 @@
 // game that is still in an unsettled tally). Names and test ids: tests/browser/README.md.
 import { expect, test, type Page } from './fixtures';
 import {
-  callMany, confirmPrizes, endGame, fillPlayers, HOME, nextNumber, openHistory, openSession, openTambola, setUpPaperGame, tallyPeople, THREE_TIERS, winEverythingAndEnd, chooseTicketType, ticketCard, fromHome,
+  callMany, confirmPrizes, endGame, fillPlayers, HOME, nextNumber, openHistory, openSession, openTambola, setUpPaperGame, tallyPeople, THREE_TIERS, winEverythingAndEnd, chooseTicketType, ticketCard, fromHome,  waitOutTapGuard,
 } from './helpers';
 
 test.use({ timezoneId: 'Asia/Kolkata' });
@@ -159,6 +159,7 @@ test.describe('PLT-011: clearing all history', () => {
     await expect(rows(page).filter({ hasText: /Riya|Zoya|Ended/ })).toHaveCount(0);
     // The game in progress is still there, exactly where it was.
     await page.goto(HOME);
+    await waitOutTapGuard(page); // 1.3.1 (I29, R2): Home's buttons are guarded for 500 ms after it shows
     await page.getByTestId('unfinished-games').getByText('Tap to resume').first().click();
     await expect(page.getByTestId('current-number')).toHaveText(String(calls[1]));
   });

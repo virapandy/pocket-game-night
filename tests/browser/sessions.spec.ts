@@ -6,7 +6,7 @@
 // "Mark as settled"), TAM-090 (no money is moved). Names and test ids: tests/browser/README.md.
 import { expect, test, type Page } from './fixtures';
 import {
-  call, callMany, confirmPrizes, continueOrNew, currentNumber, endGame, expectNoPaymentUi, HOME, nextNumber, openHistory, openSession, openSessions, sessionNameField, setUpPaperGame, tallyPeople, THREE_TIERS, winEverythingAndEnd, chooseTicketType, openTambola,
+  call, callMany, confirmPrizes, continueOrNew, currentNumber, endGame, expectNoPaymentUi, HOME, nextNumber, openHistory, openSession, openSessions, sessionNameField, setUpPaperGame, tallyPeople, THREE_TIERS, winEverythingAndEnd, chooseTicketType, openTambola,  waitOutTapGuard,
 } from './helpers';
 
 test.use({ timezoneId: 'Asia/Kolkata' });
@@ -211,6 +211,7 @@ test.describe('PLT-017, PLT-019, PLT-020, PLT-027, PLT-028: tally, settle up, ma
 
     // PLT-019: later games in the same session start a new tally: game 3, once ended, is tallied alone.
     await page.goto(HOME);
+    await waitOutTapGuard(page); // 1.3.1 (I29, R2): Home's buttons are guarded for 500 ms after it shows
     await page.getByTestId('unfinished-games').getByText('Tap to resume').first().click();
     await expect(nextNumber(page)).toBeVisible();
     await winEverythingAndEnd(page, 'Dad', THREE_TIERS);
@@ -280,6 +281,7 @@ test('PLT-026: a game left paused overnight stays in the session it was started 
   // The next morning, 14 hours later: resume it (PLT-004) and end it.
   await page.clock.setSystemTime(new Date(T0.getTime() + 14 * HOUR));
   await page.goto(HOME);
+  await waitOutTapGuard(page); // 1.3.1 (I29, R2): Home's buttons are guarded for 500 ms after it shows
   await page.getByRole('button', { name: /^Resume/ }).first().click();
   await expect(currentNumber(page)).toHaveText(String(n));
   await winEverythingAndEnd(page, 'Riya', THREE_TIERS);

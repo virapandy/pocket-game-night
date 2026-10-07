@@ -5,7 +5,7 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { expect, test, type Page } from './fixtures';
-import { HOME, call, currentNumber, endGame, nextNumber, fromHome } from './helpers';
+import { HOME, call, currentNumber, endGame, nextNumber, fromHome, waitOutTapGuard } from './helpers';
 
 const fixture = JSON.parse(
   readFileSync(fileURLToPath(new URL('../fixtures/phase-1a-saved-games.json', import.meta.url)), 'utf8'),
@@ -46,6 +46,7 @@ test.describe('PLT-014: games saved by the Phase 1a app still open', () => {
     await phoneFromPhase1a(page);
     const list = page.getByTestId('unfinished-games');
     await expect(list.getByText(/5 numbers called/)).toBeVisible();
+    await waitOutTapGuard(page); // 1.3.1 (I29, R2): Home's buttons are guarded for 500 ms after it shows
     await list.getByRole('button', { name: /Tap to resume|Resume/ }).first().click();
     await expect(currentNumber(page)).toHaveText(String(inProgress.called.at(-1)));
     const next = await call(page);
@@ -54,6 +55,7 @@ test.describe('PLT-014: games saved by the Phase 1a app still open', () => {
     await page.reload();
     await page.goto(HOME);
     await expect(page.getByTestId('unfinished-games').getByText(/6 numbers called/)).toBeVisible();
+    await waitOutTapGuard(page); // 1.3.1 (I29, R2): Home's buttons are guarded for 500 ms after it shows
     await page.getByTestId('unfinished-games').getByRole('button', { name: /Tap to resume|Resume/ }).first().click();
     await expect(currentNumber(page)).toHaveText(String(next));
     await endGame(page);

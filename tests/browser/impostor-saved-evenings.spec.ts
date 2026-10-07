@@ -234,6 +234,7 @@ test.describe('IMP-092: ending and discarding the evening', () => {
     const discard = page.getByRole('dialog', { name: /Discard this game\? Its rounds and scores will be lost\./ });
     await expect(discard).toBeVisible();
     await expectOneMainButton(page, '"Discard this game?"', 'Keep it', true);
+    await settle(page); // 1.3.1 (I29, R2): a dialog's buttons are guarded for 500 ms after it opens
     await discard.getByRole('button', { name: 'Discard', exact: true }).click();
     await expect(page.getByRole('button', { name: /^Host a game/ })).toBeVisible();
     expect(await savedEvenings(page)).toEqual([]);
@@ -343,6 +344,7 @@ test.describe('IMP-094: what History keeps', () => {
     await page.getByRole('button', { name: /^Host a game/ }).click();
     await expect(page.getByRole('heading', { name: 'What shall we play?' })).toBeVisible();
     await expect(page.getByTestId('resume-card')).toHaveCount(0);
+    await settle(page); // 1.3.1 (I29, R2): "What shall we play?" guards its buttons for 500 ms
     await page.getByRole('button', { name: /^Impostor\b/ }).click();
     await expect(page.getByRole('heading', { name: "Who's playing?" })).toBeVisible();
     await expect(page.getByRole('button', { name: /^Remove / }), 'not as tonight\'s names').toHaveCount(0);
