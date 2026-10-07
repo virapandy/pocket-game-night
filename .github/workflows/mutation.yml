@@ -1,0 +1,116 @@
+# Full mutation testing (PLT-119), report-only. Runs as part of "Weekly extended checks" (weekly.yml calls it), or on
+# its own on request: `gh workflow run mutation.yml --ref main` (Actions tab: "Mutation testing", Run workflow).
+# Nothing here changes the app, publishes anything or blocks other runs.
+#
+# The files are split into groups that run side by side on standard free runners (4 cores each), so every group
+# finishes well inside GitHub's 5-hour job limit (each is stopped at 4 hours). Measured on run 37254838465 (5 October):
+# the slowest group, Tambola rules.ts lines 561-882, took 127 minutes, so it is now two groups; the others took 20-32.
+# Line ranges end at function boundaries: if a file grows, move the last range's end to match.
+# Tambola and engine groups together cover exactly the files listed under `mutate` in tests/stryker.config.mjs
+# (--mutate replaces that list for one group), and run the tests in tests/vitest.mutation.config.ts. Impostor groups
+# cover every file in src/games/impostor/rules/ and run only Impostor's tests (.github/mutation/).
+# If a group is added, renamed or removed, change GROUPS in the summary job to match.
+name: Mutation testing
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  group:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - group: tambola-rules-1
+            files: src/games/tambola/rules/rules.ts:1-276
+          - group: tambola-rules-2
+            files: src/games/tambola/rules/rules.ts:277-560
+          - group: tambola-rules-3
+            files: src/games/tambola/rules/rules.ts:561-681
+          - group: tambola-rules-4
+            files: src/games/tambola/rules/rules.ts:682-9999
+          - group: tambola-prizes-check
+            files: src/games/tambola/rules/prizes.ts,src/games/tambola/rules/check.ts
+          - group: tambola-codes-tickets
+            files: src/games/tambola/rules/codes.ts,src/games/tambola/rules/tickets.ts:1-91,src/games/tambola/rules/tickets.ts:94-120,src/games/tambola/rules/tickets.ts:122-9999
+          - group: engine-money-tally
+            files: src/engine/money.ts,src/engine/tally.ts
+          - group: impostor-rules-1
+            config: .github/mutation/stryker.impostor.config.mjs
+            files: src/games/impostor/rules/rules.ts:1-200
+          - group: impostor-rules-2
+            config: .github/mutation/stryker.impostor.config.mjs
+            files: src/games/impostor/rules/rules.ts:201-282
+          - group: impostor-rules-3
+            config: .github/mutation/stryker.impostor.config.mjs
+            files: src/games/impostor/rules/rules.ts:283-435
+          - group: impostor-rules-4
+            config: .github/mutation/stryker.impostor.config.mjs
+            files: src/games/impostor/rules/rules.ts:436-9999
+          - group: impostor-other
+            config: .github/mutation/stryker.impostor.config.mjs
+            files: src/games/impostor/rules/picks.ts,src/games/impostor/rules/saved.ts,src/games/impostor/rules/types.ts,src/games/impostor/rules/index.ts
+    name: ${{ matrix.group }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      # GitHub's standard runners have 4 processor cores; the config's 2 suits a laptop.
+      - name: Mutation testing (${{ matrix.group }})
+        env:
+          CONFIG: ${{ matrix.config || 'tests/stryker.config.mjs' }}
+          FILES: ${{ matrix.files }}
+        run: npx stryker run "$CONFIG" --mutate "$FILES" --concurrency 4
+      - name: Mutation summary (${{ matrix.group }})
+        if: always()
+        run: npm run test:mutation:summary
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mutation-${{ matrix.group }}
+          path: |
+            reports/mutation-latest.md
+            reports/stryker/
+          if-no-files-found: warn
+
+  # Adds every group's scores into one summary (per file and per group) on the run's summary page and in the
+  # mutation-report artifact, which the weekly report also shows.
+  summary:
+    needs: group
+    if: always()
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: mutation-*
+          path: artifacts
+      - name: Merge the groups' scores
+        env:
+          GROUPS: >-
+            tambola-rules-1 tambola-rules-2 tambola-rules-3 tambola-rules-4 tambola-prizes-check tambola-codes-tickets
+            engine-money-tally impostor-rules-1 impostor-rules-2 impostor-rules-3 impostor-rules-4 impostor-other
+        run: |
+          mkdir -p mutation-report
+          node .github/mutation/merge-summary.mjs artifacts mutation-report/mutation-weekly.md
+          cat mutation-report/mutation-weekly.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mutation-report
+          path: mutation-report/
+          if-no-files-found: warn

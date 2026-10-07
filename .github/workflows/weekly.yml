@@ -1,5 +1,6 @@
 # Once a week (and on request): the long, report-only checks (PLT-118).
-# Mass simulation with an optional Jev smoke run, mutation testing, the Android phone emulator, and screen
+# Mass simulation with an optional Jev smoke run, mutation testing (mutation.yml; alone on request:
+# `gh workflow run mutation.yml --ref main`), the Android phone emulator, and screen
 # simulation evenings (200 by default; on request use the inputs below, `only_sims` to run them alone).
 # Separate from "Complete run" (ci.yml): it never blocks, cancels or waits on it, and never publishes.
 # Every job is report-only: a failure here shows in the results but fails nothing else.
@@ -68,53 +69,11 @@ jobs:
             tests/replays/
           if-no-files-found: warn
 
-  # Mutation testing is split into six groups of files that run side by side, so each finishes well inside its
-  # limit (one job for every file ran past 300 minutes; rules.ts alone ran past 240, so it is split into three line
-  # ranges at function boundaries: if that file grows, move the last range's end to match). Together the groups cover exactly the files listed under
-  # `mutate` in tests/stryker.config.mjs (the command line's --mutate replaces that list for one group). If that
-  # list changes, change the groups here to match.
+  # Full mutation testing lives in its own workflow (mutation.yml) so it can also run alone on request; it splits
+  # the rules and money files into groups that run side by side, each well inside GitHub's 5-hour job limit.
   mutation:
     if: ${{ !inputs.only_sims }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 240
-    continue-on-error: true
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - group: tambola-rules-1
-            files: src/games/tambola/rules/rules.ts:1-276
-          - group: tambola-rules-2
-            files: src/games/tambola/rules/rules.ts:277-560
-          - group: tambola-rules-3
-            files: src/games/tambola/rules/rules.ts:561-882
-          - group: tambola-prizes-check
-            files: src/games/tambola/rules/prizes.ts,src/games/tambola/rules/check.ts
-          - group: tambola-codes-tickets
-            files: src/games/tambola/rules/codes.ts,src/games/tambola/rules/tickets.ts:1-91,src/games/tambola/rules/tickets.ts:94-120,src/games/tambola/rules/tickets.ts:122-9999
-          - group: engine-money-tally
-            files: src/engine/money.ts,src/engine/tally.ts
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          cache: npm
-      - run: npm ci
-      # GitHub's standard runners have 4 processor cores; the config's 2 suits a laptop.
-      - name: Mutation testing (${{ matrix.group }})
-        run: npm run test:mutation -- --mutate "${{ matrix.files }}" --concurrency 4
-      - name: Mutation summary (${{ matrix.group }})
-        if: always()
-        run: npm run test:mutation:summary
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: mutation-${{ matrix.group }}
-          path: |
-            reports/mutation-latest.md
-            reports/stryker/
-          if-no-files-found: warn
+    uses: ./.github/workflows/mutation.yml
 
   android:
     if: ${{ !inputs.only_sims }}
@@ -163,9 +122,9 @@ jobs:
           path: artifacts
       - name: Write the weekly report
         env:
-          SIMULATION: ${{ needs.simulation.outcome }}
-          MUTATION: ${{ needs.mutation.outcome }}
-          ANDROID: ${{ needs.android.outcome }}
+          SIMULATION: ${{ needs.simulation.result }}
+          MUTATION: ${{ needs.mutation.result }}
+          ANDROID: ${{ needs.android.result }}
         run: |
           day=$(date -u +%Y-%m-%d)
           mkdir -p weekly
@@ -176,7 +135,7 @@ jobs:
             echo "| Job | Result |"
             echo "|---|---|"
             echo "| Mass simulation and Jev smoke run | $SIMULATION |"
-            echo "| Mutation testing (six groups; shows failure if any group failed) | $MUTATION |"
+            echo "| Mutation testing (groups side by side; per-group results below) | $MUTATION |"
             echo "| Android emulator | $ANDROID |"
             echo
             echo "## Simulation summary"
@@ -184,35 +143,7 @@ jobs:
             echo
             echo "## Mutation summary"
             echo
-            echo "Mutation testing runs as six groups of files at once. Each group's score is below; the overall line adds up the groups that finished."
-            echo
-            node -e '
-              const fs = require("fs");
-              let c = 0, m = 0, groups = 0;
-              for (const d of fs.readdirSync("artifacts").filter((d) => d.startsWith("mutation-")).sort()) {
-                for (const f of [`artifacts/${d}/stryker/mutation.json`, `artifacts/${d}/reports/stryker/mutation.json`]) {
-                  if (!fs.existsSync(f)) continue;
-                  groups++;
-                  for (const { mutants } of Object.values(JSON.parse(fs.readFileSync(f, "utf8")).files))
-                    for (const mu of mutants) {
-                      if (["Killed", "Timeout"].includes(mu.status)) c++;
-                      else if (["Survived", "NoCoverage"].includes(mu.status)) m++;
-                    }
-                  break;
-                }
-              }
-              const s = c + m ? (100 * c) / (c + m) : 100;
-              console.log(groups
-                ? `Overall (${groups} of 6 groups finished): **${s.toFixed(1)}%** of deliberate mistakes caught (${c} of ${c + m}); target 80%.`
-                : "No group finished, so there is no overall score.");
-            ' 2>/dev/null || echo "The overall score could not be worked out."
-            echo
-            for g in tambola-rules-1 tambola-rules-2 tambola-rules-3 tambola-prizes-check tambola-codes-tickets engine-money-tally; do
-              echo "### Group: $g"
-              echo
-              cat "artifacts/mutation-$g/mutation-latest.md" 2>/dev/null || cat "artifacts/mutation-$g/reports/mutation-latest.md" 2>/dev/null || echo "No summary for this group: it did not finish."
-              echo
-            done
+            cat artifacts/mutation-report/mutation-weekly.md 2>/dev/null || echo "No mutation summary: the mutation summary job did not finish."
           } > "$out"
           cat "$out" >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@v4
