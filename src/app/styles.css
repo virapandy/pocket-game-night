@@ -1124,6 +1124,9 @@ button.tcell { cursor: pointer; }
 .push-right { margin-left: auto; }
 
 /* ----- Home (PLT-300) and equal choices (TAM-213, PLT-301) ----- */
+/* I29: no text on Home or "What shall we play?" is selected by a tap or a double tap (text fields excepted). */
+.home, .pick-game { user-select: none; -webkit-user-select: none; }
+.home input, .home textarea, .pick-game input, .pick-game textarea { user-select: text; -webkit-user-select: text; }
 .home-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .home-bar .app-title { margin: 0; }
 /* RC fix (C1): "Menu" never shrinks under the title (its text spilled to the screen's edge at 360 px); the title

@@ -690,7 +690,7 @@ function PickGame({
   // I29: the 500 ms tap guard from when this screen shows, and again when "Start a new game?" opens or closes.
   const guard = impostor.useTapGuard(asking);
   return (
-    <main className="screen" onClickCapture={guard}>
+    <main className="screen pick-game" onClickCapture={guard}>
       <header className="top-bar">
         <button type="button" className="button button-quiet" onClick={onBack}>
           ← Back

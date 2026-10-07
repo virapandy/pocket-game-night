@@ -16,6 +16,9 @@
 .imp [hidden] { display: none !important; }
 /* The double-tap guard (guideline 20) is laid out as if it were not there. */
 .imp-guard { display: contents; }
+/* I29: no text on an Impostor screen is selected by a tap or a double tap; text fields can still be typed in and edited. */
+.imp { user-select: none; -webkit-user-select: none; }
+.imp input, .imp textarea { user-select: text; -webkit-user-select: text; }
 
 .imp-screen {
   box-sizing: border-box;
