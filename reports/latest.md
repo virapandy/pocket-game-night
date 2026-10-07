@@ -1,4 +1,39 @@
 # Test report
+**Impostor 1.3.1 (round 6b, I29 R1–R4, and P11 "Join a game"), 7 October: quick verify GREEN on 57e0c2d (run 37590811765).**
+
+Commit tested: app 131c234 (1.3.1, lane V); tests 57e0c2d   Date: 2026-10-07
+Result: GREEN (quick verify, Android). Complete run on both phones: 37592526265, started on 57e0c2d, result to follow.
+- Rule tests: 706 of 706 (local).
+- New `tests/browser/impostor-round6b.spec.ts` (29 tests a phone): R1 menus reach "End game" at 812 × 375 and 320 × 568, Larger
+  text on/off; R2 tap guard on Home, "What shall we play?", talk, picker, summary, How to play, never the hold pad; R3 no text
+  selection by tapping, text fields still work; R4 option labels keep their spaces; R5 and R10 checks. Before lane V: R1 at
+  812 × 375, R2 (6 of 8), R3 and R4 (Android) failed as expected; on 131c234 all pass on both phones, unmarked.
+- Failing (real app bugs): none.
+- Test changes for the new guard (I29 replaces IMP-077's reopen exception): every helper and test now waits 500 ms before a tap
+  on Home, "What shall we play?", and any Impostor screen, dialog or sheet that has just appeared, the reopened result included
+  (`settle` in impostor.ts, `waitOutTapGuard` in helpers.ts). Nothing they check was loosened. Two tests were adjusted in
+  timing only: "a running timer keeps running while How to play is open" (still 1:55 after 5 s, How to play open 4.5 s of them)
+  and IMP-099's exact 3-hour limit (the tap still lands at exactly 3 h and 3 h + 1 ms, with the clock paused there instead of
+  fixed, because a fixed clock never lets the 500 ms guard end). The announcer countdown test now runs on fake time only.
+- P11: Home tests expect "Join a game" / "Tambola ticket from the host" and the Join screen heading "Join a game"; specs and
+  README updated. R1's check allows 1 px of rounding at the screen edge (GitHub's Android drew "End game" 0.3 px past it).
+- R5 (IMP-004, tonight's names after going Home): PASS on 1.3.0 (a28f679) and 1.3.1, both phones: after "End game" then
+  "Home"; after "← Home" then "Start new"; after ending and opening the app again. Each lists Riya, Arjun, Meena, Kabir in order.
+  Note: an evening whose first round was never counted is not kept (IMP-097), so "Start new" over it starts empty, as specified.
+- R10 (IMP-003, fast and slow Enter): PASS on 1.3.0 and 1.3.1, both phones: one key every 400 ms then Enter after 2 s; four names
+  each followed at once by Enter; a name and Enter within the first second of the screen. Every name added, in order.
+- TAM-112 (Android closing Chrome): the 3 October failure (69 expected, 42 shown, run 37143638539) came from the old check
+  (1 s in the background). The 4 October check never reached its assertion on GitHub (run 37254838465): Playwright's
+  `newPage()` fails on a relaunched Chrome for Android, a tool fault. Fixed in ec4b633 (uses Chrome's own tab, emptied first);
+  the confirming emulator run is weekly run 37592531112 (result to follow).
+
+## Flaky or setup problems (not for the Build workspace)
+- Locally (3 workers on the owner's Mac) a few long tests hit the 30 s test limit; each passes alone. Not seen on GitHub.
+- Mutation: no local Stryker run was running; the only local result is the scoped run of 3 October (rules.ts 5 of 5, 100%).
+
+
+---
+
 **Round 6 (6 October), progress: round 6 is GREEN on both phones (quick verify 37441309625 and complete run 37441347272 on 6edd1e8).**
 
 Commit tested: 6edd1e8 (app b1e589b = round 6 43f1c97 + IMP-088 fix; tests 6edd1e8)   Date: 2026-10-06
