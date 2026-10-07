@@ -35,3 +35,21 @@ these is the fresh round), or `dealAgain` when nobody was taken off. "End game" 
 records nothing for those taken off, so the ended game still lists them; the summary's "Play again" leaves them out.
 Two or more leavers after a round: one toast, "Kabir, Zoya left after this round".
 
+
+## Note, 6 October (after round 6)
+- In landscape on the picker, "Joining next round: Zoya" sits at the bottom of the left half: accepted as built.
+- "Whole family" with Larger text fits by slightly tighter letter spacing: accepted; the owner checks it on a real
+  Android phone before release.
+
+## Note, 6 October (player re-run; decision I29) — binding detail of IMP-010, IMP-075, IMP-077, IMP-081, IMP-088
+Copied unchanged from `docs/games/impostor/scenarios.md`. Tests: `tests/browser/impostor-round6b.spec.ts` (R1–R4).
+This note replaces IMP-077's earlier exception that a merely reopened round result (resume, History's "← Back") had
+no tap guard: every screen change now starts the 500 ms guard.
+- **Tap guard everywhere:** on every Impostor screen, and on Home and "What shall we play?", a tap on any button within
+  500 ms of a screen change does nothing (the hold pad excepted, IMP-010). Tambola's own screens keep TAM-101.
+- **Menus fit:** every "··· Menu" list scrolls inside the screen when it is taller than the screen; every item,
+  including the last ("End game"), can be reached at 812 × 375 and at 320 × 568, Larger text on or off.
+- **No text selection by tapping:** text on Impostor screens, Home and "What shall we play?" cannot be selected by
+  taps or double taps (text fields excepted).
+- **Labels keep their spaces:** option labels never lose the space between words ("Free flow", "Whole family"); any
+  tighter letter spacing applies within words only.

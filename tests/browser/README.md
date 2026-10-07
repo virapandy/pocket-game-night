@@ -60,7 +60,7 @@ npm run test:browser -- --project=android phone-tickets phone-claims pattern-cue
 ## Buttons (accessible name)
 | Where | Buttons |
 |---|---|
-| Home | `Host a game…` and `Join with my ticket…` (PLT-300, see "UX list of 1 October 2026" below); `Sessions`, `History`, `Report a problem`, `Settings`, directly or inside a `Menu` button |
+| Home | `Host a game…` and `Join a game…` (P11, 4 October; was `Join with my ticket`) (PLT-300, see "UX list of 1 October 2026" below); `Sessions`, `History`, `Report a problem`, `Settings`, directly or inside a `Menu` button |
 | Tambola start | `New game`, `How to play`; the text "Housie on paper or on phones" (TAM-213) |
 | Setup | `Paper tickets…`, `Phone tickets…` (two cards, then `Next`, TAM-213; see "UX list of 1 October 2026"), `Next`, `No money`, one-tap name suggestions named after the name, `Confirm prizes`, a `Remove…` control per removable tier (TAM-183) |
 | Game: top bar (`top-bar`) | `Back`, the progress text "23 of 90 called", `Menu` (the ⋯ with its word, TAM-109) |
@@ -349,7 +349,7 @@ read it with jsQR (`readDrawnQr` in `phone.ts`): what is drawn must read back ex
 - Scanning a ticket = opening the `data-payload` link. The ticket appears with no network requests to any other
   server; it opens with no internet once the phone has opened the app (TAM-057). Scanning further tickets of the
   same game adds them; a ticket of a new game replaces the old game's tickets, marks and all (TAM-171).
-- Typing a code: Home's `Join with my ticket` → `Type the code` (PLT-300; was `Enter ticket code` on Home), then the field `Ticket code` and `Open ticket`. A code that
+- Typing a code: Home's `Join a game` → `Type the code` (PLT-300; was `Enter ticket code` on Home), then the field `Ticket code` and `Open ticket`. A code that
   is not a ticket shows a one-line reason in `role="alert"`.
 - `phone-ticket`: one per ticket shown, with `data-ticket`. Inside, 27 elements with `data-cell`, in row order (row 1
   left to right, then rows 2 and 3); numbered cells also have `data-number`, blanks have none (or empty). A marked cell
@@ -488,13 +488,13 @@ TAM-213), `report-problem.spec.ts` (PLT-200). Rule side: `tests/games/tambola/ph
   in its text, is outlined, and has a different (tinted) background from an unchosen one; never the main look.
 
 ### Home (PLT-300, TAM-057)
-- Two buttons whose accessible names start `Host a game` and `Join with my ticket`: the same size (within 2 px), the
+- Two buttons whose accessible names start `Host a game` and `Join a game` (title `Join a game`, line `Tambola ticket from the host`, P11): the same size (within 2 px), the
   same background colour, top border colour and width, and font weight; neither has the main look. The host card's
   text mentions "this phone"; the join card's mentions "QR" or "code".
 - First visit (fresh storage): the text "You're ready for game night" (straight or curly apostrophe). On the first visit
   only: after a reload, or opening Home again, it is gone (product owner's answer 3, 2 October 2026).
 - `Host a game` → the Tambola start screen (`New game`); a game picker with a `Tambola…` button in between is fine.
-- `Join with my ticket` → some text mentioning the "camera" (scan the host's QR with the phone's camera) and a button
+- `Join a game` → the heading `Join a game` (P11), some text mentioning the "camera" (scan the host's QR with the phone's camera) and a button
   starting `Type the code`, which shows the field `Ticket code` and `Open ticket` (a wrong code: `role="alert"`).
 - `unfinished-games` sits wholly below both cards; nothing inside it has the main look ("Tap to resume" today is solid
   red: that changes); tapping its "Tap to resume" still goes back into the game (PLT-004; the words stay "Tap to resume", product owner's
@@ -804,3 +804,11 @@ How the tests drive the game (Test hooks items 3 to 9 and 13):
   `lastGuess: true` unless a test says otherwise, and use the 6 category names that are the same before and after
   4 October. While lanes A to C land, `startEvening`, `toPicker` and `summaryAction` reach the same screen on the old and
   the new build (marked "v2.2 build:" in `impostor.ts`, to be removed after round 4).
+- **Round 6b → 1.3.1 (decision I29, 6 October 2026).** `impostor-round6b.spec.ts`: R1 every "··· Menu" item, "End game"
+  included, scrolls wholly onto the screen (`toBeInViewport`, ratio 1) at 812 × 375 and 320 × 568, Larger text on or off;
+  R2 a tap within 500 ms of a screen change does nothing on Home, "What shall we play?", the talk screen, the picker, the
+  summary and How to play (the hold pad never); R3 a double tap on text selects nothing (`getSelection()` empty), while a
+  double tap in "Player name" still selects the typed word; R4 the gap between the words of "Free flow", "Whole family"
+  and "+ Grown-ups" is at least the gap the same label has with normal letter and word spacing, less 0.5 px; R5 and R10
+  check IMP-004 and IMP-003. Since 1.3.1 every helper waits out the guard before tapping on Home or "What shall we
+  play?" (`waitOutTapGuard` in helpers.ts: 550 ms of real time; `settle` in impostor.ts: 500 ms of fake time).

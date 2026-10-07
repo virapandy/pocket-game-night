@@ -37,6 +37,7 @@ test.describe('P1, IMP-017: "See my word again", a wrong name goes back without 
       const before = await records(page);
       await watchForCards(page, [...secretTerms(SAMOSA, 'easy'), "You're the impostor"]);
       await quiet(page, 'See my word again').click();
+      await settle(page); // 1.3.1 (I29, R2): a dialog's buttons are guarded for 500 ms after it opens
       await whoseWord(page).getByRole('button', { name: who, exact: true }).click();
       await expect(passName(page)).toHaveText(exact(who, P4));
       const back = notBack(page, who);
@@ -58,6 +59,7 @@ test.describe('P1, IMP-017: "See my word again", a wrong name goes back without 
       const before = await records(page);
       await watchForCards(page, [...secretTerms(SAMOSA, 'easy'), "You're the impostor"]);
       await quiet(page, 'See my word again').click();
+      await settle(page); // 1.3.1 (I29, R2): a dialog's buttons are guarded for 500 ms after it opens
       await whoseWord(page).getByRole('button', { name: who, exact: true }).click();
       await settle(page);
       await imButton(page, who).click();
@@ -74,6 +76,7 @@ test.describe('P1, IMP-017: "See my word again", a wrong name goes back without 
       expect(await cardsSeen(page), 'no card, word, hint or role was ever on the page').toEqual([]);
       expect(await records(page)).toEqual(before);
       // The right name then sees their own card as before, and the button goes after the first hold.
+      await settle(page); // 1.3.1 (I29, R2): a dialog's buttons are guarded for 500 ms after it opens
       await whoseWord(page).getByRole('button', { name: 'Riya', exact: true }).click();
       await settle(page);
       await imButton(page, 'Riya').click();
@@ -92,6 +95,7 @@ test.describe('P1, IMP-017: "See my word again", a wrong name goes back without 
     await mainButton(page).filter({ hasText: CLUES_DONE }).click();
     await page.clock.runFor(10_000);
     await quiet(page, 'See my word again').click();
+    await settle(page); // 1.3.1 (I29, R2): a dialog's buttons are guarded for 500 ms after it opens
     await whoseWord(page).getByRole('button', { name: 'Meena', exact: true }).click();
     await page.clock.runFor(30_000);
     await settle(page);

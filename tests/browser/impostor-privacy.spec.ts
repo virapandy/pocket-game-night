@@ -165,6 +165,7 @@ test.describe('IMP-012: the impostor\'s turn looks exactly like everyone else\'s
     expect(bArjun, `${where}: screen B`).toBe(bRiya);
     await settle(page); // the "··· Menu" button is guarded on the deal screens too (v3.8)
     await fromMenu(page, 'Deal again with a new word');
+    await settle(page); // 1.3.1 (I29, R2): a dialog's buttons are guarded for 500 ms after it opens
     await page.getByRole('dialog').getByRole('button', { name: 'Deal again', exact: true }).click();
     await expect(passName(page)).toHaveText(exact('Riya'));
   }
@@ -244,6 +245,7 @@ test.describe('IMP-013 and IMP-062: the word is never in the page except while h
       await check('How to play');
       await mainButton(page).filter({ hasText: /^Done$/ }).click();
       await fromMenu(page, 'Settings');
+      await settle(page); // 1.3.1 (I29, R2): what the menu item opened guards its buttons for 500 ms
       await check('Settings');
       await settingsClose(page).click();
       await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
@@ -251,12 +253,14 @@ test.describe('IMP-013 and IMP-062: the word is never in the page except while h
       for (const p of ['Arjun', 'Meena', 'Kabir']) { await check(`${p}'s screen A`); await turn(page, p); }
       await check('the clues');
       await fromMenu(page, 'See my word again');
+      await settle(page); // 1.3.1 (I29, R2): what the menu item opened guards its buttons for 500 ms
       await expect(page.getByRole('dialog', { name: /Whose word\?/ })).toBeVisible();
       await check('"Whose word?"');
       await page.getByRole('button', { name: 'Cancel', exact: true }).click();
       await settle(page); // the clues screen's buttons are guarded for 500 ms after it shows again (v3.8)
       await mainButton(page).filter({ hasText: CLUES_DONE }).click();
       await check('the talk');
+      await settle(page); // 1.3.1 (I29, R2): guarded for 500 ms after the screen changes
       await mainButton(page).filter({ hasText: 'Vote now' }).click();
       await page.clock.runFor(2000);
       await check('the countdown');
@@ -349,11 +353,13 @@ test.describe('IMP-015: "Don\'t know this word?" redeals without giving anything
     const dialog = page.getByRole('dialog', { name: /New word for everyone\?/ });
     await expect(dialog).toBeVisible();
     await expectOneMainButton(page, '"New word for everyone?"', 'Back', true);
+    await settle(page); // 1.3.1 (I29, R2): a dialog's buttons are guarded for 500 ms after it opens
     await dialog.getByRole('button', { name: 'Back', exact: true }).click();
     await expect(dialog).toHaveCount(0);
     await expect(dontKnow(page)).toBeVisible();
     expect((await onlyEvening(page)).records.length, '"Back" records nothing').toBe(before);
     await dontKnow(page).click();
+    await settle(page); // 1.3.1 (I29, R2): a dialog's buttons are guarded for 500 ms after it opens
     await page.getByRole('dialog', { name: /New word for everyone\?/ }).getByRole('button', { name: 'New word', exact: true }).click();
     await expect(page.getByRole('heading', { name: 'No problem! New word coming.' })).toBeVisible();
     await expect(page.getByText(exact('Pass the phone back to Riya'))).toBeVisible();
@@ -403,13 +409,16 @@ test.describe('IMP-017: see my word again', () => {
     const before = (await onlyEvening(page)).records;
     const order = await page.getByTestId('clue-order').textContent();
     await fromMenu(page, 'See my word again');
+    await settle(page); // 1.3.1 (I29, R2): what the menu item opened guards its buttons for 500 ms
     const dialog = page.getByRole('dialog', { name: /Whose word\?/ });
     await expect(dialog).toBeVisible();
     expect(await textOf(dialog.getByRole('button'))).toEqual([...P4, 'Cancel']);
+    await settle(page); // 1.3.1 (I29, R2): a dialog's buttons are guarded for 500 ms after it opens
     await dialog.getByRole('button', { name: 'Cancel', exact: true }).click();
     await expect(dialog).toHaveCount(0);
     await expect(page.getByTestId('clue-order')).toBeVisible();
     await fromMenu(page, 'See my word again');
+    await settle(page); // 1.3.1 (I29, R2): a dialog's buttons are guarded for 500 ms after it opens
     await page.getByRole('dialog', { name: /Whose word\?/ }).getByRole('button', { name: 'Meena', exact: true }).click();
     await expect(passName(page)).toHaveText(exact('Meena'));
     await expect(menuButton(page)).toHaveCount(0);
@@ -429,6 +438,7 @@ test.describe('IMP-017: see my word again', () => {
     await startEvening(page, { seeds: { deals: [{ wordId: SAMOSA, impostor: 'Arjun', starter: 'Riya' }] } });
     await dealAll(page);
     await fromMenu(page, 'See my word again');
+    await settle(page); // 1.3.1 (I29, R2): a dialog's buttons are guarded for 500 ms after it opens
     await page.getByRole('dialog', { name: /Whose word\?/ }).getByRole('button', { name: 'Meena', exact: true }).click();
     await expect(page.getByTestId('look-away')).toHaveText(exact('Everyone else, look away!', []));
     await expect(page.getByTestId('deal-progress')).toHaveCount(0);

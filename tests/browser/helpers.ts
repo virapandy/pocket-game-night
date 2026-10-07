@@ -12,7 +12,19 @@ export interface SetupOptions {
 
 /** PLT-300 (owner 2026-10-01): Home's two equal choices. */
 export const hostAGame = (page: Page) => page.getByRole('button', { name: /^Host a game/ });
-export const joinWithMyTicket = (page: Page) => page.getByRole('button', { name: /^Join with my ticket/ });
+/** P11 (owner, 4 October): the second card reads "Join a game" (was "Join with my ticket"). */
+export const joinAGame = (page: Page) => page.getByRole('button', { name: /^Join a game/ });
+/** The same card under its earlier name, kept so older tests read unchanged. */
+export const joinWithMyTicket = joinAGame;
+
+/**
+ * 1.3.1 (decision I29, R2): on Home and "What shall we play?" a tap within 500 ms of the screen showing (the first load
+ * included) does nothing, as on every Impostor screen. A person never taps that fast; the tests wait 500 ms of real
+ * time before such a tap (a test with Playwright's fake clock paused moves it on with `page.clock.runFor` instead).
+ */
+export async function waitOutTapGuard(page: Page) {
+  await page.waitForTimeout(550);
+}
 
 /**
  * Home → the Tambola start screen. Home's "Host a game" (PLT-300); if a game picker follows, "Tambola". Until Home
@@ -23,9 +35,13 @@ export async function openTambola(page: Page) {
   const tambola = page.getByRole('button', { name: /^Tambola/ });
   await expect(hostAGame(page).or(tambola).first()).toBeVisible();
   if (await hostAGame(page).isVisible()) {
+    await waitOutTapGuard(page);
     await hostAGame(page).click();
     await expect(page.getByRole('button', { name: 'New game' }).or(tambola).first()).toBeVisible();
-    if (!(await page.getByRole('button', { name: 'New game' }).isVisible())) await tambola.first().click();
+    if (!(await page.getByRole('button', { name: 'New game' }).isVisible())) {
+      await waitOutTapGuard(page);
+      await tambola.first().click();
+    }
   } else {
     await tambola.first().click();
   }
@@ -303,6 +319,7 @@ export async function fromHome(page: Page, name: string) {
   const item = page.getByRole('menuitem', { name, exact: true }).or(page.getByRole('button', { name, exact: true })).first();
   const menu = page.getByRole('button', { name: /Menu/ }).first();
   await expect(item.or(menu).first()).toBeVisible();
+  await waitOutTapGuard(page); // Home's buttons (1.3.1, I29 R2)
   if (!(await item.isVisible())) await menu.click();
   await item.click();
 }
@@ -345,7 +362,7 @@ export async function openHistory(page: Page) {
 }
 
 /**
- * Home → the typed-code form (TAM-117, PLT-300): "Join with my ticket" → "Type the code", then the field "Ticket code"
+ * Home → the typed-code form (TAM-117, PLT-300): "Join a game" → "Type the code", then the field "Ticket code"
  * and "Open ticket". Until Home changes, the older "Enter ticket code" on Home is tapped instead.
  */
 export async function openTypedCode(page: Page) {
@@ -353,6 +370,7 @@ export async function openTypedCode(page: Page) {
   const old = page.getByRole('button', { name: 'Enter ticket code', exact: true });
   await expect(joinWithMyTicket(page).or(old).first()).toBeVisible();
   if (await joinWithMyTicket(page).isVisible()) {
+    await waitOutTapGuard(page); // Home's buttons (1.3.1, I29 R2)
     await joinWithMyTicket(page).click();
     await page.getByRole('button', { name: /^Type the code/ }).click();
   } else {

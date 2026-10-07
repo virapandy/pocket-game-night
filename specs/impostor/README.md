@@ -188,7 +188,7 @@ U+2192; "✓" is U+2713; "›" is U+203A; "–" in "3–20" is U+2013; apostroph
 | Tambola card | "Tambola" · "Housie on paper or phones · 2 hrs" | button, name starts "Tambola" | IMP-001 |
 | Impostor card | "Impostor" · "Find who doesn't know the word · 3–20 players · about 4 min a round" ("3–20 players" never breaks across lines) | button, name starts "Impostor" | IMP-001 |
 | Resume card | "Impostor · Riya, Arjun and 2 more · round 4" and "Tap to resume" | button `resume-card` | IMP-001 |
-| Join with my ticket, last line | "Playing Impostor? It's all on the host's phone. Nothing to join, just play along!" | paragraph | IMP-002 |
+| Join a game (was "Join with my ticket", P11), last line | "Playing Impostor? It's all on the host's phone. Nothing to join, just play along!" | paragraph | IMP-002 |
 | Who's playing? | heading "Who's playing?"; line "Sit in a circle. This is the passing and clue order." | h1; paragraph | IMP-003 |
 | Name field | label "Player name", placeholder "Type a name…"; button "Add" | input (`maxlength="16"`); button | IMP-003 |
 | Row buttons | "Move Riya up" (▲), "Move Riya down" (▼), "Remove Riya" (✕) | buttons, accessible names | IMP-003 |

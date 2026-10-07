@@ -6,20 +6,21 @@ observations of 1 October 2026, checked by the UX designer and decided with the 
 `docs/decisions.md` 2026-10-01, UX list rows 2 and 4 in `docs/handover.md`).
 
 ## PLT-300: Home: host a game or join with my ticket
-Status: approved, owner, 2026-10-03 (UX list row 21: tickets more than 6 hours old open on Home); was approved, owner, 2026-10-01 (UX list row 2)
+Status: approved, owner, 2026-10-04 (changed, P11: "Join a game"); approved, owner, 2026-10-03 (UX list row 21: tickets more than 6 hours old open on Home); was approved, owner, 2026-10-01 (UX list row 2)
 Phase: Phase 2 (phone tickets)
 Given the app opens on Home
-Then Home shows two equal choices, "Host a game" and "Join with my ticket", as cards of the same size and look,
+Then Home shows two equal choices, "Host a game" and "Join a game", as cards of the same size and look,
 neither with the main-button look (PLT-301)
-And each card says in one line what it is for: hosting runs the game on this phone; joining is for a player with a
-QR or code from the host
+And each card says in one line what it is for: hosting runs the game on this phone; "Join a game" reads
+"Tambola ticket from the host" (changed by the owner, 4 October, decision P11; was "Join with my ticket" / "Got a QR or
+code from the host?"; when Secret Words ships the line becomes "Tambola ticket or Secret Words map from the host", SWD-002)
 And any unfinished games are listed below the two choices, as plain rows ("Tambola 11:17 · 30 called"), whose
 resume button is never the main-button look (one tap still goes back in, PLT-004)
 And Sessions, History, Report a problem and Settings are still reachable from Home (in a menu ⋯ is fine)
 When the host taps "Host a game"
 Then the game's start screen opens (for Tambola: "New game", TAM-213)
-When a guest taps "Join with my ticket"
-Then the phone offers both ways in: scanning the host's QR with the phone's camera, and "Type the code"
+When a guest taps "Join a game"
+Then the Join screen, headed "Join a game" (P11), offers both ways in: scanning the host's QR with the phone's camera, and "Type the code"
 When the guest taps "Type the code" and types the code from the host (TAM-117)
 Then their ticket opens
 Given this is the first time the app has been opened on this phone

@@ -46,7 +46,9 @@ async function expectList(page: Page, names: string[]) {
 
 /** Home → "Host a game" → the Impostor card → "Who's playing?". */
 async function toWhosPlaying(page: Page) {
+  await settle(page); // 1.3.1 (I29, R2): Home and "What shall we play?" guard their buttons for 500 ms
   await hostAGame(page).click();
+  await settle(page); // 1.3.1 (I29, R2): Home and "What shall we play?" guard their buttons for 500 ms
   await impostorCard(page).click();
   await settle(page); // v3.9: setup and How to play buttons are guarded for 500 ms (P2)
   await expect(whoHeading(page)).toBeVisible();
@@ -71,12 +73,15 @@ async function secondEveningOfTonight(page: Page): Promise<any> {
   await startEvening(page);
   const first = await onlyEvening(page);
   await page.goto(HOME);
+  await settle(page); // 1.3.1 (I29, R2): Home and "What shall we play?" guard their buttons for 500 ms
   await hostAGame(page).click();
+  await settle(page); // 1.3.1 (I29, R2): Home and "What shall we play?" guard their buttons for 500 ms
   await impostorCard(page).click();
   await settle(page); // v3.9: setup and How to play buttons are guarded for 500 ms (P2)
   // v3.5 "Start a new evening?" / v3.8 "Start a new game?" (navigation only; the words: IMP-001's test below).
   const dialog = page.getByRole('dialog', { name: /Start a new (evening|game)\?/ });
   await expect(dialog).toBeVisible();
+  await settle(page); // 1.3.1 (I29, R2): a dialog's buttons are guarded for 500 ms after it opens
   await dialog.getByRole('button', { name: 'Start new', exact: true }).click();
   await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
   await expect(whoHeading(page)).toBeVisible();
@@ -242,6 +247,7 @@ test.describe('IMP-003: players are added in seat order, without dragging', () =
     await backButton(page).click();
     await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     await expect(page.getByRole('heading', { name: 'What shall we play?' })).toBeVisible();
+    await settle(page); // 1.3.1 (I29, R2): Home and "What shall we play?" guard their buttons for 500 ms
     await impostorCard(page).click();
     await settle(page); // v3.9: setup and How to play buttons are guarded for 500 ms (P2)
     await expect(whoHeading(page)).toBeVisible();
@@ -613,7 +619,9 @@ test.describe('IMP-008 and IMP-009: taps to the first deal; choices from last ti
 test('IMP-001 (v3.8, M22): with a game unfinished, the Impostor card asks once "Start a new game? The game from 9:30 pm will be ended." with two equal outlined buttons; "Start new" goes straight to "Who\'s playing?"', async ({ page }) => {
   await startEvening(page);
   await page.goto(HOME);
+  await settle(page); // 1.3.1 (I29, R2): Home and "What shall we play?" guard their buttons for 500 ms
   await hostAGame(page).click();
+  await settle(page); // 1.3.1 (I29, R2): Home and "What shall we play?" guard their buttons for 500 ms
   await impostorCard(page).click();
   await settle(page); // v3.9: setup and How to play buttons are guarded for 500 ms (P2)
   const dialog = page.getByRole('dialog', { name: /Start a new game\?/ });

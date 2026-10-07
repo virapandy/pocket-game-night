@@ -10,7 +10,7 @@
 // Names and test ids: README.md, "After the game: UX list rows 20, 21 and 23".
 import { expect, test, type Page } from './fixtures';
 import {
-  call, endGame, expectOneMainButton, fromHome, fromMenu, hasMainLook, HOME, hostAGame, isOutlined, joinWithMyTicket,
+  call, endGame, expectOneMainButton, fromHome, fromMenu, hasMainLook, HOME, hostAGame, isOutlined, joinWithMyTicket, waitOutTapGuard,
   nextNumber, typeTicketCode,
 } from './helpers';
 import {
@@ -247,6 +247,8 @@ test.describe('PLT-300 and TAM-171: tickets more than 6 hours old open on Home, 
     await scanAll(riya, handOuts, 'Riya');
     await reopenAt(riya, at('2026-10-03T10:00'));
     const clear = savedTickets(riya).getByRole('button', { name: 'Clear', exact: true });
+    await expect(clear).toBeVisible();
+    await waitOutTapGuard(riya); // 1.3.1 (I29, R2): Home's buttons are guarded for 500 ms after it shows
     await clear.click();
     await expect(clearQuestion(riya)).toBeVisible();
     await expect(clearQuestion(riya)).toContainText(/Tickets 1\s*·\s*2\b/);

@@ -40,7 +40,9 @@ const cardsSeen = (page: Page): Promise<string[]> => page.evaluate(() => (window
 test.describe('P2, IMP-010: the 500 ms tap guard on the setup screens', () => {
   test('a double tap on "Next" never lands on "Start round": the choices screen stays and nothing is dealt; after 500 ms "Start round" deals', async ({ page }) => {
     await phoneWith(page, [], { now: T0 });
+    await settle(page); // 1.3.1 (I29, R2): Home and "What shall we play?" guard their buttons for 500 ms
     await hostAGame(page).click();
+    await settle(page); // 1.3.1 (I29, R2): Home and "What shall we play?" guard their buttons for 500 ms
     await page.getByRole('button', { name: /^Impostor\b/ }).and(page.locator(':not([data-testid="resume-card"])')).click();
     await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     for (const n of P4) { await playerField(page).fill(n); await page.getByRole('button', { name: 'Add', exact: true }).click(); }
@@ -64,6 +66,7 @@ test.describe('P7, IMP-078: "Cancel" when someone has to leave', () => {
     await startEvening(page, { players: P5, seeds: { deals: [DEAL] } });
     await dealAll(page, P5);
     await fromMenu(page, 'Players');
+    await settle(page); // 1.3.1 (I29, R2): what the menu item opened guards its buttons for 500 ms
     await page.getByRole('button', { name: 'Remove Kabir', exact: true }).click();
     const dialog = page.getByRole('dialog', { name: /Kabir has to leave\?/ });
     const cancel = dialog.getByRole('button', { name: 'Cancel', exact: true });
@@ -72,6 +75,7 @@ test.describe('P7, IMP-078: "Cancel" when someone has to leave', () => {
     expect(c.y, '"Cancel" under the two buttons').toBeGreaterThanOrEqual(Math.max(f.y + f.height, d.y + d.height) - 1);
     expect(await isOutlined(cancel), '"Cancel" is quiet').toBe(true);
     const before = await records(page);
+    await settle(page); // 1.3.1 (I29, R2): a dialog's buttons are guarded for 500 ms after it opens
     await cancel.click();
     await expect(dialog).toHaveCount(0);
     await expect(page.getByRole('heading', { name: 'Players' }), 'the Players sheet stays open').toBeVisible();
@@ -113,7 +117,7 @@ test.describe('P4, IMP-081: nothing is ever hidden under the pinned buttons', ()
       await phoneWith(page, [e], { now: e.records.at(-1).at + 60_000 });
       const row = page.getByTestId('unfinished-games').filter({ hasText: /Impostor/ });
       await expect(row.or(mainButton(page)).first()).toBeVisible();
-      if (await row.first().isVisible()) await row.getByText('Tap to resume').first().click();
+      if (await row.first().isVisible()) { await settle(page); await row.getByText('Tap to resume').first().click(); } await settle(page); // 1.3.1 (I29, R2): Home, then the reopened screen, guard their buttons for 500 ms
       await expect(page.getByTestId('round-outcome')).toBeVisible();
       await lastContentAbovePinned(page, 'result');
       await settle(page);
@@ -190,7 +194,9 @@ test.describe('P11, IMP-109: Larger text applies on every Impostor screen', () =
   test('with Larger text on: setup, How to play, clues, talk, result, summary and "Whose word?" use 21 px body and quiet labels, 19 px small lines; the room sizes stay', async ({ page }) => {
     test.setTimeout(120_000);
     await phoneWith(page, [], { now: T0, storage: { 'pgn.pref.largerText': true, 'pgn.test.seeds': { deals: [DEAL, { wordId: PANI_PURI, impostor: 'Meena', starter: 'Arjun' }] } } });
+    await settle(page); // 1.3.1 (I29, R2): Home and "What shall we play?" guard their buttons for 500 ms
     await hostAGame(page).click();
+    await settle(page); // 1.3.1 (I29, R2): Home and "What shall we play?" guard their buttons for 500 ms
     await page.getByRole('button', { name: /^Impostor\b/ }).and(page.locator(':not([data-testid="resume-card"])')).click();
     await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     expect(await fontSize(page, page.getByText('Add at least 3 players.', { exact: true })), '"Who\'s playing?" small line').toBe(19);
@@ -215,9 +221,12 @@ test.describe('P11, IMP-109: Larger text applies on every Impostor screen', () =
     expect(await page.getByTestId('starter-name').evaluate((el) => parseFloat(getComputedStyle(el).fontSize)), 'the room size stays').toBe(56);
     await quiet(page, 'See my word again').click();
     expect(await whoseWord(page).getByRole('button', { name: 'Cancel', exact: true }).evaluate((el) => parseFloat(getComputedStyle(el).fontSize)), '"Whose word?" Cancel').toBe(21);
+    await settle(page); // 1.3.1 (I29, R2): a dialog's buttons are guarded for 500 ms after it opens
     await whoseWord(page).getByRole('button', { name: 'Cancel', exact: true }).click();
+    await settle(page); // 1.3.1 (I29, R2): closing a dialog restarts the screen's 500 ms guard
     await mainButton(page).filter({ hasText: CLUES_DONE }).click();
     expect(await fontSize(page, page.getByText('Who sounded unsure?', { exact: true })), 'talk body').toBe(21);
+    await settle(page); // 1.3.1 (I29, R2): guarded for 500 ms after the screen changes
     await mainButton(page).filter({ hasText: 'Vote now' }).click();
     await page.clock.runFor(6000);
     await reveal(page, 'Riya');

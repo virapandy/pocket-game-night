@@ -5,7 +5,7 @@
 import { expect, test, type Locator, type Page } from './fixtures';
 import {
   callMany, expectOneMainButton, fillPlayers, fromMenu, hasMainLook, HOME, hostAGame, isOutlined, joinWithMyTicket,
-  mainLookButtons, menuButton, nextNumber, openTambola, openTypedCode, setUpPaperGame, ticketCard, winEverythingAndEnd,
+  mainLookButtons, menuButton, waitOutTapGuard, nextNumber, openTambola, openTypedCode, setUpPaperGame, ticketCard, winEverythingAndEnd,
   THREE_TIERS,
 } from './helpers';
 import { closePhones, currentHandOut, newPhone, phoneGame, phoneTicket, playerWith, PORTRAIT, setUpPhoneGame } from './phone';
@@ -18,6 +18,7 @@ const READY = /You['’]re ready for game night/;
 /** The one-time iPhone tip (TAM-118) may show on a first visit: put it away so the screen can be read. */
 async function dismissInstallTip(page: Page) {
   const tip = page.getByTestId('install-tip');
+  if (await tip.isVisible().catch(() => false)) await waitOutTapGuard(page);
   if (await tip.isVisible().catch(() => false)) await tip.getByRole('button', { name: /^(Got it|Close|OK)/ }).first().click();
 }
 
@@ -36,18 +37,21 @@ async function expectEqual(a: Locator, b: Locator, what: string) {
 
 // ---------------------------------------------------------------- PLT-300 and TAM-057: Home
 
-test.describe('PLT-300: Home: "Host a game" and "Join with my ticket"', () => {
+test.describe('PLT-300: Home: "Host a game" and "Join a game"', () => {
   test('TAM-057: a first visit says "You\'re ready for game night"; the two choices are equal cards, neither in the main look, each saying what it is for', async ({ page }) => {
     await page.goto(HOME);
     await expect(page.getByText(READY).first()).toBeVisible();
     await dismissInstallTip(page);
     await expect(hostAGame(page)).toBeVisible();
     await expect(joinWithMyTicket(page)).toBeVisible();
-    await expectEqual(hostAGame(page), joinWithMyTicket(page), 'Host a game and Join with my ticket');
+    await expectEqual(hostAGame(page), joinWithMyTicket(page), 'Host a game and Join a game');
     expect(await hasMainLook(hostAGame(page)), '"Host a game" has the main look').toBe(false);
-    expect(await hasMainLook(joinWithMyTicket(page)), '"Join with my ticket" has the main look').toBe(false);
+    expect(await hasMainLook(joinWithMyTicket(page)), '"Join a game" has the main look').toBe(false);
     await expect(hostAGame(page)).toContainText(/this phone/i);
-    await expect(joinWithMyTicket(page)).toContainText(/QR|code/i);
+    // P11 (owner, 4 October; SWD-002 until Secret Words ships): title "Join a game", line "Tambola ticket from the host".
+    await expect(joinWithMyTicket(page).getByText('Join a game', { exact: true })).toBeVisible();
+    await expect(joinWithMyTicket(page).getByText('Tambola ticket from the host', { exact: true })).toBeVisible();
+    await expect(page.getByText(/Join with my ticket|Got a QR or code from the host\?/), 'the old wording is gone').toHaveCount(0);
     await expectOneMainButton(page, 'Home', null);
   });
 
@@ -70,6 +74,7 @@ test.describe('PLT-300: Home: "Host a game" and "Join with my ticket"', () => {
       await dismissInstallTip(page);
       await expect(hostAGame(page)).toBeVisible();
       const item = page.getByRole('menuitem', { name, exact: true }).or(page.getByRole('button', { name, exact: true })).first();
+      await waitOutTapGuard(page); // 1.3.1 (I29, R2): Home's buttons are guarded for 500 ms after it shows
       if (!(await item.isVisible())) await menuButton(page).first().click();
       await expect(item, `"${name}" from Home`).toBeVisible();
     }
@@ -78,21 +83,24 @@ test.describe('PLT-300: Home: "Host a game" and "Join with my ticket"', () => {
   test('"Host a game" opens the Tambola start screen', async ({ page }) => {
     await page.goto(HOME);
     await dismissInstallTip(page);
+    await waitOutTapGuard(page); // 1.3.1 (I29, R2)
     await hostAGame(page).click();
     const tambola = page.getByRole('button', { name: /^Tambola/ });
     const newGame = page.getByRole('button', { name: 'New game' });
     await expect(newGame.or(tambola).first()).toBeVisible();
-    if (!(await newGame.isVisible())) await tambola.first().click(); // a game picker may come first
+    if (!(await newGame.isVisible())) { await waitOutTapGuard(page); await tambola.first().click(); } // a game picker may come first
     await expect(newGame).toBeVisible();
   });
 
-  test('"Join with my ticket" offers the camera and "Type the code"; typing the host\'s code opens the ticket; a wrong code is refused', async ({ page, browser }, testInfo) => {
+  test('"Join a game" opens the Join screen headed "Join a game", which offers the camera and "Type the code"; typing the host\'s code opens the ticket; a wrong code is refused', async ({ page, browser }, testInfo) => {
     await setUpPhoneGame(page, [{ name: 'Riya' }, { name: 'Asha' }]);
     const h = await currentHandOut(page);
     const guest = await newPhone(browser, testInfo, PORTRAIT);
     await guest.goto(HOME);
     await dismissInstallTip(guest);
+    await waitOutTapGuard(guest); // 1.3.1 (I29, R2)
     await joinWithMyTicket(guest).click();
+    await expect(guest.getByRole('heading', { name: 'Join a game', exact: true }), 'P11: the Join screen\'s heading').toBeVisible();
     await expect(guest.getByText(/camera/i).first(), 'scanning the host\'s QR with the camera is offered').toBeVisible();
     await expect(guest.getByRole('button', { name: /^Type the code/ })).toBeVisible();
     await guest.getByRole('button', { name: /^Type the code/ }).click();
@@ -130,6 +138,7 @@ test.describe('PLT-300: Home: "Host a game" and "Join with my ticket"', () => {
     }
     await expectOneMainButton(page, 'Home with an unfinished game', null);
     // Product owner's answer 1 (2 October 2026, docs/handover.md step 3): the words stay "Tap to resume" (PLT-004).
+    await waitOutTapGuard(page); // 1.3.1 (I29, R2): Home's buttons are guarded for 500 ms after it shows
     await list.getByText('Tap to resume', { exact: true }).first().click();
     await expect(nextNumber(page)).toBeVisible();
   });

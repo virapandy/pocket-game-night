@@ -36,8 +36,10 @@ const pickerHeading = (page: Page) => page.getByRole('heading', { name: 'Who got
 const outcome = (page: Page) => page.getByTestId('round-outcome');
 /** v3.8 (IMP-077): between rounds, the outlined "End game" beside "Next round" opens the summary at once. */
 async function endGame(page: Page) {
+  await settle(page); // 1.3.1 (I29, R2): every screen's buttons are guarded for 500 ms after it shows
   await page.getByRole('button', { name: 'End game', exact: true }).click();
   await expect(page.getByRole('heading', { name: "That's the game!" })).toBeVisible();
+  await settle(page);
 }
 const announcer = (page: Page) => page.getByTestId('announcer');
 const sounds = (page: Page): Promise<{ name: string; at: number; gain: number }[]> => page.evaluate(() => (window as any).__sounds ?? []);
@@ -59,16 +61,19 @@ async function toTalk(page: Page) {
 }
 /** Talk → "Vote now" → the picker, after the 6 s countdown. */
 async function toPickerFromTalk(page: Page) {
+  await settle(page); // 1.3.1 (I29, R2): the talk screen's buttons are guarded for 500 ms after it shows
   await mainButton(page).filter({ hasText: /^(Vote now|Get ready to point)$/ }).click();
   await page.clock.runFor(6000);
   await expect(pickerHeading(page)).toBeVisible();
+  await settle(page); // 1.3.1 (I29, R2): the picker's buttons are guarded for 500 ms from the moment it opens
 }
 /** Whatever opens first: the evening itself, or Home with its unfinished row (then "Tap to resume"). */
 async function openEvening(page: Page) {
   const row = page.getByTestId('unfinished-games').filter({ hasText: /Impostor/ });
   const inGame = mainButton(page).or(page.getByRole('heading', { name: /^That's the (night|game)!$/ }));
   await expect(row.or(inGame).first()).toBeVisible();
-  if (await row.first().isVisible()) await row.getByText('Tap to resume').first().click();
+  await settle(page); // 1.3.1 (I29, R2): Home and every reopened screen guard their buttons for 500 ms
+  if (await row.first().isVisible()) { await row.getByText('Tap to resume').first().click(); await settle(page); }
 }
 /** A saved evening reopened on its round result: `rounds` caught-wrong rounds of 4 players (IMP-091 shows the result). */
 async function atResult(page: Page, o: { score?: boolean; rounds?: number } = {}) {
@@ -212,14 +217,17 @@ test.describe('IMP-025: deal again with a new word', () => {
     await dealAll(page);
     const before = await records(page);
     await fromMenu(page, 'Deal again with a new word');
+    await settle(page); // 1.3.1 (I29, R2): what the menu item opened guards its buttons for 500 ms
     const dialog = page.getByRole('dialog', { name: /^Deal again\?/ });
     await expect(dialog).toContainText('Deal again? This round won\'t count. For when someone said the word or saw a screen.');
     await expectOneMainButton(page, 'Deal again dialog', 'Keep playing', true);
+    await settle(page); // 1.3.1 (I29, R2): a dialog's buttons are guarded for 500 ms after it opens
     await dialog.getByRole('button', { name: 'Keep playing', exact: true }).click();
     await expect(dialog).toHaveCount(0);
     await expect(page.getByTestId('clue-order')).toBeVisible();
     expect(await records(page)).toEqual(before);
     await fromMenu(page, 'Deal again with a new word');
+    await settle(page); // 1.3.1 (I29, R2): a dialog's buttons are guarded for 500 ms after it opens
     await page.getByRole('dialog', { name: /^Deal again\?/ }).getByRole('button', { name: 'Deal again', exact: true }).click();
     await expect(passName(page)).toHaveText(exact('Riya'));
     expect((await records(page)).at(-1).type).toBe('dealAgain'); // the full record (v3.5, with wordId): impostor-saved-evenings.spec.ts
@@ -233,6 +241,7 @@ test.describe('IMP-030: the countdown to point', () => {
     await toClues(page);
     await toTalk(page);
     await freezeClock(page);
+    await settle(page); // 1.3.1 (I29, R2): guarded for 500 ms after the screen changes
     await mainButton(page).filter({ hasText: 'Vote now' }).click();
     await expect(page.getByRole('heading', { name: 'Get ready to point…' })).toBeVisible();
     await expect(menuButton(page)).toHaveCount(0);
@@ -255,6 +264,7 @@ test.describe('IMP-030: the countdown to point', () => {
     await toClues(page);
     await toTalk(page);
     await freezeClock(page);
+    await settle(page); // 1.3.1 (I29, R2): guarded for 500 ms after the screen changes
     await mainButton(page).filter({ hasText: 'Vote now' }).click();
     await page.clock.runFor(1000);
     expect(await fontSize(countdown(page))).toBe(200);
@@ -270,6 +280,7 @@ test.describe('IMP-030: the countdown to point', () => {
     await toClues(page);
     await toTalk(page);
     await freezeClock(page);
+    await settle(page); // 1.3.1 (I29, R2): guarded for 500 ms after the screen changes
     await mainButton(page).filter({ hasText: 'Vote now' }).click();
     await page.clock.runFor(2500);
     await expect(countdown(page)).toHaveText('2');
@@ -511,6 +522,7 @@ test.describe('IMP-033, IMP-034, IMP-038, IMP-039, IMP-073: the one result scree
     await mainButton(page).click();
     await page.clock.runFor(6000);
     const before = (await sounds(page)).length;
+    await settle(page); // 1.3.1 (I29, R2): guarded for 500 ms after the screen changes
     await quiet(page, 'Still a tie').click();
     await expect(result(page, 'build-up')).toHaveCount(0);
     await expect(result(page, 'result-headline')).toHaveText(exact('✗ Escaped!', []));
@@ -541,6 +553,7 @@ test.describe('IMP-033, IMP-034, IMP-038, IMP-039, IMP-073: the one result scree
     expect(Math.abs(r.y - w.y), 'side by side').toBeLessThanOrEqual(1);
     await expectOneMainButton(page, 'verdict step', null);
     await expect(menuButton(page)).toHaveCount(0);
+    await settle(page); // 1.3.1 (I29, R2): guarded for 500 ms after the screen changes
     await right.click();
     await expect(result(page, 'round-outcome')).toHaveText(exact('Arjun wins the round!'));
     await expect(result(page, 'round-outcome')).toBeInViewport({ ratio: 1 });
@@ -605,7 +618,9 @@ test.describe('IMP-052: no words left', () => {
       now: T0,
       storage: { 'pgn.pref.impostor.blockedWords': blocked, 'pgn.pref.impostor.lastChoices': { mode: 'easy', talking: 'free', score: false, words: 'family', categories: [CAT], nonveg: false, lastGuess: true } },
     });
+    await settle(page); // 1.3.1 (I29, R2): Home and "What shall we play?" guard their buttons for 500 ms
     await page.getByRole('button', { name: /^Host a game/ }).click();
+    await settle(page); // 1.3.1 (I29, R2): Home and "What shall we play?" guard their buttons for 500 ms
     await page.getByRole('button', { name: /^Impostor\b/ }).and(page.locator(':not([data-testid="resume-card"])')).click();
     await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     if ((await page.getByRole('button', { name: /^Remove / }).count()) === 0) {
@@ -694,9 +709,9 @@ test.describe('IMP-070 and IMP-072: "How to play" from the menu mid-round never 
     await toClues(page, { talking: 'timer' });
     await freezeClock(page);
     await toTalk(page);
-    await fromMenu(page, 'How to play');
+    await fromMenu(page, 'How to play'); // 1.3.1: 500 ms pass first (the menu button's guard, I29 R2)
     await settle(page); // v3.9: setup and How to play buttons are guarded for 500 ms (P2)
-    await page.clock.runFor(5000);
+    await page.clock.runFor(4000); // 5 s since the talk began, 4.5 s of them with How to play open
     await page.getByRole('button', { name: 'Done', exact: true }).click();
     await expect(timer(page)).toHaveText('1:55');
   });
@@ -707,6 +722,7 @@ test.describe('IMP-074: late joiner and someone leaving', () => {
     await atResult(page);
     const before = (await records(page)).length;
     await fromMenu(page, 'Players');
+    await settle(page); // 1.3.1 (I29, R2): what the menu item opened guards its buttons for 500 ms
     await expect(page.getByRole('heading', { name: 'Players' })).toBeVisible();
     await page.getByLabel('Player name', { exact: true }).fill('Zoya');
     await page.getByRole('button', { name: 'Add', exact: true }).click();
@@ -725,6 +741,7 @@ test.describe('IMP-074: late joiner and someone leaving', () => {
     await atResult(page);
     const before = (await records(page)).length;
     await fromMenu(page, 'Players');
+    await settle(page); // 1.3.1 (I29, R2): what the menu item opened guards its buttons for 500 ms
     await freezeClock(page);
     await page.getByRole('button', { name: 'Remove Kabir', exact: true }).click();
     await expect(page.getByRole('button', { name: 'Remove Kabir', exact: true })).toHaveCount(0);
@@ -739,6 +756,7 @@ test.describe('IMP-074: late joiner and someone leaving', () => {
   test('keeping score: "Kabir left · Points kept · Undo"; with 3 players ✕ opens "3 players needed. Add someone, or end the game." (IMP-078, v3.8); "Add a player" focuses the name field; nothing recorded', async ({ page }) => {
     await atResult(page, { score: true });
     await fromMenu(page, 'Players');
+    await settle(page); // 1.3.1 (I29, R2): what the menu item opened guards its buttons for 500 ms
     await page.getByRole('button', { name: 'Remove Kabir', exact: true }).click();
     await expect(page.getByTestId('undo-toast')).toHaveText(/^\s*Kabir left · Points kept ·\s*Undo\s*$/);
     await page.getByRole('button', { name: 'Remove Meena', exact: true }).click();
@@ -747,6 +765,7 @@ test.describe('IMP-074: late joiner and someone leaving', () => {
     await expect(page.getByText('Keep at least 3 players.', { exact: true })).toHaveCount(0);
     await expectOneMainButton(page, '"3 players needed."', 'Add a player', true);
     expect(await isOutlined(dialog.getByRole('button', { name: 'End game', exact: true })), '"End game" is outlined').toBe(true);
+    await settle(page); // 1.3.1 (I29, R2): a dialog's buttons are guarded for 500 ms after it opens
     await dialog.getByRole('button', { name: 'Add a player', exact: true }).click();
     await expect(dialog).toHaveCount(0);
     await expect(page.getByRole('button', { name: 'Remove Meena', exact: true })).toBeVisible();
@@ -756,12 +775,15 @@ test.describe('IMP-074: late joiner and someone leaving', () => {
   test('IMP-078 (v3.8): "End game" in "3 players needed." between rounds opens the summary, as IMP-077; nothing recorded by the tap', async ({ page }) => {
     await atResult(page);
     await fromMenu(page, 'Players');
+    await settle(page); // 1.3.1 (I29, R2): what the menu item opened guards its buttons for 500 ms
     await page.getByRole('button', { name: 'Remove Kabir', exact: true }).click();
     await page.getByRole('button', { name: 'Done', exact: true }).click();
     await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     const recs = await records(page);
     await fromMenu(page, 'Players');
+    await settle(page); // 1.3.1 (I29, R2): what the menu item opened guards its buttons for 500 ms
     await page.getByRole('button', { name: 'Remove Meena', exact: true }).click();
+    await settle(page); // 1.3.1 (I29, R2): a dialog's buttons are guarded for 500 ms after it opens
     await page.getByRole('dialog', { name: /3 players needed\./ }).getByRole('button', { name: 'End game', exact: true }).click();
     await expect(page.getByRole('heading', { name: "That's the game!" })).toBeVisible();
     expect(await records(page)).toEqual(recs);
@@ -773,6 +795,7 @@ test.describe('IMP-074: late joiner and someone leaving', () => {
     const recs = await records(page);
     const order = await page.getByTestId('clue-order').textContent();
     await fromMenu(page, 'Players');
+    await settle(page); // 1.3.1 (I29, R2): what the menu item opened guards its buttons for 500 ms
     await expect(page.getByRole('heading', { name: 'Players' })).toBeVisible();
     await expect(page.getByText('Change players after this round.', { exact: true })).toHaveCount(0);
     await expect(page.getByRole('button', { name: /^Move .* (up|down)$/ })).toHaveCount(0);
@@ -790,6 +813,7 @@ test.describe('IMP-080: at most one main button, and never a destructive one', (
   test('"End now" mid-round (menu "End game", v3.8): the main look is "Keep playing"; between rounds "End game" is outlined and opens no dialog', async ({ page }) => {
     await toClues(page);
     await fromMenu(page, 'End game');
+    await settle(page); // 1.3.1 (I29, R2): what the menu item opened guards its buttons for 500 ms
     await expect(page.getByRole('dialog', { name: /End now\? This round won't count\./ })).toBeVisible();
     await expectOneMainButton(page, 'End now dialog', 'Keep playing', true);
     await page.getByRole('button', { name: 'Keep playing', exact: true }).click();
@@ -839,6 +863,7 @@ test.describe('IMP-081: nothing scrolls during a round, at every size', () => {
         await check(page, 'clues', page.getByTestId('starter-name'));
         await toTalk(page);
         await check(page, 'timer', timer(page));
+        await settle(page); // 1.3.1 (I29, R2): guarded for 500 ms after the screen changes
         await mainButton(page).filter({ hasText: 'Vote now' }).click();
         await page.clock.runFor(1000);
         await check(page, 'countdown', countdown(page));
@@ -851,8 +876,10 @@ test.describe('IMP-081: nothing scrolls during a round, at every size', () => {
         test.setTimeout(60_000);
         await start(page);
         await toTalk(page);
+        await settle(page); // 1.3.1 (I29, R2): guarded for 500 ms after the screen changes
         await mainButton(page).filter({ hasText: 'Vote now' }).click();
         await page.clock.runFor(6000);
+        await settle(page); // 1.3.1 (I29, R2): guarded for 500 ms after the screen changes
         await pickerName(page, 'Arjun').click();
         await mainButton(page).click();
         await page.clock.runFor(1500);
@@ -895,6 +922,7 @@ test.describe('IMP-081: the room screens at 320 × 568 and 360 × 640: nothing d
         await check(page, 'clues');
         await toTalk(page);
         await check(page, 'talk, timer');
+        await settle(page); // 1.3.1 (I29, R2): guarded for 500 ms after the screen changes
         await mainButton(page).filter({ hasText: 'Vote now' }).click();
         await page.clock.runFor(1000);
         await check(page, 'countdown');
@@ -908,8 +936,10 @@ test.describe('IMP-081: the room screens at 320 × 568 and 360 × 640: nothing d
         const players = await start(page);
         await dealAll(page, players);
         await toTalk(page);
+        await settle(page); // 1.3.1 (I29, R2): guarded for 500 ms after the screen changes
         await mainButton(page).filter({ hasText: 'Vote now' }).click();
         await page.clock.runFor(6000);
+        await settle(page); // 1.3.1 (I29, R2): guarded for 500 ms after the screen changes
         await pickerName(page, 'Arjun').click();
         await mainButton(page).click();
         await page.clock.runFor(500);
@@ -978,6 +1008,7 @@ test.describe('IMP-083 and IMP-084: screen readers, no flashing', () => {
     });
     await expect(announcer(page)).toHaveAttribute('aria-live', 'polite');
     await toTalk(page);
+    await settle(page); // 1.3.1 (I29, R2): guarded for 500 ms after the screen changes
     await mainButton(page).filter({ hasText: 'Vote now' }).click();
     for (const n of ['3', '2', '1', 'Point!']) { await page.clock.runFor(1000); await expect(countdown(page)).toHaveText(n); }
     await page.clock.runFor(2000);
@@ -1027,6 +1058,7 @@ test.describe('IMP-083 and IMP-084: screen readers, no flashing', () => {
     await toClues(page, { seeds: { deals: [DEAL, { wordId: PANI_PURI, impostor: 'Meena', starter: 'Arjun' }] } });
     await expect(announcer(page)).not.toHaveText('');
     await fromMenu(page, 'Deal again with a new word');
+    await settle(page); // 1.3.1 (I29, R2): a dialog's buttons are guarded for 500 ms after it opens
     await page.getByRole('dialog', { name: /^Deal again\?/ }).getByRole('button', { name: 'Deal again', exact: true }).click();
     await expect(passName(page)).toHaveText(exact('Riya', P4));
     await expect(announcer(page), 'the new deal starts empty').toHaveText('');
@@ -1195,6 +1227,7 @@ test.describe('IMP-100 to IMP-108: after the round', () => {
     await quiet(page, 'Play something else').click();
     await expect(page.getByRole('heading', { name: 'What shall we play?' })).toBeVisible();
     expect((await onlyEvening(page)).status).toBe('ended');
+    await settle(page); // 1.3.1 (I29, R2): guarded for 500 ms after the screen changes
     await page.getByRole('button', { name: /^Tambola/ }).click();
     await page.getByRole('button', { name: 'New game' }).click();
     const paper = page.getByRole('button', { name: /^Paper tickets/ }).or(page.getByRole('radio', { name: /^Paper tickets/ })).first();
@@ -1232,6 +1265,7 @@ test.describe('IMP-100 to IMP-108: after the round', () => {
     await endGame(page);
     await quiet(page, 'Play something else').click();
     await expect(page.getByRole('heading', { name: 'What shall we play?' })).toBeVisible();
+    await settle(page); // 1.3.1 (I29, R2): guarded for 500 ms after the screen changes
     await page.getByRole('button', { name: /^Tambola/ }).click();
     await page.getByRole('button', { name: 'New game' }).click();
     if (await ticketCard(page, 'paper').isVisible()) await chooseTicketType(page, 'paper');
@@ -1312,6 +1346,7 @@ test.describe('IMP-100 to IMP-108: after the round', () => {
     expect((await records(page)).slice(before)).toEqual([{ type: 'wordDidntWork', blocked: true }, { type: 'wordDidntWork', blocked: false }]);
     await quiet(page, "This word didn't work").click();
     await fromMenu(page, 'Settings');
+    await settle(page); // 1.3.1 (I29, R2): what the menu item opened guards its buttons for 500 ms
     await expect(page.getByRole('heading', { name: 'Skipped words (1)' })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Bring back Samosa', exact: true })).toBeVisible();
   });

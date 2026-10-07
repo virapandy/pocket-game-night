@@ -60,14 +60,17 @@ async function stillTie(page: Page, a: string, b: string, label: string) {
   await mainButton(page).click();
   await page.clock.runFor(6000);
   await expect(quiet(page, 'Still a tie')).toBeVisible();
+  await settle(page); // 1.3.1 (I29, R2): the re-vote picker's buttons are guarded for 500 ms after it opens
   await quiet(page, 'Still a tie').click();
 }
 
 /** v3.8 (IMP-077, IMP-092): between rounds, the outlined "End game" beside "Next round" opens the summary at once. */
 async function endEvening(page: Page) {
+  await settle(page);
   await quiet(page, 'End game').click();
   await expect(page.getByRole('dialog')).toHaveCount(0);
   await expect(summaryHeading(page)).toBeVisible();
+  await settle(page); // 1.3.1 (I29, R2): the summary's buttons are guarded for 500 ms after it shows
 }
 
 test('Journey 1: defaults, 4 players, 3 rounds (caught, escaped, still a tie), end the evening, summary, History', { tag: '@smoke' }, async ({ page }) => {
@@ -85,11 +88,13 @@ test('Journey 1: defaults, 4 players, 3 rounds (caught, escaped, still a tie), e
   await mainButton(page).click();
   await expect(page.getByTestId('talk-heading')).toHaveText(exact('Talk it over', []));
   await expect(page.getByText('Who sounded unsure?', { exact: true })).toBeVisible();
+  await settle(page); // 1.3.1 (I29, R2): guarded for 500 ms after the screen changes
   await mainButton(page).filter({ hasText: 'Vote now' }).click();
   await expect(page.getByTestId('countdown-heading')).toHaveText('Get ready to point…');
   await page.clock.runFor(6000);
   await expect(pickerHeading(page)).toBeVisible();
   await expect(page.getByText('Not sure?', { exact: true })).toBeVisible();
+  await settle(page); // 1.3.1 (I29, R2): the picker's buttons are guarded for 500 ms after it opens
   await pickerName(page, 'Arjun').click();
   await expect(mainButton(page)).toHaveText(exact('Reveal Arjun'));
   await mainButton(page).click();
@@ -190,6 +195,7 @@ test('Journey 3: last-chance guess on: a right guess, its Undo, then a wrong gue
   await expect(menuButton(page)).toHaveCount(0);
   await mainButton(page).filter({ hasText: exact('Arjun guessed. Show the word') }).click();
   await expect(result(page, 'result-word')).toHaveText(exact('Samosa', []));
+  await settle(page); // 1.3.1 (I29, R2): guarded for 500 ms after the screen changes
   await quiet(page, 'Guessed right').click();
   await expect(result(page, 'round-outcome')).toHaveText(exact('Arjun wins the round!'));
   await expect(page.getByTestId('round-points')).toHaveText(exact('+1 Arjun'));
@@ -197,6 +203,7 @@ test('Journey 3: last-chance guess on: a right guess, its Undo, then a wrong gue
   await quiet(page, 'Undo').click();
   await expect(result(page, 'round-outcome')).toHaveCount(0);
   await expect(quiet(page, 'Guessed right')).toBeVisible();
+  await settle(page); // 1.3.1 (I29, R2): guarded for 500 ms after the screen changes
   await quiet(page, 'Wrong guess').click();
   await expect(result(page, 'round-outcome')).toHaveText(exact('You caught the impostor!'));
   await expect(page.getByTestId('round-points')).toHaveText(exact('+1 each: Riya, Meena, Kabir'));
@@ -207,6 +214,7 @@ test('Journey 3: last-chance guess on: a right guess, its Undo, then a wrong gue
   await toPicker(page);
   await reveal(page, 'Meena', 1500);
   await mainButton(page).filter({ hasText: exact('Meena guessed. Show the word') }).click();
+  await settle(page); // 1.3.1 (I29, R2): guarded for 500 ms after the screen changes
   await quiet(page, 'Guessed right').click();
   await expect(result(page, 'round-outcome')).toHaveText(exact('Meena wins the round!'));
   await expect(quiet(page, 'Undo')).toBeVisible();
@@ -222,6 +230,7 @@ test('Journey 4: "Don\'t know this word?" (New word for everyone?) and "Deal aga
   await dontKnow(page).click();
   const d = page.getByRole('dialog', { name: /New word for everyone\?/ });
   await expect(d).toBeVisible();
+  await settle(page); // 1.3.1 (I29, R2): a dialog's buttons are guarded for 500 ms after it opens
   await d.getByRole('button', { name: 'New word', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'No problem! New word coming.' })).toBeVisible();
   await expect(page.getByText(exact('Pass the phone back to Riya'))).toBeVisible();
@@ -232,6 +241,7 @@ test('Journey 4: "Don\'t know this word?" (New word for everyone?) and "Deal aga
   await expect(page.getByTestId('deal-progress')).toHaveText(exact('Player 2 of 4', []));
   await dealAll(page, P4.slice(1));
   await fromMenu(page, 'Deal again with a new word');
+  await settle(page); // 1.3.1 (I29, R2): what the menu item opened guards its buttons for 500 ms
   const again = page.getByRole('dialog', { name: /^Deal again\?/ });
   await expect(again).toContainText("Deal again? This round won't count. For when someone said the word or saw a screen.");
   await again.getByRole('button', { name: 'Deal again', exact: true }).click();
@@ -249,7 +259,7 @@ async function reopen(page: Page) {
   const row = page.getByTestId('unfinished-games').filter({ hasText: /Impostor/ });
   const inGame = mainButton(page).or(summaryHeading(page)).or(page.getByTestId('countdown-heading'));
   await expect(row.or(inGame).first()).toBeVisible();
-  if (await row.first().isVisible()) await row.getByText('Tap to resume').first().click();
+  if (await row.first().isVisible()) { await settle(page); await row.getByText('Tap to resume').first().click(); } await settle(page); // 1.3.1 (I29, R2): Home, then the reopened screen, guard their buttons for 500 ms
 }
 
 test('Journey 5: close and reopen at every step: deal, clues, talk, countdown, picker, result, summary', async ({ page }) => {
@@ -267,6 +277,7 @@ test('Journey 5: close and reopen at every step: deal, clues, talk, countdown, p
   await mainButton(page).click();
   await reopen(page);
   await expect(page.getByTestId('talk-heading')).toHaveText(exact('Talk it over', []));
+  await settle(page); // 1.3.1 (I29, R2): guarded for 500 ms after the screen changes
   await mainButton(page).filter({ hasText: 'Vote now' }).click();
   await page.clock.runFor(2000);
   await reopen(page);
@@ -372,13 +383,16 @@ test('Journey 9: a late joiner and a leaver between rounds', async ({ page }) =>
   await toPicker(page);
   await reveal(page, 'Arjun', 1500);
   await fromMenu(page, 'Players');
+  await settle(page); // 1.3.1 (I29, R2): what the menu item opened guards its buttons for 500 ms
   await expect(page.getByRole('heading', { name: 'Players' })).toBeVisible();
+  await settle(page); // 1.3.1 (I29, R2): guarded for 500 ms after the screen changes
   await page.getByLabel('Player name', { exact: true }).fill('Zoya');
   await page.getByRole('button', { name: 'Add', exact: true }).click();
   await page.getByRole('button', { name: 'Remove Kabir', exact: true }).click();
   await expect(page.getByTestId('undo-toast')).toHaveText(/^\s*Kabir left · Points kept ·\s*Undo\s*$/);
   await page.getByRole('button', { name: 'Done', exact: true }).click();
   expect((await moves(page)).at(-1)).toEqual({ type: 'setPlayers', players: ['Riya', 'Arjun', 'Meena', 'Zoya'] });
+  await settle(page); // 1.3.1 (I29, R2): guarded for 500 ms after the screen changes
   await mainButton(page).click();
   await expect(page.getByTestId('deal-progress')).toHaveText(exact('Player 1 of 4', []));
   await dealAll(page, ['Riya', 'Arjun', 'Meena', 'Zoya']);
@@ -413,6 +427,7 @@ test('Journey 10: "Oops, keep playing", Share, History, then "Play something els
   await quiet(page, 'Play something else').click();
   await expect(page.getByRole('heading', { name: 'What shall we play?' })).toBeVisible();
   expect((await onlyEvening(page)).status).toBe('ended');
+  await settle(page); // 1.3.1 (I29, R2): guarded for 500 ms after the screen changes
   await page.getByRole('button', { name: /^Tambola/ }).click();
   await page.getByRole('button', { name: 'New game' }).click();
   await chooseTicketType(page, 'paper');
@@ -462,9 +477,11 @@ test('Journey 12: screen-reader announcements through one full round', async ({ 
   await expect(page.getByTestId('announcer')).toHaveText(exact('Riya starts. Each say one word about your secret: Riya, Arjun, Meena, Kabir'));
   await mainButton(page).filter({ hasText: CLUES_DONE }).click();
   await freezeClock(page);
+  await settle(page); // 1.3.1 (I29, R2): guarded for 500 ms after the screen changes
   await mainButton(page).filter({ hasText: 'Vote now' }).click();
   for (const n of ['3', '2', '1', 'Point!']) { await page.clock.runFor(1000); await expect(page.getByTestId('countdown-number')).toHaveText(n); }
   await page.clock.runFor(2000);
+  await settle(page); // 1.3.1 (I29, R2): guarded for 500 ms after the screen changes
   await pickerName(page, 'Arjun').click();
   await mainButton(page).click();
   await page.clock.runFor(1500);

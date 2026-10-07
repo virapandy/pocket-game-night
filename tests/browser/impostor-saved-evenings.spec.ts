@@ -42,13 +42,15 @@ async function openEvening(page: Page) {
   const row = page.getByTestId('unfinished-games').filter({ hasText: /Impostor/ });
   const inGame = page.getByTestId('main-button').or(page.getByRole('heading', { name: /^That's the (night|game)!$/ }));
   await expect(row.or(inGame).first()).toBeVisible();
-  if (await row.first().isVisible()) await row.getByText('Tap to resume').first().click();
+  if (await row.first().isVisible()) { await settle(page); await row.getByText('Tap to resume').first().click(); } await settle(page); // 1.3.1 (I29, R2): Home, then the reopened screen, guard their buttons for 500 ms
 }
 const summaryHeading = (page: Page) => page.getByRole('heading', { name: "That's the game!" });
 /** v3.8 (IMP-077): between rounds, the outlined "End game" beside "Next round" opens the summary at once. */
 async function endGame(page: Page) {
+  await settle(page); // 1.3.1 (I29, R2): every screen's buttons are guarded for 500 ms after it shows
   await page.getByRole('button', { name: 'End game', exact: true }).click();
   await expect(summaryHeading(page)).toBeVisible();
+  await settle(page);
 }
 const leftHalfway = (page: Page) => page.getByRole('heading', { name: 'This round was left halfway. Start a fresh round?' });
 const quiet = (page: Page, name: string) => page.getByRole('button', { name, exact: true });
@@ -281,16 +283,20 @@ test.describe('IMP-093: ending mid-round', () => {
     await openEvening(page);
     await expect(page.getByTestId('clue-order')).toBeVisible();
     await fromMenu(page, 'End game');
+    await settle(page); // 1.3.1 (I29, R2): what the menu item opened guards its buttons for 500 ms
     const dialog = page.getByRole('dialog', { name: /End now\? This round won't count\./ });
     await expect(dialog).toBeVisible();
     await expectOneMainButton(page, '"End now?"', 'Keep playing', true);
+    await settle(page); // 1.3.1 (I29, R2): a dialog's buttons are guarded for 500 ms after it opens
     await dialog.getByRole('button', { name: 'End now', exact: true }).click();
     await expect(summaryHeading(page)).toBeVisible();
     await expect(page.getByTestId('summary-line')).toHaveText(exact('Impostor caught 1 · escaped 0', []));
     await summaryAction(page, 'Oops, keep playing');
     await expect(page.getByTestId('clue-order')).toHaveText(exact('Arjun → Meena → Kabir → Riya'));
     await fromMenu(page, 'End game');
+    await settle(page); // 1.3.1 (I29, R2): a dialog's buttons are guarded for 500 ms after it opens
     await page.getByRole('dialog', { name: /End now\?/ }).getByRole('button', { name: 'End now', exact: true }).click();
+    await settle(page); // 1.3.1 (I29, R2): the summary's buttons are guarded for 500 ms after it shows
     await quiet(page, 'Home').click();
     const saved = await onlyEvening(page);
     expect(saved.status).toBe('ended');
@@ -333,6 +339,7 @@ test.describe('IMP-094: what History keeps', () => {
     await phoneWith(page, [oldFixture.ended, oldFixture.inProgress], { now: lastAt(oldFixture.inProgress) + 30 * 60_000 });
     await expect(page.getByRole('button', { name: /^Host a game/ })).toBeVisible();
     await expect(page.getByTestId('unfinished-games').filter({ hasText: /Impostor/ })).toHaveCount(0);
+    await settle(page); // 1.3.1 (I29, R2): Home and "What shall we play?" guard their buttons for 500 ms
     await page.getByRole('button', { name: /^Host a game/ }).click();
     await expect(page.getByRole('heading', { name: 'What shall we play?' })).toBeVisible();
     await expect(page.getByTestId('resume-card')).toHaveCount(0);
@@ -350,11 +357,13 @@ test.describe('IMP-094: what History keeps', () => {
     await settle(page); await imButton(page, 'Riya').click();
     await hold(page, 600);
     await page.getByRole('button', { name: "Don't know this word?", exact: true }).click();
+    await settle(page); // 1.3.1 (I29, R2): a dialog's buttons are guarded for 500 ms after it opens
     await page.getByRole('dialog', { name: /New word for everyone\?/ }).getByRole('button', { name: 'New word', exact: true }).click();
     expect((await onlyEvening(page)).records.at(-1).move).toEqual({ type: 'dontKnow', wordId: PANI_PURI });
     await settle(page); await imButton(page, 'Riya').click();
     await hold(page, 600);
     await fromMenu(page, 'Deal again with a new word');
+    await settle(page); // 1.3.1 (I29, R2): a dialog's buttons are guarded for 500 ms after it opens
     await page.getByRole('dialog', { name: /^Deal again\?/ }).getByRole('button', { name: 'Deal again', exact: true }).click();
     expect((await onlyEvening(page)).records.at(-1).move).toEqual({ type: 'dealAgain', wordId: KHEER });
   });
@@ -459,7 +468,11 @@ test.describe('IMP-095, IMP-097, IMP-098: the summary', () => {
 test.describe('IMP-099: time limits, measured exactly', () => {
   test('3 hours after the round\'s last move exactly: the same step; 1 ms more: "left halfway"', async ({ page, browser }) => {
     const e = savedEvening({ deals: DEALS, moves: [START, ...seen(4)] });
-    await phoneWith(page, [e], { now: lastAt(e) + 3 * H, fixed: true });
+    // 1.3.1 (I29, R2): Home's 500 ms tap guard never ends while the clock is fixed, so the phone opens a minute earlier
+    // and the clock is paused 500 ms before the limit; openEvening waits out the guard (500 ms) and taps "Tap to resume"
+    // at exactly 3 hours, with the clock still paused there.
+    await phoneWith(page, [e], { now: lastAt(e) + 3 * H - 60_000 });
+    await page.clock.pauseAt(lastAt(e) + 3 * H - 500);
     await openEvening(page);
     await expect(page.getByText('Phone in the middle, face up.', { exact: true })).toBeVisible();
     await expect(leftHalfway(page)).toHaveCount(0);

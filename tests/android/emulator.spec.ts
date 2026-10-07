@@ -165,8 +165,12 @@ test.describe('PLT-121: Android-only behaviour on the emulator (390 × 844)', ()
     await device.shell('am force-stop com.android.chrome');
     const again = await device.launchBrowser({ baseURL: page.url().replace(/#.*$/, '').replace(/[^/]*$/, '') });
     await new Promise((r) => setTimeout(r, 1500));
-    // A fresh page, as the host returning to the app opens it.
-    const p = await again.newPage();
+    // A fresh load of the app, as the host returning to it gets. Chrome comes back with one tab of its own; Playwright's
+    // `newPage()` on a relaunched Chrome for Android fails inside Playwright ("Cannot read properties of undefined
+    // (reading '_page')", weekly run 37254838465, a tool fault), so that tab is used: it is emptied first, so the app
+    // loads from scratch from what was saved on the phone.
+    const p = again.pages()[0] ?? (await again.waitForEvent('page', { timeout: 15_000 }));
+    await p.goto('about:blank');
     await p.goto(url);
     await expect(p.getByText(/Game resumed|Tap to resume/)).toBeVisible();
     await resumeIfAsked(p);

@@ -31,7 +31,7 @@ async function atRound1Result(page: Page, o: { players?: string[]; practice?: bo
   await phoneWith(page, [e], { now: e.records.at(-1).at + 60_000 });
   const row = page.getByTestId('unfinished-games').filter({ hasText: /Impostor/ });
   await expect(row.or(mainButton(page)).first()).toBeVisible();
-  if (await row.first().isVisible()) await row.getByText('Tap to resume').first().click();
+  if (await row.first().isVisible()) { await settle(page); await row.getByText('Tap to resume').first().click(); } await settle(page); // 1.3.1 (I29, R2): Home, then the reopened screen, guard their buttons for 500 ms
   await expect(page.getByTestId('round-outcome')).toBeVisible();
   return e;
 }
@@ -41,7 +41,9 @@ async function atRound1Result(page: Page, o: { players?: string[]; practice?: bo
 test.describe('Lane O: IMP-003 fast Enter (M3)', () => {
   test('typing "Zoya", Enter, "Dev", Enter within 200 ms adds both, in that order; the field is empty and keeps focus', async ({ page }) => {
     await phoneWith(page, [], { now: T0 });
+    await settle(page); // 1.3.1 (I29, R2): Home and "What shall we play?" guard their buttons for 500 ms
     await hostAGame(page).click();
+    await settle(page); // 1.3.1 (I29, R2): Home and "What shall we play?" guard their buttons for 500 ms
     await impostorCard(page).click();
     await settle(page); // v3.9: setup and How to play buttons are guarded for 500 ms (P2)
     await expect(page.getByRole('heading', { name: "Who's playing?" })).toBeVisible();
@@ -155,6 +157,7 @@ test.describe('Lane O: IMP-017 "See my word again" visible on clues and talk (M1
     await btn.click();
     const dialog = page.getByRole('dialog', { name: /Whose word\?/ });
     expect(await textOf(dialog.getByRole('button'))).toEqual([...P4, 'Cancel']);
+    await settle(page); // 1.3.1 (I29, R2): a dialog's buttons are guarded for 500 ms after it opens
     await dialog.getByRole('button', { name: 'Meena', exact: true }).click();
     await settle(page);
     await imButton(page, 'Meena').click();
@@ -169,7 +172,9 @@ test.describe('Lane O: IMP-017 "See my word again" visible on clues and talk (M1
     await startEvening(page, { seeds: { deals: [DEAL] } });
     await dealAll(page);
     await mainButton(page).filter({ hasText: CLUES_DONE }).click();
+    await settle(page); // 1.3.1 (I29, R2): the talk screen's buttons are guarded for 500 ms after it shows
     await quiet(page, 'See my word again').click();
+    await settle(page); // 1.3.1 (I29, R2): a dialog's buttons are guarded for 500 ms after it opens
     await page.getByRole('dialog', { name: /Whose word\?/ }).getByRole('button', { name: 'Kabir', exact: true }).click();
     await settle(page);
     await imButton(page, 'Kabir').click();
@@ -177,9 +182,11 @@ test.describe('Lane O: IMP-017 "See my word again" visible on clues and talk (M1
     await expect(mainButton(page)).toHaveText(exact('Done, back to talking', []));
     await mainButton(page).click();
     await expect(page.getByTestId('talk-heading')).toBeVisible();
+    await settle(page); // 1.3.1 (I29, R2): guarded for 500 ms after the screen changes
     await mainButton(page).filter({ hasText: 'Vote now' }).click();
     await page.clock.runFor(6000);
     await fromMenu(page, 'See my word again');
+    await settle(page); // 1.3.1 (I29, R2): a dialog's buttons are guarded for 500 ms after it opens
     await page.getByRole('dialog', { name: /Whose word\?/ }).getByRole('button', { name: 'Riya', exact: true }).click();
     await settle(page);
     await imButton(page, 'Riya').click();
@@ -249,6 +256,7 @@ test.describe('Lane O: IMP-075 "Home (game is saved)" mid-round (M11)', () => {
     await dealAll(page);
     const before = await records(page);
     await fromMenu(page, 'Home (game is saved)');
+    await settle(page); // 1.3.1 (I29, R2): what the menu item opened guards its buttons for 500 ms
     await expect(page.getByRole('dialog')).toHaveCount(0);
     await expect(hostAGame(page)).toBeVisible();
     expect(await records(page)).toEqual(before);
@@ -307,6 +315,7 @@ test.describe('Lane N: IMP-077 between rounds: "Next round", outlined "End game"
     const row = page.getByTestId('unfinished-games').filter({ hasText: /Impostor/ });
     await expect(row).toContainText('Impostor · Riya, Arjun and 2 more · round 2');
     await expect(row).toContainText('Tap to resume');
+    await settle(page); // 1.3.1 (I29, R2): Home and "What shall we play?" guard their buttons for 500 ms
     await hostAGame(page).click();
     const card = page.getByTestId('resume-card');
     await expect(card).toContainText('Impostor · Riya, Arjun and 2 more · round 2');
@@ -393,6 +402,7 @@ test.describe('Lane N: IMP-103 History "Play again" while a game is unfinished a
     await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     const dialog = page.getByRole('dialog', { name: /Start a new game\?/ });
     await expect(dialog).toBeVisible();
+    await settle(page); // 1.3.1 (I29, R2): a dialog's buttons are guarded for 500 ms after it opens
     await dialog.getByRole('button', { name: 'Start new', exact: true }).click();
     await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     await expect(page.getByRole('heading', { name: "Who's playing?" })).toBeVisible();
@@ -415,8 +425,10 @@ test.describe('Lanes N and O: IMP-085 plain words (M24): "game", never "evening"
     // A forced deal (Test hooks item 3): Arjun is the impostor, so revealing Riya always reaches the result (with the
     // last-chance guess on, revealing the impostor would stop at the guess step first).
     await phoneWith(page, [], { now: T0, storage: { 'pgn.test.seeds': { deals: [{ wordId: SAMOSA, impostor: 'Arjun', starter: 'Riya' }] } } });
+    await settle(page); // 1.3.1 (I29, R2): Home and "What shall we play?" guard their buttons for 500 ms
     await hostAGame(page).click();
     await check('What shall we play?');
+    await settle(page); // 1.3.1 (I29, R2): Home and "What shall we play?" guard their buttons for 500 ms
     await impostorCard(page).click();
     await settle(page); // v3.9: setup and How to play buttons are guarded for 500 ms (P2)
     await check('Who\'s playing?');
@@ -448,6 +460,7 @@ test.describe('Lanes N and O: IMP-085 plain words (M24): "game", never "evening"
     await settle(page);
     await mainButton(page).filter({ hasText: CLUES_DONE }).click();
     await check('talk');
+    await settle(page); // 1.3.1 (I29, R2): guarded for 500 ms after the screen changes
     await mainButton(page).filter({ hasText: 'Vote now' }).click();
     await page.clock.runFor(6000);
     await check('picker');
@@ -455,6 +468,7 @@ test.describe('Lanes N and O: IMP-085 plain words (M24): "game", never "evening"
     await check('picker, tie');
     await page.getByRole('button', { name: /^(Not a tie|Count again)$/ }).first().click();
     await page.clock.runFor(6000);
+    await settle(page); // 1.3.1 (I29, R2): guarded for 500 ms after the screen changes
     await pickerName(page, 'Riya').click();
     await mainButton(page).filter({ hasText: /^Reveal / }).click();
     await page.clock.runFor(1500);
@@ -474,6 +488,7 @@ test.describe('C3: IMP-078 someone has to leave mid-round', () => {
     await startEvening(page, { players: P5, seeds: { deals: [{ wordId: SAMOSA, impostor, starter: 'Riya' }, { wordId: PANI_PURI, impostor: 'Meena', starter: 'Arjun' }] } });
     await dealAll(page, P5);
     await fromMenu(page, 'Players');
+    await settle(page); // 1.3.1 (I29, R2): what the menu item opened guards its buttons for 500 ms
     await page.getByRole('button', { name: 'Remove Kabir', exact: true }).click();
     const dialog = page.getByRole('dialog', { name: /Kabir has to leave\?/ });
     await expect(dialog).toBeVisible();
@@ -502,10 +517,12 @@ test.describe('C3: IMP-078 someone has to leave mid-round', () => {
 
   test('"Finish this round first": leaveAfterRound recorded; Kabir greyed with no ✕; he stays in the clue order; at the result "Kabir left after this round" shows for 4 s and he is gone from the next deal', async ({ page }) => {
     const dialog = await leaveDialog(page, 'Arjun');
+    await settle(page); // 1.3.1 (I29, R2): a dialog's buttons are guarded for 500 ms after it opens
     await dialog.getByRole('button', { name: 'Finish this round first', exact: true }).click();
     expect((await records(page)).at(-1)).toEqual({ type: 'leaveAfterRound', player: 'Kabir' });
     await expect(page.getByTestId('clue-order')).toHaveText(exact('Riya → Arjun → Meena → Kabir → Zoya'));
     await fromMenu(page, 'Players');
+    await settle(page); // 1.3.1 (I29, R2): what the menu item opened guards its buttons for 500 ms
     await expect(page.getByRole('button', { name: 'Remove Kabir', exact: true })).toHaveCount(0);
     await page.getByRole('button', { name: 'Done', exact: true }).click();
     await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
@@ -523,6 +540,7 @@ test.describe('C3: IMP-078 someone has to leave mid-round', () => {
 
   test('"Deal again without Kabir": dealAgainWithout recorded (one move, no role); the deal starts again from Riya, "Player 1 of 4"', async ({ page }) => {
     const dialog = await leaveDialog(page, 'Arjun');
+    await settle(page); // 1.3.1 (I29, R2): a dialog's buttons are guarded for 500 ms after it opens
     await dialog.getByRole('button', { name: 'Deal again without Kabir', exact: true }).click();
     const last = (await records(page)).at(-1);
     expect(last.type).toBe('dealAgainWithout');
@@ -539,7 +557,9 @@ test.describe('C3: IMP-078 two leavers after the same round (decision I27 note)'
     await dealAll(page, P5);
     for (const n of ['Kabir', 'Zoya']) {
       await fromMenu(page, 'Players');
+      await settle(page); // 1.3.1 (I29, R2): what the menu item opened guards its buttons for 500 ms
       await page.getByRole('button', { name: `Remove ${n}`, exact: true }).click();
+      await settle(page); // 1.3.1 (I29, R2): a dialog's buttons are guarded for 500 ms after it opens
       await page.getByRole('dialog', { name: new RegExp(`${n} has to leave\\?`) }).getByRole('button', { name: 'Finish this round first', exact: true }).click();
     }
     expect((await records(page)).filter((m: any) => m.type === 'leaveAfterRound')).toEqual([{ type: 'leaveAfterRound', player: 'Kabir' }, { type: 'leaveAfterRound', player: 'Zoya' }]);
@@ -561,6 +581,7 @@ test.describe('C3: IMP-079 someone arrives mid-round', () => {
     await dealAll(page);
     for (const n of ['Zoya', 'Dev']) {
       await fromMenu(page, 'Players');
+      await settle(page); // 1.3.1 (I29, R2): what the menu item opened guards its buttons for 500 ms
       await playerField(page).fill(n);
       await page.getByRole('button', { name: 'Add', exact: true }).click();
       await page.getByRole('button', { name: 'Done', exact: true }).click();
@@ -578,6 +599,7 @@ test.describe('C3: IMP-079 someone arrives mid-round', () => {
     await expectLine('clues');
     await mainButton(page).filter({ hasText: CLUES_DONE }).click();
     await expectLine('talk');
+    await settle(page); // 1.3.1 (I29, R2): guarded for 500 ms after the screen changes
     await mainButton(page).filter({ hasText: 'Vote now' }).click();
     await page.clock.runFor(6000);
     await expectLine('picker');

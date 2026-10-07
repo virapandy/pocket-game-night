@@ -236,6 +236,7 @@ test.describe('IMP-075: the menu at each moment', () => {
     expect(await menuItems(page, 'screen B')).toEqual(DEAL_MENU);
     await hold(page, 600);
     await dontKnow(page).click();
+    await settle(page); // 1.3.1 (I29, R2): a dialog's buttons are guarded for 500 ms after it opens
     await page.getByRole('dialog', { name: /New word for everyone\?/ }).getByRole('button', { name: 'New word', exact: true }).click();
     await expect(page.getByRole('heading', { name: 'No problem! New word coming.' })).toBeVisible();
     expect(await menuItems(page, '"No problem!"')).toEqual(DEAL_MENU);
@@ -292,10 +293,11 @@ test.describe('IMP-075: the menu at each moment', () => {
     const row = page.getByTestId('unfinished-games').filter({ hasText: /Impostor/ });
     const heading = page.getByRole('heading', { name: 'This round was left halfway. Start a fresh round?' });
     await expect(row.or(heading).first()).toBeVisible();
-    if (await row.first().isVisible()) await row.getByText('Tap to resume').first().click();
+    if (await row.first().isVisible()) { await settle(page); await row.getByText('Tap to resume').first().click(); } await settle(page); // 1.3.1 (I29, R2): Home, then the reopened screen, guard their buttons for 500 ms
     await expect(heading).toBeVisible();
     expect(await menuItems(page, '"left halfway"')).toEqual(HALFWAY_MENU);
     await fromMenu(page, 'Players');
+    await settle(page); // 1.3.1 (I29, R2): what the menu item opened guards its buttons for 500 ms
     await expect(page.getByRole('heading', { name: 'Players' })).toBeVisible();
     await expect(page.getByText('Change players after this round.', { exact: true })).toHaveCount(0);
     await page.getByLabel('Player name', { exact: true }).fill('Zoya');
@@ -314,6 +316,7 @@ test.describe('IMP-075: the menu at each moment', () => {
     await expect(page.getByTestId('round-outcome')).toBeVisible();
     expect(await menuItems(page, 'result')).toEqual(BETWEEN_MENU);
     await fromMenu(page, 'History');
+    await settle(page); // 1.3.1 (I29, R2): what the menu item opened guards its buttons for 500 ms
     await page.getByRole('button', { name: /^(← )?Back$/ }).click();
     await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     await expect(page.getByTestId('round-outcome')).toBeVisible();
@@ -323,6 +326,7 @@ test.describe('IMP-075: the menu at each moment', () => {
     await startEvening(page, { mode: 'hard', talking: 'timer', seeds: { deals: [{ wordId: SAMOSA, impostor: 'Arjun', starter: 'Riya' }, { wordId: 'IMPW-006', impostor: 'Meena', starter: 'Arjun' }] } });
     await dealAll(page);
     await mainButton(page).filter({ hasText: CLUES_DONE }).click();
+    await settle(page); // 1.3.1 (I29, R2): guarded for 500 ms after the screen changes
     await mainButton(page).filter({ hasText: 'Vote now' }).click();
     await page.clock.runFor(6000);
     await reveal(page, 'Riya', 7500); // past the result's build-up (v3.5: 1.5 s; v2.2 build: 7 s)
@@ -440,6 +444,7 @@ test.describe('IMP-087: the screen stays awake during a round', () => {
     await page.locator('body').evaluate(() => { (window as any).__wake = []; });
     await mainButton(page).filter({ hasText: /guessed\. Show the word$/ }).click();
     expect(await wakeCalls(page), 'not released before the verdict').not.toContain('release');
+    await settle(page); // 1.3.1 (I29, R2): the word appearing restarts the result's 500 ms guard
     await page.getByRole('button', { name: 'Wrong guess', exact: true }).click();
     await expect.poll(async () => (await wakeCalls(page)).includes('release'), 'released on the verdict').toBe(true);
     await page.locator('body').evaluate(() => { (window as any).__wake = []; });
@@ -517,6 +522,7 @@ test.describe('IMP-109: Settings for Impostor', () => {
     const records = (await onlyEvening(page)).records;
     expect(await fontSize(clueOrder(page))).toBe(17);
     await fromMenu(page, 'Settings');
+    await settle(page); // 1.3.1 (I29, R2): what the menu item opened guards its buttons for 500 ms
     await expect(larger(page)).toBeVisible();
     await expect(tapToShow(page)).toBeVisible();
     await expectNoSecrets(page, secretTerms(SAMOSA, 'hard'), 'Settings mid-round');
@@ -536,6 +542,7 @@ test.describe('IMP-109: Settings for Impostor', () => {
     await expect(passName(page)).toHaveText(exact('Arjun'));
     await settle(page); // the "··· Menu" button is guarded on the deal screens (v3.8)
     await fromMenu(page, 'Settings');
+    await settle(page); // 1.3.1 (I29, R2): what the menu item opened guards its buttons for 500 ms
     await tapToShow(page).click();
     await settingsClose(page).click();
     await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)

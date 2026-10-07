@@ -5,7 +5,7 @@ Copied unchanged from `docs/games/impostor/scenarios.md` (version 3.9, 4 October
 ## IMP-001: "Host a game" offers Tambola and Impostor
 Status: approved, owner, 2026-10-06 (changed)
 Phase: Impostor 1
-Given Home (PLT-300: still "Host a game" and "Join with my ticket")
+Given Home (PLT-300: "Host a game" and "Join a game", P11)
 Then the "Host a game" button's second line reads exactly "Tambola or Impostor on this phone"
 When the host taps "Host a game"
 Then "What shall we play?" shows two cards of equal size and look (neither has the main look):
@@ -41,7 +41,7 @@ And only one Impostor evening is ever unfinished at a time
 ## IMP-002: A guest is told there's nothing to join
 Status: approved, owner, 2026-10-03
 Phase: Impostor 1
-When a guest opens "Join with my ticket"
+When a guest opens "Join a game" (was "Join with my ticket"; P11, 4 October)
 Then the last paragraph of that screen reads exactly
 "Playing Impostor? It's all on the host's phone. Nothing to join, just play along!"
 And nothing else on that screen changes

@@ -6,6 +6,7 @@ import { expect, silence, test, type Page } from './fixtures';
 import {
   DEFAULT_CHOICES, P4, SAMOSA, PANI_PURI, KHEER, TZ, exact, mainButton, phoneWith, roundMoves, savedEvening, type Move,
   aheadOfRound5,
+  settle,
 } from './impostor';
 
 test.use({ timezoneId: TZ, viewport: { width: 390, height: 844 } });
@@ -15,7 +16,7 @@ const openAt = async (page: Page, e: any) => {
   await phoneWith(page, [e], { now: e.records.at(-1).at + 60_000 });
   const row = page.getByTestId('unfinished-games').filter({ hasText: /Impostor/ });
   await expect(row.or(mainButton(page)).first()).toBeVisible();
-  if (await row.first().isVisible()) await row.getByText('Tap to resume').first().click();
+  if (await row.first().isVisible()) { await settle(page); await row.getByText('Tap to resume').first().click(); } await settle(page); // 1.3.1 (I29, R2): Home, then the reopened screen, guard their buttons for 500 ms
   await expect(mainButton(page)).toHaveText('Next round');
 };
 const rows = async (page: Page) => page.getByTestId('score-row').evaluateAll((els) => els.map((e) => ({

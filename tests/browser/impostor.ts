@@ -24,6 +24,15 @@ export function aheadOfRound6(item: string, what: string) {
   if (process.env.PGN_IGNORE_AHEAD) return;
   pwTest.fail(true, `Impostor round 6 (v3.9), ${item}, not built yet (lane T): ${what}`);
 }
+
+/**
+ * As `aheadOfRound6`, for Impostor round 6b → 1.3.1 (decision I29, R1–R4, and the C1 Home wording P11; lane V).
+ * PGN_IGNORE_AHEAD=1 runs these tests unmarked, to check them against lane V's branch before it merges.
+ */
+export function aheadOfRound6b(item: string, what: string) {
+  if (process.env.PGN_IGNORE_AHEAD) return;
+  pwTest.fail(true, `Impostor round 6b (1.3.1, I29), ${item}, not built yet (lane V): ${what}`);
+}
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { expect, test as pwTest, type Locator, type Page } from '@playwright/test';
@@ -236,7 +245,9 @@ export async function phoneWith(page: Page, evenings: any[], opts: { now: number
 export async function resumeFromHome(page: Page) {
   const row = page.getByTestId('unfinished-games').filter({ hasText: /Impostor/ });
   await expect(row.first()).toBeVisible();
+  await settle(page); // 1.3.1 (I29, R2): Home's buttons are guarded for 500 ms after it shows
   await row.getByText('Tap to resume').or(row.getByRole('button', { name: /Tap to resume/ })).first().click();
+  await settle(page); // and so are the reopened game's (I29 replaces IMP-077's reopen exception)
 }
 
 // ---- Starting an evening on screen ----
@@ -277,7 +288,12 @@ export interface StartOptions {
  */
 export async function startEvening(page: Page, o: StartOptions = {}) {
   await freshPhone(page, { time: o.time, seeds: o.seeds, storage: o.storage });
+  // 1.3.1 (I29, R2): Home and "What shall we play?" guard their buttons for 500 ms after each screen change, the first
+  // load included.
+  await settle(page);
   await hostAGame(page).click();
+  await expect(page.getByRole('heading', { name: 'What shall we play?' })).toBeVisible();
+  await settle(page);
   await impostorCard(page).click();
   await expect(page.getByRole('heading', { name: "Who's playing?" })).toBeVisible();
   // v3.9 (IMP-010, P2): the setup screens' buttons are guarded for 500 ms after each screen shows.
@@ -393,6 +409,9 @@ export async function dealAll(page: Page, players: string[] = P4): Promise<Recor
 export const menuButton = (page: Page) => page.getByRole('button', { name: /Menu/ });
 export const menuItem = (page: Page, name: string) => page.getByRole('menuitem', { name, exact: true });
 export async function fromMenu(page: Page, item: string) {
+  // 1.3.1 (I29, R2): the menu button, like every button, is guarded for 500 ms after a screen change; what an item opens
+  // (a sheet, a dialog, a screen) guards its own buttons for 500 ms, so the caller settles before tapping there.
+  await settle(page);
   await menuButton(page).click();
   await menuItem(page, item).click();
 }
@@ -404,9 +423,11 @@ export const CLUES_DONE = /^(Clues done, talk it over|Clues done, start timer|Cl
 export async function toPicker(page: Page) {
   await settle(page);
   await mainButton(page).filter({ hasText: CLUES_DONE }).click();
+  await settle(page); // 1.3.1 (I29, R2): the talk screen's buttons are guarded for 500 ms
   await mainButton(page).filter({ hasText: 'Vote now' }).click();
   await page.clock.runFor(6000);
   await expect(page.getByRole('heading', { name: 'Who got the most fingers?' })).toBeVisible();
+  await settle(page); // 1.3.1 (I29, R2): so is the picker, from the moment it opens
 }
 export const pickerName = (page: Page, name: string) => page.getByRole('button', { name: new RegExp(`^(✓\\s*)?${ci(name)}(\\s*✓)?$`) });
 /**
@@ -414,6 +435,7 @@ export const pickerName = (page: Page, name: string) => page.getByRole('button',
  * and past every timed step of the v2.2 build).
  */
 export async function reveal(page: Page, name: string, ms = 7500) {
+  await settle(page); // 1.3.1 (I29, R2): the picker's buttons are guarded for 500 ms after it opens
   await pickerName(page, name).click();
   await mainButton(page).filter({ hasText: new RegExp(`^Reveal ${ci(name)}$`) }).click();
   await page.clock.runFor(ms);
@@ -426,6 +448,7 @@ export async function reveal(page: Page, name: string, ms = 7500) {
  * the top of the summary (v3.8: in "More ›"). Navigation only: either place is accepted for "Oops".
  */
 export async function summaryAction(page: Page, name: 'Share' | 'History' | 'Discard this evening' | 'Discard this game' | 'Oops, keep playing') {
+  await settle(page); // 1.3.1 (I29, R2): the summary's buttons are guarded for 500 ms after it shows
   const top = page.getByRole('button', { name, exact: true });
   if (name === 'Oops, keep playing' && await top.isVisible().catch(() => false)) { await top.click(); return; }
   const more = page.getByRole('button', { name: 'More ›', exact: true });
