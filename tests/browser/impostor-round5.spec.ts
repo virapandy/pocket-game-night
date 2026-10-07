@@ -320,6 +320,7 @@ test.describe('Lane N: IMP-077 between rounds: "Next round", outlined "End game"
     const card = page.getByTestId('resume-card');
     await expect(card).toContainText('Impostor · Riya, Arjun and 2 more · round 2');
     await expect(card).toContainText('Tap to resume');
+    await settle(page); // 1.3.1 (I29, R2): guarded for 500 ms after the screen changes
     await card.click();
     await expect(page.getByTestId('round-outcome')).toBeVisible();
   });
@@ -397,7 +398,9 @@ test.describe('Lane N: IMP-103 History "Play again" while a game is unfinished a
     const open = savedEvening({ id: 'imp-open', deals: [DEAL], moves: [START, { type: 'seen' }] });
     await phoneWith(page, [past, open], { now: open.records.at(-1).at + 60_000 });
     await openHistory(page);
+    await settle(page); // 1.3.1 (I29, R2): guarded for 500 ms after the screen changes
     await page.getByTestId('history-game').filter({ hasText: 'Impostor · 1 round' }).click();
+    await settle(page); // 1.3.1 (I29, R2): guarded for 500 ms after the screen changes
     await page.getByRole('button', { name: 'Play again', exact: true }).click();
     await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     const dialog = page.getByRole('dialog', { name: /Start a new game\?/ });

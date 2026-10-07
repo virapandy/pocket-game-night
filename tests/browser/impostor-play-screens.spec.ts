@@ -359,6 +359,7 @@ test.describe('IMP-031 and IMP-032: the picker and a tie', () => {
     await expect(quiet(page, "It's a tie")).toHaveCount(0);
     await expect(mainButton(page)).toHaveText(exact('Reveal'));
     await expect(mainButton(page)).toBeDisabled();
+    await settle(page); // 1.3.1 (I29, R2): guarded for 500 ms after the screen changes
     await pickerName(page, 'Meena').click();
     await expect(mainButton(page)).toHaveText(exact('Reveal Meena'));
   });
@@ -1008,11 +1009,13 @@ test.describe('IMP-083 and IMP-084: screen readers, no flashing', () => {
     });
     await expect(announcer(page)).toHaveAttribute('aria-live', 'polite');
     await toTalk(page);
+    await freezeClock(page); // fake time only, so each 1 s step of the countdown is exactly 1 s
     await settle(page); // 1.3.1 (I29, R2): guarded for 500 ms after the screen changes
     await mainButton(page).filter({ hasText: 'Vote now' }).click();
     for (const n of ['3', '2', '1', 'Point!']) { await page.clock.runFor(1000); await expect(countdown(page)).toHaveText(n); }
     await page.clock.runFor(2000);
     await expect(pickerHeading(page)).toBeVisible();
+    await settle(page); // 1.3.1 (I29, R2): guarded for 500 ms after the screen changes
     await pickerName(page, 'Arjun').click();
     await mainButton(page).click();
     await page.clock.runFor(1000);
@@ -1095,8 +1098,10 @@ test.describe('IMP-083 and IMP-084: screen readers, no flashing', () => {
         document.querySelectorAll('[data-testid]').forEach((el) => w.__bg.push({ t, k: el.getAttribute('data-testid'), c: getComputedStyle(el).backgroundColor }));
       }, 50);
     });
+    await settle(page); // 1.3.1 (I29, R2): the talk screen's buttons are guarded for 500 ms after it shows
     await mainButton(page).click();
     for (let i = 0; i < 120; i++) await page.clock.runFor(50);
+    await settle(page); // 1.3.1 (I29, R2): guarded for 500 ms after the screen changes
     await pickerName(page, 'Arjun').click();
     await mainButton(page).click();
     for (let i = 0; i < 100; i++) await page.clock.runFor(50);
@@ -1279,8 +1284,10 @@ test.describe('IMP-100 to IMP-108: after the round', () => {
     await summaryAction(page, 'History');
     const row = page.getByTestId('history-game').filter({ hasText: 'Impostor' });
     await expect(row).toContainText('Impostor · 1 round');
+    await settle(page); // 1.3.1 (I29, R2): guarded for 500 ms after the screen changes
     await row.click();
     await expect(page.getByTestId('history-round')).toHaveText([exact('Round 1 · Samosa · Arjun caught, wrong guess')]);
+    await settle(page); // 1.3.1 (I29, R2): guarded for 500 ms after the screen changes
     await page.getByRole('button', { name: 'Play again', exact: true }).click();
     await settle(page); // v3.9: the setup screens' buttons are guarded for 500 ms whenever they show (P2)
     await expect(page.getByRole('heading', { name: "Who's playing?" })).toBeVisible();

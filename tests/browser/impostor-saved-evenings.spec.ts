@@ -479,7 +479,8 @@ test.describe('IMP-099: time limits, measured exactly', () => {
     const ctx = await browser.newContext({ timezoneId: TZ, viewport: { width: 390, height: 844 } });
     await silence(ctx);
     const later = await ctx.newPage();
-    await phoneWith(later, [e], { now: lastAt(e) + 3 * H + 1, fixed: true });
+    await phoneWith(later, [e], { now: lastAt(e) + 3 * H + 1 - 60_000 });
+    await later.clock.pauseAt(lastAt(e) + 3 * H + 1 - 500); // as above: "Tap to resume" at exactly 3 hours + 1 ms
     await openEvening(later);
     await expect(leftHalfway(later)).toBeVisible();
     await ctx.close();
