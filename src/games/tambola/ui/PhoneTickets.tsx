@@ -43,7 +43,7 @@ type Screen =
   | { name: 'claim-ticket' }
   | { name: 'claim-prize'; ticket: number }
   | { name: 'claim'; ticket: number; pattern: Pattern }
-  /** `typing` false: "Join with my ticket" first offers the camera, then "Type the code" (PLT-300). */
+  /** `typing` false: "Join a game" first offers the camera, then "Type the code" (PLT-300). */
   | { name: 'enter'; text: string; error: string | null; typing: boolean };
 
 /**
@@ -160,13 +160,13 @@ export function PhoneTickets({
 }: {
   prefs: Preferences;
   link: string | null;
-  /** true: the typed-code form; 'join': Home's "Join with my ticket" (scan with the camera, or type the code). */
+  /** true: the typed-code form; 'join': Home's "Join a game" (scan with the camera, or type the code). */
   enter: boolean | 'join';
   nonce: number;
   onHome: () => void;
   /** Phase 7: "Report a problem" with only this phone's own tickets and marks (PLT-207). */
   onReport?: (subject: ReportSubject) => void;
-  /** IMP-002: the app's last line on "Join with my ticket" for games played on the host's phone alone. */
+  /** IMP-002: the app's last line on "Join a game" for games played on the host's phone alone. */
   joinNote?: string;
 }) {
   const [game, setGame] = useState<PhoneGameFacts | null>(() => loadPhoneGame(prefs));
@@ -289,7 +289,7 @@ export function PhoneTickets({
             {game ? 'Back' : 'Home'}
           </button>
         </header>
-        <h1 className="step-title">{s.typing ? 'Type the code' : 'Join with my ticket'}</h1>
+        <h1 className="step-title">{s.typing ? 'Type the code' : 'Join a game'}</h1>
         {!s.typing ? (
           <>
             <p className="lead">Scan the QR on the host's phone with your phone's camera. Your ticket opens here.</p>

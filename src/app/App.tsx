@@ -487,7 +487,7 @@ function PastGameActions({
 const SEEN_KEY = 'home.seen';
 
 /**
- * Home (PLT-300): two equal choices, "Host a game" and "Join with my ticket", then any unfinished games as plain
+ * Home (PLT-300): two equal choices, "Host a game" and "Join a game", then any unfinished games as plain
  * rows. Sessions, History, Report a problem and Settings sit in the menu (⋯). A first visit says "You're ready for
  * game night" (TAM-057): the app is saved on this phone and opens with no internet from now on.
  */
@@ -588,8 +588,8 @@ function Home({
           <span className="choice-card-text">{hostGames.map((g) => g.info.title).join(' or ')} on this phone</span>
         </button>
         <button type="button" className="choice-card home-card" onClick={() => onTickets('join')}>
-          <span className="choice-card-title">Join with my ticket</span>
-          <span className="choice-card-text">Got a QR or code from the host?</span>
+          <span className="choice-card-title">Join a game</span>
+          <span className="choice-card-text">Tambola ticket from the host</span>
         </button>
       </div>
 

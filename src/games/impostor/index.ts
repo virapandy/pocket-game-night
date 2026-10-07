@@ -74,6 +74,6 @@ export const impostor = {
   reuseLabel: 'Play again',
   /** IMP-109: "Larger text", "Tap to show instead of hold" and "Skipped words", for the app's Settings. */
   Settings: ImpostorSettings,
-  /** IMP-002: the last line of "Join with my ticket". */
+  /** IMP-002: the last line of "Join a game". */
   joinNote: "Playing Impostor? It's all on the host's phone. Nothing to join, just play along!",
 };
