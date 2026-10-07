@@ -275,8 +275,14 @@
   border: 2px solid var(--border);
   border-radius: 16px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  /* I29 (IMP-075): a list taller than the screen scrolls inside it, so every item, "End game" too, can be reached at
+     812 × 375 and 320 × 568 with Larger text on or off. */
+  max-height: calc(100% - max(60px, calc(env(safe-area-inset-top) + 60px)) - max(12px, env(safe-area-inset-bottom)));
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 .imp-menu-item {
+  flex: none;
   min-height: 48px;
   padding: 0 14px;
   text-align: left;
@@ -684,8 +690,12 @@
 .imp-fun { font-weight: 700; text-align: center; }
 .imp-summary-quiet { display: flex; flex-direction: column; gap: 8px; }
 /* "More ›" opens just above the main button. */
-.imp-menu.imp-more-menu { top: auto; bottom: calc(var(--imp-foot) + 4px); }
-.imp-menu-divider { height: 1px; margin: 4px 8px; background: var(--border); }
+.imp-menu.imp-more-menu {
+  top: auto;
+  bottom: calc(var(--imp-foot) + 4px);
+  max-height: calc(100% - var(--imp-foot) - 4px - max(12px, env(safe-area-inset-top)));
+}
+.imp-menu-divider { flex: none; height: 1px; margin: 4px 8px; background: var(--border); }
 .imp-look-rounds { padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
 .imp-look-line { display: block; }
 
