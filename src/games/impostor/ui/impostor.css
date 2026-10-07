@@ -341,15 +341,16 @@
 /* "Whole family" must fit inside the borders: 96 px at 17 px (320 wide, Larger text: 100 px option) and 108 px at
    19 px (360 wide, Larger text: 112 px option), so at most 5.64 em. Bold Arial/Liberation measures 6.17 em, so: no side
    padding, the tightest bold system font of each phone (SF, Roboto, Segoe UI, Helvetica or Arial; never the wider
-   fallback some desktops give `system-ui`), letters 0.05 em closer and the space 0.1 em narrower (about 5.45 em:
-   93 px at 17 px, 104 px at 19 px). The ✓ is drawn small (10 px) tight in the top right corner, above the letters,
+   fallback some desktops give `system-ui`) and letters 0.06 em closer within words only (I29: labels keep their
+   spaces, so `word-spacing` gives the space back exactly what `letter-spacing` takes from it; about 5.51 em: 94 px at
+   17 px, 105 px at 19 px). The ✓ is drawn small (10 px) tight in the top right corner, above the letters,
    and not read out (the button says `aria-pressed`). */
 .imp-group .imp-option {
   position: relative;
   padding: 4px 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Liberation Sans', sans-serif;
-  letter-spacing: -0.05em;
-  word-spacing: -0.1em;
+  letter-spacing: -0.06em;
+  word-spacing: 0.06em;
   white-space: nowrap;
   overflow-wrap: normal;
 }
