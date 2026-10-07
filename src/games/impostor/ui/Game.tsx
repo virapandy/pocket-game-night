@@ -12,8 +12,8 @@ import {
   clearUi, endEvening, LEFT_HALFWAY_MS, PREF, record, undoableVerdict, undoVerdict,
   type Evening, type EveningMatch, type UiState,
 } from './evening';
-import { Dialog, HideMainButton, MainButton, Menu, QuietButton, TapGuard, Toast, useToast, type MenuItem } from './parts';
-import { EndGameButton, Reveal, useTapGuard, type ResultInfo } from './Reveal';
+import { Dialog, HideMainButton, MainButton, Menu, QuietButton, TapGuard, Toast, useTapGuard, useToast, type MenuItem } from './parts';
+import { EndGameButton, Reveal, type ResultInfo } from './Reveal';
 import { HowToPlayChoices } from './Setup';
 import { PlayersSheet, RulesSheet, SettingsSheet, type PlayersMoment } from './Sheets';
 import { counts, outcomeLine, pointsText, scoreRows, storyOf } from './story';
@@ -179,13 +179,21 @@ export function Game({
   const resultScreen = !leftHalfway && !seeAgain && (step === 'caught' || step === 'guess' || step === 'result');
   /** IMP-077: a between-rounds screen ("Next round", "End game", "← Home"). */
   const betweenRounds = leftHalfway || state.phase === 'noWords' || (step === 'result' && resultShown);
-  // IMP-077: the guard starts only at its moments (1.5 s after "Reveal …", at once after "Still a tie" or the verdict,
-  // when the "left halfway" or no-words screen shows), not when a round result is merely reopened (resume, History's
-  // "← Back"). Once the result has gone (Undo of a verdict, the next round), every later showing is guarded again.
-  const guardKey = `${roundKey}|${state.phase}|${leftHalfway}`;
-  const reopenedResult = useRef<string | null>(resumed && step === 'result' && !leftHalfway ? guardKey : null);
-  if (!betweenRounds) reopenedResult.current = null;
-  const guard = useTapGuard(betweenRounds && guardKey !== reopenedResult.current ? guardKey : null);
+  // I29 (IMP-010, IMP-077): every screen change starts the 500 ms tap guard on all of this screen's buttons: each step
+  // of the round, the countdown and the picker, the result's lines appearing (1.5 s after "Reveal …", at once after
+  // "Still a tie" or the verdict), "left halfway", the no-words screen, "See my word again", and each dialog or sheet
+  // opening or closing. The deal's own screens (A, B, "No problem!", "Welcome back.") also have their own guard (Turn).
+  const screenKey = [
+    roundKey,
+    state.phase,
+    step ?? '',
+    leftHalfway,
+    resultShown,
+    counting ? `count-${countKey}` : '',
+    seeAgain ? `again-${seeAgain.name}-${seeAgain.key}` : '',
+    overlay ?? '',
+  ].join('|');
+  const guardScreen = useTapGuard(screenKey);
 
   // IMP-087, IMP-100: the screen stays on from a round's first screen A until the round's result shows.
   useWakeLock(state.phase === 'round' && !resultShown && !leftHalfway && !summary, roundKey);
@@ -386,9 +394,9 @@ export function Game({
         <section className="imp-stage imp-center">
           <h1 className="imp-room-title">This round was left halfway. Start a fresh round?</h1>
         </section>
-        <EndGameButton onClick={guard(showSummary)} />
+        <EndGameButton onClick={showSummary} />
         <MainButton
-          onClick={guard(() => {
+          onClick={() => {
             // IMP-074: each player taken off in the Players sheet is one "Deal again without …" (the last one is the
             // fresh round); with nobody taken off, one `dealAgain`. So k removals use k deals.
             let dealt = false;
@@ -399,7 +407,7 @@ export function Game({
               setLeftHalfway(false);
               resetRound();
             }
-          })}
+          }}
         >
           Next round
         </MainButton>
@@ -417,13 +425,13 @@ export function Game({
           <h1 className="imp-room-title">You've played every word in these categories!</h1>
           <p className="imp-body">Turn on more categories or + Grown-ups.</p>
           {canRepeat && (
-            <QuietButton className="imp-allow-repeats" onClick={guard(() => act({ type: 'allowRepeats' }))}>
+            <QuietButton className="imp-allow-repeats" onClick={() => act({ type: 'allowRepeats' })}>
               Allow repeats
             </QuietButton>
           )}
         </section>
-        <EndGameButton onClick={guard(showSummary)} />
-        <MainButton onClick={guard(change)}>Change categories</MainButton>
+        <EndGameButton onClick={showSummary} />
+        <MainButton onClick={change}>Change categories</MainButton>
       </>
     );
   } else if (seeAgain && r) {
@@ -558,7 +566,6 @@ export function Game({
         playerCount={state.players.length}
         onPlayers={() => setOverlay('players')}
         onEndGame={showSummary}
-        guard={guard}
         onUndo={() => {
           const cur = evRef.current;
           if (keepEv(undoVerdict(store, cur.saved, cur.match))) {
@@ -605,6 +612,7 @@ export function Game({
   return (
     <main
       className={`imp-screen imp-room${holdScreen ? ' imp-hold-screen' : ''}${resultScreen ? ' imp-page' : ''}${betweenRounds ? ' imp-between' : ''}`}
+      onClickCapture={guardScreen}
     >
       <HideMainButton.Provider value={dialog || sheet}>
         <div className="imp-screen-inner" hidden={sheet}>
@@ -613,7 +621,7 @@ export function Game({
                 chip on its own line directly under it, left-aligned, so both stay in the left half at every size. */}
             {betweenRounds ? (
               <div className="imp-bar-stack">
-                <QuietButton className="imp-home" onClick={guard(onHome)}>
+                <QuietButton className="imp-home" onClick={onHome}>
                   ← Home
                 </QuietButton>
                 {practiceChip}

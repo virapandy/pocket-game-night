@@ -7,7 +7,7 @@ import {
   tonightsNames, unfinishedEvening, type Evening, type EveningMatch,
 } from './evening';
 import { Game } from './Game';
-import { Dialog, HideMainButton, QuietButton } from './parts';
+import { Dialog, HideMainButton, QuietButton, useTapGuard } from './parts';
 import { LookBack } from './LookBack';
 import { HowToPlayChoices, WhosPlaying } from './Setup';
 import './impostor.css';
@@ -226,9 +226,11 @@ export function ImpostorPastGame({
   const match = loadEvening(saved);
   const d = describeEvening(saved);
   const larger = prefs?.get<boolean>(PREF.largerText, false) === true;
+  // I29: the 500 ms tap guard from when the look back shows.
+  const guard = useTapGuard(saved.id);
   return (
     <div className={larger ? 'imp imp-larger' : 'imp'}>
-      <main className="imp-screen imp-setup">
+      <main className="imp-screen imp-setup" onClickCapture={guard}>
         <header className="imp-bar">
           <QuietButton onClick={onBack}>← Back</QuietButton>
         </header>

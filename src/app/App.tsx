@@ -540,8 +540,10 @@ function Home({
     setMenu(false);
     run();
   };
+  // I29: a tap on any of Home's buttons within 500 ms of Home showing is ignored (a double tap never skips a screen).
+  const guard = impostor.useTapGuard('home');
   return (
-    <main className="screen home">
+    <main className="screen home" onClickCapture={guard}>
       {needRefresh && (
         <div className="update" role="status">
           <span>A new version is ready.</span>
@@ -685,8 +687,10 @@ function PickGame({
     return impostor.unfinished(gameStore);
   });
   const [asking, setAsking] = useState(false);
+  // I29: the 500 ms tap guard from when this screen shows, and again when "Start a new game?" opens or closes.
+  const guard = impostor.useTapGuard(asking);
   return (
-    <main className="screen">
+    <main className="screen" onClickCapture={guard}>
       <header className="top-bar">
         <button type="button" className="button button-quiet" onClick={onBack}>
           ← Back

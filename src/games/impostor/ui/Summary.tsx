@@ -5,7 +5,7 @@
 // Leaving records `endEvening` (the Game does it); "Share" does not leave.
 import { useEffect, useState } from 'react';
 import type { ImpostorState } from '../rules';
-import { Dialog, MainButton, QuietButton, Toast, useToast } from './parts';
+import { Dialog, MainButton, QuietButton, Toast, useTapGuard, useToast } from './parts';
 import { Scoreboard } from './Reveal';
 import { counts, funLines, leadLine, scoreRows, shareText, type Story } from './story';
 
@@ -35,6 +35,8 @@ export function Summary({
   const [asking, setAsking] = useState(false);
   const [more, setMore] = useState(false);
   const [toast, showToast, clearToast] = useToast();
+  // I29: the 500 ms tap guard from when the summary shows (the discard dialog has its own).
+  const guard = useTapGuard('summary');
   const c = counts(story);
   const none = c.rounds === 0;
   const fun = none ? [] : funLines(state, story).lines;
@@ -72,7 +74,7 @@ export function Summary({
   ];
 
   return (
-    <main className="imp-screen imp-summary imp-page">
+    <main className="imp-screen imp-summary imp-page" onClickCapture={guard}>
       <div className="imp-screen-inner">
         <div className="imp-summary-body">
           {/* IMP-092, IMP-101 (P3): the way back, visible at the top, full width; no extra confirmation on "End game". */}

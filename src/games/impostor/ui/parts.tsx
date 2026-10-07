@@ -1,6 +1,6 @@
 // Impostor's shared pieces (specs/impostor/README.md, Terms): the main button, quiet buttons, selected options,
 // switches, toasts, dialogs, sheets and the "··· Menu". The next screens reuse these.
-import { createContext, useCallback, useContext, useEffect, useId, useLayoutEffect, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useId, useLayoutEffect, useRef, useState, useSyncExternalStore, type MouseEvent as ReactMouseEvent, type ReactNode } from 'react';
 
 /**
  * IMP-080: at most one main button on screen. While a dialog, sheet or the summary covers a screen, that screen's
@@ -182,8 +182,10 @@ export function Toast({ toast, onDone }: { toast: ToastState | null; onDone: () 
  */
 export function Dialog({ text, children, className }: { text: ReactNode; children: ReactNode; className?: string }) {
   const id = useId();
+  // I29: a dialog is a new screen: its buttons are guarded for 500 ms from when it (or its question) shows.
+  const guard = useTapGuard(typeof text === 'string' ? text : 'dialog');
   return (
-    <div className="imp-backdrop">
+    <div className="imp-backdrop" onClickCapture={guard}>
       <div className={className ? `imp-dialog ${className}` : 'imp-dialog'} role="dialog" aria-modal="true" aria-labelledby={id}>
         <p id={id} className="imp-dialog-text">
           {text}
@@ -214,8 +216,10 @@ export function Sheet({
 }) {
   const id = useId();
   const covered = cover !== undefined && cover !== null && cover !== false;
+  // I29: a sheet is a new screen: its buttons are guarded for 500 ms from when it shows.
+  const guard = useTapGuard(title);
   return (
-    <div className="imp-sheet" role="dialog" aria-modal="true" aria-labelledby={id}>
+    <div className="imp-sheet" role="dialog" aria-modal="true" aria-labelledby={id} onClickCapture={guard}>
       <div className="imp-sheet-body" inert={covered}>
         <h1 id={id} className="imp-title">
           {title}
@@ -277,27 +281,34 @@ export function Menu({ items }: { items: readonly MenuItem[] }) {
 export const TAP_GUARD_MS = 500;
 
 /**
- * Guideline 20 (M18): a tap on a button within 500 ms of `screen` changing (or of this mounting) is ignored: it does
- * nothing at all, so a double tap never skips a screen. Only buttons are guarded; the hold pad (`hold-pad`) never is.
- * Laid out as if it were not there (`display: contents`). Uses `Date.now()`, so a fake clock drives it.
+ * Guideline 20 (M18), I29: a tap on a button within 500 ms of `screen` changing (or of the screen mounting) is ignored:
+ * it does nothing at all, so a double tap never skips a screen. Returns the click handler to put on the screen's own
+ * outer element (`onClickCapture`), so no element is added. Only buttons are guarded; the hold pad (`hold-pad`) never
+ * is, and neither is a click made by the keyboard (Enter in a text field adds its name at once, IMP-003). Uses
+ * `Date.now()`, so a fake clock drives it. The one tap guard: every Impostor screen, Home and "What shall we play?".
  */
-export function TapGuard({ screen, children }: { screen: unknown; children: ReactNode }) {
+export function useTapGuard(screen: unknown): (e: ReactMouseEvent) => void {
   const shownAt = useRef(Date.now());
   useLayoutEffect(() => {
     shownAt.current = Date.now();
   }, [screen]);
+  return useCallback((e: ReactMouseEvent) => {
+    if (Date.now() - shownAt.current >= TAP_GUARD_MS) return;
+    // A click from the keyboard (Enter or Space) is not a tap.
+    if (e.detail === 0) return;
+    const target = e.target as Element;
+    const button = target.closest('button');
+    if (!button || button.closest('[data-testid="hold-pad"]')) return;
+    e.stopPropagation();
+    e.preventDefault();
+  }, []);
+}
+
+/** `useTapGuard` around part of a screen, laid out as if it were not there (`display: contents`). */
+export function TapGuard({ screen, children }: { screen: unknown; children: ReactNode }) {
+  const guard = useTapGuard(screen);
   return (
-    <div
-      className="imp-guard"
-      onClickCapture={(e) => {
-        if (Date.now() - shownAt.current >= TAP_GUARD_MS) return;
-        const target = e.target as Element;
-        const button = target.closest('button');
-        if (!button || button.closest('[data-testid="hold-pad"]')) return;
-        e.stopPropagation();
-        e.preventDefault();
-      }}
-    >
+    <div className="imp-guard" onClickCapture={guard}>
       {children}
     </div>
   );

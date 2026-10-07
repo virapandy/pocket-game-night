@@ -20,6 +20,7 @@ import {
 } from './ui/evening';
 import { ImpostorPastGame, ImpostorScreen } from './ui/ImpostorScreen';
 import { ImpostorSettings } from './ui/Sheets';
+import { useTapGuard } from './ui/parts';
 
 export {
   impostorRules, pickImpostor, pickStarter, pickWord, scoreRound, readImpostorEvening, readTestSeeds, eveningTotals,
@@ -74,6 +75,11 @@ export const impostor = {
   reuseLabel: 'Play again',
   /** IMP-109: "Larger text", "Tap to show instead of hold" and "Skipped words", for the app's Settings. */
   Settings: ImpostorSettings,
+  /**
+   * I29: Impostor's 500 ms tap guard, also on Home and "What shall we play?" (the screens an Impostor game starts and
+   * ends on). Returns the `onClickCapture` handler for the screen's outer element.
+   */
+  useTapGuard,
   /** IMP-002: the last line of "Join a game". */
   joinNote: "Playing Impostor? It's all on the host's phone. Nothing to join, just play along!",
 };

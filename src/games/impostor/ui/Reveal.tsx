@@ -5,8 +5,8 @@
 // "Still a tie" shows at once. Reopened (or back from hidden) it shows at once, with no build-up (IMP-091).
 // The screen scrolls as one page; only the main button stays pinned (guideline 46a, IMP-081).
 // Between rounds (IMP-077, IMP-074): "Next round" with the outlined "End game" beside it, "Players (5) ›" on the game
-// line's row, and a 500 ms tap guard from the moment the lines appear.
-import { useCallback, useContext, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
+// line's row. The 500 ms tap guard from the moment the lines appear is the screen's own (Game, I29).
+import { useContext, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import type { Preferences } from '../../../engine';
 import { wordById, type Round } from '../rules';
 import { playSound } from './device';
@@ -25,27 +25,6 @@ export interface ResultInfo {
   readonly scoresFrom: number | null;
   readonly canUndo: boolean;
   readonly canSkipWord: boolean;
-}
-
-/** IMP-077 (guideline 20): a tap within 500 ms of a between-rounds screen appearing is ignored. */
-const GUARD_MS = 500;
-
-/**
- * IMP-077: the tap guard of the between-rounds screens. The window starts each time `key` turns to a new value that is
- * not null (the result's lines appear, the "left halfway" or no-words screen shows); `guard(fn)` ignores taps inside it.
- */
-export function useTapGuard(key: string | null): (fn: () => void) => () => void {
-  const since = useRef(0);
-  useLayoutEffect(() => {
-    if (key !== null) since.current = Date.now();
-  }, [key]);
-  return useCallback(
-    (fn: () => void) => () => {
-      if (Date.now() - since.current < GUARD_MS) return;
-      fn();
-    },
-    [],
-  );
 }
 
 /**
@@ -84,7 +63,6 @@ export function Reveal({
   playerCount,
   onPlayers,
   onEndGame,
-  guard,
 }: {
   round: Round;
   /** Just tapped: the build-up first (none after "Still a tie"). Otherwise everything at once. */
@@ -107,8 +85,6 @@ export function Reveal({
   onPlayers: () => void;
   /** IMP-077: the outlined "End game" beside "Next round". */
   onEndGame: () => void;
-  /** IMP-077: the between-rounds tap guard. */
-  guard: (fn: () => void) => () => void;
 }) {
   const tie = round.stillTie;
   const [building, setBuilding] = useState(() => live && !tie);
@@ -228,9 +204,9 @@ export function Reveal({
         result={result}
         practice={round.practice}
         playerCount={playerCount}
-        onPlayers={guard(onPlayers)}
-        onUndo={guard(onUndo)}
-        onSkipWord={guard(onSkipWord)}
+        onPlayers={onPlayers}
+        onUndo={onUndo}
+        onSkipWord={onSkipWord}
       />
     );
   }
@@ -293,8 +269,8 @@ export function Reveal({
       )}
       {complete && (
         <>
-          <EndGameButton onClick={guard(onEndGame)} />
-          <MainButton onClick={guard(onNext)}>Next round</MainButton>
+          <EndGameButton onClick={onEndGame} />
+          <MainButton onClick={onNext}>Next round</MainButton>
         </>
       )}
     </>
