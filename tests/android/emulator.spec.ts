@@ -4,7 +4,7 @@
 import type { Page } from '@playwright/test';
 import { expect, SCREENS, test, type ScreenName } from './fixtures';
 import {
-  call, callMany, calledNumbers, currentNumber, HOME, nextNumber, recordWin, setUpPaperGame, undoLastCall,
+  call, callMany, calledNumbers, currentNumber, HOME, nextNumber, recordWin, setUpPaperGame, undoLastCall, waitOutTapGuard,
 } from '../browser/helpers';
 
 /** The first visit, online: wait until the service worker controls the page, so the app works offline after. */
@@ -29,7 +29,10 @@ async function expectNoScrolling(page: Page, what: string) {
 /** Resume the game if the app asks (TAM-112: "Game resumed" / "Tap to resume"). */
 async function resumeIfAsked(page: Page) {
   const resume = page.getByRole('button', { name: /Tap to resume|Resume/ });
-  if (await resume.first().isVisible().catch(() => false)) await resume.first().click();
+  if (await resume.first().isVisible().catch(() => false)) {
+    await waitOutTapGuard(page); // 1.3.1 (I29, R2): Home's buttons are guarded for 500 ms after it shows
+    await resume.first().click();
+  }
 }
 
 for (const screen of Object.keys(SCREENS) as ScreenName[]) {
@@ -117,6 +120,7 @@ test.describe('PLT-121: Android-only behaviour on the emulator (390 × 844)', ()
     const calls = await callMany(page, 3);
     await page.goto('about:blank');
     await page.goto(HOME);
+    await waitOutTapGuard(page); // 1.3.1 (I29, R2)
     await page.getByText('Tap to resume').first().click();
     await resumeIfAsked(page);
     await expect(currentNumber(page)).toHaveText(String(calls[2]));
