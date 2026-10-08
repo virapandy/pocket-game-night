@@ -138,6 +138,19 @@ ask the owner to approve. Approved scenarios become tests; then the Build role s
 
 ---
 
+## Jev during design (owner, 8 October 2026)
+Jev (TypeSafe's decision model; `docs/proposals/e2e-and-jev-testing.md`) answers typed questions cheaply with probabilities.
+The product owner asks the orchestrator to run these **before** asking the owner to approve:
+1. **Word list check** (step 1 and whenever a word file changes): for every word, yes/no with probability on: belongs to its
+   category; known to most Indian families, including a non-Hindi speaker from Tirunelveli or Sivagangai; family-friendly;
+   one word, not a phrase. Words below 0.5 on any question go in a short list for the product owner, who decides, and the
+   owner approves the list with that list attached. Jev is a first filter, never the approver.
+2. **Board or clue check for word games** (step 2–3, Secret Words and the like): Jev guesses as the team would (a clue
+   against the board words); word pairs the guesses confuse are reworded before scenarios are drafted.
+3. **Screen text check** (step 5, with the UX designer): for each sketched screen, "which button would you press next?" from
+   the on-screen words alone. A screen whose most likely answer is not its main button is reworked before build.
+Jev never writes text, counts or decides a rule; it sorts, scores and says yes or no. Costs sit inside the weekly cap.
+
 ## ID prefixes
 | Game | Prefix | Folder |
 |---|---|---|
@@ -158,3 +171,4 @@ ask the owner to approve. Approved scenarios become tests; then the Build role s
 - [ ] Contract check with no unflagged engine changes
 - [ ] Scenarios cross-checked three ways
 - [ ] Owner approval recorded in each scenario's status
+- [ ] Jev word list check run and its short list settled (word games and any game with a word file)

@@ -43,7 +43,8 @@ When unsure between two classes, take the higher one.
    in the release, and a **player play** of each changed flow (the player helper, `docs/proposals/player-agent.md`).
 3. Red: rerun the failing tests on each change in the batch to find the one that broke it; fix it first.
 4. Green: the owner tries the preview and says yes; then the release goes to the families' link.
-5. Nightly and weekly runs (complete run nightly; mutation, simulation, emulator, Jev weekly) never block anyone.
+5. Nightly and weekly runs (complete run nightly; mutation, simulation, emulator weekly) never block anyone. The Jev **full
+   run** on the release candidate is part of the gate ("Jev in the pipeline" below); bundle runs report, they don't block.
    The full mutation run stays weekly; changes in between get mutation only where they touched code (C3 above).
    A release includes mutation on every rules or money line changed since the last release.
 
@@ -56,6 +57,19 @@ https://virapandy.github.io/pocket-game-night/, updated only by a release.
 2. Complete run on the candidate (reports only, publishes nothing): `gh workflow run ci.yml --ref rc-<date>`.
 3. After the owner's yes: `gh workflow run release.yml --ref main -f tag=rc-<date>` — refuses unless a complete run
    on that commit is green; publishes the families' link and creates the version release from `package.json`.
+
+## Jev in the pipeline (owner, 8 October 2026)
+Full detail: `docs/proposals/e2e-and-jev-testing.md`, "Pipeline, modes and limits". In short, for the orchestrator and tester:
+1. **Bundle run:** when a bundle of changes closes (merged lanes, or nightly if anything with C2 or C3 landed), the tester's
+   screen simulation plays the touched game(s): scripts cover every screen, button and path; Jev judges each new screen
+   state and steers to unreached options. Red on breakage or unreached items; confusing-screen flags go to the product owner.
+2. **Full run** on every release candidate (part of the release gate, with the complete run) and weekly on the game least
+   recently run extensively.
+3. **Word list check** whenever a word file changes (that alone, no bundle run); results to the product owner.
+4. **Finding triage** on every red run: Jev sorts findings by kind and severity and separates tool problems from real bugs
+   (PLT-122) before the tester writes `reports/latest.md`.
+C0 and C1 changes never trigger a Jev run by themselves. Every ordinary test passes without the key (PLT-114); the key is a
+GitHub secret; 50,000 decisions a week cap. Jev never writes code or tests, never decides a verdict, class or lane.
 
 ## Parallel work
 - Up to **3 coders** at once, each in its own working copy (git worktree) on its own short branch, each owning one

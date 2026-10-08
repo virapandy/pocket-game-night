@@ -55,6 +55,13 @@ complete test only before a release; up to 3 coders in parallel, each on its own
   for simulated play in the routine pipeline, per bundle and per release candidate, with a coverage map, a *least likely*
   mode and a 50,000 weekly cap. First game: the one not yet run extensively since its last changes. The tester builds it
   with the player-scripts work after the Impostor release; the coder adds the pipeline stage and the GitHub secret.
+  **Revised after the owner's independent-pass question (8 October, approved):** scripts own coverage, Jev owns judgement
+  (one question per new screen state, not per tap). Standing Jev jobs for the tester: word list check on every word file
+  change, the Secret Words guesser in full runs, finding triage on red runs. Orchestrator: run the word list check when the
+  product owner asks (`docs/new-game-process.md` "Jev during design") and a screen read when the UX designer asks
+  (`docs/ux-evaluation-playbook.md` §7). Rules: `docs/change-sop.md` "Jev in the pipeline"; detail: the proposal's
+  "Pipeline, modes and limits". First standing job once the tester is free: the word list check on Secret Words' 452 words
+  and Impostor's 291, results to the product owner.
 - C1/C2 questions don't stop work (pick by the UX guidelines, note it); C3 questions go to the owner in one list.
 - Stuck after 3 rounds or half a day: tell the owner. One progress line at the top of `reports/latest.md` per step.
 

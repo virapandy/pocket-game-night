@@ -90,30 +90,42 @@ its email and calendar workflow.
 **Budget:** superseded by "Pipeline, modes and limits" below (8 October): about 15,000 decisions in a typical week under a
 50,000 cap; no paid service beyond Jev.
 
-## Pipeline, modes and limits (owner's answers, 8 October 2026; `docs/decisions.md`)
-| Run | When | Plays | Size | Jev decisions (about) |
+## Pipeline, modes and limits (owner approved the independent pass, 8 October 2026; `docs/decisions.md`)
+**Principle: scripts own coverage, Jev owns judgement.** Jev picks among options and never plans, so reaching every screen,
+button and path is the scripted runner's job (free). Jev is asked where a knowledgeable person's quick judgement is worth
+paying a fraction of a cent for.
+
+| Run | When | What Jev does | Size | Jev decisions (about) |
 |---|---|---|---|---|
-| Quick verify | Every push | Browser smoke set, no Jev | as now, about 3 minutes | 0 |
-| **Bundle run** | When the orchestrator closes a bundle of changes (merged lanes, or nightly if anything landed) | The game(s) the bundle touched | 100 evenings per game, half *likely*, half *least likely*; stops early once the coverage map is complete and at least 40 evenings have played | up to 3,000 per game |
-| **Full run** | Every release candidate before the owner tries it; weekly on the game least recently run | One game | 300 evenings, same mix | about 9,000 |
-| Engine mass simulation | Weekly | Rules and money only, no screens | back to 2,000 games (free) | 0 |
+| Quick verify | Every push | Nothing | as now, about 3 minutes | 0 |
+| **Bundle run** | When the orchestrator closes a bundle of changes (merged lanes, or nightly if anything landed) | Scripts play 100 evenings per touched game and keep the coverage map; on every **new screen state** (screen, buttons, sizes; seen once) Jev answers "which button would a person press next?" and, where the map shows unreached options, the run takes Jev's **least likely** option | 100 evenings, early stop once the map is complete after 40 | 300–800 per game |
+| **Full run** | Every release candidate before the owner tries it; weekly on the game least recently run | As the bundle run, 300 evenings, plus the word-game guesser (below) for Secret Words | 300 evenings | 1,000–3,000 |
+| **Word list check** | Whenever a word list or word file changes, and before the owner approves a new list | Per word, yes/no with probability: belongs to its category; known to most Indian families, including a non-Hindi speaker from Tirunelveli; family-friendly; one word, not a phrase; for Secret Words also "too close to another board word" (pairs) | every word, 4–5 questions | 1,500–3,000 per list |
+| **Word-game guesser** | Full runs of Secret Words; design time for a new board or clue rule | Given a clue and the 25 board words, Jev's Choice probabilities are the team's guesses; boards where the probabilities spread over the wrong words name word pairs that are too close | 300 games | about 3,000 |
+| **Finding triage** | On every red bundle, full or player run | Choice and Score: tool problem or real bug (PLT-122); flaky or real; which **kind** of player finding (hidden action, dead end, cut-off text, double-tap harm, unknown word, other); severity. Kinds feed the player-rules list in `docs/proposals/player-scripts.md` | per finding | under 200 a week |
+| Engine mass simulation | Weekly | Nothing (rules and money only) | 2,000 games (free) | 0 |
 
 - **Which game first:** the one not yet run extensively since its last set of changes. Incremental changes on top of an
-  extensively-run baseline wait their turn.
-- **Two modes.** *Likely:* Jev taps as a person would; disagreement with the main button is the confusing-screen flag.
-  *Least likely:* the same question is asked, and the run takes the option Jev rates **least** likely, so the choices people
-  rarely make (the quiet button, Back at an odd moment, Undo, "Don't know this word?") get played on purpose. The runner
-  switches to least-likely whenever the coverage map still shows unreached buttons or paths on the current screen.
+  extensively-run baseline wait their turn. (Impostor first, then Secret Words as it is built, Tambola after.)
+- **Two modes.** *Likely:* Jev's most likely button; if it is not the screen's main button with confidence above 0.8, the
+  screen is **flagged confusing** with a screenshot. *Least likely:* the run takes the option Jev rates least likely, so the
+  choices people rarely make (quiet buttons, Back at an odd moment, Undo, "Don't know this word?") get played on purpose.
+  Every question offers "uncertain"; bands are fixed in one config file (high above 0.8 acts; 0.5 to 0.8 goes in the report;
+  below 0.5 or uncertain is listed as "Jev unsure" and a scripted player taps). Every decision is logged with its confidence.
 - **Coverage map, per game and bundle:** every screen; every button on every screen; every rule branch (by scenario ID);
-  every screen-to-screen path; each marked reached or unreached, with the three sizes (360, 390, 812 × 375) seen for every
-  screen. Combinations of settings are not a target ("good coverage, not 99.99%").
+  every screen-to-screen path; each marked reached or unreached, at the three sizes (360, 390, 812 × 375). Combinations of
+  settings are not a target (owner: "good coverage, not 99.99%").
 - **Verdict:** a bundle or full run is red on any dead end, stuck screen, secret shown, console error, layout break or
-  unreached item; the full run's verdict is part of the release gate. Every ordinary test still passes without the key
-  (PLT-114); the Jev runs are a pipeline stage with the key as a GitHub secret.
+  unreached item; the full run's verdict is part of the release gate. Confusing-screen flags and word-list results are
+  **findings for the product owner**, never red on their own. Every ordinary test still passes without the key (PLT-114);
+  the Jev jobs are pipeline stages with the key as a GitHub secret.
 - **Cap:** 50,000 Jev decisions a week (was 20,000), worst case about $4.20 a week by the 29 September estimate. A typical
-  week (two bundles plus one full run) uses about 15,000. When the cap is reached, runs finish with scripted players.
+  week (two bundles, one full run, one word-list check, triage) uses about 8,000. When the cap is reached, runs finish with
+  scripted players and the word jobs wait for the next week.
 - **Being smart about what runs:** C0 docs and C1 look-only changes never trigger a bundle run on their own; they ride
-  with the next bundle that has C2 or C3 changes, or with the weekly run.
+  with the next bundle that has C2 or C3 changes, or with the weekly run. A word file change triggers only the word list check.
+- **Not Jev's job:** writing anything (reports, tests, code), counting or arithmetic, deciding a rule or a verdict
+  (PLT-112), planning a sequence of taps, or deciding a change's class or lane (a few decisions a day; the orchestrator does it).
 
 ## What the owner sees
 One short weekly line in the report: "200 evenings played (50 with Jev people): 0 dead ends, 0 secrets shown, 2 screens

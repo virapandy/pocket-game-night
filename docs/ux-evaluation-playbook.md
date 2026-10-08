@@ -83,6 +83,14 @@ glare, fun, tipsy or older fingers, real phones, or whether people trust the dra
 `docs/playtest-checklist.md`. Each play-test round aims for about 5 people across our personas (a family game night
 with a grandparent and a child counts), thinking aloud where it doesn't spoil the game.
 
+## 7. Jev as a second opinion on "what next?" (owner, 8 October 2026)
+For pass 12a ("What next?") the product owner or UX designer may ask the orchestrator for a Jev read of a screen: the
+screen's visible words and buttons, and the question "which button would a person press next?". Jev's most likely button
+with its probability goes next to the designer's own judgement in the report. Agreement with the main button above 0.8 is
+evidence the step is obvious; a different button above 0.8 is a flag. Jev reads words, not layout, so it never replaces
+passes on size, contrast, reach or motion, and it never decides; the product owner does. Results of the weekly runs'
+confusing-screen flags land in the same place (`docs/room-moments.md` style rows).
+
 ## Sources
 [1] NN/g, 10 usability heuristics, https://www.nngroup.com/articles/ten-usability-heuristics/ ·
 [2] NN/g, how to conduct a heuristic evaluation, https://www.nngroup.com/articles/how-to-conduct-a-heuristic-evaluation/ ·
