@@ -30,6 +30,24 @@ that five things are derived from or checked against, so they can never drift ap
 | 4. **Test navigation helpers**: the tester's "go to screen X" steps follow the map, so a flow change is one map edit, not twenty test edits | Tester | Brittle per-test navigation |
 | 5. **Design rule checks**, run on the map itself before any code: every screen has a way out; every button leads somewhere; stop and home visible where the guidelines say; one main button per screen; banned words absent; every rule hook has a scenario; every secret is behind a hold | Product owner (automatic, a script in the Test clone the tester keeps) | The player rules of `player-scripts.md`, applied to the design instead of the build |
 
+### How the map gets made (owner, 8 October): owner, Jev and persona agents together
+1. **Owner's draft, in plain words:** one screen per line: its name, what it says, its buttons, where each button goes.
+   No table skills needed. The product owner turns it into the table and fills the bookkeeping columns (rule hooks,
+   intentions, size classes).
+2. **Jev reads every screen** of the table (typed questions, inside the weekly cap): which button would a person press
+   next; is a way out visible; is any word unlikely to be known by a non-Hindi-speaking family; does this screen duplicate
+   one we already have. Jev cannot write the map; it checks it.
+3. **Persona agents walk the map**, one agent per persona from the player cast (`player-agent.md`: first-time host,
+   grandparent with weak English, 10-year-old, distracted host with one hand busy, competitive uncle, guest who just
+   opened the link). Each reads **only the on-screen words and buttons** of the map, never the guide, rules or
+   decisions, and plays the evening screen by screen: at every screen, what it wants to do next (carry on, stop, pause,
+   go home, get help, undo, change something, switch game) and whether it can see how; words it does not understand;
+   where it feels rushed or lost. Text only, no browser, a few minutes each; run one after another, each from a clean
+   start. The product owner merges the six reports into one list of gaps, by screen.
+4. **Owner fixes the draft** from that list, then the prototype is generated and the owner taps through it (stage 2).
+The same four steps run on the **diff** of the map for a C2 or C3 change to a shipped game. This replaces the design-time
+player walk of `player-agent.md` with a definite place in the pipeline; its testing-time play of the preview stays.
+
 **Rules stay separate from screens.** The rules engine for a game is pure logic with no screens (as Tambola's is). Its
 scenarios carry worked examples with exact numbers (`spec-rules.md`). It is written and mass-simulated **before any
 screen code**, because it is the cheapest code to write and the cheapest to prove. Screens come only after the map and
@@ -39,7 +57,7 @@ prototype have been played.
 | # | Stage | Who | What comes out | Cheap simulation at this stage |
 |---|---|---|---|---|
 | 0 | Problem and player stories (exists, step 0a) | Product owner | "I want to… so that…" per persona and lifecycle stage | — |
-| 1 | **Screen map** and words | Product owner | The table above; new words into the shared text list | Design rule checks (5) run automatically |
+| 1 | **Screen map** and words | Owner's draft; product owner's table; Jev checks; persona agents walk it ("How the map gets made") | The table above; new words into the shared text list; one gap list by screen | Design rule checks (5) run automatically; Jev per screen; six persona walks |
 | 2 | **Tap-through prototype** | Generated | A phone-playable prototype in the preview | **Owner taps through on their phone (10 minutes)**; the player helper plays each persona (no spec read); Jev reads every screen ("which button would you press?"); a scripted walk proves every path reachable |
 | 3 | **Critic pass** | A read-only "critic" helper, same model as the designer, different brief | Contradictions between guide, map and decisions; missing intentions; lifecycle gaps (pause, stop, resume, late joiner, phone dies); words a non-Hindi speaker would not know; the three worst things that could happen in the room | — |
 | 4 | Rules engine and its scenarios | Tester (scenarios), coder (engine only) | Engine passing rule tests; mass simulation green | Mass simulation, property tests (free) |
@@ -67,7 +85,7 @@ changed, the critic reads the diff, scenarios update, freeze, code. C0 and C1 ch
 ## What it needs
 | Item | Who | Class | Owner decision |
 |---|---|---|---|
-| Screen map as a required design artefact (step 1b of `new-game-process.md`; Secret Words first) | Product owner | C0 | Yes/no |
+| Screen map as a required design artefact (step 1b of `new-game-process.md`; Secret Words first), made by the owner's draft, the product owner's table, Jev checks and persona-agent walks | Owner, product owner | C0 | **Owner said yes, 8 October** (the making of it); the artefact itself: yes/no |
 | Generic prototype renderer at `/preview/proto/` reading `docs/games/<game>/screen-map` from the product docs, using the shared building blocks | Coder, one lane, after faster-cycles item 8 | C1 (no rules, no saved data) | Yes/no; it is app code that families never see |
 | Design rule checks as a script in the Test clone, run on the map (and later on the build) | Tester | Test only | Yes/no |
 | Critic helper: a read-only brief in `.claude/workspace/agents/critic.md`, called by the product owner at stage 3 and on every C2/C3 design diff | Orchestrator applies (project rules) | Rules | Yes/no |
