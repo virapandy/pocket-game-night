@@ -162,6 +162,9 @@ build already does all of it. Tester: copy the changed scenario lines into `spec
 mark (the "left halfway" menu as built is now the spec). Then Impostor waits for the owner's "release Impostor".
 
 ### Secret Words, the third game: START WHEN RELEASE CANDIDATE 1.3.0 IS FROZEN (owner, 4 October)
+**FIRST, before any Secret Words build work (owner, 8 October):** faster build-and-test cycles,
+`docs/proposals/faster-cycles.md` (orchestrator's evaluation plus an independent best-practice research pass). Get the
+owner's approval for its rule changes (items 1, 4, 5, 10, 12), set it up in its "Order of work", then start Secret Words.
 **Scenarios version 3.4 (SWD-001 to SWD-133) approved by the owner on 4 October** (adds section 07 Sessions and behaviour,
 plain wording, decisions K32–K41; two reader checks and a final pass done). The tester works from 3.4 only, after two two-reader checks and a final
 check pass; SWD-200+ are direction only. Design in `docs/games/secret-words/`: `scenarios.md` (binding), guide, ux, lifecycle,
