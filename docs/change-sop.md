@@ -37,6 +37,18 @@ When unsure between two classes, take the higher one.
 | Can be batched with others | yes | yes, freely | yes | in a batch of its own, or last in a batch |
 | Goes to the preview | n/a | after quick verify | after quick verify | after quick verify |
 
+## Bundling, restated (owner, 8 October 2026): optimise cycle time for changes
+1. **After every change: only quick verify** (small, fast, the change's area). Its green is the verdict for that change;
+   nobody starts a complete run, a full mutation run or a full Jev run for a single change or a single fix round.
+2. **Complete test only on a bundle (package):** when the orchestrator closes a bundle of merged changes (a release
+   candidate, or a planned package), the complete run on both phones runs once on it. If it is red, find the change
+   that broke it (rerun the failures per change), fix it, and rerun only what failed plus quick verify.
+3. **Complete mutation for a release:** every mutation group (`.github/workflows/mutation.yml`, about an hour on GitHub)
+   runs on the release candidate, alongside the complete run; changes in between get none (C3 lines may get the
+   changed-lines run above when the tester asks). Report-only: the score is part of the release notes, not a blocker.
+4. The nightly scheduled complete run and the weekly runs stay as free, report-only safety nets; they never block a
+   change and nobody waits for them.
+
 ## Release (the only complete test)
 1. The orchestrator calls a release when the owner asks, or when a set of handover items is done.
 2. The complete run: every browser test on both phones, every rule test, the UX designer's re-check of the rows
