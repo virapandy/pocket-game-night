@@ -1,8 +1,10 @@
 # Test report
-**Impostor 1.3.1 (round 6b, I29 R1–R4, and P11 "Join a game"), 7 October: quick verify GREEN on 57e0c2d (run 37590811765).**
+**Impostor 1.3.1 (round 6b, I29 R1–R4, and P11 "Join a game"): GREEN on both phones. Complete run 37726525429 on b0ed99d.**
 
-Commit tested: app 131c234 (1.3.1, lane V); tests 57e0c2d   Date: 2026-10-07
-Result: GREEN (quick verify, Android). Complete run on both phones: 37592526265, started on 57e0c2d, result to follow.
+Commit tested: app 131c234 (1.3.1, lane V); tests b0ed99d   Date: 2026-10-08
+Result: GREEN. Complete run 37726525429 (b0ed99d), every job green on Android and iPhone. Quick verify 37590811765 (57e0c2d)
+and 37593591313 (0037c8b) green. Earlier complete runs 37592526265 and 37721886881 failed only on the three Home screenshots
+(new "Join a game" card) and the TAM-118 test's tap within the guard; both fixed in b0ed99d.
 - Rule tests: 706 of 706 (local).
 - New `tests/browser/impostor-round6b.spec.ts` (29 tests a phone): R1 menus reach "End game" at 812 × 375 and 320 × 568, Larger
   text on/off; R2 tap guard on Home, "What shall we play?", talk, picker, summary, How to play, never the hold pad; R3 no text
