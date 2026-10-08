@@ -6,6 +6,13 @@ some tens of thousands."
 
 > **Owner's clarification (6 October 2026, `docs/decisions.md`):** the Jev test exists to **tap every button at random through the real screens and check that every flow ends rationally**: no dead ends, no stuck screens, no game that carries on after it should have ended, no Back or Home that goes nowhere. Weeding out breakage in game play, flow and navigation is job 1 for layers 3 and 4 below. Playing people realistically and rating confusing screens are secondary and must never shrink the random coverage: every button on every screen gets pressed, including quiet buttons, the menu, Back, Home, close-and-reopen, mid-round taps and taps that make no sense for that moment.
 
+> **Owner's direction (8 October 2026):** Jev is the **engine** for simulated play, used as much as possible because it is
+> cheap and fast: it plays the game extensively through the real screens, covering game play, the rules and every flow and
+> navigation path, so that every potential path is tested and verified. The counts below (50 per release, 200 a week, 50 with
+> Jev) are no longer the ceiling; they are the floor. How many evenings run is set by the weekly cap and by a coverage map:
+> every screen, every button on it, every rule branch and every path between screens, each marked reached or not reached in
+> the report. Scripts guarantee the coverage; Jev supplies the human-like and odd choices along the way. Confusion flags stay.
+
 ## Why change
 - Today's simulations play **100,000 Tambola games inside the rules engine** (no screens), plus 2,000 and 300 on every
   test run. They prove the maths, but they have never found the kind of problem the owner found by playing:
