@@ -61,7 +61,9 @@ complete test only before a release; up to 3 coders in parallel, each on its own
   product owner asks (`docs/new-game-process.md` "Jev during design") and a screen read when the UX designer asks
   (`docs/ux-evaluation-playbook.md` §7). Rules: `docs/change-sop.md` "Jev in the pipeline"; detail: the proposal's
   "Pipeline, modes and limits". First standing job once the tester is free: the word list check on Secret Words' 452 words
-  and Impostor's 291, results to the product owner.
+  and Impostor's 291, results to the product owner. **Orchestrator's four review changes applied (8 October):** I30
+  blockers only; report-only until two clean weeks; finite path lists from the tap-to-move table; counts only in "Pipeline,
+  modes and limits"; triage is a suggestion. Order: after faster-cycles items 2, 3 and 5.
 - C1/C2 questions don't stop work (pick by the UX guidelines, note it); C3 questions go to the owner in one list.
 - Stuck after 3 rounds or half a day: tell the owner. One progress line at the top of `reports/latest.md` per step.
 

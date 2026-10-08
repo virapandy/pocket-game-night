@@ -44,7 +44,8 @@ When unsure between two classes, take the higher one.
 3. Red: rerun the failing tests on each change in the batch to find the one that broke it; fix it first.
 4. Green: the owner tries the preview and says yes; then the release goes to the families' link.
 5. Nightly and weekly runs (complete run nightly; mutation, simulation, emulator weekly) never block anyone. The Jev **full
-   run** on the release candidate is part of the gate ("Jev in the pipeline" below); bundle runs report, they don't block.
+   run** on the release candidate joins the gate once proven, on I30 blockers only ("Jev in the pipeline" below); bundle
+   runs report, they don't block.
    The full mutation run stays weekly; changes in between get mutation only where they touched code (C3 above).
    A release includes mutation on every rules or money line changed since the last release.
 
@@ -62,14 +63,16 @@ https://virapandy.github.io/pocket-game-night/, updated only by a release.
 Full detail: `docs/proposals/e2e-and-jev-testing.md`, "Pipeline, modes and limits". In short, for the orchestrator and tester:
 1. **Bundle run:** when a bundle of changes closes (merged lanes, or nightly if anything with C2 or C3 landed), the tester's
    screen simulation plays the touched game(s): scripts cover every screen, button and path; Jev judges each new screen
-   state and steers to unreached options. Red on breakage or unreached items; confusing-screen flags go to the product owner.
-2. **Full run** on every release candidate (part of the release gate, with the complete run) and weekly on the game least
-   recently run extensively.
+   state and steers to unreached options. Bundle runs report only. Blockers are dead ends, stuck screens, secrets shown and
+   crashes (I30); unreached items, layout breaks and confusing-screen flags are findings for the product owner.
+2. **Full run** on every release candidate and weekly on the game least recently run extensively. It joins the release gate
+   (I30 blockers only) once the runner has had about two clean weeks with no tool faults; report-only until then.
 3. **Word list check** whenever a word file changes (that alone, no bundle run); results to the product owner.
-4. **Finding triage** on every red run: Jev sorts findings by kind and severity and separates tool problems from real bugs
-   (PLT-122) before the tester writes `reports/latest.md`.
+4. **Finding triage** on every red run: Jev suggests a sort by kind and severity and separates tool problems from real bugs
+   (PLT-122); the tester decides, then writes `reports/latest.md`.
 C0 and C1 changes never trigger a Jev run by themselves. Every ordinary test passes without the key (PLT-114); the key is a
 GitHub secret; 50,000 decisions a week cap. Jev never writes code or tests, never decides a verdict, class or lane.
+Order: after the faster-cycles setup (`docs/proposals/faster-cycles.md` items 2, 3 and 5) when Secret Words starts.
 
 ## Parallel work
 - Up to **3 coders** at once, each in its own working copy (git worktree) on its own short branch, each owning one
