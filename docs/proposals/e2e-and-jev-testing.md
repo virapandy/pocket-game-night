@@ -66,6 +66,20 @@ or rules (PLT-112). It does two jobs:
    category?" and "Would most families know it?" (yes/no with probability), as a cheap first filter before real
    readers. 291 words × 2 questions ≈ 600 decisions.
 
+**Two additions from a published two-model pattern the owner shared (8 October 2026; for the owner's approval, built with
+layer 4):**
+1. **Every Jev question offers "uncertain"** as one of its options, so Jev is never forced to pick a button it has no view on;
+   a forced pick looks confident and would wrongly pass or flag a screen. (Adds to PLT-110 and PLT-123.)
+2. **One config file holds every Jev question and its confidence thresholds**, and every decision is logged with its
+   confidence. Three bands, fixed once: **high** (above 0.8) the run acts on it; **medium** (0.5 to 0.8) the screen goes in the
+   report for the product owner to look at; **low** (below 0.5, or "uncertain") the screen is listed as "Jev unsure" and a
+   scripted player takes the tap. Today the 0.65 on the Talk screen (M27) was read by hand; with fixed bands the weekly line
+   is the same every week. (Adds to PLT-110 and the report format.)
+The tester confirms first whether Jev's API also offers score (low, medium, high) and true/false questions, as the pattern
+claims; if so, the optional content check uses true/false. Not taken from that pattern: its "Jev, then Opus, then Jev"
+drafting loop (we never let Jev judge facts or rules, PLT-112), its plugin install (our client calls the API directly) and
+its email and calendar workflow.
+
 **Budget:** about 50 evenings × 30 decisions = 1,500 Jev decisions a week, well inside the 20,000 weekly cap; no
 paid service ($0 rule).
 
