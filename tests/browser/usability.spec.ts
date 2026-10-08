@@ -1,6 +1,6 @@
 // Usability on the host phone: TAM-104, TAM-106, TAM-109, TAM-110, TAM-113, TAM-116, TAM-118, TAM-135.
 import { expect, test, type Page } from './fixtures';
-import { call, callMany, dismiss, fromMenu, HOME, hostAGame, menuButton, nextNumber, openTambola, recordWin, setUpPaperGame } from './helpers';
+import { call, callMany, dismiss, fromMenu, HOME, hostAGame, menuButton, nextNumber, openTambola, recordWin, setUpPaperGame, waitOutTapGuard } from './helpers';
 
 /** Screens worth checking: home, Tambola, setup, a game, its menu, a recorded win, the room view. */
 async function eachScreen(page: Page, check: (name: string) => Promise<void>) {
@@ -186,6 +186,7 @@ test('TAM-118: an iPhone host sees a one-time "Add to Home Screen" tip, which me
   await expect(tip).toBeVisible();
   await expect(tip.getByText(/Add to Home Screen/)).toBeVisible();
   await expect(tip.getByText(/separate/i)).toBeVisible();
+  await waitOutTapGuard(page); // 1.3.1 (I29, R2): Home's buttons are guarded for 500 ms after it shows
   await tip.getByRole('button', { name: /Got it|Close|OK/ }).click();
   await page.reload();
   await expect(page.getByTestId('install-tip')).toHaveCount(0);

@@ -27,6 +27,15 @@ Result: GREEN (quick verify, Android). Complete run on both phones: 37592526265,
   `newPage()` fails on a relaunched Chrome for Android, a tool fault. Fixed in ec4b633 (uses Chrome's own tab, emptied first);
   the confirming emulator run is weekly run 37592531112 (result to follow).
 
+- Screenshots for the product owner's approval (C1, P11): the three "player: Home with tickets more than 6 hours old" references
+  (360 × 640, 390 × 844, 812 × 375; Linux from Screenshots run 37726011326, Mac made locally) now show "Join a game" /
+  "Tambola ticket from the host". No other reference changed.
+- TAM-118 (iPhone tip): the test tapped "Got it" within Home's new 500 ms guard; it now waits first. Not an app bug.
+- TAM-112: CONFIRMED FIXED / not reproduced. With the emulator check repaired, weekly run 37593615495 (0037c8b) passed TAM-112:
+  Android closed Chrome after 10 s in the background and the game reopened at the same number. The 3 October failure was the
+  old check's 1 s in the background, not lost data. No coder work needed. (TAM-111 back gestures and TAM-116 passed; PLT-120 at
+  390 × 844 and TAM-116 passed on their retry: emulator flakiness.)
+
 ## Flaky or setup problems (not for the Build workspace)
 - Locally (3 workers on the owner's Mac) a few long tests hit the 30 s test limit; each passes alone. Not seen on GitHub.
 - Mutation: no local Stryker run was running; the only local result is the scoped run of 3 October (rules.ts 5 of 5, 100%).
