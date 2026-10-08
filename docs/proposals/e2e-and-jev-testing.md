@@ -87,8 +87,33 @@ claims; if so, the optional content check uses true/false. Not taken from that p
 drafting loop (we never let Jev judge facts or rules, PLT-112), its plugin install (our client calls the API directly) and
 its email and calendar workflow.
 
-**Budget:** about 50 evenings × 30 decisions = 1,500 Jev decisions a week, well inside the 20,000 weekly cap; no
-paid service ($0 rule).
+**Budget:** superseded by "Pipeline, modes and limits" below (8 October): about 15,000 decisions in a typical week under a
+50,000 cap; no paid service beyond Jev.
+
+## Pipeline, modes and limits (owner's answers, 8 October 2026; `docs/decisions.md`)
+| Run | When | Plays | Size | Jev decisions (about) |
+|---|---|---|---|---|
+| Quick verify | Every push | Browser smoke set, no Jev | as now, about 3 minutes | 0 |
+| **Bundle run** | When the orchestrator closes a bundle of changes (merged lanes, or nightly if anything landed) | The game(s) the bundle touched | 100 evenings per game, half *likely*, half *least likely*; stops early once the coverage map is complete and at least 40 evenings have played | up to 3,000 per game |
+| **Full run** | Every release candidate before the owner tries it; weekly on the game least recently run | One game | 300 evenings, same mix | about 9,000 |
+| Engine mass simulation | Weekly | Rules and money only, no screens | back to 2,000 games (free) | 0 |
+
+- **Which game first:** the one not yet run extensively since its last set of changes. Incremental changes on top of an
+  extensively-run baseline wait their turn.
+- **Two modes.** *Likely:* Jev taps as a person would; disagreement with the main button is the confusing-screen flag.
+  *Least likely:* the same question is asked, and the run takes the option Jev rates **least** likely, so the choices people
+  rarely make (the quiet button, Back at an odd moment, Undo, "Don't know this word?") get played on purpose. The runner
+  switches to least-likely whenever the coverage map still shows unreached buttons or paths on the current screen.
+- **Coverage map, per game and bundle:** every screen; every button on every screen; every rule branch (by scenario ID);
+  every screen-to-screen path; each marked reached or unreached, with the three sizes (360, 390, 812 × 375) seen for every
+  screen. Combinations of settings are not a target ("good coverage, not 99.99%").
+- **Verdict:** a bundle or full run is red on any dead end, stuck screen, secret shown, console error, layout break or
+  unreached item; the full run's verdict is part of the release gate. Every ordinary test still passes without the key
+  (PLT-114); the Jev runs are a pipeline stage with the key as a GitHub secret.
+- **Cap:** 50,000 Jev decisions a week (was 20,000), worst case about $4.20 a week by the 29 September estimate. A typical
+  week (two bundles plus one full run) uses about 15,000. When the cap is reached, runs finish with scripted players.
+- **Being smart about what runs:** C0 docs and C1 look-only changes never trigger a bundle run on their own; they ride
+  with the next bundle that has C2 or C3 changes, or with the weekly run.
 
 ## What the owner sees
 One short weekly line in the report: "200 evenings played (50 with Jev people): 0 dead ends, 0 secrets shown, 2 screens

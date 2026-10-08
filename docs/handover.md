@@ -51,6 +51,10 @@ complete test only before a release; up to 3 coders in parallel, each on its own
   When simulation and Jev work resumes: the owner clarified on 6 October what the Jev test is for (decision of 6 October;
   note at the top of `docs/proposals/e2e-and-jev-testing.md`): random taps on every button through the real screens to check
   every flow ends rationally; it hunts breakage in game play, flow and navigation first, confusion ratings second.
+  **Widened on 8 October** (decisions of 8 October; proposal section "Pipeline, modes and limits"): Jev becomes the engine
+  for simulated play in the routine pipeline, per bundle and per release candidate, with a coverage map, a *least likely*
+  mode and a 50,000 weekly cap. First game: the one not yet run extensively since its last changes. The tester builds it
+  with the player-scripts work after the Impostor release; the coder adds the pipeline stage and the GitHub secret.
 - C1/C2 questions don't stop work (pick by the UX guidelines, note it); C3 questions go to the owner in one list.
 - Stuck after 3 rounds or half a day: tell the owner. One progress line at the top of `reports/latest.md` per step.
 
