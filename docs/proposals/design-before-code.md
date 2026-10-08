@@ -1,5 +1,8 @@
 # Design before code: a system that finds problems while they are still cheap (proposal, 8 October 2026)
 
+**Status: approved by the owner, 8 October 2026 ("I approve all"), with the clarification that Jev and the persona agents
+evaluate the tap-through prototype as well as the map.** For the orchestrator to apply ("What it needs").
+
 Owner: "optimise the development cycle time: ensure proposed changes are deeply analysed, scenarios simulated and
 user journeys critically assessed before any code is written. What architecture and system can strengthen it?"
 
@@ -45,7 +48,8 @@ that five things are derived from or checked against, so they can never drift ap
    where it feels rushed or lost. Text only, no browser, a few minutes each; run one after another, each from a clean
    start. The product owner merges the six reports into one list of gaps, by screen.
 4. **Owner fixes the draft** from that list, then the prototype is generated and the owner taps through it (stage 2).
-The same four steps run on the **diff** of the map for a C2 or C3 change to a shipped game. This replaces the design-time
+The same four steps run on the **diff** of the map for a C2 or C3 change to a shipped game, and stage 2 repeats them on
+the generated prototype (owner, 8 October: Jev and the persona agents evaluate the prototype too, not only the map). This replaces the design-time
 player walk of `player-agent.md` with a definite place in the pipeline; its testing-time play of the preview stays.
 
 **Rules stay separate from screens.** The rules engine for a game is pure logic with no screens (as Tambola's is). Its
@@ -58,7 +62,7 @@ prototype have been played.
 |---|---|---|---|---|
 | 0 | Problem and player stories (exists, step 0a) | Product owner | "I want to… so that…" per persona and lifecycle stage | — |
 | 1 | **Screen map** and words | Owner's draft; product owner's table; Jev checks; persona agents walk it ("How the map gets made") | The table above; new words into the shared text list; one gap list by screen | Design rule checks (5) run automatically; Jev per screen; six persona walks |
-| 2 | **Tap-through prototype** | Generated | A phone-playable prototype in the preview | **Owner taps through on their phone (10 minutes)**; the player helper plays each persona (no spec read); Jev reads every screen ("which button would you press?"); a scripted walk proves every path reachable |
+| 2 | **Tap-through prototype** | Generated | A phone-playable prototype in the preview | **Owner taps through on their phone (10 minutes)**; **the same six persona agents play it** in a browser at phone sizes, from what is on screen only, one after another from a clean start, each reporting its timeline, where it got stuck and what it wanted and could not see; **Jev reads every screen state** it produces ("which button would you press?", way out visible, unknown words); a scripted walk proves every path reachable and runs the design rule checks on the live screens. The product owner merges it all into one gap list by screen; the owner fixes; repeat until the list is empty or every open item is a conscious decision |
 | 3 | **Critic pass** | A read-only "critic" helper, same model as the designer, different brief | Contradictions between guide, map and decisions; missing intentions; lifecycle gaps (pause, stop, resume, late joiner, phone dies); words a non-Hindi speaker would not know; the three worst things that could happen in the room | — |
 | 4 | Rules engine and its scenarios | Tester (scenarios), coder (engine only) | Engine passing rule tests; mass simulation green | Mass simulation, property tests (free) |
 | 5 | Scenarios from the map, dual read, cross-check (exists, steps 8–9) | Product owner, tester, coder readers | Approved scenarios, one per path at least | Path-to-scenario check is mechanical |
@@ -85,11 +89,11 @@ changed, the critic reads the diff, scenarios update, freeze, code. C0 and C1 ch
 ## What it needs
 | Item | Who | Class | Owner decision |
 |---|---|---|---|
-| Screen map as a required design artefact (step 1b of `new-game-process.md`; Secret Words first), made by the owner's draft, the product owner's table, Jev checks and persona-agent walks | Owner, product owner | C0 | **Owner said yes, 8 October** (the making of it); the artefact itself: yes/no |
-| Generic prototype renderer at `/preview/proto/` reading `docs/games/<game>/screen-map` from the product docs, using the shared building blocks | Coder, one lane, after faster-cycles item 8 | C1 (no rules, no saved data) | Yes/no; it is app code that families never see |
-| Design rule checks as a script in the Test clone, run on the map (and later on the build) | Tester | Test only | Yes/no |
-| Critic helper: a read-only brief in `.claude/workspace/agents/critic.md`, called by the product owner at stage 3 and on every C2/C3 design diff | Orchestrator applies (project rules) | Rules | Yes/no |
-| Design freeze rule: scenario versions are tagged; after a freeze, findings go to the next version; a build round never changes its version | Owner | Rules | Yes/no (same as faster-cycles item 6) |
+| Screen map as a required design artefact (step 1b of `new-game-process.md`; Secret Words first), made by the owner's draft, the product owner's table, Jev checks and persona-agent walks | Owner, product owner | C0 | **Owner said yes, 8 October** (the making of it); the artefact itself: **yes** |
+| Generic prototype renderer at `/preview/proto/` reading `docs/games/<game>/screen-map` from the product docs, using the shared building blocks | Coder, one lane, after faster-cycles item 8 | C1 (no rules, no saved data) | **Yes** (8 October); it is app code that families never see |
+| Design rule checks as a script in the Test clone, run on the map (and later on the build) | Tester | Test only | **Yes** (8 October) |
+| Critic helper: a read-only brief in `.claude/workspace/agents/critic.md`, called by the product owner at stage 3 and on every C2/C3 design diff | Orchestrator applies (project rules) | Rules | **Yes** (8 October) |
+| Design freeze rule: scenario versions are tagged; after a freeze, findings go to the next version; a build round never changes its version | Owner | Rules | **Yes** (8 October; same as faster-cycles item 6) |
 | Role guard: the product owner may edit `docs/games/<game>/screen-map.*`; no other change | Coder (guard) | Rules | Follows from the first row |
 
 Nothing here needs a paid service. Jev screen reads sit inside the weekly cap.

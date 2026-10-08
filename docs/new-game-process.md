@@ -10,6 +10,7 @@ workspace folder) or the Claude desktop app. The Build role starts only after st
 |---|---|---|---|
 | 0 | Fit check | A short yes/no against the brief's intake questions | Owner says go |
 | 1 | Game overview, how to play, rules | `docs/games/<game>/guide.md` | Owner reads the guide |
+| 1b | Screen map and tap-through prototype | `docs/games/<game>/screen-map.md`; the prototype in the preview; one gap list | Owner drafts the screens, taps the prototype, fixes |
 | 2 | Game setup, anchor/host role and controls | "Setup" and "Host" sections of `journeys.md` | |
 | 3 | Player roles and controls | "Players" section of `journeys.md` | |
 | 4 | User journeys | `docs/games/<game>/journeys.md` | Owner reviews the journeys |
@@ -54,6 +55,14 @@ Written for someone who has never played. One page.
 7. **Sources:** at least three established sources, each actually opened, with the date checked.
 
 Rule: conventions win by default. Anything we change from the convention is marked as ours.
+
+## Step 1b: Screen map and tap-through prototype (owner approved, 8 October 2026)
+Before journeys and scenarios, the game gets a **screen map** (`docs/games/<game>/screen-map.md`) and a generated
+**tap-through prototype**, made and checked as `docs/proposals/design-before-code.md` describes: the owner's plain-word draft,
+the product owner's table, Jev's per-screen checks, six persona agents walking the map, the owner's fixes; then the prototype,
+played by the owner on their phone, by the same six persona agents in a browser at phone sizes, read by Jev at every screen
+state, and walked by a script that runs the design rule checks. Output: one gap list by screen, worked down to zero or to
+conscious decisions, before step 4. Then the **critic pass** (stage 3 of the proposal), and a **design freeze** before build.
 
 ## Step 2: Game setup, anchor/host role and controls
 - **Setup screen by screen:** every choice, its default, and the target time to the first action.
@@ -172,3 +181,4 @@ Jev never writes text, counts or decides a rule; it sorts, scores and says yes o
 - [ ] Scenarios cross-checked three ways
 - [ ] Owner approval recorded in each scenario's status
 - [ ] Jev word list check run and its short list settled (word games and any game with a word file)
+- [ ] Screen map and prototype checked by Jev and the six persona agents; gap list at zero or decided; critic pass done; design frozen

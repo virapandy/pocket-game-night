@@ -5,6 +5,15 @@ A new orchestrator session starts here: read this section, then work through **"
 top, reporting to the owner after each. The product owner keeps this section
 current; instructions live here, not in chat. History from Phase 0 and 1a is further down.
 
+### Approved 8 October: design before code (`docs/proposals/design-before-code.md`), for the orchestrator to apply
+Owner approved all five items. In order, none of it before the faster-cycles setup is done: (1) rules: the critic helper brief
+(`.claude/workspace/agents/critic.md`, read only), the design freeze rule, and the role guard letting the product owner edit
+`docs/games/<game>/screen-map.*`; (2) tester: the design rule checks as a script that runs on a screen map and on live screens;
+(3) coder, one lane after the shared building blocks (faster-cycles item 8): the generic prototype renderer at
+`/preview/proto/<game>/` reading the product docs' screen map, C1, no rules, no saved data. Secret Words is the first game
+through it: the product owner will hand over its screen map; the orchestrator then runs Jev's per-screen checks and the six
+persona-agent walks on the map, and again on the prototype, returning one merged gap list.
+
 ### C1 now (owner, 4 October, P11): Home says "Join a game"
 Home's second card: title **"Join a game"**, line **"Tambola ticket from the host"** (replaces "Join with my ticket" / "Got a QR
 or code from the host?"); the Join screen's heading reads "Join a game". When Secret Words ships the line becomes "Tambola ticket
