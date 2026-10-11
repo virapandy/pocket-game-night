@@ -181,25 +181,28 @@
 /* ----- How do you want to play? (IMP-005, IMP-088) ----- */
 .imp-groups { display: flex; flex-direction: column; gap: 10px; }
 .imp-group-wrap { display: flex; flex-direction: column; gap: 4px; }
-/* IMP-088 (P5): the label in its own 88 px column (72 px at 320 px wide), then the two options sharing the rest
-   equally, 8 px apart: 127 px each at 390 wide, 112 at 360, 100 at 320, 139 in each 382 px cell at 812 × 375. Every
-   label fits on one line and never sits behind an option. Label and option text 17 px (15 at 320 wide); with Larger
-   text 19 px (17 at 320 wide). Option text on one line ("Whole family" included): the ✓ sits in the corner. */
-.imp-group { display: grid; grid-template-columns: 88px minmax(0, 1fr) minmax(0, 1fr); gap: 8px; align-items: center; }
+/* IMP-088 (owner decision 11 October, Noto Sans): the label in its own column, then the two options sharing the rest
+   equally, 8 px apart. The column is the widest label ("Talking", bold) plus a small margin: 72 px (62.5 px at 17 px,
+   69.8 px at 19 px), so options are 127 px each at 390 wide, 112 at 360, 139 in each 382 px cell at 812 × 375 (135 at
+   390 with Larger text); at 320 wide 60 px (55.1 px at 15 px), options 106 px. With Larger text at 320 and 360 wide the
+   label sits on its own line above its two options, which share the full row: 140 px each at 320, 160 at 360. Label
+   and option text 17 px (15 at 320 wide); with Larger text 19 px (17 at 320 wide). Every label and option on one line;
+   the ✓ sits in the corner. */
+.imp-group { display: grid; grid-template-columns: 72px minmax(0, 1fr) minmax(0, 1fr); gap: 8px; align-items: center; }
 .imp-group-label { font-weight: 800; font-size: 17px; line-height: 1.2; white-space: nowrap; min-width: 0; }
 .imp-group .pgn-option { font-size: 17px; }
 .pgn-larger .imp-group-label, .pgn-larger .imp-group .pgn-option { font-size: 19px; }
-/* "Whole family" must fit inside the borders: 96 px at 17 px (320 wide, Larger text: 100 px option) and 108 px at
-   19 px (360 wide, Larger text: 112 px option), so at most 5.64 em. Bold Noto Sans, the app's font, measures 6.53 em,
-   so: no side padding and letters 0.09 em closer within words only (I29: labels keep their spaces, so `word-spacing`
-   gives the space back exactly what `letter-spacing` takes from it; about 5.54 em: 94 px at 17 px, 105 px at 19 px). The ✓ is drawn small (10 px) tight in the top right corner, above the letters,
-   and not read out (the button says `aria-pressed`). */
+/* Bold Noto Sans "Whole family" measures 6.09 em with letters 0.04 em closer within words only (I29: labels keep
+   their spaces, so `word-spacing` gives the space back exactly what `letter-spacing` takes from it): 103.5 px at 17 px,
+   115.6 px at 19 px, inside every option above (the smallest, 102 px inside its borders at 320, holds it at 15 px:
+   91.3 px). No side padding. The ✓ is drawn small (10 px) tight in the top right corner, above the letters, and not
+   read out (the button says `aria-pressed`). */
 .imp-group .pgn-option {
   position: relative;
   padding: 4px 0;
   font-family: 'Noto Sans', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
-  letter-spacing: -0.09em;
-  word-spacing: 0.09em;
+  letter-spacing: -0.04em;
+  word-spacing: 0.04em;
   white-space: nowrap;
   overflow-wrap: normal;
 }
@@ -215,13 +218,20 @@
   -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M1.5 6.5l3 3 6-7' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M1.5 6.5l3 3 6-7' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
 }
-.imp-option-line { padding-left: 96px; }
+.imp-option-line { padding-left: 80px; }
 @media (max-width: 340px) {
-  .imp-group { grid-template-columns: 72px minmax(0, 1fr) minmax(0, 1fr); }
-  .imp-option-line { padding-left: 80px; }
+  .imp-group { grid-template-columns: 60px minmax(0, 1fr) minmax(0, 1fr); }
+  .imp-option-line { padding-left: 68px; }
   .imp-group-label, .imp-group .pgn-option { font-size: 15px; }
   /* IMP-088: with Larger text, 17 px at 320 px wide. */
   .pgn-larger .imp-group-label, .pgn-larger .imp-group .pgn-option { font-size: 17px; }
+}
+/* IMP-088 (owner decision 11 October): with Larger text at 320 and 360 wide, each label on its own line above its
+   two options, which share the full row 8 px apart; the option's line starts under the options. */
+@media (max-width: 380px) and (orientation: portrait) {
+  .pgn-larger .imp-group { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); row-gap: 4px; }
+  .pgn-larger .imp-group > .imp-group-label { grid-column: 1 / -1; }
+  .pgn-larger .imp-option-line { padding-left: 0; }
 }
 /* The choices heading sits on its own line under "← Back"; on short phones it shares the bar's row (below). */
 .imp-bar-title { flex-wrap: wrap; row-gap: 12px; }
