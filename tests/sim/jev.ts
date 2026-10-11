@@ -6,9 +6,12 @@
 // placed in the Authorization header. It is never printed, logged, saved in a replay or a summary (PLT-115): every
 // error message passes through `redact()` first.
 //
-// Cap (PLT-113): 20,000 Jev decisions a week (owner, 2026-09-29). One decision = one question in a call. Usage is
+// Cap (PLT-113): 50,000 Jev decisions a week (raised from 20,000, owner decision of 8 October 2026). One decision = one question in a call. Usage is
 // kept per ISO week in `reports/runs/jev-usage.json` (gitignored); when the cap is reached no more calls are made and
 // the run finishes with scripted players.
+//
+// Question types: Choice only, always with an "uncertain" option. The API refused true/false (boolean) and score
+// questions on 11 October 2026, so no code here or in the tools attempts them.
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -16,8 +19,8 @@ import { fileURLToPath } from 'node:url';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export const JEV_URL = 'https://api.typesafe.ai/v1/systemone';
 export const JEV_MODEL = 'jev-latest';
-/** Owner, 2026-09-29 (PLT-113). */
-export const WEEKLY_CAP = 20_000;
+/** Owner, 2026-09-29 (PLT-113); raised from 20,000 to 50,000 on 8 October 2026. */
+export const WEEKLY_CAP = 50_000;
 export const NO_KEY_MESSAGE = 'No Jev key: ran with random and scripted players';
 
 const ROOT = fileURLToPath(new URL('../../', import.meta.url));

@@ -7,7 +7,7 @@ in an ordinary run (PLT-114).
 |---|---|
 | `tambola-sim.ts`, `tambola.test.ts` | The first paper-ticket simulation (TAM-077), 2,000 games on every `npm test` |
 | `player.ts` | The generic simulated player (PLT-110): options are the actor's legal moves plus the driver's detail moves and "do nothing"; code states the facts; the player is random, scripted, or Jev-backed; it never applies a move itself (PLT-112) |
-| `jev.ts` | Jev (TypeSafe AI) for simulations: typed Choice questions with probabilities, the weekly cap of 20,000 decisions (PLT-113, owner 2026-09-29) kept per ISO week in `reports/runs/jev-usage.json` (gitignored), one retry then Jev off (PLT-122), and `redact()` on every message (PLT-115) |
+| `jev.ts` | Jev (TypeSafe AI) for simulations: typed Choice questions with probabilities, the weekly cap of 50,000 decisions (PLT-113, raised from 20,000 by the owner on 8 October 2026); Choice questions only, with an "uncertain" option (true/false and score were refused by the API on 11 October) kept per ISO week in `reports/runs/jev-usage.json` (gitignored), one retry then Jev off (PLT-122), and `redact()` on every message (PLT-115) |
 | `mass.ts` | Mass Tambola simulation (PLT-116): paper and phone tickets, 2 to 60 tickets, tier sets, money or none, ties, late joiners, bogeys, late claims, undo of claims and of the last call, closing tiers, handing tickets over, ending early and discarding; checks after every move; the plain summary (PLT-117) |
 | `mass.test.ts` | 300 games on every `npm test` (`SIM_MASS_GAMES` to change), no Jev |
 | `player.test.ts` | PLT-110 to PLT-113, PLT-122, PLT-123 with a fake Jev (no network) |

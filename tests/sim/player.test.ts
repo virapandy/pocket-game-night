@@ -150,10 +150,10 @@ describe('PLT-112: Jev is never the referee', () => {
   });
 });
 
-describe('PLT-113: Jev spending is capped at 20,000 decisions a week', () => {
-  it('the weekly cap is the owner\'s 20,000 decisions', () => {
-    expect(WEEKLY_CAP).toBe(20_000);
-    expect(makeBudget().cap).toBe(20_000);
+describe('PLT-113: Jev spending is capped at 50,000 decisions a week', () => {
+  it('the weekly cap is the owner\'s 50,000 decisions', () => {
+    expect(WEEKLY_CAP).toBe(50_000);
+    expect(makeBudget().cap).toBe(50_000);
   });
 
   it('when a run reaches the cap, no more Jev calls are made and the run finishes with scripted players', async () => {
@@ -168,7 +168,7 @@ describe('PLT-113: Jev spending is capped at 20,000 decisions a week', () => {
     expect(s.failures).toEqual([]);
     expect(s.fallbacks['weekly Jev cap reached']).toBeGreaterThan(0);
     expect(s.decisionsBy.scripted).toBeGreaterThan(0);
-    expect(summaryText(s)).toContain('weekly cap of 20,000 decisions reached; the rest of the run used scripted players');
+    expect(summaryText(s)).toContain('weekly cap of 50,000 decisions reached; the rest of the run used scripted players');
   });
 
   it('a run can set its own lower limit; the summary says so and never claims the weekly cap was reached', async () => {

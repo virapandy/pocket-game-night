@@ -3,6 +3,8 @@
 //   node tests/tools/jev-map-walk.ts words   word list and team names check   -> reports/runs/jev-word-check.json
 //   node tests/tools/jev-map-walk.ts report                                   -> reports/jev-map-walk-secret-words.md
 // Uses the Jev client in tests/sim/jev.ts (key, weekly cap, retry, redaction). Never prints the key.
+// Every question is a Choice with an "uncertain" option: the API refused true/false and score questions on 11 October
+// 2026, so nothing here attempts them.
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { makeBudget, makeJev, loadJevKey, USAGE_FILE, isoWeek, type ChoiceAnswer, type ChoiceQuestion } from '../sim/jev.ts';
 import { SCREENS, LABELS, PERSONAS, type Screen } from './secret-words-screens.ts';
@@ -96,15 +98,14 @@ async function wordsRun() {
     const batch = words.slice(i, i + 6);
     const qs: Record<string, ChoiceQuestion> = {};
     batch.forEach((r, j) => {
-      const [id, word, , category] = r as [string, string, string, string];
-      qs[`b${j}`] = { ...yesNo(`Does the word "${word}" belong in the category "${category}"?`) };
+      const [id, word] = r as [string, string];
       qs[`k${j}`] = yesNo(`${known} The word is "${word}".`);
       qs[`f${j}`] = yesNo(`${family} The word is "${word}".`);
       if (/\s/.test(word.trim())) out.codeChecks.push(`${id} ${word}: more than one word`);
     });
     const ans = await jev.choose(ctx, qs);
     if (!ans) { out.skipped.push(...batch.map((r) => r[0])); continue; }
-    batch.forEach((r, j) => (out.words[r[0]!] = { word: r[1], category: r[3], audience: r[4], belongs: probsOf(ans[`b${j}`]), known: probsOf(ans[`k${j}`]), family: probsOf(ans[`f${j}`]) }));
+    batch.forEach((r, j) => (out.words[r[0]!] = { word: r[1], category: r[3], audience: r[4], known: probsOf(ans[`k${j}`]), family: probsOf(ans[`f${j}`]) }));
   }
   for (let i = 0; i < teams.length; i += 6) {
     const batch = teams.slice(i, i + 6);
@@ -194,11 +195,10 @@ function report() {
   if (!w) L.push('Not run.', '');
   else {
     const ws = Object.entries(w.words as Record<string, any>);
-    const lowB = ws.filter(([, v]) => (v.belongs?.yes ?? 0) < 0.5), lowK = ws.filter(([, v]) => (v.known?.yes ?? 0) < 0.5), lowF = ws.filter(([, v]) => (v.family?.yes ?? 0) < 0.5);
+    const lowK = ws.filter(([, v]) => (v.known?.yes ?? 0) < 0.5), lowF = ws.filter(([, v]) => (v.family?.yes ?? 0) < 0.5);
     const midK = ws.filter(([, v]) => v.known?.yes >= 0.5 && v.known?.yes <= 0.8).length;
     const f = (arr: [string, any][], k: string) => arr.length ? arr.map(([id, v]) => `${id} ${v.word} (${v.category}, ${pct(v[k]?.yes)})`).join('; ') : 'none';
-    L.push(`Words asked: ${ws.length} of 452, three questions each (belongs to its category; known at once by most Indian families including a non-Hindi speaker from Tirunelveli; fine to say in front of children and grandparents). "One word, not a phrase" was checked by code, not Jev. The "too close to another board word" pairs question was not run (needs a pair list; none exists yet). P yes below 0.5 is listed; 0.5 to 0.8 is counted only.`, '',
-      `- **Does not belong in its category (below 0.5), ${lowB.length}:** ${f(lowB, 'belongs')}`, '',
+    L.push(`Words asked: ${ws.length} of 452, two questions each (known at once by most Indian families including a non-Hindi speaker from Tirunelveli; fine to say in front of children and grandparents). "One word, not a phrase" was checked by code, not Jev. The "too close to another board word" pairs question was not run (needs a pair list; none exists yet). P yes below 0.5 is listed; 0.5 to 0.8 is counted only.`, '',
       `- **Not known at once (below 0.5), ${lowK.length}:** ${f(lowK, 'known')} (words in the 0.5 to 0.8 band: ${midK})`, '',
       `- **Not clearly family-friendly (below 0.5), ${lowF.length}:** ${f(lowF, 'family')}`, '',
       `- Code check, more than one word: ${w.codeChecks.length ? w.codeChecks.join('; ') : 'none'}.`, '');
@@ -210,7 +210,7 @@ function report() {
   }
   L.push('## Decisions used', '',
     `- Map run: ${m.stats.decisions} decisions (3 for the format probe, ${SCREENS.length * 9} for screens, ${LABELS.length} for labels), ${m.stats.calls} calls. Word list check: ${w ? w.stats.decisions : 0}. Total this job: ${m.stats.decisions + (w ? w.stats.decisions : 0)}.`,
-    `- Weekly cap in the client: 20,000 (the proposal raises it to 50,000; the client was not changed). Used this ISO week after the job: ${w ? w.stats.usedThisWeek : m.stats.usedThisWeek}.`,
+    `- Weekly cap in the client: 50,000. Used this ISO week after the job: ${w ? w.stats.usedThisWeek : m.stats.usedThisWeek}.`,
     `- Skipped for cap or tool: ${m.skipped.length ? m.skipped.join(', ') : 'nothing'}.`, '',
     '## Tool faults (apart from findings, PLT-122)', '',
     ...(() => {
