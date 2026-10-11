@@ -2,7 +2,8 @@
 // IMP-009, IMP-088), with "How to play" on request (IMP-070).
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { CATEGORIES, type Choices } from '../rules';
-import { MainButton, OptionButton, QuietButton, Sheet, Switch, TapGuard, Toast, useToast } from './parts';
+import { MainButton, OptionButton, QuietButton, Screen, ScreenContent, ScrollArea, Sheet, TapGuard, Toast, useBackCloses, useToast } from '../../../blocks';
+import { Switch } from './parts';
 import { MoreOptionsSheet, RulesSheet } from './Sheets';
 
 const MAX_PLAYERS = 20;
@@ -143,7 +144,7 @@ export function PlayerList({
             setDupOf(null);
           }}
         />
-        <button type="submit" className="imp-quiet imp-add-button" disabled={text.trim() === '' || full}>
+        <button type="submit" className="pgn-quiet imp-add-button" disabled={text.trim() === '' || full}>
           Add
         </button>
       </form>
@@ -201,13 +202,13 @@ export function WhosPlaying({
   useEffect(() => setTried(false), [count]);
   // IMP-010 (P2): the 500 ms tap guard covers this screen's buttons too, from the moment it shows.
   return (
-    <main className="imp-screen imp-setup">
+    <Screen className="imp-setup">
       <TapGuard screen="players">
       <header className="imp-bar">
         <QuietButton onClick={onBack}>← Back</QuietButton>
       </header>
-      <div className="imp-scroll">
-        <h1 className="imp-title">Who's playing?</h1>
+      <ScrollArea>
+        <h1 className="pgn-title">Who's playing?</h1>
         <p className="imp-body">Sit in a circle. This is the passing and clue order.</p>
         <PlayerList players={players} onChange={onChange} past={past} tooFewTried={tried} />
         {players.length > 0 && (
@@ -222,13 +223,13 @@ export function WhosPlaying({
             Clear list
           </QuietButton>
         )}
-      </div>
+      </ScrollArea>
       <Toast toast={toast} onDone={clearToast} />
       <MainButton onClick={() => (players.length < MIN_PLAYERS ? setTried(true) : onNext())}>
         Next
       </MainButton>
       </TapGuard>
-    </main>
+    </Screen>
   );
 }
 
@@ -304,12 +305,7 @@ export function HowToPlayChoices({
   const more = onLastGuess !== undefined;
   // IMP-076: the browser's or phone's Back closes any sheet here ("More options", Categories, How to play) and
   // discards its change. The app's back guard (App.tsx) keeps the address, so Back stays on this screen.
-  useEffect(() => {
-    if (sheet === null) return;
-    const back = () => setSheet(null);
-    window.addEventListener('popstate', back);
-    return () => window.removeEventListener('popstate', back);
-  }, [sheet]);
+  useBackCloses(sheet !== null, () => setSheet(null));
   const backRef = useRef(onBack);
   backRef.current = onBack;
   useEffect(() => {
@@ -321,16 +317,16 @@ export function HowToPlayChoices({
   // IMP-010 (P2): the 500 ms tap guard on this screen and on "How to play", each time one of them shows, so a double
   // tap on "Next" never lands on "Start round".
   return (
-    <main className="imp-screen imp-setup">
+    <Screen className="imp-setup">
       <TapGuard screen={sheet}>
-      <div className="imp-screen-inner" hidden={sheet !== null}>
+      <ScreenContent hidden={sheet !== null}>
         {/* IMP-088: the heading shares the bar's row on short phones (320 × 568), so everything fits unscrolled. */}
         <header className="imp-bar imp-bar-title">
           <QuietButton onClick={onBack}>← Back</QuietButton>
-          <h1 className="imp-title">How do you want to play?</h1>
+          <h1 className="pgn-title">How do you want to play?</h1>
         </header>
         {sameAsLast && <p className="imp-small imp-same">Same as last time</p>}
-        <div className="imp-scroll imp-choices-scroll">
+        <ScrollArea className="imp-choices-scroll">
           <div className="imp-groups">
             {GROUPS.map((g) => {
               const current = choices[g.key];
@@ -371,9 +367,9 @@ export function HowToPlayChoices({
               How to play
             </QuietButton>
           </div>
-        </div>
+        </ScrollArea>
         <MainButton onClick={onStart}>Start round</MainButton>
-      </div>
+      </ScreenContent>
       {sheet === 'howTo' && (
         <RulesSheet
           choices={lastGuess === undefined ? choices : { ...choices, lastGuess }}
@@ -400,7 +396,7 @@ export function HowToPlayChoices({
           }}
         />
       )}
-    </main>
+    </Screen>
   );
 }
 

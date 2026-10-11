@@ -1,7 +1,8 @@
 // After the last "Done": straight to the clues (IMP-016, IMP-020, IMP-022). The phone goes in the middle, face up.
 import { useEffect, useRef } from 'react';
 import { useFitText } from './Deal';
-import { Caps, LANDSCAPE, MainButton, QuietButton, TapGuard, useMediaQuery } from './parts';
+import { MainButton, QuietButton, TapGuard } from '../../../blocks';
+import { Caps, LANDSCAPE, useMediaQuery } from './parts';
 
 /** The seat order from the starter, wrapping round (IMP-020). */
 export function clueOrder(players: readonly string[], starter: string): string[] {

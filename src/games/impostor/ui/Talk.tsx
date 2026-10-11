@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import type { Preferences } from '../../../engine';
 import { playSound, speak } from './device';
-import { MainButton, OptionButton, QuietButton } from './parts';
+import { MainButton, OptionButton, QuietButton } from '../../../blocks';
 
 const TIMER_MS = 120_000;
 
@@ -258,7 +258,7 @@ export function Picker({
       <section className="imp-stage imp-picker">
         <div className="imp-pick-names">
           {/* IMP-032 (M22a): in tie mode the heading says what to do. */}
-          <h1 className="imp-title">{tieMode ? 'Tap everyone who is tied' : 'Who got the most fingers?'}</h1>
+          <h1 className="pgn-title">{tieMode ? 'Tap everyone who is tied' : 'Who got the most fingers?'}</h1>
           <div className="imp-pick-list">
           {names.map((n) => (
             <OptionButton

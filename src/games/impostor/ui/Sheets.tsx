@@ -1,10 +1,11 @@
 // The sheets: How to play (IMP-070, IMP-072), More options (IMP-076), Settings (IMP-014, IMP-107, IMP-109) and
 // Players (IMP-074, IMP-078, IMP-079). None shows a word or a role.
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import type { Preferences } from '../../../engine';
 import { wordById, type Choices } from '../rules';
 import { PREF } from './evening';
-import { Dialog, MainButton, OptionButton, QuietButton, Sheet, Switch, Toast, useToast } from './parts';
+import { Dialog, MainButton, OptionButton, QuietButton, Sheet, Toast, useBackCloses, useToast } from '../../../blocks';
+import { Switch } from './parts';
 import { PlayerList } from './Setup';
 
 /**
@@ -128,7 +129,7 @@ export function ImpostorSettings({ prefs }: { prefs: Preferences }) {
                   <span>{w.word}</span>
                   <button
                     type="button"
-                    className="imp-quiet"
+                    className="pgn-quiet"
                     aria-label={`Bring back ${w.word}`}
                     onClick={() => {
                       const next = skipped.filter((x) => x !== id);
@@ -200,12 +201,7 @@ export function PlayersSheet({
   const [why, setWhy] = useState<string | null>(null);
   const [toast, showToast, clearToast] = useToast();
   // The phone's Back closes a dialog here and changes nothing (IMP-078).
-  useEffect(() => {
-    if (ask === null) return;
-    const back = () => setAsk(null);
-    window.addEventListener('popstate', back);
-    return () => window.removeEventListener('popstate', back);
-  }, [ask]);
+  useBackCloses(ask !== null, () => setAsk(null));
   // Pending leavers count as gone, at every moment (the no-words screen included); during a round (or its "left
   // halfway" screen) they are greyed, with no ✕.
   const gone = leaving.filter((p) => players.includes(p));

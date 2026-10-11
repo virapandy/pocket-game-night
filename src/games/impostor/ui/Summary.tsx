@@ -5,7 +5,7 @@
 // Leaving records `endEvening` (the Game does it); "Share" does not leave.
 import { useEffect, useState } from 'react';
 import type { ImpostorState } from '../rules';
-import { Dialog, MainButton, QuietButton, Toast, useTapGuard, useToast } from './parts';
+import { Dialog, MainButton, QuietButton, Screen, ScreenContent, Toast, useTapGuard, useToast } from '../../../blocks';
 import { Scoreboard } from './Reveal';
 import { counts, funLines, leadLine, scoreRows, shareText, type Story } from './story';
 
@@ -74,8 +74,8 @@ export function Summary({
   ];
 
   return (
-    <main className="imp-screen imp-summary imp-page" onClickCapture={guard}>
-      <div className="imp-screen-inner">
+    <Screen page className="imp-summary" onClickCapture={guard}>
+      <ScreenContent>
         <div className="imp-summary-body">
           {/* IMP-092, IMP-101 (P3): the way back, visible at the top, full width; no extra confirmation on "End game". */}
           {canOops && (
@@ -83,7 +83,7 @@ export function Summary({
               Oops, keep playing
             </QuietButton>
           )}
-          <h1 className="imp-title">That's the game!</h1>
+          <h1 className="pgn-title">That's the game!</h1>
           <p className="imp-lead" data-testid="summary-line">
             {leadLine(state, story)}
           </p>
@@ -99,7 +99,7 @@ export function Summary({
             <QuietButton onClick={() => setMore(!more)}>More ›</QuietButton>
           </div>
         </div>
-      </div>
+      </ScreenContent>
       {more && <MoreMenu items={items} onClose={() => setMore(false)} />}
       <Toast toast={toast} onDone={clearToast} />
       {!asking && <MainButton onClick={onPlayAgain}>Play again</MainButton>}
@@ -111,7 +111,7 @@ export function Summary({
           </MainButton>
         </Dialog>
       )}
-    </main>
+    </Screen>
   );
 }
 

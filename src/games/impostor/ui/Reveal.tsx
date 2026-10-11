@@ -10,7 +10,8 @@ import { useContext, useEffect, useLayoutEffect, useRef, useState, type ReactNod
 import type { Preferences } from '../../../engine';
 import { wordById, type Round } from '../rules';
 import { playSound } from './device';
-import { Caps, HideMainButton, MainButton, QuietButton } from './parts';
+import { HideMainButton, MainButton, QuietButton } from '../../../blocks';
+import { Caps } from './parts';
 import type { ScoreRow } from './story';
 
 /** IMP-033: the build-up lasts 1.5 s. */
@@ -35,7 +36,7 @@ export function EndGameButton({ onClick }: { onClick: () => void }) {
   const hide = useContext(HideMainButton);
   if (hide) return null;
   return (
-    <button type="button" className="imp-quiet imp-end-game" onClick={onClick}>
+    <button type="button" className="pgn-quiet imp-end-game" onClick={onClick}>
       End game
     </button>
   );

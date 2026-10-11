@@ -12,7 +12,8 @@ import {
   clearUi, endEvening, LEFT_HALFWAY_MS, PREF, record, undoableVerdict, undoVerdict,
   type Evening, type EveningMatch, type UiState,
 } from './evening';
-import { Dialog, HideMainButton, MainButton, Menu, QuietButton, TapGuard, Toast, useTapGuard, useToast, type MenuItem } from './parts';
+import { Dialog, HideMainButton, MainButton, QuietButton, Screen, ScreenContent, TapGuard, Toast, useTapGuard, useToast } from '../../../blocks';
+import { Menu, type MenuItem } from './parts';
 import { EndGameButton, Reveal, type ResultInfo } from './Reveal';
 import { HowToPlayChoices } from './Setup';
 import { PlayersSheet, RulesSheet, SettingsSheet, type PlayersMoment } from './Sheets';
@@ -610,12 +611,13 @@ export function Game({
     </span>
   );
   return (
-    <main
-      className={`imp-screen imp-room${holdScreen ? ' imp-hold-screen' : ''}${resultScreen ? ' imp-page' : ''}${betweenRounds ? ' imp-between' : ''}`}
+    <Screen
+      page={resultScreen}
+      className={`imp-room${holdScreen ? ' imp-hold-screen' : ''}${betweenRounds ? ' imp-between' : ''}`}
       onClickCapture={guardScreen}
     >
       <HideMainButton.Provider value={dialog || sheet}>
-        <div className="imp-screen-inner" hidden={sheet}>
+        <ScreenContent hidden={sheet}>
           <header className="imp-bar">
             {/* IMP-071 with IMP-077 (orchestrator's call): between rounds "← Home" first, top left, and the practice
                 chip on its own line directly under it, left-aligned, so both stay in the left half at every size. */}
@@ -645,7 +647,7 @@ export function Game({
               Joining next round: {joining.join(', ')}
             </p>
           )}
-        </div>
+        </ScreenContent>
         {!sheet && <Toast toast={toast} onDone={clearToast} />}
       </HideMainButton.Provider>
       <div className="imp-sr" data-testid="announcer" aria-live="polite">
@@ -753,6 +755,6 @@ export function Game({
       )}
       {/* IMP-018: while the page is hidden, a blank cover over everything (the app-switcher picture). */}
       {hidden && <div className="imp-cover" data-testid="privacy-cover" />}
-    </main>
+    </Screen>
   );
 }

@@ -1,51 +1,22 @@
 /* Impostor's screens (docs/games/impostor/ux.md; sizes from specs/impostor/README.md, Terms, and IMP-073, IMP-088).
    Tambola's look and colours (the app's variables); everything here is scoped to `.imp`. */
 
-.imp {
-  /* Terms: body text 17 px and small lines 15 px; with Larger text (IMP-109) 21 px and 19 px. */
-  --imp-body: 17px;
-  --imp-small: 15px;
-  --imp-gutter: 16px;
-  --imp-main-h: 60px;
-  /* The space kept free above the bottom edge for the main button. */
-  --imp-foot: calc(var(--imp-main-h) + 2 * var(--imp-gutter));
-  --imp-tint: color-mix(in srgb, var(--accent) 10%, transparent);
-  font-size: var(--imp-body);
-}
-.imp.imp-larger { --imp-body: 21px; --imp-small: 19px; }
-.imp [hidden] { display: none !important; }
-/* The double-tap guard (guideline 20) is laid out as if it were not there. */
-.imp-guard { display: contents; }
+/* The text sizes and spacing (--pgn-body, --pgn-small, --pgn-gutter, --pgn-main-h, --pgn-foot), Larger text, the screen,
+   its scroll area, the buttons, toasts, dialogs and sheets come from src/blocks/blocks.css (loaded first). */
 /* I29: no text on an Impostor screen is selected by a tap or a double tap; text fields can still be typed in and edited. */
 .imp { user-select: none; -webkit-user-select: none; }
 .imp input, .imp textarea { user-select: text; -webkit-user-select: text; }
 
-.imp-screen {
-  box-sizing: border-box;
-  height: 100dvh;
-  max-width: 640px;
-  margin: 0 auto;
-  padding: max(12px, env(safe-area-inset-top)) max(var(--imp-gutter), env(safe-area-inset-right)) var(--imp-foot)
-    max(var(--imp-gutter), env(safe-area-inset-left));
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  overflow: hidden;
-}
-.imp-screen-inner { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; gap: 12px; }
 .imp-bar { flex: none; display: flex; align-items: center; gap: 8px; min-height: 48px; }
 .imp-grow { flex: 1; }
-.imp-scroll { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; display: flex; flex-direction: column; gap: 12px; padding-bottom: 8px; }
 .imp-stage { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; gap: 12px; }
 .imp-center { justify-content: center; align-items: center; text-align: center; }
-.imp p, .imp h1, .imp h2, .imp ol, .imp ul { margin: 0; }
 
-.imp-title { font-size: 1.75rem; font-weight: 800; line-height: 1.15; }
-.imp-subtitle { font-size: var(--imp-body); font-weight: 800; }
-.imp-body { font-size: var(--imp-body); line-height: 1.4; }
-.imp-small { font-size: var(--imp-small); line-height: 1.35; color: var(--muted); }
+.imp-subtitle { font-size: var(--pgn-body); font-weight: 800; }
+.imp-body { font-size: var(--pgn-body); line-height: 1.4; }
+.imp-small { font-size: var(--pgn-small); line-height: 1.35; color: var(--muted); }
 .imp-caps { text-transform: uppercase; }
-.imp-alert { color: var(--danger); font-weight: 700; font-size: var(--imp-body); }
+.imp-alert { color: var(--danger); font-weight: 700; font-size: var(--pgn-body); }
 .imp-sr {
   position: absolute;
   width: 1px;
@@ -59,59 +30,6 @@
 }
 
 /* ----- Buttons (Terms) ----- */
-.imp-main {
-  position: fixed;
-  z-index: 5;
-  left: max(var(--imp-gutter), env(safe-area-inset-left));
-  right: max(var(--imp-gutter), env(safe-area-inset-right));
-  bottom: max(var(--imp-gutter), env(safe-area-inset-bottom));
-  height: var(--imp-main-h);
-  padding: 0 16px;
-  font: inherit;
-  font-size: 1.15rem;
-  font-weight: 800;
-  color: var(--accent-text);
-  background: var(--accent);
-  border: 0;
-  border-radius: 12px;
-  cursor: pointer;
-  touch-action: manipulation;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-.imp-main:disabled { opacity: 0.5; cursor: default; }
-.imp-main-inline { position: static; width: 100%; }
-.imp-quiet {
-  min-height: 48px;
-  padding: 0 16px;
-  font: inherit;
-  font-weight: 700;
-  color: var(--accent);
-  background: transparent;
-  border: 2px solid var(--border);
-  border-radius: 12px;
-  cursor: pointer;
-  touch-action: manipulation;
-}
-.imp-quiet:disabled { opacity: 0.5; cursor: default; }
-.imp-option {
-  flex: 1 1 0;
-  min-width: 0;
-  min-height: 48px;
-  padding: 4px 8px;
-  font: inherit;
-  font-size: var(--imp-body);
-  font-weight: 700;
-  line-height: 1.2;
-  color: var(--text);
-  background: var(--surface);
-  border: 2px solid var(--border);
-  border-radius: 12px;
-  cursor: pointer;
-  overflow-wrap: anywhere;
-}
-.imp-selected { color: var(--accent); background: var(--imp-tint); border-color: var(--accent); }
 .imp-icon {
   flex: none;
   width: 44px;
@@ -160,7 +78,7 @@
 .imp-practice {
   padding: 4px 12px;
   font-weight: 800;
-  font-size: var(--imp-small);
+  font-size: var(--pgn-small);
   color: var(--accent);
   border: 2px solid var(--accent);
   border-radius: 16px;
@@ -197,74 +115,7 @@
 .imp-skipped-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 
 /* ----- Toasts, dialogs, sheets, the menu ----- */
-.imp-toast {
-  position: fixed;
-  z-index: 6;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: calc(var(--imp-foot) - 4px);
-  max-width: calc(100vw - 32px);
-  min-height: 44px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 0 14px;
-  color: var(--toast-text);
-  background: var(--toast-bg);
-  border-radius: 22px;
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.18);
-  width: max-content;
-  box-sizing: border-box;
-}
-/* A long word wraps inside the toast, so "Undo" always stays on screen. */
-.imp-toast > span { min-width: 0; overflow-wrap: anywhere; }
-.imp-toast-button {
-  min-height: 44px;
-  min-width: 44px;
-  padding: 0 6px;
-  font: inherit;
-  font-weight: 800;
-  color: var(--toast-button);
-  background: transparent;
-  border: 0;
-  text-decoration: underline;
-  cursor: pointer;
-}
-.imp-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 30;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-  background: rgba(28, 27, 26, 0.55);
-}
-.imp-dialog {
-  width: min(100%, 460px);
-  max-height: calc(100dvh - 32px);
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  padding: 20px;
-  background: var(--surface);
-  border-radius: 16px;
-}
-.imp-dialog-text { font-size: var(--imp-body); font-weight: 700; line-height: 1.4; }
-.imp-dialog-buttons { display: flex; flex-direction: column; gap: 8px; }
-.imp-sheet {
-  position: fixed;
-  inset: 0;
-  z-index: 20;
-  box-sizing: border-box;
-  padding: max(16px, env(safe-area-inset-top)) var(--imp-gutter) var(--imp-foot);
-  display: flex;
-  flex-direction: column;
-  background: var(--bg);
-}
-.imp-sheet-body { flex: 1 1 auto; min-height: 0; max-width: 640px; width: 100%; margin: 0 auto; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
-.imp-rules { display: flex; flex-direction: column; gap: 10px; font-size: var(--imp-body); line-height: 1.4; }
+.imp-rules { display: flex; flex-direction: column; gap: 10px; font-size: var(--pgn-body); line-height: 1.4; }
 .imp-menu-backdrop { position: fixed; inset: 0; z-index: 25; }
 .imp-menu {
   position: absolute;
@@ -336,8 +187,8 @@
    text 19 px (17 at 320 wide). Option text on one line ("Whole family" included): the ✓ sits in the corner. */
 .imp-group { display: grid; grid-template-columns: 88px minmax(0, 1fr) minmax(0, 1fr); gap: 8px; align-items: center; }
 .imp-group-label { font-weight: 800; font-size: 17px; line-height: 1.2; white-space: nowrap; min-width: 0; }
-.imp-group .imp-option { font-size: 17px; }
-.imp-larger .imp-group-label, .imp-larger .imp-group .imp-option { font-size: 19px; }
+.imp-group .pgn-option { font-size: 17px; }
+.pgn-larger .imp-group-label, .pgn-larger .imp-group .pgn-option { font-size: 19px; }
 /* "Whole family" must fit inside the borders: 96 px at 17 px (320 wide, Larger text: 100 px option) and 108 px at
    19 px (360 wide, Larger text: 112 px option), so at most 5.64 em. Bold Arial/Liberation measures 6.17 em, so: no side
    padding, the tightest bold system font of each phone (SF, Roboto, Segoe UI, Helvetica or Arial; never the wider
@@ -345,7 +196,7 @@
    spaces, so `word-spacing` gives the space back exactly what `letter-spacing` takes from it; about 5.51 em: 94 px at
    17 px, 105 px at 19 px). The ✓ is drawn small (10 px) tight in the top right corner, above the letters,
    and not read out (the button says `aria-pressed`). */
-.imp-group .imp-option {
+.imp-group .pgn-option {
   position: relative;
   padding: 4px 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Liberation Sans', sans-serif;
@@ -354,8 +205,8 @@
   white-space: nowrap;
   overflow-wrap: normal;
 }
-.imp-group .imp-tick { display: none; }
-.imp-group .imp-selected::after {
+.imp-group .pgn-tick { display: none; }
+.imp-group .pgn-selected::after {
   content: '';
   position: absolute;
   top: 2px;
@@ -367,30 +218,28 @@
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M1.5 6.5l3 3 6-7' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
 }
 .imp-option-line { padding-left: 96px; }
-.imp-tick { font-weight: 800; }
 @media (max-width: 340px) {
-  .imp-option { font-size: var(--imp-small); }
   .imp-group { grid-template-columns: 72px minmax(0, 1fr) minmax(0, 1fr); }
   .imp-option-line { padding-left: 80px; }
-  .imp-group-label, .imp-group .imp-option { font-size: 15px; }
+  .imp-group-label, .imp-group .pgn-option { font-size: 15px; }
   /* IMP-088: with Larger text, 17 px at 320 px wide. */
-  .imp-larger .imp-group-label, .imp-larger .imp-group .imp-option { font-size: 17px; }
+  .pgn-larger .imp-group-label, .pgn-larger .imp-group .pgn-option { font-size: 17px; }
 }
 /* The choices heading sits on its own line under "← Back"; on short phones it shares the bar's row (below). */
 .imp-bar-title { flex-wrap: wrap; row-gap: 12px; }
-.imp-bar-title .imp-title { flex: 1 0 100%; }
+.imp-bar-title .pgn-title { flex: 1 0 100%; }
 /* IMP-009: "Same as last time", directly under the heading. */
 .imp-same { flex: none; margin-top: -6px; }
 @media (max-height: 640px) and (orientation: portrait) {
-  .imp-setup .imp-title { font-size: 1.35rem; }
-  .imp-setup .imp-scroll { gap: 8px; }
+  .imp-setup .pgn-title { font-size: 1.35rem; }
+  .imp-setup .pgn-scroll { gap: 8px; }
   .imp-groups { gap: 6px; }
   .imp-setup .imp-bar { min-height: 44px; }
   /* IMP-088: at 320 × 568 the four groups, Categories and "Start round" all show with no scrolling. */
-  .imp-setup.imp-screen { padding-top: 8px; --imp-foot: calc(var(--imp-main-h) + var(--imp-gutter) + 8px); }
-  .imp-setup .imp-screen-inner { gap: 6px; }
+  .imp-setup.pgn-screen { padding-top: 8px; --pgn-foot: calc(var(--pgn-main-h) + var(--pgn-gutter) + 8px); }
+  .imp-setup .pgn-screen-inner { gap: 6px; }
   .imp-setup .imp-bar-title { flex-wrap: nowrap; }
-  .imp-setup .imp-bar-title .imp-title { flex: 1 1 auto; min-width: 0; font-size: var(--imp-body); line-height: 1.15; }
+  .imp-setup .imp-bar-title .pgn-title { flex: 1 1 auto; min-width: 0; font-size: var(--pgn-body); line-height: 1.15; }
   .imp-setup .imp-choices-scroll { gap: 6px; padding-bottom: 0; }
   .imp-setup .imp-groups { gap: 4px; }
   .imp-setup .imp-group-wrap { gap: 2px; }
@@ -399,23 +248,23 @@
 
 /* IMP-005, IMP-070, IMP-076: "More options ›" left and "How to play" right, equal widths, directly above "Start round". */
 .imp-choice-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.imp-choice-row .imp-quiet { min-width: 0; padding: 0 8px; }
+.imp-choice-row .pgn-quiet { min-width: 0; padding: 0 8px; }
 /* IMP-076: a group whose label is too long for the 64 px column sits above its two options. */
 .imp-group-wide { grid-template-columns: 1fr 1fr; }
 .imp-group-wide .imp-group-label { white-space: normal; }
 .imp-group-wide .imp-group-label { grid-column: 1 / -1; }
 
 /* ----- How to play (IMP-070, IMP-072) ----- */
-.imp-read { padding-left: 24px; display: flex; flex-direction: column; gap: 10px; font-size: var(--imp-body); line-height: 1.4; }
+.imp-read { padding-left: 24px; display: flex; flex-direction: column; gap: 10px; font-size: var(--pgn-body); line-height: 1.4; }
 .imp-practice-first { align-self: flex-start; }
 
 /* ----- The deal (IMP-010 to IMP-014) ----- */
 .imp-pass { font-size: 1.35rem; font-weight: 700; }
 .imp-welcome { font-size: 1.35rem; font-weight: 800; }
 /* IMP-019, IMP-073: "Player 2 of 4" 17 px (21 px with Larger text); "Everyone else, look away!" 20 px (24 px). */
-.imp-deal-progress { flex: none; width: 100%; text-align: center; font-size: var(--imp-body); line-height: 1.2; color: var(--muted); }
+.imp-deal-progress { flex: none; width: 100%; text-align: center; font-size: var(--pgn-body); line-height: 1.2; color: var(--muted); }
 .imp-look-away { font-size: 20px; font-weight: 700; line-height: 1.25; }
-.imp-larger .imp-look-away { font-size: 24px; }
+.pgn-larger .imp-look-away { font-size: 24px; }
 .imp-room-title { font-size: 28px; font-weight: 800; line-height: 1.2; }
 /* IMP-073: 48 px, shrunk to fit one line (to 32 px, then wrapping) by the screen. */
 .imp-pass-name { width: 100%; font-size: 48px; font-weight: 800; line-height: 1.1; white-space: nowrap; overflow-wrap: anywhere; }
@@ -424,7 +273,7 @@
    above the bottom edge. "Tap instead" sits under the name, far from the main button (M22b). While held, an opaque
    layer runs from y = 0 to 8 px above the pad. */
 .imp-room {
-  --imp-deal-pad-bottom: calc(max(var(--imp-gutter), env(safe-area-inset-bottom)) + var(--imp-main-h) + 8px);
+  --imp-deal-pad-bottom: calc(max(var(--pgn-gutter), env(safe-area-inset-bottom)) + var(--pgn-main-h) + 8px);
   --imp-deal-layer-bottom: calc(var(--imp-deal-pad-bottom) + 48px + 8px + 160px + 8px);
 }
 .imp-turn-b { flex: none; display: flex; flex-direction: column; align-items: center; gap: 8px; }
@@ -437,7 +286,7 @@
   min-width: 44px;
   padding: 0 8px;
   font: inherit;
-  font-size: var(--imp-body);
+  font-size: var(--pgn-body);
   font-weight: 700;
   color: var(--accent);
   background: transparent;
@@ -450,8 +299,8 @@
 .imp-pad-area {
   position: fixed;
   z-index: 4;
-  left: max(var(--imp-gutter), env(safe-area-inset-left));
-  right: max(var(--imp-gutter), env(safe-area-inset-right));
+  left: max(var(--pgn-gutter), env(safe-area-inset-left));
+  right: max(var(--pgn-gutter), env(safe-area-inset-right));
   bottom: var(--imp-deal-pad-bottom);
   display: flex;
   flex-direction: column;
@@ -483,15 +332,15 @@
   bottom: var(--imp-deal-layer-bottom);
   box-sizing: border-box;
   /* IMP-010 (P5): the block starts 8 px below the layer's top, so "Your secret" is never cut at the top. */
-  padding: 8px var(--imp-gutter) 0;
+  padding: 8px var(--pgn-gutter) 0;
   overflow: hidden;
   background: var(--bg);
 }
 /* IMP-010: line-height 1.2, 4 px gaps, no padding, from y = 8. Lines 1 and 5 small, 3 and 4 body text. */
 .imp-block { display: flex; flex-direction: column; gap: 4px; padding: 0; text-align: center; }
 .imp-block > p { line-height: 1.2; overflow-wrap: anywhere; }
-.imp-block-small { font-size: var(--imp-small); color: var(--muted); }
-.imp-block-body { font-size: var(--imp-body); }
+.imp-block-small { font-size: var(--pgn-small); color: var(--muted); }
+.imp-block-body { font-size: var(--pgn-body); }
 .imp-line5 { min-height: 1.2em; }
 /* IMP-012, F11: the word's box is exactly 2 lines tall for every role, its text centred both ways. */
 .imp-block > .imp-private-word {
@@ -504,7 +353,7 @@
   font-weight: 800;
   color: var(--text);
 }
-.imp-block-long > .imp-private-word, .imp-larger .imp-block > .imp-private-word, .imp-block-tighter > .imp-private-word { font-size: 30px; }
+.imp-block-long > .imp-private-word, .pgn-larger .imp-block > .imp-private-word, .imp-block-tighter > .imp-private-word { font-size: 30px; }
 .imp-block-tight > p:nth-child(n + 3) { font-size: 15px; }
 /* IMP-013: nothing on the pad or the block can be selected, copied, looked up or dragged. */
 .imp-pad, .imp-pad *, .imp-layer, .imp-layer *, .imp-block, .imp-block * {
@@ -515,11 +364,11 @@
 }
 @media (max-height: 640px) and (orientation: portrait) {
   .imp-room .imp-bar { min-height: 44px; }
-  .imp-room.imp-screen { padding-top: 8px; --imp-foot: calc(var(--imp-main-h) + var(--imp-gutter) + 8px); }
-  .imp-room .imp-screen-inner { gap: 6px; }
+  .imp-room.pgn-screen { padding-top: 8px; --pgn-foot: calc(var(--pgn-main-h) + var(--pgn-gutter) + 8px); }
+  .imp-room .pgn-screen-inner { gap: 6px; }
 }
 @media (max-height: 600px) and (orientation: portrait) {
-  .imp-larger .imp-room .imp-screen-inner { gap: 4px; }
+  .pgn-larger .imp-room .pgn-screen-inner { gap: 4px; }
 }
 
 /* ----- The clues (IMP-016, IMP-020, IMP-022) ----- */
@@ -560,7 +409,7 @@
   .imp-clues .imp-clues-top { margin-top: 0; }
   .imp-clues-who { margin-top: auto; }
   .imp-clues-two .imp-clues-buttons { width: 100%; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: stretch; }
-  .imp-clues-two .imp-clues-buttons .imp-quiet { min-width: 0; padding: 0 8px; line-height: 1.15; }
+  .imp-clues-two .imp-clues-buttons .pgn-quiet { min-width: 0; padding: 0 8px; line-height: 1.15; }
 }
 
 /* ----- Talk and the timer (IMP-023, IMP-024, IMP-027, IMP-073) ----- */
@@ -598,7 +447,7 @@
   grid-auto-rows: 56px;
   gap: 8px;
 }
-.imp-pick-list .imp-option { min-height: 56px; height: 56px; overflow: hidden; }
+.imp-pick-list .pgn-option { min-height: 56px; height: 56px; overflow: hidden; }
 .imp-pick-unsure { flex: none; display: flex; flex-direction: column; gap: 0; }
 /* "It's a tie" (or "Still a tie") and "Count again": equal halves of the row. */
 .imp-pick-quiet { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; }
@@ -608,7 +457,7 @@
   min-width: 44px;
   padding: 0 8px;
   font: inherit;
-  font-size: var(--imp-body);
+  font-size: var(--pgn-body);
   font-weight: 700;
   color: var(--accent);
   background: transparent;
@@ -618,13 +467,7 @@
 }
 
 /* ----- The one result screen (IMP-033 to IMP-039, IMP-073, IMP-081; F1, F2) -----
-   The page scrolls as one (guideline 46a): no inner scroll areas; the main button stays pinned and the page's bottom
-   padding keeps the last line clear of it. */
-.imp-screen.imp-page { height: auto; min-height: 100dvh; overflow: visible; }
-.imp-page .imp-screen-inner { flex: 1 0 auto; }
-/* IMP-081: while a toast shows over a page that scrolls as one, the page ends above the toast, so scrolled to the end
-   nothing (such as "Players (5) ›") lies under it. */
-.imp-screen.imp-page:has(> .imp-toast) { padding-bottom: calc(var(--imp-foot) + var(--imp-toast-h, 48px) + 4px); }
+   The page scrolls as one (guideline 46a, `Screen page` in src/blocks). */
 .imp-build-up { font-size: 40px; font-weight: 800; line-height: 1.2; overflow-wrap: anywhere; }
 .imp-result-page { flex: 1 0 auto; display: flex; flex-direction: column; gap: 8px; }
 .imp-result-left, .imp-result-right { display: flex; flex-direction: column; gap: 8px; }
@@ -644,7 +487,7 @@
   max-width: 100%;
   margin-top: 4px;
   padding: 3px 14px;
-  font-size: var(--imp-body);
+  font-size: var(--pgn-body);
   font-weight: 700;
   line-height: 1.3;
   overflow-wrap: anywhere;
@@ -652,7 +495,7 @@
   border-radius: 18px;
 }
 .imp-verdict { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; }
-.imp-verdict .imp-quiet { min-width: 0; padding: 0 8px; }
+.imp-verdict .pgn-quiet { min-width: 0; padding: 0 8px; }
 .imp-outcome { font-size: 28px; font-weight: 800; line-height: 1.2; overflow-wrap: anywhere; }
 /* IMP-037: "Undo" above "This word didn't work". */
 .imp-result-quiet { display: flex; flex-direction: column; gap: 8px; }
@@ -679,7 +522,7 @@
   gap: 8px;
   padding: 2px 8px 2px 0;
   border-bottom: 1px solid var(--border);
-  font-size: var(--imp-body);
+  font-size: var(--pgn-body);
   line-height: 1.25;
 }
 .imp-score-left { opacity: 0.5; }
@@ -696,8 +539,8 @@
 /* "More ›" opens just above the main button. */
 .imp-menu.imp-more-menu {
   top: auto;
-  bottom: calc(var(--imp-foot) + 4px);
-  max-height: calc(100% - var(--imp-foot) - 4px - max(12px, env(safe-area-inset-top)));
+  bottom: calc(var(--pgn-foot) + 4px);
+  max-height: calc(100% - var(--pgn-foot) - 4px - max(12px, env(safe-area-inset-top)));
 }
 .imp-menu-divider { flex: none; height: 1px; margin: 4px 8px; background: var(--border); }
 .imp-look-rounds { padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
@@ -705,24 +548,21 @@
 
 /* ----- Landscape (812 × 375): the main button bottom right, 358 px wide; block left, pad right (IMP-010, IMP-081) ----- */
 @media (orientation: landscape) and (max-height: 600px) {
-  .imp-screen { max-width: none; padding-top: 8px; gap: 6px; }
-  .imp-main { left: auto; width: 358px; }
-  .imp-main-inline { width: 100%; }
   .imp-bar { min-height: 44px; }
   .imp-groups { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; }
   /* IMP-010, IMP-081: screen B with the name and the block on the left, the pad on the right (right half minus 32). The
      top bar runs y = 0 to 48; while held the layer covers it across the full width, and the whole left half. */
-  .imp-room.imp-screen.imp-hold-screen { padding-top: 0; }
-  .imp-turn-b { align-self: flex-start; width: calc(50vw - 2 * var(--imp-gutter)); }
-  .imp-pad-area { left: calc(50vw + var(--imp-gutter)); }
+  .imp-room.pgn-screen.imp-hold-screen { padding-top: 0; }
+  .imp-turn-b { align-self: flex-start; width: calc(50vw - 2 * var(--pgn-gutter)); }
+  .imp-pad-area { left: calc(50vw + var(--pgn-gutter)); }
   .imp-layer { bottom: 0; clip-path: polygon(0 0, 100% 0, 100% 48px, 50% 48px, 50% 100%, 0 100%); }
-  .imp-layer .imp-block { width: calc(50vw - 2 * var(--imp-gutter)); }
+  .imp-layer .imp-block { width: calc(50vw - 2 * var(--pgn-gutter)); }
   /* IMP-020: starter and "starts" in the left half; the lines, the order and the buttons in the right half. */
   .imp-clues {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     /* The middle row always keeps "Each say…" and one full line of the clue order (which scrolls inside its box). */
-    grid-template-rows: auto minmax(calc(var(--imp-body) * 2.8 + 8px), 1fr) auto;
+    grid-template-rows: auto minmax(calc(var(--pgn-body) * 2.8 + 8px), 1fr) auto;
     grid-template-areas: "who top" "who rest" "who again";
     column-gap: 16px;
     row-gap: 8px;
@@ -734,7 +574,7 @@
   .imp-clues-rest > * { flex: none; }
   .imp-clues-rest > .imp-clue-order {
     flex: 0 1 auto;
-    min-height: calc(var(--imp-body) * 1.4);
+    min-height: calc(var(--pgn-body) * 1.4);
     overflow-y: auto;
     overscroll-behavior: contain;
   }
@@ -745,18 +585,18 @@
   .imp-clues-buttons { width: 100%; }
   /* Both halves the same height with their tops aligned, whether "See my word again" fits on one line or wraps. */
   .imp-clues-two .imp-clues-buttons { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: stretch; }
-  .imp-clues-two .imp-clues-buttons .imp-quiet { min-width: 0; padding: 0 8px; line-height: 1.15; }
+  .imp-clues-two .imp-clues-buttons .pgn-quiet { min-width: 0; padding: 0 8px; line-height: 1.15; }
   /* IMP-020 with IMP-022 (I24) and Larger text: the right half must hold the three lines (the third may wrap), the
      clue order (at least one full line, scrolling inside), "Not enough clues?", "Go round again" and the main button.
      Same font sizes; tighter line heights and gaps, and 8 px (not 16) above the main button. At 812 × 375: 375 - 8 top
      - 48 bar - 4 - 84 foot = 231 px; need 2 x 26.25 + 4 + 4 + 2 x 26.25 + 4 + 26.25 + 4 + 23.75 + 4 + 48 = 223 px. */
-  .imp-larger .imp-room.imp-screen:has(.imp-clues) { padding-bottom: calc(var(--imp-main-h) + var(--imp-gutter) + 8px); }
-  .imp-larger .imp-screen-inner:has(> .imp-guard > .imp-clues) { gap: 4px; }
-  .imp-larger .imp-clues { row-gap: 4px; }
-  .imp-larger .imp-clues-top, .imp-larger .imp-clues-rest { gap: 4px; }
-  .imp-larger .imp-clues .imp-body, .imp-larger .imp-clues .imp-small { line-height: 1.25; }
-  .imp-larger .imp-clue-order { min-height: calc(var(--imp-body) * 1.25); }
-  .imp-larger .imp-clues { grid-template-rows: auto minmax(calc(var(--imp-body) * 2.5 + 4px), 1fr) auto; }
+  .pgn-larger .imp-room.pgn-screen:has(.imp-clues) { padding-bottom: calc(var(--pgn-main-h) + var(--pgn-gutter) + 8px); }
+  .pgn-larger .pgn-screen-inner:has(> .pgn-guard > .imp-clues) { gap: 4px; }
+  .pgn-larger .imp-clues { row-gap: 4px; }
+  .pgn-larger .imp-clues-top, .pgn-larger .imp-clues-rest { gap: 4px; }
+  .pgn-larger .imp-clues .imp-body, .pgn-larger .imp-clues .imp-small { line-height: 1.25; }
+  .pgn-larger .imp-clue-order { min-height: calc(var(--pgn-body) * 1.25); }
+  .pgn-larger .imp-clues { grid-template-rows: auto minmax(calc(var(--pgn-body) * 2.5 + 4px), 1fr) auto; }
   .imp-count { font-size: 160px; }
   .imp-count-point { font-size: 96px; }
   /* IMP-031, IMP-082: the heading and the names box (scrolling inside) left; "Not sure?", its text buttons and the
@@ -783,9 +623,9 @@
   position: fixed;
   z-index: 5;
   box-sizing: border-box;
-  bottom: max(var(--imp-gutter), env(safe-area-inset-bottom));
-  left: max(var(--imp-gutter), env(safe-area-inset-left));
-  height: var(--imp-main-h);
+  bottom: max(var(--pgn-gutter), env(safe-area-inset-bottom));
+  left: max(var(--pgn-gutter), env(safe-area-inset-left));
+  height: var(--pgn-main-h);
   padding: 0 8px;
   background: var(--bg, #fff);
   white-space: nowrap;
@@ -794,28 +634,28 @@
 }
 /* 360 px and wider in portrait: two equal halves 8 px apart, "End game" left, the main button right (160 px each at
    360 × 640, 175 px at 390 × 844). */
-.imp-between > .imp-screen-inner .imp-main:not(.imp-main-inline) { left: calc(50% + 4px); }
+.imp-between > .pgn-screen-inner .pgn-main:not(.pgn-main-inline) { left: calc(50% + 4px); }
 .imp-end-game { right: calc(50% + 4px); }
 /* 320 × 568: "End game" full width and 48 px tall, 8 px above the full-width main button; the pinned area is 132 px. */
 @media (max-width: 359.98px) and (orientation: portrait) {
-  .imp-between > .imp-screen-inner .imp-main:not(.imp-main-inline) { left: max(var(--imp-gutter), env(safe-area-inset-left)); }
+  .imp-between > .pgn-screen-inner .pgn-main:not(.pgn-main-inline) { left: max(var(--pgn-gutter), env(safe-area-inset-left)); }
   .imp-end-game {
-    right: max(var(--imp-gutter), env(safe-area-inset-right));
+    right: max(var(--pgn-gutter), env(safe-area-inset-right));
     height: 48px;
-    bottom: calc(max(var(--imp-gutter), env(safe-area-inset-bottom)) + var(--imp-main-h) + 8px);
+    bottom: calc(max(var(--pgn-gutter), env(safe-area-inset-bottom)) + var(--pgn-main-h) + 8px);
   }
-  .imp-room.imp-screen.imp-between { --imp-foot: calc(var(--imp-main-h) + 48px + 8px + var(--imp-gutter) + 8px); }
+  .imp-room.pgn-screen.imp-between { --pgn-foot: calc(var(--pgn-main-h) + 48px + 8px + var(--pgn-gutter) + 8px); }
 }
 /* 812 × 375: one row in the right half, (406 − 32 − 8) / 2 = 183 px each. */
 @media (orientation: landscape) and (max-height: 600px) {
-  .imp-between > .imp-screen-inner .imp-main:not(.imp-main-inline) {
+  .imp-between > .pgn-screen-inner .pgn-main:not(.pgn-main-inline) {
     left: auto;
-    width: calc((50vw - 2 * var(--imp-gutter) - 8px) / 2);
+    width: calc((50vw - 2 * var(--pgn-gutter) - 8px) / 2);
   }
   .imp-end-game {
     left: auto;
-    right: calc(max(var(--imp-gutter), env(safe-area-inset-right)) + (50vw - 2 * var(--imp-gutter) - 8px) / 2 + 8px);
-    width: calc((50vw - 2 * var(--imp-gutter) - 8px) / 2);
+    right: calc(max(var(--pgn-gutter), env(safe-area-inset-right)) + (50vw - 2 * var(--pgn-gutter) - 8px) / 2 + 8px);
+    width: calc((50vw - 2 * var(--pgn-gutter) - 8px) / 2);
   }
 }
 /* IMP-052: "Allow repeats" directly above the bottom row. */
@@ -825,42 +665,36 @@
 .imp-result-line > p { flex: 1 1 auto; min-width: 0; text-align: left; }
 .imp-players-link { flex: none; margin-left: auto; white-space: nowrap; }
 /* IMP-001 (M22): "Carry on that game" and "Start new" side by side, equal and outlined. */
-.imp-dialog-buttons:has(> .imp-equal) { flex-direction: row; }
+.pgn-dialog-buttons:has(> .imp-equal) { flex-direction: row; }
 .imp-equal { flex: 1 1 0; min-width: 0; padding: 0 8px; }
 /* IMP-092 (P3): "Oops, keep playing" full width, 48 px tall, at the top of the summary. */
 .imp-oops { width: 100%; height: 48px; flex: none; }
 
 /* ----- Nothing under the pinned buttons (IMP-081, P4) ----- */
-/* Sheets scroll as one page, so the Players sheet's field and "Add" (and every last line) can be scrolled above the
-   pinned "Done"; a focused field is kept clear of it too. */
-.imp-sheet { overflow-y: auto; overscroll-behavior: contain; scroll-padding-bottom: var(--imp-foot); }
-.imp-sheet-body { flex: 1 0 auto; min-height: auto; overflow: visible; }
+/* Sheets scroll as one page (src/blocks), so the Players sheet's field and "Add" can be scrolled above "Done". */
 /* "Whose word?": the names scroll inside their own box; "Cancel" stays pinned at the dialog's bottom. */
-.imp-dialog.imp-whose { overflow: hidden; }
-.imp-whose .imp-dialog-buttons { flex: 0 1 auto; min-height: 0; }
+.pgn-dialog.imp-whose { overflow: hidden; }
+.imp-whose .pgn-dialog-buttons { flex: 0 1 auto; min-height: 0; }
 .imp-whose-list { flex: 0 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; display: flex; flex-direction: column; gap: 8px; }
-.imp-whose-list > .imp-quiet { flex: none; overflow-wrap: anywhere; }
-.imp-whose .imp-dialog-buttons > .imp-quiet { flex: none; }
+.imp-whose-list > .pgn-quiet { flex: none; overflow-wrap: anywhere; }
+.imp-whose .pgn-dialog-buttons > .pgn-quiet { flex: none; }
 @media (orientation: landscape) and (max-height: 600px) {
   /* 812 × 375: two columns of 56 px rows, 8 px apart (5 players: 3 rows × 64 = 192 px; 12 players scroll inside). */
   .imp-whose-list { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-auto-rows: 56px; }
-  .imp-whose-list > .imp-quiet { min-height: 56px; height: 56px; overflow: hidden; }
+  .imp-whose-list > .pgn-quiet { min-height: 56px; height: 56px; overflow: hidden; }
   /* The picker's heading and names use the left half's full height (the main button sits in the right half, under
      "Not sure?" and its text buttons): 48 + 70 + 3 rows × 64 = 310 px ≤ 375 with 5 players. */
-  .imp-room.imp-screen:has(.imp-picker) { padding-bottom: var(--imp-gutter); }
+  .imp-room.pgn-screen:has(.imp-picker) { padding-bottom: var(--pgn-gutter); }
   .imp-pick-list { grid-auto-rows: 56px; }
-  .imp-room.imp-screen:has(.imp-picker) .imp-joining { width: calc(50% - 8px); }
+  .imp-room.pgn-screen:has(.imp-picker) .imp-joining { width: calc(50% - 8px); }
 }
 
 /* ----- Larger text on every Impostor screen (IMP-109, P11): quiet and text button labels, menu items, chips, the
    name field, switches and toasts follow body text (17 → 21 px) everywhere, setup, deal, room, result, summary,
    sheets and dialogs included. Room sizes (IMP-073) stay as they are. ----- */
-.imp .imp-quiet,
 .imp .imp-menu-item,
 .imp .imp-menu-button,
 .imp .imp-row-button,
 .imp .imp-chip,
 .imp .imp-input,
-.imp .imp-switch,
-.imp .imp-toast,
-.imp .imp-toast-button { font-size: var(--imp-body); }
+.imp .imp-switch { font-size: var(--pgn-body); }

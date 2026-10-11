@@ -1,0 +1,190 @@
+/* Shared screen building blocks (src/blocks/README.md), taken from Impostor's screens. Everything is scoped to `pgn-`
+   classes inside a `.pgn` root (BlocksRoot); Tambola uses none of it. Colours are the app's variables (styles.css).
+   A game's own stylesheet loads after this one and may adjust these classes (and the tokens) for its screens. */
+
+/* ----- Tokens (guideline 24, IMP-109): body 17 px and small 15 px; with Larger text 21 px and 19 px ----- */
+.pgn {
+  --pgn-body: 17px;
+  --pgn-small: 15px;
+  --pgn-gutter: 16px;
+  --pgn-main-h: 60px;
+  /* The space kept free above the bottom edge for the main button. */
+  --pgn-foot: calc(var(--pgn-main-h) + 2 * var(--pgn-gutter));
+  --pgn-tint: color-mix(in srgb, var(--accent) 10%, transparent);
+  font-size: var(--pgn-body);
+}
+.pgn.pgn-larger { --pgn-body: 21px; --pgn-small: 19px; }
+.pgn [hidden] { display: none !important; }
+/* The tap guard (guideline 20) is laid out as if it were not there. */
+.pgn-guard { display: contents; }
+
+/* ----- Screens: the main button's space kept free at the bottom; fixed, with one scroll area inside ----- */
+.pgn-screen {
+  box-sizing: border-box;
+  height: 100dvh;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: max(12px, env(safe-area-inset-top)) max(var(--pgn-gutter), env(safe-area-inset-right)) var(--pgn-foot)
+    max(var(--pgn-gutter), env(safe-area-inset-left));
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow: hidden;
+}
+.pgn-screen-inner { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; gap: 12px; }
+.pgn-scroll { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; display: flex; flex-direction: column; gap: 12px; padding-bottom: 8px; }
+.pgn p, .pgn h1, .pgn h2, .pgn ol, .pgn ul { margin: 0; }
+
+.pgn-title { font-size: 1.75rem; font-weight: 800; line-height: 1.15; }
+
+/* ----- Buttons (guidelines 14, 17a, 26) ----- */
+.pgn-main {
+  position: fixed;
+  z-index: 5;
+  left: max(var(--pgn-gutter), env(safe-area-inset-left));
+  right: max(var(--pgn-gutter), env(safe-area-inset-right));
+  bottom: max(var(--pgn-gutter), env(safe-area-inset-bottom));
+  height: var(--pgn-main-h);
+  padding: 0 16px;
+  font: inherit;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--accent-text);
+  background: var(--accent);
+  border: 0;
+  border-radius: 12px;
+  cursor: pointer;
+  touch-action: manipulation;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.pgn-main:disabled { opacity: 0.5; cursor: default; }
+.pgn-main-inline { position: static; width: 100%; }
+.pgn-quiet {
+  min-height: 48px;
+  padding: 0 16px;
+  font: inherit;
+  font-weight: 700;
+  color: var(--accent);
+  background: transparent;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.pgn-quiet:disabled { opacity: 0.5; cursor: default; }
+.pgn-option {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 48px;
+  padding: 4px 8px;
+  font: inherit;
+  font-size: var(--pgn-body);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--text);
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+.pgn-selected { color: var(--accent); background: var(--pgn-tint); border-color: var(--accent); }
+.pgn-tick { font-weight: 800; }
+@media (max-width: 340px) {
+  .pgn-option { font-size: var(--pgn-small); }
+}
+
+/* ----- Toasts, dialogs, sheets ----- */
+.pgn-toast {
+  position: fixed;
+  z-index: 6;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(var(--pgn-foot) - 4px);
+  max-width: calc(100vw - 32px);
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 14px;
+  color: var(--toast-text);
+  background: var(--toast-bg);
+  border-radius: 22px;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.18);
+  width: max-content;
+  box-sizing: border-box;
+}
+/* A long word wraps inside the toast, so "Undo" always stays on screen. */
+.pgn-toast > span { min-width: 0; overflow-wrap: anywhere; }
+.pgn-toast-button {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0 6px;
+  font: inherit;
+  font-weight: 800;
+  color: var(--toast-button);
+  background: transparent;
+  border: 0;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.pgn-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(28, 27, 26, 0.55);
+}
+.pgn-dialog {
+  width: min(100%, 460px);
+  max-height: calc(100dvh - 32px);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  background: var(--surface);
+  border-radius: 16px;
+}
+.pgn-dialog-text { font-size: var(--pgn-body); font-weight: 700; line-height: 1.4; }
+.pgn-dialog-buttons { display: flex; flex-direction: column; gap: 8px; }
+/* IMP-081 (P4): a sheet scrolls as one page, so every last line (a field and its "Add" too) can be scrolled above the
+   pinned "Done"; a focused field is kept clear of it too. */
+.pgn-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  box-sizing: border-box;
+  padding: max(16px, env(safe-area-inset-top)) var(--pgn-gutter) var(--pgn-foot);
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scroll-padding-bottom: var(--pgn-foot);
+}
+.pgn-sheet-body { flex: 1 0 auto; min-height: auto; max-width: 640px; width: 100%; margin: 0 auto; overflow: visible; display: flex; flex-direction: column; gap: 12px; }
+
+/* ----- A screen that scrolls as one page (guideline 46a, IMP-081): no inner scroll areas; the main button stays pinned
+   and the page's bottom padding keeps the last line clear of it ----- */
+.pgn-screen.pgn-page { height: auto; min-height: 100dvh; overflow: visible; }
+.pgn-page .pgn-screen-inner { flex: 1 0 auto; }
+/* While a toast shows, the page ends above the toast, so scrolled to the end nothing lies under it. */
+.pgn-screen.pgn-page:has(> .pgn-toast) { padding-bottom: calc(var(--pgn-foot) + var(--pgn-toast-h, 48px) + 4px); }
+
+/* ----- Landscape (812 × 375): the main button bottom right, 358 px wide ----- */
+@media (orientation: landscape) and (max-height: 600px) {
+  .pgn-screen { max-width: none; padding-top: 8px; gap: 6px; }
+  .pgn-main { left: auto; width: 358px; }
+  .pgn-main-inline { width: 100%; }
+}
+
+/* ----- Larger text (IMP-109, P11): quiet button labels and toasts follow body text (17 → 21 px) ----- */
+.pgn .pgn-quiet,
+.pgn .pgn-toast,
+.pgn .pgn-toast-button { font-size: var(--pgn-body); }

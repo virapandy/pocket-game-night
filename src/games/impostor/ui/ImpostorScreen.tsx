@@ -7,7 +7,7 @@ import {
   tonightsNames, unfinishedEvening, type Evening, type EveningMatch,
 } from './evening';
 import { Game } from './Game';
-import { Dialog, HideMainButton, QuietButton, useTapGuard } from './parts';
+import { BlocksRoot, Dialog, HideMainButton, QuietButton, Screen, ScrollArea, useTapGuard } from '../../../blocks';
 import { LookBack } from './LookBack';
 import { HowToPlayChoices, WhosPlaying } from './Setup';
 import './impostor.css';
@@ -178,7 +178,7 @@ export function ImpostorScreen({
       );
   }
   return (
-    <div className={larger ? 'imp imp-larger' : 'imp'}>
+    <BlocksRoot className="imp" larger={larger}>
       <HideMainButton.Provider value={asking !== null}>{screen}</HideMainButton.Provider>
       {asking && (
         // IMP-001 (M22): two equal outlined buttons; neither has the main look.
@@ -206,7 +206,7 @@ export function ImpostorScreen({
           </QuietButton>
         </Dialog>
       )}
-    </div>
+    </BlocksRoot>
   );
 }
 
@@ -229,18 +229,18 @@ export function ImpostorPastGame({
   // I29: the 500 ms tap guard from when the look back shows.
   const guard = useTapGuard(saved.id);
   return (
-    <div className={larger ? 'imp imp-larger' : 'imp'}>
-      <main className="imp-screen imp-setup" onClickCapture={guard}>
+    <BlocksRoot className="imp" larger={larger}>
+      <Screen className="imp-setup" onClickCapture={guard}>
         <header className="imp-bar">
           <QuietButton onClick={onBack}>← Back</QuietButton>
         </header>
-        <div className="imp-scroll">
-          <h1 className="imp-title">Impostor · {d.result}</h1>
+        <ScrollArea>
+          <h1 className="pgn-title">Impostor · {d.result}</h1>
           <p className="imp-body">Started {clock(saved.createdAt)}</p>
           {match && <LookBack match={match} />}
           {actions}
-        </div>
-      </main>
-    </div>
+        </ScrollArea>
+      </Screen>
+    </BlocksRoot>
   );
 }

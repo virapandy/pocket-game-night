@@ -1,5 +1,6 @@
 import { Fragment, useCallback, useEffect, useRef, useState, type ReactNode, type RefObject } from 'react';
 import { useRegisterSW } from 'virtual:pwa-register/react';
+import { BlocksRoot, useTapGuard } from '../blocks';
 import { makePlayerReport, makeReport, type Preferences, type Report, type ReportSubject, type SavedGame } from '../engine';
 import { games, hostGames, impostor, phoneGames, tambola, type GameId, type HostGameId, type PhoneGameId } from './games';
 import { History, isPast, unsettledSessionName, type Deleted } from './History';
@@ -303,9 +304,9 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
         settingsExtra={
           <>
             {/* IMP-014, IMP-109: Impostor's switches, in its own sizes. */}
-            <div className="imp">
+            <BlocksRoot className="imp">
               <impostor.Settings prefs={preferences} />
-            </div>
+            </BlocksRoot>
             <WaitingReports />
           </>
         }
@@ -541,7 +542,7 @@ function Home({
     run();
   };
   // I29: a tap on any of Home's buttons within 500 ms of Home showing is ignored (a double tap never skips a screen).
-  const guard = impostor.useTapGuard('home');
+  const guard = useTapGuard('home');
   return (
     <main className="screen home" onClickCapture={guard}>
       {needRefresh && (
@@ -688,7 +689,7 @@ function PickGame({
   });
   const [asking, setAsking] = useState(false);
   // I29: the 500 ms tap guard from when this screen shows, and again when "Start a new game?" opens or closes.
-  const guard = impostor.useTapGuard(asking);
+  const guard = useTapGuard(asking);
   return (
     <main className="screen pick-game" onClickCapture={guard}>
       <header className="top-bar">

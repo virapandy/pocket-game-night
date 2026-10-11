@@ -4,7 +4,8 @@ import { useContext, useEffect, useLayoutEffect, useRef, useState, type PointerE
 import { flushSync } from 'react-dom';
 import type { ImpostorWord } from '../rules';
 import { buzz } from './device';
-import { Caps, Dialog, HideMainButton, MainButton, QuietButton, TapGuard } from './parts';
+import { Dialog, HideMainButton, MainButton, QuietButton, TapGuard, useBackCloses } from '../../../blocks';
+import { Caps } from './parts';
 
 /**
  * What one player may see: the round's word for the crew; for the impostor only what their mode allows. `lastGuess`
@@ -297,12 +298,7 @@ function ScreenB({
   // IMP-015, F3: "Don't know this word?" asks first; "Back" (or the browser's or phone's Back) records nothing.
   const [asking, setAsking] = useState(false);
   const hideMain = useContext(HideMainButton) || asking;
-  useEffect(() => {
-    if (!asking) return;
-    const back = () => setAsking(false);
-    window.addEventListener('popstate', back);
-    return () => window.removeEventListener('popstate', back);
-  }, [asking]);
+  useBackCloses(asking, () => setAsking(false));
 
   const holdHandlers = {
     onPointerDown: (e: PointerEv<HTMLButtonElement>) => {
@@ -351,7 +347,7 @@ function ScreenB({
         </h1>
         {/* IMP-010 (M22b): "Tap instead" directly under the name, far from the main button. In tap mode (IMP-014) it
             is not shown; its space stays, so nothing moves. */}
-        <button type="button" className={tapMode ? 'imp-quiet imp-tap-instead imp-reserved' : 'imp-quiet imp-tap-instead'} onClick={() => setTapMode(true)}>
+        <button type="button" className={tapMode ? 'pgn-quiet imp-tap-instead imp-reserved' : 'pgn-quiet imp-tap-instead'} onClick={() => setTapMode(true)}>
           Tap instead
         </button>
         <button
@@ -389,6 +385,7 @@ function ScreenB({
           type="button"
           className="imp-pad"
           data-testid="hold-pad"
+          data-tap-guard="off"
           draggable={false}
           onContextMenu={stop}
           onDragStart={stop}
