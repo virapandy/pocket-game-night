@@ -6,11 +6,12 @@
 # Green: publishes the owner's preview link, https://virapandy.github.io/pocket-game-night/preview/.
 # The families' link is left on the last release (the families' half is rebuilt from that commit).
 # Pushes that change only docs/ or reports/ do not start a run.
+# Lane branches (lane-*): the same checks, with area tests from everything the lane changed since origin/main; never publishes, and a newer push to the same lane cancels the older run.
 name: Quick verify
 
 on:
   push:
-    branches: [main]
+    branches: [main, 'lane-*']
     paths-ignore:
       - 'docs/**'
       - 'reports/**'
@@ -19,11 +20,12 @@ permissions:
   contents: read
   actions: read # to find the last green quick run (the area tests' diff base)
 
-# Queue, never cancel: a run that is nearly done is kept. GitHub keeps only the newest waiting run,
+# main: queue, never cancel: a run that is nearly done is kept. GitHub keeps only the newest waiting run,
 # but each run diffs from the last green quick run, so a skipped push's areas are still covered.
+# lane-*: one group per lane; a newer push cancels the older run (each lane run covers the whole lane).
 concurrency:
   group: quick-verify-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: ${{ startsWith(github.ref, 'refs/heads/lane-') }}
 
 jobs:
   # Picks the area tests: spec files mapped from the paths changed since the last green quick run on main
@@ -49,16 +51,27 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           PUSH_BEFORE: ${{ github.event.before }}
           AFTER: ${{ github.sha }}
+          REF_NAME: ${{ github.ref_name }}
         run: |
           if [ ! -f tests/playwright.config.ts ]; then echo "No browser tests."; echo "mode=none" >> "$GITHUB_OUTPUT"; exit 0; fi
-          BEFORE=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow quick.yml --branch main --status success \
-            --limit 1 --json headSha --jq '.[0].headSha // empty' 2>/dev/null || true)
-          if [ -n "$BEFORE" ] && git cat-file -e "$BEFORE^{commit}" 2>/dev/null && git merge-base --is-ancestor "$BEFORE" "$AFTER"; then
-            echo "Diff base: last green quick run, $BEFORE."
-          else
-            BEFORE="$PUSH_BEFORE"
-            echo "No usable green quick run found; diff base: this push's previous commit, $BEFORE."
-          fi
+          case "$REF_NAME" in
+            lane-*)
+              # A lane is checked as one change: everything it changed since it left origin/main.
+              BEFORE=$(git merge-base origin/main "$AFTER" 2>/dev/null || true)
+              if [ -z "$BEFORE" ]; then BEFORE="$PUSH_BEFORE"; echo "No merge base with origin/main; diff base: $BEFORE."
+              else echo "Lane $REF_NAME; diff base: where it left origin/main, $BEFORE."; fi
+              ;;
+            *)
+              BEFORE=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow quick.yml --branch main --status success \
+                --limit 1 --json headSha --jq '.[0].headSha // empty' 2>/dev/null || true)
+              if [ -n "$BEFORE" ] && git cat-file -e "$BEFORE^{commit}" 2>/dev/null && git merge-base --is-ancestor "$BEFORE" "$AFTER"; then
+                echo "Diff base: last green quick run, $BEFORE."
+              else
+                BEFORE="$PUSH_BEFORE"
+                echo "No usable green quick run found; diff base: this push's previous commit, $BEFORE."
+              fi
+              ;;
+          esac
           specs=$(node scripts/browser-areas.mjs "$BEFORE" "$AFTER")
           if [ -z "$specs" ]; then
             echo "No area tests mapped for this push; smoke set only."
@@ -178,8 +191,9 @@ jobs:
           retention-days: 14
           if-no-files-found: ignore
 
-  # Both halves build alongside the checks, so publishing adds little time.
+  # Both halves build alongside the checks, so publishing adds little time. main only: lanes never publish.
   preview-site:
+    if: github.ref == 'refs/heads/main'
     uses: ./.github/workflows/build-site.yml
     permissions:
       contents: read
@@ -189,6 +203,7 @@ jobs:
       sha: ${{ github.sha }}
 
   families-site:
+    if: github.ref == 'refs/heads/main'
     uses: ./.github/workflows/build-site.yml
     permissions:
       contents: read
@@ -200,6 +215,7 @@ jobs:
   publish:
     needs: [verify, all-browser-tests, preview-site, families-site]
     if: >-
+      github.ref == 'refs/heads/main' &&
       !cancelled() &&
       needs.verify.result == 'success' &&
       (needs.all-browser-tests.result == 'success' || needs.all-browser-tests.result == 'skipped') &&
