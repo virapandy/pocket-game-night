@@ -5,6 +5,7 @@
 # After the owner tries the candidate and says yes, "Publish release" (release.yml) puts it on the
 # families' link; it refuses a tag whose commit has no successful Complete run.
 # Everyday pushes run "Quick verify" (quick.yml) instead.
+# Known-flaky tests (@quarantine) run every time in a separate step that never blocks; results on the run's summary page.
 # The browser tests run in four parallel jobs (android and iphone, each split in two halves) to keep a round short.
 name: Complete run
 
@@ -85,13 +86,41 @@ jobs:
       - name: Browser tests
         id: browser
         if: hashFiles('tests/playwright.config.ts') != ''
-        run: npm run test:browser -- --project=${{ matrix.project }} --shard=${{ matrix.shard }}/2
+        # Known-flaky tests (@quarantine) run in the non-blocking step below instead.
+        run: npm run test:browser -- --project=${{ matrix.project }} --grep-invert @quarantine --shard=${{ matrix.shard }}/2
       # When the browser step fails, keep its traces and screenshots so the Test workspace can see why.
       - name: Keep browser results
         if: failure() && steps.browser.outcome == 'failure'
         uses: actions/upload-artifact@v4
         with:
           name: browser-test-results-${{ matrix.project }}-${{ matrix.shard }}
+          path: test-results/browser/
+          retention-days: 14
+          if-no-files-found: ignore
+      # Known-flaky tests (tagged @quarantine, tests/browser/README.md "Quarantine"): run every time, this job's half of
+      # them, but never turn the run red; results are listed on the run's summary page for the tester.
+      # Runs after "Keep browser results", because each browser run empties test-results/browser/.
+      - name: Quarantined browser tests (non-blocking)
+        id: quarantine
+        if: >-
+          !cancelled() && hashFiles('tests/playwright.config.ts') != '' &&
+          (steps.browser.outcome == 'success' || steps.browser.outcome == 'failure')
+        continue-on-error: true
+        env:
+          PLAYWRIGHT_JSON_OUTPUT_FILE: ${{ github.workspace }}/test-results/quarantine-${{ matrix.project }}-${{ matrix.shard }}.json
+          REPORT: test-results/quarantine-${{ matrix.project }}-${{ matrix.shard }}.json
+          HEADING: Quarantined browser tests (${{ matrix.project }} ${{ matrix.shard }}/2)
+        run: |
+          set +e
+          npm run test:browser -- --project=${{ matrix.project }} --grep @quarantine --pass-with-no-tests --shard=${{ matrix.shard }}/2 --reporter=line,json
+          status=$?
+          node .github/scripts/quarantine-summary.mjs "$REPORT" "$HEADING"
+          exit $status
+      - name: Keep quarantined browser results
+        if: ${{ !cancelled() && steps.quarantine.outcome == 'failure' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-test-results-quarantine-${{ matrix.project }}-${{ matrix.shard }}
           path: test-results/browser/
           retention-days: 14
           if-no-files-found: ignore
