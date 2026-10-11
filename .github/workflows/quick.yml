@@ -1,7 +1,8 @@
 # Quick verify (docs/change-sop.md), on every push to main, aiming for about 3 minutes:
 # type-check, boundary check, build, every rule test, then the browser smoke set (tests tagged @smoke)
 # and the browser tests for the areas changed since the last green quick run (tests/browser/areas.json), Android only.
-# When a push touches shared set-up (__ALL__), every browser test runs instead, split in two parallel shards.
+# When a push touches shared set-up (__ALL__), every browser test runs instead, split in three parallel shards
+# that take about the same time (.github/scripts/browser-shard.mjs).
 # Known-flaky tests (@quarantine) run every time in a separate step that never blocks; results on the run's summary page.
 # Screenshot tests (@screens) never run here: they belong to the complete run (ci.yml) and screenshots.yml.
 # Green: publishes the owner's preview link, https://virapandy.github.io/pocket-game-night/preview/.
@@ -31,7 +32,7 @@ concurrency:
 jobs:
   # Picks the area tests: spec files mapped from the paths changed since the last green quick run on main
   # (falling back to the push's own range), so a push whose run was skipped or failed is covered.
-  # mode: none (smoke set only), areas (the listed specs), all (every browser test, in two shards).
+  # mode: none (smoke set only), areas (the listed specs), all (every browser test, in three shards).
   # No map, or no match: the smoke set alone. __ALL__ (an area mapped to "*", such as package.json): all.
   plan:
     runs-on: ubuntu-latest
@@ -78,7 +79,7 @@ jobs:
             echo "No area tests mapped for this push; smoke set only."
             echo "mode=none" >> "$GITHUB_OUTPUT"
           elif [ "$specs" = "__ALL__" ]; then
-            echo "This push touches shared set-up: every browser test on Android, in two shards."
+            echo "This push touches shared set-up: every browser test on Android, in three shards."
             echo "mode=all" >> "$GITHUB_OUTPUT"
           else
             echo "Area tests:"; echo "$specs"
@@ -172,17 +173,22 @@ jobs:
           retention-days: 14
           if-no-files-found: ignore
 
-  # Every browser test on Android, split into two parallel halves; runs only when the plan says "all".
+  # Every browser test on Android, split into three parallel shards; runs only when the plan says "all".
+  # Playwright's own --shard cut the list into consecutive slices, which put the slow files together (6.6 and 12.2
+  # minutes with two shards on 11 October); browser-shard.mjs spreads every file's tests over the shards instead.
+  # To change the number of shards, change SHARDS and the matrix together.
   all-browser-tests:
     needs: plan
     if: needs.plan.outputs.mode == 'all'
-    name: Every browser test (${{ matrix.shard }} of 2)
+    name: Every browser test (${{ matrix.shard }} of 3)
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    env:
+      SHARDS: 3
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2]
+        shard: [1, 2, 3]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -207,9 +213,21 @@ jobs:
       - name: Install browser system libraries
         if: steps.pw-cache.outputs.cache-hit == 'true'
         run: npx playwright install-deps chromium
-      - name: Browser tests, shard ${{ matrix.shard }} of 2
+      # Every shard lists the same tests from the same commit and takes its own share, so each test runs exactly once.
+      - name: Pick this shard's tests
+        env:
+          SHARD: ${{ matrix.shard }}
+        run: |
+          npx playwright test --config tests/playwright.config.ts --list --project=android \
+            --grep-invert "@screens|@quarantine" --reporter=json > "$RUNNER_TEMP/browser-list.json"
+          node .github/scripts/browser-shard.mjs "$RUNNER_TEMP/browser-list.json" "$SHARD" "$SHARDS" > "$RUNNER_TEMP/browser-shard.txt"
+      - name: Browser tests, shard ${{ matrix.shard }} of 3
         # Quarantined tests run in the verify job's non-blocking step instead.
-        run: npm run test:browser -- --project=android --grep-invert "@screens|@quarantine" --pass-with-no-tests --shard=${{ matrix.shard }}/2
+        run: |
+          # With no locations Playwright would run every test, so an empty shard stops here (a pass).
+          if [ ! -s "$RUNNER_TEMP/browser-shard.txt" ]; then echo "No tests in this shard."; exit 0; fi
+          mapfile -t LOCATIONS < "$RUNNER_TEMP/browser-shard.txt"
+          npm run test:browser -- --project=android --grep-invert "@screens|@quarantine" "${LOCATIONS[@]}"
       - name: Keep browser results
         if: failure()
         uses: actions/upload-artifact@v4
