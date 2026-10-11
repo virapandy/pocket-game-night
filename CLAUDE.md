@@ -148,7 +148,7 @@ GitHub Pages · GitHub Actions.
 - Test role: `npm test` (Vitest, config `tests/vitest.config.ts`), `npm run test:browser`
   (Playwright, config `tests/playwright.config.ts`, against `npm run build` + `npm run preview`)
 - Automation (`docs/change-sop.md`): **quick verify** (`.github/workflows/quick.yml`, ~3 min) on every
-  push to `main` runs the type-check, build, every rule test, the browser smoke set and the changed
+  push to `main` or a `lane-*` branch (lanes check only, never publish) runs the type-check, build, every rule test, the browser smoke set and the changed
   area's browser tests on Android, then publishes the **preview**,
   https://virapandy.github.io/pocket-game-night/preview/. The **complete run** (`.github/workflows/ci.yml`)
   runs every browser test on both phones nightly and on a release (`gh workflow run ci.yml --ref main`);
