@@ -1,4 +1,49 @@
 # Test report
+**Faster cycles, test side (items 3, 7, 9, 11): GREEN. Quick verify 38115857931 on e0b62d4, every browser test on Android.**
+
+Commit tested: e0b62d4 (app b7a01c8, shared screen building blocks; tests e0b62d4)   Date: 2026-10-11
+Result: GREEN. Quick verify 38115857931: rule tests 706 of 706; smoke 17 passed; every browser test on Android (the
+shared test set-up changed), 346 + 345 passed, 1 skipped (the usual one-phone-only test). iPhone: not in quick verify;
+locally the eight Tambola files that wait out Home's guard passed on iPhone (86 of 86).
+- Failing (real bugs): none. Nothing any test checks was changed.
+- Item 3, clock: every test page now starts with Playwright's clock (runs with real time); the 500 ms tap guard is
+  waited out by moving the app's time on, not by sleeping. Guard tests still pause the clock and tap within 500 ms.
+  Measured locally (Android, 3 workers): eight Tambola files 444 s → 345 s; three Impostor files 281 s → 250 s (Impostor
+  already used the clock, so that difference is mostly the Mac's run-to-run spread). One test adjusted for the clock,
+  not its check: PLT-203's injected crash is thrown from a microtask instead of a timer (the clock's timers keep a thrown
+  error from reaching the page as uncaught). No animation is known to cause flakiness, so none was turned off.
+- Item 7, area map: one game's files run only that game's browser files plus smoke (Impostor now lists all 12 of its
+  files; 4 were missing). Shared app shell files and the new `src/blocks/**` run smoke + both games' key journeys + Home
+  + layout rules (6 to 7 files instead of 11 or all). Checked: b7a01c8's blocks change maps to 17 files, not all 42.
+- Item 9, mutation: Stryker's incremental mode works with our Vitest set-up (re-run 161 s → 77 s, "3 of 3 reused").
+  Command for a C3 change in `tests/mutation/README.md`. Scoped runs on Impostor's rules now use Impostor's tests.
+- Item 11, quarantine: documented in `tests/browser/README.md`; list below.
+
+## Quarantined (known-flaky; still run every time, never re-run away)
+| Test | Scenario | Owner | Reason | Since | Ends when |
+|---|---|---|---|---|---|
+| `tests/android/emulator.spec.ts` PLT-120 full paper game at 390 × 844 | PLT-120 | tester | passed only on its PLT-122 retry, weekly run 37593615495 (emulator timing) | 2026-10-11 | three weekly runs green first time |
+| `tests/android/emulator.spec.ts` TAM-116 taps within 100 ms on a slowed processor | TAM-116 | tester | passed only on its PLT-122 retry, weekly run 37593615495 | 2026-10-11 | three weekly runs green first time |
+| TAM-111 (emulator back gesture) | TAM-111 | tester | watch only: no failure on record in this clone's reports; not marked | 2026-10-11 | next weekly run |
+
+## Flaky or setup problems (not for the Build workspace)
+- Quick verify's two Android shards are unbalanced (6.6 min and 12.2 min); splitting by file would even them (item 7).
+
+## Requests for the Build workspace
+- quick.yml: run `--grep-invert @quarantine` in the blocking browser steps and `--grep @quarantine` in a
+  non-blocking step, so a known-flaky test never freezes the preview (only weekly emulator tests are tagged today).
+- `.github/mutation/stryker.impostor.config.mjs`: point `vitest.configFile` at `tests/vitest.mutation.impostor.config.ts`
+  and remove `.github/mutation/vitest.impostor.config.mjs` (same settings).
+- Optional: cache `reports/stryker/scoped/incremental.json` (or the weekly run's own incremental file) between runs if
+  CI mutation should be incremental.
+
+## Notes for the owner (plain English)
+Tests no longer sit and wait half a second at every "tap guard"; they fast-forward the app's clock instead. A push that
+changes one game now runs that game's browser tests only (plus the quick core check), and a change to shared screens
+runs the core journeys of both games. Known-flaky tests are now listed with an owner instead of being quietly re-run.
+
+---
+
 **Impostor 1.3.1 (round 6b, I29 R1–R4, and P11 "Join a game"): GREEN on both phones. Complete run 37726525429 on b0ed99d.**
 
 Commit tested: app 131c234 (1.3.1, lane V); tests b0ed99d   Date: 2026-10-08
