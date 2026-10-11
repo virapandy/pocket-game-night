@@ -11,8 +11,9 @@ Owner approved all five items. In order, none of it before the faster-cycles set
 `docs/games/<game>/screen-map.*`; (2) tester: the design rule checks as a script that runs on a screen map and on live screens;
 (3) coder, one lane after the shared building blocks (faster-cycles item 8): the generic prototype renderer at
 `/preview/proto/<game>/` reading the product docs' screen map, C1, no rules, no saved data. Secret Words is the first game
-through it: the product owner will hand over its screen map; the orchestrator then runs Jev's per-screen checks and the six
-persona-agent walks on the map, and again on the prototype, returning one merged gap list.
+through it. **Draft 1 of the Secret Words screen map is at `docs/games/secret-words/screen-map.md` (11 October), awaiting
+the owner's corrections and answers to its section H.** Once the owner says it is corrected, the orchestrator runs Jev's
+per-screen checks and the six persona-agent walks on the map, and again on the prototype, returning one merged gap list.
 
 ### C1 now (owner, 4 October, P11): Home says "Join a game"
 Home's second card: title **"Join a game"**, line **"Tambola ticket from the host"** (replaces "Join with my ticket" / "Got a QR
