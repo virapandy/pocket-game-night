@@ -27,11 +27,13 @@ always run on pushed code, never on half-finished edits:
 | Role | Who | Folder | May edit | May run |
 |---|---|---|---|---|
 | **Orchestrator** | Claude Code opened in the workspace folder | both, read only | `docs/` in the Build clone | git, type-check, build; never tests |
-| **Build** | `coder` subagent, or Claude Code opened in `pocket-game-night/` | `pocket-game-night/` | `src/`, `content/`, root config files, `.github/`, `docs/` | type-check, build, lint |
+| **Build** | `coder` subagent, or Claude Code opened in `pocket-game-night/` | `pocket-game-night/` | `src/`, `content/`, root config files, `.github/`, `docs/` | type-check, build, lint; in a lane, its area's pushed tests and screenshots (never edits tests) |
 | **Test** | `tester` subagent, or the Claude desktop app opened in `pocket-game-night-testing/` | `pocket-game-night-testing/` | `tests/`, `specs/`, `reports/`, `docs/` | every test, simulations, iPhone Simulator, browser checks |
 | **Product owner** | the Claude desktop app opened in `pocket-game-night-product/` (or the workspace folder) | all, read only; writes only its own clone | `docs/` in `pocket-game-night-product/` | nothing that builds or tests |
 | **UX designer** | `ux-designer` subagent, called by the product owner | all, read only; the live preview | nothing | nothing (reviews screens by `docs/ux-evaluation-playbook.md`; reports to the product owner) |
-| **Reviewer** | `reviewer` subagent, called by the orchestrator before each lane merge | all, read only | nothing | read-only git (diff, log, show, status); checks changes against their UX row, guidelines and class |
+| **Reviewer** | `reviewer` subagent, called by the orchestrator before each C2/C3 lane merge (C0/C1 once per bundle) | all, read only | nothing | read-only git (diff, log, show, status); checks changes against their UX row, guidelines and class; flags weakened tests |
+| **Critic** | `critic` subagent, called by the product owner or orchestrator | all, read only | nothing | nothing (reviews screen maps and prototypes, `docs/proposals/design-before-code.md`) |
+| **Player** | `player` subagent, called by the orchestrator or product owner | the live preview only | nothing | nothing (plays one persona from the screen, `docs/proposals/player-agent.md`) |
 
 - **Usual way: three agents in one chat.** Open the workspace folder. The main session is the
   **orchestrator**; it runs the loop below by handing work to the **coder** and the **tester**
@@ -41,8 +43,10 @@ always run on pushed code, never on half-finished edits:
 - **Also allowed:** Claude Code in `pocket-game-night/` as the Build role alone, or the desktop
   app in `pocket-game-night-testing/` as the Test role alone. Never have the desktop app and the
   `tester` subagent working at the same time: they share the Test clone.
-- Build never writes or runs tests. Test never edits app code. The subagents cannot even read the
-  other clone, so the tester sees only pushed code and the coder sees only pushed tests.
+- Build never writes or edits tests; in a lane it may run that lane's pushed area tests and screenshots (owner,
+  11 October 2026). Test never edits app code. The subagents cannot even read the other clone, so the tester sees only
+  pushed code and the coder sees only pushed tests. A lane's code and its test changes land on the same lane branch
+  and merge only when quick verify on that branch is green.
 - Root `CLAUDE.md`, `.claude/` and `.githooks/` are project rules: every edit asks the owner
   first, and subagents may not change them.
 - Enforced by `.claude/hooks/role-guard.mjs` (edits, reads, test commands, files changed by shell

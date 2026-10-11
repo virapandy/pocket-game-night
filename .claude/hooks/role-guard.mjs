@@ -14,6 +14,11 @@
 //                      nothing, runs no commands
 //         review       the reviewer subagent the orchestrator calls before merging a lane: reads every
 //                      clone, runs only git diff/log/show/status, changes nothing
+//         critic       the critic subagent: reads screen maps and prototypes, changes nothing, runs nothing
+//         player       the player subagent: plays the live preview in a browser as one persona; never reads
+//                      scenarios, decisions or guidelines; changes nothing, runs nothing
+// Owner, 11 October 2026 (docs/proposals/rule-edits-faster-cycles.md): coders may run their lane's pushed
+// tests (never edit them); testers may work in their own Test worktrees, <test folder>-lane-<letter>.
 //
 // Modes:  pre     PreToolUse   - block edits and reads outside the role, and test runs outside Test
 //         post    PostToolUse  - catch shell commands that changed files the role must not touch
@@ -32,7 +37,12 @@ const TEST_RUNNERS =
   /\b(vitest|playwright|stryker|jest|mocha|appium)\b|\b(npm|pnpm|yarn|bun)\s+(run\s+)?(test|e2e|sim|mutation)\b|\bnpm\s+t\b/;
 const WEAKENING = /\.(skip|only|todo)\s*\(|\bx(it|describe|test)\s*\(/;
 const READ_TOOLS = ['Read', 'Grep', 'Glob'];
-const AGENT_ROLE = { coder: 'build', tester: 'test', 'ux-designer': 'ux', reviewer: 'review' };
+const AGENT_ROLE = { coder: 'build', tester: 'test', 'ux-designer': 'ux', reviewer: 'review', critic: 'critic', player: 'player' };
+// Coders may run these in their lane (never mutation, mass simulation or the emulator).
+const LANE_TEST_RUNNERS = /\b(vitest|playwright)\b|\bnpm\s+(run\s+)?(test|test:browser|screenshots)\b|\bnpm\s+t\b/;
+const HEAVY_RUNNERS = /\b(stryker|appium)\b|\b(npm|pnpm|yarn|bun)\s+(run\s+)?(sim|mutation|e2e)\b/;
+// The player plays as a family would: it never reads the design or the rules behind the screens.
+const PLAYER_FORBIDDEN = /(^|\/)(specs\/|docs\/decisions\.md$|docs\/ux-guidelines\.md$|docs\/games\/[^/]+\/(scenarios|guide|ux|lifecycle|screen-map)\b)/;
 // The reviewer may only look at changes: git diff, log, show, status (optionally after `cd <folder> &&`).
 const READ_ONLY_GIT = /^\s*(cd\s+("[^"]*"|'[^']*'|[^\s;&|]+)\s*&&\s*)?git\s+(diff|log|show|status)\b[^;&|`$<>]*$/;
 
@@ -52,11 +62,29 @@ const LANES = (() => {
       .map((n) => path.join(WORKSPACE, n));
   } catch { return []; }
 })();
+// Test lanes: worktrees of the Test clone, <test folder>-lane-<letter>, one short-lived tester each (owner,
+// 11 October 2026). They count as the Test clone everywhere.
+const TEST_LANES = (() => {
+  const prefix = `${path.basename(FOLDER.test)}-lane-`;
+  try {
+    return readdirSync(WORKSPACE)
+      .filter((n) => n.startsWith(prefix) && /^[a-z]$/.test(n.slice(prefix.length)))
+      .map((n) => path.join(WORKSPACE, n));
+  } catch { return []; }
+})();
 // Every working copy the guard knows: [key, root, clone].
 const ROOTS = [
   ...Object.entries(FOLDER).map(([clone, root]) => [clone, root, clone]),
   ...LANES.map((root) => [path.basename(root), root, 'build']),
+  ...TEST_LANES.map((root) => [path.basename(root), root, 'test']),
 ];
+// Is this shell command run inside a Build lane (its folder, or `cd <lane> && …`)?
+function inBuildLane(cwd, command) {
+  const dirs = [real(cwd)];
+  const m = /^\s*cd\s+("([^"]*)"|'([^']*)'|([^\s;&|]+))/.exec(command || '');
+  if (m) dirs.push(real(path.resolve(cwd, m[2] ?? m[3] ?? m[4])));
+  return dirs.some((d) => LANES.some((lane) => inside(d, lane)));
+}
 
 const entry = process.env.CLAUDE_CODE_ENTRYPOINT;
 const projectDir = real(process.env.CLAUDE_PROJECT_DIR || process.cwd());
@@ -66,7 +94,7 @@ let role = entry === 'claude-desktop'
   ? (inside(projectDir, FOLDER.test) ? 'test' : 'product')
   : projectDir === WORKSPACE ? 'orchestrator' : 'build';
 let agent = null; // 'coder', 'tester' or 'ux-designer' when a subagent is acting
-const NAME = { build: 'Build role', test: 'Test role', orchestrator: 'orchestrator', product: 'product owner', ux: 'UX designer', review: 'reviewer' };
+const NAME = { build: 'Build role', test: 'Test role', orchestrator: 'orchestrator', product: 'product owner', ux: 'UX designer', review: 'reviewer', critic: 'critic', player: 'player' };
 const who = () => (agent ? `${agent} subagent` : NAME[role]);
 
 const git = (args, cwd) => execSync(`git ${args}`, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
@@ -131,8 +159,23 @@ function pre(input) {
     decide('deny', 'The reviewer changes nothing and runs only git diff, log, show or status. Put the finding in your reply.');
   }
 
-  // The UX designer reads anything and uses the browser, but changes nothing and runs nothing.
-  if (role === 'ux') {
+  // The player uses the browser and may read only what the caller names, never the design or rules.
+  if (role === 'player') {
+    if (READ_TOOLS.includes(tool)) {
+      const loc = locate(path.resolve(cwd, ti.file_path || ti.path || '.'));
+      if (loc && PLAYER_FORBIDDEN.test(loc.rel)) {
+        decide('deny', 'The player plays from the screen only: it never reads scenarios, guides, decisions or guidelines.');
+      }
+      process.exit(0);
+    }
+    if (tool === 'Bash' || ti.file_path || ti.notebook_path) {
+      decide('deny', 'The player changes nothing and runs no commands. Report what you saw as a player instead.');
+    }
+    process.exit(0);
+  }
+
+  // The UX designer and the critic read anything (the designer also uses the browser), but change and run nothing.
+  if (role === 'ux' || role === 'critic') {
     if (READ_TOOLS.includes(tool)) process.exit(0);
     if (tool === 'Bash' || ti.file_path || ti.notebook_path) {
       decide('deny', 'The UX designer changes nothing and runs no commands. Report the finding to the product owner instead.');
@@ -141,10 +184,17 @@ function pre(input) {
   }
 
   if (tool === 'Bash') {
-    if (role !== 'test' && TEST_RUNNERS.test(ti.command || '')) {
-      decide('deny', role === 'orchestrator'
-        ? 'The orchestrator never runs tests. Hand testing to the tester subagent.'
-        : 'Only the Test role runs tests. Type-check instead, push, and read reports/latest.md for results.');
+    const cmd = ti.command || '';
+    if (role !== 'test' && TEST_RUNNERS.test(cmd)) {
+      // Coders may run the pushed tests of their own lane (read only) and take screenshots; never heavy runs.
+      const laneRun = role === 'build' && inBuildLane(cwd, cmd) && LANE_TEST_RUNNERS.test(cmd) && !HEAVY_RUNNERS.test(cmd);
+      if (!laneRun) {
+        decide('deny', role === 'orchestrator'
+          ? 'The orchestrator never runs tests. Hand testing to the tester subagent.'
+          : role === 'build'
+            ? 'Coders run tests only inside their lane folder (pocket-game-night-lane-<x>), only the area tests and screenshots, never mutation, simulation or the emulator.'
+            : 'Only the Test role runs tests. Type-check instead, push, and read reports/latest.md for results.');
+      }
     }
     if (input.tool_use_id) {
       const snap = Object.fromEntries(ROOTS.map(([key, root]) => [key, changedFiles(root)]));
@@ -246,7 +296,7 @@ function session() {
     lines.push(`You are in the ${NAME[role]}. Follow "How we work" in CLAUDE.md.`);
     lines.push(role === 'test'
       ? 'You may edit tests/, specs/, reports/ and docs/ only, and you run all testing.'
-      : 'You may edit app code only. Never write, edit or run tests; type-check instead and read reports/latest.md.');
+      : 'You may edit app code only. Never write or edit tests. In a lane folder you may run your area\'s pushed tests and screenshots; otherwise type-check and read reports/latest.md.');
     const here = locate(projectDir);
     if (here && here.clone !== role) lines.push(`WARNING: ${wrongFolderMessage(here.clone)}`);
   }

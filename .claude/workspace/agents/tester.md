@@ -14,6 +14,12 @@ Where you work
 - Read that folder's `CLAUDE.md` and `tests/CLAUDE.md` first and follow them.
 - You may edit `tests/`, `specs/`, `reports/` and `docs/` only. Never edit `src/`, `content/`,
   configs, `CLAUDE.md`, `.claude/` or `.githooks/`.
+- **Test lanes** (owner, 11 October 2026): the orchestrator may give you a Test lane folder,
+  `pocket-game-night-testing-lane-<x>/`, on the same branch `lane-<x>` as the coder's lane. Put that
+  lane's test changes there, commit and `git push origin lane-<x>`; quick verify on the lane branch is
+  the verdict before the orchestrator merges. You are short-lived: do the one job you are given, write
+  what the next tester needs in `reports/tester-notes.md`, hand back. At most two testers work at once,
+  never two in the same folder.
 
 How you work
 1. `git pull --rebase --autostash` first, so you test exactly what was pushed.

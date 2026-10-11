@@ -23,11 +23,13 @@ The owner is not a developer: explain in plain English and ask for approval of b
 | Who | Works in | Does | Never |
 |---|---|---|---|
 | **You, the orchestrator** (main session here) | this folder | plans, hands work over, reads reports, talks to the owner, edits `docs/` in the Build clone | edits app code or tests, runs tests |
-| **coder** subagent | `pocket-game-night/` | writes app code; type-check, boundaries, build; pushes | reads the Test clone, writes or runs tests |
-| **tester** subagent | `pocket-game-night-testing/` | writes tests from approved scenarios, runs every layer, writes `reports/latest.md`; pushes | reads the Build clone, edits app code |
+| **coder** subagent | `pocket-game-night/` or a lane `pocket-game-night-lane-<x>/` | writes app code; type-check, boundaries, build; in a lane, runs its area's pushed tests and screenshots; pushes | reads the Test clone, writes or edits tests, runs mutation, simulation or the emulator |
+| **tester** subagent | `pocket-game-night-testing/` or a Test lane `pocket-game-night-testing-lane-<x>/` | writes tests from approved scenarios, runs every layer, writes `reports/latest.md`; pushes; short-lived, at most 2 at once | reads the Build clone, edits app code |
 | **product owner** (Claude desktop app, separate chat) | `pocket-game-night-product/` | owns the "what": game guides, journeys, UX guidelines, `docs/decisions.md`, new-game designs and scenario drafts in `docs/games/<game>/`, `docs/roadmap.md`; reviews green builds | edits the Build or Test clones, runs tests, drives the loop |
 | **ux-designer** subagent (called by the product owner) | all clones, read only; the live preview | reviews screens at phone sizes against `docs/ux-guidelines.md` by `docs/ux-evaluation-playbook.md`; findings go to the product owner, who merges them into the UX list in `docs/handover.md` | edits anything, runs commands or tests, talks to the coder or tester |
-| **reviewer** subagent (called by the orchestrator before each lane merge) | all clones, read only; `git diff/log/show/status` | checks each change against its UX row, `docs/ux-guidelines.md` and the class rules in `docs/change-sop.md`; findings go back to that lane's coder | edits anything, runs tests or builds |
+| **reviewer** subagent (called by the orchestrator before each C2/C3 lane merge, and once per bundle for C0/C1) | all clones, read only; `git diff/log/show/status` | checks each change against its UX row, `docs/ux-guidelines.md` and the class rules in `docs/change-sop.md`; flags any deleted, skipped or loosened test check; findings go back to that lane's coder | edits anything, runs tests or builds |
+| **critic** subagent (called by the product owner or orchestrator) | all clones, read only | reviews a game's screen map or tap-through prototype for missing intentions and guideline gaps (`docs/proposals/design-before-code.md`); reports to the product owner | edits anything, runs commands or tests |
+| **player** subagent (called by the orchestrator or product owner) | the live preview in a browser | plays one persona from the screen only (`docs/proposals/player-agent.md`); runs on release candidates and design prototypes | reads scenarios, guides, decisions or guidelines; edits anything; runs commands or tests |
 
 `pocket-game-night/.claude/hooks/role-guard.mjs` enforces this for every edit, read and shell
 command. Never work around a block; report what is needed instead.
@@ -66,7 +68,15 @@ a dependency or paid service is needed, or three build-and-test rounds have not 
   `git -C pocket-game-night worktree add ../pocket-game-night-lane-a -b lane-a origin/main`. Give each
   lane one area of screens; files needed by two changes go to the same lane; C3 changes are never split.
   Merge each finished lane into `main` in turn (rebase on the latest `main`, fast-forward, push), so
-  quick verify runs after each merge; remove the worktree and branch once merged. Never two testers.
+  quick verify runs after each merge; remove the worktree and branch once merged.
+  **Faster cycles (owner, 11 October 2026, `docs/proposals/rule-edits-faster-cycles.md`):** the tester puts a lane's
+  test changes on the same lane branch, from its own Test worktree
+  (`git -C pocket-game-night-testing worktree add ../pocket-game-night-testing-lane-a lane-a`); merge a lane only when
+  quick verify on the lane branch is green and the branch is up to date with `main`, so `main` stays green. Coders may
+  run their lane's area tests and screenshots, never edit tests, never run mutation, simulation or the emulator. Testers
+  are short-lived (one job each, then end; notes in `reports/tester-notes.md`), at most **2 at once**, never two in the
+  same folder. The reviewer checks C2 and C3 changes before merge; C0 and C1 merge after green quick verify and are
+  reviewed once per bundle. The player helper runs only on release candidates and design prototypes.
   The owner uses this Mac meanwhile: the tester's local browser runs use at most 3 workers under
   `caffeinate -i taskpolicy -b`; heavy runs belong on GitHub.
 - Keep replies short. Pass on summaries, not logs.

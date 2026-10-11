@@ -1,6 +1,11 @@
 # Exact rule edits for faster cycles and design before code (orchestrator, 11 October 2026)
 
-Status: **for the owner's approval, item by item.** These edit project rules (root `CLAUDE.md`, `.claude/workspace/`,
+Status: **approved by the owner, 11 October 2026** ("choose the options which will ensure lower cycle time but also balance
+token consumption"). The orchestrator chose all of A–F with three token limits: **B** coders run only their lane's area
+tests plus screenshots, never the full suite; **C** at most 2 testers in parallel, each short-lived; **E** the player helper
+runs only on release candidates and on design prototypes, not on every bundle.
+
+Original status: for the owner's approval, item by item. These edit project rules (root `CLAUDE.md`, `.claude/workspace/`,
 `.claude/hooks/role-guard.mjs`, `.githooks/pre-commit`), so nothing is changed until the owner says yes. Sources:
 `docs/proposals/faster-cycles.md` (items 1, 4, 5, 10, 12) and `docs/proposals/design-before-code.md` (step 1, already
 approved in principle on 8 October). After approval the coder makes the hook and workflow edits in one lane, the

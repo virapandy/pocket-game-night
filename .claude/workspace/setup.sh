@@ -27,6 +27,8 @@ mkdir -p "$WS/.claude"
 link "$NAME/.claude/workspace/CLAUDE.md" "$WS/CLAUDE.md"
 link "../$NAME/.claude/workspace/settings.json" "$WS/.claude/settings.json"
 link "../$NAME/.claude/workspace/agents" "$WS/.claude/agents"
+# A free browser for the player helper (owner, 11 October 2026): read-only use against the preview link.
+link "$NAME/.claude/workspace/mcp.json" "$WS/.mcp.json"
 # The product owner's chat (desktop app in the Product clone) calls the ux-designer helper from here.
 # The link is local to that clone, kept out of git through .git/info/exclude.
 link "workspace/agents" "$PRODUCT/.claude/agents"

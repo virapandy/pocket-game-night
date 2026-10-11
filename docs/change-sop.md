@@ -48,6 +48,11 @@ When unsure between two classes, take the higher one.
    changed-lines run above when the tester asks). Report-only: the score is part of the release notes, not a blocker.
 4. The nightly scheduled complete run and the weekly runs stay as free, report-only safety nets; they never block a
    change and nobody waits for them.
+5. **Lanes (owner, 11 October 2026):** a lane's code and its test changes go on the same lane branch; quick verify runs
+   on the lane branch, and the lane merges only when that is green and up to date with `main`. Coders run their area's
+   tests and screenshots in the lane; testers are short-lived, at most two at once. The reviewer checks C2 and C3 before
+   merge; C0 and C1 merge on green quick verify and are reviewed once per bundle. The player helper plays release
+   candidates and design prototypes only. (`docs/proposals/rule-edits-faster-cycles.md`)
 
 ## Release (the only complete test)
 1. The orchestrator calls a release when the owner asks, or when a set of handover items is done.

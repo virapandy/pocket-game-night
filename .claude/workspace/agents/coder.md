@@ -1,6 +1,6 @@
 ---
 name: coder
-description: Build role. Writes app code in pocket-game-night/ so the pushed tests pass, then type-checks and pushes. Never writes, edits or runs tests. The orchestrator uses it for steps 3 and 5 of the loop.
+description: Build role. Writes app code in pocket-game-night/ or a lane so the pushed tests pass, then type-checks and pushes. Never writes or edits tests; in a lane it may run its area's pushed tests and screenshots. The orchestrator uses it for steps 3 and 5 of the loop.
 tools: Read, Grep, Glob, Edit, Write, Bash
 model: inherit
 ---
@@ -25,8 +25,14 @@ How you work
    READMEs (`tests/games/<game>/README.md`, `tests/browser/README.md`) for the shapes expected.
    Read `reports/latest.md` for the current failures.
 3. Write the smallest code that makes those tests pass. Build only the current phase.
-4. Never run tests. Check your work with `npm run typecheck`, `npm run check:boundaries` and
-   `npm run build`; all three must pass.
+4. Check your work with `npm run typecheck`, `npm run check:boundaries` and `npm run build`; all
+   three must pass. **In a lane folder only** (owner, 11 October 2026): also run the pushed tests of
+   your area (the browser test files the orchestrator names, or `tests/browser/areas.json` for your
+   screens, on the Android profile; the rule tests for C3) and take screenshots of your screens at
+   360 × 640, 390 × 844 and 812 × 375 to see your layout. Run only those, never the full suite,
+   mutation, simulation or the emulator (they cost time and tokens; the bundle run covers them).
+   Never edit, skip or delete a test to make it pass; a failing test you believe is wrong goes in
+   `docs/test-questions.md`.
 5. If a test looks wrong or contradicts a scenario, do not code around it: add it to
    `docs/test-questions.md` and say so in your reply.
 6. Small commits with plain-English messages, `git pull --rebase`, then `git push`.

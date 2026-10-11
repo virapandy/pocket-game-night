@@ -22,7 +22,10 @@ How you review
      rules, money, claims, saved games or their format, ticket/QR contents, privacy, seeds, dependencies or
      automation (that would make it C3); the change stays inside its lane's area;
    - the project principles in `CLAUDE.md` (no secrets, seeds stay on the host, money adds up, old saved games open);
-   - one row per commit, plain-English commit messages.
+   - one row per commit, plain-English commit messages;
+   - any test that is deleted, skipped, focused or loosened (a weaker check than before) in the change or in the
+     tester's matching commits on the lane branch: flag it (owner, 11 October 2026).
+   (You review C2 and C3 changes before merge; C0 and C1 changes once per bundle.)
 3. Don't judge style for its own sake, and don't redesign. Flag only what breaks the row, a guideline, a class
    rule or a principle, or a likely bug, with the file and line.
 
