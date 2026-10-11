@@ -8,7 +8,8 @@
 # Line ranges end at function boundaries: if a file grows, move the last range's end to match.
 # Tambola and engine groups together cover exactly the files listed under `mutate` in tests/stryker.config.mjs
 # (--mutate replaces that list for one group), and run the tests in tests/vitest.mutation.config.ts. Impostor groups
-# cover every file in src/games/impostor/rules/ and run only Impostor's tests (.github/mutation/).
+# cover every file in src/games/impostor/rules/ and run only Impostor's tests (.github/mutation/stryker.impostor.config.mjs,
+# with the tests in tests/vitest.mutation.impostor.config.ts).
 # If a group is added, renamed or removed, change GROUPS in the summary job to match.
 name: Mutation testing
 
