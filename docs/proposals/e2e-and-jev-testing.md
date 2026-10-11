@@ -82,8 +82,8 @@ layer 4):**
    report for the product owner to look at; **low** (below 0.5, or "uncertain") the screen is listed as "Jev unsure" and a
    scripted player takes the tap. Today the 0.65 on the Talk screen (M27) was read by hand; with fixed bands the weekly line
    is the same every week. (Adds to PLT-110 and the report format.)
-The tester confirms first whether Jev's API also offers score (low, medium, high) and true/false questions, as the pattern
-claims; if so, the optional content check uses true/false. Not taken from that pattern: its "Jev, then Opus, then Jev"
+**Confirmed 11 October (tester's probe):** the API refused a boolean question and a score question needs a `criteria` field the
+client does not model, so every yes/no question runs as a three-way Choice (yes, no, uncertain); good enough as a first filter. Not taken from that pattern: its "Jev, then Opus, then Jev"
 drafting loop (we never let Jev judge facts or rules, PLT-112), its plugin install (our client calls the API directly) and
 its email and calendar workflow.
 

@@ -29,6 +29,12 @@ from the product owner's chat (`docs/games/secret-words/map-walk-2026-10-11.md`)
    flag; way-out probability; purpose probability; persona disagreements), the label list, the decisions used, and tool
    faults apart from findings (PLT-122). Around 700 decisions, inside the weekly cap. Also run the **word list check** on
    `docs/games/secret-words/words.csv` and `team-names.csv` if the tester has time (same report, own section).
+**Done 11 October** (tester, commit ffe52f6, `reports/jev-map-walk-secret-words.md`); merged by the product owner into
+`docs/games/secret-words/map-walk-2026-10-11.md` §5–8; screen map draft 2 pushed. Two follow-ups for the tester, no owner
+question: raise `WEEKLY_CAP` in `tests/sim/jev.ts` to 50,000 (decision of 8 October); keep questions as Choice with
+"uncertain" (true/false and score refused by the API on 11 October); drop the category-fit question from word checks
+(categories are never shown). The product owner is waiting on the owner's round-2 answers (wording batch, word list);
+scenarios version 3.5 follows.
 5. The product owner merges this with the persona walks into one gap list (the owner has already decided the persona walks'
    eight questions, decisions of 11 October; the wording batch waits for Jev's label list). Screen map draft 2 and scenarios
    version 3.5 follow as one batch; the Jev walk runs on draft 1 as it stands. **Model:** a mid-size model is enough for this scripting; keep the largest model for design and C3 work (owner,
