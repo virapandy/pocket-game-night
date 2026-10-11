@@ -190,18 +190,16 @@
 .imp-group .pgn-option { font-size: 17px; }
 .pgn-larger .imp-group-label, .pgn-larger .imp-group .pgn-option { font-size: 19px; }
 /* "Whole family" must fit inside the borders: 96 px at 17 px (320 wide, Larger text: 100 px option) and 108 px at
-   19 px (360 wide, Larger text: 112 px option), so at most 5.64 em. Bold Arial/Liberation measures 6.17 em, so: no side
-   padding, the tightest bold system font of each phone (SF, Roboto, Segoe UI, Helvetica or Arial; never the wider
-   fallback some desktops give `system-ui`) and letters 0.06 em closer within words only (I29: labels keep their
-   spaces, so `word-spacing` gives the space back exactly what `letter-spacing` takes from it; about 5.51 em: 94 px at
-   17 px, 105 px at 19 px). The ✓ is drawn small (10 px) tight in the top right corner, above the letters,
+   19 px (360 wide, Larger text: 112 px option), so at most 5.64 em. Bold Noto Sans, the app's font, measures 6.53 em,
+   so: no side padding and letters 0.09 em closer within words only (I29: labels keep their spaces, so `word-spacing`
+   gives the space back exactly what `letter-spacing` takes from it; about 5.54 em: 94 px at 17 px, 105 px at 19 px). The ✓ is drawn small (10 px) tight in the top right corner, above the letters,
    and not read out (the button says `aria-pressed`). */
 .imp-group .pgn-option {
   position: relative;
   padding: 4px 0;
   font-family: 'Noto Sans', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
-  letter-spacing: -0.06em;
-  word-spacing: 0.06em;
+  letter-spacing: -0.09em;
+  word-spacing: 0.09em;
   white-space: nowrap;
   overflow-wrap: normal;
 }
