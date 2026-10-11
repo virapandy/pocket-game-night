@@ -49,7 +49,8 @@ const READ_ONLY_GIT = /^\s*(cd\s+("[^"]*"|'[^']*'|[^\s;&|]+)\s*&&\s*)?git\s+(dif
 // This file lives in every clone; the clones sit side by side in the workspace folder.
 const real = (p) => { try { return realpathSync(p); } catch { return path.resolve(p); } };
 const SELF = real(path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..'));
-const BASE = SELF.replace(/-(testing|product)$/, '');
+// A lane (a worktree named <clone>-lane-<letter>) runs its own copy of this file: drop the lane ending first.
+const BASE = SELF.replace(/-lane-[a-z]$/, '').replace(/-(testing|product)$/, '');
 const FOLDER = { build: BASE, test: `${BASE}-testing`, product: `${BASE}-product` };
 const WORKSPACE = path.dirname(FOLDER.build);
 // Lanes: extra working copies of the Build clone (git worktrees) named <build folder>-lane-<letter>, one per
