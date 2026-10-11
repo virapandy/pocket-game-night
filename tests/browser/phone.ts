@@ -3,7 +3,7 @@
 // tests/browser/README.md, "Phase 2: phone tickets".
 import { expect, type Browser, type BrowserContext, type Locator, type Page, type TestInfo } from '@playwright/test';
 import { fileURLToPath } from 'node:url';
-import { silence } from './fixtures';
+import { silence, startClock } from './fixtures';
 import { call, chooseTicketType, fillPlayers, fromMenu, HOME, nextNumber, openTambola, sessionNameField, continueOrNew } from './helpers';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -32,7 +32,9 @@ export async function newPhone(
   });
   await silence(context);
   opened.push(context);
-  return context.newPage();
+  const page = await context.newPage();
+  await startClock(page); // like every test's page (fixtures.ts): the tap guard is waited out in app time, not real time
+  return page;
 }
 
 const opened: BrowserContext[] = [];

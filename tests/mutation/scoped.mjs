@@ -8,6 +8,8 @@
 //   node tests/mutation/scoped.mjs <last release>..HEAD --whole-files   a release: every changed rules or money file
 // The range defaults to HEAD~1..HEAD. On the owner's Mac, run it as
 //   caffeinate -i taskpolicy -b node tests/mutation/scoped.mjs <range>        (concurrency is capped at 3 there)
+// --incremental: Stryker's incremental mode on top (reports/stryker/scoped/incremental.json): a re-run of the same
+// change after a fix reuses the results for every mistake and test that did not change (see tests/mutation/README.md).
 //
 // Which files count (the same rules and money code the weekly run mutates): src/games/<game>/rules/**/*.ts and
 // src/engine/money.ts, tally.ts, session.ts. Lines the weekly config leaves out (a Stryker limit, see
@@ -25,6 +27,7 @@ const range = args.find((a, i) => !a.startsWith('--') && !['--only', '--concurre
 const wholeFiles = flag('--whole-files');
 const only = value('--only');
 const dryRun = flag('--dry-run');
+const incremental = flag('--incremental');
 const cap = process.env.CI ? 8 : 3; // the owner's Mac: at most 3 at once (owner, 3 October 2026)
 const concurrency = Math.min(Number(value('--concurrency') ?? base.concurrency ?? 2), cap);
 
@@ -100,15 +103,21 @@ if (mutate.length === 0) {
   process.exit(0);
 }
 
-console.log(`Scoped mutation for ${range}${wholeFiles ? ' (whole files)' : ''}, concurrency ${concurrency}:\n  ${mutate.join('\n  ')}`);
+// The tests to run against each mistake, from the games whose files are mutated (see stryker.scoped.config.mjs).
+const impostorOnly = files.every((f) => f.startsWith('src/games/impostor/'));
+const withImpostor = files.some((f) => f.startsWith('src/games/impostor/'));
+const vitestConfig = impostorOnly ? 'tests/vitest.mutation.impostor.config.ts'
+  : withImpostor ? 'tests/vitest.mutation.scoped.config.ts' : 'tests/vitest.mutation.config.ts';
+
+console.log(`Scoped mutation for ${range}${wholeFiles ? ' (whole files)' : ''}, concurrency ${concurrency}, tests ${vitestConfig}${incremental ? ', incremental' : ''}:\n  ${mutate.join('\n  ')}`);
 if (dryRun) process.exit(0);
 
 mkdirSync('reports/stryker/scoped', { recursive: true });
 const started = Date.now();
-const run = spawnSync('npx', ['stryker', 'run', 'tests/mutation/stryker.scoped.config.mjs', '--concurrency', String(concurrency)], {
+const run = spawnSync('npx', ['stryker', 'run', 'tests/mutation/stryker.scoped.config.mjs', '--concurrency', String(concurrency), ...(incremental ? ['--incremental'] : [])], {
   stdio: ['ignore', 'pipe', 'pipe'],
   encoding: 'utf8',
-  env: { ...process.env, PGN_SCOPED_MUTATE: JSON.stringify(mutate) },
+  env: { ...process.env, PGN_SCOPED_MUTATE: JSON.stringify(mutate), PGN_SCOPED_VITEST: vitestConfig },
   maxBuffer: 256 * 1024 * 1024,
 });
 const seconds = Math.round((Date.now() - started) / 1000);

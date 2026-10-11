@@ -40,7 +40,11 @@ for (const screen of Object.keys(SCREENS) as ScreenName[]) {
   test.describe(`PLT-120: a full paper game on the Android emulator at ${width} × ${height}`, () => {
     test.use({ screen });
 
-    test(`setup, calling, wins, a tie, closing tiers, undo, ending and the payout summary, offline after the first visit (${width} × ${height})`, async ({ page, context }) => {
+    // Quarantine (tests/browser/README.md): at 390 × 844 it passed only on its PLT-122 retry in weekly run 37593615495.
+    const quarantine = width === 390
+      ? { tag: '@quarantine', annotation: { type: 'quarantine', description: 'tester: passed only on its retry in weekly run 37593615495 (emulator timing), 11 October 2026; ends after three weekly runs green first time' } }
+      : {};
+    test(`setup, calling, wins, a tie, closing tiers, undo, ending and the payout summary, offline after the first visit (${width} × ${height})`, quarantine, async ({ page, context }) => {
       await firstVisit(page);
       expect(await page.evaluate(() => [window.screen.width, window.screen.height])).toEqual([width, height]);
       await context.setOffline(true);
@@ -211,7 +215,11 @@ test.describe('PLT-121: Android-only behaviour on the emulator (390 × 844)', ()
     expect(locks.length > 0 || hinted, 'Android holds no screen wake lock for Chrome, and no hint is shown').toBe(true);
   });
 
-  test('TAM-116: with the processor slowed like a budget phone, taps respond within 100 ms', async ({ page, context }) => {
+  // Quarantine (tests/browser/README.md): passed only on its PLT-122 retry in weekly run 37593615495.
+  test('TAM-116: with the processor slowed like a budget phone, taps respond within 100 ms', {
+    tag: '@quarantine',
+    annotation: { type: 'quarantine', description: 'tester: passed only on its retry in weekly run 37593615495 (emulator timing), 11 October 2026; ends after three weekly runs green first time' },
+  }, async ({ page, context }) => {
     await setUpPaperGame(page);
     const cdp = await context.newCDPSession(page);
     await cdp.send('Emulation.setCPUThrottlingRate', { rate: 4 });

@@ -20,10 +20,11 @@ export const joinWithMyTicket = joinAGame;
 /**
  * 1.3.1 (decision I29, R2): on Home and "What shall we play?" a tap within 500 ms of the screen showing (the first load
  * included) does nothing, as on every Impostor screen. A person never taps that fast; the tests wait 550 ms before such
- * a tap: fake time on a page with Playwright's clock installed, real time otherwise.
+ * a tap. Every test page has Playwright's clock installed (fixtures.ts, phone.ts: faster-cycles item 3), so this moves
+ * the app's time on by 550 ms at once: no real waiting. A page without the clock (none today) still waits real time.
+ * The tests of the guard itself pause the clock and tap within 500 ms on purpose; they do not use this.
  */
 export async function waitOutTapGuard(page: Page) {
-  // A page with Playwright's fake clock (paused, or set by the test) moves on by fake time; any other page waits real time.
   const fake = await page.evaluate(() => '__pwClock' in window).catch(() => false);
   if (fake) await page.clock.runFor(550);
   else await page.waitForTimeout(550);

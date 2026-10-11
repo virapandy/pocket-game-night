@@ -4,6 +4,7 @@
     "How to read it: take every changed path; for each, every area whose 'paths' glob matches adds its 'specs'.",
     "The smoke set (tests tagged @smoke) always runs as well. A path no area matches adds nothing: smoke only (see 'default').",
     "Globs: '**' any depth, '*' within one folder. Spec names are files in tests/browser/. 'specs': ['*'] means every spec file.",
+    "Selection rule (faster-cycles item 7, 11 October 2026): a change to one game's files runs that game's browser files plus the smoke set; a shared file (app shell, styles, building blocks) runs the smoke set plus each game's key journey (Tambola: lifecycle.spec.ts; Impostor: impostor-journeys.spec.ts) and the layout rules, not every file. Only build, dependency and shared test set-up files run everything. The complete run (nightly, release) runs every file on both phones.",
     "Lanes (handover, UX rows 1-25): A player's phone (tickets, cue, claim); B host calling, claims, payouts, settings, summary; C host setup and hand-out. 'shared' areas belong to no lane: a change there reaches several lanes."
   ],
   "smokeTag": "@smoke",
@@ -203,7 +204,7 @@
       "specs": ["rhymes.spec.ts", "calling.spec.ts", "voice.spec.ts", "layout.spec.ts"]
     },
     {
-      "name": "App shell: Home, menu, install, offline, styles",
+      "name": "App shell: Home, menu, install, offline, styles (shared: smoke set plus each game's key journey and the layout rules, not every file)",
       "lane": "shared",
       "paths": [
         "src/app/App.tsx",
@@ -217,15 +218,24 @@
       "specs": [
         "app-shell.spec.ts",
         "home-and-buttons.spec.ts",
-        "lifecycle.spec.ts",
-        "usability.spec.ts",
-        "dark-mode.spec.ts",
         "layout.spec.ts",
         "setup-layout.spec.ts",
-        "after-the-game.spec.ts",
-        "impostor-privacy.spec.ts",
-        "impostor-saved-evenings.spec.ts",
-        "impostor-scoring.spec.ts"
+        "lifecycle.spec.ts",
+        "impostor-journeys.spec.ts"
+      ]
+    },
+    {
+      "name": "Shared screen building blocks (pinned bottom bar, scroll area, dialogs and sheets, tap guard, text sizes; faster-cycles item 8)",
+      "lane": "shared",
+      "paths": ["src/blocks/**"],
+      "specs": [
+        "app-shell.spec.ts",
+        "home-and-buttons.spec.ts",
+        "layout.spec.ts",
+        "setup-layout.spec.ts",
+        "lifecycle.spec.ts",
+        "impostor-journeys.spec.ts",
+        "impostor-round6b.spec.ts"
       ]
     },
     {
@@ -278,10 +288,23 @@
       "specs": ["lifecycle.spec.ts", "claims.spec.ts", "payouts-and-tally.spec.ts"]
     },
     {
-      "name": "Impostor: rules, screens, saved evenings, word list (C3 tests written first, 3 October 2026; not in the smoke set until they pass)",
+      "name": "Impostor: rules, screens, saved evenings, word list (every Impostor browser file, no Tambola file; golden journey 1 is in the smoke set)",
       "lane": "shared",
       "paths": ["src/games/impostor/**", "content/impostor/**", "tests/browser/impostor.ts", "tests/fixtures/impostor-saved-evenings*.json", "tests/browser/impostor-*.spec.ts", "tests/sims/**", "tests/replays/screen/**"],
-      "specs": ["impostor-privacy.spec.ts", "impostor-saved-evenings.spec.ts", "impostor-scoring.spec.ts", "impostor-setup.spec.ts", "impostor-round-screens.spec.ts", "impostor-play-screens.spec.ts", "impostor-journeys.spec.ts", "impostor-sim-replays.spec.ts"]
+      "specs": [
+        "impostor-privacy.spec.ts",
+        "impostor-saved-evenings.spec.ts",
+        "impostor-scoring.spec.ts",
+        "impostor-setup.spec.ts",
+        "impostor-round-screens.spec.ts",
+        "impostor-play-screens.spec.ts",
+        "impostor-journeys.spec.ts",
+        "impostor-sim-replays.spec.ts",
+        "impostor-round5.spec.ts",
+        "impostor-round6.spec.ts",
+        "impostor-round6-p1.spec.ts",
+        "impostor-round6b.spec.ts"
+      ]
     },
     {
       "name": "Build, dependencies and test set-up: everything",

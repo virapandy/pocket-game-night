@@ -6,7 +6,7 @@ each one; the share it catches shows how well the tests guard that code (PLT-119
 | When | What | Command (from the repo root) |
 |---|---|---|
 | Weekly (unattended) | every rules and money file (`tests/stryker.config.mjs`) | `npm run test:mutation`, then `node tests/mutation/summary.mjs` → `reports/mutation-latest.md` |
-| A C3 change (`docs/change-sop.md`) | only the rules and money **lines** that change touched | `node tests/mutation/scoped.mjs <first commit of the change>~1..HEAD` |
+| A C3 change (`docs/change-sop.md`) | only the rules and money **lines** that change touched | `caffeinate -i taskpolicy -b node tests/mutation/scoped.mjs <first commit of the change>~1..HEAD --incremental` |
 | A release | every rules and money **file** changed since the last release | `node tests/mutation/scoped.mjs <last release>..HEAD --whole-files` |
 | C0, C1, C2 | none | |
 
@@ -27,3 +27,23 @@ Measured 3 October 2026 on the Mac, low priority, concurrency 2: one small file,
 `src/games/tambola/rules/rules.ts` (`ae4b7f1~1..ae4b7f1`), 9 mistakes: 410 s. Most of the time is Stryker's first run
 of every rule test to learn which tests reach which lines, and the shortened simulations in
 `tests/vitest.mutation.config.ts`, which run for each mistake they reach.
+
+## Incremental mode and Impostor (faster-cycles item 9, checked 11 October 2026)
+- **Stryker's incremental mode works with our Vitest set-up** (Stryker 10, Vitest 5, the `vitest-v5` wrapper). Checked on
+  `src/games/impostor/rules/picks.ts:8-9` (3 mistakes): first run 161 s; the same run again 77 s, Stryker reporting
+  "3 of 3 mutant result(s) are reused". The time left is Stryker's first run of every test to learn which tests reach
+  which lines; incremental mode cannot skip that.
+- `--incremental` on `scoped.mjs` turns it on. Results are kept in `reports/stryker/scoped/incremental.json`
+  (gitignored, on this Mac only). It pays off on the second and later runs of the same change (after a fix round): only
+  mistakes in changed lines, or reached by changed tests, run again. A first run costs the same as without it.
+- **The command the tester runs for a C3 change** (changed lines only, from the repo root):
+  `caffeinate -i taskpolicy -b node tests/mutation/scoped.mjs <first commit of the change>~1..HEAD --incremental`
+  Add `--dry-run` first to see the lines. Never per C0 to C2 change; the full run stays weekly.
+- **Which tests run against the mistakes** (`scoped.mjs` picks): Tambola's rules and the engine's money files:
+  `tests/vitest.mutation.config.ts`; Impostor's rules only: `tests/vitest.mutation.impostor.config.ts`; both in one
+  change: `tests/vitest.mutation.scoped.config.ts`. Before this, a scoped run on Impostor's rules ran Tambola's tests and
+  every mistake showed as "no test runs this line".
+- **For the Build role:** `.github/mutation/stryker.impostor.config.mjs` can point `vitest.configFile` at
+  `tests/vitest.mutation.impostor.config.ts` (same settings as `.github/mutation/vitest.impostor.config.mjs`, which can
+  then go). For the nightly or weekly run in CI, incremental mode needs `incremental.json` kept between runs (an
+  Actions cache keyed on the branch); without it every run is a full run.

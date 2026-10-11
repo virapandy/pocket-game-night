@@ -6,7 +6,8 @@
 //  - Speech (the phone's real voice): each utterance is spoken at volume 0. Tests that stand in for the voice
 //    (`fakeVoices` in helpers.ts) replace speechSynthesis afterwards, so they see what they always saw.
 // On Android (Chromium), the browser is also started with --mute-audio (tests/playwright.config.ts).
-import { test as base, type BrowserContext } from '@playwright/test';
+// Every page also starts with Playwright's clock installed (startClock below), so tests skip waits instead of sleeping.
+import { test as base, type BrowserContext, type Page } from '@playwright/test';
 
 export * from '@playwright/test';
 
@@ -57,9 +58,23 @@ export async function silence(context: BrowserContext) {
   });
 }
 
+/**
+ * Playwright's clock, installed on every page before it opens the app (faster-cycles item 3, 11 October 2026). It
+ * starts at the real time and runs on with it, so a page behaves exactly as before; what it adds is that a test can
+ * move the app's time on at once (`page.clock.runFor`) instead of really waiting, as `waitOutTapGuard` (helpers.ts)
+ * does for the 500 ms tap guard. Tests that need another start time still call `page.clock.install({ time })` first.
+ */
+export async function startClock(page: Page) {
+  await page.clock.install();
+}
+
 export const test = base.extend({
   context: async ({ context }, use) => {
     await silence(context);
     await use(context);
+  },
+  page: async ({ page }, use) => {
+    await startClock(page);
+    await use(page);
   },
 });

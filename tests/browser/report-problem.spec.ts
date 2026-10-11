@@ -335,7 +335,9 @@ test.describe('PLT-203: crashes are caught, the game is safe, and a report is on
     await fakeSender(page, 'ok');
     await setUpPaperGame(page, { players: NAMES });
     const calls = await callMany(page, 3);
-    await page.evaluate(() => { setTimeout(() => { throw new Error('Test crash 4242'); }, 0); });
+    // An uncaught error outside any handler. Thrown from a microtask, not a timer: every test page has Playwright's clock
+    // installed (fixtures.ts), whose timers keep an error thrown inside them from reaching the page as uncaught.
+    await page.evaluate(() => { queueMicrotask(() => { throw new Error('Test crash 4242'); }); });
     await expect(calm(page)).toBeVisible();
     await page.waitForTimeout(1000);
     expect(await sentCount(page), 'a crash report sent without asking').toBe(0);

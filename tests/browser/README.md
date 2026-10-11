@@ -57,6 +57,54 @@ lane A's specs by hand:
 npm run test:browser -- --project=android phone-tickets phone-claims pattern-cue held-tickets
 ```
 
+**Selection rule (faster-cycles item 7, 11 October 2026):** a change to one game's files (`src/games/<game>/**`,
+`content/<game>/**`) runs that game's browser files plus the smoke set, never the other game's. A shared file (app
+shell, `styles.css`, `src/blocks/**` once it exists) runs the smoke set plus each game's key journey (Tambola:
+`lifecycle.spec.ts`; Impostor: `impostor-journeys.spec.ts`), Home (`app-shell`, `home-and-buttons`) and the layout
+rules (`layout`, `setup-layout`; blocks also `impostor-round6b`: tap guard, menus at small sizes), not every file. Only
+build and dependency files and the shared test set-up (`playwright.config.ts`, `helpers.ts`, `fixtures.ts`,
+`phone.ts`) run everything. The complete run (nightly and on a release) still runs every file on both phones. A new
+spec file for a game must be added to that game's area. Check what a commit range would run with
+`node scripts/browser-areas.mjs <before> <after>`.
+
+## Time in the tests: Playwright's clock (faster-cycles item 3, 11 October 2026)
+Every test page starts with Playwright's clock installed (`startClock` in `fixtures.ts`; `newPhone` in `phone.ts` for
+the extra phones). It starts at the real time and runs on with it, so the app behaves as before; a test can then move
+the app's time on at once instead of waiting. The 500 ms tap guard is waited out that way: `waitOutTapGuard`
+(`helpers.ts`) runs the clock on 550 ms and `settle` (`impostor.ts`) 500 ms, with no real waiting. A test that needs
+another start time calls `page.clock.install({ time })` before opening the app, as before.
+- The tests of the guard itself stay honest: they pause the clock (`freezeClock` in `impostor.ts`), tap at once (still
+  ignored), then run the clock on exactly 500 ms (the tap then works).
+- An error thrown inside a timer callback no longer reaches the page as uncaught (the clock's timers keep it); a test
+  that needs an uncaught error throws it from `queueMicrotask` (PLT-203).
+- Other fixed waits (`waitForTimeout`) are left: they check that something does not happen within real time (voice,
+  pulses, reports not sent) or wait for the app's own animation; turning them into clock steps changes what they check.
+- Animations: screenshots already turn CSS animations off (`animations: 'disabled'`, Playwright's default). No test is
+  known to be flaky because of an animation, so none is turned off elsewhere; if one is, turn it off in that test only
+  (`page.addStyleTag` with `animation: none; transition: none`) and say so in the report.
+- Measured 11 October on the Mac (Android, 3 workers, app fb605b7): the eight Tambola files that wait out Home's guard
+  (`home-and-buttons`, `lifecycle`, `history`, `sessions`, `report-problem`, `after-the-game`, `format-1`,
+  `usability`) 444 s → 345 s; three Impostor files (`impostor-journeys`, `impostor-round6b`, `impostor-setup`, 86 tests)
+  281 s → 250 s, within the Mac's run-to-run spread: Impostor's helpers already used the clock since 4 October.
+
+## Quarantine: a known-flaky test (faster-cycles item 11, 11 October 2026)
+A flaky test is a finding, never something to re-run away (`retries: 0`; the emulator's one retry is scenario PLT-122,
+and a test that needed it is still listed). To quarantine one:
+1. Add it to "Quarantined" in `reports/latest.md`: test (file and title), scenario ID, **owner** (who will fix or
+   un-quarantine it: the tester, or the coder when it is an app timing fault), **reason** with the run IDs it failed in,
+   the date, and what ends the quarantine (for example "three green complete runs").
+2. In the test, add the tag `@quarantine` and an annotation naming the owner and reason to its options:
+   `test('…', { tag: '@quarantine', annotation: { type: 'quarantine', description: '<owner>: <reason>, <date>' } }, async …)`.
+   The test still runs and still reports its result in every run; nothing is skipped or loosened. (Requested from the
+   Build role: quick verify runs `--grep-invert @quarantine` in its blocking step and the quarantined tests in a
+   non-blocking step, so one known-flaky test never freezes the preview. Until then a quarantined failure turns the run
+   red and the report explains it.)
+3. Reading a run: a failure of a quarantined test is reported under "Quarantined", not as an app bug, and the verdict
+   says so ("GREEN except quarantined X"). Any other failure is red as usual. A quarantined test that fails in a new way,
+   or a quarantine with no owner, is red.
+4. Never `test.skip`, `test.fixme`, `.only` or a retry for it without the owner's approval. Remove the annotation and
+   the list entry when it ends.
+
 ## Buttons (accessible name)
 | Where | Buttons |
 |---|---|
