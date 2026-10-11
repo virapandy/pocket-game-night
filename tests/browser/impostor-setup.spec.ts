@@ -862,10 +862,18 @@ test.describe('IMP-088: the choices screen at 320 × 568 and in landscape', () =
   const GROUP_NAMES = ['Mode', 'Talking', 'Score', 'Words'];
   const FIRST = { Mode: ['Easy', 'Hard'], Talking: ['Free flow', 'Timer'], Score: ['No', 'Yes'], Words: ['Whole family', '+ Grown-ups'] } as Record<string, [string, string]>;
 
-  /** v3.9 (IMP-088, P5): the label column and each option's width at each size. */
-  const COLUMNS: Record<number, { label: number; option: number }> = { 390: { label: 88, option: 127 }, 360: { label: 88, option: 112 }, 320: { label: 72, option: 100 }, 812: { label: 88, option: 139 } };
-  async function expectRows(page: Page, where: string) {
-    const col = COLUMNS[page.viewportSize()!.width]!;
+  /**
+   * IMP-088 (owner decision, 11 October): the label column and each option's width at each size, side by side (Larger
+   * text off everywhere; on at 390 and 812 × 375).
+   */
+  const COLUMNS: Record<number, { label: number; option: number }> = { 390: { label: 72, option: 135 }, 360: { label: 72, option: 120 }, 320: { label: 60, option: 106 }, 812: { label: 72, option: 147 } };
+  /** IMP-088 (owner decision, 11 October): with Larger text at 320 and 360 each label sits 4 px above its options, which share the full row. */
+  const ABOVE: Record<number, { option: number }> = { 320: { option: 140 }, 360: { option: 160 } };
+  async function expectRows(page: Page, where: string, layout: 'side' | 'above' = 'side') {
+    const width = page.viewportSize()!.width;
+    const col = COLUMNS[width]!;
+    const above = ABOVE[width];
+    if (layout === 'above') expect(above, `${where}: labels above options only at 320 and 360`).toBeTruthy();
     for (const g of GROUP_NAMES) {
       const group = page.getByRole('group', { name: g, exact: true });
       const label = group.getByText(g, { exact: true }).first();
@@ -876,15 +884,25 @@ test.describe('IMP-088: the choices screen at 320 × 568 and in landscape', () =
       expect(Math.abs(a.width - b.width), `${where} ${g}: the options share the row equally`).toBeLessThanOrEqual(1);
       expect(a.height, `${where} ${g}: option height`).toBeGreaterThanOrEqual(48);
       expect(b.height, `${where} ${g}: option height`).toBeGreaterThanOrEqual(48);
-      expect(a.x - lb.x, `${where} ${g}: the label takes a ${col.label} px column (then 8 px)`).toBeGreaterThanOrEqual(col.label + 8 - 1.5);
-      expect(a.x - lb.x, `${where} ${g}: the options start right after the label column`).toBeLessThanOrEqual(col.label + 8 + 1.5);
-      expect(Math.abs(a.width - col.option), `${where} ${g}: each option ${col.option} px wide`).toBeLessThanOrEqual(1.5);
       expect(b.x - (a.x + a.width), `${where} ${g}: the options 8 px apart`).toBeGreaterThanOrEqual(7);
-      expect(lb.x + lb.width, `${where} ${g}: the label never sits behind an option`).toBeLessThanOrEqual(a.x);
+      expect(b.x - (a.x + a.width), `${where} ${g}: the options 8 px apart`).toBeLessThanOrEqual(9);
       const oneLine = await label.evaluate((el) => { const r = document.createRange(); r.selectNodeContents(el); return new Set(Array.from(r.getClientRects()).filter((x) => x.width > 1).map((x) => Math.round(x.top))).size <= 1; });
       expect(oneLine, `${where} ${g}: the label fits on one line`).toBe(true);
-      expect(lb.y + lb.height / 2, `${where} ${g}: the label is on the options' row`).toBeGreaterThanOrEqual(a.y);
-      expect(lb.y + lb.height / 2, `${where} ${g}: the label is on the options' row`).toBeLessThanOrEqual(a.y + a.height);
+      if (layout === 'side') {
+        expect(a.x - lb.x, `${where} ${g}: the label takes a ${col.label} px column (then 8 px)`).toBeGreaterThanOrEqual(col.label + 8 - 1.5);
+        expect(a.x - lb.x, `${where} ${g}: the options start right after the label column`).toBeLessThanOrEqual(col.label + 8 + 1.5);
+        expect(Math.abs(a.width - col.option), `${where} ${g}: each option ${col.option} px wide`).toBeLessThanOrEqual(1.5);
+        expect(lb.x + lb.width, `${where} ${g}: the label never sits behind an option`).toBeLessThanOrEqual(a.x);
+        expect(lb.y + lb.height / 2, `${where} ${g}: the label is on the options' row`).toBeGreaterThanOrEqual(a.y);
+        expect(lb.y + lb.height / 2, `${where} ${g}: the label is on the options' row`).toBeLessThanOrEqual(a.y + a.height);
+      } else {
+        expect(Math.abs(a.width - above!.option), `${where} ${g}: each option ${above!.option} px wide (the full row)`).toBeLessThanOrEqual(1.5);
+        expect(Math.abs(a.x - 16), `${where} ${g}: the options start at the content's left edge`).toBeLessThanOrEqual(1.5);
+        expect(Math.abs(b.x + b.width - (width - 16)), `${where} ${g}: the options end at the content's right edge`).toBeLessThanOrEqual(1.5);
+        expect(Math.abs(lb.x - a.x), `${where} ${g}: the label lines up with the options' left edge`).toBeLessThanOrEqual(1.5);
+        expect(a.y - (lb.y + lb.height), `${where} ${g}: the label sits 4 px above its options`).toBeGreaterThanOrEqual(4 - 1.5);
+        expect(a.y - (lb.y + lb.height), `${where} ${g}: the label sits 4 px above its options`).toBeLessThanOrEqual(4 + 1.5);
+      }
     }
   }
   const fontSize = (l: Locator) => l.evaluate((el) => parseFloat(getComputedStyle(el).fontSize));
@@ -893,7 +911,7 @@ test.describe('IMP-088: the choices screen at 320 × 568 and in landscape', () =
     return s.scrollHeight <= window.innerHeight && s.scrollWidth <= window.innerWidth;
   });
 
-  test('390 × 844 (v3.9): each group is one row, an 88 px label column, then two 127 px options 8 px apart; label and option text 17 px', async ({ page }) => {
+  test('390 × 844 (IMP-088, owner decision 11 October): each group is one row, a 72 px label column, then two 135 px options 8 px apart; label and option text 17 px', async ({ page }) => {
     await toChoicesAt(page, 390, 844);
     await expectRows(page, '390');
     for (const g of GROUP_NAMES) {
@@ -902,19 +920,26 @@ test.describe('IMP-088: the choices screen at 320 × 568 and in landscape', () =
     }
   });
 
-  test('320 × 568 with Larger text (v3.9, P5): every label on one line in its 72 px column, never behind an option; options 100 px', async ({ page }) => {
-    await toChoicesAt(page, 320, 568, true);
-    await expectRows(page, '320, Larger text');
+  for (const [w, h] of [[320, 568], [360, 640]] as const) {
+    test(`${w} × ${h} with Larger text (IMP-088, owner decision 11 October): every label on one line on its own line, 4 px above its two options; options ${ABOVE[w]!.option} px, 8 px apart`, async ({ page }) => {
+      await toChoicesAt(page, w, h, true);
+      await expectRows(page, `${w}, Larger text`, 'above');
+    });
+  }
+
+  test('812 × 375 with Larger text (IMP-088, owner decision 11 October): labels stay in their 72 px column, options 147 px', async ({ page }) => {
+    await toChoicesAt(page, 812, 375, true);
+    await expectRows(page, '812, Larger text');
   });
 
   for (const [w, h] of [[360, 640], [812, 375]] as const) {
-    test(`${w} × ${h} (v3.9): the label column and the options (${w === 360 ? '88 + 112 + 112' : '88 + 139 + 139 in each grid cell'})`, async ({ page }) => {
+    test(`${w} × ${h} (IMP-088, owner decision 11 October): the label column and the options (${w === 360 ? '72 + 120 + 120' : '72 + 147 + 147 in each grid cell'})`, async ({ page }) => {
       await toChoicesAt(page, w, h);
       await expectRows(page, `${w}`);
     });
   }
 
-  test('320 × 568 (v3.9: 72 px label column, 100 px options): one row per group, option text 15 px; no page scrolling; "Start round" fixed at the bottom; the content above it may scroll inside its own box (v3.5)', async ({ page }) => {
+  test('320 × 568 (IMP-088, owner decision 11 October: 60 px label column, 106 px options): one row per group, option text 15 px; no page scrolling; "Start round" fixed at the bottom; the content above it may scroll inside its own box (v3.5)', async ({ page }) => {
     await toChoicesAt(page, 320, 568);
     await expectRows(page, '320');
     for (const g of GROUP_NAMES) expect(await fontSize(option(page, g, FIRST[g]![1])), `${g} option text`).toBe(15);
@@ -929,6 +954,7 @@ test.describe('IMP-088: the choices screen at 320 × 568 and in landscape', () =
 
   test('Larger text (v3.9): label and option text 19 px (17 px at 320 wide); "Start round" stays fixed at the bottom', async ({ page }) => {
     await toChoicesAt(page, 390, 844, true);
+    await expectRows(page, '390, Larger text'); // IMP-088 (owner decision, 11 October): side by side at 390 with Larger text
     for (const g of GROUP_NAMES) {
       expect(await fontSize(option(page, g, FIRST[g]![0])), `${g} option text, 390`).toBe(19);
       expect(await fontSize(page.getByRole('group', { name: g, exact: true }).getByText(g, { exact: true }).first()), `${g} label text, 390`).toBe(19);

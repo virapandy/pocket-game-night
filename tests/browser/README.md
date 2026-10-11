@@ -785,6 +785,10 @@ the approved pictures once the product owner or UX designer has checked them at 
 - Fonts differ between computers, so each platform has its own references (Playwright's default). Where a platform has
   none yet, each test is skipped with the reason "no approved … reference picture …", never passed. To take new
   pictures: `SCREENS_NEW=1 npm run test:browser -- --project=android --grep @screens --update-snapshots`.
+- **Noto Sans (11 October 2026, lane-y, 95faf03; faster-cycles item 3):** the app now ships its own font, so every
+  reference picture changed. All 60 Linux pictures are from Screenshots run 38117099977 (lane-y, 95faf03) and all 60
+  Mac pictures were taken locally on the same commit. **None of them are approved yet**: for the product owner's
+  release review (look for any word cut off or wrapped differently from the old pictures).
 
 | Screen (file name start) | What is on it | Rows |
 |---|---|---|

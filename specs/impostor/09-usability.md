@@ -116,15 +116,20 @@ And it is requested again when "Undo" reopens the verdict (IMP-037), and release
 And when `navigator.wakeLock` is missing or refused, nothing else happens (no message)
 
 ## IMP-088: The choices screen at 320 × 568 and in landscape
-Status: approved, owner, 2026-10-06 (changed)
+Status: approved, owner, 2026-10-06 (changed); widths and Larger-text layout: owner decision, 11 October; product owner to confirm in scenarios.md (`docs/test-questions.md`, "owner decision 11 October, IMP-088 widths changed")
 Phase: Impostor 1
 Then on "How do you want to play?" each group is one row: the label in its own column, then the two options sharing
 the rest of the row equally, 8 px apart (each at least 48 px tall), with only the selected option's line under it;
 every label ("Mode", "Talking", "Score", "Words") fits on one line in its column and never sits behind an option
-And widths: label column 88 px at 360 × 640, 390 × 844 and 812 × 375, 72 px at 320 × 568; options at 390 × 844:
-(390 − 32 − 88 − 8 − 8) / 2 = 127 px each; at 360 × 640: 112 px each; at 320 × 568: (320 − 32 − 72 − 8 − 8) / 2 =
-100 px each; at 812 × 375 (2 × 2 grid, each group cell (812 − 32 − 16) / 2 = 382 px): (382 − 88 − 16) / 2 = 139 px
-each
+And widths (content width = screen − 32, 8 px from label column to options, 8 px between options): label column 72 px
+at 390 × 844, 360 × 640 and 812 × 375, 60 px at 320 × 568; options at 390 × 844: (390 − 32 − 72 − 8 − 8) / 2 =
+135 px each; at 360 × 640: 120 px each; at 320 × 568: (320 − 32 − 60 − 8 − 8) / 2 = 106 px each; at 812 × 375
+(2 × 2 grid, each group cell (812 − 32 − 16) / 2 = 382 px): (382 − 72 − 16) / 2 = 147 px each. These apply with
+Larger text off at every size, and with Larger text on at 390 × 844 and 812 × 375
+And with Larger text on at 320 × 568 and 360 × 640, each label sits on its own line, 4 px above its two options,
+which share the full row 8 px apart: (320 − 32 − 8) / 2 = 140 px each at 320, (360 − 32 − 8) / 2 = 160 px each at
+360; the label still fits on one line and never sits behind an option
+And option letters are 0.04 em closer within words, with the space between words in full (I29)
 And label and option text are 17 px (15 px at 320 px wide); with Larger text 19 px (17 px at 320 px wide); "Whole
 family" fits on one line inside its 48 px-tall button at every size
 And at 320 × 568, with Larger text on or off, the content above "Start round" (the four groups, the Categories

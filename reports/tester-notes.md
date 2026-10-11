@@ -19,6 +19,14 @@ Read this and the top of `reports/latest.md` before starting. Keep it short: rep
   reason; tag `@quarantine` + annotation in the test; never skip or retry.
 
 ## Open items for the next tester
+- **Test lanes cannot commit (found 11 October, lane-y):** `.githooks/pre-commit` runs the lane's own copy of
+  `.claude/hooks/role-guard.mjs`; its `BASE = SELF.replace(/-(testing|product)$/, '')` leaves `-lane-y` on the end, so
+  the lane folder is taken for the Build clone and every `tests/`/`specs/` commit is refused ("the Build role cannot
+  commit"). Rule-file fix for the owner (e.g. strip `-lane-[a-z]` first). Never work around it.
+- Lane-y (Noto Sans, IMP-088 owner decision 11 October): IMP-088 spec and `impostor-setup.spec.ts` checks updated
+  (72/60 px label column, 135/120/147/106 px options; labels 4 px above 140/160 px options with Larger text at 320 and
+  360, new checks for 360 Larger, 812 Larger and 390 Larger); 120 reference pictures redone, unapproved
+  (README, "Screenshot comparison").
 - Quarantined: PLT-120 at 390 × 844 and TAM-116 (emulator, weekly). Un-quarantine after three weekly runs green first time.
 - Build role requests (in `reports/latest.md`): quick verify to run `@quarantine` tests non-blocking; point
   `.github/mutation/stryker.impostor.config.mjs` at `tests/vitest.mutation.impostor.config.ts`; cache
