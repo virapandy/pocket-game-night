@@ -5,6 +5,34 @@ A new orchestrator session starts here: read this section, then work through **"
 top, reporting to the owner after each. The product owner keeps this section
 current; instructions live here, not in chat. History from Phase 0 and 1a is further down.
 
+### DO NOW (owner, 11 October): Jev walk of the Secret Words screen map
+The owner approved `docs/games/secret-words/screen-map.md` draft 1 as it stands (11 October). The six persona walks ran
+from the product owner's chat (`docs/games/secret-words/map-walk-2026-10-11.md`). The orchestrator hands this to the
+**tester** (the Jev client is `tests/sim/jev.ts`; the map is in every clone's `docs/`; pull first). A one-off script under
+`tests/tools/` (not a test; the ordinary test run is unchanged):
+1. **State per screen:** for every screen and dialog in sections A–F of the map (host phone and map phone): its name, the
+   words on it (the *Words* line) and its visible buttons (the *Tap* column, menu items excluded; main button named).
+2. **Questions per screen** (every Choice includes the option "uncertain"; bands from `docs/proposals/e2e-and-jev-testing.md`:
+   above 0.8 clear, 0.5–0.8 report, below 0.5 or uncertain "Jev unsure"):
+   a. Choice: "A family is playing this word game at home. Which button would a person on this screen press next?" Options:
+      the visible buttons. Flag the screen when the most likely option is not its main button (or its obvious next step where
+      the map says so) with probability above 0.8.
+   b. The same Choice six more times, each with one persona in the state: a grandparent with weak English; a 10-year-old; a
+      first-time host; a distracted host with one hand; a competitive uncle who knows the rules; a guest who just opened the
+      link. Report where a persona's most likely button differs from the main button.
+   c. Noul (yes/no): "Can a person see, without opening a menu, how to stop or leave what they are doing on this screen?"
+   d. Noul: "Is the purpose of this screen clear from its words alone?"
+3. **Questions per label:** for every heading, button label and small line on the map, Noul: "Would most Indian families,
+   including someone from Tirunelveli who does not speak Hindi, understand this word or phrase at once?" List everything
+   below 0.5.
+4. **Report** `reports/jev-map-walk-secret-words.md` (push it): one table per screen (Jev's most likely button and probability;
+   flag; way-out probability; purpose probability; persona disagreements), the label list, the decisions used, and tool
+   faults apart from findings (PLT-122). Around 700 decisions, inside the weekly cap. Also run the **word list check** on
+   `docs/games/secret-words/words.csv` and `team-names.csv` if the tester has time (same report, own section).
+5. The product owner merges this with the persona walks into one gap list; nothing in the map or scenarios changes before
+   that. **Model:** a mid-size model is enough for this scripting; keep the largest model for design and C3 work (owner,
+   11 October: at every step use the model that fits the task's complexity).
+
 ### Approved 8 October: design before code (`docs/proposals/design-before-code.md`), for the orchestrator to apply
 Owner approved all five items. In order, none of it before the faster-cycles setup is done: (1) rules: the critic helper brief
 (`.claude/workspace/agents/critic.md`, read only), the design freeze rule, and the role guard letting the product owner edit
