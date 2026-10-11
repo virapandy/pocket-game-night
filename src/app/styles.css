@@ -1,3 +1,26 @@
+/* The app's one font (owner, 11 October 2026; docs/proposals/faster-cycles.md item 3): Noto Sans 400 and 700, Latin
+   subset, shipped in src/app/fonts (SIL Open Font License) so every phone and test machine draws text the same way.
+   No font service at run time; the service worker precaches the files. Weights 800 and 900 use the 700 face.
+   `block`: text waits (briefly; the files are preloaded and cached) rather than flashing in another font. */
+@font-face {
+  font-family: 'Noto Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url('./fonts/noto-sans-400.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Noto Sans';
+  font-style: normal;
+  font-weight: 700;
+  font-display: block;
+  src: url('./fonts/noto-sans-700.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 /* Light by default (docs/ux-guidelines.md, 27). Large text and big targets (14, 24). */
 :root {
   --bg: #fffaf2;
@@ -24,7 +47,7 @@
   --toast-button: #b3261e;
   --radius: 16px;
   color-scheme: light;
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Noto Sans', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
   font-size: 17px;
   line-height: 1.45;
   color: var(--text);
