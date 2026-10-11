@@ -66,12 +66,30 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
+      # Incremental mode (tests/mutation/README.md): each group keeps Stryker's incremental file between runs in GitHub's
+      # cache (per group and branch, falling back to main's), so mutants whose code and tests did not change are reused
+      # instead of tested again. The report still lists every mutant. With no cached file the group tests them all.
+      - name: Restore the incremental file (${{ matrix.group }})
+        uses: actions/cache/restore@v4
+        with:
+          path: reports/stryker-incremental/${{ matrix.group }}.json
+          key: stryker-incremental-${{ matrix.group }}-${{ github.ref_name }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            stryker-incremental-${{ matrix.group }}-${{ github.ref_name }}-
+            stryker-incremental-${{ matrix.group }}-main-
       # GitHub's standard runners have 4 processor cores; the config's 2 suits a laptop.
       - name: Mutation testing (${{ matrix.group }})
         env:
           CONFIG: ${{ matrix.config || 'tests/stryker.config.mjs' }}
           FILES: ${{ matrix.files }}
-        run: npx stryker run "$CONFIG" --mutate "$FILES" --concurrency 4
+          INCREMENTAL_FILE: reports/stryker-incremental/${{ matrix.group }}.json
+        run: npx stryker run "$CONFIG" --mutate "$FILES" --concurrency 4 --incremental --incrementalFile "$INCREMENTAL_FILE"
+      - name: Keep the incremental file (${{ matrix.group }})
+        if: ${{ !cancelled() && hashFiles(format('reports/stryker-incremental/{0}.json', matrix.group)) != '' }}
+        uses: actions/cache/save@v4
+        with:
+          path: reports/stryker-incremental/${{ matrix.group }}.json
+          key: stryker-incremental-${{ matrix.group }}-${{ github.ref_name }}-${{ github.run_id }}-${{ github.run_attempt }}
       - name: Mutation summary (${{ matrix.group }})
         if: always()
         run: npm run test:mutation:summary
