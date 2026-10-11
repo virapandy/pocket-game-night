@@ -22,7 +22,7 @@ SWDW-020,Orange,fruit / colour,Food,family,no,1,,"replaced Pakora (owner, 4 Oct:
 SWDW-021,Chutney,green or coconut chutney / sauce,Food,family,no,1,,
 SWDW-022,Corn,maize / bhutta / corny joke,Food,family,no,1,,"replaced Papad (owner, 4 Oct: English or pan-India only)"
 SWDW-023,Sambar,lentil stew / idli-sambar,Food,family,no,1,,
-SWDW-024,Puri,fried bread / temple town Puri,Food,family,no,1,,
+SWDW-024,Puri,fried bread / temple town Puri,Food,grownups,no,1,,"grownups: Jev known-at-once below 0.4, owner 11 Oct"
 SWDW-025,Naan,tandoor bread / butter naan,Food,family,no,1,,
 SWDW-026,Soup,tomato soup / in the soup,Food,family,no,1,,"replaced Kheer (owner, 4 Oct: English or pan-India only)"
 SWDW-027,Masala,spice mix / masala film / masala chai,Food,family,no,1,,
@@ -55,7 +55,7 @@ SWDW-053,Bat,cricket bat / flying animal,Cricket and sport,family,no,1,,
 SWDW-054,Ball,cricket ball / dance ball / having a ball,Cricket and sport,family,no,1,,
 SWDW-055,Wicket,stumps / losing a wicket,Cricket and sport,family,no,1,,
 SWDW-056,Stump,cricket stumps / tree stump / stumped,Cricket and sport,family,no,1,,
-SWDW-057,Pitch,cricket pitch / sales pitch / voice pitch,Cricket and sport,family,no,1,,
+SWDW-057,Pitch,cricket pitch / sales pitch / voice pitch,Cricket and sport,grownups,no,1,,"grownups: Jev known-at-once below 0.4, owner 11 Oct"
 SWDW-058,Over,six balls / finished / above,Cricket and sport,family,no,1,,
 SWDW-059,Duck,out for zero / bird / bend down,Cricket and sport,family,no,1,,
 SWDW-060,Six,sixer / number six,Cricket and sport,family,no,1,,
@@ -73,7 +73,7 @@ SWDW-071,Helmet,batting helmet / bike helmet,Cricket and sport,family,no,1,,
 SWDW-072,Pad,batting pads / notepad / launch pad,Cricket and sport,family,no,1,,
 SWDW-073,Spin,spin bowling / spinning top / twist a story,Cricket and sport,family,no,1,,
 SWDW-074,Swing,swing bowling / garden jhoola / dance swing,Cricket and sport,family,no,1,,
-SWDW-075,Googly,tricky ball / tricky question,Cricket and sport,family,no,1,,
+SWDW-075,Googly,tricky ball / tricky question,Cricket and sport,grownups,no,1,,"grownups: Jev known-at-once below 0.4, owner 11 Oct"
 SWDW-076,Hockey,hockey stick / national game,Cricket and sport,family,no,1,,
 SWDW-077,Kabaddi,raid game / kabaddi-kabaddi,Cricket and sport,family,no,1,,
 SWDW-078,Chess,board game / king and queen,Cricket and sport,family,no,1,,
@@ -179,7 +179,7 @@ SWDW-177,Hero,film hero / real-life hero,Films and music,family,no,1,,
 SWDW-178,Villain,bad guy / film villain,Films and music,family,no,1,,
 SWDW-179,Song,film song / birthday song,Films and music,family,no,1,,
 SWDW-180,Dance,naach / dance floor,Films and music,family,no,1,,
-SWDW-181,Interval,film break / gap,Films and music,family,no,1,,
+SWDW-181,Interval,film break / gap,Films and music,grownups,no,1,,"grownups: Jev known-at-once below 0.4, owner 11 Oct"
 SWDW-182,Climax,film ending / the peak,Films and music,grownups,no,1,,
 SWDW-183,Director,film director / company director,Films and music,family,no,1,,
 SWDW-184,Camera,camera / candid camera,Films and music,family,no,1,,
@@ -192,7 +192,7 @@ SWDW-190,Trailer,film trailer / truck trailer,Films and music,family,no,1,,
 SWDW-191,Star,film star / sky star,Films and music,family,no,1,,
 SWDW-192,Drum,drum beat / oil drum,Films and music,family,no,1,,"replaced Dhol (owner, 4 Oct: English or pan-India only)"
 SWDW-193,Tabla,pair of drums / tabla player,Films and music,family,no,1,,
-SWDW-194,Sitar,string instrument,Films and music,family,no,1,,
+SWDW-194,Sitar,string instrument,Films and music,grownups,no,1,,"grownups: Jev known-at-once below 0.4, owner 11 Oct"
 SWDW-195,Flute,bansuri / music,Films and music,family,no,1,,
 SWDW-196,Guitar,instrument / air guitar,Films and music,family,no,1,,
 SWDW-197,Note,music note / money note / class notes,Films and music,family,no,1,,
@@ -210,7 +210,7 @@ SWDW-208,Comic,funny / comic book,Films and music,family,no,1,,
 SWDW-209,Shadow,shade / follow someone / shadow puppets,Films and music,family,no,1,,"replaced Ghost (now the losing card's name, K23)"
 SWDW-210,Hit,superhit / to hit,Films and music,family,no,1,,
 SWDW-211,Flop,box-office flop / plop down,Films and music,family,no,1,,
-SWDW-212,Reel,film reel / short video / fishing reel,Films and music,family,no,1,,
+SWDW-212,Reel,film reel / short video / fishing reel,Films and music,grownups,no,1,,"grownups: Jev known-at-once below 0.4, owner 11 Oct"
 SWDW-213,Serial,TV serial / serial number,Films and music,family,no,1,,
 SWDW-214,Anchor,TV anchor / ship's anchor,Films and music,family,no,1,,
 SWDW-215,Diwali,festival of lights / crackers,Festivals,family,no,1,,
@@ -226,7 +226,7 @@ SWDW-224,Costume,fancy dress / outfit,Festivals,family,no,1,,"replaced Diya (own
 SWDW-225,Prize,first prize / prized,Festivals,family,no,1,,"replaced Rangoli (owner, 4 Oct: must be known in Tirunelveli or Sivagangai without Hindi)"
 SWDW-226,Cracker,firecracker / biscuit cracker,Festivals,family,no,1,,
 SWDW-227,Rocket,Diwali rocket / space rocket,Festivals,family,no,1,,
-SWDW-228,Sparkler,phuljhadi / sparkly,Festivals,family,no,1,,
+SWDW-228,Sparkler,phuljhadi / sparkly,Festivals,grownups,no,1,,"grownups: Jev known-at-once below 0.4, owner 11 Oct"
 SWDW-229,Kite,Sankranti kite / bird / kite flying,Festivals,family,no,1,,
 SWDW-230,Colour,Holi colours / crayons / colour TV,Festivals,family,no,1,,
 SWDW-231,Fair,fun fair / fair play / fair weather,Festivals,family,no,1,,"replaced Pichkari (owner, 4 Oct: English or pan-India only)"
@@ -240,7 +240,7 @@ SWDW-238,Wish,birthday wish / genie wish,Festivals,family,no,1,,"replaced Sangee
 SWDW-239,Guest,house guest / guest star,Festivals,family,no,1,,"replaced Haldi (owner, 4 Oct: English or pan-India only)"
 SWDW-240,Garland,flower mala / welcome,Festivals,family,no,1,,
 SWDW-241,Paint,wall paint / painting,Festivals,family,no,1,,"replaced Mela (owner, 4 Oct: English or pan-India only)"
-SWDW-242,Lantern,sky lantern / Christmas star,Festivals,family,no,1,,
+SWDW-242,Lantern,sky lantern / Christmas star,Festivals,grownups,no,1,,"grownups: Jev known-at-once below 0.4, owner 11 Oct"
 SWDW-243,Party,celebration / search party / party games,Festivals,family,no,1,,
 SWDW-244,Birthday,cake / candles / birthday bumps,Festivals,family,no,1,,
 SWDW-245,Vacation,summer holidays / trip,Festivals,family,no,1,,
@@ -304,7 +304,7 @@ SWDW-302,Compass,geometry box / direction finder,School and work,family,no,1,,
 SWDW-303,Pen,writing pen / pen pal,School and work,family,no,1,,
 SWDW-304,Chalk,blackboard chalk / chalk and cheese,School and work,family,no,1,,
 SWDW-305,Board,blackboard / board exam / board a train,School and work,family,no,1,,
-SWDW-306,Duster,blackboard duster / cleaning cloth,School and work,family,no,1,,
+SWDW-306,Duster,blackboard duster / cleaning cloth,School and work,grownups,no,1,,"grownups: Jev known-at-once below 0.4, owner 11 Oct"
 SWDW-307,Bench,class bench / bench strength / court bench,School and work,family,no,1,,
 SWDW-308,Bag,school bag / bag a prize,School and work,family,no,1,,
 SWDW-309,Uniform,school dress / same for everyone,School and work,family,no,1,,
@@ -415,9 +415,9 @@ SWDW-413,Bhutan,neighbour / happy country,Geography,family,no,1,,"added: Geograp
 SWDW-414,Turkey,country / bird,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
 SWDW-415,Malaysia,country / twin towers,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
 SWDW-416,Thailand,country / beaches,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
-SWDW-417,Mexico,country / sombrero,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
+SWDW-417,Mexico,country / sombrero,Geography,grownups,no,1,,"added: Geography (owne; grownups: Jev known-at-once below 0.4, owner 11 Oct", 4 Oct)"
 SWDW-418,Spain,country / bullfight,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
-SWDW-419,Greece,country / sounds like grease,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
+SWDW-419,Greece,country / sounds like grease,Geography,grownups,no,1,,"added: Geography (owne; grownups: Jev known-at-once below 0.4, owner 11 Oct", 4 Oct)"
 SWDW-420,London,city / London Bridge,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
 SWDW-421,Paris,city / Eiffel Tower,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
 SWDW-422,Dubai,city / tallest building,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
@@ -444,7 +444,7 @@ SWDW-442,Shimla,hill station / snow,Geography,family,no,1,,"added: Geography (ow
 SWDW-443,Kochi,city / Kerala port,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
 SWDW-444,Lucknow,city / nawabs,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
 SWDW-445,Amritsar,Golden Temple / city,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
-SWDW-446,Patna,city / Bihar,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
+SWDW-446,Patna,city / Bihar,Geography,grownups,no,1,,"added: Geography (owne; grownups: Jev known-at-once below 0.4, owner 11 Oct", 4 Oct)"
 SWDW-447,Surat,diamond city / Gujarat,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
 SWDW-448,Everest,highest mountain / climb,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"
 SWDW-449,Sahara,desert / sand,Geography,family,no,1,,"added: Geography (owner, 4 Oct)"

@@ -33,8 +33,9 @@ from the product owner's chat (`docs/games/secret-words/map-walk-2026-10-11.md`)
 `docs/games/secret-words/map-walk-2026-10-11.md` §5–8; screen map draft 2 pushed. Two follow-ups for the tester, no owner
 question: raise `WEEKLY_CAP` in `tests/sim/jev.ts` to 50,000 (decision of 8 October); keep questions as Choice with
 "uncertain" (true/false and score refused by the API on 11 October); drop the category-fit question from word checks
-(categories are never shown). The product owner is waiting on the owner's round-2 answers (wording batch, word list);
-scenarios version 3.5 follows.
+(categories are never shown). Owner answered round 2 ("yes to all"): **scenarios version 3.5 is approved and pushed** (`docs/games/secret-words/scenarios.md`,
+"What version 3.5 changes" items 1–10; `words.csv` and `team-names.csv` updated). The tester works from 3.5; PLT-113's cap
+becomes 50,000 in `specs/platform`. Screen map draft 2 is the map for the prototype renderer and the coverage map.
 5. The product owner merges this with the persona walks into one gap list (the owner has already decided the persona walks'
    eight questions, decisions of 11 October; the wording batch waits for Jev's label list). Screen map draft 2 and scenarios
    version 3.5 follow as one batch; the Jev walk runs on draft 1 as it stands. **Model:** a mid-size model is enough for this scripting; keep the largest model for design and C3 work (owner,

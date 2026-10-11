@@ -30,7 +30,7 @@ first build.
 ### Decision (K2, changed by the owner on 4 October: K23, K25)
 **Tambola's clean, flat look for the board, two coloured teams with funny names, and the Landmine.**
 - **The orange team and the teal team.** Each evening they get a random pair of **funny names** from `team-names.csv`
-  (Chai Champions v Coffee Commandos, Back Benchers v Front Benchers, Snooze Buttons v Alarm Clocks, Pressure Cookers v Ceiling Fans…);
+  (Chai Champions v Coffee Commandos, Back Benchers v Front Benchers, Snooze Buttons v Alarm Clocks, Early Birds v Night Owls, Loud Speakers v Quiet Corners…);
   "New team names" draws another pair before the first game. Orange and teal stay apart for the common colour-vision
   deficiencies (unlike red and green or red and blue).
 - **Nobody's words:** light sand, with a short dash.
