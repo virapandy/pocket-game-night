@@ -6,6 +6,7 @@
 // exactly one shard.
 // Usage: node .github/scripts/browser-shard.mjs <JSON from `playwright test --list --reporter=json`> <shard> <total>
 // Prints this shard's locations, one per line, as Playwright location filters (nothing when it has no tests).
+// Fails (exit 1) when the listing has no tests at all.
 import { readFileSync } from 'node:fs';
 
 const [file, shardArg, totalArg] = process.argv.slice(2);
@@ -26,6 +27,13 @@ const walk = (suite) => {
   for (const child of suite.suites ?? []) walk(child);
 };
 for (const suite of report.suites ?? []) walk(suite);
+
+// The job runs only when every browser test should run, so an empty list is a fault (a broken listing or report
+// format), never a pass: stop the shard red instead of letting every shard go green with nothing run.
+if (units.size === 0) {
+  console.error(`No browser tests found in ${file}: the test listing is empty or unreadable, so no shard can run.`);
+  process.exit(1);
+}
 
 const counts = Array(total).fill(0);
 const mine = [];
