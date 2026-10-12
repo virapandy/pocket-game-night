@@ -180,15 +180,15 @@ jobs:
   all-browser-tests:
     needs: plan
     if: needs.plan.outputs.mode == 'all'
-    name: Every browser test (${{ matrix.shard }} of 3)
+    name: Every browser test (${{ matrix.shard }} of 4)
     runs-on: ubuntu-latest
     timeout-minutes: 25
     env:
-      SHARDS: 3
+      SHARDS: 4
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2, 3]
+        shard: [1, 2, 3, 4]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -221,7 +221,7 @@ jobs:
           npx playwright test --config tests/playwright.config.ts --list --project=android \
             --grep-invert "@screens|@quarantine" --reporter=json > "$RUNNER_TEMP/browser-list.json"
           node .github/scripts/browser-shard.mjs "$RUNNER_TEMP/browser-list.json" "$SHARD" "$SHARDS" > "$RUNNER_TEMP/browser-shard.txt"
-      - name: Browser tests, shard ${{ matrix.shard }} of 3
+      - name: Browser tests, shard ${{ matrix.shard }} of 4
         # Quarantined tests run in the verify job's non-blocking step instead.
         run: |
           # With no locations Playwright would run every test, so an empty shard stops here (a pass).
