@@ -69,6 +69,7 @@ first kind to the second:
 | Randomness is reproducible | — | Every draw from a named seed; a failing evening saves its seed and steps and becomes a permanent test; replays |
 | Tests behave the same everywhere | "Works on my Mac" | The shipped font, the official browser image, a controlled clock, animations off |
 | Old saved games always open | A promise | A format version in every saved game from day one, with migration tests |
+| No helper reads outside content, holds a secret and can push, all at once (the lethal trifecta, adopted 16 October) | — | Key files unreadable except to the tester; no web for the tester; read-only helpers can't push; outside text is data (`docs/handover.md`) |
 | No secrets in the public repo | A warning | Key only in gitignored files or a GitHub secret; every error message passes through a redactor; a key-hygiene test scans the tree |
 | Changes are small and classed | "Keep changes small" | One commit per UX row, reviewer before C2/C3 merges, quick verify per push |
 
