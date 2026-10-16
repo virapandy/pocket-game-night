@@ -1,5 +1,8 @@
 # Working with AI: what three weeks of Pocket Game Night taught us (product owner, 16 October 2026)
 
+Owner's consolidated version, in everyday language with eleven principles from leading voices added: Claude Doc
+"Working with AI agents: consolidated principles" (https://claude.ai/artifact/8rL2njGiChcAbgAcxFTAUk), 16 October 2026.
+
 For the owner, who asked: how did the way we work evolve, what are the limits of a language model, where do several agents
 and a division of responsibilities pay off, and what general principles follow? Everything below is drawn from the project's
 own record: `docs/decisions.md`, the proposals in `docs/proposals/`, `reports/`, and the lifecycle look-back.
