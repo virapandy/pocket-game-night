@@ -341,7 +341,7 @@ portrait shows the sideways line instead of the grid; landscape grid left, colum
 | Hide map ↔ Show map · 60 s silence · app hidden | map removed ↔ shown | — | SWD-034, 121 |
 | Next map | M3 dialog "Next map? Only when the host has dealt the next board." with "Next map" / "Not yet" (main) (decision 7) → the next board of the same deck, found marks cleared; toast "Next map. It should start with: Kite · Tiffin · Rain." or "That was the last map of this deck. Scan the new code." (after the host's "New board", Next map gives the right board: a replaced board uses a deal index) | saved map replaced | SWD-039 |
 | Clue rules | S5 How to play, scrolled to "Clue rules", without any map; Done → here | — | decision 1 |
-| I give clues for: Chai Champions / Coffee Commandos (three phones, first opening) | here, that team's words highlighted | saved with the map | decision 7 |
+| I give clues for: Chai Champions / Coffee Commandos (three phones, until chosen; then quiet "Change") | here, that team's list button first | saved with the map | SWD-034, 117 |
 | Done with this game | M2 "Clear this map from your phone?" | — | SWD-036 |
 | ← Back | A1 Home (map kept as a saved row) | — | SWD-034 |
 
@@ -414,3 +414,43 @@ every step that has it; SWD-114 the three tap guards.
 | Every guarded main | Greyed look while waiting, label unchanged | SWD-114 |
 
 **Paths added (R10):** QR link from the phone's camera → M1 (or D11 first) · bad link → J2 with the error · S7b "Show the map to" from P4, P5, P6 · D7b "End the game" → D6 → G1 · app opened after 12 hours → A1 with the night ended (SWD-063) · S3→S5→S3 · M1→S5→M1 · D11→M1|back. **Removed:** P2 → D5 → S7 (the private map is one phone only).
+
+## J. Screens draft 3 named but did not describe (added 22 October, from the design rule checks)
+### D9. Dialog "Delete tonight's games? The games and tally will be lost."
+| Tap | Leads to | Records | IDs |
+|---|---|---|---|
+| Delete | A1 Home | the game night deleted | SWD-065 |
+| Keep it (main) | G2 Summary | — | SWD-065 |
+
+### E1a. History: one game
+*Words:* h1 "Game 2 · Chai Champions won"; the board with the whole map (faded cells by SWD-051); "Clues: Chai Champions CRICKET 2 · Coffee Commandos 1 · …". No main.
+| Tap | Leads to | Records | IDs |
+|---|---|---|---|
+| ← Back | E1 History | — | SWD-064 |
+
+### M3. Dialog "Next map? Only when the host has dealt the next board."
+| Tap | Leads to | Records | IDs |
+|---|---|---|---|
+| Next map (quiet) | M1 with the next map, toast | saved map replaced | SWD-039 |
+| Not yet (main) | M1 unchanged | — | SWD-039 |
+
+### D11. Dialog "This phone is the board. Open the map here?"
+*Words:* "Clue givers use their own phone. To show the map on this phone, use Show the map to a clue giver in the game's menu." (one phone: "…With one phone, pass this phone to the clue giver when the game says so.")
+| Tap | Leads to | Records | IDs |
+|---|---|---|---|
+| Open the map here (quiet) | M1 | saved map | SWD-002 |
+| No, keep the board (main) | the screen the map was opened from (J1, J2 or A1); from the camera with the app closed, A1 | — | SWD-002 |
+
+### Settings (shared with every game)
+Opened from any game menu's "Settings" or Home's menu; ← Back returns to where it was opened. Contents as the app's shared Settings (Larger text, sound, tap to show); not Secret Words specific. IDs: SWD-132.
+
+### D7 openers (paths for D7a and D7b)
+D7 "✕" on a clue giver with no partner → D7a → Done → D7 (toast) · D7 "✕" leaving a team with one player → D7b → Move Zoya over → D7 | Keep Kabir → D7 | End the game → D6 → G1.
+
+### Paths for D11 (section G additions)
+```
+J1→D11→M1|J1   J2→D11→M1|J2   A1→D11→M1|A1   (QR link)→D11→M1|A1
+D7→D7a→D7   D7→D7b→D7|D6
+```
+**Stop and Home during a turn (design checks R3):** menu-only on S6, S7, P1, P3, P4 and P6 by the owner's decision of 11
+October (Pause visible; Home and End in the menu). Game over and the summary show them as buttons.
