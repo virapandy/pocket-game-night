@@ -6,9 +6,11 @@ setup is done on both sides (rules acb35a2; lane CI, shipped font, four shards, 
 area map, incremental mutation, quarantine; critic and player helpers installed). Last app change: 12 October. Secret
 Words is fully designed and approved: scenarios **version 3.5**, screen map draft 2, persona and Jev walks merged, word list
 and team names updated. Nothing is built for it yet and `specs/secret-words/` is empty.
-**Order for the orchestrator now:** (1) the trifecta rule edit below, one commit; (2) design-before-code leftovers: the
-tester's design rule checks script, the prototype renderer as one coder lane (build it generic now; feed it Secret Words' screen
-map draft 3 when it lands) (C1, `/preview/proto/secret-words/`); (3) tester copies scenarios **3.6** (not 3.5: a critic pass and UX review on 22 October found fixes, `docs/games/secret-words/design-review-2026-10-22.md`; 3.6 follows the owner's answers) into `specs/secret-words/` and writes the C3
+**Order for the orchestrator now:** (1) ~~the trifecta rule edit~~ done 22 October (71e8a5b); (2) design-before-code leftovers: the
+tester's design rule checks script, the prototype renderer as one coder lane (generic; feed it `docs/games/secret-words/screen-map.md`
+draft 3, pushed 22 October) (C1, `/preview/proto/secret-words/`); (3) tester copies scenarios **3.6** (approved 22 October after the critic pass, UX review, other-app precedent and a coder-reader,
+tester-reader and final check, `docs/games/secret-words/design-review-2026-10-22.md`; read each scenario's "Version 3.6" paragraph,
+which wins over the text above it) into `specs/secret-words/` and writes the C3
 tests first (sections 02, 04 rules, 05, 06, SWD-099, 101, 117, 118, 123, 125, 127, 129); (4) when the prototype is live, tell
 the product owner, who runs the six personas and the Jev read on it; (5) coder lanes build Secret Words by
 `docs/change-sop.md`. Report to the owner after each step. Mid-size models for routine work.
