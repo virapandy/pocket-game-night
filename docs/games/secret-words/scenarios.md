@@ -1188,6 +1188,7 @@ How to play has h2 "Clue rules" after "The rules" and before `credit`, an `ol` o
 count as one." 2 "About meaning: no spelling, no rhymes, no 'top left'." 3 "Not a word on the board, or part of one." 4
 "English, or a word you'd use in English (chai, dosa)." The dispute dialog's "Clue rules" (SWD-124) opens How to play scrolled
 to it.
+**Version 3.6 (22 October, from the simulated table games):** line 3 reads "Not a word on the board, or a form or part of one (no 'rail' while Railway is face down). Letters inside another word are fine (Pan with Japan)." Words already turned over may be used. A clue may repeat an earlier clue (the rulebook doesn't forbid it). The clue screen's warning (SWD-101) stays a hint, not a rule: it may also show for allowed clues such as Pan with Japan.
 
 ### SWD-132 Settings and names (E17, E19)
 Settings save every change at once (no Save button). In "Who's playing?" every Enter adds its name and keeps the field focused; 7
