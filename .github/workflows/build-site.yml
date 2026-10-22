@@ -65,9 +65,9 @@ jobs:
               # The newer of the newest successful release.yml run and the newest successful rollback.yml run wins,
               # so a rollback is not undone by the next push.
               REL_RUN=$(try gh run list -R "$REPO" --workflow release.yml --status success --limit 1 \
-                --json displayTitle,createdAt -q '.[0] | select(. != null) | .createdAt + " " + .displayTitle' || true)
+                --json displayTitle,createdAt -q '.[0] | select(. != null) | .createdAt + " " + .displayTitle') || { echo "::error::The release.yml run lookup errored after 3 tries; refusing to guess which site to publish. Nothing published."; exit 1; }
               RB_RUN=$(try gh run list -R "$REPO" --workflow rollback.yml --status success --limit 1 \
-                --json displayTitle,createdAt -q '.[0] | select(. != null) | .createdAt + " " + .displayTitle' || true)
+                --json displayTitle,createdAt -q '.[0] | select(. != null) | .createdAt + " " + .displayTitle') || { echo "::error::The rollback.yml run lookup errored after 3 tries; refusing to guess which site to publish. Nothing published."; exit 1; }
               TITLE="$REL_RUN"; TAG=""
               REL_AT="${REL_RUN%% *}"; RB_AT="${RB_RUN%% *}"
               if [ -n "$RB_RUN" ] && { [ -z "$REL_RUN" ] || [ "$RB_AT" \> "$REL_AT" ]; }; then
@@ -103,6 +103,10 @@ jobs:
               SHA=$(try gh run list -R "$REPO" --workflow quick.yml --branch main --event push --status success --limit 1 \
                 --json headSha -q '.[0].headSha // empty' || true)
             fi
+          fi
+          if [ -z "$SHA" ] && [ -n "${TAG:-}" ]; then
+            echo "::error::Found release/rollback tag '$TAG' but could not resolve its commit; refusing to use a fallback commit. Nothing published."
+            exit 1
           fi
           [ -z "$SHA" ] && SHA="$FALLBACK"
           if [ -z "$SHA" ]; then
