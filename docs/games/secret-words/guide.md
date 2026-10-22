@@ -1,5 +1,10 @@
 # Secret Words: the rule book (draft, 4 October 2026)
 
+> **Replaced by `scenarios.md` version 3.6 wherever they differ (22 October).** Known differences: a disputed clue is
+> decided by both clue givers together (K40), not the other clue giver; the Landmine defaults to "Lose your turn" with Whole
+> family words and "Lose the game" with + Harder words (K33); play modes are one, two or three phones; the end-of-night fun
+> lines are the summary of SWD-128 (no Landmine count).
+
 > **Version 3 (4 October):** the play modes are now one, two (recommended) or three phones, with an optional clue word,
 > tap-to-see map, "Turn", "Guesses only" and "Next map" (`play-modes.md`, decisions P1–P11). Where this file differs,
 > `scenarios.md` wins.

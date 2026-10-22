@@ -41,7 +41,8 @@ speed [8]. Our users:
 ## 3. Host controls under pressure
 13. **"Next number" is always in the same place: bottom centre, in the thumb zone.** 49% of people hold
     the phone one-handed and 75% of touches are by thumb; bottom centre suits both hands [11][12].
-14. **Big targets.** Every control at least 48×48 dp / 44×44 pt [13][14], WCAG AAA 44×44 CSS px [15].
+14. **Big targets.** Every control at least 48×48 dp / 44×44 pt [13][14], WCAG AAA 44×44 CSS px [15]. Main buttons are 60 CSS px
+    tall; Tambola's "Next number" is 72 (22 October 2026).
     "Next number" at least 72 dp tall **[Inference]**. About 12 mm at edges and corners, 7 mm at
     the centre [16]. Leave space between controls [13][17].
 15. **Rare and destructive actions go up top, away from the thumb, behind a specific confirmation**
@@ -69,7 +70,7 @@ speed [8]. Our users:
     save on every move and when the app is hidden; a refresh resumes the game [23][24][25].
 
 ## 5. Legibility and accessibility
-24. **Text:** 17 pt body by default, never below 11 pt [13]; a **Larger text** option for players,
+24. **Text:** 17 pt body by default, never below 11 pt [13] (in CSS px, 12 px; rule 49's board floor); a **Larger text** option for players,
     since bigger and fewer items removed the walking penalty in research [8].
 25. **Contrast:** at least 4.5:1 for text, 3:1 for large text and for state indicators such as a
     marked cell; aim for 7:1 on the room screen [4][26][27].
@@ -127,7 +128,8 @@ speed [8]. Our users:
 45a. **Controls on a passed phone never move after the first hold** (space is reserved), so a re-press can't hit
     something new (Impostor review, 4 October 2026).
 46a. **Result and summary screens scroll as one page** with only the main button pinned; never a scroll area inside a
-    scroll area; lists are one column at widths of 360 px or less.
+    scroll area; lists are one column at widths of 360 px or less, except two side-by-side columns of at least 140 px
+    each (Secret Words' Make teams).
 47a. **Every between-rounds screen shows both "carry on" and "stop".** The next round is the main button; "End game"
     is a visible outlined button beside it; "← Home" leaves the game saved to resume. Stopping is never only in a menu
     (owner, 4 October 2026).
@@ -137,6 +139,8 @@ speed [8]. Our users:
 49. **Word boards on a shared phone** (Secret Words, 4 October 2026). A board of many words can't meet rule 46's 56 px. Instead:
     landscape first; one font size for the whole board, the largest that fits, never below 12 px; words of at most 8 letters;
     a smaller board option; a "turn sideways" message where even 12 px can't fit. Guessers lean in, as over a real board.
+    The same exception covers the hurry-up timer on board screens (56 px at 390 px wide, 40 px below that); where room
+    allows, as on Secret Words' pass screen, the timer keeps rule 46's 120 px (22 October 2026).
 
 ## Decisions (owner, 2026-09-28)
 - **Auto-call mode:** off by default. When the host turns it on, they set the time between calls,

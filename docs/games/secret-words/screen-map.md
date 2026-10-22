@@ -1,8 +1,8 @@
-# Secret Words: screen map (draft 2, product owner, 11 October 2026)
+# Secret Words: screen map (draft 3, product owner, 22 October 2026)
 
-**Status: draft 2 = draft 1 (approved as it stood) plus the owner's seven decisions from the persona walks
-(`map-walk-2026-10-11.md` §3; `docs/decisions.md` 11 October) and the map corrections of its §2. The wording batch (§6) and
-the word list changes (§7) are marked *proposed* until the owner says yes; scenarios version 3.5 then carries all of it.**
+**Status: draft 3, matching scenarios version 3.6 (22 October).** Every mark that said *proposed* in draft 2 is approved
+(owner, 11 October); section I below adds the 22 October changes. Where this map and `scenarios.md` differ, the scenarios win.
+This is the map the prototype renderer reads and the coverage map is derived from.
 Draft 1 was: Drawn from `scenarios.md` version 3.4 (binding), `ux.md`, `lifecycle.md`
 and `play-modes.md`. Where this file and `scenarios.md` differ, `scenarios.md` wins until the owner decides otherwise.
 This is stage 1 of `docs/proposals/design-before-code.md`: once the owner has corrected it, the orchestrator runs Jev's
@@ -126,7 +126,7 @@ Nothing about the map. Page may scroll.
 | Done | the step it was opened from (dispute dialog if opened from it) | — | SWD-011, 124, 131 |
 
 ### S6. Preview board (after "Show me the board first")
-*Words:* heading "The board, before you start" (*proposed*, W23); the board, every cell locked; "Chai Champions start"; counts. *Intentions:* help, pause, home, stop (all menu).
+*Words:* heading "The board, before you start" (W23); the board, every cell locked; "Chai Champions start"; counts. *Intentions:* help, pause, home, stop (all menu).
 Menu: How to play · New board · Pause · Home (keep this game) · End for tonight · Settings · History.
 | Tap | Leads to | Records | IDs |
 |---|---|---|---|
@@ -137,7 +137,7 @@ Menu: How to play · New board · Pause · Home (keep this game) · End for toni
 *Words:* "Clue givers, scan your map"; two phones "Riya and Arjun: sit side by side and share one map phone." / three phones
 "Riya (Chai Champions, orange) and Arjun (Coffee Commandos, teal): scan on your own phones."; QR ≥ 200 px; "or type:
 27P-3QX8"; board check line (one of SWD-116's four wordings); Do Not Disturb tip (first deal); "Guessers: don't scan this
-one!" (decision 5, replaces "Everyone else: look away from their phones."); *proposed* W11: a line above the QR "On the other
+one!" (decision 5, replaces "Everyone else: look away from their phones."); W11: a line above the QR "On the other
 phone: open the app, tap Join a game, scan this." and the heading and main of W11. *Intentions:* help, pause, home, stop, players (all menu). Page may scroll, QR fixed size, main fixed.
 | Tap | Leads to | Records | IDs |
 |---|---|---|---|
@@ -168,7 +168,7 @@ Pause · Home (keep this game) · End the game · End for tonight · Settings ·
 | Menu items | as S7 | | menu table |
 
 ### P2. Private map (one phone; also S7b "Show the map to a clue giver")
-*Words:* "RIYA"; "You give clues for Chai Champions (orange)"; *proposed* W23 small line "Only Riya should see this screen."; counts; map area (empty until shown); pad "Tap to see the map" /
+*Words:* "RIYA"; "You give clues for Chai Champions (orange)"; W23 small line "Only Riya should see this screen."; counts; map area (empty until shown); pad "Tap to see the map" /
 "Tap to hide"; "Our words" / "Whole map" and "↻ Flip" (while shown); "Not Riya? Go back" (before the first show) / "Someone saw
 the map" (while shown); list "Your words (6 left)" + "Landmine word: Shadow"; "Still looking? Tap to keep the map" (at 50 s).
 No menu, no team bar. *Intentions:* back (before the first show), hide. Sizes: narrow portrait shows the list, never the grid;
@@ -230,7 +230,7 @@ into the menu.
 | End our turn (after the first reveal) | P5 End-turn line | — | SWD-044 |
 | ↻ | grid turned for the guessing team | UI angle | SWD-102 |
 | Menu → Earlier clues | D2 sheet "Earlier clues" → Done → here | — | SWD-041 |
-| Menu → Pass the pick (2+ guessers; *proposed* W13 "Someone else taps Reveal") | D3 "Who picks this turn?" → a name → here, main renamed | UI `pickerOverride` | SWD-122 |
+| Menu → Pass the pick (2+ guessers; W13 "Someone else taps Reveal") | D3 "Who picks this turn?" → a name → here, main renamed | UI `pickerOverride` | SWD-122 |
 | Pause icon | D4 Paused | — | decision 6 |
 | Other menu items | as S7 / P3 | | menu table |
 
@@ -257,12 +257,12 @@ the game · End for tonight · Settings · History.
 | D1 | Clue not allowed? | "Clue not allowed? Both clue givers decide together." | Try another clue → P3 (with Keep my clue) · Turn ends, they get a word → P6 with "Clue broke a rule. One of the other team's words was turned over." · Clue rules → S5 scrolled to Clue rules, Done → back here · Let it go (main) → P4 | `brokeRule` on the second | SWD-124, 046 |
 | D2 | Earlier clues | one line per clue in force, oldest first | Done → P4 | — | SWD-041 |
 | D3 | Who picks this turn? | one button per guesser; Cancel | a name → P4 · Cancel → P4 | UI only | SWD-122 |
-| D4 | Paused (cover) | "Paused"; the where-line (decision 3); "Tap Carry on when everyone's back." (*proposed* W17 "…when you're ready.") | Carry on → the same step (guards not restarted) | — | SWD-110 |
+| D4 | Paused (cover) | "Paused"; the where-line (decision 3); "Tap Carry on when everyone's back." (W17 "…when you're ready.") | Carry on → the same step (guards not restarted) | — | SWD-110 |
 | D5 | New board? | "New board? For when someone saw the map or the words are too hard. This board won't count. Same teams and clue givers." | New board → deal → S7 or P1 · Keep playing (main) → back | new deal | SWD-055 |
 | D6 | End this game with no winner? | | End the game → G1 "Game ended. No winner." with toast "Game ended · Undo" (10 s) · Keep playing (main) → back | `endGame` when the toast expires or the screen is left; Undo → back to the step | SWD-054 |
 | D7 | Players | per team: name (Rename), "Move to …" (guessers), "✕" (Remove); add row: "Player name", "Doesn't give clues", "Add to Chai Champions" / "Add to Coffee Commandos" | Done → the step; toasts "Neha joined Chai Champions" · "Zoya moved to Coffee Commandos · Undo" · "Kabir left · Undo" | `setPlayers` per change | SWD-127 |
 | D7a | Who gives clues for Coffee Commandos now? | one button per eligible player | Done → removal confirmed, toast · close → cancelled | `setPlayers` | SWD-127 |
-| D7b | Kabir leaves Coffee Commandos with only Om. Move someone over? (*proposed* W23: "Coffee Commandos would be left with only Om. Move someone over?") | "Move Zoya over" per movable guesser; "No one can move over." | Move Zoya over → both changes · Keep Kabir (main) → D7 · End the game → D6 | `setPlayers` | SWD-127 |
+| D7b | Kabir leaves Coffee Commandos with only Om. Move someone over? (W23: "Coffee Commandos would be left with only Om. Move someone over?") | "Move Zoya over" per movable guesser; "No one can move over." | Move Zoya over → both changes · Keep Kabir (main) → D7 · End the game → D6 | `setPlayers` | SWD-127 |
 | D8 | End for tonight? | "End for tonight? Tonight's tally stays in History." / mid-game "… This game won't count in the tally." | End for tonight → G2 Summary · Keep playing (main) → back | nothing yet (see G2) | SWD-060 |
 | S7b | Show the map to | "Riya (Chai Champions)", "Arjun (Coffee Commandos)"; Cancel | a name → P1 + P2 for them, main "Done, hide the map" → back · Cancel → back | — | SWD-037 |
 
@@ -301,7 +301,7 @@ playing" (until recorded); quiet "← Home"; main "Play something else". Menu: o
 *Words:* "Secret Words · 3 games"; "Game 2 · Chai Champions won · Riya and Arjun gave clues" (· "(Landmine)" · "Ended early").
 | Tap | Leads to | Records | IDs |
 |---|---|---|---|
-| A game row | E1a: heading "Game 2 · Chai Champions won" (*proposed* W23); the board with the whole map and "Clues: Chai Champions CRICKET 2 · …"; ← Back → E1 | — | SWD-064 |
+| A game row | E1a: heading "Game 2 · Chai Champions won" (W23); the board with the whole map and "Clues: Chai Champions CRICKET 2 · …"; ← Back → E1 | — | SWD-064 |
 | ← Back / Done | the step History was opened from, or Home | — | menu table |
 
 ## F. The map phone (a clue giver's own phone, two or three phones)
@@ -364,7 +364,7 @@ S6→S7  S6→P1  S6→S5→S6  S6→D5→S7|P1  S6→D4→S6  S6→A1  S6→D8�
 S7→P3  S7→S5|D7|D5|D4|D6|D8→…  S7→A1
 S7a→P3|P4|P5|P6 (back to the step)
 P1→P2  P1→S5|D7|D5|D4|D6|D8  P1→A1
-P2→P3  P2→P1(not Riya; app hidden)  P2→D5→S7|P1 or back to P2
+P2→P3  P2→P1(not Riya; app hidden)  P2→D5→P1(new board) or back to P2
 P3→P4  P3→P2(see the map again)→P3  P3→P4(keep my clue)  P3→S7b→P1,P2→(back)  P3→S7a→P3  P3→menu…  P3→A1
 P4→P4(reveal, own word)  P4→P6  P4→G1  P4→P5  P4→P3(change clue)  P4→D1→P3|P6|S5|P4  P4→D2|D3→P4  P4→menu…  P4→A1
 P5→P4  P5→P1|P3(other team)
@@ -396,3 +396,21 @@ every step that has it; SWD-114 the three tap guards.
 6. **Game over's "← Home" is a quiet button, but mid-game Home is menu-only** ("Home (keep this game)"). Deliberate, so a
    stray tap can't leave a round? Confirm.
 7. **Settings is reachable from every game menu but nowhere in setup.** Same as the other games; confirm.
+
+## I. Draft 3 additions (scenarios version 3.6, 22 October)
+| Screen | Change | IDs |
+|---|---|---|
+| Every map-opening route on a phone with an unfinished game night (J1 scan, J2 code, the QR link, A1 saved map) | New dialog D11 "This phone is the board. Open the map here?": quiet "Open the map here" → M1 · main "No, keep the board" → back | SWD-002, 036 (D2) |
+| S3 Choices | Quiet "How to play" under the heading → S5 → Done → S3 | SWD-009 |
+| S5 How to play | Rule 7 "The host phone stays at the table: it's the board."; opened from M1 "Clue rules" it opens at Clue rules and returns to M1 | SWD-011 |
+| S6 Preview, S7 Scan | `pause-button` → D4 | SWD-012, 033, 110 (D5) |
+| S7 Scan | Warning directly above the QR; `other-phone-line`; `mismatch-line` "Doesn't match? Scan this code again."; landscape two columns; three phones with new clue givers: "Meena and Kabir: scan this code on your phones. Riya and Arjun: tap Done with this game." | SWD-033, 116 (D1) |
+| P2 Private map | Row space reserved; "Someone saw the map" at the top right; pad quiet look, 72 px while shown | SWD-031 |
+| P4 Guessing | 568 × 320: guess line in the action slot until the first reveal; 160 px panel: ↻ into the menu, Pause in its place | SWD-041 |
+| P1 Pass screen | Timer 120 px at 390 px wide and up | SWD-047 (D4) |
+| Narrow portrait (320) | Easy board shows in portrait; Full keeps the sideways line + "Or choose the Easy board for the next game." | SWD-092 (D6) |
+| M1 Map phone | Quiet "Clue rules" → S5; `my-team` (three phones) until chosen, then "I give clues for: …" + quiet "Change"; `mismatch-line`; "Hide map" pinned top right; list buttons stacked in portrait; end line "Game over: tap Done with this game. New board on the host: tap Next map." | SWD-034, 117, 120 (D3) |
+| G1, M1 | Faded cells by a light fill, not opacity | SWD-051 |
+| Every guarded main | Greyed look while waiting, label unchanged | SWD-114 |
+
+**Paths added (R10):** QR link from the phone's camera → M1 (or D11 first) · bad link → J2 with the error · S7b "Show the map to" from P4, P5, P6 · D7b "End the game" → D6 → G1 · app opened after 12 hours → A1 with the night ended (SWD-063) · S3→S5→S3 · M1→S5→M1 · D11→M1|back. **Removed:** P2 → D5 → S7 (the private map is one phone only).
