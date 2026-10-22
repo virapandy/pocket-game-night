@@ -151,6 +151,18 @@ function changedFiles(root) {
   if (!existsSync(path.join(root, '.git'))) return [];
   try { return git('status --porcelain --untracked-files=all', root).split('\n').filter(Boolean); } catch { return []; }
 }
+// Bringing a lane up to date (owner, 22 October 2026): during a merge, rebase or cherry-pick, a staged file that matches
+// the branch coming in is that branch's committed work, not this role's edit. Returns a test for such files.
+function incoming(root) {
+  for (const ref of ['MERGE_HEAD', 'REBASE_HEAD', 'CHERRY_PICK_HEAD']) {
+    try { git(`rev-parse -q --verify ${ref}`, root); } catch { continue; }
+    try {
+      const differ = new Set(git(`diff --cached --name-only ${ref}`, root).split('\n').filter(Boolean));
+      return (rel) => !differ.has(rel);
+    } catch { return () => false; }
+  }
+  return () => false;
+}
 
 function pre(input) {
   const tool = input.tool_name;
@@ -281,9 +293,12 @@ function post(input) {
     const now = changedFiles(root);
     // Without a snapshot, check the role's own clone fully and skip the other one.
     const was = new Set(before ? before[key] ?? [] : clone === own ? [] : now);
+    const fromBranch = incoming(root);
     for (const line of now) {
       if (was.has(line)) continue;
       const rel = line.slice(3).split(' -> ').pop().replace(/^"|"$/g, '');
+      // Staged as it came from the other branch, with no edit on top: not this role's change.
+      if (line[1] === ' ' && fromBranch(rel)) continue;
       if (!allowed(clone, ownerOf(rel))) stray.push(`${path.basename(root)}/${rel}`);
     }
   }
@@ -330,7 +345,8 @@ function commit() {
   const clone = locate(root)?.clone ?? 'build';
   if (entry !== 'claude-desktop' || clone !== 'build') role = clone;
   const staged = git('diff --cached --name-only', root).split('\n').filter(Boolean);
-  const bad = staged.filter((rel) => !allowed(clone, ownerOf(rel)));
+  const fromBranch = incoming(root);
+  const bad = staged.filter((rel) => !allowed(clone, ownerOf(rel)) && !fromBranch(rel));
   if (bad.length) {
     process.stderr.write(`Commit blocked: the ${NAME[role]} cannot commit these files:\n  ${bad.join('\n  ')}\n`);
     process.exit(1);
