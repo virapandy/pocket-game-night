@@ -23,6 +23,15 @@ export interface Tap {
   to: string;
   main: boolean;
   go: Go;
+  /** A "(…)" note in the map's menu line, kept for the script renderer (e.g. "2/3" or "two or three phones"). */
+  cond?: string;
+}
+
+/** One row of a screen's table as the map writes it. */
+export interface RawRow {
+  label: string;
+  to: string;
+  ids: string;
 }
 
 export interface ProtoScreen {
@@ -35,6 +44,10 @@ export interface ProtoScreen {
   notes: string;
   taps: Tap[];
   menu: Tap[];
+  /** Every row as written (the script renderer reads these). */
+  rows: RawRow[];
+  /** The *Words* part of the screen's notes, without its "Menu:" sentence. */
+  wordsText: string;
 }
 
 export interface Problem {
@@ -54,6 +67,7 @@ export interface ProtoMap {
 interface Row {
   label: string;
   to: string;
+  ids?: string;
 }
 
 interface Raw {
@@ -177,8 +191,9 @@ export function parseScreenMap(text: string): ProtoMap {
       if (!header) continue;
       const leads = header.findIndex((h) => /leads to/i.test(h));
       const buttons = header.findIndex((h) => /^buttons/i.test(h));
+      const idsCol = header.findIndex((h) => /^ids$/i.test(h));
       if (leads >= 0 && cur) {
-        cur.rows.push({ label: c[0] ?? '', to: c[leads] ?? '' });
+        cur.rows.push({ label: c[0] ?? '', to: c[leads] ?? '', ids: idsCol >= 0 ? (c[idsCol] ?? '') : '' });
       } else if (buttons >= 0) {
         const id = tidy(c[0] ?? '');
         if (!/^[A-Z]\d+[a-z]?$/.test(id)) continue;
@@ -192,7 +207,11 @@ export function parseScreenMap(text: string): ProtoMap {
             if (last) last.to += ` · ${seg}`;
             continue;
           }
-          rows.push({ label: seg.slice(0, arrow), to: seg.slice(arrow).replace(/^\s*(→|->)\s*/, '') });
+          rows.push({
+            label: seg.slice(0, arrow),
+            to: seg.slice(arrow).replace(/^\s*(→|->)\s*/, ''),
+            ids: idsCol >= 0 ? (c[idsCol] ?? '') : '',
+          });
         }
         raws.push({
           id,
@@ -289,7 +308,9 @@ export function parseScreenMap(text: string): ProtoMap {
     for (const item of items) {
       const k = keyOf(item);
       const found = own.find((t) => keyOf(t.label) === k) ?? globalMenu.get(k) ?? globalRow.get(k);
-      add(found ? { ...found, label: showLabel(item), main: false } : { label: showLabel(item), full: item, to: '', main: false, go: { kind: 'none' } });
+      const cond = /^\(([^)]*)\)/.exec(item)?.[1];
+      const base: Tap = found ? { ...found, label: showLabel(item), main: false } : { label: showLabel(item), full: item, to: '', main: false, go: { kind: 'none' } };
+      add(cond ? { ...base, cond } : base);
     }
     for (const t of menuRowsOf.get(id) ?? []) add(t);
     for (const other of [...inherits, ...(menuAs.get(id) ?? [])]) for (const t of menuOf(other, seen)) add(t);
@@ -330,7 +351,8 @@ export function parseScreenMap(text: string): ProtoMap {
       if (t.go.kind === 'none') problem(t.label, 'no target in the map', r.id);
       if (t.go.kind === 'go') for (const m of t.go.missing) problem(t.label, `leads to "${m}", which is not a screen in the map`, r.id);
     }
-    return { id: r.id, title: r.title, kind: r.kind, section: r.section, words, notes, taps, menu };
+    const rows = r.rows.map((x) => ({ label: tidy(x.label), to: tidy(x.to), ids: tidy(x.ids ?? '') }));
+    return { id: r.id, title: r.title, kind: r.kind, section: r.section, words, notes, taps, menu, rows, wordsText };
   });
 
   return { title, screens, problems: [...problems.values()], noMain };

@@ -218,7 +218,7 @@ function Draw({
 }
 
 /** The start list: every screen by section (host phone, second phone…), and what the map leaves unanswered. */
-function Index({ map, id }: { map: ProtoMap; id: string }) {
+export function Index({ map, id }: { map: ProtoMap; id: string }) {
   const sections = [...new Set(map.screens.map((s) => s.section))];
   return (
     <main className="proto-index">
