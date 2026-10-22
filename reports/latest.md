@@ -25,6 +25,7 @@ locally the eight Tambola files that wait out Home's guard passed on iPhone (86 
 |---|---|---|---|---|---|
 | `tests/android/emulator.spec.ts` PLT-120 full paper game at 390 × 844 | PLT-120 | tester | passed only on its PLT-122 retry, weekly run 37593615495 (emulator timing) | 2026-10-11 | three weekly runs green first time |
 | `tests/android/emulator.spec.ts` TAM-116 taps within 100 ms on a slowed processor | TAM-116 | tester | passed only on its PLT-122 retry, weekly run 37593615495 | 2026-10-11 | three weekly runs green first time |
+| `tests/browser/phone-tickets.spec.ts:339` TAM-191 and TAM-122 "One at a time" (iPhone) | TAM-191, TAM-122 | tester | failed in nightly runs 39093481183 (18 Oct), 39364341289 (20 Oct), 39716929005 (22 Oct) on unchanged main: left margin 7.5 px, expected 12, right after the resize to 375 px; cause is the test reading the layout before the app finished re-laying the ticket (360 px wide, then 351 px within 100 ms); test now waits for it (check unchanged) | 2026-10-22 | three green nightly runs after the fix (local 20 repeats could not be completed: Mac under load, 30 s timeouts) |
 | TAM-111 (emulator back gesture) | TAM-111 | tester | watch only: no failure on record in this clone's reports; not marked | 2026-10-11 | next weekly run |
 
 ## Flaky or setup problems (not for the Build workspace)

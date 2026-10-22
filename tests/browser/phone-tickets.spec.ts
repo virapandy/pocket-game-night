@@ -336,7 +336,7 @@ test.describe('Several tickets on one phone', () => {
     for (const t of riya.tickets) expect(await markedOn(phoneTicket(riya.page, t))).toEqual(marks.get(t));
   });
 
-  test('TAM-191 and TAM-122 (owner 2026-10-01): "One at a time" shows one ticket with tabs, a 12 px margin each side, cells filling the width between, the whole ticket on a 390 and a 375 px portrait screen with no sideways sliding; "All tickets" shows all 3 again', async ({ page, browser }, testInfo) => {
+  test('TAM-191 and TAM-122 (owner 2026-10-01): "One at a time" shows one ticket with tabs, a 12 px margin each side, cells filling the width between, the whole ticket on a 390 and a 375 px portrait screen with no sideways sliding; "All tickets" shows all 3 again', { tag: '@quarantine', annotation: { type: 'quarantine', description: 'tester: failed in nightly runs 39093481183, 39364341289, 39716929005 (the ticket was still laid out for 390 px a moment after the resize to 375); test now waits for the re-layout; ends after 3 green nightly runs, 22 October 2026' } }, async ({ page, browser }, testInfo) => {
     const handOuts = await phoneGame(page, TWELVE);
     const riya = await playerWith(browser, testInfo, handOuts, 'Riya', PORTRAIT);
     const [t1, t2, t3] = riya.tickets as [number, number, number];
@@ -354,6 +354,9 @@ test.describe('Several tickets on one phone', () => {
     // The same on a 375 × 812 phone (owner 2026-10-01: cells about 39 px there).
     await riya.page.setViewportSize({ width: 375, height: 812 });
     await riya.page.evaluate(() => new Promise<void>((r) => requestAnimationFrame(() => requestAnimationFrame(() => r()))));
+    // The app re-lays the ticket a few frames after the resize (seen: still 360 px wide, 7.5 px from the edge, on the
+    // first read, 351 px and 12 px within 100 ms), so wait, within a second, for the turn; the check itself is unchanged.
+    await expect.poll(async () => (await phoneTicket(riya.page, t2).boundingBox())!.width, { message: 'the ticket re-lays for 375 px', timeout: 1_000 }).toBeLessThanOrEqual(375 - 24 + 0.5);
     await expectOneAtATimeFit(riya.page, 'ticket ' + t2 + ' on 375 × 812');
     expect(await slidesSideways(riya.page), 'the ticket slides sideways on 375 px').toEqual([]);
     await riya.page.setViewportSize(PORTRAIT);
