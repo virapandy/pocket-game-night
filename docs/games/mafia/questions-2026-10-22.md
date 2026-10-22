@@ -1,5 +1,7 @@
 # Mafia: questions for the owner (product owner, 22 October 2026)
 
+**Decided 22 October 2026: owner, "follow your recommendations on M1 to M13" (M1b included). Recorded as MF1–MF13 in `docs/decisions.md`.**
+
 These change how the game plays, so they are the owner's (rule decisions are asked, never decided silently). Each has
 the convention marked **norm** and the product owner's recommendation. Answered rows move to `docs/decisions.md` as
 MF1, MF2, ….

@@ -1,7 +1,7 @@
 # Mafia: a short guide (draft, 22 October 2026)
 
 Step 1 of `docs/new-game-process.md`. Fit check and player stories: `fit-and-stories.md`. Open rule questions for the
-owner: `questions-2026-10-22.md` (M1–M13); rows below marked "M…" follow the recommendation until the owner answers.
+owner: `questions-2026-10-22.md` (M1–M13); all decided as recommended on 22 October (MF1–MF13 in `docs/decisions.md`).
 Once scenarios exist, `scenarios.md` wins wherever it differs from this file.
 
 ## Overview

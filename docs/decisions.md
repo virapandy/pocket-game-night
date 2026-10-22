@@ -260,3 +260,22 @@ Status: **decided: owner, 4 October 2026, "follow the recommendation"** for K1�
 | K40 | Disputes: "Clue not allowed?" offers **Let it go · Try another clue · Turn ends, they get a word**, with "Both clue givers decide together." (B3) | Owner, 4 October |
 | K41 | Behaviour proposals B4–B12 (ask before making someone clue giver; credit people, blame the board; poker-face line; a job for the waiting team; end on a high; fair shuffles; "Our words" on the map phone; "tap to suggest"; easy joining) and the never-do list of `behaviour.md` §3 | Owner, 4 October ("follow the recommendation") |
 | K42 | Secret Words scenarios **version 3.4 approved** (SWD-001 to SWD-133); the build starts when Impostor's release candidate 1.3.0 is frozen | Owner, 4 October |
+
+## Mafia: decisions (22 October 2026; evidence in `docs/games/mafia/guide.md`)
+Status: **decided: owner, 22 October 2026, "follow your recommendations on M1 to M13"** (M1b included; the Recommendation column is the decision). Norm = the classic Mafia convention. IDs MF1… match M1… below.
+| # | Question | Options | Decision |
+|---|---|---|---|
+| MF1 | **How does night work with one phone?** (no app we found does A: new, so the persona agents walk it on the prototype before scenarios) | **A. Pass the phone round at night:** everyone takes it in turn; Mafia pick someone to put out, Doctor picks someone to protect, Police picks someone to check, Villagers tap anyone (a "who do you suspect?" pick). Same time and taps for every role, so nobody can tell. No closing eyes, works with kids and noise · **B. Phone on the table speaks** ("Everyone close your eyes… Mafia, open your eyes"), Mafia point silently, one of them taps (**norm**, closest to a human moderator; needs sound and silence, and the tapping can be heard) | **A**, with B as a later option |
+| MF1b | **With A, how do 2 or more Mafia agree?** (the norm is that they must agree) | The first Mafia to hold the phone picks; the next Mafia sees "Arjun picked Riya" and taps Agree or a different name; if they differ, the phone picks one of their names at random · each Mafia picks and the most-picked name wins, ties at random | First picks, the others agree or change; differences settled at random |
+| MF2 | **Words for being out** | "Out" and "caught by the Mafia" · "killed" / "died" (**norm**) | "Out" everywhere; the morning story keeps it light |
+| MF3 | **When someone is voted out, is their role shown?** | **Shown** (**norm**, the original game) · Hidden until the game ends | Shown: simpler and gives the room something to reason from |
+| MF4 | **Which roles in the first release?** | Mafia, Villagers, Doctor, Police (**norm**: the classic four) · plus extras later (e.g. a Joker) | The classic four; "Police" rather than "Detective" (known to everyone) |
+| MF5 | **How many players and Mafia?** | 5 to 16 (**norm** at least 6); Mafia set by the phone: 5–7 → 1, 8–11 → 2, 12–15 → 3, 16 → 4 (about 1 in 3 to 1 in 4 in the sources) · host can change it | Phone sets it, host can change by one |
+| MF6 | **Day vote tie** | No single norm: by lot (Wikipedia), nobody out, or re-vote · re-vote between the tied, then nobody · random | Re-vote between the tied once, then nobody is out (as in Impostor) |
+| MF7 | **Can the Doctor protect themselves?** | Yes, any night (**norm**), but never the same player two nights running · Yes, once a game · Never | Yes, once a game (stops a Doctor hiding behind self-saves); same-player rule as the norm |
+| MF8 | **What does the Police learn?** | "Mafia" or "Not Mafia" (**norm**) · the exact role | "Mafia" or "Not Mafia" |
+| MF9 | **New players** | Anyone can be any role · a "New to Mafia" tick keeps someone a Villager in their first game | Offer the tick (off by default) |
+| MF10 | **Someone must leave mid-game** | They go out without their role shown and the game goes on (it ends at once if that decides it) · deal again | Go out quietly; if they were the last Mafia, "The Village wins" with no blame |
+| MF11 | **Players who are out** | Watch silently (**norm**) · they keep a small job: guess who the Mafia are on the phone, scored at the end | Watch, plus the guess, so nobody is bored |
+| MF12 | **Can the room skip the vote ("nobody today")?** | Yes (**norm** in most rule sets) · No | Yes, as a visible but quiet button |
+| MF13 | **Name** | Mafia · another English name | Mafia (known everywhere) |
