@@ -10,7 +10,8 @@ proposes an order and a split; the orchestrator decides.
    product owner before screen lanes start, so screens are built once.
 3. **Screen lanes A–D in parallel** (below), each C1/C2, area tests and screenshots in the lane, reviewer for C2.
 4. **Simulated table games** (tester, `docs/handover.md` "Added 22 October") once the engine deals boards.
-5. **Complete run, UX re-check, release candidate; the owner's family game on the preview** (`family-game-questions.md`).
+5. **Complete run, UX re-check, release candidate; AI playthrough of the release candidate** (six personas at five sizes, Jev and the
+   coverage map on the real screens), "Report a problem" real (PLT-208) and rollback ready (owner, 22 October: no hand testing).
 
 ## 2. Screen lanes (one area each; files used by two lanes go to the earlier lane)
 | Lane | Area | Screens (map) | Scenarios | Class |

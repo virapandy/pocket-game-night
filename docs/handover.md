@@ -26,6 +26,18 @@ A new orchestrator session starts here: read this section, then work through **"
 top, reporting to the owner after each. The product owner keeps this section
 current; instructions live here, not in chat. History from Phase 0 and 1a is further down.
 
+### No hand testing (owner, 22 October): three safety nets before Secret Words reaches families
+1. **PLT-208, "Report a problem" real (coder, C3, tests first by the tester):** replace `stubSend` in `src/app/reports.ts`: "Send
+   report" calls `navigator.share({ title, text, files: [replay .json] })`; where files can't be shared, share the text with the replay
+   as a short code in it; where `navigator.share` is missing, copy the report to the clipboard with the toast "Report copied. Paste
+   it in a message to whoever shared this app." The waiting list and retries stay for when sharing is cancelled. Nothing is sent
+   anywhere by the app itself. The product owner writes the exact screen words into PLT-208 before the tester starts.
+2. **Rollback (coder, automation):** `rollback.yml`, run by hand with a tag: republishes that release on the families' link without
+   a new build (the release's own artefact), and writes a line in the release notes.
+3. **Release candidate playthrough (orchestrator):** in place of the owner's family game, on each release candidate: the player
+   helper plays one complete evening per persona (six) at 320 × 568, 360 × 640, 390 × 844, 812 × 375 and 568 × 320, one at a
+   time; plus the Jev and scripted coverage-map run on the real screens. Findings go to the product owner; blockers by I30.
+
 ### Fewer scheduled runs (owner, 22 October; C3 automation, one coder commit)
 In `.github/workflows/ci.yml` (nightly, `cron: '0 3 * * *'`) and `weekly.yml` (Mondays), add a first job that compares `main`'s
 commit with the commit of the last successful run of the same workflow (`gh run list --workflow … --status success`) and ends

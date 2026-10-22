@@ -1,3 +1,6 @@
+> **Not used (owner, 22 October: no hand testing).** Replaced by the AI playthrough of the release candidate. Kept in case a family
+> game becomes possible later.
+
 # Secret Words: the first family game on the preview (owner, before the families' release)
 
 Play one evening on the preview link with at least 4 people, two or three games, with whichever phones you have. Afterwards,
