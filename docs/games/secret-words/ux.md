@@ -1,5 +1,9 @@
 # Secret Words: theme and screens (draft, 4 October 2026)
 
+> **Historical (22 October).** The screens are now defined by `screen-map.md` draft 3 and `scenarios.md` version 3.6. Names
+> here such as "Hold here to see", "Hurry up", "Deal the words" and "Family: 16" are retired. Kept for the theme choice (§1)
+> and the colour tokens.
+
 > **Version 3 (4 October):** the play modes are now one, two (recommended) or three phones, with an optional clue word,
 > tap-to-see map, "Turn", "Guesses only" and "Next map" (`play-modes.md`, decisions P1–P11). Where this file differs,
 > `scenarios.md` wins.
