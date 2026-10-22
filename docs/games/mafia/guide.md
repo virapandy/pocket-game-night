@@ -25,7 +25,7 @@ night. **With the app: one phone.** Nobody sits out, roles are fair, every night
 1. Type the names (or keep tonight's). The phone says how many Mafia there will be (M5).
 2. **Deal: pass the phone round.** Each player holds to see their role, lets go, taps "Done", passes on. Mafia also see
    who the other Mafia are.
-3. **Night** (M1): the phone is passed round once more. Everyone does the same thing: hold, pick a name, let go, pass.
+3. **Night** (M1): the phone is passed round once more. Everyone does the same thing: tap to see their night job, pick a name, tap Done, pass.
    Mafia pick who to put out, the Doctor who to protect, the Police who to check (and see "Mafia" or "Not Mafia");
    Villagers pick who they suspect. Nobody can tell from the time or taps who is who.
 4. **Morning:** the host reads the phone's short story aloud: who is out, or that the Doctor saved someone (without
