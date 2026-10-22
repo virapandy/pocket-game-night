@@ -40,12 +40,13 @@ jobs:
           TAG: ${{ inputs.tag }}
         run: |
           REL=$(gh release list -R "$REPO" --limit 200 --json tagName,name \
-            -q ".[] | select(.tagName == env.TAG or (.name | endswith(\"(\" + env.TAG + \")\"))) | .tagName" | head -n 1)
+            -q ".[] | select(.tagName == env.TAG or ((.name // \"\") | endswith(\"(\" + env.TAG + \")\"))) | .tagName" | head -n 1)
           if [ -z "$REL" ]; then
             echo "::error::No release matches '$TAG'. Nothing changed."
             exit 1
           fi
-          if ! gh release view "$REL" -R "$REPO" --json assets -q '.assets[].name' | grep -qx 'site-families.zip'; then
+          HAS=$(gh release view "$REL" -R "$REPO" --json assets -q '[.assets[] | select(.name == "site-families.zip")][0].name // empty')
+          if [ -z "$HAS" ]; then
             echo "::error::Release $REL has no site-families.zip artefact (it was published before artefacts were kept). Nothing changed."
             exit 1
           fi

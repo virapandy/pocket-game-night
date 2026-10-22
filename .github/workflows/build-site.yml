@@ -4,8 +4,9 @@
 #   preview:  the newest checked commit, at https://virapandy.github.io/pocket-game-night/preview/
 # Each half is rebuilt from its commit, so nothing has to be stored between runs.
 # When no commit is given, the right one is looked up from earlier successful runs:
-#   families: the tag named by the newest successful "Publish release" run (release.yml; its run name is
-#             "Publish release <tag>"). Before the first such release, the commit the old automation last
+#   families: the tag named by the newer of the newest successful "Publish release" run (release.yml; run name
+#             "Publish release <tag>") and the newest successful "Roll back" run (rollback.yml; run name
+#             "Roll back to <tag>"), so a rollback stays until the next release. Before the first such release, the commit the old automation last
 #             published: the newest successful ci.yml run on main started by push or by hand before
 #             3 October 2026 07:30 UTC (after that, ci.yml publishes nothing).
 #   preview:  the newest successful "Quick verify" push run.
@@ -50,27 +51,41 @@ jobs:
           # try CMD... up to 3 times, 2 s then 4 s apart. It retries on an error (stderr is shown, never hidden)
           # and on an empty answer (GitHub's run list has returned an empty list for a moment while runs exist).
           try() {
-            local n out
+            local n out rc=0
             for n in 1 2 3; do
-              if out=$("$@") && [ -n "$out" ]; then printf '%s' "$out"; return 0; fi
+              if out=$("$@"); then rc=0; [ -n "$out" ] && { printf '%s' "$out"; return 0; }; else rc=1; fi
               echo "Lookup attempt $n of 3 gave no answer: $*" >&2
               [ "$n" -lt 3 ] && sleep $((n * 2))
             done
-            return 0
+            return $rc   # 1 if the last attempt was an error; 0 if GitHub answered successfully but empty
           }
           LOOKUP="given commit"
           if [ -z "$SHA" ]; then
             if [ "$SITE" = families ]; then
-              LOOKUP="newest successful release.yml run (tag from its title)"
-              TITLE=$(try gh run list -R "$REPO" --workflow release.yml --status success --limit 1 \
-                --json displayTitle -q '.[0].displayTitle // empty')
-              TAG=$(printf '%s\n' "$TITLE" | sed -n 's/^Publish release //p')
+              # The newer of the newest successful release.yml run and the newest successful rollback.yml run wins,
+              # so a rollback is not undone by the next push.
+              REL_RUN=$(try gh run list -R "$REPO" --workflow release.yml --status success --limit 1 \
+                --json displayTitle,createdAt -q '.[0] | select(. != null) | .createdAt + " " + .displayTitle' || true)
+              RB_RUN=$(try gh run list -R "$REPO" --workflow rollback.yml --status success --limit 1 \
+                --json displayTitle,createdAt -q '.[0] | select(. != null) | .createdAt + " " + .displayTitle' || true)
+              TITLE="$REL_RUN"; TAG=""
+              REL_AT="${REL_RUN%% *}"; RB_AT="${RB_RUN%% *}"
+              if [ -n "$RB_RUN" ] && { [ -z "$REL_RUN" ] || [ "$RB_AT" \> "$REL_AT" ]; }; then
+                TAG=$(printf '%s\n' "$RB_RUN" | sed -n 's/^[^ ]* Roll back to //p')
+                LOOKUP="newest successful rollback.yml run (newer than the last release run)"
+                echo "Lookup winner: rollback run at $RB_AT (release run at ${REL_AT:-none})"
+              else
+                TAG=$(printf '%s\n' "$REL_RUN" | sed -n 's/^[^ ]* Publish release //p')
+                LOOKUP="newest successful release.yml run (tag from its title)"
+                echo "Lookup winner: release run at ${REL_AT:-none} (rollback run at ${RB_AT:-none})"
+              fi
               if [ -n "$TAG" ]; then
-                SHA=$(try gh api "repos/$REPO/commits/$TAG" --jq .sha)
+                SHA=$(try gh api "repos/$REPO/commits/$TAG" --jq .sha || true)
                 echo "Last release: $TAG"
               else
                 # Never fall back to the old ci.yml commit once any release exists: that would silently publish an older site.
-                if [ -n "$(gh release list -R "$REPO" --limit 1 --json tagName -q '.[0].tagName // empty')" ]; then
+                RELS=$(try gh release list -R "$REPO" --limit 1 --json tagName -q '.[0].tagName // empty') || { echo "::error::Could not ask GitHub whether a release exists. Nothing published."; exit 1; }
+                if [ -n "$RELS" ]; then
                   echo "::group::Diagnostics"
                   echo "A release exists but the release.yml lookup stayed empty after 3 tries (title found: '${TITLE:-none}')."
                   gh release list -R "$REPO" --limit 3 || true
@@ -81,12 +96,12 @@ jobs:
                 fi
                 LOOKUP="no release has ever existed; newest successful ci.yml push/manual run on main before 2026-10-03T07:30Z"
                 SHA=$(try gh run list -R "$REPO" --workflow ci.yml --branch main --status success --limit 100 \
-                  --json headSha,event,createdAt -q '[.[] | select((.event == "workflow_dispatch" or .event == "push") and .createdAt < "2026-10-03T07:30:00Z")][0].headSha // empty')
+                  --json headSha,event,createdAt -q '[.[] | select((.event == "workflow_dispatch" or .event == "push") and .createdAt < "2026-10-03T07:30:00Z")][0].headSha // empty' || true)
               fi
             else
               LOOKUP="newest successful quick.yml push run on main"
               SHA=$(try gh run list -R "$REPO" --workflow quick.yml --branch main --event push --status success --limit 1 \
-                --json headSha -q '.[0].headSha // empty')
+                --json headSha -q '.[0].headSha // empty' || true)
             fi
           fi
           [ -z "$SHA" ] && SHA="$FALLBACK"
