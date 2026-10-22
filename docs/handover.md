@@ -1,6 +1,17 @@
 # Handover: start here
 
-## Now: status and what's next (product owner, updated 3 October 2026: speed first)
+## Now: status and what's next (product owner, updated 22 October 2026)
+**State on 22 October.** Live on the families' link: Tambola 1.2.0 and Impostor 1.3.1 (v1.3.1, 8 October). The faster-cycles
+setup is done on both sides (rules acb35a2; lane CI, shipped font, four shards, shared blocks in `src/blocks`; clock,
+area map, incremental mutation, quarantine; critic and player helpers installed). Last app change: 12 October. Secret
+Words is fully designed and approved: scenarios **version 3.5**, screen map draft 2, persona and Jev walks merged, word list
+and team names updated. Nothing is built for it yet and `specs/secret-words/` is empty.
+**Order for the orchestrator now:** (1) the trifecta rule edit below, one commit; (2) design-before-code leftovers: the
+tester's design rule checks script, the prototype renderer as one coder lane from `docs/games/secret-words/screen-map.md`
+draft 2 (C1, `/preview/proto/secret-words/`); (3) tester copies scenarios 3.5 into `specs/secret-words/` and writes the C3
+tests first (sections 02, 04 rules, 05, 06, SWD-099, 101, 117, 118, 123, 125, 127, 129); (4) when the prototype is live, tell
+the product owner, who runs the six personas and the Jev read on it; (5) coder lanes build Secret Words by
+`docs/change-sop.md`. Report to the owner after each step. Mid-size models for routine work.
 A new orchestrator session starts here: read this section, then work through **"Next, in order"** from the
 top, reporting to the owner after each. The product owner keeps this section
 current; instructions live here, not in chat. History from Phase 0 and 1a is further down.
