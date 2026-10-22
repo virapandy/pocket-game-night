@@ -1,5 +1,5 @@
 # Test report
-**Progress 22 Oct 2026: design rule checks script done and run on the Secret Words screen map draft 2 (`reports/design-checks-secret-words.md`: 15 findings, 18 cannot check); next: re-run on draft 3; tests/code unchanged, so the verdict below stands; rows done: 1 of 1.**
+**Progress 22 Oct 2026: design rule checks re-run on the Secret Words screen map draft 3 (`reports/design-checks-secret-words.md`: 16 findings, 18 cannot check; 15 carried over, 1 new: D11 has no path into it); reader now handles section I; npm test 706 passed, unchanged; the verdict below stands; rows done: 1 of 1.**
 **Faster cycles, test side (items 3, 7, 9, 11): GREEN. Quick verify 38115857931 on e0b62d4, every browser test on Android.**
 
 Commit tested: e0b62d4 (app b7a01c8, shared screen building blocks; tests e0b62d4)   Date: 2026-10-11

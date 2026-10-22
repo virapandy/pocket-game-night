@@ -109,16 +109,51 @@ function finish(s: Screen, desc: string, rowTexts: string[]): void {
   s.mainMentioned = all.some((t) => /\bmain\b/i.test(t));
 }
 
+// Section I (draft 3 additions): a table of free-text changes plus a "Paths added" line. Only two things in it are
+// machine-readable and are read: a row that adds a whole dialog ("New dialog D11 "title": quiet "A" -> X · main "B" -> Y")
+// and the "Paths added" list. Every other row only changes wording or layout of existing screens and is not read.
+function readAdds(line: string, set: ScreenSet): void {
+  const dlg = /New dialog (D\d+[a-z]?)\s+"([^"]+)":\s*(.*?)\s*\|/.exec(line);
+  if (dlg && line.startsWith('|')) {
+    const c = cells(line);
+    const ids = c[c.length - 1] ?? '';
+    const s = newScreen(dlg[1], dlg[2], 'dialog'); set.screens.push(s);
+    for (const seg of splitTop(dlg[3], '·').map((x) => x.trim()).filter(Boolean)) {
+      const m = /^(?:(quiet|main)\s+)?"([^"]+)"\s*→\s*(.*)$/.exec(seg);
+      if (!m) continue;
+      s.buttons.push({ label: m[2], leadsText: m[3], target: classifyTarget(m[3], m[2]), records: '', scenarioIds: scenarioIds(ids), idsText: ids, isMain: m[1] === 'main', inMenu: false });
+    }
+    s.words = dlg[2]; s.texts = [s.name, dlg[3]]; s.mainLabels = s.buttons.filter((b) => b.isMain).map((b) => b.label);
+    s.mainLabelsInDescription = s.mainLabels; s.mainMentioned = s.mainLabels.length > 0;
+    if (!s.buttons.length) set.faults.push(`${s.id}: no buttons read in section I`);
+    return;
+  }
+  if (/^\*\*Paths added/.test(line)) {
+    const body = line.replace(/^\*\*Paths added[^:]*:\*\*/, '').split('**Removed:**')[0];
+    for (const chunk of body.split(' · ').map((x) => x.trim().replace(/\.$/, '')).filter(Boolean)) {
+      const parts = chunk.split('→');
+      if (parts.length < 2) continue;
+      for (let i = 0; i + 1 < parts.length; i++) {
+        const froms = i === 0 ? [...parts[0].matchAll(TARGET_RE)].map((m) => m[1]).slice(0, 1) : [...parts[i].matchAll(TARGET_RE)].map((m) => m[1]).slice(-1);
+        const tos = [...parts[i + 1].matchAll(TARGET_RE)].map((m) => m[1]);
+        if (!froms.length) { set.faults.push(`path in section I not read (starts with words, not a screen): "${chunk.slice(0, 60)}"`); break; }
+        for (const f of froms) for (const t of tos) set.paths.push({ from: f, to: t });
+      }
+    }
+  }
+}
+
 export function readMap(file: string): ScreenSet {
   const src = readFileSync(file, 'utf8');
   const lines = src.split('\n');
   const set: ScreenSet = { source: file, screens: [], paths: [], faults: [] };
   let cur: Screen | null = null; let desc: string[] = []; let rowTexts: string[] = []; let header: string[] | null = null;
-  let inPaths = false; let inCode = false; let dialogTable = false;
+  let inPaths = false; let inCode = false; let dialogTable = false; let inAdds = false;
   const close = () => { if (cur) finish(cur, desc.join(' ').replace(/\s+/g, ' '), rowTexts); cur = null; desc = []; rowTexts = []; header = null; };
 
   for (const line of lines) {
-    if (/^## /.test(line)) { close(); inPaths = /^## G\./.test(line); dialogTable = false; continue; }
+    if (/^## /.test(line)) { close(); inPaths = /^## G\./.test(line); inAdds = /^## I\./.test(line); dialogTable = false; continue; }
+    if (inAdds) { readAdds(line, set); continue; }
     const h = /^###\s+([A-Z]\d+[a-z]?)\.\s+(.*)$/.exec(line);
     if (h) { close(); cur = newScreen(h[1], h[2].trim(), 'screen'); set.screens.push(cur); continue; }
     if (inPaths) {

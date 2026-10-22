@@ -1,14 +1,14 @@
-# Design rule checks: Secret Words screen map, draft 2
+# Design rule checks: Secret Words screen map, draft 3 (scenarios 3.6)
 
-Run 22 October 2026 by the tester with `tests/tools/design-checks/run.ts` (README next to it); it reads the map and `scenarios.md` (for the ids) and nothing else. Report-only: nothing here blocks a build. Tool self-test passed (`--self-test`).
+Run 22 October 2026 by the tester with `tests/tools/design-checks/run.ts` (README next to it). Report-only: nothing here blocks a build. Tool self-test passed. The reader now also reads section I (new dialog D11 and the "Paths added" list).
 
-Source: `docs/games/secret-words/screen-map.md`. 36 screens and dialogs, 138 button rows read.
+Source: `docs/games/secret-words/screen-map.md`. 37 screens and dialogs, 140 button rows read.
 
-**Findings: 15. Cannot check: 18. Accepted exceptions: 2. Tool faults: 0.**
+**Findings: 16. Cannot check: 18. Accepted exceptions: 2. Tool faults: 3.**
 
 ## Findings, by screen
 
-Counts by rule: R1 way out 2 · R2 button leads somewhere 6 · R3 stop and home 6 · R6 rule hook has a scenario 1
+Counts by rule: R1 way out 3 · R2 button leads somewhere 6 · R3 stop and home 6 · R6 rule hook has a scenario 1
 
 
 ### - (whole map)
@@ -37,7 +37,7 @@ Counts by rule: R1 way out 2 · R2 button leads somewhere 6 · R3 stop and home 
 ### D7a Who gives clues for Coffee Commandos now?
 - **R1 way out**: no row or path in the map names this screen, so as written nobody can reach it
 
-### D7b Kabir leaves Coffee Commandos with only Om. Move someone over? (*proposed* W23: "Coffee Commandos would be left with only Om. Move someone over?")
+### D7b Kabir leaves Coffee Commandos with only Om. Move someone over? (W23: "Coffee Commandos would be left with only Om. Move someone over?")
 - **R1 way out**: no row or path in the map names this screen, so as written nobody can reach it
 
 ### G2 Summary "Tonight's Secret Words"
@@ -49,6 +49,9 @@ Counts by rule: R1 way out 2 · R2 button leads somewhere 6 · R3 stop and home 
 ### M1 Secret Words map
 - **R2 button leads somewhere**: leads to M3, which has no section or row of its own in the map (its buttons are not checked)
 - **R6 rule hook has a scenario**: "I give clues for: Chai Champions / Coffee Co…" records "saved with the map" but its ids cell is "decision 7"
+
+### D11 This phone is the board. Open the map here?
+- **R1 way out**: no row or path in the map names this screen, so as written nobody can reach it
 
 ## Cannot check (the map does not say enough)
 
@@ -87,7 +90,7 @@ Counts by rule: R1 way out 2 · R2 button leads somewhere 6 · R3 stop and home 
 - R1 way out: no row names another screen or a way back; some rows are described only in words, so a way out cannot be ruled in or out
 - R2 button leads somewhere: 2 row(s) say what happens only in words, with no screen id, so the target cannot be checked: "Done", "close"
 
-### D7b Kabir leaves Coffee Commandos with only Om. Move someone over? (*proposed* W23: "Coffee Commandos would be left with only Om. Move someone over?")
+### D7b Kabir leaves Coffee Commandos with only Om. Move someone over? (W23: "Coffee Commandos would be left with only Om. Move someone over?")
 - R2 button leads somewhere: 1 row(s) say what happens only in words, with no screen id, so the target cannot be checked: "Move Zoya over"
 
 ### M1 Secret Words map
@@ -102,4 +105,17 @@ Counts by rule: R1 way out 2 · R2 button leads somewhere 6 · R3 stop and home 
 
 ## Tool faults (about the script or the map file format, not about the design)
 
+- path in section I not read (starts with words, not a screen): "QR link from the phone's camera → M1 (or D11 first)"
+- path in section I not read (starts with words, not a screen): "bad link → J2 with the error"
+- path in section I not read (starts with words, not a screen): "app opened after 12 hours → A1 with the night ended (SWD-063"
 - limit of the map format, not a fault: it has no screen-kind tag, so which screens are "between rounds", "game steps" or "not secret any more" is a setting in rules.ts (SECRET_WORDS), and R7 recognises secrets by phrases such as "Your words" and "Hide map"
+
+## Draft 2 → draft 3
+
+Draft 2 had 15 findings, 18 cannot-check. Draft 3 has 16 findings, 18 cannot-check (screens read 36 → 37, button rows 138 → 140).
+
+- **Gone: none.** The map changed wording and layout in draft 3 (section I), not the structure these rules look at.
+- **Remain (all 15):** D9, E1a and M3 are used in the paths but have no section of their own (R2, 6 lines); D7a and D7b have no row or path that opens them (R1); stop and home are menu-only on S6, S7, P1, P3, P4, P6 (R3, need the owner's explicit decision); the M1 "I give clues for" row says "decision 7" instead of a scenario id (R6). The "proposed" mark on D7b's title is gone (approved), which is not a finding.
+- **New (1):** D11 "This phone is the board. Open the map here?" (R1): the section I row says J1 scan, J2 code, the QR link and A1 saved map open it, but the paths list in section G has no line into D11, and the "Paths added" line only has "QR link ... → M1 (or D11 first)", which starts with words, not a screen. Add D11 lines to section G.
+- **Reader changes:** reads D11 as a dialog from section I (its two buttons and ids) and reads the screen-to-screen items in "Paths added" (S7b from P4/P5/P6, D7b→D6→G1, S3→S5→S3, M1→S5→M1, D11→M1|back). Stays "cannot check": the other section I rows (wording or layout of existing screens, e.g. pause button on S6/S7, Clue rules on M1, Hide map position) because they are free text with no button table, so their targets are not checked; three "Paths added" items that start with words (QR link from the camera, bad link, app opened after 12 hours), listed under tool faults above.
+- The two accepted exceptions (S7, S7a code on host phone) are unchanged.
