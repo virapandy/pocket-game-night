@@ -26,6 +26,10 @@ A new orchestrator session starts here: read this section, then work through **"
 top, reporting to the owner after each. The product owner keeps this section
 current; instructions live here, not in chat. History from Phase 0 and 1a is further down.
 
+### Ready for the build (product owner, 22 October): `docs/games/secret-words/build-plan.md`
+Order, four screen lanes with their screens, scenarios and classes, the tests-first list, and the on-screen text list
+`docs/games/secret-words/text.csv` (faster-cycles item 2; one row per string). A proposal: the orchestrator decides the split.
+
 ### Prototype renderer: second pass before the persona walks (product owner, 22 October)
 The first persona walk (grandparent, 360 × 640) and the product owner's own check found the prototype renders the map's tables
 literally: all alternative lines at once, row descriptions as button labels, no board grid, blank names, chooser notes. The
