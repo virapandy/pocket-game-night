@@ -28,6 +28,9 @@ reused by C and D; lane B merges them before C and D start their board screens.
   SWD-054, 060, 063, 065–067 saved data, SWD-099 word list format, SWD-101, 118, 123, 127 moves, SWD-129.
 - Privacy, before any map screen: SWD-025 (no kind of a face-down word in a room screen's page), SWD-031/032/121 (map removed on
   hide, leave, 60 s), SWD-002 D11 dialog.
+- **Double-tap privacy (from the 10-year-old's prototype walk, 22 October):** a test that double-taps "I'm Riya" and
+  "Play again" (two taps 50 ms apart, and two taps 600 ms apart) and checks the private map never shows a map that wasn't asked
+  for with "Tap to see the map" (SWD-031, 114). Before any map screen is built.
 - Test ids for 3.6: the list before "## Secret Words later" in `scenarios.md`.
 
 ## 4. The text list (`text.csv`, faster-cycles item 2)
