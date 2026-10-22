@@ -36,7 +36,7 @@ export function teamsProblem(players: unknown, teams: unknown): string | null {
   const lower = all.map((p) => p.toLowerCase());
   if (new Set(lower).size !== lower.length) return 'A name is there twice.';
   if (all.length > MAX_PLAYERS) return '20 players is the most.';
-  if (players.length !== all.length || !players.every((p) => all.includes(p))) return 'The teams must hold exactly the players.';
+  if (players.length !== all.length || new Set(players).size !== players.length || !players.every((p) => all.includes(p))) return 'The teams must hold exactly the players.';
   const guessOnly = t.guessOnly === undefined ? [] : t.guessOnly;
   if (!isStringList(guessOnly)) return 'Guessers-only must be a list of names.';
   const givers = t.clueGivers as Record<string, unknown> | undefined;
