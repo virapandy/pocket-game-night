@@ -47,3 +47,8 @@ Read this and the top of `reports/latest.md` before starting. Keep it short: rep
 - Not done from faster-cycles yet (test side): item 2 (shared text list, behaviour-based checks), Playwright Docker
   image (item 3), sharding beyond quick verify's two shards (item 7).
 - Local timing on the Mac swings about 10 to 15 % between runs; compare before/after on the same files back to back.
+
+## 22 October (later): SWD-127 repeated-name test, simulated table games blocked
+- Added the SWD-127 test in tests/games/secret-words/people.test.ts (a list repeating one name and leaving a member out is refused); passes on b5f030b.
+- Simulated table games (docs/handover.md, "Added 22 October") NOT built: the AI clue giver needs a large-model call. There is no Anthropic API key in the environment or .env.local (only JEV_API_KEY), and adding one is a new paid service. Needed from the owner: either an approved API key for a large model with a spending limit, or approval to use another route. Jev (Choice questions only) cannot write clues. The guesser side (Jev Choice over face-down words plus "uncertain") and the board dealing can be built once the clue giver is settled.
+- The Test lane worktree for lane-e was clean and fully pushed; removed.

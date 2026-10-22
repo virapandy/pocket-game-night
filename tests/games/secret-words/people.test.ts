@@ -125,6 +125,19 @@ describe('SWD-127: players during a game (setPlayers)', () => {
     expect(e.try(setPlayers({ ...t, orange: ['Riya', 'Meena', 'Zoya', ...many.slice(0, 7)], teal: ['Arjun', 'Kabir', 'Dev', ...many.slice(7, 14)] })), '20 players').toBe(true);
   });
 
+  it('SWD-127: a player list repeating one name (and so leaving a team member out) is refused, even when the count is right', () => {
+    const e = new Evening({ seed: 'repeat-name' });
+    e.deal();
+    const t = exampleTeams();
+    // Orange has 4 players; Zoya is left out and Meena is listed twice, so the count is still 4.
+    expect(e.try(setPlayers({ ...t, orange: ['Riya', 'Meena', 'Meena', 'Om'] })), 'Meena twice in one team').toBe(false);
+    // The same through the players list alone.
+    const move = setPlayers(t);
+    move.players = ['Riya', 'Meena', 'Meena', 'Om', 'Arjun', 'Kabir', 'Dev'];
+    expect(e.try(move), 'Meena twice in players').toBe(false);
+    expect(evening(e).teams.orange).toEqual(['Riya', 'Meena', 'Zoya', 'Om']);
+  });
+
   it('the clue giver stays a player of the team: removing them needs a new clue giver in the same change', () => {
     const e = new Evening({ seed: 'giver-left' });
     e.deal();
