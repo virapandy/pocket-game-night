@@ -252,8 +252,7 @@ function reveal(s: SecretWordsState, g: GameState, m: { cell?: unknown; freeCell
     return ok({ ...s, game: usedUp ? turnOver(next, 'allowance', null) : next });
   }
   if (kind === o && leftOf(next, o) === 0) return finish(s, { ...next, winner: o });
-  // SWD-103's order: allowance used up comes before a blank word and the other team's word.
-  if (usedUp) return ok({ ...s, game: turnOver(next, 'allowance', null) });
+  // SWD-103 (3.6): a wrong word always gives its own line, even as the last allowed guess.
   return ok({ ...s, game: turnOver(next, kind === 'nobody' ? 'nobody' : 'other', cell) });
 }
 
