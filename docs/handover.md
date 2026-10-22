@@ -26,6 +26,14 @@ A new orchestrator session starts here: read this section, then work through **"
 top, reporting to the owner after each. The product owner keeps this section
 current; instructions live here, not in chat. History from Phase 0 and 1a is further down.
 
+### Failing-run emails (owner asked, 22 October): one flaky test to quarantine and fix
+The nightly complete run on unchanged `main` (e10e61a) failed on 18, 20 and 22 October and passed on 19 and 21: each time the
+same single iPhone test, `tests/browser/phone-tickets.spec.ts:339` (TAM-191 / TAM-122, "One at a time" ticket layout). Tester:
+put it in the quarantine list (runs every time, never blocks) and find the cause; it is not on the quarantine list today. Also
+seen: quick verify on `main` 5a04176 failed in "families-site / build families → Choose commit" with an empty commit (`SHA:`
+blank); the next push (cfc5bfe) passed. Coder: make that step say why when it finds no commit, so a repeat is diagnosable.
+Lane-e's red rule tests are expected (Secret Words tests written before the engine).
+
 ### Ready for the build (product owner, 22 October): `docs/games/secret-words/build-plan.md`
 Order, four screen lanes with their screens, scenarios and classes, the tests-first list, and the on-screen text list
 `docs/games/secret-words/text.csv` (faster-cycles item 2; one row per string). A proposal: the orchestrator decides the split.
