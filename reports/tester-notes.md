@@ -30,6 +30,11 @@ Read this and the top of `reports/latest.md` before starting. Keep it short: rep
   (`hostEvening`, `passToClue`, `giveClue`, `revealCell`) follows the canonical strings but has never met a real screen:
   expect to adjust selectors (not checks) the first time. Open questions in `docs/test-questions.md` (22 October rows).
   SWD-025's 10,000-game property takes ~45 s in `npm test`.
+- **Lane-e round 2 (22 October, c86f220 on app 0ff9800):** owner answers applied: SWD-090/042/103 v3.6 paragraphs in
+  specs; SWD-099's content check is now the 10 px floor (words below 12 px annotated); new ahead-of-screens checks
+  SWD-090 shrink-alone (360 × 640) and SWD-042 tap-to-zoom (guessing; turned-over cells, 2 000 ms) use `WIDE_CODE`, the
+  first deck whose board holds a known wide word. SWD-103 v3.6 rule tests fail until the coder changes the recap
+  (quick verify 39811481754). Lane-e still needs origin/main merged: the Test role can't (main brings `src/proto/`).
 - **Test lanes commit fine now:** the role guard strips `-lane-<x>` (commit from lane-e, 22 October).
 - Lane-y (Noto Sans, IMP-088 owner decision 11 October): IMP-088 spec and `impostor-setup.spec.ts` checks updated
   (72/60 px label column, 135/120/147/106 px options; labels 4 px above 140/160 px options with Larger text at 320 and

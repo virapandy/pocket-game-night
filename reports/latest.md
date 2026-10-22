@@ -1,4 +1,34 @@
 # Test report
+## Lane-e, Secret Words rules engine + owner answers of 22 October (SWD-090, 042, 099, 103)
+Commit tested: c86f220 (app 0ff9800, Secret Words rules engine; tests c86f220)   Date: 2026-10-22
+Result: RED (expected: SWD-103's new rule only). Quick verify 39811481754 on lane-e: every browser test (4 of 4 shards)
+green, so SWD-099's content check now passes; verify job red on 3 rule tests, all SWD-103.
+- Rule tests: 846 of 849 pass (locally and in quick verify). Every other Secret Words rule test now passes on 0ff9800.
+- Browser, `secret-words-c3.spec.ts` locally on both phones: 38 of 38 as expected (18 marked expected-to-fail until the
+  screens exist, now including SWD-090's shrink-alone check and SWD-042's two tap-to-zoom checks).
+## Failing (real bugs only)
+- SWD-103 v3.6, `tests/games/secret-words/play.test.ts` "the last allowed guess on a nobody's word → nobody with its cell":
+  expected `lastTurn` `{ ended: 'nobody', cell }`, got `ended: 'allowance'` (no cell).
+- SWD-103 v3.6, same file, "the last allowed guess on the other team's word → other with its cell": expected
+  `ended: 'other'` with `cell`, got `'allowance'`.
+- SWD-103 v3.6, same file, "with a clue for 2, a wrong word as the third (last allowed) guess": expected `ended: 'nobody'`
+  with `cell`, found 2; got `'allowance'`. The rule: "they used all their guesses" only when the last allowed guess was the
+  team's own word; a wrong word gives that word's line.
+## Flaky or setup problems (not for the Build workspace)
+- Lane-e is NOT merged with main: merging origin/main brings main's `src/proto/` and `vite.config.ts` into the Test lane
+  folder, and the role guard blocks the Test role from changing those files (merge aborted). The orchestrator (or the
+  lane-e coder) needs to merge origin/main into lane-e. Main's docs were read from `origin/main` for this round.
+- Locally under `taskpolicy -b`, 6 heavy rule tests (simulations, chi-square, SWD-025's 10,000 games) timed out; all 65
+  pass at normal priority. One local browser run had 3 timeouts under load; the re-run was 38 of 38.
+## Notes for the owner (plain English)
+- Your answer on wide words is now what the tests check: every word must fit its cell at 10 px; the 10 words that need
+  less than 12 px (Boundary, Rickshaw, Puncture, Mosquito, Monsoon, Homework, Umbrella, Diamond, Germany, Himalaya)
+  stay and are listed, not failed. SWD-099's text still says a too-wide word is replaced; SWD-090's 22 October paragraph
+  says it never is. The tests follow the newer answer; the product owner may want SWD-099's line updated to match.
+- New screen checks wait for the board screens: only a too-wide word's cell is smaller, never below 10 px; tapping a word
+  shows it large (28 px) over its cell, and the large word looks the same whatever kind the word is.
+
+## Earlier verdict (main, 11 October)
 **Progress 22 Oct 2026 (lane-e, Secret Words C3 tests first): scenarios v3.6 copied to `specs/secret-words/` (94 scenarios + 2 retired + 7 direction); 140 rule tests (with the contract suite) written: 126 fail only with "src/games/secret-words is not built yet" or "content/secret-words/words.json is not there yet", 8 content checks already pass; every existing rule test still passes (706 of 706); 16 browser checks in `tests/browser/secret-words-c3.spec.ts`, 15 marked expected-to-fail until the screens exist; SWD-099's browser content test fails for real: 10 words are wider than their cell on both phones (Boundary, Rickshaw, Puncture, Mosquito, Monsoon, Homework, Umbrella, Diamond, Germany, Himalaya; for the product owner); rule API for the coder: `specs/secret-words/api.md`; the verdict below stands.**
 **Progress 22 Oct 2026: design rule checks script done and run on the Secret Words screen map draft 2 (`reports/design-checks-secret-words.md`: 15 findings, 18 cannot check); next: re-run on draft 3; tests/code unchanged, so the verdict below stands; rows done: 1 of 1.**
 **Faster cycles, test side (items 3, 7, 9, 11): GREEN. Quick verify 38115857931 on e0b62d4, every browser test on Android.**
