@@ -47,30 +47,42 @@ jobs:
           SHA: ${{ inputs.sha }}
           FALLBACK: ${{ inputs.fallback_sha }}
         run: |
+          # try CMD... up to 3 times, 2 s then 4 s apart. It retries on an error (stderr is shown, never hidden)
+          # and on an empty answer (GitHub's run list has returned an empty list for a moment while runs exist).
+          try() {
+            local n out
+            for n in 1 2 3; do
+              if out=$("$@") && [ -n "$out" ]; then printf '%s' "$out"; return 0; fi
+              echo "Lookup attempt $n of 3 gave no answer: $*" >&2
+              [ "$n" -lt 3 ] && sleep $((n * 2))
+            done
+            return 0
+          }
           LOOKUP="given commit"
           if [ -z "$SHA" ]; then
             if [ "$SITE" = families ]; then
               LOOKUP="newest successful release.yml run (tag from its title)"
-              TAG=$(gh run list -R "$REPO" --workflow release.yml --status success --limit 1 \
-                --json displayTitle -q '.[0].displayTitle // empty' | sed -n 's/^Publish release //p')
+              TITLE=$(try gh run list -R "$REPO" --workflow release.yml --status success --limit 1 \
+                --json displayTitle -q '.[0].displayTitle // empty')
+              TAG=$(printf '%s\n' "$TITLE" | sed -n 's/^Publish release //p')
               if [ -n "$TAG" ]; then
-                SHA=$(gh api "repos/$REPO/commits/$TAG" --jq .sha)
+                SHA=$(try gh api "repos/$REPO/commits/$TAG" --jq .sha)
                 echo "Last release: $TAG"
               else
                 LOOKUP="no release run found (tag empty); newest successful ci.yml push/manual run on main before 2026-10-03T07:30Z"
-                SHA=$(gh run list -R "$REPO" --workflow ci.yml --branch main --status success --limit 100 \
+                SHA=$(try gh run list -R "$REPO" --workflow ci.yml --branch main --status success --limit 100 \
                   --json headSha,event,createdAt -q '[.[] | select((.event == "workflow_dispatch" or .event == "push") and .createdAt < "2026-10-03T07:30:00Z")][0].headSha // empty')
               fi
             else
               LOOKUP="newest successful quick.yml push run on main"
-              SHA=$(gh run list -R "$REPO" --workflow quick.yml --branch main --event push --status success --limit 1 \
+              SHA=$(try gh run list -R "$REPO" --workflow quick.yml --branch main --event push --status success --limit 1 \
                 --json headSha -q '.[0].headSha // empty')
             fi
           fi
           [ -z "$SHA" ] && SHA="$FALLBACK"
           if [ -z "$SHA" ]; then
             echo "Lookup for the $SITE site: $LOOKUP"
-            echo "Release tag found: '${TAG:-none}'; commit found: '(empty)'; fallback_sha: '${FALLBACK:-none}'."
+            echo "Release title found: '${TITLE:-none}'; release tag found: '${TAG:-none}'; commit found: '(empty)'; fallback_sha: '${FALLBACK:-none}'."
             echo "Recent successful release.yml runs:"; gh run list -R "$REPO" --workflow release.yml --status success --limit 3 --json displayTitle,headSha,createdAt || true
             echo "::error::No commit found for the $SITE site (lookup: $LOOKUP; tag: '${TAG:-none}'); nothing published."
             exit 1
