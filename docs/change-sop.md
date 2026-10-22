@@ -131,6 +131,7 @@ Every handover row and scenario follows `docs/spec-rules.md`: exact on-screen wo
 sizes and states they hold in, every edge case, and the scenario IDs it rewords. A C3 batch also passes the two-reader
 check before tests are written. A row that leaves the coder or tester guessing goes back to the product owner, not
 into a build.
+A change that adds a network call, reads an environment variable or follows a link in test tooling is C3 and goes to the reviewer.
 
 ## Questions
 - C1 and C2: the coder or tester picks the option closest to `docs/ux-guidelines.md`, notes it in the report, and

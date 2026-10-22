@@ -43,6 +43,10 @@ const LANE_TEST_RUNNERS = /\b(vitest|playwright)\b|\bnpm\s+(run\s+)?(test|test:b
 const HEAVY_RUNNERS = /\b(stryker|appium)\b|\b(npm|pnpm|yarn|bun)\s+(run\s+)?(sim|mutation|e2e)\b/;
 // The player plays as a family would: it never reads the design or the rules behind the screens.
 const PLAYER_FORBIDDEN = /(^|\/)(specs\/|docs\/decisions\.md$|docs\/ux-guidelines\.md$|docs\/games\/[^/]+\/(scenarios|guide|ux|lifecycle|screen-map)\b)/;
+// The lethal trifecta (owner, 16 October 2026): only the tester, which runs Jev, may read the key files; the tester,
+// which holds the key, never fetches web pages or drives a browser.
+const SECRET_FILES = /(^|[\/\s'"*])(\.env\.local|\.claude\/settings\.local\.json|settings\.local\.json)\b/;
+const WEB_TOOLS = /^(WebFetch|WebSearch|mcp__browser__.*)$/;
 // The reviewer may only look at changes: git diff, log, show, status (optionally after `cd <folder> &&`).
 const READ_ONLY_GIT = /^\s*(cd\s+("[^"]*"|'[^']*'|[^\s;&|]+)\s*&&\s*)?git\s+(diff|log|show|status)\b[^;&|`$<>]*$/;
 
@@ -152,6 +156,19 @@ function pre(input) {
   const tool = input.tool_name;
   const ti = input.tool_input || {};
   const cwd = input.cwd || projectDir;
+
+  // Never all three in one helper: the key files are the tester's alone, and the tester never goes on the web.
+  if (role === 'test' && WEB_TOOLS.test(tool)) {
+    decide('deny', 'The tester holds the Jev key, so it never fetches web pages, searches the web or drives a browser ' +
+      '(never all three in one helper). Report the link or page you need instead.');
+  }
+  if (role !== 'test') {
+    const looked = tool === 'Bash' ? ti.command : READ_TOOLS.includes(tool) ? [ti.file_path, ti.path, ti.pattern, ti.glob].join(' ') : '';
+    if (looked && SECRET_FILES.test(' ' + looked)) {
+      decide('deny', `.env.local and .claude/settings.local.json hold the Jev key; only the tester reads them (never all ` +
+        `three in one helper). The ${who()} works without the key.`);
+    }
+  }
 
   // The reviewer reads anything and runs read-only git, nothing else.
   if (role === 'review') {
