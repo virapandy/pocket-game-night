@@ -31,7 +31,8 @@ current; instructions live here, not in chat. History from Phase 0 and 1a is fur
    report" calls `navigator.share({ title, text, files: [replay .json] })`; where files can't be shared, share the text with the replay
    as a short code in it; where `navigator.share` is missing, copy the report to the clipboard with the toast "Report copied. Paste
    it in a message to whoever shared this app." The waiting list and retries stay for when sharing is cancelled. Nothing is sent
-   anywhere by the app itself. The product owner writes the exact screen words into PLT-208 before the tester starts.
+   anywhere by the app itself. **Exact words and behaviour: `docs/scenario-drafts/plt-208-209-share-sheet.md` (decided, 22 October);
+   the tester replaces PLT-208 and PLT-209 with it and writes the tests first.**
 2. **Rollback (coder, automation):** `rollback.yml`, run by hand with a tag: republishes that release on the families' link without
    a new build (the release's own artefact), and writes a line in the release notes.
 3. **Release candidate playthrough (orchestrator):** in place of the owner's family game, on each release candidate: the player
