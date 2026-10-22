@@ -48,3 +48,22 @@ the scenario bodies tests are written from; version 3.6 writes them in.
 Owner answers D1–D6 → version 3.6 (all of section 2 plus the answers, written into every scenario they touch) and screen map
 draft 3 (no "proposed" marks) → a coder-reader and tester-reader check (`docs/spec-rules.md`) → the prototype is generated
 from draft 3, and the tester copies 3.6 into `specs/secret-words/`. Draft 2 and version 3.5 stay as they are until then.
+
+## 4. Precedent from other apps (owner asked, 22 October; research helper, web only, sources opened)
+Evidence is thin: store pages and one university guide carried most of it; no Reddit or BGG threads and no help pages for
+Codenames Online, Codewords or the clones were found. Sources: CODENAMES Companion on the App Store
+(https://apps.apple.com/us/app/-/id1032754439); Horsepaste (https://www.horsepaste.com/, guide at
+https://www.liverpool.ac.uk/researcher/postdoc-appreciation-week/npdc/engagement/pre-conference/codenames/); Codenames Offline
+(http://imperialoctopus.com/posts/codenames-offline/); Codenames digital app review
+(https://www.theboardgamefamily.com/2024/10/codenames-digital-app-review/).
+
+| # | What others do | Effect on our recommendation |
+|---|---|---|
+| D1 | Companion: a new random key each round from one sync code. Horsepaste: "next game" resets everyone's role; spymasters choose again. | **Supported.** A new game resets who sees the key; ours says so on screen. |
+| D2 | Companion's most recorded complaint is the key showing by accident when the phone changes hands or is laid down; a reviewer asked for a confirmation before the key shows. Horsepaste's only guard is a button on the same page. | **Supported, and strengthened:** confirm before a map opens on the board phone; we never rely on tilt sensing (already true). |
+| D3 | Table-play apps show both colours equally; only the 2024 online app marks your team, by background colour. | **Partly.** Keep both colours shown; the chosen team is a highlight, not a filter, and changeable. |
+| D4 | Companion: optional timer the host sets; audible announcements. Size not documented. | **No precedent on size.** Ours is optional with a chime; size stays a guideline call. |
+| D5 | No pause found in any app. | **Ours alone.** Low stakes. |
+| D6 | No evidence on portrait layout. | **Ours alone.** Low stakes. |
+Borrowed for later: the game code always visible on the board screen (Companion), a colour-blind mode (Horsepaste; ours
+already never uses colour alone). Because precedent is thin, the paper play-test in `lifecycle.md` remains the strongest check.
