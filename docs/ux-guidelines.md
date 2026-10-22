@@ -141,6 +141,8 @@ speed [8]. Our users:
     a smaller board option; a "turn sideways" message where even 12 px can't fit. Guessers lean in, as over a real board.
     The same exception covers the hurry-up timer on board screens (56 px at 390 px wide, 40 px below that); where room
     allows, as on Secret Words' pass screen, the timer keeps rule 46's 120 px (22 October 2026).
+    A single word that can't fit at 12 px may shrink alone to 10 px, provided a tap shows it large (zoom); no word is
+    dropped from a list for size alone (owner, 22 October 2026).
 
 ## Decisions (owner, 2026-09-28)
 - **Auto-call mode:** off by default. When the host turns it on, they set the time between calls,

@@ -26,6 +26,13 @@ A new orchestrator session starts here: read this section, then work through **"
 top, reporting to the owner after each. The product owner keeps this section
 current; instructions live here, not in chat. History from Phase 0 and 1a is further down.
 
+### Answers to the orchestrator's four questions (22 October; `docs/decisions.md`)
+1. **Too-wide words stay.** SWD-090's new paragraph: a word that doesn't fit at 12 px shrinks alone to as small as 10 px; SWD-042's
+   new paragraph: tapping a board cell zooms the word (`word-zoom`, 28 px). The tester changes lane-e's fit check to expect this.
+2. **SWD-103:** a last allowed guess on a wrong word gives that word's line; "used all their guesses" only after their own word.
+3. **Stop and Home during a turn:** stay in the menu with the visible Pause (11 October). No change.
+4. **lane-a and lane-b:** delete both branches.
+
 ### Rule edit (owner approved 16 October): the lethal trifecta, for the orchestrator to apply (one commit, project rules)
 Principle (Simon Willison): a helper that reads untrusted content, holds private data and has a way out can be tricked into
 leaking the data. Ours: untrusted content = web pages, the live preview, test and automation output, comments, other
