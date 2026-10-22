@@ -31,6 +31,7 @@ green, so SWD-099's content check now passes; verify job red on 3 rule tests, al
 ## Earlier verdict (main, 11 October)
 **Progress 22 Oct 2026 (lane-e, Secret Words C3 tests first): scenarios v3.6 copied to `specs/secret-words/` (94 scenarios + 2 retired + 7 direction); 140 rule tests (with the contract suite) written: 126 fail only with "src/games/secret-words is not built yet" or "content/secret-words/words.json is not there yet", 8 content checks already pass; every existing rule test still passes (706 of 706); 16 browser checks in `tests/browser/secret-words-c3.spec.ts`, 15 marked expected-to-fail until the screens exist; SWD-099's browser content test fails for real: 10 words are wider than their cell on both phones (Boundary, Rickshaw, Puncture, Mosquito, Monsoon, Homework, Umbrella, Diamond, Germany, Himalaya; for the product owner); rule API for the coder: `specs/secret-words/api.md`; the verdict below stands.**
 **Progress 22 Oct 2026: design rule checks script done and run on the Secret Words screen map draft 2 (`reports/design-checks-secret-words.md`: 15 findings, 18 cannot check); next: re-run on draft 3; tests/code unchanged, so the verdict below stands; rows done: 1 of 1.**
+**Progress 22 Oct 2026: design rule checks re-run on the Secret Words screen map draft 3 (`reports/design-checks-secret-words.md`: 16 findings, 18 cannot check; 15 carried over, 1 new: D11 has no path into it); reader now handles section I; npm test 706 passed, unchanged; the verdict below stands; rows done: 1 of 1.**
 **Faster cycles, test side (items 3, 7, 9, 11): GREEN. Quick verify 38115857931 on e0b62d4, every browser test on Android.**
 
 Commit tested: e0b62d4 (app b7a01c8, shared screen building blocks; tests e0b62d4)   Date: 2026-10-11
@@ -56,6 +57,7 @@ locally the eight Tambola files that wait out Home's guard passed on iPhone (86 
 |---|---|---|---|---|---|
 | `tests/android/emulator.spec.ts` PLT-120 full paper game at 390 × 844 | PLT-120 | tester | passed only on its PLT-122 retry, weekly run 37593615495 (emulator timing) | 2026-10-11 | three weekly runs green first time |
 | `tests/android/emulator.spec.ts` TAM-116 taps within 100 ms on a slowed processor | TAM-116 | tester | passed only on its PLT-122 retry, weekly run 37593615495 | 2026-10-11 | three weekly runs green first time |
+| `tests/browser/phone-tickets.spec.ts:339` TAM-191 and TAM-122 "One at a time" (iPhone) | TAM-191, TAM-122 | tester | failed in nightly runs 39093481183 (18 Oct), 39364341289 (20 Oct), 39716929005 (22 Oct) on unchanged main: left margin 7.5 px, expected 12, right after the resize to 375 px; cause is the test reading the layout before the app finished re-laying the ticket (360 px wide, then 351 px within 100 ms); test now waits for it (check unchanged) | 2026-10-22 | three green nightly runs after the fix (local 20 repeats could not be completed: Mac under load, 30 s timeouts) |
 | TAM-111 (emulator back gesture) | TAM-111 | tester | watch only: no failure on record in this clone's reports; not marked | 2026-10-11 | next weekly run |
 
 ## Flaky or setup problems (not for the Build workspace)

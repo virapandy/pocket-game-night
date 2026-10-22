@@ -1,0 +1,61 @@
+/* The prototype's own look (src/proto): its bar, notes and index are drawn apart from the game screens (grey, dashed,
+   small mono), so nobody takes them for part of a game. The screens themselves are the shared blocks. */
+.proto-bar {
+  position: fixed;
+  z-index: 50;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 36px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 8px;
+  font: 12px/1.2 ui-monospace, Menlo, monospace;
+  color: #f3efe9;
+  background: #3d3a36;
+  border-bottom: 2px dashed #bdb5aa;
+}
+.proto-bar a { color: #ffd54f; white-space: nowrap; }
+.proto-where { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.proto-bar select { max-width: 40%; min-height: 28px; font: inherit; }
+
+/* Room for the bar above every screen and sheet. */
+.proto .pgn-screen { padding-top: 48px; }
+.proto .pgn-sheet { padding-top: 48px; }
+.proto .pgn-backdrop { top: 36px; }
+.proto-top { display: flex; justify-content: flex-end; }
+.proto-under { color: var(--muted); }
+.proto-dialog-line { display: block; margin-top: 8px; font-weight: 400; }
+
+.proto-note {
+  position: fixed;
+  z-index: 60;
+  top: 44px;
+  left: 8px;
+  right: 8px;
+  padding: 10px;
+  font: 14px/1.35 ui-monospace, Menlo, monospace;
+  color: #1c1b1a;
+  background: #fff8d6;
+  border: 2px dashed #8a6d00;
+  border-radius: 8px;
+}
+.proto-note p { margin: 0 0 6px; }
+.proto-note-buttons { display: flex; flex-wrap: wrap; gap: 6px; }
+.proto-note-buttons button { min-height: 44px; padding: 0 10px; font: inherit; background: #fff; border: 1px solid #8a6d00; border-radius: 6px; }
+.proto-missing { color: #8c1d18; font-weight: 700; }
+
+.proto-index {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 48px 16px 32px;
+  font: 15px/1.45 ui-monospace, Menlo, monospace;
+}
+.proto-index h1 { font-size: 18px; }
+.proto-index h2 { font-size: 16px; margin-top: 20px; }
+.proto-index ul { padding: 0; list-style: none; }
+.proto-index li { margin: 6px 0; }
+.proto-index a { display: inline-block; min-height: 32px; color: var(--accent); }
+.proto-kind { color: var(--muted); }

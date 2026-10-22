@@ -1,6 +1,6 @@
 # Roadmap
 
-Owned by the product owner. Updated 28 September 2026, after Phase 1a went green and live.
+Owned by the product owner. Updated 22 October 2026.
 Phase numbers match the `Phase:` lines in `specs/`; the **order** below is the recommended build order.
 
 ## Where we are
@@ -8,7 +8,9 @@ Phase numbers match the `Phase:` lines in `specs/`; the **order** below is the r
 |---|---|---|
 | 0 | Foundation: app skeleton, engine, automation, hosting | Done |
 | **1a** | **Tambola, paper tickets, one host phone** | **Done: green and live** at https://virapandy.github.io/pocket-game-night/ |
-| **Impostor 1** | **Impostor, one phone, 291 India-centric words** | **Released by the owner as app 1.3.0, 6 October 2026** (`docs/games/impostor/release-1.3.0.md`); 1.3.1 follows with the known issues and the owner's pick from the next list |
+| **Impostor 1** | **Impostor, one phone, 291 India-centric words** | **Released: app 1.3.0 on 6 October, 1.3.1 on 8 October 2026** |
+| Faster cycles and design before code | How we build: lane CI, shared screen blocks, the screen map, persona and Jev walks, a prototype before code | **Set up 11–22 October** (`docs/proposals/faster-cycles.md`, `design-before-code.md`) |
+| **Secret Words 1** | **The team word game, one, two or three phones, 452 words** | **Designed and approved: scenarios 3.6 and screen map draft 3 (22 October).** Prototype live, second pass in progress; rules engine being built (lane-e). No paper play-test (owner): simulated table games and one family game on the preview instead |
 
 Left over from 1a: the coder still has to update a note (`src/games/tambola/CLAUDE.md`, "End of game"
 row). The owner has Android only, so iPhone is covered by automated checks, not by hand.
@@ -27,7 +29,7 @@ row). The owner has Android only, so iPhone is covered by automated checks, not 
 | 6 | **6 Connected mode** | Calls and claims over the internet | **only if** play-tests show it's wanted | |
 | 7 | **Simulations and extended testing** | Nothing visible: the generic simulated player (Jev), mass simulations, mutation testing, Android emulator runs, so bugs are caught before families see them | Tambola complete | |
 | — | **Impostor** (next game; owner, 3 October): design done and scenarios approved (3 October) in `docs/games/impostor/` by the lifecycle process (`docs/proposals/next-game-lifecycle.md`); scenarios go to the tester only after the Tambola release. New games must replace a box, cards or a moderator (`docs/decisions.md`, 3 October); Mafia and a Codenames-style game are next candidates | | owner approves the design | design and paper play-test |
-| — | **Secret Words** (Codenames-style word game; owner, 4 October): research, rule book, theme and draft scenarios in `docs/games/secret-words/`; decisions K1–K19 decided and scenarios v2 approved 4 October; the paper play-test is optional. Built after Impostor's release | | release candidate 1.3.0 frozen (scenarios v3.2 approved) | review the preview with the UX designer |
+| — | **Secret Words**: see "Where we are". Order from here: prototype second pass → six persona walks and the Jev read → tests for the C3 parts → build in lanes → simulated table games → one family game on the preview → release | | | persona walks; merging findings |
 
 Step 7 uses the Phase 2.5 scenarios for the simulated player (PLT-110 to PLT-113) and the testing
 layers from the architecture proposal; the rest of Phase 2.5 (shared blocks, the new-game template)

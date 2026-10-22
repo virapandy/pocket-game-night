@@ -756,6 +756,7 @@ Face-down cells are buttons (`board-cell`, `data-index`, accessible name "Kite, 
 (selected look: outline, ✓, tint; never a team colour); a tap on the picked cell unpicks; a tap on another moves the pick.
 Turned-over cells are not buttons. Main "Sunita: Reveal" (disabled) / "Sunita: Reveal <WORD>" (the picker's name, SWD-122).
 Tapping it is the guess; anyone may tap it. The pick clears after each guess.
+**Version 3.6 (owner, 22 October):** **Tap to zoom (owner, 22 October):** on every board screen (preview, guessing, end-turn line, turn over, game over, History's board), tapping a cell shows `word-zoom`: the word at 28 px, weight 700, in a card with the selected look's outline, centred over that cell and up to 2 cells wide, kept inside the board (shifted in from the edges), above the cell's neighbours. While guessing, the tap also picks the cell as before, and the zoom stays while the cell is picked; it goes when the pick moves, is cleared or the word is revealed. On locked cells and turned-over cells the tap only zooms, for 2 000 ms, then the zoom goes; another tap within that time moves it. The zoom is not a button, carries no information about a face-down word's kind, and has no animation with reduce motion on. The private map and the map phone keep their lists ("Our words", the team lists) for large text instead.
 
 ### SWD-043 What a guess does
 At t = 0 the cell starts a 300 ms turn (none with reduce motion); at t = 300 ms (0 with reduce motion) the cell shows turned
@@ -849,6 +850,7 @@ first that applies: broke a rule → "the clue broke a rule."; the Landmine (Los
 "End our turn" → "they stopped."; allowance used up → "they used all their guesses."; a nobody's word → "Train was blank."; the
 other team's word (the current team's) → "Train was yours!". Fits in 2 lines (3 with Larger text) at every size with an
 18-character team name and an 8-letter word.
+**Version 3.6 (22 October):** when the turn's last allowed guess is a nobody's or the other team's word, the ending is that word's line ("Train was blank." / "Train was yours!"); "they used all their guesses." applies only when the last allowed guess was the team's own word. The order of the other endings is unchanged.
 
 ### SWD-104 Do Not Disturb tip (P9)
 `dnd-tip` "Tip: turn on Do Not Disturb so messages don't pop up on the board." on the evening's first deal, on every showing of
@@ -1206,6 +1208,7 @@ px). Cell height 56 px, shrinking to no less than 48 px so the page doesn't scro
 the largest whole px from 22 down to 12 at which every word fits in 1 line within its cell minus 4 px padding each side.
 Larger text doesn't change it. Status lines and the full height budget: SWD-041. No page scrolling at 390 × 844 (Larger text off and on) and 360 × 640
 (Larger text off), within SWD-041's longest content. The map phone may scroll (SWD-034).
+**Version 3.6 (owner, 22 October):** **Words that don't fit at 12 px (owner, 22 October):** the board's one font size is chosen as before (22 down to 12 px). A word that still doesn't fit in one line at 12 px shrinks alone, in 0.5 px steps, to a floor of 10 px; only that cell is smaller. Known cases on test phones: Boundary, Rickshaw, Puncture, Mosquito, Monsoon, Homework, Umbrella, Diamond, Germany, Himalaya. Such a word is never replaced for size. The tap zoom of SWD-042 lets anyone read it large.
 
 ### SWD-091 Landscape board
 812 × 375: grid at the left (margins 16 px left and bottom, 8 px under the team bar); a 200 px panel at the right (16 px right

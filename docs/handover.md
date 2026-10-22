@@ -26,6 +26,38 @@ A new orchestrator session starts here: read this section, then work through **"
 top, reporting to the owner after each. The product owner keeps this section
 current; instructions live here, not in chat. History from Phase 0 and 1a is further down.
 
+### Fewer scheduled runs (owner, 22 October; C3 automation, one coder commit)
+In `.github/workflows/ci.yml` (nightly, `cron: '0 3 * * *'`) and `weekly.yml` (Mondays), add a first job that compares `main`'s
+commit with the commit of the last successful run of the same workflow (`gh run list --workflow … --status success`) and ends
+the run as skipped (not failed) when they match. Manual runs (`workflow_dispatch`) and release runs always run in full. The
+release gate is unchanged: a green complete run on the exact commit.
+
+### Failing-run emails (owner asked, 22 October): one flaky test to quarantine and fix
+The nightly complete run on unchanged `main` (e10e61a) failed on 18, 20 and 22 October and passed on 19 and 21: each time the
+same single iPhone test, `tests/browser/phone-tickets.spec.ts:339` (TAM-191 / TAM-122, "One at a time" ticket layout). Tester:
+put it in the quarantine list (runs every time, never blocks) and find the cause; it is not on the quarantine list today. Also
+seen: quick verify on `main` 5a04176 failed in "families-site / build families → Choose commit" with an empty commit (`SHA:`
+blank); the next push (cfc5bfe) passed. Coder: make that step say why when it finds no commit, so a repeat is diagnosable.
+Lane-e's red rule tests are expected (Secret Words tests written before the engine).
+
+### Ready for the build (product owner, 22 October): `docs/games/secret-words/build-plan.md`
+Order, four screen lanes with their screens, scenarios and classes, the tests-first list, and the on-screen text list
+`docs/games/secret-words/text.csv` (faster-cycles item 2; one row per string). A proposal: the orchestrator decides the split.
+
+### Prototype renderer: second pass before the persona walks (product owner, 22 October)
+The first persona walk (grandparent, 360 × 640) and the product owner's own check found the prototype renders the map's tables
+literally: all alternative lines at once, row descriptions as button labels, no board grid, blank names, chooser notes. The
+remaining five walks wait. Coder, one lane, C1: render by `docs/games/secret-words/screen-map.md` **section K** (example night,
+example board, seven rendering rules, which outcome each tap follows), still generic: section K is data. Tell the product owner
+when it is live; the walks and the Jev read then run on it.
+
+### Answers to the orchestrator's four questions (22 October; `docs/decisions.md`)
+1. **Too-wide words stay.** SWD-090's new paragraph: a word that doesn't fit at 12 px shrinks alone to as small as 10 px; SWD-042's
+   new paragraph: tapping a board cell zooms the word (`word-zoom`, 28 px). The tester changes lane-e's fit check to expect this.
+2. **SWD-103:** a last allowed guess on a wrong word gives that word's line; "used all their guesses" only after their own word.
+3. **Stop and Home during a turn:** stay in the menu with the visible Pause (11 October). No change.
+4. **lane-a and lane-b:** delete both branches.
+
 ### Rule edit (owner approved 16 October): the lethal trifecta, for the orchestrator to apply (one commit, project rules)
 Principle (Simon Willison): a helper that reads untrusted content, holds private data and has a way out can be tricked into
 leaking the data. Ours: untrusted content = web pages, the live preview, test and automation output, comments, other

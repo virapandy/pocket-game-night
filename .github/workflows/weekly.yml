@@ -32,8 +32,44 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # Scheduled runs only: skip when main has not moved since the last successful run of this workflow
+  # (Weekly extended checks). Manual and release-candidate runs always run in full. A skipped run shows a green "Nothing new" job and
+  # grey skipped jobs; the release gate is unchanged (it needs a successful complete run on the exact commit).
+  gate:
+    name: Anything new since the last good run?
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: read
+    outputs:
+      run: ${{ steps.compare.outputs.run }}
+    steps:
+      - name: Compare main with the last successful run
+        id: compare
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          EVENT: ${{ github.event_name }}
+          HEAD_SHA: ${{ github.sha }}
+        run: |
+          if [ "$EVENT" != schedule ]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+            echo "Not a scheduled run ($EVENT): running in full."
+            exit 0
+          fi
+          LAST=$(gh run list -R "$REPO" --workflow weekly.yml --status success --branch main --limit 1 \
+            --json headSha -q '.[0].headSha // empty')
+          if [ -n "$LAST" ] && [ "$LAST" = "$HEAD_SHA" ]; then
+            echo "run=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Nothing new: main is still at $HEAD_SHA, which the last successful run already checked. Skipped."
+          else
+            echo "run=true" >> "$GITHUB_OUTPUT"
+            echo "Main is at $HEAD_SHA; the last successful run checked '${LAST:-none}'. Running in full."
+          fi
+
   simulation:
-    if: ${{ !inputs.only_sims }}
+    needs: gate
+    if: ${{ needs.gate.outputs.run == 'true' && !inputs.only_sims }}
     runs-on: ubuntu-latest
     timeout-minutes: 90
     continue-on-error: true
@@ -72,11 +108,13 @@ jobs:
   # Full mutation testing lives in its own workflow (mutation.yml) so it can also run alone on request; it splits
   # the rules and money files into groups that run side by side, each well inside GitHub's 5-hour job limit.
   mutation:
-    if: ${{ !inputs.only_sims }}
+    needs: gate
+    if: ${{ needs.gate.outputs.run == 'true' && !inputs.only_sims }}
     uses: ./.github/workflows/mutation.yml
 
   android:
-    if: ${{ !inputs.only_sims }}
+    needs: gate
+    if: ${{ needs.gate.outputs.run == 'true' && !inputs.only_sims }}
     runs-on: ubuntu-latest
     timeout-minutes: 60
     continue-on-error: true
@@ -112,8 +150,8 @@ jobs:
   # Collects the jobs' results and summaries into one artifact and the run's summary page.
   # It does not commit: the Test role copies what it needs into reports/.
   report:
-    needs: [simulation, mutation, android]
-    if: ${{ always() && !inputs.only_sims }}
+    needs: [gate, simulation, mutation, android]
+    if: ${{ always() && needs.gate.outputs.run == 'true' && !inputs.only_sims }}
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
@@ -157,8 +195,8 @@ jobs:
   # It waits for the simulation job (when that runs), so it starts from the Jev count that job saved; with
   # only_sims the simulation job is skipped and this still runs.
   screen-sims:
-    needs: simulation
-    if: ${{ !cancelled() }}
+    needs: [gate, simulation]
+    if: ${{ !cancelled() && needs.gate.outputs.run == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 120
     continue-on-error: true
@@ -222,8 +260,8 @@ jobs:
           if-no-files-found: warn
 
   screen-sims-report:
-    needs: screen-sims
-    if: always()
+    needs: [gate, screen-sims]
+    if: ${{ always() && needs.gate.outputs.run == 'true' }}
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:

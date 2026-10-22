@@ -47,24 +47,34 @@ jobs:
           SHA: ${{ inputs.sha }}
           FALLBACK: ${{ inputs.fallback_sha }}
         run: |
+          LOOKUP="given commit"
           if [ -z "$SHA" ]; then
             if [ "$SITE" = families ]; then
+              LOOKUP="newest successful release.yml run (tag from its title)"
               TAG=$(gh run list -R "$REPO" --workflow release.yml --status success --limit 1 \
                 --json displayTitle -q '.[0].displayTitle // empty' | sed -n 's/^Publish release //p')
               if [ -n "$TAG" ]; then
                 SHA=$(gh api "repos/$REPO/commits/$TAG" --jq .sha)
                 echo "Last release: $TAG"
               else
+                LOOKUP="no release run found (tag empty); newest successful ci.yml push/manual run on main before 2026-10-03T07:30Z"
                 SHA=$(gh run list -R "$REPO" --workflow ci.yml --branch main --status success --limit 100 \
                   --json headSha,event,createdAt -q '[.[] | select((.event == "workflow_dispatch" or .event == "push") and .createdAt < "2026-10-03T07:30:00Z")][0].headSha // empty')
               fi
             else
+              LOOKUP="newest successful quick.yml push run on main"
               SHA=$(gh run list -R "$REPO" --workflow quick.yml --branch main --event push --status success --limit 1 \
                 --json headSha -q '.[0].headSha // empty')
             fi
           fi
           [ -z "$SHA" ] && SHA="$FALLBACK"
-          if [ -z "$SHA" ]; then echo "::error::No commit found for the $SITE site; nothing published."; exit 1; fi
+          if [ -z "$SHA" ]; then
+            echo "Lookup for the $SITE site: $LOOKUP"
+            echo "Release tag found: '${TAG:-none}'; commit found: '(empty)'; fallback_sha: '${FALLBACK:-none}'."
+            echo "Recent successful release.yml runs:"; gh run list -R "$REPO" --workflow release.yml --status success --limit 3 --json displayTitle,headSha,createdAt || true
+            echo "::error::No commit found for the $SITE site (lookup: $LOOKUP; tag: '${TAG:-none}'); nothing published."
+            exit 1
+          fi
           echo "Building the $SITE site from $SHA"
           echo "sha=$SHA" >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@v4
