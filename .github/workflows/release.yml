@@ -7,7 +7,8 @@
 #   2. builds the families' half from the tag's commit and the preview half from the newest green
 #      Quick verify commit (build-site.yml), and publishes both together;
 #   3. creates the GitHub release v<package.json version> on that commit, with docs/releases/<tag>.md
-#      as its notes when that file exists.
+#      as its notes when that file exists, and the built families site attached as the asset
+#      site-families.zip (the durable copy that rollback.yml republishes).
 # The run name records the tag, so build-site.yml finds the families' commit from the last successful run.
 name: Publish release
 run-name: Publish release ${{ inputs.tag }}
@@ -124,6 +125,12 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ needs.check.outputs.sha }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: site-families
+          path: families-dist
+      - name: Zip the families site
+        run: (cd families-dist && zip -qr ../site-families.zip .)
       - name: Create the version and its release notes
         env:
           GH_TOKEN: ${{ github.token }}
@@ -134,8 +141,8 @@ jobs:
         run: |
           NOTES="docs/releases/$TAG.md"
           if [ -f "$NOTES" ]; then
-            gh release create "$VERSION" -R "$REPO" --target "$SHA" --title "$VERSION ($TAG)" --notes-file "$NOTES"
+            gh release create "$VERSION" -R "$REPO" --target "$SHA" --title "$VERSION ($TAG)" --notes-file "$NOTES" site-families.zip
           else
             gh release create "$VERSION" -R "$REPO" --target "$SHA" --title "$VERSION ($TAG)" \
-              --notes "Release candidate $TAG, published to the families' link."
+              --notes "Release candidate $TAG, published to the families' link." site-families.zip
           fi

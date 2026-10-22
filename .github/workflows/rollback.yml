@@ -1,0 +1,116 @@
+# Roll back (docs/handover.md, "No hand testing", item 2): put an earlier release back on the families' link.
+#   gh workflow run rollback.yml --ref main -f tag=rc-1.2.0
+# The tag may be the release candidate tag (as in the release title) or the version tag (v1.2.0).
+# It republishes the families' site from that release's own asset (site-families.zip, attached by release.yml),
+# with NO new build of it, and appends a line to that release's notes. It refuses a release without the asset.
+# GitHub Pages holds one site, so the preview half is rebuilt as usual (build-site.yml) and published beside it;
+# the preview content is not changed by a rollback.
+name: Roll back release
+run-name: Roll back to ${{ inputs.tag }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: release to restore, for example rc-1.2.0 or v1.2.0
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-release
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    outputs:
+      release: ${{ steps.find.outputs.release }}
+    steps:
+      - name: Find the release and its artefact
+        id: find
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          REL=$(gh release list -R "$REPO" --limit 200 --json tagName,name \
+            -q ".[] | select(.tagName == env.TAG or (.name | endswith(\"(\" + env.TAG + \")\"))) | .tagName" | head -n 1)
+          if [ -z "$REL" ]; then
+            echo "::error::No release matches '$TAG'. Nothing changed."
+            exit 1
+          fi
+          if ! gh release view "$REL" -R "$REPO" --json assets -q '.assets[].name' | grep -qx 'site-families.zip'; then
+            echo "::error::Release $REL has no site-families.zip artefact (it was published before artefacts were kept). Nothing changed."
+            exit 1
+          fi
+          echo "Rolling back to release $REL"
+          echo "release=$REL" >> "$GITHUB_OUTPUT"
+
+  preview-site:
+    needs: check
+    uses: ./.github/workflows/build-site.yml
+    permissions:
+      contents: read
+      actions: read
+    with:
+      site: preview
+
+  publish:
+    needs: [check, preview-site]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    concurrency:
+      group: pages-publish
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Download the release's families site
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          RELEASE: ${{ needs.check.outputs.release }}
+        run: |
+          gh release download "$RELEASE" -R "$REPO" -p site-families.zip
+          mkdir site
+          unzip -q site-families.zip -d site
+          test -f site/index.html
+      - uses: actions/download-artifact@v4
+        with:
+          name: site-preview
+          path: site/preview
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deployment
+        uses: actions/deploy-pages@v4
+
+  notes:
+    needs: [check, publish]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - name: Add the rollback line to the release notes
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          RELEASE: ${{ needs.check.outputs.release }}
+          TAG: ${{ inputs.tag }}
+          ACTOR: ${{ github.actor }}
+        run: |
+          BODY=$(gh release view "$RELEASE" -R "$REPO" --json body -q .body)
+          printf '%s\n\nRolled back to %s on %s by %s\n' "$BODY" "$TAG" "$(date -u +%Y-%m-%d)" "$ACTOR" > notes.md
+          gh release edit "$RELEASE" -R "$REPO" --notes-file notes.md
