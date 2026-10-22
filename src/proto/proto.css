@@ -59,3 +59,125 @@
 .proto-index li { margin: 6px 0; }
 .proto-index a { display: inline-block; min-height: 32px; color: var(--accent); }
 .proto-kind { color: var(--muted); }
+
+/* ----- The script prototype (src/proto/Frame.tsx, Play.tsx; screen map section K) ----- */
+/* Outer page: the grey bar, and the phone-sized frame under it (rule 7). */
+html.proto-outer, html.proto-outer body { margin: 0; background: #6b665f; }
+.proto-outer .proto-bar select { max-width: 28%; flex: none; }
+.proto-stage { display: flex; justify-content: center; padding: 52px 8px 8px; }
+.proto-frame { display: block; border: 0; transform-origin: 0 0; background: var(--bg, #fff); box-shadow: 0 2px 12px rgb(0 0 0 / 0.35); }
+
+/* Inside the frame there is no bar: the screens start at the top. */
+.proto-in-frame .proto .pgn-screen { padding-top: 12px; }
+.proto-in-frame .proto .pgn-sheet { padding-top: 16px; }
+.proto-in-frame .proto .pgn-backdrop { top: 0; }
+.proto-in-frame .proto-index { padding-top: 16px; }
+
+.proto .proto-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.proto .proto-top > div { display: flex; gap: 8px; }
+.proto .proto-top .pgn-quiet { min-height: 44px; }
+.proto .proto-iconbutton { min-width: 44px; padding: 0; display: inline-flex; align-items: center; justify-content: center; }
+.proto .proto-small { font-size: var(--pgn-small); color: var(--muted); }
+.proto .proto-big { font-size: 2.6rem; font-weight: 800; letter-spacing: 0.02em; line-height: 1.1; }
+.proto .proto-result { font-weight: 700; }
+.proto .proto-sub { display: block; font-size: var(--pgn-small); font-weight: 400; color: var(--muted); }
+.proto .proto-rowbutton { display: flex; flex-direction: column; align-items: flex-start; text-align: left; padding-top: 8px; padding-bottom: 8px; }
+.proto .proto-buttons { display: flex; flex-direction: column; gap: 8px; }
+.proto .proto-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.proto .proto-actions > * { flex: 1 1 40%; }
+.proto .proto-teambar { height: 8px; margin: -12px calc(-1 * var(--pgn-gutter)) 0; flex: none; }
+.proto .proto-icon { flex: none; vertical-align: -2px; }
+.proto .proto-counts { display: flex; gap: 4px; font-weight: 700; font-size: var(--pgn-small); }
+.proto .proto-counts > span { display: inline-flex; align-items: center; gap: 4px; }
+.proto .proto-sep { color: var(--muted); }
+.proto .proto-qr {
+  width: 200px; height: 200px; align-self: center; display: grid; place-items: center; font-weight: 800; color: var(--muted);
+  background: repeating-linear-gradient(45deg, var(--border) 0 10px, transparent 10px 20px); border: 2px solid var(--text);
+}
+.proto .proto-maparea { min-height: 120px; border: 2px dashed var(--border); border-radius: 8px; }
+.proto .proto-keys { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+.proto .proto-keys .pgn-option { min-height: 48px; padding: 0; justify-content: center; }
+.proto .proto-names { padding: 0; list-style: none; display: flex; flex-direction: column; gap: 4px; }
+.proto .proto-names li { padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; }
+.proto .proto-teams { display: flex; flex-direction: column; gap: 12px; }
+.proto .proto-teams section { display: flex; flex-direction: column; gap: 6px; }
+.proto .proto-team { display: flex; align-items: center; gap: 6px; font-size: 1.15rem; }
+.proto .proto-member { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.proto .proto-member > .pgn-quiet, .proto .proto-member > .pgn-option { flex: 0 1 auto; min-height: 44px; padding: 0 12px; }
+.proto .proto-member > :first-child { flex: 1 1 auto; }
+.proto .proto-found { text-decoration: line-through; color: var(--muted); }
+.proto .proto-badge { font-size: var(--pgn-small); font-weight: 700; padding: 2px 8px; border-radius: 999px; background: var(--pgn-tint); color: var(--accent); }
+.proto .proto-switch { display: flex; align-items: center; gap: 6px; font-size: var(--pgn-small); flex-basis: 100%; }
+.proto .proto-people { display: flex; flex-direction: column; gap: 8px; }
+.proto .proto-ol { padding-left: 1.4em; display: flex; flex-direction: column; gap: 6px; }
+.proto .proto-full { display: flex; flex-direction: column; gap: 14px; }
+.proto .proto-full h2 { font-size: 1.2rem; margin-bottom: 6px; }
+.proto .proto-input { display: flex; flex-direction: column; gap: 4px; }
+.proto .proto-input input { min-height: 48px; padding: 0 12px; font: inherit; border: 1px solid var(--muted); border-radius: 8px; background: var(--surface); color: var(--text); }
+.proto .proto-options { border: 0; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.proto .proto-options legend { font-weight: 700; margin-bottom: 6px; padding: 0; }
+.proto .proto-options .pgn-option { flex: 1 1 auto; }
+.proto .proto-list { padding: 0; list-style: none; display: flex; flex-direction: column; gap: 4px; }
+.proto .proto-list li { display: flex; align-items: center; gap: 6px; }
+.proto .proto-dialog-body { display: flex; flex-direction: column; gap: 8px; }
+
+/* The board (SWD-090: 8 px side margins, 4 px gaps, cells 48–56 px tall, one font size). */
+.proto .proto-board {
+  display: grid; gap: 4px; margin: 0 calc(8px - var(--pgn-gutter)); flex: none;
+  transition: transform 0.3s;
+}
+.proto .proto-rotated { transform: rotate(180deg); }
+.proto .proto-cell {
+  position: relative; box-sizing: border-box; min-width: 0; height: 52px; padding: 0 4px;
+  display: flex; align-items: center; justify-content: center;
+  font: inherit; font-size: inherit; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 6px;
+}
+button.proto-cell { cursor: pointer; touch-action: manipulation; }
+.proto .proto-cell-coloured { background: var(--cell); border-color: var(--cell); color: #fff; }
+.proto .proto-cell-light { color: var(--text); }
+.proto .proto-cell-faded { background: color-mix(in srgb, var(--cell) 20%, var(--surface)); color: var(--text); }
+.proto .proto-cell-faded .proto-icon { color: var(--cell); }
+.proto .proto-cell-light .proto-icon, .proto .proto-cell-faded.proto-cell-light .proto-icon { color: #6b5f4b; }
+.proto .proto-cell .proto-icon { position: absolute; top: 2px; left: 2px; }
+.proto .proto-cell-picked { outline: 3px solid var(--accent); outline-offset: -3px; background: var(--pgn-tint); }
+.proto .proto-cell-tick { position: absolute; top: 1px; right: 4px; font-size: 13px; color: var(--accent); }
+.proto .proto-cell-word { overflow: hidden; text-overflow: clip; }
+.proto-boardscreen .pgn-screen-inner { gap: 8px; }
+.proto .proto-countsrow { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.proto .proto-countsrow .pgn-quiet { min-height: 44px; min-width: 44px; padding: 0 10px; }
+@media (orientation: portrait) and (max-height: 700px) { .proto .proto-cell { height: 48px; } }
+.proto-boardscreen .pgn-title { font-size: 1.3rem; }
+
+/* Board screens: the board between the lines above it and below it (portrait), or the grid at the left and a 200 px
+   panel at the right that scrolls inside (landscape, SWD-091). */
+.proto .proto-split { display: flex; flex-direction: column; gap: 8px; }
+.proto .proto-panel { display: contents; }
+.proto .proto-panel-a { order: 1; display: flex; flex-direction: column; gap: 8px; }
+.proto .proto-split > .proto-board, .proto .proto-split > .proto-maparea, .proto .proto-split > .proto-list { order: 2; }
+.proto .proto-panel-b { order: 3; display: flex; flex-direction: column; gap: 8px; }
+@media (orientation: landscape) and (max-height: 600px) {
+  .proto-boardscreen .pgn-screen.pgn-page { max-width: none; height: 100dvh; min-height: 0; overflow: hidden; padding-bottom: 16px; }
+  .proto-boardscreen .pgn-screen-inner { min-height: 0; }
+  .proto-boardscreen .proto-split { display: grid; grid-template-columns: 1fr 200px; column-gap: 12px; flex: 1 1 auto; min-height: 0; }
+  .proto.proto-boardscreen .proto-split > .proto-board,
+  .proto.proto-boardscreen .proto-split > .proto-maparea,
+  .proto.proto-boardscreen .proto-split > .proto-list { order: 0; }
+  .proto.proto-boardscreen .proto-split > .proto-panel { order: 1; }
+  .proto-boardscreen .proto-split > .proto-board { margin: 0; align-self: start; }
+  .proto-boardscreen .proto-split > .proto-list, .proto-boardscreen .proto-split > .proto-maparea { overflow-y: auto; }
+  .proto-boardscreen .proto-panel { display: flex; flex-direction: column; gap: 6px; overflow-y: auto; min-height: 0; margin-bottom: 64px; }
+  .proto-boardscreen .proto-panel-a, .proto-boardscreen .proto-panel-b { display: contents; }
+  .proto-boardscreen .proto-panel .pgn-title { font-size: 1.1rem; }
+  .proto-boardscreen .proto-panel p { font-size: var(--pgn-small); }
+  .proto-boardscreen .proto-actions > * { flex-basis: 100%; }
+  .proto-boardscreen .pgn-main { width: 200px; white-space: normal; line-height: 1.15; font-size: 1rem; }
+  .proto-boardscreen .proto-cell { height: 56px; }
+  .proto-boardscreen .proto-teambar { margin-top: -8px; }
+  /* Other screens: the content keeps clear of the main button at the bottom right. */
+  .proto:not(.proto-boardscreen) .pgn-screen.pgn-page { padding-bottom: 16px; padding-right: 390px; }
+}
+
+.proto .proto-member { padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+.proto .proto-member > .proto-x { flex: none; width: 48px; order: 1; }
+.proto .proto-member > .proto-control { flex: 1 1 100%; order: 2; }

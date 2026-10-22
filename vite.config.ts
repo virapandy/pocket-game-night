@@ -33,7 +33,7 @@ const PROTO_HTML = 'src/proto/index.html';
 function screenMapGames(): string[] {
   return readdirSync(GAMES_DOCS).filter((g) => existsSync(new URL(`${g}/screen-map.md`, GAMES_DOCS)));
 }
-/** `virtual:screen-maps`: every docs/games/<game>/screen-map.md as text; in dev, <base>proto/… serves the page. */
+/** `virtual:screen-maps`: every docs/games/<game>/screen-map.md (and its scenarios.md) as text; in dev, <base>proto/… serves the page. */
 function screenMaps(): Plugin {
   const id = 'virtual:screen-maps';
   return {
@@ -42,12 +42,19 @@ function screenMaps(): Plugin {
     load(source) {
       if (source !== `\0${id}`) return null;
       const maps: Record<string, string> = {};
+      // The scenarios too: a prototype script may show a scenario's full text ("S5 shows the full How to play text").
+      const scenarios: Record<string, string> = {};
       for (const g of screenMapGames()) {
         const file = new URL(`${g}/screen-map.md`, GAMES_DOCS);
         this.addWatchFile(file.pathname);
         maps[g] = readFileSync(file, 'utf8');
+        const sc = new URL(`${g}/scenarios.md`, GAMES_DOCS);
+        if (existsSync(sc)) {
+          this.addWatchFile(sc.pathname);
+          scenarios[g] = readFileSync(sc, 'utf8');
+        }
       }
-      return `export default ${JSON.stringify(maps)};`;
+      return `export default ${JSON.stringify(maps)};\nexport const scenarios = ${JSON.stringify(scenarios)};`;
     },
     configureServer(server) {
       server.middlewares.use((req, _res, next) => {
