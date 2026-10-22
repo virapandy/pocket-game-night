@@ -14,6 +14,14 @@ which wins over the text above it) into `specs/secret-words/` and writes the C3
 tests first (sections 02, 04 rules, 05, 06, SWD-099, 101, 117, 118, 123, 125, 127, 129); (4) when the prototype is live, tell
 the product owner, who runs the six personas and the Jev read on it; (5) coder lanes build Secret Words by
 `docs/change-sop.md`. Report to the owner after each step. Mid-size models for routine work.
+**Added 22 October (no paper play-test, owner):** once the tester has the Secret Words rule API's board and map from a code,
+the tester runs **simulated table games**: 30 Full and 30 Easy boards dealt from `words.csv` (Whole family), an AI clue giver
+(largest model, sees the map, gives one word and a number by the rules in SWD-011 and 131) and Jev as the guessers (Choice over
+the face-down words plus "uncertain", the word-game guesser). Report to `reports/sim-table-secret-words.md`: turns per game,
+word pairs Jev confuses most often across boards, clues where Jev's top pick was the other team's word or the Landmine, and
+anything in the rules the clue giver could not follow. Within the weekly Jev cap; the AI clue giver's cost goes in the report.
+The product owner turns it into word-list and rule findings. Then, before any families' release: the owner plays one real
+family game on the preview build and answers five questions (the product owner sends them).
 A new orchestrator session starts here: read this section, then work through **"Next, in order"** from the
 top, reporting to the owner after each. The product owner keeps this section
 current; instructions live here, not in chat. History from Phase 0 and 1a is further down.

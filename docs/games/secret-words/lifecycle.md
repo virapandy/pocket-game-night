@@ -96,6 +96,8 @@ next team.
 | Must never be lost | Tonight's tally of a finished evening |
 
 ## Paper play-test (process step 5), before any build
+> **Dropped 22 October (owner: not possible).** Replaced by simulated table games, the prototype walks and a first family
+> game on the preview build; see `docs/decisions.md`, 22 October.
 6+ players, 3 games, one phone used only as a timer:
 1. Write 25 words from `words.csv` on slips in a 5 × 5 grid. One person (not playing that game) draws the map on paper:
    9 for the starting team, 8 for the other, 7 nobody's, 1 Landmine, and hands it to both clue givers.
