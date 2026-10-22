@@ -30,10 +30,7 @@ Read this and the top of `reports/latest.md` before starting. Keep it short: rep
   (`hostEvening`, `passToClue`, `giveClue`, `revealCell`) follows the canonical strings but has never met a real screen:
   expect to adjust selectors (not checks) the first time. Open questions in `docs/test-questions.md` (22 October rows).
   SWD-025's 10,000-game property takes ~45 s in `npm test`.
-- **Test lanes cannot commit (found 11 October, lane-y):** `.githooks/pre-commit` runs the lane's own copy of
-  `.claude/hooks/role-guard.mjs`; its `BASE = SELF.replace(/-(testing|product)$/, '')` leaves `-lane-y` on the end, so
-  the lane folder is taken for the Build clone and every `tests/`/`specs/` commit is refused ("the Build role cannot
-  commit"). Rule-file fix for the owner (e.g. strip `-lane-[a-z]` first). Never work around it.
+- **Test lanes commit fine now:** the role guard strips `-lane-<x>` (commit from lane-e, 22 October).
 - Lane-y (Noto Sans, IMP-088 owner decision 11 October): IMP-088 spec and `impostor-setup.spec.ts` checks updated
   (72/60 px label column, 135/120/147/106 px options; labels 4 px above 140/160 px options with Larger text at 320 and
   360, new checks for 360 Larger, 812 Larger and 390 Larger); 120 reference pictures redone, unapproved
