@@ -26,6 +26,13 @@ A new orchestrator session starts here: read this section, then work through **"
 top, reporting to the owner after each. The product owner keeps this section
 current; instructions live here, not in chat. History from Phase 0 and 1a is further down.
 
+### Prototype renderer: second pass before the persona walks (product owner, 22 October)
+The first persona walk (grandparent, 360 × 640) and the product owner's own check found the prototype renders the map's tables
+literally: all alternative lines at once, row descriptions as button labels, no board grid, blank names, chooser notes. The
+remaining five walks wait. Coder, one lane, C1: render by `docs/games/secret-words/screen-map.md` **section K** (example night,
+example board, seven rendering rules, which outcome each tap follows), still generic: section K is data. Tell the product owner
+when it is live; the walks and the Jev read then run on it.
+
 ### Answers to the orchestrator's four questions (22 October; `docs/decisions.md`)
 1. **Too-wide words stay.** SWD-090's new paragraph: a word that doesn't fit at 12 px shrinks alone to as small as 10 px; SWD-042's
    new paragraph: tapping a board cell zooms the word (`word-zoom`, 28 px). The tester changes lane-e's fit check to expect this.

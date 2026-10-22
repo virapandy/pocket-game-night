@@ -454,3 +454,43 @@ D7→D7a→D7   D7→D7b→D7|D6
 ```
 **Stop and Home during a turn (design checks R3):** menu-only on S6, S7, P1, P3, P4 and P6 by the owner's decision of 11
 October (Pause visible; Home and End in the menu). Game over and the summary show them as buttons.
+
+## K. Prototype script (product owner, 22 October): what the tap-through shows
+The first prototype rendered this map's tables literally: every alternative line of a screen at once, the *Tap* column's
+descriptions as button labels ("A face-down word", "↳ blank", "A number key / ∞"), no board grid, blank names. Persona walks
+on it judged the rendering, not the design. This section is the data the renderer needs to show **one real phone screen per
+state**. Everything here is example content; the scenarios stay binding for behaviour.
+
+**K1. The example game night.** Players Riya, Arjun, Meena, Kabir, Zoya, Dev, Om, Sunita. Teams: Chai Champions (orange) Riya,
+Meena, Zoya, Sunita; Coffee Commandos (teal) Arjun, Kabir, Dev, Om. Clue givers Riya and Arjun. One phone unless a screen says
+otherwise. Tally 2–1. Game 3, turn 4, Chai Champions' turn, clue "Cricket · 2".
+
+**K2. The board** (Full, Chai Champions start; row by row, kind in brackets: O orange, T teal, N nobody, L Landmine):
+```
+Cricket(O)  Bat(T)      Monsoon(O)  Kite(N)     Tiffin(O)
+Mehendi(T)  Lamp(N)     Rain(O)     Shadow(L)   Train(N)
+Chai(T)     Samosa(O)   Dosa(T)     Idli(N)     Pickle(O)
+Laddu(T)    Jalebi(N)   Paneer(O)   Wicket(T)   Stump(N)
+Umpire(O)   Coconut(T)  Honey(N)    Century(T)  Six(O)
+```
+Turned over at guessing: Cricket, Rain (orange), Bat (teal), Train (nobody). Counts "7 left · 7 left".
+
+**K3. Rendering rules for the renderer.**
+1. Each screen shows **one state**: the first line of each *Words* alternative ("A / B" shows A), with names and numbers from K1.
+   Lines the map marks "(when …)" show only if K1 makes them true.
+2. Button labels are the screen's real labels (the quoted words in the *Tap* column), never the row's description. A row that
+   stands for many buttons draws them all: "A number key / ∞" draws keys 0–9 and ∞; "A face-down word" draws the board.
+3. Every screen with a board (S6, P4, P5, P6, G1, E1a, P2 map, M1) draws the 5 × 5 grid of K2, laid out by SWD-090/091, with turned
+   cells in their kind colour and icon; the private map and the map phone show every kind.
+4. A tap with several outcomes (a reveal; "Other team's turn"; resume) follows **K4**, never a chooser note.
+5. Taps that stay on the screen change it as the map says (a picked cell gets the selected look and the main reads "Sunita: Reveal
+   KITE"; "Tap to see the map" shows the map). "Carry on" closes the cover.
+6. Every row the map marks as a button is a real button (Home's unfinished row and saved-map row included).
+7. The phone size is the frame: 360 × 640 by default, a size switch in the grey bar; the grey bar stays out of the frame.
+
+**K4. Which outcome a tap follows.** Reveal on Kite → "Blank word. Other team's turn next." → P6. Reveal on Samosa → "✓ Riya's clue
+works! 2 guesses left." (any orange word). Reveal on Shadow → G1 with "Boom! Chai Champions hit the Landmine." heading "Coffee
+Commandos win!". Reveal on a teal word → "✗ The other team's word! It counts for them." → P6. "Other team's turn" → P1 for
+Arjun (Coffee Commandos). Home's unfinished row → P1 with "Welcome back." and the where-line. G1 from "End the game" shows
+"Game ended. No winner." only; otherwise "Chai Champions win!" + "All 9 words found." only. P2 "Tap to see the map" → the K2
+grid. D7 lists the eight players of K1 with their buttons. S5 shows the full How to play text of SWD-011 and 131.
