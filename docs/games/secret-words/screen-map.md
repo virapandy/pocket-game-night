@@ -463,7 +463,8 @@ state**. Everything here is example content; the scenarios stay binding for beha
 
 **K1. The example game night.** Players Riya, Arjun, Meena, Kabir, Zoya, Dev, Om, Sunita. Teams: Chai Champions (orange) Riya,
 Meena, Zoya, Sunita; Coffee Commandos (teal) Arjun, Kabir, Dev, Om. Clue givers Riya and Arjun. One phone unless a screen says
-otherwise. Tally 2–1. Game 3, turn 4, Chai Champions' turn, clue "Cricket · 2".
+otherwise. Tally 2–1. Game 3, turn 4, Chai Champions' turn, clue "Cricket · 2". Choices: Full board, Whole family words,
+Landmine "Lose the game" (chosen by the host over the Whole family default, K33).
 
 **K2. The board** (Full, Chai Champions start; row by row, kind in brackets: O orange, T teal, N nobody, L Landmine):
 ```
