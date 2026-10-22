@@ -19,6 +19,17 @@ Read this and the top of `reports/latest.md` before starting. Keep it short: rep
   reason; tag `@quarantine` + annotation in the test; never skip or retry.
 
 ## Open items for the next tester
+- **Secret Words C3 (lane-e, 22 October):** specs copied to `specs/secret-words/` (v3.6; each scenario's "Version 3.6"
+  paragraph wins); rule API for the coder `specs/secret-words/api.md`; rule tests `tests/games/secret-words/` (140 with
+  the contract suite) fail only for "not built yet" until the coder's lane lands. `oracle.ts` = the scenarios' own
+  board/deck algorithms (shared with the browser helper `tests/browser/secret-words.ts`). The tests were checked
+  against a throwaway reference build kept outside the repo (all 140 passed with it, bar the missing words.json), so a red
+  rule test after the build is most likely a real difference: read the scenario before suspecting the test.
+  Browser: `secret-words-c3.spec.ts` (SWD-022, 025, 099, 117, 129); all but SWD-099 marked `aheadOfSecretWordsScreens`
+  until the screens exist: remove a mark when Playwright says "expected to fail, but passed". Their navigation
+  (`hostEvening`, `passToClue`, `giveClue`, `revealCell`) follows the canonical strings but has never met a real screen:
+  expect to adjust selectors (not checks) the first time. Open questions in `docs/test-questions.md` (22 October rows).
+  SWD-025's 10,000-game property takes ~45 s in `npm test`.
 - **Test lanes cannot commit (found 11 October, lane-y):** `.githooks/pre-commit` runs the lane's own copy of
   `.claude/hooks/role-guard.mjs`; its `BASE = SELF.replace(/-(testing|product)$/, '')` leaves `-lane-y` on the end, so
   the lane folder is taken for the Build clone and every `tests/`/`specs/` commit is refused ("the Build role cannot

@@ -307,6 +307,12 @@
       ]
     },
     {
+      "name": "Secret Words: rules, screens, saved evenings, word list (every Secret Words browser file)",
+      "lane": "shared",
+      "paths": ["src/games/secret-words/**", "content/secret-words/**", "docs/games/secret-words/words.csv", "tests/browser/secret-words.ts", "tests/browser/secret-words-*.spec.ts", "tests/games/secret-words/oracle.ts", "tests/browser/impostor.ts"],
+      "specs": ["secret-words-c3.spec.ts"]
+    },
+    {
       "name": "Build, dependencies and test set-up: everything",
       "lane": "shared",
       "paths": [
