@@ -1,0 +1,80 @@
+# Backfill a release's missing site-families.zip (docs/handover.md, "No hand testing", item 2).
+#   gh workflow run backfill-release-asset.yml --ref main -f tag=v1.2.0
+# For a release published before artefacts were kept: rebuilds the families' site from the tag's commit
+# (build-site.yml, same release build as release.yml), zips it with index.html at the root, attaches it
+# and notes it in the release notes. It refuses a missing release or one that already has the asset.
+# It publishes nothing to the site.
+name: Backfill release asset
+run-name: Backfill site-families.zip for ${{ inputs.tag }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: release tag, for example v1.2.0
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    outputs:
+      sha: ${{ steps.find.outputs.sha }}
+    steps:
+      - name: Check the release exists and lacks the asset
+        id: find
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          gh release view "$TAG" -R "$REPO" >/dev/null || { echo "::error::No release '$TAG'. Nothing changed."; exit 1; }
+          HAS=$(gh release view "$TAG" -R "$REPO" --json assets -q '[.assets[] | select(.name == "site-families.zip")][0].name // empty')
+          if [ -n "$HAS" ]; then
+            echo "::error::Release $TAG already has site-families.zip. Nothing changed."
+            exit 1
+          fi
+          SHA=$(gh api "repos/$REPO/commits/$TAG" --jq .sha)
+          [ -n "$SHA" ] || { echo "::error::Could not find the commit of $TAG."; exit 1; }
+          echo "Release $TAG is commit $SHA"
+          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+
+  families-site:
+    needs: check
+    uses: ./.github/workflows/build-site.yml
+    permissions:
+      contents: read
+      actions: read
+    with:
+      site: families
+      sha: ${{ needs.check.outputs.sha }}
+
+  attach:
+    needs: [check, families-site]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: site-families
+          path: families-dist
+      - name: Zip, attach and note
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          test -f families-dist/index.html
+          (cd families-dist && zip -qr ../site-families.zip .)
+          gh release upload "$TAG" site-families.zip -R "$REPO"
+          BODY=$(gh release view "$TAG" -R "$REPO" --json body -q .body)
+          printf '%s\n\nArtefact rebuilt from %s'"'"'s commit on %s\n' "$BODY" "$TAG" "$(date -u +%Y-%m-%d)" > notes.md
+          gh release edit "$TAG" -R "$REPO" --notes-file notes.md
