@@ -627,8 +627,7 @@ the QR stays 200 × 200 and the main stays fixed. While paused (SWD-110) the QR 
 map in these modes until game over, except through SWD-037.
 
 ### SWD-034 The map phone
-Heading "Secret Words map"; `map-teams` (SWD-117, only with known team names); `map-code-line` "Code 27P-3QX8 · Chai Champions
-start" (without names: "Host's code 27P-3QX8 · Orange team goes first", SWD-117); `first-words` (SWD-116); the map grid (`map-grid`, cells
+Heading "Secret Words map"; `map-teams` (SWD-117, only with known team names); `map-code-line` "Host's code 27P-3QX8 · Chai Champions go first" (without names: "Host's code 27P-3QX8 · Orange team goes first", SWD-117); `first-words` (SWD-116); the map grid (`map-grid`, cells
 `map-cell` with `data-index`, in the host board's order, each with word text, kind colour and icon, laid out as the board,
 SWD-090/091, without the panel); the small line and the lists (SWD-120); quiet "Hide map" / "Show map"; quiet "Next map"
 (SWD-039); quiet "Done with this game"; `map-end-line` (SWD-120). No main button, no "↻", no menu; "← Back" → Home. The map
@@ -769,8 +768,7 @@ The menu item "Clue not allowed?" is enabled from the clue until the turn's firs
 quiet "Clue not allowed?" (SWD-041) open the dispute dialog (SWD-124). Its "Turn ends, they get a word": the turn
 ends; `list` = the other team's face-down cells in cell order; cell =
 ``list[createRng(`${seeds.deal}:penalty:${D}:${T}`).int(list.length)]`` (D = deal number of the evening, T = turn number on
-this board); that cell turns over as SWD-043 (vibration 50 ms, the `thud` sound). Result line "Clue broke a rule. One of
-the other team's words was turned over." and turn over; if it was that team's last word: game over, that team wins.
+this board); that cell turns over as SWD-043 (vibration 50 ms, the `thud` sound). Result line "The clue broke a rule, so the other team got a free word." and turn over; if it was that team's last word: game over, that team wins.
 
 ### SWD-047 Start 90-second timer
 "Start 90-second timer" (buttons on the pass and clue screens; menu item while guessing) starts the timer `hurry-timer`. Place and
@@ -1023,8 +1021,7 @@ the Board group. The Landmine choice: a saved `lastChoices.landmine` wins; with 
 family, "Lose the game" with + Harder words, updated whenever Words changes until the host taps a Landmine option in this setup.
 
 ### SWD-120 Map phone kindness (W12, W17, B10)
-The map phone's small line reads "Optional: tap a word once it's found to fade it; tap again to undo. The board in the middle
-is always right." While the map shows, three quiet buttons "Orange team's words" / "Teal team's words" / "Whole map": a list replaces the grid
+The map phone's small line reads "Tap a word when it's found to fade it (optional). The host's board is what counts." While the map shows, three quiet buttons "Orange team's words" / "Teal team's words" / "Whole map": a list replaces the grid
 with `map-list`: h2 "Orange words (6)" / "Teal words (5)" (that colour's words not faded on this phone, the count in brackets),
 each word an `li` at 24 px (28 px with Larger text) in `data-index` order, then `avoid-line` "Never guess: Shadow (the Landmine)" (none on
 Easy); words in a list can't be tapped to fade; "Whole map" returns to the grid. It always shows `map-end-line` "Game over? Tap
@@ -1121,8 +1118,7 @@ then the adding row; main "Done" closes. Every confirmed change records one `set
   cancels the removal. On "Done": the toast "Kabir left · Undo". One phone: the new clue giver takes the team's next pass; if
   their team is on its pass or clue step, the pass screen restarts for them; once guessing has started, the turn carries on. Two
   or three phones: they use "Show the map code again" (SWD-129). Removing one of a pair: SWD-123.
-- **A team is never left with 1 player.** A removal that would do so opens "Kabir leaves Coffee Commandos with only Om. Move
-  someone over?" with a button "Move Zoya over" per guesser of the other team whose team would keep at least 2 players (and a
+- **A team is never left with 1 player.** A removal that would do so opens "Coffee Commandos would be left with only Om. Move someone over?" with a button "Move Zoya over" per guesser of the other team whose team would keep at least 2 players (and a
   guesser), and main "Keep Kabir" (cancels). "Move Zoya over" removes Kabir and moves Zoya in one change (if Kabir gave clues, the
   clue-giver dialog follows first, and "Done" confirms the whole change). If no one can move: the line "No one can move over."
   with main "Keep Kabir" and quiet "End the game" (opens SWD-054's dialog; Kabir stays; absent at game over).
