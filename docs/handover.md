@@ -26,6 +26,12 @@ A new orchestrator session starts here: read this section, then work through **"
 top, reporting to the owner after each. The product owner keeps this section
 current; instructions live here, not in chat. History from Phase 0 and 1a is further down.
 
+### Fewer scheduled runs (owner, 22 October; C3 automation, one coder commit)
+In `.github/workflows/ci.yml` (nightly, `cron: '0 3 * * *'`) and `weekly.yml` (Mondays), add a first job that compares `main`'s
+commit with the commit of the last successful run of the same workflow (`gh run list --workflow … --status success`) and ends
+the run as skipped (not failed) when they match. Manual runs (`workflow_dispatch`) and release runs always run in full. The
+release gate is unchanged: a green complete run on the exact commit.
+
 ### Failing-run emails (owner asked, 22 October): one flaky test to quarantine and fix
 The nightly complete run on unchanged `main` (e10e61a) failed on 18, 20 and 22 October and passed on 19 and 21: each time the
 same single iPhone test, `tests/browser/phone-tickets.spec.ts:339` (TAM-191 / TAM-122, "One at a time" ticket layout). Tester:
