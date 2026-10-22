@@ -1,7 +1,8 @@
-import { defineConfig, loadEnv } from 'vite';
+import { build, defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
-import { readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import type { Plugin } from 'vite';
 
 // The version shown in problem reports (PLT-200): package.json's version plus the commit, when automation builds it.
 const pkg = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8')) as { version: string };
@@ -24,8 +25,76 @@ function port(value: string | undefined, fallback: number): number {
   return Number.isInteger(n) && n > 0 && n < 65536 ? n : fallback;
 }
 
+// The tap-through prototype (docs/proposals/design-before-code.md, stage 2): one page per game with a screen map,
+// at <base>proto/<game>/ (src/proto), its files under proto/. Preview and local builds only; the families' release
+// build leaves it out. It is built on its own after the app, so the app's own files stay exactly as they were.
+const GAMES_DOCS = new URL('./docs/games/', import.meta.url);
+const PROTO_HTML = 'src/proto/index.html';
+function screenMapGames(): string[] {
+  return readdirSync(GAMES_DOCS).filter((g) => existsSync(new URL(`${g}/screen-map.md`, GAMES_DOCS)));
+}
+/** `virtual:screen-maps`: every docs/games/<game>/screen-map.md as text; in dev, <base>proto/… serves the page. */
+function screenMaps(): Plugin {
+  const id = 'virtual:screen-maps';
+  return {
+    name: 'pgn-screen-maps',
+    resolveId: (source) => (source === id ? `\0${id}` : null),
+    load(source) {
+      if (source !== `\0${id}`) return null;
+      const maps: Record<string, string> = {};
+      for (const g of screenMapGames()) {
+        const file = new URL(`${g}/screen-map.md`, GAMES_DOCS);
+        this.addWatchFile(file.pathname);
+        maps[g] = readFileSync(file, 'utf8');
+      }
+      return `export default ${JSON.stringify(maps)};`;
+    },
+    configureServer(server) {
+      server.middlewares.use((req, _res, next) => {
+        if (req.url && new RegExp(`^${BASE}proto(/[^./?#]*)*/?([?#].*)?$`).test(req.url)) req.url = `${BASE}${PROTO_HTML}`;
+        next();
+      });
+    },
+  };
+}
+/** After the app's build: builds the prototype page and writes it once per game (and once as the list of games). */
+function prototypes(mode: string): Plugin {
+  let outDir = 'dist';
+  return {
+    name: 'pgn-prototypes',
+    apply: 'build',
+    configResolved: (config) => void (outDir = config.build.outDir),
+    async closeBundle() {
+      await build({
+        configFile: false,
+        mode,
+        base: BASE,
+        logLevel: 'warn',
+        plugins: [
+          react(),
+          screenMaps(),
+          {
+            name: 'pgn-prototype-pages',
+            enforce: 'post',
+            generateBundle(_options, bundle) {
+              const page = bundle[PROTO_HTML];
+              if (!page || page.type !== 'asset') return;
+              delete bundle[PROTO_HTML];
+              for (const g of ['', ...screenMapGames()]) {
+                this.emitFile({ type: 'asset', fileName: `proto/${g ? `${g}/` : ''}index.html`, source: page.source });
+              }
+            },
+          },
+        ],
+        build: { outDir, emptyOutDir: false, assetsDir: 'proto/assets', rollupOptions: { input: PROTO_HTML } },
+      });
+    },
+  };
+}
+
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
+  const withPrototypes = mode !== 'release';
   return {
     base: BASE,
     server: { port: port(env.DEV_PORT, 5173) },
@@ -33,6 +102,8 @@ export default defineConfig(({ mode }) => {
     define: { __APP_VERSION__: JSON.stringify(APP_VERSION) },
     plugins: [
       react(),
+      screenMaps(),
+      ...(withPrototypes ? [prototypes(mode)] : []),
       VitePWA({
         // Updates are offered on the home screen only, never mid-game (docs/handover.md).
         registerType: 'prompt',
@@ -57,9 +128,12 @@ export default defineConfig(({ mode }) => {
         workbox: {
           // Open once, then works offline: precache the whole app shell and content on first visit.
           globPatterns: ['**/*.{js,css,html,svg,png,json,woff2}'],
+          // The prototype pages are not part of the app.
+          globIgnores: ['proto/**'],
           navigateFallback: `${BASE}index.html`,
           // The families' app must never answer for the preview, which lives inside its path.
-          navigateFallbackDenylist: IS_PREVIEW ? [] : [new RegExp(`^${BASE}preview/`)],
+          // Nor for the prototype pages, which are their own pages.
+          navigateFallbackDenylist: [new RegExp(`^${BASE}proto/`), ...(IS_PREVIEW ? [] : [new RegExp(`^${BASE}preview/`)])],
           cleanupOutdatedCaches: true,
         },
       }),
