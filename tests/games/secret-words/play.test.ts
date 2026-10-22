@@ -462,6 +462,38 @@ describe('SWD-103: the recap (the room view\'s lastTurn)', () => {
     });
   }
 
+  // Version 3.6 (22 October): a last allowed guess on a wrong word gives that word's line; "allowance" only after the
+  // team's own word (the allowance case above).
+  const lastGuessWrong: { name: string; ended: 'nobody' | 'other' }[] = [
+    { name: 'a nobody\'s word', ended: 'nobody' },
+    { name: 'the other team\'s word', ended: 'other' },
+  ];
+  for (const c of lastGuessWrong) {
+    it(`v3.6: the last allowed guess on ${c.name} → ${c.ended} with its cell, not allowance`, () => {
+      const e = dealt(`recap-last-${c.ended}`);
+      const t = e.turn();
+      e.clue(1); // allowance 2
+      e.mustReveal(e.faceDown(t)[0]!);
+      const cell = e.faceDown(c.ended === 'nobody' ? 'nobody' : other(t))[0]!;
+      e.mustReveal(cell); // the second and last allowed guess
+      e.nextTurn();
+      expect(e.view().lastTurn).toEqual({ team: t, found: 1, ended: c.ended, cell });
+    });
+  }
+
+  it('v3.6: with a clue for 2, a wrong word as the third (last allowed) guess → its line, found 2', () => {
+    const e = dealt('recap-last-third');
+    const t = e.turn();
+    e.clue(2); // allowance 3
+    const own = e.faceDown(t);
+    e.mustReveal(own[0]!);
+    e.mustReveal(own[1]!);
+    const cell = e.faceDown('nobody')[0]!;
+    e.mustReveal(cell);
+    e.nextTurn();
+    expect(e.view().lastTurn).toEqual({ team: t, found: 2, ended: 'nobody', cell });
+  });
+
   it('the Landmine (Lose your turn) → landmine; the free word does not count as found', () => {
     const e = dealt('recap-mine', { landmine: 'turn' });
     const t = e.turn();

@@ -1,5 +1,5 @@
 // Secret Words on screen: the C3 browser checks (scenarios v3.6, 22 October 2026), written before the screens exist.
-// SWD-099 (every word fits its cell), SWD-022 (host board = map phone for the same code), SWD-025 (no kind of a
+// SWD-099 and SWD-090 v3.6 (every word fits its cell; a too-wide word shrinks alone), SWD-042 v3.6 (tap to zoom), SWD-022 (host board = map phone for the same code), SWD-025 (no kind of a
 // face-down cell in a room screen's DOM), SWD-117 (the QR format and team names on the map phone), SWD-129 (Show the
 // map code again records nothing). Rules: tests/games/secret-words/. Helpers: secret-words.ts.
 // Tests that need the Secret Words screens are marked `aheadOfSecretWordsScreens` (expected to fail until built).
@@ -7,7 +7,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { expect, test, type Page } from './fixtures';
 import { closePhones, newPhone, readDrawnQr } from './phone';
-import { freshPhone, mainButton } from './impostor';
+import { freezeClock, freshPhone, mainButton } from './impostor';
 import {
   aheadOfSecretWordsScreens, boardCells, cellsOf, fromMenu, giveClue, hostEvening, kindOf, mapCells, menuButton, oracleBoard,
   passToClue, revealCell, scanHeading, shown, tapMain, TEAM_PAIRS, waitGuards, type OracleBoard,
@@ -28,30 +28,206 @@ const CODES = [
   oracleCode({ edition: 1, board: 'full', words: 'family' }, 777_777, 12),
 ];
 
-test.describe('SWD-099: every word fits its cell', () => {
-  test('every word, as word text (body font, weight 600), fits in 57 px at 12 px and in 63 px at 14 px', async ({ page }) => {
+// SWD-099 asks every word to fit at 12 px (360 × 640) and 14 px (390 × 844). The owner's answer of 22 October (SWD-090,
+// version 3.6): words that don't fit at 12 px stay and shrink alone, in 0.5 px steps, to a floor of 10 px; none is
+// replaced for size. So the content check is the 10 px floor; the words that need it are listed, not failed.
+test.describe('SWD-099 / SWD-090 (v3.6): every word fits its cell', () => {
+  test('every word, as word text (body font, weight 600), fits in 57 px at the 10 px floor; words below 12 px are listed', async ({ page }, testInfo) => {
     await page.goto('./');
-    const tooWide = await page.evaluate(async (words) => {
+    const { tooWide, shrinks } = await page.evaluate(async (words) => {
       const family = getComputedStyle(document.body).fontFamily;
-      await document.fonts.load(`600 12px ${family}`, words.join(''));
-      await document.fonts.load(`600 14px ${family}`, words.join(''));
+      for (const px of [10, 12, 14]) await document.fonts.load(`600 ${px}px ${family}`, words.join(''));
       await document.fonts.ready;
       const span = document.createElement('span');
       span.style.cssText = `position:absolute;left:-9999px;top:0;white-space:nowrap;font-family:${family};font-weight:600;text-transform:none;letter-spacing:normal`;
       document.body.appendChild(span);
-      const out: string[] = [];
+      const width = (w: string, px: number) => { span.textContent = w; span.style.fontSize = `${px}px`; return span.getBoundingClientRect().width; };
+      const tooWide: string[] = [];
+      const shrinks: string[] = [];
       for (const w of words) {
-        span.textContent = w;
-        span.style.fontSize = '12px';
-        const at12 = span.getBoundingClientRect().width;
-        span.style.fontSize = '14px';
-        const at14 = span.getBoundingClientRect().width;
-        if (at12 > 57 || at14 > 63) out.push(`${w} (${at12.toFixed(1)} px at 12, ${at14.toFixed(1)} px at 14)`);
+        const at10 = width(w, 10);
+        const at12 = width(w, 12);
+        const at14 = width(w, 14);
+        if (at10 > 57) tooWide.push(`${w} (${at10.toFixed(1)} px at 10)`);
+        else if (at12 > 57 || at14 > 63) shrinks.push(`${w} (${at12.toFixed(1)} px at 12, ${at14.toFixed(1)} px at 14)`);
       }
       span.remove();
-      return out;
+      return { tooWide, shrinks };
     }, WORDS);
-    expect(tooWide, 'words to report to the product owner (SWD-099)').toEqual([]);
+    testInfo.annotations.push({ type: 'SWD-090 v3.6: shrink alone (wider than 57 px at 12 or 63 px at 14)', description: shrinks.join(', ') || 'none' });
+    expect(tooWide, 'words wider than a 360 × 640 cell even at the 10 px floor (SWD-090 v3.6): report to the product owner').toEqual([]);
+  });
+});
+
+/** The ten words the scenarios name as too wide at 12 px on the test phones (SWD-090 v3.6). */
+const WIDE_WORDS = ['Boundary', 'Rickshaw', 'Puncture', 'Mosquito', 'Monsoon', 'Homework', 'Umbrella', 'Diamond', 'Germany', 'Himalaya'];
+/** The first Full Whole-family code (deal index 0) whose board holds one of them. */
+const WIDE_CODE = (() => {
+  for (let d = 0; d < 5000; d++) {
+    const c = oracleCode({ edition: 1, board: 'full', words: 'family' }, d, 0);
+    if (oracleBoard(c).words.some((w) => WIDE_WORDS.includes(w))) return c;
+  }
+  throw new Error('no board with a wide word in the first 5000 decks');
+})();
+
+/** One phone, guessing turn 1 on `code` with a clue for `n`. */
+async function guessingOn(page: Page, code: string, seed: string, n: number | 'inf' = 2) {
+  await hostEvening(page, { phones: 'One phone', boards: [code], seed });
+  await passToClue(page);
+  await giveClue(page, n);
+  await expect(boardCells(page).first()).toBeVisible();
+}
+
+test.describe('SWD-090 (v3.6): a word that doesn\'t fit at 12 px shrinks alone', () => {
+  test.use({ viewport: { width: 360, height: 640 } });
+  test('360 × 640: one board size from 22 to 12 px; only a word that doesn\'t fit at 12 px is smaller, by 0.5 px steps, never below 10 px; every word fits in 1 line', async ({ page }) => {
+    aheadOfSecretWordsScreens('board screens (SWD-090 v3.6 shrink alone)');
+    await guessingOn(page, WIDE_CODE, 'shrink-alone');
+    const cells = await boardCells(page).evaluateAll((els) => els.map((el) => {
+      const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, { acceptNode: (n) => ((n.textContent ?? '').trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP) });
+      const node = walker.nextNode()!;
+      const holder = node.parentElement!;
+      const range = document.createRange();
+      range.selectNodeContents(node);
+      const textWidth = range.getBoundingClientRect().width;
+      const lines = range.getClientRects().length;
+      const cs = getComputedStyle(holder);
+      // Would the word fit 0.5 px larger? Measured on a copy with the same font.
+      const probe = document.createElement('span');
+      probe.style.cssText = `position:absolute;left:-9999px;white-space:nowrap;font-family:${cs.fontFamily};font-weight:${cs.fontWeight};letter-spacing:${cs.letterSpacing};text-transform:${cs.textTransform}`;
+      probe.textContent = node.textContent;
+      document.body.appendChild(probe);
+      const at = (px: number) => { probe.style.fontSize = `${px}px`; return probe.getBoundingClientRect().width; };
+      const size = parseFloat(cs.fontSize);
+      const out = {
+        word: (node.textContent ?? '').trim(), size, textWidth, lines, room: el.getBoundingClientRect().width - 8,
+        fitsHalfLarger: at(size + 0.5) <= el.getBoundingClientRect().width - 8, fitsAt12: at(12) <= el.getBoundingClientRect().width - 8,
+      };
+      probe.remove();
+      return out;
+    }));
+    expect(cells).toHaveLength(25);
+    const board = Math.max(...cells.map((c) => c.size));
+    expect(Number.isInteger(board) && board >= 12 && board <= 22, `board size ${board} px`).toBe(true);
+    for (const c of cells) {
+      expect(c.lines, `${c.word}: 1 line`).toBe(1);
+      expect(c.textWidth, `${c.word}: fits its cell minus 4 px each side`).toBeLessThanOrEqual(c.room + 0.5);
+      if (c.size === board) continue;
+      expect(board, `${c.word} is smaller (${c.size} px), so the board is at 12 px`).toBe(12);
+      expect(c.fitsAt12, `${c.word} is smaller only because it doesn't fit at 12 px`).toBe(false);
+      expect(c.size, `${c.word}: floor 10 px`).toBeGreaterThanOrEqual(10);
+      expect(Number.isInteger(c.size * 2), `${c.word}: 0.5 px steps (${c.size} px)`).toBe(true);
+      expect(c.fitsHalfLarger, `${c.word}: the largest 0.5 px step that fits (${c.size} px)`).toBe(false);
+    }
+    // Never replaced for size: the board shows the code's words.
+    expect(cells.map((c) => c.word)).toEqual(oracleBoard(WIDE_CODE).words);
+  });
+});
+
+/** The zoom card's look, without its text: attributes, classes and the computed style (SWD-042 v3.6: no kind in it). */
+async function zoomLook(page: Page) {
+  return page.getByTestId('word-zoom').evaluate((el) => {
+    const word = (el.textContent ?? '').trim();
+    const attrs = [...el.attributes].map((a) => `${a.name}=${a.value.split(word).join('<WORD>')}`).sort().join('|');
+    const cs = getComputedStyle(el);
+    const skip = /^(left|right|top|bottom|inset|width|height|transform|translate|inline-size|block-size|perspective-origin|transform-origin|inset-.*)$/;
+    const style = [...cs].filter((p) => !skip.test(p)).map((p) => `${p}:${cs.getPropertyValue(p)}`).join(';');
+    return `${attrs}\n${style}\n${el.innerHTML.split(word).join('<WORD>')}`;
+  });
+}
+
+/** Checks `word-zoom` shows `index`'s word at 28 px weight 700, centred over the cell (shifted in at the board's edges). */
+async function expectZoomOver(page: Page, index: number, word: string) {
+  const zoom = page.getByTestId('word-zoom');
+  await expect(zoom).toHaveCount(1);
+  await expect(zoom).toBeVisible();
+  await expect(zoom).toHaveText(word);
+  const g = await page.evaluate((i) => {
+    const z = document.querySelector('[data-testid="word-zoom"]') as HTMLElement;
+    const walker = document.createTreeWalker(z, NodeFilter.SHOW_TEXT, { acceptNode: (n) => ((n.textContent ?? '').trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP) });
+    const holder = walker.nextNode()!.parentElement!;
+    const cs = getComputedStyle(holder);
+    const box = (el: Element) => { const r = el.getBoundingClientRect(); return { x: r.x, y: r.y, w: r.width, h: r.height }; };
+    const cell = document.querySelector(`[data-testid="word-board"] [data-index="${i}"]`)!;
+    const cells = [...document.querySelectorAll('[data-testid="word-board"] [data-index]')].map(box);
+    const xs = [...new Set(cells.map((c) => Math.round(c.x)))].sort((a, b) => a - b);
+    return {
+      size: cs.fontSize, weight: cs.fontWeight, zoom: box(z), cell: box(cell), board: box(document.querySelector('[data-testid="word-board"]')!),
+      gap: xs.length > 1 ? xs[1]! - xs[0]! - cells[0]!.w : 0,
+      role: z.getAttribute('role'), tag: z.tagName, buttons: z.querySelectorAll('button, [role="button"]').length,
+      onTop: (() => { const c = box(z); const hit = document.elementFromPoint(c.x + c.w / 2, c.y + c.h / 2); return !!hit && (hit === z || z.contains(hit)); })(),
+    };
+  }, index);
+  expect(g.size, 'word-zoom: 28 px').toBe('28px');
+  expect(g.weight, 'word-zoom: weight 700').toBe('700');
+  expect(g.tag === 'BUTTON' || g.role === 'button' || g.buttons > 0, 'word-zoom is not a button').toBe(false);
+  expect(g.onTop, 'word-zoom is above the cells').toBe(true);
+  expect(g.zoom.w, 'up to 2 cells wide').toBeLessThanOrEqual(2 * g.cell.w + g.gap + 1);
+  expect(g.zoom.x, 'inside the board (left)').toBeGreaterThanOrEqual(g.board.x - 0.5);
+  expect(g.zoom.y, 'inside the board (top)').toBeGreaterThanOrEqual(g.board.y - 0.5);
+  expect(g.zoom.x + g.zoom.w, 'inside the board (right)').toBeLessThanOrEqual(g.board.x + g.board.w + 0.5);
+  expect(g.zoom.y + g.zoom.h, 'inside the board (bottom)').toBeLessThanOrEqual(g.board.y + g.board.h + 0.5);
+  const atEdgeX = g.zoom.x <= g.board.x + 0.5 || g.zoom.x + g.zoom.w >= g.board.x + g.board.w - 0.5;
+  const atEdgeY = g.zoom.y <= g.board.y + 0.5 || g.zoom.y + g.zoom.h >= g.board.y + g.board.h - 0.5;
+  if (!atEdgeX) expect(Math.abs(g.zoom.x + g.zoom.w / 2 - (g.cell.x + g.cell.w / 2)), 'centred over the cell (across)').toBeLessThanOrEqual(1);
+  if (!atEdgeY) expect(Math.abs(g.zoom.y + g.zoom.h / 2 - (g.cell.y + g.cell.h / 2)), 'centred over the cell (down)').toBeLessThanOrEqual(1);
+}
+
+test.describe('SWD-042 (v3.6): tap to zoom', () => {
+  test.use({ viewport: { width: 390, height: 844 } });
+  test('guessing: a tap picks and zooms; the zoom follows the pick, goes when unpicked or revealed; same look for every kind', async ({ page }) => {
+    aheadOfSecretWordsScreens('board screens (SWD-042 v3.6 word-zoom)');
+    const b = oracleBoard(WIDE_CODE);
+    await guessingOn(page, WIDE_CODE, 'zoom-guess', 2);
+    await expect(page.getByTestId('word-zoom')).toHaveCount(0);
+    // A wide word first (face down: nothing is turned yet), then one of the team's own words and a blank word, all different.
+    const wide = b.words.findIndex((w) => WIDE_WORDS.includes(w));
+    const own = b.kinds.map((k, i) => (k === b.starts && i !== wide ? i : -1)).filter((i) => i >= 0);
+    const blank = b.kinds.findIndex((k, i) => k === 'nobody' && i !== wide);
+    const cell = (i: number) => page.locator(`[data-testid="board-cell"][data-index="${i}"]`);
+    await waitGuards(page);
+    await cell(wide).click();
+    await expect(cell(wide)).toHaveAttribute('aria-pressed', 'true');
+    await expectZoomOver(page, wide, b.words[wide]!);
+    await cell(own[0]!).click();
+    await expect(cell(own[0]!)).toHaveAttribute('aria-pressed', 'true');
+    await expectZoomOver(page, own[0]!, b.words[own[0]!]!);
+    const ownLook = await zoomLook(page);
+    await page.clock.runFor(2500); // stays while the cell is picked
+    await expectZoomOver(page, own[0]!, b.words[own[0]!]!);
+    await cell(blank).click();
+    await expectZoomOver(page, blank, b.words[blank]!);
+    expect(await zoomLook(page), 'the zoom carries no kind of a face-down word').toBe(ownLook);
+    await cell(blank).click(); // unpick
+    await expect(cell(blank)).toHaveAttribute('aria-pressed', 'false');
+    await expect(page.getByTestId('word-zoom')).toHaveCount(0);
+    await cell(own[0]!).click();
+    await expectZoomOver(page, own[0]!, b.words[own[0]!]!);
+    await tapMain(page, /: Reveal /);
+    await page.clock.runFor(400);
+    await expect(page.getByTestId('word-zoom')).toHaveCount(0);
+  });
+
+  test('a turned-over cell: a tap only zooms, for 2 000 ms; another tap within that time moves it', async ({ page }) => {
+    aheadOfSecretWordsScreens('board screens (SWD-042 v3.6 word-zoom on turned-over cells)');
+    const b = oracleBoard(WIDE_CODE);
+    await guessingOn(page, WIDE_CODE, 'zoom-turned', 2);
+    const own = b.kinds.map((k, i) => (k === b.starts ? i : -1)).filter((i) => i >= 0);
+    await revealCell(page, own[0]!);
+    await revealCell(page, own[1]!);
+    await waitGuards(page);
+    await freezeClock(page);
+    const cell = (i: number) => page.locator(`[data-testid="word-board"] [data-index="${i}"]`);
+    await cell(own[0]!).click();
+    await expectZoomOver(page, own[0]!, b.words[own[0]!]!);
+    await expect(mainButton(page).filter({ hasText: /: Reveal$/ }), 'the tap picks nothing').toBeDisabled();
+    await page.clock.runFor(1000);
+    await cell(own[1]!).click(); // within 2 000 ms: moves the zoom
+    await expectZoomOver(page, own[1]!, b.words[own[1]!]!);
+    await page.clock.runFor(1900);
+    await expectZoomOver(page, own[1]!, b.words[own[1]!]!);
+    await page.clock.runFor(200);
+    await expect(page.getByTestId('word-zoom')).toHaveCount(0);
   });
 });
 

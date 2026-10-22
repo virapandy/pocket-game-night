@@ -10,6 +10,7 @@ px). Cell height 56 px, shrinking to no less than 48 px so the page doesn't scro
 the largest whole px from 22 down to 12 at which every word fits in 1 line within its cell minus 4 px padding each side.
 Larger text doesn't change it. Status lines and the full height budget: SWD-041. No page scrolling at 390 × 844 (Larger text off and on) and 360 × 640
 (Larger text off), within SWD-041's longest content. The map phone may scroll (SWD-034).
+**Version 3.6 (owner, 22 October):** **Words that don't fit at 12 px (owner, 22 October):** the board's one font size is chosen as before (22 down to 12 px). A word that still doesn't fit in one line at 12 px shrinks alone, in 0.5 px steps, to a floor of 10 px; only that cell is smaller. Known cases on test phones: Boundary, Rickshaw, Puncture, Mosquito, Monsoon, Homework, Umbrella, Diamond, Germany, Himalaya. Such a word is never replaced for size. The tap zoom of SWD-042 lets anyone read it large.
 
 ## SWD-091: Landscape board
 Status: approved, owner, 2026-10-22 (version 3.6)

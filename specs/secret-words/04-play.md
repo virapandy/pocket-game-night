@@ -70,6 +70,7 @@ Face-down cells are buttons (`board-cell`, `data-index`, accessible name "Kite, 
 (selected look: outline, ✓, tint; never a team colour); a tap on the picked cell unpicks; a tap on another moves the pick.
 Turned-over cells are not buttons. Main "Sunita: Reveal" (disabled) / "Sunita: Reveal <WORD>" (the picker's name, SWD-122).
 Tapping it is the guess; anyone may tap it. The pick clears after each guess.
+**Version 3.6 (owner, 22 October):** **Tap to zoom (owner, 22 October):** on every board screen (preview, guessing, end-turn line, turn over, game over, History's board), tapping a cell shows `word-zoom`: the word at 28 px, weight 700, in a card with the selected look's outline, centred over that cell and up to 2 cells wide, kept inside the board (shifted in from the edges), above the cell's neighbours. While guessing, the tap also picks the cell as before, and the zoom stays while the cell is picked; it goes when the pick moves, is cleared or the word is revealed. On locked cells and turned-over cells the tap only zooms, for 2 000 ms, then the zoom goes; another tap within that time moves it. The zoom is not a button, carries no information about a face-down word's kind, and has no animation with reduce motion on. The private map and the map phone keep their lists ("Our words", the team lists) for large text instead.
 
 ## SWD-043: What a guess does
 Status: approved, owner, 2026-10-22 (version 3.6)
@@ -182,6 +183,7 @@ Commandos found 2 words;" (that turn's **found** words, Terms; "found 1 word", "
 first that applies: broke a rule → "the clue broke a rule."; the Landmine (Lose your turn) → "they stepped on the Landmine.";
 "End our turn" → "they stopped."; allowance used up → "they used all their guesses."; a nobody's word → "Train was blank."; the
 other team's word (the current team's) → "Train was yours!". Fits in 2 lines (3 with Larger text) at every size with an
+**Version 3.6 (22 October):** when the turn's last allowed guess is a nobody's or the other team's word, the ending is that word's line ("Train was blank." / "Train was yours!"); "they used all their guesses." applies only when the last allowed guess was the team's own word. The order of the other endings is unchanged.
 18-character team name and an 8-letter word.
 
 ## SWD-104: Do Not Disturb tip (P9)
