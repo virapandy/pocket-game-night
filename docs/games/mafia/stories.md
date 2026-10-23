@@ -1,7 +1,7 @@
 # Mafia: the morning stories (draft v1, 23 October 2026)
 
-The list is `stories.csv` (edition 1.1, 23 October: 13 "out" stories, 11 "saved" stories; MAFS-06 and MAFS-12 retired and
-five rewritten after the Jev check, `jev-results-2026-10-23.md`). The host reads one aloud each morning
+The list is `stories.csv` (edition 1.2, 23 October: 12 "out" stories, 10 "saved" stories; MAFS-06, 12, 13 and 22 retired and
+four rewritten after two Jev checks, `jev-results-2026-10-23.md`). The host reads one aloud each morning
 (screen map M1). The phone then adds the role line ("Kabir was a Villager.") and the count line ("7 players left · Mafia
 caught: 0 of 2").
 
@@ -15,7 +15,7 @@ caught: 0 of 2").
    `docs/games/secret-words/words.md` rule 3. No politics, religion, caste, real people, brands, alcohol.
 5. **Short:** at most 25 words, so it fits the morning screen at 320 × 568 without scrolling and reads aloud in about
    ten seconds.
-6. **Never the same story twice in a game**; chosen at random from the game's seed (screen map M1). With 13 "out" and 11
+6. **Never the same story twice in a game**; chosen at random from the game's seed (screen map M1). With 12 "out" and 10
    "saved" stories, a game of up to 16 players never runs out.
 
 ## Checks before approval

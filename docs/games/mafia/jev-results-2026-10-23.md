@@ -14,6 +14,17 @@ the approver (`docs/word-guidelines.md`).
 | Funniest: MAFS-16 turmeric milk (0.93), 09 jalebis, 13 (0.88), 19 banana peel (0.84) | — |
 **Re-check:** the five rewritten stories and the six near the line, about 44 decisions, next time the product side runs Jev.
 
+### Re-check of edition 1.1 (`jev-stories-2.md`, 96 decisions)
+- **Noise first:** stories whose text didn't change moved by up to 0.2 between the two runs (MAFS-26 "understood" 0.60 → 0.42,
+  MAFS-22 0.43 → 0.33). One reading near 0.5 means little; only stories low **both times** are acted on.
+- **Rewrites that worked:** MAFS-02 (understood 0.30 → 0.64), 08 (0.36 → 0.60), 20 (0.36 → 0.54). MAFS-11 (0.39 → 0.47) is
+  near the line with strong laughs (0.90): kept.
+- **Retired (edition 1.2):** MAFS-13, the never-ending TV show (understood 0.16 and 0.17), and MAFS-22, the sack (understood
+  0.43 and 0.33, friendly only 0.60 and 0.58: a sack reads as kidnapping). 12 "out" and 10 "saved" stories remain.
+- **Watch:** MAFS-10, the power cut ("scary" 0.42 and 0.48, the highest left). Kept for now; the family game decides.
+- **No story is above 0.8 on "understood" in either run**: Jev is cautious about any joke, so families' first games, not Jev,
+  are the real check of the stories.
+
 ## 2. The table simulation (Jev players, code referee)
 Village wins, 20 games a cell; the referee applied MF1–MF15 and the MF5 table:
 
