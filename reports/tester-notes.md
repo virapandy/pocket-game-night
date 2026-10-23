@@ -58,3 +58,13 @@ Read this and the top of `reports/latest.md` before starting. Keep it short: rep
 - Run: `SIM_MODE=deal|play npx vitest run --config tests/tools/sim-table/vitest.config.ts deal|play`; wrap play in `caffeinate -i`. Play writes reports/sim-table-secret-words.md and results.json (exchange). Wiring was checked with a stub guesser (`SIM_TABLE_DRYRUN=1`, report to the exchange folder, no Jev); the real run was not made.
 - Finding for the owner: the engine has no pass move (a clue needs at least one guess; only "Clue not allowed" ends a turn with none, and it gives the other team a word). A team out of planned clues therefore ends the board and is counted; asked for "pass with clue 0, no guesses" was not possible.
 - Jev decisions: one per guess; run limit 6000 (SIM_TABLE_RUN_LIMIT).
+
+## 23 October: Secret Words 3.7 specs (main) and lane B tests first (lane-b)
+- Specs: `specs/secret-words/` is scenarios 3.7 (db2398d). The split was regenerated from `docs/games/secret-words/scenarios.md`
+  (sections by their `→ specs/...` headings; `### SWD-nnn Title` → `## SWD-nnn: Title` + Status/Phase lines; README = the
+  front matter + Test hooks). Rule tests needed no change for 3.7 (SWD-101/131: the warning stays a hint).
+- Lane B (the turn on the host): `secret-words-shared.spec.ts`, `secret-words-turn.spec.ts`, `secret-words-dialogs.spec.ts`,
+  helpers `secret-words-b.ts`, coder note `specs/secret-words/screens-b.md`. They reach the turn through lane A's setup, so
+  they fail at the picker until lane A is merged and lane-b rebased. Six lane B checks in `secret-words-c3.spec.ts` are real
+  checks now (SWD-090, 042 ×2, 033 QR ×2, 129); the other 12 stay `aheadOfSecretWordsScreens` (lanes A, C, D).
+- Never run against a real screen: expect to adjust selectors (not checks) the first time, as with the C3 browser checks.

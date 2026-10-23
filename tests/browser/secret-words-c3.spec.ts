@@ -2,7 +2,8 @@
 // SWD-099 and SWD-090 v3.6 (every word fits its cell; a too-wide word shrinks alone), SWD-042 v3.6 (tap to zoom), SWD-022 (host board = map phone for the same code), SWD-025 (no kind of a
 // face-down cell in a room screen's DOM), SWD-117 (the QR format and team names on the map phone), SWD-129 (Show the
 // map code again records nothing). Rules: tests/games/secret-words/. Helpers: secret-words.ts.
-// Tests that need the Secret Words screens are marked `aheadOfSecretWordsScreens` (expected to fail until built).
+// Tests that need screens from lanes A, C or D are marked `aheadOfSecretWordsScreens` (expected to fail until built);
+// lane B's own checks (SWD-090, 042, 033 QR, 129) are real checks since 23 October (lane-b tests first).
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { expect, test, type Page } from './fixtures';
@@ -81,7 +82,6 @@ async function guessingOn(page: Page, code: string, seed: string, n: number | 'i
 test.describe('SWD-090 (v3.6): a word that doesn\'t fit at 12 px shrinks alone', () => {
   test.use({ viewport: { width: 360, height: 640 } });
   test('360 × 640: one board size from 22 to 12 px; only a word that doesn\'t fit at 12 px is smaller, by 0.5 px steps, never below 10 px; every word fits in 1 line', async ({ page }) => {
-    aheadOfSecretWordsScreens('board screens (SWD-090 v3.6 shrink alone)');
     await guessingOn(page, WIDE_CODE, 'shrink-alone');
     const cells = await boardCells(page).evaluateAll((els) => els.map((el) => {
       const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, { acceptNode: (n) => ((n.textContent ?? '').trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP) });
@@ -176,7 +176,6 @@ async function expectZoomOver(page: Page, index: number, word: string) {
 test.describe('SWD-042 (v3.6): tap to zoom', () => {
   test.use({ viewport: { width: 390, height: 844 } });
   test('guessing: a tap picks and zooms; the zoom follows the pick, goes when unpicked or revealed; same look for every kind', async ({ page }) => {
-    aheadOfSecretWordsScreens('board screens (SWD-042 v3.6 word-zoom)');
     const b = oracleBoard(WIDE_CODE);
     await guessingOn(page, WIDE_CODE, 'zoom-guess', 2);
     await expect(page.getByTestId('word-zoom')).toHaveCount(0);
@@ -209,7 +208,6 @@ test.describe('SWD-042 (v3.6): tap to zoom', () => {
   });
 
   test('a turned-over cell: a tap only zooms, for 2 000 ms; another tap within that time moves it', async ({ page }) => {
-    aheadOfSecretWordsScreens('board screens (SWD-042 v3.6 word-zoom on turned-over cells)');
     const b = oracleBoard(WIDE_CODE);
     await guessingOn(page, WIDE_CODE, 'zoom-turned', 2);
     const own = b.kinds.map((k, i) => (k === b.starts ? i : -1)).filter((i) => i >= 0);
@@ -283,7 +281,6 @@ test.describe('SWD-117: the map phone from the host\'s QR link', () => {
 
   for (const phones of ['Two phones', 'Three phones'] as const) {
     test(`the host's scan QR (${phones}) is <origin><BASE_URL>#map=<code>&t=<pair id>${phones === 'Three phones' ? '&p=own' : ''}`, async ({ page }) => {
-      aheadOfSecretWordsScreens('scan screen (SWD-033, 117)');
       await hostEvening(page, { phones, boards: [code], seed: 'qr' });
       await expect(scanHeading(page)).toBeVisible();
       await expect(page.getByTestId('map-code-text')).toContainText(shown(code));
@@ -341,7 +338,6 @@ test.describe('SWD-022: the host board and a map phone given the same code agree
 
 test.describe('SWD-129: Show the map code again', () => {
   test('two phones, at the clue screen: the scan screen for the current board, no menu, "Back to the game" returns; nothing is recorded', async ({ page }) => {
-    aheadOfSecretWordsScreens('Show the map code again (SWD-129)');
     const code = CODES[3]!;
     await hostEvening(page, { phones: 'Two phones', boards: [code], seed: 'again' });
     await tapMain(page, /^The map phone has the map$/);
@@ -399,7 +395,7 @@ async function faceDownUniform(page: Page): Promise<string[]> {
 test.describe('SWD-025: room screens carry no kind of a face-down cell', () => {
   for (const phones of ['One phone', 'Two phones', 'Three phones'] as const) {
     test(`${phones}: 10 seeded games, at every step`, async ({ page }) => {
-      aheadOfSecretWordsScreens('board screens (SWD-025 browser check)');
+      aheadOfSecretWordsScreens('game over heading, G1 in lane D (SWD-025 browser check; its board screens are lane B)');
       test.setTimeout(10 * 60_000);
       for (let g = 0; g < 10; g++) {
         const code = oracleCode({ edition: 1, board: 'full', words: 'family' }, 10_007 * (g + 1), g);
