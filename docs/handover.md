@@ -26,6 +26,15 @@ A new orchestrator session starts here: read this section, then work through **"
 top, reporting to the owner after each. The product owner keeps this section
 current; instructions live here, not in chat. History from Phase 0 and 1a is further down.
 
+### Secret Words version 3.7 (23 October): the owner's four questions are answered
+1. P1–P10: yes, written as "Version 3.7" paragraphs (SWD-010, 031, 033, 034, 043, 102, 103, 110, 112, 120, 124, 126, 127; Terms
+   "Small line colour"). 2. Jev's flagged words: reworded in 3.7 (most were already reworded in 3.5–3.6; the prototype shows old
+   wording). 3. Reveal stays final (K35). 4. The clue rule stays as clarified on 22 October (SWD-131: forms and parts, not letters;
+   "Ring" with "Spring" is allowed). `text.csv` updated. The tester works from 3.7; screen lanes A–D may start after its reader
+   check (product owner, today). **Correction to your summary:** the owner does not try Secret Words in the preview (no hand
+   testing, 22 October); the AI playthrough of the release candidate replaces it. PLT-208/209's exact words are already written
+   (`docs/scenario-drafts/plt-208-209-share-sheet.md`), so that work can start now.
+
 ### No hand testing (owner, 22 October): three safety nets before Secret Words reaches families
 1. **PLT-208, "Report a problem" real (coder, C3, tests first by the tester):** replace `stubSend` in `src/app/reports.ts`: "Send
    report" calls `navigator.share({ title, text, files: [replay .json] })`; where files can't be shared, share the text with the replay
