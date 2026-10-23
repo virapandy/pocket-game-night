@@ -36,43 +36,49 @@ const MAX = 22;
 const FLOOR = 10;
 const PAD = 4;
 
-let probe: HTMLSpanElement | null = null;
-function measurer(family: string): (word: string, px: number) => number {
-  if (!probe) {
-    probe = document.createElement('span');
-    probe.setAttribute('aria-hidden', 'true');
-    probe.style.cssText = 'position:absolute;left:-9999px;top:0;white-space:nowrap;font-weight:600;text-transform:none;letter-spacing:normal;visibility:hidden';
-    document.body.appendChild(probe);
+/**
+ * SWD-090's measuring, without leaving any word in the page (SWD-025, 032, 121): a hidden span is added for one
+ * fitting only, emptied and removed as soon as it is done, so no word, and no order of measuring, can be read later.
+ */
+function withMeasurer<T>(family: string, run: (width: (word: string, px: number) => number) => T): T {
+  const probe = document.createElement('span');
+  probe.setAttribute('aria-hidden', 'true');
+  probe.style.cssText = 'position:absolute;left:-9999px;top:0;white-space:nowrap;font-weight:600;text-transform:none;letter-spacing:normal;visibility:hidden';
+  probe.style.fontFamily = family;
+  document.body.appendChild(probe);
+  try {
+    return run((word, px) => {
+      probe.textContent = word;
+      probe.style.fontSize = `${px}px`;
+      return probe.getBoundingClientRect().width;
+    });
+  } finally {
+    probe.textContent = '';
+    probe.remove();
   }
-  const p = probe;
-  p.style.fontFamily = family;
-  return (word, px) => {
-    p.textContent = word;
-    p.style.fontSize = `${px}px`;
-    return p.getBoundingClientRect().width;
-  };
 }
 
 /** SWD-090: the board's one size, and the sizes of the words that shrink alone. */
 export function fitWords(words: readonly string[], room: number, family: string): { size: number; alone: Map<number, number> } {
-  const width = measurer(family);
-  let size = MIN;
-  for (let s = MAX; s >= MIN; s--) {
-    if (words.every((w) => width(w, s) <= room)) {
-      size = s;
-      break;
+  return withMeasurer(family, (width) => {
+    let size = MIN;
+    for (let s = MAX; s >= MIN; s--) {
+      if (words.every((w) => width(w, s) <= room)) {
+        size = s;
+        break;
+      }
     }
-  }
-  const alone = new Map<number, number>();
-  if (size === MIN) {
-    words.forEach((w, i) => {
-      if (width(w, MIN) <= room) return;
-      let s = MIN - 0.5;
-      while (s > FLOOR && width(w, s) > room) s -= 0.5;
-      alone.set(i, s);
-    });
-  }
-  return { size, alone };
+    const alone = new Map<number, number>();
+    if (size === MIN) {
+      words.forEach((w, i) => {
+        if (width(w, MIN) <= room) return;
+        let s = MIN - 0.5;
+        while (s > FLOOR && width(w, s) > room) s -= 0.5;
+        alone.set(i, s);
+      });
+    }
+    return { size, alone };
+  });
 }
 
 /**
