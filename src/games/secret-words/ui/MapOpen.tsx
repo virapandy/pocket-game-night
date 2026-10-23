@@ -11,6 +11,9 @@ import {
   endNight, homeRowLine, isNight, lastNight, loadNight, resumeCardLine, startNewText, unfinishedNight, whereLine, type Night,
 } from './evening';
 import { GuardedMain } from './guard';
+import { MapPhone as LaneCMapPhone } from './MapPhone';
+import { readSavedMap, SAVED_MAP_KEY } from './mapSaved';
+import { HowToPlay } from './Texts';
 import './secret-words.css';
 
 /** A map to open: the 7-symbol code (no hyphen) and what the QR carried (SWD-117). */
@@ -160,19 +163,23 @@ export function BoardPhoneDialog({ onePhone, onOpenHere, onKeep }: { onePhone: b
 }
 
 /**
- * PLACEHOLDER (lane A): the map phone is lane C (SWD-034). This stand-in has the heading only, so the paths that end
- * on the map phone arrive somewhere; it shows no word, kind or map.
+ * The map phone (SWD-034, lane C), with "Clue rules" opening How to play at its Clue rules (SWD-011 v3.6). The map
+ * phone's own file holds the screen and its privacy rules; this only joins it to How to play.
  */
-export function MapPhone({ onHome }: { map: MapToOpen; onHome: () => void }) {
+export function MapPhone(props: { map: MapToOpen; onHome: () => void; keys: Preferences; prefs: Preferences }) {
   return (
-    <BlocksRoot className="sw">
-      <Screen className="sw-setup">
-        <header className="sw-bar">
-          <QuietButton onClick={onHome}>← Back</QuietButton>
-        </header>
-        <h1 className="pgn-title">Secret Words map</h1>
-      </Screen>
-    </BlocksRoot>
+    <LaneCMapPhone
+      {...props}
+      renderClueRules={(about, done) => (
+        <HowToPlay
+          names={about.names}
+          // The map phone doesn't know the host's Landmine choice: K33's default for the code's word list.
+          choices={{ board: about.board, landmine: about.audience === 'grownups' ? 'lose' : 'turn' }}
+          at="clue-rules"
+          onDone={done}
+        />
+      )}
+    />
   );
 }
 
@@ -249,25 +256,7 @@ export function lastNightRow(store: SavedGameStore, now: number): { id: string; 
 
 // ---- Home's saved map (SWD-036) ----
 
-const SAVED_MAP_KEY = 'secretWords.map';
 const SIX_HOURS = 6 * 3600_000;
-
-interface SavedMap {
-  readonly code: string;
-  readonly savedAt: number;
-  readonly t?: string;
-  readonly p?: string;
-}
-
-function readSavedMap(keys: Preferences): SavedMap | null {
-  const raw = keys.get<unknown>(SAVED_MAP_KEY, null);
-  if (typeof raw !== 'object' || raw === null) return null;
-  const m = raw as Partial<Record<keyof SavedMap, unknown>>;
-  if (typeof m.code !== 'string' || typeof m.savedAt !== 'number') return null;
-  const code = readMapCode(m.code);
-  if (code === 'invalid' || code === 'newer') return null;
-  return { code, savedAt: m.savedAt, ...(typeof m.t === 'string' ? { t: m.t } : {}), ...(m.p === 'own' ? { p: 'own' } : {}) };
-}
 
 const shown = (code: string) => `${code.slice(0, 3)}-${code.slice(3)}`;
 

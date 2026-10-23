@@ -1,21 +1,5 @@
-/* The map phone (SWD-034, 090-092, 120, 121), inside a `.pgn.sw-map` root. Colours: docs/games/secret-words/ux.md §1. */
-.sw-map {
-  --team-orange: #b45309;
-  --team-teal: #0f766e;
-  --nobody: #e7dfd3;
-  --landmine: #1c1b1a;
-  --on-team: #ffffff;
-  --on-landmine: #f3efe9;
-  color: var(--text);
-}
-:root[data-theme='dark'] .sw-map {
-  --team-orange: #f59e0b;
-  --team-teal: #2dd4bf;
-  --nobody: #3a3632;
-  --landmine: #f3efe9;
-  --on-team: #1c1b1a;
-  --on-landmine: #1c1b1a;
-}
+/* The map phone (SWD-034, 090-092, 120, 121), inside a `.pgn.sw-map` root. Team colours come from shared/sw.css. */
+.sw-map { --nobody: var(--sw-nobody); --landmine: var(--sw-landmine); --on-team: var(--sw-on-team); --on-landmine: var(--bg); color: var(--text); }
 
 .swm-root { position: relative; }
 .swm-page { display: flex; flex-direction: column; gap: 8px; padding: max(8px, env(safe-area-inset-top)) 0 24px; min-height: 100dvh; box-sizing: border-box; }
@@ -55,8 +39,8 @@
   cursor: pointer; touch-action: manipulation; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
 }
 .swm-word { font-weight: 600; text-transform: none; white-space: nowrap; line-height: 1.2; }
-.swm-cell > .swm-icon { position: absolute; top: 2px; left: 2px; }
-.swm-icon { flex: none; width: 16px; height: 16px; fill: currentColor; }
+.swm-cell > .sw-icon { position: absolute; top: 2px; left: 2px; }
+.sw-map .sw-icon { flex: none; width: 16px; height: 16px; }
 .swm-orange { background: var(--team-orange); color: var(--on-team); }
 .swm-teal { background: var(--team-teal); color: var(--on-team); }
 .swm-nobody { background: var(--nobody); color: var(--text); }
@@ -68,9 +52,7 @@
 .swm-teal.swm-found { background: color-mix(in srgb, var(--team-teal) 20%, var(--surface)); }
 .swm-nobody.swm-found { background: color-mix(in srgb, var(--nobody) 20%, var(--surface)); }
 .swm-landmine.swm-found { background: color-mix(in srgb, var(--landmine) 20%, var(--surface)); }
-.swm-icon-orange { color: var(--team-orange); }
-.swm-icon-teal { color: var(--team-teal); }
-.swm-cell .swm-icon { color: inherit; }
+.swm-cell .sw-icon { color: inherit; }
 
 .swm-sideways { font-size: var(--pgn-body); font-weight: 700; padding: 16px 0; margin: 0; }
 
@@ -85,8 +67,6 @@
 .swm-key { display: flex; flex-direction: column; gap: 2px; }
 .swm-key-line { display: flex; gap: 12px; white-space: nowrap; overflow: hidden; font-size: var(--pgn-small); line-height: 1.3; }
 .swm-key-item { display: inline-flex; align-items: center; gap: 4px; flex: none; }
-.swm-key .swm-icon-nobody { color: var(--text); }
-.swm-key .swm-icon-landmine { color: var(--text); }
 
 /* Landscape (SWD-034, 091): the grid at the left, a column at the right that scrolls inside; no page scrolling. */
 .swm-land { display: flex; gap: 12px; height: 100dvh; padding: 16px; box-sizing: border-box; overflow: hidden; }

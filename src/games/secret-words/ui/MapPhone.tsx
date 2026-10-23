@@ -4,11 +4,11 @@
 // map", when the screen is left, and 60 000 ms after the last touch ("Still looking?" from 50 000 ms). The screen-on lock
 // is held only while the map shows.
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
-import { flushSync } from 'react-dom';
 import type { Preferences } from '../../../engine';
 import { BlocksRoot, Dialog, MainButton, QuietButton, Toast, useToast } from '../../../blocks';
 import { boardFromCode, nextMapCode, WORDS } from '../rules';
 import type { Board, Kind, Team } from '../rules';
+import { cellName, fitWords, KindIcon, usePageVisibility, useWakeLock } from './shared';
 import { knownPair, readSavedMap, writeSavedMap, SAVED_MAP_FORMAT, type SavedMap } from './mapSaved';
 import './map-phone.css';
 
@@ -17,6 +17,13 @@ export interface MapPhoneOpen {
   readonly code: string;
   readonly t?: string;
   readonly p?: string;
+}
+
+/** What How to play needs from the map: the team names (or "Orange team" / "Teal team") and the board's config. */
+export interface ClueRulesAbout {
+  readonly names: { readonly id: string; readonly orange: string; readonly teal: string };
+  readonly board: Board['board'];
+  readonly audience: Board['audience'];
 }
 
 const WARN_MS = 50_000;
@@ -37,7 +44,6 @@ const TEXT = {
 } as const;
 
 const shown = (code: string) => `${code.slice(0, 3)}-${code.slice(3)}`;
-const KIND_NAME: Record<Kind, string> = { orange: 'orange team', teal: 'teal team', nobody: 'blank word', landmine: 'the Landmine' };
 
 type View = 'grid' | Team;
 type Mode = 'portrait' | 'narrow' | 'land' | 'land-s';
@@ -60,79 +66,6 @@ function useMode(): Mode {
   return mode;
 }
 
-/** Kind icons (Terms "Team icon"): circle, diamond, dash, landmine; SVG, 16 × 16, `aria-hidden`. */
-export function KindIcon({ kind }: { kind: Kind }) {
-  return (
-    <svg className={`swm-icon swm-icon-${kind}`} width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-      {kind === 'orange' && <circle cx="8" cy="8" r="6.5" />}
-      {kind === 'teal' && <path d="M8 1.2 14.8 8 8 14.8 1.2 8Z" />}
-      {kind === 'nobody' && <rect x="2" y="6.5" width="12" height="3" rx="1.5" />}
-      {kind === 'landmine' && (
-        <>
-          <circle cx="8" cy="9" r="5" />
-          <rect x="7" y="1" width="2" height="4" rx="1" />
-          <rect x="1" y="8" width="2.5" height="2" rx="1" />
-          <rect x="12.5" y="8" width="2.5" height="2" rx="1" />
-        </>
-      )}
-    </svg>
-  );
-}
-
-/** SWD-090: one font size for the board (22 down to 12 px); a word that doesn't fit at 12 px shrinks alone to 10 px. */
-function fitWords(words: readonly string[], cellWidth: number, family: string): { size: number; own: Record<number, number> } {
-  const ctx = typeof document === 'undefined' ? null : document.createElement('canvas').getContext('2d');
-  const room = cellWidth - 8;
-  if (!ctx || room <= 0) return { size: 16, own: {} };
-  const width = (w: string, s: number) => {
-    ctx.font = `600 ${s}px ${family}`;
-    return ctx.measureText(w).width;
-  };
-  let size = 12;
-  for (let s = 22; s >= 12; s--) {
-    if (words.every((w) => width(w, s) <= room)) {
-      size = s;
-      break;
-    }
-  }
-  const own: Record<number, number> = {};
-  words.forEach((w, i) => {
-    if (width(w, size) <= room) return;
-    let s = size;
-    while (s > 10 && width(w, s) > room) s -= 0.5;
-    own[i] = s;
-  });
-  return { size, own };
-}
-
-/** The screen-on lock while `on` (SWD-034): asked for when it turns on, let go when it turns off. */
-function useScreenOn(on: boolean) {
-  useEffect(() => {
-    if (!on) return;
-    let live = true;
-    let lock: { release: () => Promise<void> } | null = null;
-    try {
-      const api = (navigator as Navigator & { wakeLock?: { request: (t: 'screen') => Promise<{ release: () => Promise<void> }> } }).wakeLock;
-      if (api && typeof api.request === 'function') {
-        api
-          .request('screen')
-          .then((l) => {
-            if (live) lock = l;
-            else void l.release().catch(() => {});
-          })
-          .catch(() => {});
-      }
-    } catch {
-      // Not allowed here: nothing to do.
-    }
-    return () => {
-      live = false;
-      if (lock) void lock.release().catch(() => {});
-      lock = null;
-    };
-  }, [on]);
-}
-
 /** Opening (SWD-036): the same code keeps its found marks; a different one replaces the old map (with a toast). */
 function opening(keys: Preferences, map: MapPhoneOpen): { saved: SavedMap; replaced: boolean } {
   const old = readSavedMap(keys);
@@ -151,8 +84,7 @@ export function MapPhone({
   onHome,
   keys,
   prefs,
-  onClueRules,
-  startHidden = false,
+  renderClueRules,
 }: {
   map: MapPhoneOpen;
   onHome: () => void;
@@ -160,14 +92,16 @@ export function MapPhone({
   keys: Preferences;
   /** The app's preferences (Larger text). */
   prefs: Preferences;
-  /** "Clue rules" (SWD-011): How to play, then back here with the map hidden. */
-  onClueRules?: () => void;
-  /** Back from How to play: the map opens hidden ("Show map"). */
-  startHidden?: boolean;
+  /**
+   * "Clue rules" (SWD-011 v3.6): How to play in place of this screen, the map out of the page while it shows; its "Done"
+   * (`done`) returns here with the map hidden ("Show map").
+   */
+  renderClueRules?: (about: ClueRulesAbout, done: () => void) => ReactNode;
 }) {
+  const [rules, setRules] = useState(false);
   const [first] = useState(() => opening(keys, map));
   const [saved, setSaved] = useState<SavedMap>(first.saved);
-  const [mapShown, setMapShown] = useState(!startHidden && !(typeof document !== 'undefined' && document.visibilityState === 'hidden'));
+  const [mapShown, setMapShown] = useState(!(typeof document !== 'undefined' && document.visibilityState === 'hidden'));
   const [covered, setCovered] = useState(() => typeof document !== 'undefined' && document.visibilityState === 'hidden');
   const [view, setView] = useState<View>('grid');
   const [warning, setWarning] = useState(false);
@@ -250,24 +184,25 @@ export function MapPhone({
     };
   }, [restart]);
 
-  // SWD-032: hidden → the cover, and the map gone, in the same task; back → the map phone with the map hidden.
-  useEffect(() => {
-    const on = () => {
-      const hidden = document.visibilityState === 'hidden';
-      flushSync(() => {
-        setCovered(hidden);
-        if (hidden) hide();
-      });
-    };
-    document.addEventListener('visibilitychange', on);
-    window.addEventListener('pagehide', on);
-    return () => {
-      document.removeEventListener('visibilitychange', on);
-      window.removeEventListener('pagehide', on);
-    };
-  }, [hide]);
+  // SWD-032: hidden → the cover, and the map gone, in the same task (lane B's hook runs it in flushSync); back → the
+  // map phone with the map hidden.
+  usePageVisibility(
+    () => {
+      setCovered(true);
+      hide();
+    },
+    () => setCovered(false),
+  );
 
-  useScreenOn(mapShown && !covered);
+  useWakeLock(mapShown && !covered);
+
+  if (rules && renderClueRules && !('error' in board)) {
+    return (
+      <BlocksRoot className="sw" larger={larger}>
+        {renderClueRules({ names: { id: pair?.id ?? '', ...names }, board: board.board, audience: board.audience }, () => setRules(false))}
+      </BlocksRoot>
+    );
+  }
 
   if ('error' in board) {
     return (
@@ -409,7 +344,7 @@ export function MapPhone({
           className="swm-wide"
           onClick={() => {
             hide();
-            onClueRules?.();
+            if (renderClueRules) setRules(true);
           }}
         >
           Clue rules
@@ -527,7 +462,7 @@ function PressButton({ pressed, wide, onClick, children }: { pressed: boolean; w
 
 function MapGrid({ board, found, onTap, mode }: { board: Board; found: readonly number[]; onTap: (i: number) => void; mode: Mode }) {
   const ref = useRef<HTMLDivElement | null>(null);
-  const [fit, setFit] = useState<{ size: number; own: Record<number, number> } | null>(null);
+  const [fit, setFit] = useState<{ size: number; alone: Map<number, number> } | null>(null);
   const cols = board.board === 'easy' ? 4 : 5;
   useLayoutEffect(() => {
     const el = ref.current;
@@ -536,7 +471,7 @@ function MapGrid({ board, found, onTap, mode }: { board: Board; found: readonly 
       const cell = el.querySelector('[data-testid="map-cell"]');
       if (!cell) return;
       const family = getComputedStyle(cell).fontFamily;
-      setFit(fitWords(board.words, cell.getBoundingClientRect().width, family));
+      setFit(fitWords(board.words, cell.getBoundingClientRect().width - 8, family));
     };
     measure();
     window.addEventListener('resize', measure);
@@ -553,7 +488,7 @@ function MapGrid({ board, found, onTap, mode }: { board: Board; found: readonly 
       {board.words.map((word, i) => {
         const kind = board.kinds[i]!;
         const isFound = found.includes(i);
-        const own = fit?.own[i];
+        const own = fit?.alone.get(i);
         return (
           <button
             key={i}
@@ -561,7 +496,7 @@ function MapGrid({ board, found, onTap, mode }: { board: Board; found: readonly 
             className={`swm-cell swm-${kind}${isFound ? ' swm-found' : ''}`}
             data-testid="map-cell"
             data-index={i}
-            aria-label={`${word}, ${KIND_NAME[kind]}${isFound ? ', found' : ''}`}
+            aria-label={cellName({ word, kind, found: isFound })}
             onClick={() => onTap(i)}
           >
             <KindIcon kind={kind} />
@@ -629,7 +564,7 @@ function MapKey({ names, easy }: { names: { orange: string; teal: string }; easy
   }, [short, names.orange, names.teal]);
   const item = (kind: Kind, text: string) => (
     <span className="swm-key-item">
-      <KindIcon kind={kind} />
+      <KindIcon kind={kind} {...(kind === 'orange' || kind === 'teal' ? { className: `sw-ink-${kind}` } : {})} />
       <span>{text}</span>
     </span>
   );
