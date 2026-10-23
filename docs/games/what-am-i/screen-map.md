@@ -1,6 +1,6 @@
 # What Am I?: screen map (draft 4, product owner, 23 October 2026)
 
-**Status: draft 4.1** (23 October: T1 loses "Players (6) ›", which stays on R1 and in the menu, after the second Jev read and three prototype walks agreed T1 is crowded; section K4 gives the prototype renderer exact states). Every change from the critic pass, the six persona walks, the word guidelines check, the first Jev
+**Status: draft 4.2** (23 October: scenarios Version 1.2 applied: "End Riya's turn now", "player 1 of 6", the Join line, two-player dialog, sound and Do Not Disturb tips, new paths). Before that, draft 4.1 (23 October: T1 loses "Players (6) ›", which stays on R1 and in the menu, after the second Jev read and three prototype walks agreed T1 is crowded; section K4 gives the prototype renderer exact states). Every change from the critic pass, the six persona walks, the word guidelines check, the first Jev
 check and the owner's hold choices (drafts 2–3, sections J–O) is now written into the screens themselves; section H lists
 where each came from. Stage 1 of `docs/proposals/design-before-code.md` (step 1b of `docs/new-game-process.md`). Drawn from
 `guide.md`, `fit-and-stories.md`, `words.md` and the What Am I? decisions in `docs/decisions.md` (WA1–WA10 and the 23 October
@@ -111,7 +111,7 @@ standing behind a player; "Done".
 ### T1. Pass screen ("Riya, you're guessing")
 *Words, in the guesser's hand:* "Riya, you're guessing"; "Hold the phone on your forehead or chest, screen facing the
 room."; the drawing; rule line "Phone down: Got it · Phone up: Pass" (taps only: "Tap bottom: Got it · Tap top: Pass");
-score line "Round 1 · turn 1 of 6"; at most one tip line, in this order: "Joining this round: Zoya" · "Only 8 new Animals
+score line "Round 1 · player 1 of 6"; at most one tip line, in this order: "Joining this round: Zoya" · "Only 8 new Animals
 words left. After that, words come from Mix of all." · "All words used tonight. Words from earlier games come back, oldest
 first." · a phone tip on this phone's first turn only ("Turn your ringer on so you hear each word count." on iPhone /
 "Screen not turning? Turn off rotation lock." / "Keep your screen on during the turn."); quiet "Someone else goes first";
@@ -193,13 +193,13 @@ most."; quiet "Players (6) ›"; quiet "Change players or words"; quiet "End the
 ## E. Dialogs during a game
 | # | Dialog | Words | Buttons → where | Records | IDs |
 |---|---|---|---|---|---|
-| D1 | Paused (cover) | "Paused"; the where-line; "The word is hidden. Tap Carry on playing when you're ready." | **Carry on playing** → T1, or T2 countdown again then T3 with a **new** word (the hidden one goes back unused) and the time left · quiet "Skip Riya's turn" → D7 · quiet "← Home (game saved)" → A1 | `resume` | WAI-06 |
+| D1 | Paused (cover) | "Paused"; the where-line; "The word is hidden. Tap Carry on playing when you're ready." | **Carry on playing** → T1 or T4 (paused there), or T2 countdown again then T3 with a **new** word (the hidden one goes back unused) and the time left · quiet "End Riya's turn now" → D7 · quiet "← Home (game saved)" → A1 | `resume` | WAI-06 |
 | D2 | Players | top line "Add a name to join. New players go after the last player in this round."; names with "✕" and drag handles; add row | Done → back; ✕ → D3; from "Someone else goes first", tap a name → T1 for them | `addPlayer`, `reorder` | WAI-06 |
 | D3 | Kabir has to leave? | "Kabir's points stay on tonight's scoreboard." If only 1 would be left: "2 players needed. Add someone, or end the game." | Kabir leaves → back, toast "Kabir left · Undo" (10 s); if Kabir was on T1, T1 moves to the next player · **Don't remove Kabir** → D2 · (1 left) Add a player → D2 · End the game → D5 | `leave` | WAI-06 |
 | D4 | Words and time (menu, between turns only) | S2's choices; mid-turn the item is greyed with "After this turn" | Done → back (applies from the next turn) | setup | WAI-03 |
 | D5 | End the game? | "Shows this game's winner. You can play again with the same people." | End the game → G1, toast "Game ended · Undo" (10 s) · **Keep playing** → back | `endGame` | WAI-07 |
 | D6 | End for tonight? | "Shows tonight's summary. Every score is kept in History." | End for tonight → G2 · **Keep playing** → back | — | WAI-07 |
-| D7 | Skip Riya's turn? | "Words marked so far still count." | Skip Riya's turn → T4 with what was marked · **Carry on playing** → D1 | `timeUp` | WAI-06 |
+| D7 | End Riya's turn now? | "Riya's turn ends now. Words marked so far still count." | End Riya's turn now → T4 "Turn ended early. Riya got 2" with what was marked · **Carry on playing** → D1 | `skip` | WAI-06 |
 
 ## F. After a game, after the night
 
@@ -222,7 +222,7 @@ turns) · Zoya 6 (1 turn)"); fun lines "Best turn: Meena, 8 words" · "Words nob
 | Tap | Leads to | Records | IDs |
 |---|---|---|---|
 | Oops, keep playing | where the host came from | nothing | WAI-07 |
-| ← Home / Play something else | A1 / A2 (tonight's names kept) | `endEvening` | WAI-07 |
+| ← Home / Play something else | A1 / A2 (tonight's names kept; `endEvening` was recorded at D6) | — | WAI-07 |
 
 ## G. The paths (the finite list for the coverage map)
 ```
@@ -232,7 +232,9 @@ T1→T0→T2  T1→T2  T1(hands-free)→T2  T1→T1(hands-free|hold it)  T1→D2
 T2→T3  T2→D1→T2
 T3→T3(got|pass|ignored)  T3→T4(time up)  T3→D1→T2→T3(new word)  T3→D1→D7→T4  T3→D1→A1
 T4→T4(fix)  T4→T1  T4→R1  T4→(undo)T4  T4→A1
-R1→T1  R1→D2→R1  R1→S1→S2→T1  R1→D5→G1  R1→A1
+R1→T1  R1→D2→R1  R1→S1→S2→T1  R1→S1→R1(back to the game)  R1→D5→G1  R1→A1
+menu→Settings→same  menu→History→same  G2→menu→Delete tonight's games  D3(2 left)→D2(add)|D2(don't remove)|D5
+D2(who goes now)→T1(kept first)  G1→(undo)D1|T4  any dialog→Back→closes  (12 h later)→History  T4→D4→T4
 any game screen→D1→same   any→D2→D3→same|D5   between turns→D4→same   any→D5→G1   any→D6→G2
 G1→T1  G1→S1→S2→T1  G1→D6→G2  G1→A1  G1→(undo)step
 G2→(back)step  G2→A1  G2→A2
@@ -266,7 +268,7 @@ only, never a row's description; the word "quiet" and the quote marks are never 
   with its line; two switches (non-veg off, Sounds on); the "Ready as it is…" line; main "Start with these words" (→ S3). The
   page scrolls; the main button never covers other text.
 - **S4:** the seven lines of the scenarios' How to play (version 1.1 item 42) and the three drawings as labelled boxes; "Done".
-- **T1:** the hand-hold state for Riya ("Round 1 · turn 1 of 6", no tip line); "Hands-free for Riya" switches to the hands-free
+- **T1:** the hand-hold state for Riya ("Round 1 · player 1 of 6", no tip line); "Hands-free for Riya" switches to the hands-free
   state (shown as Kabir's turn in K2); main → T0 the first time, then T2.
 - **T2:** "3" with the line; main absent; after 3 s (or a tap anywhere) → T3.
 - **T3:** sideways frame (812 × 375 by default for this screen); the top line, the word **TIGER** large, "Animals", "0:34",
@@ -277,7 +279,7 @@ only, never a row's description; the word "quiet" and the quote marks are never 
 - **R1, G1:** the full scoreboard of K2 as a list ("Arjun 7 (1 turn)", "Dev 6 (1 turn)", … after round 1; "Arjun 14 (2 turns)",
   "Meena 13 (2 turns)", … at game over).
 - **D2:** the six names with "✕" and handles, the add row, the top line, "Done".
-- **D1:** "Carry on playing" (main), "Skip Riya's turn", "← Home (game saved)" (no "quiet" text).
+- **D1:** "Carry on playing" (main), "End Riya's turn now", "← Home (game saved)" (no "quiet" text).
 - **Guards:** a double tap on a main button counts once (the 800 ms / 1 s guard), so T1 never skips T2.
 - **Back:** the browser Back goes to the previous prototype screen, not the index.
 
@@ -291,7 +293,7 @@ back." and the where-line "Round 2 · Arjun guessing, 34 s left".
 |---|---|
 | Critic helper, pass of draft 1 (23 October) | rotation lock; ringer tip; screen awake; one move one mark; edge taps; T4 stop, home and undo; Home on T1 and D1; joiners this round; leave down to 1; all words used; "Carry on playing" from R1; Settings to turn moving back on; example data; 26 words replaced; WAI-08 unused |
 | Six persona walks of draft 2 (`map-walk-2026-10-23.md`) | Pause button and gestures; tap guard never carries; one word for Home; End lines; when the game ends; chosen time in S3; fix after time's up; T1 one tip at a time; the rule line on T1; Players on T1 and R1; Undo until the next start; S2 words and ticks; Skip asks first; a new word after a pause; ↺ and turns played; two-line resume row |
-| Word guidelines (`docs/word-guidelines.md`) | verb-and-object buttons ("Don't remove Kabir", "Use taps instead", "Carry on playing", "Skip Riya's turn"); "Oops, keep playing" kept; "I'm Riya: start"; one word per idea; counted plurals; "Words from every pack." |
+| Word guidelines (`docs/word-guidelines.md`) | verb-and-object buttons ("Don't remove Kabir", "Use taps instead", "Carry on playing", "End Riya's turn now"); "Oops, keep playing" kept; "I'm Riya: start"; one word per idea; counted plurals; "Words from every pack." |
 | First Jev check (`jev-check.md`) | "move the phone down / up" (owner chose it over tilt and nod); "Which words?", "Time for each turn", "Start with these words", "Ready as it is…"; "Give clues. Don't say the word!" on T3 |
 | Owner, 23 October | forehead or chest; hands-free mode and per-player choice |
 

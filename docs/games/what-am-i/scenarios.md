@@ -1,6 +1,6 @@
-# What Am I?: scenarios (version 1.1 draft, 23 October 2026)
+# What Am I?: scenarios (version 1.2 draft, 23 October 2026)
 
-Status: **draft 1.1, not yet approved** (the two-reader check of version 1 is resolved in section "Version 1.1" below). Drawn from `screen-map.md` draft 4 (binding where this file is silent), `guide.md`,
+Status: **draft 1.2, not yet approved** (the two-reader check is resolved in "Version 1.1"; three more persona walks and the critic pass in "Version 1.2", `map-walk-2-2026-10-23.md`). Drawn from `screen-map.md` draft 4 (binding where this file is silent), `guide.md`,
 `words.md` and the What Am I? decisions in `docs/decisions.md` (WA1–WA10 and the rows of 23 October). Written to
 `docs/spec-rules.md`. Before approval: the two-reader check (rule 12), then the owner. After approval the tester copies each
 section into `specs/what-am-i/` (file names in the headings) and writes tests. Build only after Secret Words is released
@@ -159,7 +159,7 @@ in 04).
 **Smaller**
 45. WAI-003's options are `role="radio"` with `aria-checked` (an exception to Impostor's Selected term). Last-used values are
     saved at `start`.
-46. Pause on T1 or T4: the cover without "Skip Riya's turn". Each tap on a T4 word is one `fix` (no guard on word chips).
+46. Pause on T1 or T4: the cover without "End Riya's turn now". Each tap on a T4 word is one `fix` (no guard on word chips).
 47. WAI-081: live region `data-testid="mark-live"`; flash text 4.5:1 against the flash colour.
 48. WAI-082, exact: no screen text contains, as a whole word, case-insensitive, "tilt", "tilting", "nod", "session", "evening"
     or "card"; "clue" appears only in "Give clues", "gives clues", "Clue givers", "clue giver".
@@ -167,6 +167,49 @@ in 04).
     Back gesture (`popstate`); **WAI-H10** wall clock and time zone; **WAI-H11** clear this phone's stored state.
 50. **T1 without Players** (second Jev read and three prototype walks, 23 October): T1 has no "Players (6) ›"; Players is
     on R1 and in the menu. WAI-012's and the Canonical strings' mentions of it on the pass screen are withdrawn.
+
+## Version 1.2: three more persona walks and the critic pass (23 October)
+**Every item below wins over the earlier text and over Version 1.1.** Source: `map-walk-2-2026-10-23.md`.
+1. **A guest on their own phone** (guest walk, stuck): Home's shared "Join a game" screen gains the line, after the other games'
+   lines: "What Am I? is played on the host's phone. Ask the host to add your name." (`join-line-what-am-i`).
+2. **"End Riya's turn now"** replaces "Skip Riya's turn" everywhere (uncle, guest: "Pass" vs "Skip"). Its dialog: h1 "End Riya's
+   turn now?", body "Riya's turn ends now. Words marked so far still count.", buttons "End Riya's turn now" / "Carry on playing"
+   (main). It records `skip` (Version 1.1 item 15), and T4 then reads "Turn ended early. Riya got 2".
+3. **Score line** "Round 1 · player 1 of 6" (was "turn 1 of 6"; walks mixed "turn" and "round"); same k and n as Version 1.1 item 31.
+4. **Hold, one place to read it** (uncle, distracted host): S2's "How to hold the phone" gains the small line "You can change
+   this for one player on their turn." T1's quiet buttons stay "Hands-free for Riya" / "Riya will hold it".
+5. **Ending with an unfinished round** (critic 4, uncle): when End the game is opened mid-round, its body is "Round 2 isn't done:
+   Zoya and Dev haven't played. Shows this game's winner." (names of current players still to play, joined with ", " and " and ";
+   more than 3: "4 players haven't played."). Main stays "Keep playing".
+6. **A visible record** (uncle): G1 gains the small line "Moved after time's up: 3 words · Turns ended early: 1" (each part only
+   when not 0; the whole line left out when both are 0).
+7. **Two players left** (critic 2): that dialog's buttons become "End the game", quiet "Don't remove Kabir" (→ D2), and main
+   "Add a player" (focuses the add row).
+8. **θ₀ only when steady** (critic 1): θ₀ is set from [2500, 3000) ms of T2 only if every event there is within 10 of their mean
+   and |mean| < 35. Otherwise θ₀ is set from the first 500 ms span of T3 whose events are all within 10 of their mean; until then
+   motion marks are ignored (taps work).
+9. **Sound tip for everyone** (critic 6, 10): the ringer tip becomes "Turn the sound up so the guesser hears each word count.",
+   on both platforms, on the first turn of every game, while Sounds is on. "Ringer" never appears.
+10. **Screen-on tip sooner** (critic 3): "Keep your screen on during the turn." shows on the next T1 after any refused wake lock,
+    once per game; it ranks right after "Joining this round".
+11. **Rotation tip by platform** (critic 10): iPhone "Screen not turning? Turn off rotation lock."; Android "Screen not turning?
+    Turn on Auto-rotate."
+12. **Do Not Disturb** (critic 7): Read this aloud ends with the sentence "Tip: turn on Do Not Disturb so messages don't buzz."
+    A notification banner or a system dialog over the page (battery saver, a permission prompt) does not pause the turn; only
+    the page being hidden does (WAI-040).
+13. **Saying the word or peeking** (critic 11): How to play gains line 5b, after line 5: "Said the word, or the guesser peeked?
+    Move that word to Passed when time's up."
+14. **Motion off by choice** (distracted host): T0's paragraph ends "You can change this in Settings."
+15. **Home row for a paused turn** (distracted host): line 1 uses the where-line: "What Am I? · Round 2 · Arjun guessing, 34 s
+    left"; tapping it opens the Paused cover, where "Carry on playing" counts 3, 2, 1 and shows a new word with that time.
+16. **Settings and History in a game:** menu "Settings" opens the app's Settings sheet; "Done" returns to the same screen,
+    unchanged. Menu "History" opens History; its "← Back" returns to the same screen. G2's menu "Delete tonight's games" works as
+    Impostor's (IMP-105's delete, with its confirm).
+17. **Phone Back on screens without a turn:** S1–S4 as their "← Back"; G1 and G2 as "← Home"; on any dialog it closes the dialog
+    (as its quiet, non-destructive button).
+18. **Kept as decided:** R2 stays (a paused word goes back unshown; the guesser never sees the word, so it can fairly come back);
+    shared ties (WA7); the guards' greyed look (all games). **Out of scope:** two host phones in one game; each phone keeps its
+    own words.
 
 ## Terms
 Terms defined in `docs/games/impostor/scenarios.md` mean exactly the same here: **main button, quiet button, selected, tint,
@@ -214,8 +257,8 @@ Plurals: "1 word" / "2 words"; "1 turn" / "2 turns"; "1 game" / "2 games"; "6 pl
 | Word screen | top line "Give clues. Don't say the word!" / hands-free "Clue givers: tap bottom for Got it, top for Pass."; the word; pack name; time "0:34"; flashes "Got it!" / "Pass"; button "Pause" | small line; `the-word`; small line; `time-left`; `mark-flash`; button | WAI-020 |
 | Time's up | h1 "Time's up! Riya got 5"; h2 "Got it", "Passed"; word buttons "Owl" / moved "Owl ↺"; lines "Marked wrong? Tap a word to move it.", "Next: Arjun" / last of round "Next: round over"; quiet "← Home (game saved)"; main "Save score"; toast "Riya: 5 saved · Undo" | h1; h2; buttons; small lines; main; `undo-toast` | WAI-030, 031 |
 | Round over | h1 "Round 1 done"; scoreboard rows "Arjun 7 (1 turn)"; line "Words nobody got: Penguin, Zebra"; small line "Play as many rounds as you like; tap End the game to see who got the most."; quiet "Players (6) ›", "Change players or words", "End the game", "← Home (game saved)"; main "Round 2" | h1; `scoreboard` list; small lines; buttons | WAI-033 |
-| Paused | dialog "Paused"; where-line; "The word is hidden. Tap Carry on playing when you're ready."; quiet "Skip Riya's turn", "← Home (game saved)"; main "Carry on playing" | dialog | WAI-040 |
-| Skip | dialog "Skip Riya's turn?"; "Words marked so far still count."; "Skip Riya's turn" / "Carry on playing" (main) | dialog | WAI-043 |
+| Paused | dialog "Paused"; where-line; "The word is hidden. Tap Carry on playing when you're ready."; quiet "End Riya's turn now", "← Home (game saved)"; main "Carry on playing" | dialog | WAI-040 |
+| Skip | dialog "End Riya's turn now?"; "Words marked so far still count."; "End Riya's turn now" / "Carry on playing" (main) | dialog | WAI-043 |
 | Players | dialog "Players"; top line "Add a name to join. New players go after the last player in this round."; ✕ per name; Done | dialog | WAI-041 |
 | Leave | dialog "Kabir has to leave?"; "Kabir's points stay on tonight's scoreboard."; "Kabir leaves" / "Don't remove Kabir" (main); toast "Kabir left · Undo"; one left: "2 players needed. Add someone, or end the game." with "Add a player" / "End the game" | dialog; toast | WAI-042 |
 | End the game | dialog "End the game?"; "Shows this game's winner. You can play again with the same people."; "End the game" / "Keep playing" (main); toast "Game ended · Undo" | dialog; toast | WAI-060 |
@@ -250,7 +293,7 @@ the field focused (as SWD-132). "← Back" → the picker. "Next" → Words and 
 
 ### WAI-003 Words and time
 Status: draft · Phase: What Am I? 1
-One screen, no page scrolling at 390 × 844 with Larger text off; elsewhere it scrolls, the main button stays fixed.
+The page scrolls at every size; the main button stays fixed.
 1. **"Which words?"**: a radio group of 9 options in this order: Mix of all, Animals, Food, Around the house, Jobs, Sports and
    cricket, Festivals and places, Act it out, Famous Indians. Each label "<Pack> · <n> words" with n = eligible words of that
    pack (R3 for Mix of all). With `words.csv` edition 1 and non-veg off: Mix of all 743, Animals 93, Food 89, Around the house
@@ -322,8 +365,8 @@ chest, screen facing the room."; the forehead-and-chest drawing; rule line "Phon
 unavailable: "Tap bottom: Got it · Tap top: Pass"); quiet "Hands-free for Riya"; main "I'm Riya: start". **Hands-free:** small
 line "Stand the phone behind Riya, facing the room. Riya, don't turn round!"; the standing-phone drawing; rule line "One clue
 giver taps: bottom half Got it · top half Pass"; when Riya chose it in a hand-hold game, the small line "Hands-free (Riya's
-choice)"; quiet "Riya will hold it"; main "Start Riya's turn". Both: score line "Round 1 · turn 1 of 6" (turn k of the round's
-current length); the tip line (WAI-011); quiet "Someone else goes first", "Players (6) ›" (count of current players), "← Home
+choice)"; quiet "Riya will hold it"; main "Start Riya's turn". Both: score line "Round 1 · player 1 of 6" (turn k of the round's
+current length); the tip line (WAI-011); quiet "Someone else goes first", "← Home
 (game saved)"; Pause; "··· Menu". Main guard 1000 ms.
 
 ### WAI-013 Motion permission and the motion question
@@ -446,7 +489,7 @@ left kept; the hidden word goes to the end of the queue unshown (R2). "← Home 
 
 ### WAI-041 Players during a game
 Status: draft · Phase: What Am I? 1
-Players (from "Players (6) ›" on T1 and R1, or the menu) lists the players in turn order with ✕ and drag handles, an add row,
+Players (from "Players (6) ›" on R1, or the menu) lists the players in turn order with ✕ and drag handles, an add row,
 and the top line "Add a name to join. New players go after the last player in this round." Adding Om mid-round records
 `addPlayer` and puts Om at the end of the turn order; he takes a turn this round and T1 shows "Joining this round: Om" until
 then. Dragging records `reorder` (only among players still to play this round; players who have played stay in place). Re-adding
@@ -461,7 +504,7 @@ Leaving is not offered during T2–T3 (the menu's Players item is greyed with th
 
 ### WAI-043 Skip a turn
 Status: draft · Phase: What Am I? 1
-"Skip Riya's turn" on the Paused cover (during T2/T3 only) opens "Skip Riya's turn?". "Skip Riya's turn" records `timeUp` (the
+"End Riya's turn now" on the Paused cover (during T2/T3 only) opens "End Riya's turn now?". "End Riya's turn now" records `skip` (the
 hidden word goes back unshown, R2) and opens T4 with what was marked; "Carry on playing" → back to the cover.
 
 ### WAI-044 Words and time mid-game
@@ -542,7 +585,7 @@ what an old game shows.
 
 ## Test hooks the build provides
 - **WAI-H1** Rule API in `src/games/what-am-i/index.ts` (pure), fitting the engine (`startMatch`, `play`, `replay`, `viewFor`,
-  `SavedGame`, `createRng`, `shuffle`). Moves: `start`, `got`, `pass`, `timeUp`, `fix`, `scoreTurn`, `undoScore`, `pause`,
+  `SavedGame`, `createRng`, `shuffle`). Moves: `start`, `got`, `pass`, `timeUp`, `skip`, `fix`, `scoreTurn`, `undoScore`, `pause`,
   `resume`, `addPlayer`, `leave`, `reorder`, `setHold`, `setChoices`, `setPlayers`, `endGame`, `endEvening`. Seeds:
   `{ words: string }`. `queueFor(state)` returns the remaining queue (ids) for tests.
 - **WAI-H2** Fake clock for the countdown, the turn clock, guards and toasts.
