@@ -31,7 +31,7 @@ SWD-063, 067), `secret-words-players-history.spec.ts` (D7 with D7a/D7b, E1, E1a)
 |---|---|---|
 | Heading | `game-heading`, an h1: "Chai Champions win!" / "Coffee Commandos win!" / "Game ended. No winner." | SWD-051, 054 |
 | Line | `result-line`: "All 9 words found." (winner's total 9, 8, 6 or 5) / "Boom! Chai Champions hit the Landmine." (the team that hit it); none when ended early | SWD-051 |
-| Board | `word-board` with every cell named by kind: turned over "Kite, orange team"; face down now "Kite, teal team, not found" ("blank word", "the Landmine"); faded fill = `color-mix(in srgb, <kind token> 20%, var(--surface))`, word colour `--text`, opacity 1; turned-over fill = the kind token | SWD-051 v3.6, 093 |
+| Board | `word-board` with every cell named by kind: turned over "Kite, orange team"; face down now "Kite, teal team, not found" ("nobody's word", "the Landmine"); faded fill = `color-mix(in srgb, <kind token> 20%, var(--surface))`, word colour `--text`, opacity 1; turned-over fill = the kind token | SWD-051 v3.6, 093 |
 | Narrow portrait | Full: `turn-sideways` "Turn your phone sideways to see the board." and no visible cells; Easy: the 16 cells | SWD-051, 092 |
 | `near-miss` | "Coffee Commandos were 1 word away!" / "… 2 words away!"; only after a won game (the Landmine included) | SWD-128 |
 | `best-clue` | "Best clue: Ocean 2 · all 2 found" / "… · 3 found" / "Best clue: Rain ∞ · 9 found" / "Best clue: Rain 0 · 9 found" (DOM text as typed, the word upper case by CSS, so `innerText` shows "OCEAN"); earliest on a tie; absent when none found ≥ 2 | SWD-128 |

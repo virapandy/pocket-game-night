@@ -86,12 +86,12 @@ export async function fromMenu(page: Page, item: string) {
   await menuItem(page, item).click();
 }
 
-/** The kind an accessible name gives (SWD-093: "Kite, orange team" / "Kite, teal team" / "Kite, blank word" / "Kite, the Landmine"). */
+/** The kind an accessible name gives (SWD-093: "Kite, orange team" / "Kite, teal team" / "Kite, nobody's word" / "Kite, the Landmine"). */
 export function kindOf(name: string): Kind | 'face down' | null {
   if (/, face down$/.test(name)) return 'face down';
   if (/, orange team\b/.test(name)) return 'orange';
   if (/, teal team\b/.test(name)) return 'teal';
-  if (/, blank word\b/.test(name)) return 'nobody';
+  if (/, nobody's word\b/.test(name)) return 'nobody';
   if (/, the Landmine\b/.test(name)) return 'landmine';
   return null;
 }

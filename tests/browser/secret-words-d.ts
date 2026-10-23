@@ -49,7 +49,7 @@ export function turnedOver(ev: Evening): Set<number> {
   return out;
 }
 
-const PHRASE: Record<Kind, string> = { orange: 'orange team', teal: 'teal team', nobody: 'blank word', landmine: 'the Landmine' };
+const PHRASE: Record<Kind, string> = { orange: 'orange team', teal: 'teal team', nobody: "nobody's word", landmine: 'the Landmine' };
 /** SWD-051, 093: the accessible names of the whole map at game over (face-down cells: ", not found"). */
 export function wholeMapNames(b: OracleBoard, turned: Set<number>): string[] {
   return b.words.map((w, i) => `${w}, ${PHRASE[b.kinds[i]!]}${turned.has(i) ? '' : ', not found'}`);
@@ -69,7 +69,7 @@ export interface UiState { step: string; angles?: { orange: 0 | 180; teal: 0 | 1
  * Opens the app at `now` (default: a minute after the last move) on a phone holding these Secret Words evenings, their
  * session and, per evening id, the UI state `pgn.secretWords-ui.<id>` (SWD-048). This is a reload of the app.
  */
-export async function phoneWithEvenings(page: Page, saved: any[], o: { now?: number; ui?: Record<string, UiState>; storage?: Record<string, unknown> } = {}) {
+export async function phoneWithEvenings(page: Page, saved: any[], o: { now?: number; ui?: Record<string, UiState>; storage?: Record<string, unknown>; fixed?: boolean } = {}) {
   const storage: Record<string, unknown> = { ...o.storage };
   for (const e of saved) {
     storage[`pgn.game.${e.id}`] = e;
@@ -79,7 +79,7 @@ export async function phoneWithEvenings(page: Page, saved: any[], o: { now?: num
     storage[`pgn.secretWords-ui.${id}`] = { angles: { orange: 0, teal: 0 }, paused: false, pickerOverride: null, ...ui };
   }
   const now = o.now ?? Math.max(...saved.map(lastAt)) + 60_000;
-  await freshPhone(page, { time: now, storage });
+  await freshPhone(page, { time: now, storage, fixed: o.fixed });
 }
 
 /**

@@ -11,7 +11,7 @@ import { oracleBoard, waitGuards } from './secret-words';
 import {
   bestClue, bestClueFlows, box, boardCells, button, cellNames, cellsOfKind, clueCredit, CODES, dialog, EASY_CODES, endForTonight,
   exampleTeams, flows, fromMenu, gameHeading, heldLocks, hideAndShowApp, home, homeButton, menuItems, movesAfter, movesOf,
-  NAME, nearMiss, needsLanes, nextClueGivers, openGameOver, openOn, phoneWithEvenings, playAgain,
+  NAME, nearMiss, nextClueGivers, openGameOver, openOn, phoneWithEvenings, playAgain,
   resolvedColour, resultLine, savedById, savedEvenings, savedOf, summaryHeading, summaryLine, tally, teamBar,
   SwEvening, turnedOver, undoToast, watchWakeLock, wholeMapNames,
 } from './secret-words-d';
@@ -210,7 +210,6 @@ test.describe('D6 End the game, from a game step (SWD-054)', () => {
   }
 
   test('the dialog: "End the game" and main "Keep playing"; Keep playing goes back to guessing and records nothing', async ({ page }) => {
-    needsLanes('B', 'guessing after a reload and its menu (SWD-048, 110)');
     const { n, d } = await toDialog(page);
     await expect(d.getByRole('button', { name: 'End the game', exact: true })).toBeVisible();
     await expect(d.getByTestId('main-button')).toHaveText('Keep playing');
@@ -222,7 +221,6 @@ test.describe('D6 End the game, from a game step (SWD-054)', () => {
   });
 
   test('"End the game": game over "Game ended. No winner." with the 10 s toast "Game ended · Undo"; endGame recorded when it expires', async ({ page }) => {
-    needsLanes('B', 'guessing after a reload and its menu (SWD-048, 110)');
     const { n, d } = await toDialog(page);
     await waitGuards(page);
     await d.getByRole('button', { name: 'End the game', exact: true }).click();
@@ -238,7 +236,6 @@ test.describe('D6 End the game, from a game step (SWD-054)', () => {
   });
 
   test('"Undo" within 10 s returns to guessing as it was and records nothing, then or later', async ({ page }) => {
-    needsLanes('B', 'guessing after a reload and its menu (SWD-048, 110)');
     const { n, d } = await toDialog(page);
     const clueLine = await page.getByTestId('clue-line').textContent().catch(() => null);
     await waitGuards(page);
@@ -254,7 +251,6 @@ test.describe('D6 End the game, from a game step (SWD-054)', () => {
   });
 
   test('a tap that leaves game over ("← Home") records endGame at once; "Players" and "Swap clue givers" don\'t', async ({ page }) => {
-    needsLanes('B', 'guessing after a reload and its menu (SWD-048, 110)');
     const { n, d } = await toDialog(page);
     await waitGuards(page);
     await d.getByRole('button', { name: 'End the game', exact: true }).click();
@@ -270,7 +266,6 @@ test.describe('D6 End the game, from a game step (SWD-054)', () => {
   });
 
   test('the app hidden while the toast runs records endGame', async ({ page }) => {
-    needsLanes('B', 'guessing after a reload and its menu (SWD-048, 110)');
     const { n, d } = await toDialog(page);
     await waitGuards(page);
     await d.getByRole('button', { name: 'End the game', exact: true }).click();
@@ -285,7 +280,6 @@ test.describe('SWD-055: New board', () => {
   test.use({ viewport: { width: 390, height: 844 } });
 
   test('menu "New board" → "New board": dealNew with the next board; the new starting team\'s pass screen, turn 1; tally unchanged', async ({ page }) => {
-    needsLanes('B', 'the pass screen after a reload, its menu, the New board dialog (D5) and Pause (SWD-048, 110)');
     const ev = flows.tealPassStep(); // turn 2: Coffee Commandos' pass screen
     const n = ev.records.length;
     await openOn(page, savedOf(ev), page.getByTestId('turn-heading'));
@@ -330,7 +324,6 @@ test.describe('SWD-053/066: Play again', () => {
   });
 
   test('one phone: then the new starting team\'s pass screen for its new clue giver', async ({ page }) => {
-    needsLanes('B', 'the pass screen (P1)');
     await openGameOver(page, orangeWinsAtOnce());
     await playAgain(page).click();
     await expect(page.getByTestId('turn-heading')).toHaveText('Coffee Commandos, your turn');
@@ -338,7 +331,6 @@ test.describe('SWD-053/066: Play again', () => {
   });
 
   test('two phones: then the scan screen', async ({ page }) => {
-    needsLanes('B', 'the scan screen (S7)');
     await openGameOver(page, orangeWinsAtOnce({ choices: { map: 'shared' } }));
     await playAgain(page).click();
     await expect(page.getByRole('heading', { name: 'Clue givers: scan to get the secret map' })).toBeVisible();
@@ -359,7 +351,6 @@ test.describe('SWD-112: game over, what next', () => {
   });
 
   test('SWD-062/111: Home\'s row resumes at game over, as it was', async ({ page }) => {
-    needsLanes('A', 'Home\'s Secret Words row (SWD-115)');
     await openGameOver(page, orangeWinsAtOnce());
     await homeButton(page).click();
     const row = page.getByTestId('unfinished-games').filter({ hasText: /Secret Words/ });
@@ -371,7 +362,6 @@ test.describe('SWD-112: game over, what next', () => {
   });
 
   test('"Swap clue givers": the Clue givers sheet for the next game; "Done" updates the line; nothing recorded until Play again', async ({ page }) => {
-    needsLanes('A', 'the Clue givers sheet (S2a, SWD-007)');
     const ev = orangeWinsAtOnce();
     const n = ev.records.length;
     await openGameOver(page, ev);
@@ -392,7 +382,6 @@ test.describe('SWD-112: game over, what next', () => {
   });
 
   test('"Change teams, players, phones or board": Who\'s playing? with tonight\'s names and "← Back to the game", which returns to game over', async ({ page }) => {
-    needsLanes('A', 'Who\'s playing? from game over (S1, SWD-003)');
     const ev = orangeWinsAtOnce();
     await openGameOver(page, ev);
     await button(page, 'Change teams, players, phones or board').click();
@@ -405,7 +394,6 @@ test.describe('SWD-112: game over, what next', () => {
   });
 
   test('→ Make teams (no "New team names") → Choices → "Start the game": no read-aloud; records setChoices, then the deal', async ({ page }) => {
-    needsLanes('A', 'Who\'s playing?, Make teams and Choices from game over (S1–S3)');
     const ev = orangeWinsAtOnce();
     const n = ev.records.length;
     await openGameOver(page, ev);
@@ -650,10 +638,10 @@ test.describe('D8 End for tonight and G2 the summary (SWD-060, 128)', () => {
     await expect(button(page, 'Oops, keep playing')).toHaveCount(0);
   });
 
-  test('SWD-128: two games: "7 players · 2 games · 17 words found", the tally, credits in order of first credit', async ({ page }) => {
-    const ev = flows.twoGames(); // Coffee Commandos find their 8 in game 2
+  test('SWD-128: two games: "7 players · 2 games · 18 words found", the tally, credits in order of first credit', async ({ page }) => {
+    const ev = flows.twoGames(); // Coffee Commandos start game 2 and find all 9 of their words
     await toSummary(page, ev);
-    await expect(summaryLine(page)).toHaveText('7 players · 2 games · 17 words found');
+    await expect(summaryLine(page)).toHaveText('7 players · 2 games · 18 words found');
     await expect(tally(page)).toHaveText('Tonight: Chai Champions 1 · Coffee Commandos 1');
     await expect(clueCredit(page)).toHaveText('Clues tonight from Riya, Arjun, Meena and Kabir');
   });
@@ -667,7 +655,6 @@ test.describe('D8 End for tonight and G2 the summary (SWD-060, 128)', () => {
   });
 
   test('mid-game: "End for tonight? This game won\'t count in the tally."; the game counts as ended early; "Oops" returns; "← Home" records endGame then endEvening', async ({ page }) => {
-    needsLanes('B', 'guessing after a reload and its menu (SWD-048, 110)');
     const ev = midGame();
     const n = ev.records.length;
     await openOn(page, savedOf(ev), page.getByTestId('turn-line'));
@@ -736,7 +723,7 @@ test.describe('SWD-063: the 12-hour limit', () => {
   test('at exactly 12 hours after the last move the game night is still unfinished', async ({ page }) => {
     const saved = savedOf(midGame());
     const last = saved.records.at(-1).at;
-    await phoneWithEvenings(page, [saved], { now: last + H12 });
+    await phoneWithEvenings(page, [saved], { now: last + H12, fixed: true }); // the app's time stays at exactly 12 h while it opens
     await expect(home(page)).toBeVisible();
     await page.clock.runFor(500);
     const now = await savedById(page, ID);
@@ -747,7 +734,7 @@ test.describe('SWD-063: the 12-hour limit', () => {
   test('1 ms later: endGame and endEvening recorded at the last move + 12 hours; Home, no summary', async ({ page }) => {
     const saved = savedOf(midGame());
     const last = saved.records.at(-1).at;
-    await phoneWithEvenings(page, [saved], { now: last + H12 + 1 });
+    await phoneWithEvenings(page, [saved], { now: last + H12 + 1, fixed: true });
     await expect(home(page)).toBeVisible();
     await expect(summaryHeading(page)).toHaveCount(0);
     await expect.poll(async () => (await savedById(page, ID)).records.length).toBe(saved.records.length + 2);
@@ -784,7 +771,6 @@ test.describe('SWD-063: the 12-hour limit', () => {
 test.describe('SWD-067: Start new (ends that one)', () => {
   test.use({ viewport: { width: 390, height: 844 } });
   test('from the picker: endGame and endEvening for the old game night, then Who\'s playing?; no summary', async ({ page }) => {
-    needsLanes('A', 'the picker\'s Secret Words card and the Start new dialog (A2, A3, SWD-115)');
     const saved = savedOf(midGame());
     const n = saved.records.length;
     await phoneWithEvenings(page, [saved]);

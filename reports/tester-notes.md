@@ -70,3 +70,4 @@ Read this and the top of `reports/latest.md` before starting. Keep it short: rep
   `needsLanes(...)` (expected to fail); remove the call when Playwright says "expected to fail, but passed".
 - New area entry in `areas.json` (its own block near the end, so lane A's and B's edits of the Secret Words block merge).
 - Questions of 23 October in docs/test-questions.md (bar gap 8 vs 16 px; SWD-051 Landmine wording; credit order etc.).
+- Round 2 (23 October): lane D marks all removed (they pass on 918c937). lane-f still needs origin/main merged: the merge conflicts in app files (the coder copied main's app in by hand, 48b6629), so the Build side must merge; test-owned files already match main where lane D doesn't change them (secret-words.ts, SWD-093, playwright configs, c3 spec + SWD-025 game-over step).

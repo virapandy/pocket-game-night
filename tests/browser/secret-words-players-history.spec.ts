@@ -10,7 +10,7 @@ import { mainButton } from './impostor';
 import { openHistory } from './helpers';
 import { oracleBoard, waitGuards } from './secret-words';
 import {
-  button, cellNames, dialog, exampleTeams, flows, fromMenu, gameHeading, movesAfter, needsLanes, nextClueGivers, openGameOver,
+  button, cellNames, dialog, exampleTeams, flows, fromMenu, gameHeading, movesAfter, nextClueGivers, openGameOver,
   openOn, phoneWithEvenings, savedOf, textOf, toast, twentyTeams, undoToast, wholeMapNames, type TeamsInput,
 } from './secret-words-d';
 
@@ -265,7 +265,6 @@ test.describe('D7 the Players sheet during a turn (SWD-127)', () => {
   test.use({ viewport: { width: 390, height: 844 } });
 
   test('one phone, on the team\'s pass step: removing its clue giver restarts the pass screen for the new one', async ({ page }) => {
-    needsLanes('B', 'the pass screen after a reload, and its menu (SWD-048, 110)');
     const ev = flows.tealPassStep(); // Coffee Commandos' pass screen: Arjun
     await openOn(page, savedOf(ev), page.getByTestId('turn-heading'));
     await expect(mainButton(page)).toHaveText("I'm Arjun");
@@ -281,7 +280,6 @@ test.describe('D7 the Players sheet during a turn (SWD-127)', () => {
   });
 
   test('D7b mid-game: no one can move: quiet "End the game" opens the End the game dialog (Kabir stays)', async ({ page }) => {
-    needsLanes('B', 'a game step after a reload, and its menu (SWD-048, 110)');
     const ev = flows.fourPlayersGuessing();
     const n = ev.records.length;
     await openOn(page, savedOf(ev), page.getByTestId('turn-line'));
@@ -299,13 +297,13 @@ test.describe('D7 the Players sheet during a turn (SWD-127)', () => {
 
 const fixture = JSON.parse(readFileSync(fileURLToPath(new URL('../fixtures/secret-words-saved-evenings-v1.json', import.meta.url)), 'utf8'));
 
-/** Cells turned over on a game's last board, from the fixture's records of that game (game = 1-based). */
+/** Cells turned over on a game's last board, from the fixture's records of that game only (game = 1-based). */
 function turnedInGame(records: any[], game: number): Set<number> {
   let g = 0;
   let out = new Set<number>();
   for (const r of records) {
     const m = r.move;
-    if (m.type === 'deal') { g++; out = new Set(); }
+    if (m.type === 'deal') { if (g === game) return out; g++; out = new Set(); }
     if (m.type === 'dealNew') out = new Set();
     if (g !== game) continue;
     if (m.type === 'reveal') { out.add(m.cell); if (typeof m.freeCell === 'number') out.add(m.freeCell); }

@@ -40,7 +40,7 @@ work at 320 × 568 portrait.
 Status: approved, owner, 2026-10-23 (version 3.7)
 Phase: Secret Words 1
 Every turned-over cell and every map cell has its kind's icon and an accessible name: "Kite, orange team" / "Kite, teal
-team" / "Kite, blank word" / "Kite, the Landmine" (+ ", found" or ", not found" where SWD-031, SWD-035 and SWD-051 say).
+team" / "Kite, nobody's word" / "Kite, the Landmine" (+ ", found" or ", not found" where SWD-031, SWD-035 and SWD-051 say).
 
 ## SWD-094: Targets
 Status: approved, owner, 2026-10-23 (version 3.7)

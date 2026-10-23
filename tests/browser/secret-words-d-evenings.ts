@@ -201,7 +201,7 @@ export const flows = {
     for (const c of ev.faceDown('orange').slice(0, 2)) ev.mustReveal(c);
     return ev.must({ type: 'endGame' });
   },
-  /** Game 1 won by Chai Champions; Play again with Meena and Kabir; Coffee Commandos win game 2 at once. */
+  /** Game 1 won by Chai Champions; Play again with Meena and Kabir; Coffee Commandos (starting, 9 words) win game 2 at once. */
   twoGames: () => { const ev = flows.orangeWinsAtOnce(); playAgainOn(ev, 'Meena', 'Kabir'); return ev.winTurn(); },
   /** One word found by Chai Champions, then "End the game"; teams `o`. */
   oneWordEndedEarly: (o: EveningOptions = {}) => {
