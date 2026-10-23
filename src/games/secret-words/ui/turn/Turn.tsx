@@ -481,7 +481,7 @@ export function SecretWordsPlay(props: SecretWordsPlayProps) {
   else if (overlay === 'howto' || overlay === 'rules') {
     const back = overlay === 'rules' ? () => setOverlay('dispute') : () => setOverlay(null);
     const o = overlay === 'rules' ? { onDone: back, at: 'clue-rules' as const } : { onDone: back };
-    overlayNode = howToPlay ? howToPlay(o) : <HowToPlayFallback {...o} />;
+    overlayNode = howToPlay ? <HowToPlaySheet at={overlay === 'rules' ? 'clue-rules' : undefined}>{howToPlay(o)}</HowToPlaySheet> : <HowToPlayFallback {...o} />;
   }
 
   // ---- Screens ----
@@ -813,6 +813,21 @@ export function SecretWordsPlay(props: SecretWordsPlayProps) {
       )}
       {hiddenCover && <div className="sw-privacy-cover" data-testid="privacy-cover" />}
       <Announcer text={announce} />
+    </div>
+  );
+}
+
+/** Lane A's How to play over the turn screens; opened at h2 "Clue rules" from the dispute dialog (SWD-124). */
+function HowToPlaySheet({ at, children }: { at: 'clue-rules' | undefined; children: ReactNode }) {
+  const ref = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (at !== 'clue-rules') return;
+    const h2 = [...(ref.current?.querySelectorAll('h2') ?? [])].find((h) => h.textContent?.trim() === 'Clue rules');
+    h2?.scrollIntoView({ block: 'start' });
+  }, [at]);
+  return (
+    <div className="sw-sheet sw-howto" ref={ref}>
+      {children}
     </div>
   );
 }
