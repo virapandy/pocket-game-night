@@ -3,7 +3,7 @@
 // Run from the repo root: `npm run build && npx playwright test --config tests/playwright.android.config.ts`.
 import { defineConfig } from '@playwright/test';
 
-const PORT = 4173;
+const PORT = Number(process.env.PGN_PORT ?? 4173);
 export const APP_URL = `http://localhost:${PORT}/pocket-game-night/`;
 
 export default defineConfig({

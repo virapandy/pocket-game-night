@@ -6,6 +6,15 @@ a field's label, or (where there are no words to use) a `data-testid`. Names com
 
 The shared steps live in `helpers.ts`.
 
+## One port per lane (PGN_PORT)
+The local preview server's port comes from the environment variable `PGN_PORT` (default 4173), used for the
+web server, the base URL and the helpers (`playwright*.config.ts`, `android/fixtures.ts`, `report-problem.spec.ts`).
+Each lane sets its own, so two lanes running browser tests at once never share or kill each other's server:
+lane-a 4174, lane-b 4175, lane-c 4176, lane-d 4177, lane-e 4178, lane-f 4179 (main keeps 4173).
+```
+PGN_PORT=4174 npm run test:browser -- --project=android --grep @smoke --workers=2
+```
+
 ## Quick verify: the smoke set and the area map (change SOP, 3 October 2026)
 `docs/change-sop.md` runs the complete browser suite only before a release. On every push the automation runs
 the **smoke set** plus the specs for the **area** the change touched.

@@ -18,7 +18,7 @@ const NAMES = ['Riyaben', 'Ashalata', 'Daddyji', 'Kabirbhai'];
 const SESSION = 'Diwali Gathering';
 /** PLT-200 (owner 2026-10-01): a release number major.minor.patch from 1.0.0 up (a build note after + or - is allowed). */
 const RELEASE = /^[1-9]\d*\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$/;
-const APP_ORIGIN = 'http://localhost:4173';
+const APP_ORIGIN = `http://localhost:${process.env.PGN_PORT ?? 4173}`;
 
 // ---------- The report form ----------
 
