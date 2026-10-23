@@ -73,15 +73,34 @@ including a non-Hindi speaker from Tirunelveli) would not know, could not act or
 religious-sensitive. Within the weekly Jev cap. Tell the product owner when the report is pushed; it merges the findings
 into the map. The six persona walks are already done by the product owner.
 
-### Mafia (game five, 23 October): Jev checks, queued after What Am I?'s (tester, mid-size model)
-Design only; nothing to build. **Always after What Am I?** (owner, 23 October): start only when the What Am I? Jev report
-above is pushed. Two jobs, report to `reports/jev-map-mafia.md`, within the weekly Jev cap: (1) **Jev per-screen read** of
-`docs/games/mafia/screen-map.md` draft 3, sections A–G (on-screen *Words* and buttons only): "which button would a person
-press next?" and labels Jev rates unclear; for N2 (the night job) also, per role, "could someone watching tell this
-player's role from what they do?"; (2) **Jev story check** of `docs/games/mafia/stories.csv` (26 morning stories): per story,
-family-friendly; known to a mixed-region Indian family including a non-Hindi speaker from Tirunelveli; **scary for a
-7-year-old?** Tell the product owner when pushed. The persona walks wait for the prototype renderer to draw this map (owner,
-23 October), which also comes after What Am I?.
+### Mafia (game five, 23 October): two additions to the jev-design tool (tester, mid-size model; owner asked, 23 October)
+Design only; nothing to build. **Always after What Am I?** (owner, 23 October): do this after any What Am I? tester work in
+hand. The Jev per-screen read of the Mafia map is **done** by the product side (`docs/games/mafia/jev-check.md`, 271
+decisions); this replaces the two jobs that were here. Both additions are tools in `tests/tools/jev-design/`, not tests; the
+product side runs them through the jev-design helper with `--budget product`.
+1. **Text check** (`--texts <csv> --column <name>`): one Choice call per row, each question with "uncertain": (a)
+   family-friendly; (b) understood by a mixed-region Indian family (ages 8–80, including a non-Hindi speaker from
+   Tirunelveli); (c) **scary for a 7-year-old?**; (d) would it get a laugh? First use: `docs/games/mafia/stories.csv`, column
+   `text` (26 morning stories, about 104 decisions). A report section lists rows under 0.5 on (a) or (b), or over 0.5 on (c).
+   Also, from the Mafia map run: skip dialog row IDs (D1…) and table rows that aren't buttons ("App hidden…", "A name").
+2. **Mafia table simulation** (`--sim mafia`): a referee script that deals and applies the rules in `docs/games/mafia/guide.md`
+   and decisions MF1–MF15 (`docs/decisions.md`): night first; Mafia pick (first picks, later Mafia agree or change, random if
+   they differ); Doctor (themselves once a game, never the same player two nights running); Police (Mafia or Not Mafia,
+   private); role shown when out; point at once, tie → point again among the tied → nobody out; "Nobody today"; Mafia win when
+   equal to the rest. Mafia counts by MF5 (5–7 → 1, 8–11 → 2, 12–15 → 3, 16 → 4); Doctor and Police from 6. **Code computes
+   the facts; Jev only chooses**: each player's night pick and day point is one Choice over the legal names (plus "nobody" by
+   day), given a short fact list the code writes for that player (who is out and their role, who pointed at whom each day, and
+   only their own private facts: Mafia partners and picks, the Doctor's past protections, the Police's results). Jev cannot
+   talk, so the Police's behaviour is a setting: `--police-shares never|when-found` (when-found: the Police's Mafia findings
+   join every player's facts on the next day). Seeds per game; the run is replayable.
+   First use: 6, 8, 10, 12 and 16 players × 20 games × both Police settings (200 games, about 6,000–8,000 decisions), with
+   `--max-decisions 8000` so it stops cleanly. Report: Village wins per size and setting, rounds per game, how long the first
+   player out sits out, Doctor saves, Mafia disagreements, ties and second ties, nobody-today days, decisions used.
+   Why: two rough models disagree (random votes: the Mafia win most games, `docs/games/mafia/balance-2026-10-23.md`; AI
+   players who talk: the Village won 11 of 12, `docs/games/mafia/sim-table-2026-10-23.md`). Jev players sit between them and
+   cost decisions instead of millions of tokens.
+Tell the product owner when both are pushed; it runs them and merges the findings. The persona walks still wait for the
+prototype renderer to draw `docs/games/mafia/screen-map.md` (draft 4), also after What Am I?.
 
 ### Secret Words version 3.7 (23 October): the owner's four questions are answered
 1. P1–P10: yes, written as "Version 3.7" paragraphs (SWD-010, 031, 033, 034, 043, 102, 103, 110, 112, 120, 124, 126, 127; Terms
