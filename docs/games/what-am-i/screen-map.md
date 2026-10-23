@@ -1,6 +1,6 @@
 # What Am I?: screen map (draft 3, product owner, 23 October 2026)
 
-**Status: draft 3** (critic pass, section J; six persona walks, section L; word guidelines, section M; first Jev check, section N, `map-walk-2026-10-23.md`; where J or L and a row differ, the later section wins). Jev's check is pending (handover). Stage 1 of `docs/proposals/design-before-code.md` (step 1b of `docs/new-game-process.md`). Drawn from
+**Status: draft 3** (critic pass, section J; six persona walks, section L; word guidelines, section M; first Jev check, section N; holding the phone, section O, `map-walk-2026-10-23.md`; where J or L and a row differ, the later section wins). Jev's check is pending (handover). Stage 1 of `docs/proposals/design-before-code.md` (step 1b of `docs/new-game-process.md`). Drawn from
 `guide.md`, `fit-and-stories.md`, `words.md` and decisions WA1–WA10 (`docs/decisions.md`, 23 October). No scenarios exist
 yet, so the IDs column says which future scenario file a row belongs to (`WAI-01 setup` … `WAI-10 lifecycle`). Where a
 later `scenarios.md` differs from this map, the scenarios win.
@@ -306,6 +306,32 @@ markup, not findings. Changes below are where Jev and an earlier check agree (`d
 4. **Not changed:** G1 and G2 (personas lean to Home at the end of a night; both are visible, which is right); S1 (first-timers
    reaching for How to play is what that button is for); A2, T2 (no main button by design).
 5. **Re-run** J5 on this draft once the tool reads the latest section for each screen.
+
+## O. Holding the phone: forehead, chest or hands-free (owner, 23 October)
+Holding a phone to your forehead for 90 s tires a grandparent's arm and a small child drops it. Two easier ways, same
+rules and scoring.
+1. **Forehead or chest.** T1's line becomes "Hold the phone on your forehead or chest, screen facing the room."; the
+   drawing shows both. Moving the phone down (screen towards the floor) and up works the same from the chest. S3: "One of
+   us holds the phone on their forehead or chest, screen to the room."
+2. **Hands-free, a setup choice.** S2 gets "How to hold the phone": **In the guesser's hand** (default) with "Forehead or
+   chest; the guesser moves it to answer." · **Hands-free** with "The phone stands behind the guesser; one clue giver
+   taps to answer. Good for grandparents and small children." The last choice is kept on this phone. D4 (between turns)
+   has the same choice.
+3. **One player hands-free, the rest not.** T1 in hand mode has a quiet "Hands-free for Riya"; in hands-free mode a quiet
+   "Riya will hold it". The choice is kept for that player for the rest of the game; T1 shows "Hands-free (Riya's
+   choice)" when it applies.
+4. **T1 in hands-free:** "Riya, you're guessing" · "Stand the phone behind Riya, facing the room. Riya, don't turn round!"
+   · drawing of a phone leaning on a cushion or glass behind a seated player · rule line "One clue giver taps: bottom half
+   Got it · top half Pass" · quiet "Riya will hold it" · Pause · "··· Menu" · main **"Start Riya's turn"** (a clue giver
+   taps it; the guesser isn't holding the phone). T0 is never shown in hands-free.
+5. **T3 in hands-free:** phone movement is ignored (a bump or the phone sliding never marks a word); only taps on the two
+   halves mark, with the same 0.8 s guard and edge rule (J4). The top line reads "Clue givers: tap bottom for Got it, top
+   for Pass." Sounds stay on (the guesser hears each mark). The "lay the phone flat to pause" gesture (L1) is off; the
+   Pause button and Back still pause. Upright or sideways both work: the word fills whichever way the phone stands.
+6. **T4, R1, G1** are unchanged; the turn's result says nothing about how it was held.
+7. **New paths:** S2 (hold choice) → T1 hands-free → T3 taps only → T4; T1 → "Hands-free for Riya" → T1 hands-free;
+   T1 hands-free → "Riya will hold it" → T1 (→ T0 if never asked) . **Rule branches:** hand mode with tilt, hand mode
+   with taps only, hands-free with a bump while a word shows (no mark), one player hands-free in a hand-mode game.
 
 ## K. Prototype script (what the tap-through shows)
 Same rendering rules as Secret Words K3 (one state per screen, real labels, K4-style outcomes), with this data.
