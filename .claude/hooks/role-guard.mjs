@@ -158,6 +158,9 @@ function changedFiles(root) {
   if (!existsSync(path.join(root, '.git'))) return [];
   try { return git('status --porcelain --untracked-files=all', root).split('\n').filter(Boolean); } catch { return []; }
 }
+const merging = (root) => ['MERGE_HEAD', 'REBASE_HEAD', 'CHERRY_PICK_HEAD'].some((ref) => {
+  try { git(`rev-parse -q --verify ${ref}`, root); return true; } catch { return false; }
+});
 // Bringing a lane up to date (owner, 22 October 2026): during a merge, rebase or cherry-pick, a staged file that matches
 // the branch coming in is that branch's committed work, not this role's edit. Returns a test for such files.
 function incoming(root) {
@@ -352,6 +355,10 @@ function post(input) {
       const rel = line.slice(3).split(' -> ').pop().replace(/^"|"$/g, '');
       // Staged as it came from the other branch, with no edit on top: not this role's change.
       if (line[1] === ' ' && fromBranch(rel)) continue;
+      // While a merge or rebase is in progress, files git itself left conflicted or merged (and staged) are the merge's
+      // doing, not this command's edits; the commit check still refuses any that differ from the incoming branch, so
+      // each role takes the other branch's version of files it doesn't own (owner, 22 October: lanes can be updated).
+      if (merging(root) && (line.slice(0, 2).includes('U') || line[1] === ' ')) continue;
       if (!allowed(clone, ownerOf(rel), rel)) stray.push(`${path.basename(root)}/${rel}`);
     }
   }
