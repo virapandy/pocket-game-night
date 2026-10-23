@@ -204,6 +204,9 @@ function keyed(prefix: string): Preferences {
 export const appKeys: Preferences = keyed(KEY_ROOT);
 
 /** Impostor's screen state that is not a move (the paused timer, when the summary was shown): `pgn.impostor-ui.<id>`. */
+/** Secret Words' screen state (SWD-048): `pgn.secretWords-ui.<id>`. */
+export const secretWordsUi: Preferences = keyed(`${KEY_ROOT}secretWords-ui.`);
+
 export const impostorUi: Preferences = keyed(`${KEY_ROOT}impostor-ui.`);
 
 /**

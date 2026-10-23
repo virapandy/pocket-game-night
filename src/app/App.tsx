@@ -3,12 +3,13 @@ import { useRegisterSW } from 'virtual:pwa-register/react';
 import { BlocksRoot, useTapGuard } from '../blocks';
 import { makePlayerReport, makeReport, type Preferences, type Report, type ReportSubject, type SavedGame } from '../engine';
 import { games, hostGames, impostor, phoneGames, secretWords, tambola, type GameId, type HostGameId, type PhoneGameId } from './games';
+import { secretWordsShowingNight } from '../games/secret-words';
 import type { SecretWordsMapCodeError, SecretWordsMapToOpen, SecretWordsStart } from '../games/secret-words';
 import { History, isPast, unsettledSessionName, type Deleted } from './History';
 import { CrashNotice, ReportForm, ReportToast, WaitingReports } from './Report';
 import { APP_VERSION, hasRealDestination, phoneType, queueReport, startReportSender } from './reports';
 import { Dialog, SessionList, SessionScreen } from './Sessions';
-import { appKeys, gameStore, impostorUi, IS_RELEASE, preferences, sessionPicker, testSeedsRaw } from './storage';
+import { appKeys, gameStore, impostorUi, secretWordsUi, IS_RELEASE, preferences, sessionPicker, testSeedsRaw } from './storage';
 
 const TWELVE_HOURS = 12 * 3600_000;
 const TIP_KEY = 'install-tip.seen';
@@ -100,6 +101,11 @@ function routeFromAddress(): Route {
   if (h === 'sessions') return { name: 'sessions' };
   if (h.startsWith('session/')) return { name: 'session', id: h.slice(8) };
   if (h.startsWith('past/')) return { name: 'past', id: h.slice(5) };
+  // SWD-048: a reload during a Secret Words game night opens its turn screens again, at the same step.
+  if (h === 'sw') {
+    const id = secretWordsShowingNight(gameStore, secretWordsUi);
+    if (id) return { name: 'sw', start: { kind: 'resume', id } };
+  }
   return { name: 'home' };
 }
 
@@ -112,6 +118,8 @@ function addressOf(route: Route): string {
       return `session/${route.id}`;
     case 'past':
       return `past/${route.id}`;
+    case 'sw':
+      return 'sw';
     default:
       return '';
   }
@@ -310,7 +318,7 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
     if (decodeURIComponent(location.hash.slice(1)) === want) return;
     history.replaceState(history.state, '', want ? `#${encodeURIComponent(want).replace(/%2F/g, '/')}` : `${location.pathname}${location.search}`);
   }, [route]);
-  useBackGuard(route.name === 'game');
+  useBackGuard(route.name === 'game' || route.name === 'sw');
   const home = () => setRoute({ name: 'home' });
   const expire = useCallback(() => setDeleted(null), []);
 
@@ -382,6 +390,8 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
           }
           onExit={home}
           onBack={(names) => setRoute({ name: 'pick', swNames: names })}
+          ui={secretWordsUi}
+          onHistory={() => setRoute({ name: 'history' })}
         />
       );
     }

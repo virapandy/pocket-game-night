@@ -14,6 +14,7 @@ import {
 import { BoardGrid, type GridCell } from '../shared/BoardGrid';
 import { playSound, usePageVisibility, useNow, useReducedMotion, useViewport, useWakeLock, vibrate } from '../shared/device';
 import { useGuard } from '../shared/guard';
+import { whereLineFor } from '../shared/where';
 import { Announcer, type MenuItem } from '../shared/parts';
 import { BoardScreen } from './BoardScreen';
 import { TIMER_MS, type TimerState } from './chrome';
@@ -25,7 +26,7 @@ import { PrivateMap } from './PrivateMap';
 import { ScanScreen } from './ScanScreen';
 import { loadNight, readUi, recordMoves, writeUi, type Night, type NightMatch, type SwUiState } from './store';
 import {
-  allowance, boardCheck, clueAnnouncement, gameNumber, giversAnd, giversOf, giversPlus, guessLine, other, plural, recapLine,
+  boardCheck, clueAnnouncement, giversAnd, giversOf, giversPlus, guessLine, plural, recapLine,
   waitingLine,
 } from './words';
 import '../shared/sw.css';
@@ -320,32 +321,16 @@ export function SecretWordsPlay(props: SecretWordsPlayProps) {
   const g = game;
   const turnTeam: Team = g?.turn ?? 'orange';
   const teamName = (t: Team) => teams.names[t];
-  const N = gameNumber(state);
   const T = g?.turnNo ?? 1;
   const firstDeal = state.deals === 1;
   const moveTypes = match.records.map((r) => r.move.type);
   const pickerName = uiState.pickerOverride ?? g?.picker ?? null;
 
-  const whereText = (): string => {
-    if (!g) return '';
-    switch (screen.name) {
-      case 'preview':
-        return `Before game ${N}`;
-      case 'scan':
-      case 'again':
-        return `Scan the map, game ${N}`;
-      case 'over':
-        return `Game over, game ${N}`;
-      default:
-        break;
-    }
-    if (g.step === 'clue' || screen.name === 'clue') return `Turn ${T} · clue for ${teamName(turnTeam)}`;
-    if (g.step === 'turn-over') return `Turn ${T} over · ${teamName(other(turnTeam))} next`;
-    if (endLine) return `Turn ${T} · ${teamName(turnTeam)} ended their turn`;
-    const n = g.clue?.n ?? 0;
-    const left = n === 0 || n === 'inf' ? 'as many as you like' : `${plural(allowance(n) - g.guesses, 'guess', 'guesses')} left`;
-    return `${teamName(turnTeam)} guessing · ${left}`;
-  };
+  const whereText = (): string =>
+    whereLineFor(
+      state,
+      screen.name === 'preview' ? 'preview' : screen.name === 'scan' || screen.name === 'again' ? 'scan' : screen.name === 'board' && endLine ? 'end-turn' : null,
+    );
 
   // ---- The menu (SWD-110 v3.7; the menu table) ----
   const item = (label: string, onSelect: () => void, disabled?: boolean): MenuItem => (disabled ? { label, onSelect, disabled } : { label, onSelect });

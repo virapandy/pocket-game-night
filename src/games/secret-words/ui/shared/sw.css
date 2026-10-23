@@ -59,6 +59,8 @@
   overflow: hidden;
 }
 .sw-main:disabled, .sw-main.sw-waiting { opacity: 0.5; cursor: default; }
+/* Setup's mains (blocks' look) wait with the same greyed look (SWD-114). */
+.pgn-main.sw-waiting { opacity: 0.5; cursor: default; }
 .sw-main.sw-main-inline { position: static; width: 100%; flex: none; }
 .sw-quiet {
   min-height: 48px;

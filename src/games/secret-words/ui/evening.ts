@@ -1,6 +1,7 @@
 // Secret Words game nights on this phone: the engine's SavedGame (SWD-026, SWD-062) and the match replayed from it, plus
 // what Home and the picker read from them (SWD-115), Start new (SWD-067), tonight's names (SWD-003), the read-aloud card
 // (SWD-010), the saved choices (SWD-066) and making a new game night at its first deal (SWD-009, Test hooks item 2).
+import { whereLineFor } from './shared/where';
 import {
   HOST, play, replay, SAVED_GAME_FORMAT, startMatch,
   type Match, type Preferences, type SavedGame, type SavedGameStore, type Session, type SessionPicker,
@@ -117,28 +118,8 @@ const score = (s: SecretWordsState) => {
   return `${t.orange}–${t.teal}`;
 };
 
-/**
- * `where-line` (SWD-110 version 3.6): the step a game night is on, as far as its saved moves tell. A minimal stand-in
- * until lane B's shared where-line (which also knows the screen state: preview, pause, end-turn line).
- */
-export function whereLine(s: SecretWordsState): string {
-  const g = s.game;
-  const names = s.teams.names;
-  if (!g) return 'Before game 1';
-  if (g.step === 'over') return `Game over, game ${s.games.length}`;
-  const number = s.games.length + 1;
-  if (g.step === 'clue') {
-    if (s.choices.map !== 'pass' && g.turnNo === 1) return `Scan the map, game ${number}`;
-    return `Turn ${g.turnNo} · clue for ${names[g.turn]}`;
-  }
-  if (g.step === 'guessing') {
-    const n = g.clue?.n;
-    if (n === undefined || n === 0 || n === 'inf') return `${names[g.turn]} guessing · as many as you like`;
-    const left = n + 1 - g.guesses;
-    return `${names[g.turn]} guessing · ${left} ${left === 1 ? 'guess' : 'guesses'} left`;
-  }
-  return `Turn ${g.turnNo} over · ${names[g.turn === 'orange' ? 'teal' : 'orange']} next`;
-}
+/** `where-line` (SWD-110 version 3.6) for Home's row and the resume card: the shared where-line, from the moves. */
+export const whereLine = (s: SecretWordsState): string => whereLineFor(s);
 
 /** Home's unfinished row, line 1: "Secret Words, 8:40 pm · Chai Champions v Coffee Commandos · 2–1". */
 export const homeRowLine = (saved: Night, s: SecretWordsState) => `Secret Words, ${clock(saved.createdAt)} · ${teamsLine(s.teams.names)} · ${score(s)}`;

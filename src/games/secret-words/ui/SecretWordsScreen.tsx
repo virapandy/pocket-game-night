@@ -1,9 +1,9 @@
 // Secret Words on the host phone: setup (lane A: "Who's playing?", "Make teams", "How do you want to play?", "Read this
 // aloud", "How to play") up to the first deal, then the game. The game's own screens (the turn, the board, game over)
-// are lanes B to D; until they are built, `Playing` is a plain stand-in that shows no part of the map.
+// are lanes B to D: after the first deal this shows lane B's turn screens (ui/turn/Turn.tsx).
 import { useState, type ReactNode } from 'react';
 import type { Preferences, SavedGameStore, SessionPicker } from '../../../engine';
-import { BlocksRoot, QuietButton, Screen } from '../../../blocks';
+import { BlocksRoot } from '../../../blocks';
 import type { SecretWordsChoices, SecretWordsTeamNames } from '../rules';
 import {
   landmineDefault, loadNight, pastNames, PREF, readAloudDue, readLastChoices, recentPairIds, startNight, teamSeedFor, tonightsNames,
@@ -12,6 +12,7 @@ import {
 import { Choices, MakeTeams, SettingsScreen, WhosPlaying } from './Setup';
 import { drawNames, drawSplit, fromSplit, keepTeams, movePlayer, teamOf, otherTeam, type TeamsDraft } from './teams';
 import { HowToPlay, ReadAloud } from './Texts';
+import { SecretWordsPlay } from './turn/Turn';
 import './secret-words.css';
 
 /** How the screen opens: a new game night (from the picker), "Play again with these teams" (Home), or a resume. */
@@ -44,7 +45,13 @@ export function SecretWordsScreen({
   settingsPanel,
   onExit,
   onBack,
+  ui,
+  onHistory,
 }: {
+  /** `pgn.secretWords-ui.*` (SWD-048), the turn screens' state. */
+  ui: Preferences;
+  /** History, from the game's menu. */
+  onHistory: () => void;
   start: SecretWordsStart;
   store: SavedGameStore;
   prefs: Preferences;
@@ -91,7 +98,9 @@ export function SecretWordsScreen({
     setSameShown(last.same);
     setStep('choices');
   };
-  const deal = (): boolean => {
+  /** "Show me the board first" (SWD-010, 012): the turn screens open on the preview board. */
+  const [preview, setPreview] = useState(false);
+  const deal = (first = false): boolean => {
     if (!teams || choices.map === null) return false;
     const c: SecretWordsChoices = { map: choices.map, board: choices.board, landmine: choices.landmine, words: choices.words };
     const made = startNight({
@@ -100,6 +109,7 @@ export function SecretWordsScreen({
     });
     if (!made) return false;
     setNight(made);
+    setPreview(first);
     setStep('playing');
     return true;
   };
@@ -183,8 +193,8 @@ export function SecretWordsScreen({
           choices={choices}
           larger={larger}
           onBack={() => setStep('choices')}
-          onPlay={deal}
-          onPreview={deal}
+          onPlay={() => deal()}
+          onPreview={() => deal(true)}
           onSettings={() => {
             setSettingsFrom('aloud');
             setStep('settings');
@@ -204,7 +214,22 @@ export function SecretWordsScreen({
       );
       break;
     default:
-      screen = <Playing night={night} onHome={onExit} />;
+      screen = night && (
+        <SecretWordsPlay
+          id={night.saved.id}
+          store={store}
+          prefs={prefs}
+          ui={ui}
+          {...(preview ? { start: 'preview' as const } : {})}
+          onHome={onExit}
+          onHistory={onHistory}
+          onSettings={() => {
+            setSettingsFrom('playing');
+            setStep('settings');
+          }}
+          howToPlay={({ onDone }) => <HowToPlay names={night.match.state.teams.names} choices={night.match.state.choices} onDone={onDone} />}
+        />
+      );
   }
   return (
     <BlocksRoot className="sw" larger={larger}>
@@ -243,21 +268,4 @@ function opening(
   }
   const names = start.kind === 'new' && start.names ? [...start.names] : tonightsNames(store, sessions, Date.now());
   return { step: 'names', names, teams: null, night: null };
-}
-
-/**
- * PLACEHOLDER (lane A): the game after its deal. The scan screen, pass screen, board and game over are lanes B to D;
- * this stand-in only says the game is on and shows no word, kind or map.
- */
-function Playing({ night, onHome }: { night: { saved: Night; match: NightMatch } | null; onHome: () => void }) {
-  const names = night?.match.state.teams.names;
-  return (
-    <Screen className="sw-setup">
-      <header className="sw-bar">
-        <QuietButton onClick={onHome}>← Home</QuietButton>
-      </header>
-      <h1 className="pgn-title">Secret Words</h1>
-      {names && <p className="sw-body">{`${names.orange} v ${names.teal}: the game is on.`}</p>}
-    </Screen>
-  );
 }

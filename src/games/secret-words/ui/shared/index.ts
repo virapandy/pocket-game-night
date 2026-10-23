@@ -11,3 +11,4 @@ export {
   playSound, soundOn, useMediaQuery, useNow, usePageVisibility, useReducedMotion, useViewport, useWakeLock, vibrate,
   type SoundName, type Viewport,
 } from './device';
+export { whereLineFor } from './where';
