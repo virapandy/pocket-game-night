@@ -17,7 +17,7 @@ in 04).
   first. Pause stays on the Pause button (the room can reach it: the screen faces them), the phone's Back gesture and hiding
   the app. Map draft 4's T3 row changes accordingly.
 - **R2. A word hidden by a pause goes to the end of the queue,** not back to its place, and is not "shown" (WAI-021).
-- **R3. Mix of all lists a word once** even when it sits in two packs (Bat, Swimming): 753 words with non-veg on, 743 off.
+- **R3. Mix of all lists a word once** even when it sits in two packs (Bat, Swimming): 724 words with non-veg on, 714 off (edition 1 after the second Jev check).
 - **R4. A player who leaves keeps their points on the scoreboard,** marked "(left)", and is never the winner unless they
   rejoin (a leaver can't share the win).
 
@@ -249,7 +249,7 @@ Plurals: "1 word" / "2 words"; "1 turn" / "2 turns"; "1 game" / "2 games"; "6 pl
 | Home unfinished row | line 1 "What Am I? · Round 2 · Arjun's turn"; line 2 "Riya, Arjun +4 · 8:05 pm · Tap to resume" | inside `unfinished-games` | WAI-091 |
 | Who's playing? | h1 "Who's playing?"; small line "Players take turns in this order. Drag a name to move it."; "What Am I? needs at least 2 players."; "Up to 20 players."; Impostor's duplicate message "Riya is already playing. Add an initial, like Riya S."; toast "Kabir removed · Undo" | h1; small line; `role="alert"`; toast | WAI-002 |
 | Words and time | h1 "Words and time"; h2 "Which words?", "Time for each turn", "How to hold the phone"; line under Mix of all "Words from every pack."; time line "30 s for small kids, 90 s for grandparents"; hold lines (WAI-003); switches "Include non-veg food (chicken, fish, egg)", "Sounds"; sound line on "So the guesser knows a word counted." / off "The guesser won't know a word counted."; line "Ready as it is, or change anything above."; main "Start with these words" / from R1 "Carry on playing" | h1; h2; radio groups; switches; main | WAI-003 |
-| Pack option | "<Pack> · <n> words" (e.g. "Animals · 93 words"; "Mix of all · 743 words") | radio label | WAI-003 |
+| Pack option | "<Pack> · <n> words" (e.g. "Animals · 93 words"; "Mix of all · 714 words") | radio label | WAI-003 |
 | Read this aloud | h1 "Read this aloud"; the card text of WAI-005; main "First turn" | h1; paragraph; main | WAI-005 |
 | Pass screen | h1 "Riya, you're guessing"; hold line, rule line, score line, tip line (WAI-011); quiet "Someone else goes first", "Hands-free for Riya" / "Riya will hold it", "Players (6) ›", "← Home (game saved)"; main "I'm Riya: start" / "Start Riya's turn" | h1; small lines; quiet buttons; main | WAI-011 |
 | Motion question | h1 "Answer by moving the phone?"; "Move the phone down for Got it, up for Pass. Your phone will ask once."; quiet "Use taps instead"; main "Yes, move the phone"; toast "Tap bottom: Got it · Tap top: Pass" | h1; paragraph; buttons; toast | WAI-013 |
@@ -296,9 +296,9 @@ Status: draft · Phase: What Am I? 1
 The page scrolls at every size; the main button stays fixed.
 1. **"Which words?"**: a radio group of 9 options in this order: Mix of all, Animals, Food, Around the house, Jobs, Sports and
    cricket, Festivals and places, Act it out, Famous Indians. Each label "<Pack> · <n> words" with n = eligible words of that
-   pack (R3 for Mix of all). With `words.csv` edition 1 and non-veg off: Mix of all 743, Animals 93, Food 89, Around the house
-   100, Jobs 96, Sports and cricket 95, Festivals and places 96, Act it out 100, Famous Indians 76; with non-veg on, Food 99
-   and Mix of all 753. The selected option shows a ✓ and `aria-checked="true"`. Mix of all has the small line "Words from
+   pack (R3 for Mix of all). With `words.csv` edition 1 and non-veg off: Mix of all 714, Animals 92, Food 88, Around the house
+   100, Jobs 94, Sports and cricket 87, Festivals and places 91, Act it out 100, Famous Indians 64; with non-veg on, Food 98
+   and Mix of all 724. The selected option shows a ✓ and `aria-checked="true"`. Mix of all has the small line "Words from
    every pack." Default: Mix of all.
 2. **"Time for each turn"**: 30 s · 60 s · 90 s (default 60 s), small line "30 s for small kids, 90 s for grandparents".
 3. **"How to hold the phone"**: "In the guesser's hand" with small line "Forehead or chest; the guesser moves it to answer." ·
