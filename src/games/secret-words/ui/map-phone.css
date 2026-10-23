@@ -1,0 +1,111 @@
+/* The map phone (SWD-034, 090-092, 120, 121), inside a `.pgn.sw-map` root. Colours: docs/games/secret-words/ux.md §1. */
+.sw-map {
+  --team-orange: #b45309;
+  --team-teal: #0f766e;
+  --nobody: #e7dfd3;
+  --landmine: #1c1b1a;
+  --on-team: #ffffff;
+  --on-landmine: #f3efe9;
+  color: var(--text);
+}
+:root[data-theme='dark'] .sw-map {
+  --team-orange: #f59e0b;
+  --team-teal: #2dd4bf;
+  --nobody: #3a3632;
+  --landmine: #f3efe9;
+  --on-team: #1c1b1a;
+  --on-landmine: #1c1b1a;
+}
+
+.swm-root { position: relative; }
+.swm-page { display: flex; flex-direction: column; gap: 8px; padding: max(8px, env(safe-area-inset-top)) 0 24px; min-height: 100dvh; box-sizing: border-box; }
+.swm-pad { padding: 0 16px; }
+.swm-lines { display: flex; flex-direction: column; gap: 6px; }
+.swm-top { padding: 0 16px; display: flex; }
+.swm-col .swm-top { padding: 0; }
+
+/* Heading row: the heading at the left, "Hide map" / "Show map" at the right, kept in view while the page scrolls. */
+.swm-head {
+  position: sticky; top: 0; z-index: 4;
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 4px 8px;
+  padding: 4px 12px 4px 16px; background: var(--bg);
+}
+.swm-heading { flex: 0 1 auto; min-width: 0; font-size: calc(var(--pgn-body) * 1.3); font-weight: 800; line-height: 1.15; margin: 0; }
+.swm-hide.pgn-quiet { flex: none; min-height: 44px; height: 44px; padding: 0 12px; }
+.swm-line { font-size: var(--pgn-small); line-height: 1.35; font-weight: 700; margin: 0; overflow-wrap: anywhere; }
+.swm-small { font-size: var(--pgn-small); line-height: 1.35; color: var(--text); margin: 0; overflow-wrap: anywhere; }
+.swm-stack { display: flex; flex-direction: column; gap: 6px; }
+.swm-wide { width: 100%; }
+.pgn-option.swm-press { flex: none; min-height: 48px; padding: 4px 12px; line-height: 1.2; }
+.swm-my-team { display: flex; flex-direction: column; gap: 6px; }
+.swm-my-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.swm-my-chosen { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.swm-change.pgn-quiet { flex: none; min-height: 48px; }
+
+/* The grid (SWD-090): 8 px margins, 4 px gaps, cells 56 px tall in portrait. */
+.swm-grid-wrap { padding: 0 8px; }
+.swm-grid { display: grid; gap: 4px; grid-auto-rows: 56px; font-size: 16px; }
+.swm-cols-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.swm-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (max-width: 359px) and (orientation: portrait) { .swm-grid.swm-cols-4 { grid-auto-rows: 48px; } }
+.swm-cell {
+  position: relative; display: flex; align-items: center; justify-content: center; min-width: 0;
+  padding: 10px 4px 0; margin: 0; border: 0; border-radius: 6px;
+  font: inherit; font-size: inherit; font-weight: 600; text-transform: none; white-space: nowrap; overflow: hidden;
+  cursor: pointer; touch-action: manipulation; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
+}
+.swm-word { font-weight: 600; text-transform: none; white-space: nowrap; line-height: 1.2; }
+.swm-cell > .swm-icon { position: absolute; top: 2px; left: 2px; }
+.swm-icon { flex: none; width: 16px; height: 16px; fill: currentColor; }
+.swm-orange { background: var(--team-orange); color: var(--on-team); }
+.swm-teal { background: var(--team-teal); color: var(--on-team); }
+.swm-nobody { background: var(--nobody); color: var(--text); }
+.swm-landmine { background: var(--landmine); color: var(--on-landmine); }
+/* Found (SWD-035, v3.6): a light fill of the kind's colour, the word struck through, full strength. */
+.swm-cell.swm-found { color: var(--text); }
+.swm-found .swm-word { text-decoration-line: line-through; text-decoration-thickness: 2px; }
+.swm-orange.swm-found { background: color-mix(in srgb, var(--team-orange) 20%, var(--surface)); }
+.swm-teal.swm-found { background: color-mix(in srgb, var(--team-teal) 20%, var(--surface)); }
+.swm-nobody.swm-found { background: color-mix(in srgb, var(--nobody) 20%, var(--surface)); }
+.swm-landmine.swm-found { background: color-mix(in srgb, var(--landmine) 20%, var(--surface)); }
+.swm-icon-orange { color: var(--team-orange); }
+.swm-icon-teal { color: var(--team-teal); }
+.swm-cell .swm-icon { color: inherit; }
+
+.swm-sideways { font-size: var(--pgn-body); font-weight: 700; padding: 16px 0; margin: 0; }
+
+/* Lists (SWD-120): words at 24 px (28 px with Larger text). */
+.swm-list { display: flex; flex-direction: column; gap: 8px; }
+.swm-list-heading { font-size: calc(var(--pgn-body) + 3px); font-weight: 800; margin: 0; }
+.swm-list-words { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 4px; }
+.swm-list-words li { font-size: calc(var(--pgn-body) + 7px); font-weight: 700; line-height: 1.25; }
+.swm-avoid { display: flex; align-items: center; gap: 6px; font-weight: 700; }
+
+/* Map key (v3.7): exactly two lines. */
+.swm-key { display: flex; flex-direction: column; gap: 2px; }
+.swm-key-line { display: flex; gap: 12px; white-space: nowrap; overflow: hidden; font-size: var(--pgn-small); line-height: 1.3; }
+.swm-key-item { display: inline-flex; align-items: center; gap: 4px; flex: none; }
+.swm-key .swm-icon-nobody { color: var(--text); }
+.swm-key .swm-icon-landmine { color: var(--text); }
+
+/* Landscape (SWD-034, 091): the grid at the left, a column at the right that scrolls inside; no page scrolling. */
+.swm-land { display: flex; gap: 12px; height: 100dvh; padding: 16px; box-sizing: border-box; overflow: hidden; }
+.swm-land-s { gap: 8px; padding: 8px; }
+.swm-left { flex: 1 1 auto; min-width: 0; height: 100%; overflow-y: auto; }
+.swm-left .swm-grid { height: 100%; grid-auto-rows: unset; grid-template-rows: repeat(5, minmax(0, 1fr)); }
+.swm-left .swm-grid.swm-cols-4 { grid-template-rows: repeat(4, minmax(0, 1fr)); }
+.swm-col { flex: none; width: 200px; height: 100%; overflow-y: auto; overscroll-behavior: contain; display: flex; flex-direction: column; gap: 8px; }
+.swm-land-s .swm-col { width: 160px; }
+.swm-col .swm-head { position: static; padding: 0; }
+.swm-col .swm-my-buttons { grid-template-columns: 1fr; }
+.swm-col .swm-heading { font-size: calc(var(--pgn-body) * 1.15); }
+
+/* SWD-121's warning, over the map. */
+.swm-warning {
+  position: fixed; z-index: 8; left: 16px; right: 16px; top: 40%;
+  margin: 0; padding: 14px 16px; text-align: center; font-weight: 800;
+  color: var(--toast-text); background: var(--toast-bg); border: 2px solid var(--accent); border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+.sw-map .pgn-toast { bottom: 16px; }
+.swm-cover { position: fixed; inset: 0; z-index: 100; background: var(--bg); }
