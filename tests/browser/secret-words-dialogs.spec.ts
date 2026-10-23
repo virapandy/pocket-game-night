@@ -729,6 +729,7 @@ test.describe('SWD-094 / SWD-098: targets and one main button', () => {
         await targetsAtLeast44(page, 'preview');
         await expectOneMainButton(page, 'preview', 'Start', true);
         await tapMain(page, /^Start$/);
+        await waitGuards(page); // SWD-114: "I'm ..." is greyed for its first second
         await targetsAtLeast44(page, 'pass screen');
         await expectOneMainButton(page, 'pass screen', "I'm", true);
         await tapMain(page, /^I'm /);

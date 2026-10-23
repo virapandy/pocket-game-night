@@ -161,7 +161,8 @@ export async function toGuessing(page: Page, o: Omit<LaneBHost, 'boards'> & { co
   await toClueScreen(page, o.phones);
   if (o.word !== undefined) await page.getByLabel('Clue word (optional)', { exact: true }).fill(o.word);
   await giveClue(page, o.n ?? 2);
-  await expect(boardCells(page).first()).toBeAttached();
+  // The clue line shows on every guessing screen; a Full board in narrow portrait has no cells by design (SWD-092).
+  await expect(page.getByTestId('clue-line')).toBeVisible();
   const b = oracleBoard(o.code);
   return { b, teams: await teamsOf(page), team: b.starts, code: o.code };
 }
