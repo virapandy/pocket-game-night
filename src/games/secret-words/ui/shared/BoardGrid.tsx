@@ -12,6 +12,7 @@
 //     `data-index`, never from the cell's own markup.
 import { useEffect, useId, useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
 import type { Kind } from '../../rules';
+import { createPortal } from 'react-dom';
 import { KindIcon } from './icons';
 
 export interface GridCell {
@@ -184,7 +185,7 @@ export function BoardGrid({
       {cells.map((c, i) => {
         const turningNow = turning.includes(i);
         const kind = turningNow ? undefined : c.kind;
-        const zoom = zoomIndex === i ? <Zoom word={c.word} grid={ref} /> : null;
+        const zoom = zoomIndex === i ? <Zoom word={c.word} grid={ref} gridId={gridId} /> : null;
         const testId = isMap ? 'map-cell' : 'board-cell';
         if (kind) {
           return (
@@ -233,7 +234,7 @@ export function BoardGrid({
 }
 
 /** `word-zoom`: the word large over its cell, kept inside the board. Not a button; no kind in it. */
-function Zoom({ word, grid }: { word: string; grid: React.RefObject<HTMLDivElement | null> }) {
+function Zoom({ word, grid, gridId }: { word: string; grid: React.RefObject<HTMLDivElement | null>; gridId: string }) {
   const ref = useRef<HTMLSpanElement | null>(null);
   const [pos, setPos] = useState<{ left: number; top: number; width: number } | null>(null);
   useLayoutEffect(() => {
@@ -255,15 +256,16 @@ function Zoom({ word, grid }: { word: string; grid: React.RefObject<HTMLDivEleme
     // Absolute positions start inside the cell's border.
     setPos({ left: left - cell.offsetLeft - cell.clientLeft, top: top - cell.offsetTop - cell.clientTop, width });
   }, [word, grid]);
+  // The position goes in a style rule, not on the element, so the zoom looks the same for every word (SWD-042, 025).
+  const sel = `[data-sw-grid="${gridId}"] .sw-zoom`;
+  const rule = pos ? `${sel}{left:${pos.left}px;top:${pos.top}px;width:${pos.width}px}` : `${sel}{left:0;top:0;visibility:hidden}`;
   return (
-    <span
-      ref={ref}
-      className="sw-zoom"
-      data-testid="word-zoom"
-      style={pos ? { left: pos.left, top: pos.top, width: pos.width } : { left: 0, top: 0, visibility: 'hidden' }}
-    >
-      {word}
-      <span className="sw-zoom-hit" aria-hidden="true" />
-    </span>
+    <>
+      <span ref={ref} className="sw-zoom" data-testid="word-zoom">
+        {word}
+        <span className="sw-zoom-hit" aria-hidden="true" />
+      </span>
+      {createPortal(<style>{rule}</style>, document.head)}
+    </>
   );
 }

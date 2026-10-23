@@ -165,7 +165,8 @@ export function SecretWordsPlay(props: SecretWordsPlayProps) {
         step = screen.name;
         break;
       case 'pass':
-        step = 'pass';
+        // After the app was hidden on the private map, a reload still says "Welcome back." (SWD-032).
+        step = screen.welcome ? 'map' : 'pass';
         break;
       case 'board':
         step = endLine ? 'end-turn' : game.step;
