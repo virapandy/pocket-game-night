@@ -34,14 +34,14 @@ what it records. *Intentions* says which of the common next wishes are visible w
 ## A. Home and the picker (shared with other games)
 
 ### A1. Home (changes for Mafia only)
-*Words:* "Host a game" with "Tambola, Impostor, Secret Words or Mafia on this phone"; unfinished row "Mafia, 9:10 pm ·
+*Words:* "Host a game" with "Tambola, Impostor, Secret Words, What Am I? or Mafia on this phone"; unfinished row "Mafia, 9:10 pm ·
 Riya, Arjun +6 · Night 2" + where-line + "Tap to resume".
 | Tap | Leads to | Records | IDs |
 |---|---|---|---|
 | Unfinished Mafia row | the game's last room screen with "Welcome back." (never a private screen: a night in progress resumes at the pass screen of the player whose turn it is) | — | MAF-10 |
 
 ### A2. What shall we play? (new card)
-*Words:* card "Mafia" · "Find the Mafia before they find you · 5–16 players · 15–30 min a game".
+*Words:* card "Mafia", always after the What Am I? card (owner, 23 October) · "Find the Mafia before they find you · 5–16 players · 15–30 min a game".
 | Tap | Leads to | Records | IDs |
 |---|---|---|---|
 | Mafia card, nothing unfinished | S1 Who's playing? | — | MAF-01 |

@@ -1,8 +1,8 @@
 # Mafia: fit check and player stories (product owner, draft, 22 October 2026)
 
 Steps 0 and 0a of `docs/new-game-process.md`. Owner asked for Mafia as the next game on 22 October 2026 ("5th game -
-mafia"); it was on the 3 October shortlist (`docs/decisions.md`). Design only: nothing is built until Secret Words is
-released (roadmap).
+mafia"); it was on the 3 October shortlist (`docs/decisions.md`). Design only: Mafia always comes after What Am I?
+(owner, 23 October), so nothing is built until What Am I? is released (roadmap).
 
 ## Step 0: fit check
 | Question | Mafia | Pass? |
