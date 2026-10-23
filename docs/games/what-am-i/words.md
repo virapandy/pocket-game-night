@@ -42,3 +42,12 @@ already doubted it (a growing helper's note, word guideline B1 or B4, or its fit
   The owner may overrule any of these.
 - **Next:** the tool gets control words; then J1 is re-run, with J2 (fits its pack) and J3 (guessable from a clue).
 
+## Clues for the "guessable from a clue" check (J3), 23 October
+`clues.csv` holds two clues per word (755 rows, one per word in `words.csv`), written by four helpers in parallel as a
+family would shout them: one description, one association; never the word or part of it (checked by script), at most
+10 words. They are test data for Jev's J3 job only, never shown in the app. The helpers' hard cases, to read against J3's
+results: near-twins (Leopard / Cheetah, Rooster / Hen, Wicket / Stumps / Pitch, Talcum powder / Hair oil / Perfume, Safety
+pin / Needle and thread); cricket terms non-fans may miss (Free hit, Super over, Howzat); words a region may not know
+(Sandesh, Seven stones, Cherrapunji, Sundarbans); people children may not know (Anju Bobby George, KS Chithra, Karnam
+Malleswari, Salim Ali, Verghese Kurien, Indra Nooyi, Bachendri Pal, Sheetal Devi).
+
