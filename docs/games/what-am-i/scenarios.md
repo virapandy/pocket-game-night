@@ -12,7 +12,7 @@ Change classes (`docs/change-sop.md`): the word order and its seed, marking rule
 format = **C3** (tests first: sections 02, 03 rules, 04, 07); screens = C1/C2. Sections 05 and 08 are not used (rounds are
 in 04).
 
-### Product owner's resolutions while drafting (low impact; the owner may overrule)
+### Product owner's resolutions while drafting (owner confirmed R1–R4, 23 October)
 - **R1. "Lay the phone flat to pause" is dropped.** Laying a phone flat face up passes through "phone up", which marks Pass
   first. Pause stays on the Pause button (the room can reach it: the screen faces them), the phone's Back gesture and hiding
   the app. Map draft 4's T3 row changes accordingly.
