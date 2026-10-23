@@ -376,7 +376,8 @@ export async function openTypedCode(page: Page) {
   if (await joinWithMyTicket(page).isVisible()) {
     await waitOutTapGuard(page); // Home's buttons (1.3.1, I29 R2)
     await joinWithMyTicket(page).click();
-    await page.getByRole('button', { name: /^Type the code/ }).click();
+    // SWD-002 (rule 11): "Type the code" becomes "Type a ticket code" when Secret Words ships (lane A); both read here until then.
+    await page.getByRole('button', { name: /^Type (a ticket|the) code/ }).click();
   } else {
     await old.click();
   }

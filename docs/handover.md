@@ -90,6 +90,11 @@ including a non-Hindi speaker from Tirunelveli) would not know, could not act or
 religious-sensitive. Within the weekly Jev cap. Tell the product owner when the report is pushed; it merges the findings
 into the map. The six persona walks are already done by the product owner.
 
+### Mafia (23 October, evening): one line in the jev-design helper's brief: **done** (fd47822)
+The tool now caps the product side at 30,000 a week (owner, 23 October: "we can increase jev budget"), but
+`.claude/workspace/agents/jev-design.md` still tells the helper 15,000, so it reports a 30,000-limit run as "over". Change
+15,000 to 30,000 there (show the owner the one-line diff). The two tool changes below are **done**.
+
 ### Mafia (game five, 23 October, later): two small changes to the jev-design tool (tester, mid-size model)
 The two additions below are **done** (stories checked, 147 simulated games; `docs/games/mafia/jev-results-2026-10-23.md`).
 Jev chose "Nobody today" on up to 8 days a game, far more than people would, which skews the results towards the Mafia.
