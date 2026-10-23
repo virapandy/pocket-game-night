@@ -35,6 +35,16 @@ including a non-Hindi speaker from Tirunelveli) would not know, could not act or
 religious-sensitive. Within the weekly Jev cap. Tell the product owner when the report is pushed; it merges the findings
 into the map. The six persona walks are already done by the product owner.
 
+### Mafia (game five, 23 October): Jev checks, queued after What Am I?'s (tester, mid-size model)
+Design only; nothing to build. **Always after What Am I?** (owner, 23 October): start only when the What Am I? Jev report
+above is pushed. Two jobs, report to `reports/jev-map-mafia.md`, within the weekly Jev cap: (1) **Jev per-screen read** of
+`docs/games/mafia/screen-map.md` draft 3, sections A–G (on-screen *Words* and buttons only): "which button would a person
+press next?" and labels Jev rates unclear; for N2 (the night job) also, per role, "could someone watching tell this
+player's role from what they do?"; (2) **Jev story check** of `docs/games/mafia/stories.csv` (26 morning stories): per story,
+family-friendly; known to a mixed-region Indian family including a non-Hindi speaker from Tirunelveli; **scary for a
+7-year-old?** Tell the product owner when pushed. The persona walks wait for the prototype renderer to draw this map (owner,
+23 October), which also comes after What Am I?.
+
 ### Secret Words version 3.7 (23 October): the owner's four questions are answered
 1. P1–P10: yes, written as "Version 3.7" paragraphs (SWD-010, 031, 033, 034, 043, 102, 103, 110, 112, 120, 124, 126, 127; Terms
    "Small line colour"). 2. Jev's flagged words: reworded in 3.7 (most were already reworded in 3.5–3.6; the prototype shows old
