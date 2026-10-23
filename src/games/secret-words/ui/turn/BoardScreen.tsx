@@ -151,7 +151,7 @@ export function BoardScreen({
       className={land ? 'sw-panel-main' : 'sw-board-main'}
       until={main.until}
       onClick={main.onClick}
-      {...(main.disabled || sideways ? { disabled: true } : {})}
+      {...(main.disabled ? { disabled: true } : {})}
       {...(main.label ? { label: main.label } : {})}
     >
       {main.line1 !== undefined ? (

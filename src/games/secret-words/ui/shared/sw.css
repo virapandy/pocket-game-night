@@ -235,6 +235,7 @@
 .sw-panel-buttons .sw-top-actions { flex: 1; margin: 0; }
 .sw-panel-buttons .sw-menu-button { flex: 1; padding: 0 4px; }
 .sw-panel-middle { flex: 1 1 auto; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
+.sw-panel-middle > * { flex: none; }
 .sw-panel-middle .sw-turn-line { height: auto; white-space: normal; max-height: 48px; }
 .sw-panel-middle .sw-clue-block { height: auto; }
 .sw-panel-middle .sw-clue-line { white-space: normal; overflow-wrap: anywhere; }
