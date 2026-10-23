@@ -65,10 +65,10 @@ The first run worked (2,563 decisions, no faults; `docs/games/what-am-i/jev-chec
    clue2, 755 rows) and ask Jev to
    pick the word from it plus 5 others from the same pack.
 
-### What Am I? prototype: teach the renderer this map (product owner, 23 October; **after the Secret Words work in hand**, C1)
+### DO NOW (owner, 23 October): What Am I? prototype: teach the renderer this map (C1, one coder lane beside the Secret Words lanes)
 Correction: nobody built the first What Am I? prototype by hand. The renderer draws every pushed `docs/games/<game>/screen-map.md`
 by itself on each preview build, so What Am I? appeared automatically, drawn without its section K (the script reader knows
-Secret Words' shape: teams and a board). Nothing to do until Secret Words allows; then:
+Secret Words' shape: teams and a board). The owner asked for it now (23 October), in its own lane so Secret Words is not held up:
 The first render drew row descriptions as buttons and left out lists, so three persona walks got stuck on A1 and T3
 (`docs/games/what-am-i/prototype-walk-2026-10-23.md`). The map now quotes real labels and gives **K4, exact states for the
 renderer** (A1's "Host a game", T3's word TIGER with tap halves, S2's radios with ✓, S4's lines, the scoreboards, D2's names,
