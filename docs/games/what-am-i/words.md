@@ -66,7 +66,7 @@ it (a helper's note when growing or writing clues, word guideline B4, or a near-
 - **Kept although Jev rated them low:** regional festivals and foods (Bihu, Lohri, Baisakhi, Onam, Durga Puja, Appam, Payasam,
   Rasam, Dhokla, Poha, Modak) for balance across regions (B1); cartoon characters children know (Chhota Bheem, Motu Patlu,
   Tenali Raman, Little Singham); cricketers and athletes in school books (Mithali Raj, Harmanpreet Kaur, Mirabai Chanu, Hima
-  Das, Kalpana Chawla, Sunita Williams). **Sensitive:** Cow 0.86 again (owner asked, below); Mosque 0.58 and Golden Temple
+  Das, Kalpana Chawla, Sunita Williams). **Sensitive:** Cow 0.86 again, **kept by the owner** (23 October) as an everyday animal to act; Mosque 0.58 and Golden Temple
   0.52 kept for balance with Temple and Church.
 - **Still to come:** J2 (fits its pack) and J3 (guessable from a clue, `clues.csv`, now 726 rows) when the tester adds them.
 
