@@ -5,7 +5,7 @@ import { makePlayerReport, makeReport, type Preferences, type Report, type Repor
 import { games, hostGames, impostor, phoneGames, tambola, type GameId, type HostGameId, type PhoneGameId } from './games';
 import { History, isPast, unsettledSessionName, type Deleted } from './History';
 import { CrashNotice, ReportForm, ReportToast, WaitingReports } from './Report';
-import { APP_VERSION, hasRealDestination, phoneType, queueReport, startReportSender } from './reports';
+import { APP_VERSION, onReportsChange, onShareToast, phoneType, readyReports, shareFromForm, shareReport, startReportWatch } from './reports';
 import { Dialog, SessionList, SessionScreen } from './Sessions';
 import { gameStore, impostorUi, IS_RELEASE, preferences, sessionPicker, testSeedsRaw } from './storage';
 
@@ -170,7 +170,7 @@ function reportMaker(subject: ReportSubject, error: Crash | null): (what: string
 
 /**
  * The app, with "Report a problem" around every screen (Phase 7): the form, the calm message after an
- * unexpected error (PLT-203), and the quiet sender of waiting reports (PLT-202, PLT-208).
+ * unexpected error (PLT-203), and the phone's share sheet for reports (PLT-206, PLT-208).
  */
 export function App() {
   const routeName = useRef<Route['name']>('home');
@@ -178,7 +178,8 @@ export function App() {
   const [crash, setCrash] = useState<Crash | null>(null);
   const [toast, setToast] = useState<string | null>(null);
 
-  useEffect(() => startReportSender(gameStore), []);
+  useEffect(() => startReportWatch(gameStore), []);
+  useEffect(() => onShareToast(setToast), []);
   useEffect(() => {
     const seen = (reason: unknown, fallback: string) => {
       const message = reason instanceof Error ? reason.message : typeof reason === 'string' ? reason : fallback;
@@ -203,13 +204,10 @@ export function App() {
 
   const onReport = useCallback((subject: ReportSubject) => setForm({ build: reportMaker(subject, null) }), []);
   const cancel = useCallback(() => setForm(null), []);
+  // PLT-208: the share sheet opens straight from the tap; nothing is sent by the app itself.
   const send = (report: Report) => {
-    queueReport(report);
     setForm(null);
-    if (!hasRealDestination()) setToast('Thanks. Your report is kept on this phone.');
-    else if (report.waitingForGameEnd) setToast('Thanks. Your report will be sent when this game ends.');
-    else if (navigator.onLine === false) setToast('Thanks. Your report will be sent when this phone is back online.');
-    else setToast('Thanks. Your report is on its way.');
+    shareFromForm(report);
   };
 
   return (
@@ -584,6 +582,7 @@ function Home({
         </div>
       )}
       {firstVisit && <p className="ready">✓ You're ready for game night</p>}
+      <ReadyReports />
 
       <div className="home-choices">
         <button type="button" className="choice-card home-card" onClick={onHost}>
@@ -648,6 +647,27 @@ function Home({
         </section>
       )}
     </main>
+  );
+}
+
+/** PLT-206, PLT-208: once a reported game has ended or been discarded, Home offers its report to share. */
+function ReadyReports() {
+  const [ready, setReady] = useState(readyReports);
+  useEffect(() => {
+    const refresh = () => setReady(readyReports());
+    const off = onReportsChange(refresh);
+    refresh();
+    return off;
+  }, []);
+  const report = ready[0];
+  if (!report) return null;
+  return (
+    <div className="report-ready" role="status">
+      <span>A problem report is ready to share</span>
+      <button type="button" className="button button-quiet" onClick={() => shareReport(report)}>
+        Share
+      </button>
+    </div>
   );
 }
 
