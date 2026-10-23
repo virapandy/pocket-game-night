@@ -53,7 +53,7 @@ export interface GameLog {
   privateLeak: string[]; // facts shown to a player that mention a role they could not know (self-test)
 }
 
-export interface Opts { players: number; policeShares: PoliceShares; seed: number; game: number; chooser: Chooser; maxRounds?: number; stop?: () => boolean }
+export interface Opts { players: number; policeShares: PoliceShares; seed: number; game: number; chooser: Chooser; noNobody?: boolean; maxRounds?: number; stop?: () => boolean }
 
 export async function playGame(o: Opts): Promise<GameLog | 'stopped'> {
   const n = o.players;
@@ -165,7 +165,7 @@ export async function playGame(o: Opts): Promise<GameLog | 'stopped'> {
     const voters = aliveNow();
     const pts: Record<string, string> = {};
     for (const v of voters) {
-      const c = await ask('day', round, v, [...voters.filter((p) => p !== v), NOBODY]);
+      const c = await ask('day', round, v, [...voters.filter((p) => p !== v), ...(o.noNobody ? [] : [NOBODY])]);
       if (c === 'STOP') return 'stopped';
       pts[v] = c;
     }
@@ -202,7 +202,7 @@ export async function playGame(o: Opts): Promise<GameLog | 'stopped'> {
 }
 
 // ---------- the run and its report ----------
-export interface SimOpts { sizes: number[]; games: number; shares: PoliceShares[]; seed: number; maxDecisions: number; chooserFor: () => Chooser; countDecisions?: () => number }
+export interface SimOpts { noNobody?: boolean; sizes: number[]; games: number; shares: PoliceShares[]; seed: number; maxDecisions: number; chooserFor: () => Chooser; countDecisions?: () => number }
 export interface Cell { size: number; shares: PoliceShares; logs: GameLog[] }
 
 export async function runSim(o: SimOpts): Promise<{ cells: Cell[]; stoppedEarly: string | null; decisions: number }> {
@@ -213,7 +213,7 @@ export async function runSim(o: SimOpts): Promise<{ cells: Cell[]; stoppedEarly:
     for (let g = 0; g < o.games; g++) {
       const seed = ((o.seed * 1000 + size) * 1000 + g) * 2 + (shares === 'never' ? 0 : 1);
       const before = decisions;
-      const res = await playGame({ players: size, policeShares: shares, seed, game: g + 1, chooser, stop: () => decisions >= o.maxDecisions });
+      const res = await playGame({ players: size, policeShares: shares, seed, game: g + 1, chooser, noNobody: o.noNobody, stop: () => decisions >= o.maxDecisions });
       if (res === 'stopped') { stoppedEarly = decisions >= o.maxDecisions ? `--max-decisions ${o.maxDecisions} reached` : 'Jev or the budget stopped answering'; void before; break outer; }
       decisions += res.decisions; cell.logs.push(res);
     }
@@ -224,7 +224,7 @@ export async function runSim(o: SimOpts): Promise<{ cells: Cell[]; stoppedEarly:
 const avg = (xs: number[]) => (xs.length ? (xs.reduce((a, b) => a + b, 0) / xs.length).toFixed(1) : 'n/a');
 const sum = (xs: number[]) => xs.reduce((a, b) => a + b, 0);
 
-export function simReport(res: { cells: Cell[]; stoppedEarly: string | null; decisions: number }, a: { seed: number; games: number; maxDecisions: number; extra: string[] }): string[] {
+export function simReport(res: { cells: Cell[]; stoppedEarly: string | null; decisions: number }, a: { seed: number; games: number; maxDecisions: number; noNobody?: boolean; extra: string[] }): string[] {
   const L: string[] = ['## Mafia table simulation', '',
     `Referee in code (rules: \`docs/games/mafia/guide.md\`, MF1 to MF15); Jev only chose each player's night pick and day point from the legal names. Seed ${a.seed}; game seeds are derived from it, size and game number, so the referee's deals are replayable (Jev's answers are logged in the sidecar JSON, which \`--replay\` plays back). Games per cell asked: ${a.games}. Villagers' night "suspect" pick has no effect and is not asked. A Mafia pick must be a non-Mafia player. Police: \`never\` keeps findings private; \`when-found\` adds "the Police says X is Mafia" to every player's facts that day if the Police is still in.`, '',
     '| Players | Police shares | Games | Village wins | Mafia wins | Unfinished | Village win % | Rounds/game | First out sits out (rounds) | Doctor saves/game | Mafia disagreements/game | Ties/game | Second ties/game | Nobody by choice/game | Nobody after tie/game |', '|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|'];
@@ -234,7 +234,8 @@ export function simReport(res: { cells: Cell[]; stoppedEarly: string | null; dec
     const per = (f: (x: GameLog) => number) => (g.length ? (sum(g.map(f)) / g.length).toFixed(2) : 'n/a');
     L.push(`| ${c.size} | ${c.shares} | ${g.length} | ${vw} | ${mw} | ${g.length - fin.length} | ${fin.length ? Math.round((100 * vw) / fin.length) + '%' : 'n/a'} | ${avg(g.map((x) => x.rounds))} | ${avg(g.filter((x) => x.sitOut !== null).map((x) => x.sitOut!))} | ${per((x) => x.doctorSaves)} | ${per((x) => x.mafiaDisagreements)} | ${per((x) => x.ties)} | ${per((x) => x.secondTies)} | ${per((x) => x.nobodyByChoice)} | ${per((x) => x.nobodyAfterTie)} |`);
   }
-  L.push('', `- Decisions used by the simulation: ${res.decisions} (limit ${a.maxDecisions}).`,
+  L.push('', `- Day point setting: ${a.noNobody ? '--no-nobody (the day point offers only the players still in; no "nobody")' : 'default (the day point also offers "nobody")'}.`,
+    `- Decisions used by the simulation: ${res.decisions} (limit ${a.maxDecisions}).`,
     `- Stopped early: ${res.stoppedEarly ?? 'no'}. A game cut off by the stop is not counted.`,
     `- "First out sits out": rounds from the first player going out to the end of the game (0 = the game ended that round).`, '');
   return L;
@@ -253,6 +254,20 @@ export async function selfTest(): Promise<string[]> {
   ok('Mafia do not win when fewer (1 v 2); Village wins at 0 Mafia', winner(1, 2) === null && winner(0, 3) === 'village');
   ok('Tie: two top names -> no winner; clear top -> that name', tally(['A', 'B', 'A', 'B', 'C']).winner === null && tally(['A', 'B', 'A']).winner === 'A');
   ok('"nobody" can top the point', tally([NOBODY, NOBODY, 'A']).winner === NOBODY);
+
+  // --no-nobody: the day point offers only players still in
+  {
+    let sawDay = false, sawNobodyOption = false, sawNobodyDefault = false;
+    for (const nn of [true, false]) for (let s = 1; s <= 30; s++) {
+      const r = rngOf(s);
+      const l = await playGame({ players: 5 + (s % 12), policeShares: 'never', seed: s, game: 1, noNobody: nn, chooser: async (q) => {
+        if (q.kind === 'day') { sawDay = true; if (q.options.includes(NOBODY)) { if (nn) sawNobodyOption = true; else sawNobodyDefault = true; } }
+        return q.options[Math.floor(r() * q.options.length)]!;
+      } });
+      if (nn) ok(`--no-nobody game ${s} finishes with no nobody-by-choice day`, l !== 'stopped' && !l.unfinished && l.nobodyByChoice === 0, l === 'stopped' ? 'stopped' : String(l.nobodyByChoice));
+    }
+    ok('--no-nobody: day options never include nobody; default still offers it', sawDay && !sawNobodyOption && sawNobodyDefault, `day ${sawDay}, offered with flag ${sawNobodyOption}, offered by default ${sawNobodyDefault}`);
+  }
 
   // Property checks over many random games
   const logs: GameLog[] = [];

@@ -10,7 +10,7 @@ import { makeBudget, makeJev, loadJevKey, USAGE_FILE, isoWeek, type Budget, type
 
 const ROOT = new URL('../../../', import.meta.url).pathname;
 const PRODUCT_FILE = `${ROOT}reports/runs/jev-usage-product.json`;
-const PRODUCT_CAP = 15_000;
+const PRODUCT_CAP = 30_000;
 const UNSURE = 'uncertain';
 
 const PERSONAS = [
@@ -29,6 +29,7 @@ function parseArgs(argv: string[]) {
     const k = argv[i]!;
     if (!k.startsWith('--')) throw new Error(`Unexpected argument: ${k}`);
     if (k === '--self-test') { a['self-test'] = '1'; continue; }
+    if (k === '--no-nobody') { a['no-nobody'] = '1'; continue; }
     const v = argv[i + 1];
     if (v === undefined || v.startsWith('--')) throw new Error(`Missing value for ${k}`);
     a[k.slice(2)] = v; i++;
@@ -239,7 +240,7 @@ async function main() {
       const task = q.kind === 'night-mafia' ? 'You are in the Mafia. Choose who to put out tonight (a Mafia partner may already have picked: choose the same name to agree).'
         : q.kind === 'night-doctor' ? 'You are the Doctor. Choose who to protect tonight.'
         : q.kind === 'night-police' ? 'You are the Police. Choose who to check tonight (you learn Mafia or Not Mafia).'
-        : q.kind === 'day' ? 'It is day. The room points at a player at the same moment. Choose who you point at, or nobody.'
+        : q.kind === 'day' ? 'It is day. The room points at a player at the same moment. Choose who you point at' + (noNobody ? '.' : ', or nobody.')
         : 'The first point was tied. Point again among the tied names.';
       const ans = await jev.choose(
         { game: 'Mafia, played with one phone passed round. The Village wins when every Mafia is out; the Mafia win when they are as many as everyone else.', you: q.player, facts: q.facts },
@@ -253,14 +254,15 @@ async function main() {
       const best = ranked.filter(([, v]) => v === ranked[0]![1]);
       return best[Math.floor(pick() * best.length)]![0];
     };
-    const res = await runSim({ sizes, games, shares, seed, maxDecisions, chooserFor });
+    const noNobody = args['no-nobody'] !== undefined;
+    const res = await runSim({ sizes, games, shares, seed, maxDecisions, noNobody, chooserFor });
     const side = resolve(args.out) + '.json';
     mkdirSync(dirname(resolve(args.out)), { recursive: true });
     writeFileSync(side, JSON.stringify({ seed, sizes, games, shares, choices: res.cells.flatMap((c) => c.logs.flatMap((l) => l.choices)),
       games_log: res.cells.flatMap((c) => c.logs.map((l) => ({ size: c.size, shares: c.shares, game: l.game, seed: l.seed, winner: l.winner, rounds: l.rounds, roles: l.roles }))) }));
     const body = [`# Jev design check: ${game}, Mafia table simulation`, '',
-      `Run: ${new Date().toISOString().slice(0, 10)}, budget \`${mode}\`. Tool: \`tests/tools/jev-design/run.ts --sim mafia\`. Sizes ${sizes.join(', ')}; police shares ${shares.join(', ')}; seed ${seed}. Findings only.`, '',
-      ...simReport(res, { seed, games, maxDecisions, extra: [] })];
+      `Run: ${new Date().toISOString().slice(0, 10)}, budget \`${mode}\`. Tool: \`tests/tools/jev-design/run.ts --sim mafia\`. Sizes ${sizes.join(', ')}; police shares ${shares.join(', ')}; seed ${seed}; day point ${noNobody ? '--no-nobody' : 'default (with nobody)'}. Findings only.`, '',
+      ...simReport(res, { seed, games, maxDecisions, noNobody, extra: [] })];
     finish(body, [`- Picks where Jev's answer named no legal name (a legal name was then chosen at random): ${uncertain}.`, `- Choices log (for \`--replay\`): ${side}`]);
     return;
   }
