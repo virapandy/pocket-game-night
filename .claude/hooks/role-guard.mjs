@@ -219,6 +219,13 @@ function pre(input) {
     }
   }
 
+  // Every shell command, whatever the role: remember what was already changed, so "post" blames a command only for
+  // what it did (the read-only helpers return early below, so this comes first).
+  if (tool === 'Bash' && input.tool_use_id) {
+    const snap = Object.fromEntries(ROOTS.map(([key, root]) => [key, changedFiles(root)]));
+    try { writeFileSync(snapshotFile(input), JSON.stringify(snap)); } catch { /* post falls back */ }
+  }
+
   // The reviewer reads anything and runs read-only git, nothing else.
   if (role === 'review') {
     if (READ_TOOLS.includes(tool)) process.exit(0);
@@ -262,10 +269,6 @@ function pre(input) {
             ? 'Coders run tests only inside their lane folder (pocket-game-night-lane-<x>), only the area tests and screenshots, never mutation, simulation or the emulator.'
             : 'Only the Test role runs tests. Type-check instead, push, and read reports/latest.md for results.');
       }
-    }
-    if (input.tool_use_id) {
-      const snap = Object.fromEntries(ROOTS.map(([key, root]) => [key, changedFiles(root)]));
-      try { writeFileSync(snapshotFile(input), JSON.stringify(snap)); } catch { /* post falls back */ }
     }
     process.exit(0);
   }
