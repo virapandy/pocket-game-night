@@ -1,5 +1,6 @@
 # Test report
 **23 October, lane-a (Test lane): Secret Words screen lane A tests written (scenarios v3.7): 132 browser tests in 2 files, all expected-to-fail until the screens exist (2 plain regression checks); rule tests 850 of 850; Tambola wording helpers accept old and new. Not a build verdict.**
+**Lane-b, Secret Words screen lane B tests first (scenarios 3.7, 23 October): written and pushed, RED as intended.** 138 lane B browser tests per phone (shared pieces 19, turn screens 63, dialogs/menu/timer/reload 36 + 1 marked, 6 C3 checks unmarked), all failing at the picker ("Secret Words" card not built; lane A's setup leads there) on both phones locally; the other 12 C3 checks stay marked for lanes A, C, D; SWD-099 passes. Rule tests 850 of 850. Coder note: `specs/secret-words/screens-b.md`.
 **Lane-e at merge 88354ab (lane-e 0ebb60d + origin/main): GREEN. Quick verify 39815492509 green (all shards). Local: npm test 849 of 849, build ok, Secret Words browser file 38 of 38 on both phones (nice -n 10, 2 workers). SWD-103, 090, 042, 099 all pass.**
 ## Lane-e, Secret Words rules engine + owner answers of 22 October (SWD-090, 042, 099, 103)
 Commit tested: c86f220 (app 0ff9800, Secret Words rules engine; tests c86f220)   Date: 2026-10-22

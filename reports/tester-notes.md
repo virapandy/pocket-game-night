@@ -72,3 +72,16 @@ Read this and the top of `reports/latest.md` before starting. Keep it short: rep
 
 ## Lane A tests, 23 Oct (tester)
 Merged origin/main (PGN_PORT per lane: lane-a 4174). Lane A area: 129 of 132 pass on Android (PGN_IGNORE_AHEAD=1). The 3 failures end on the map phone (lane C): secret-words-a-home.spec.ts lines 323, 358, 418. Four coder questions answered in docs/test-questions.md (all test problems, fixed).
+
+## 23 October: Secret Words 3.7 specs (main) and lane B tests first (lane-b)
+- Specs: `specs/secret-words/` is scenarios 3.7 (db2398d). The split was regenerated from `docs/games/secret-words/scenarios.md`
+  (sections by their `→ specs/...` headings; `### SWD-nnn Title` → `## SWD-nnn: Title` + Status/Phase lines; README = the
+  front matter + Test hooks). Rule tests needed no change for 3.7 (SWD-101/131: the warning stays a hint).
+- Lane B (the turn on the host): `secret-words-shared.spec.ts`, `secret-words-turn.spec.ts`, `secret-words-dialogs.spec.ts`,
+  helpers `secret-words-b.ts`, coder note `specs/secret-words/screens-b.md`. They reach the turn through lane A's setup, so
+  they fail at the picker until lane A is merged and lane-b rebased (done 23 Oct). Six lane B checks in `secret-words-c3.spec.ts` are real
+  checks now (SWD-090, 042 ×2, 033 QR ×2, 129); the other 12 stay `aheadOfSecretWordsScreens` (lanes A, C, D).
+- Never run against a real screen: expect to adjust selectors (not checks) the first time, as with the C3 browser checks.
+
+## Lane B fixes, 23 Oct (tester)
+`pass screen` checks in the SWD-094/098 test wait out the 1 s guard; `toGuessing` waits for `clue-line`. Both questions answered in docs/test-questions.md.

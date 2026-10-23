@@ -25,7 +25,7 @@ Tests: `tests/browser/secret-words-shared.spec.ts` (shared pieces), `secret-word
 | Piece | Test id / role | Checked |
 |---|---|---|
 | Board grid | `word-board` (`data-angle` "0"/"180"), cells `board-cell` with `data-index` (row-major from 0) | SWD-090 sizes at 390 × 844 and 360 × 640 (8 px margins, 4 px gaps, cells 71.6 / 65.6 px wide, 48–56 px tall, one font size 12–22 px, weight 600, `text-transform: none`); SWD-091 at 812 × 375 and 568 × 320; SWD-092 at 320 × 568 (Full: `turn-sideways` + `turn-sideways-hint`; Easy: 4 × 4, 73 × 48) |
-| Cell names | face down: `aria-label` "Kite, face down" + `aria-pressed`; turned over: "Kite, orange team" / "teal team" / "blank word" / "the Landmine", not a button; locked cells `aria-disabled="true"`, opacity 1 | SWD-042, 093, Terms |
+| Cell names | face down: `aria-label` "Kite, face down" + `aria-pressed`; turned over: "Kite, orange team" / "teal team" / "nobody's word" / "the Landmine", not a button; locked cells `aria-disabled="true"`, opacity 1 | SWD-042, 093, Terms |
 | Cell icon | an `svg` inside the cell, within an `aria-hidden="true"` element, 16 × 16, top left (2 px in); no ● or ◆ in the page | SWD-093 |
 | Zoom | `word-zoom`: the word at 28 px weight 700, not a button | SWD-042 (preview locked cells: 2 000 ms) |
 | Team bar | `team-bar`: 8 px tall at y = 0, full width, background = `var(--team-orange)` / `var(--team-teal)` (compared after the browser resolves both) | pass, clue, guessing, turn over; none on the private map |

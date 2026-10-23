@@ -7,7 +7,7 @@
 import { expect, test, type Page } from './fixtures';
 import { expectOneMainButton } from './helpers';
 import { freezeClock, mainButton } from './impostor';
-import { aheadOfSecretWordsScreens, giveClue, mapCells, menuButton, oracleBoard, scanHeading, shown, tapMain, waitGuards } from './secret-words';
+import { giveClue, mapCells, menuButton, oracleBoard, scanHeading, shown, tapMain, waitGuards } from './secret-words';
 import {
   announcer, box, byId, cellAt, clearEffects, clueGiver, easyCode, fullCode, guess, hideApp, holdPad, host, indexesOf, itemsOnly,
   listenForEffects, menuOf, moves, moveTypes, other, quiet, resultLine, showApp, sounds, teamsOf, toClueScreen, toGuessing,
@@ -573,8 +573,7 @@ test.describe('SWD-111: Home during a game', () => {
     expect(e.records.map((r: any) => r.move.type)).not.toContain('endGame');
   });
 
-  test('it resumes at the same step from Home\'s row (needs lane A\'s Home row, SWD-115)', async ({ page }) => {
-    aheadOfSecretWordsScreens('Home\'s Secret Words row (SWD-115, lane A) for SWD-111\'s resume');
+  test('it resumes at the same step from Home\'s row', async ({ page }) => {
     await toGuessing(page, { phones: 'One phone', code: CODE, seed: 'home-resume', n: 2 });
     await guess(page, ownOf(B.starts)[0]!);
     await openMenuItem(page, 'Home (keep this game)');

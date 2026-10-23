@@ -179,7 +179,7 @@ test.describe('SWD-042 (v3.6): tap to zoom', () => {
     const b = oracleBoard(WIDE_CODE);
     await guessingOn(page, WIDE_CODE, 'zoom-guess', 2);
     await expect(page.getByTestId('word-zoom')).toHaveCount(0);
-    // A wide word first (face down: nothing is turned yet), then one of the team's own words and a blank word, all different.
+    // A wide word first (face down: nothing is turned yet), then one of the team's own words and a nobody's word, all different.
     const wide = b.words.findIndex((w) => WIDE_WORDS.includes(w));
     const own = b.kinds.map((k, i) => (k === b.starts && i !== wide ? i : -1)).filter((i) => i >= 0);
     const blank = b.kinds.findIndex((k, i) => k === 'nobody' && i !== wide);
@@ -410,7 +410,7 @@ test.describe('SWD-025: room screens carry no kind of a face-down cell', () => {
           if (phones === 'One phone') { await check('pass screen'); await passToClue(page); }
         };
         if (phones !== 'One phone') await tapMain(page, /^(The map phone has the map|Both have the map)$/);
-        // Turn 1: one of the team's own words, then a blank word (turn over).
+        // Turn 1: one of the team's own words, then a nobody's word (turn over).
         await toClue();
         await check('clue screen');
         await giveClue(page, 2);

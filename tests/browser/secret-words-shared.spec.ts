@@ -159,7 +159,7 @@ test.describe('SWD-092: narrow portrait (320 × 568)', () => {
 
 test.describe('SWD-093: never colour alone', () => {
   test.use({ viewport: { width: 390, height: 844 } });
-  test('turned-over cells: "<Word>, orange team" / "teal team" / "blank word", each with its icon (SVG, aria-hidden, 16 × 16, top left); face-down cells "<Word>, face down"; no ● or ◆ characters', async ({ page }) => {
+  test('turned-over cells: "<Word>, orange team" / "teal team" / nobody\'s word, each with its icon (SVG, aria-hidden, 16 × 16, top left); face-down cells "<Word>, face down"; no ● or ◆ characters', async ({ page }) => {
     const { b } = await toGuessing(page, { phones: 'One phone', code: CODE, seed: 'icons', n: 'inf' });
     const own = indexesOf(b, b.starts)[0]!;
     const nobody = indexesOf(b, 'nobody')[0]!;
@@ -170,7 +170,7 @@ test.describe('SWD-093: never colour alone', () => {
     const after = await cellsOf(page.getByTestId('word-board').locator('[data-index]'));
     expect(kindOf(after[own]!.name)).toBe(b.starts);
     expect(kindOf(after[nobody]!.name)).toBe('nobody');
-    expect(after[nobody]!.name).toBe(`${b.words[nobody]}, blank word`);
+    expect(after[nobody]!.name).toBe(`${b.words[nobody]}, nobody's word`);
     for (const i of [own, nobody]) {
       const icon = await cellAt(page, i).evaluate((el) => {
         const svg = el.querySelector('svg');
