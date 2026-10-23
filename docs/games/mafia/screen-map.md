@@ -1,6 +1,6 @@
-# Mafia: screen map (draft 3, product owner, 23 October 2026)
+# Mafia: screen map (draft 4, product owner, 23 October 2026)
 
-**Status: draft 3** (critic pass of draft 1 applied, section J; owner's answers J-Q1 and J-Q2, 23 October). Stage 1 of `docs/proposals/design-before-code.md` (step 1b of `docs/new-game-process.md`). Drawn from
+**Status: draft 4** (Jev check applied, section L; before that critic pass of draft 1, section J; owner's answers J-Q1 and J-Q2, 23 October). Stage 1 of `docs/proposals/design-before-code.md` (step 1b of `docs/new-game-process.md`). Drawn from
 `guide.md`, `fit-and-stories.md` and decisions MF1–MF13 (`docs/decisions.md`, 22 October). No scenarios exist yet, so
 the IDs column says which future scenario file a row belongs to (`MAF-01 setup` … `MAF-10 lifecycle`). Where a later
 `scenarios.md` differs from this map, the scenarios win.
@@ -52,7 +52,7 @@ Riya, Arjun +6 · Night 2" + where-line + "Tap to resume".
 ### S1. Who's playing?
 *Words:* heading "Who's playing?"; tonight's names already in the list (from another game tonight); input "Player name" +
 "Add"; per name "✕"; counter "9 players"; under 5: "Mafia needs at least 5 players."
-(main disabled); over 16: "Up to 16 players." (Add disabled); quiet "How to play"; quiet "← Back"; main "Next".
+(main disabled); over 16: "Up to 16 players." (Add disabled); small text link "How to play"; quiet "← Back"; main "Next".
 *Intentions:* back, help.
 | Tap | Leads to | Records | IDs |
 |---|---|---|---|
@@ -66,20 +66,20 @@ Riya, Arjun +6 · Night 2" + where-line + "Tap to resume".
 *Words:* heading "Roles for 9 players"; line "Mafia: 2" with "−" and "+" and "We suggest 2 for 9 players."; lines "Doctor:
 1", "Police: 1", "Villagers: 5" (counts only, no buttons); suggestion 5–7 → 1, 8–11 → 2, 12–15 → 3, 16 → 4 (MF5); with 5 players:
 "With 5 players: 1 Mafia and 4 Villagers. Doctor and Police join at 6."; rules box "Night comes first · Doctor can protect themselves once a game, never the same person two
-nights running · Police learns Mafia or Not Mafia · A tie: point again once, then nobody is out"; quiet "How to play";
-quiet "← Back"; main "Deal the roles". *Intentions:* back, help.
+nights running · Police learns Mafia or Not Mafia · A tie: point again once, then nobody is out"; small text link "How to play";
+quiet "← Back"; main "Give everyone a role". *Intentions:* back, help.
 | Tap | Leads to | Records | IDs |
 |---|---|---|---|
 | − / + | Mafia count changes by one from the suggestion, never more (MF5): "−" disabled at suggestion − 1 or 1; "+" disabled at suggestion + 1, and whenever one more Mafia would make the Mafia equal the rest after night 1 (so never at 5 players); Villagers line follows | setup | MAF-01 |
 | How to play | S4 → Done → back | — | MAF-09 |
 | ← Back | S1 (names kept) | — | MAF-01 |
-| Deal the roles | S3 Read this aloud (first Mafia game tonight) or B1 first pass screen | `deal` (roles from the role seed) | MAF-01, 05 |
+| Give everyone a role | S3 Read this aloud (first Mafia game tonight) or B1 first pass screen | `deal` (roles from the role seed) | MAF-01, 05 |
 
 ### S3. Read this aloud (first Mafia game of the night)
 *Words:* "Read this aloud:"; card "2 of us are secretly the Mafia. Everyone else is the Village. At night we pass the phone
 round and everyone does the same thing, so nobody can tell who is who. Each morning the phone tells us what happened, then
 we talk and vote someone out. The Village wins by finding every Mafia. The Mafia win when they are as many as everyone
-else."; quiet "← Back"; quiet "How to play"; main "Pass the phone round".
+else."; quiet "← Back"; small text link "How to play"; main "Pass the phone round".
 | Tap | Leads to | Records | IDs |
 |---|---|---|---|
 | Pass the phone round | B1 for the first player | — | MAF-01 |
@@ -108,7 +108,7 @@ else."; quiet "← Back"; quiet "How to play"; main "Pass the phone round".
 - **DOCTOR** · "At night, pick someone to protect from the Mafia. Yourself once a game. Never the same person two nights running."
 - **POLICE** · "At night, check one person. The phone tells only you: Mafia or Not Mafia."
 - **VILLAGER** · "You have no night power. By day, talk, watch and find the Mafia."
-While the role shows, a quiet "New to Mafia? What this means" (on **every** role card, so opening it tells nobody anything;
+While the role shows, a quiet "First time? What this role means" (on **every** role card, so opening it tells nobody anything;
 MF14) opens, on the same private screen, three short lines for that role, e.g. Mafia: "Your side wins when the Mafia are as
 many as everyone else." · "At night, pick who goes out." · "By day, join in and point at others. Stay calm!"; Villager: "Your
 side wins when every Mafia is out." · "At night, pick who you think is Mafia. Only you see it." · "By day, listen, ask
@@ -119,7 +119,7 @@ Arjun" (last player: "Done, everyone's seen"). No menu.
 |---|---|---|---|
 | Hold / let go (or Tap instead → "Tap to see" / "Tap to hide") | role shown / hidden | — | MAF-05 |
 | Not Riya? ← Back | B1 for Riya | — | MAF-05 |
-| New to Mafia? What this means / hide | the three lines for this role shown / hidden; hidden with the role | — | MAF-04 |
+| First time? What this role means / hide | the three lines for this role shown / hidden; hidden with the role | — | MAF-04 |
 | Someone saw my role | D4 Deal again | — | MAF-05 |
 | Done, pass to Arjun | B1 for Arjun | `seen` | MAF-05 |
 | Done, everyone's seen | N0 Night begins | `seen` | MAF-02 |
@@ -138,7 +138,7 @@ Done, pass it on." (Night uses tap to see, not hold: names must be tapped while 
 
 ### N1. Pass screen (night)
 *Words:* "Night 1 · 3 of 9"; "Pass the phone to"; MEENA; "Everyone else, look away!"; main "I'm Meena" (1 s guard). Players who
-are out are in the order too, with "Out players: your ghost guess." under the name (MF11). *Intentions:* pause, menu as B1
+are out are in the order too, with "You're out: pick who you think is Mafia." under the name (MF11). *Intentions:* pause, menu as B1
 without "Deal again".
 | Tap | Leads to | Records | IDs |
 |---|---|---|---|
@@ -192,13 +192,13 @@ the Doctor or say who the Police checked. Quiet "See my role again"; main "Start
 
 ### Y1. Day: talk it over
 *Words:* "Day 1 · Talk it over"; "Who's still in:" names; out names greyed, each with their shown role; "Out players: watch
-quietly, no hints!"; quiet "See my role again"; quiet "Start 2-minute timer" ↔ "Stop timer"; main "Time to vote".
+quietly, no hints!"; quiet "See my role again"; small text link "Start a 2-minute timer" ↔ "Stop timer" (smaller than the main, as Impostor's M27); quiet "← Home"; main "Time to vote".
 *Intentions:* pause, help (menu), stop (menu), timer.
 | Tap | Leads to | Records | IDs |
 |---|---|---|---|
 | Time to vote | V1 Countdown | — | MAF-02 |
 | See my role again | D5 | — | MAF-05 |
-| Start 2-minute timer | timer on this screen; at 0 a chime and "Time's up!", nothing else | — | MAF-02 |
+| Start a 2-minute timer | timer on this screen; at 0 a chime and "Time's up!", nothing else | — | MAF-02 |
 
 ### V1. Countdown
 *Words:* "Everyone in, point at who you think is Mafia."; big "3", "2", "1", "Point!" (1 s each); then automatically V2.
@@ -206,12 +206,12 @@ Quiet "Not yet" during the count → Y1. *Intentions:* back (Not yet), pause.
 
 ### V2. Who got the most fingers?
 *Words:* heading "Who got the most fingers?"; one button per player still in; label "Not sure? Count again."; text buttons
-"It's a tie", "Count again", "Nobody today" (MF12); quiet "← Back to talking"; main "Put out" (disabled) → "Put Kabir out".
+"It's a tie", "Count again", "Nobody today" (MF12); quiet "← Back to talking"; main "Vote out" (disabled) → "Vote Kabir out".
 *Intentions:* back, pause; help, stop (menu).
 | Tap | Leads to | Records | IDs |
 |---|---|---|---|
-| A name | selected; main "Put Kabir out" | — | MAF-02 |
-| Put Kabir out | V4 Vote result | `voteOut` | MAF-02 |
+| A name | selected; main "Vote Kabir out" | — | MAF-02 |
+| Vote Kabir out | V4 Vote result | `voteOut` | MAF-02 |
 | It's a tie | V3 Tie | — | MAF-02 |
 | Count again | V1 | — | MAF-02 |
 | Nobody today | D6 "Nobody out today?" | — | MAF-02 |
@@ -219,7 +219,7 @@ Quiet "Not yet" during the count → Y1. *Intentions:* back (Not yet), pause.
 
 ### V3. Tie
 *Words:* first tie: heading "Tap everyone who is tied"; names; quiet "Not a tie"; main "Point again (2 players)". Second tie:
-"Still a tie. Nobody is out today." main "Start night 2". *Intentions:* back (Not a tie), pause; stop (menu).
+"Still a tie. Nobody is out today."; quiet "← Home"; main "Start night 2". *Intentions:* back (Not a tie), pause; stop (menu).
 | Tap | Leads to | Records | IDs |
 |---|---|---|---|
 | Names | selected | — | MAF-02 |
@@ -256,19 +256,19 @@ the game is over). *Intentions:* stop, home, pause; help (menu).
 *Words:* "The Village wins! Every Mafia is out." / "The Mafia win! They're as many as everyone else." / "Game ended. No
 winner."; the roles list: every player with their role, out players with "out night 1" / "voted out day 2"; quiet "What
 happened each night" (opens a list: "Night 1: Mafia picked Kabir · Doctor protected Kabir · Police checked Zoya (Mafia)");
-fun lines: "Sharpest eyes: Om picked a Mafia 3 nights out of 3" (Villagers' picks), "Best ghost guess: Riya" (when
+fun lines: "Best Mafia spotter: Om picked a Mafia 3 nights out of 3" (Villagers' picks), "Best ghost guess: Riya" (when
 any); "Tonight: Village 2 · Mafia 1"; quiet "Change players or roles"; quiet "End for tonight"; quiet "← Home"; main "Play
 again". *Intentions:* stop, home, play on, change (visible); help, Settings, History (menu).
 | Tap | Leads to | Records | IDs |
 |---|---|---|---|
 | Play again | deal with the same players (new ones added, leavers removed) → B1; the Mafia count is kept unless S2's limits no longer allow it, then the suggestion. Fewer than 5 players: S1 with "Mafia needs at least 5 players." | `deal` | MAF-07 |
-| Change players or roles | S1 ("← Back to the game") → S2 → Deal the roles (no read-aloud) | — | MAF-07 |
+| Change players or roles | S1 ("← Back to the game") → S2 → Give everyone a role (no read-aloud) | — | MAF-07 |
 | End for tonight | D8 → G2 | — | MAF-07 |
 | ← Home | A1 (game night stays unfinished) | — | MAF-10 |
 | Undo (toast after End the game) | the step it came from | nothing | MAF-07 |
 
 ### G2. Summary "Tonight's Mafia"
-*Words:* "9 players · 3 games"; "Village 2 · Mafia 1"; "Mafia most often: Arjun (2 games)"; "Sharpest eyes tonight: Om"; quiet
+*Words:* "9 players · 3 games"; "Village 2 · Mafia 1"; "Arjun was Mafia in 2 games"; "Best Mafia spotter tonight: Om"; quiet
 "Oops, keep playing"; quiet "← Home"; main "Play something else". Menu: only "Delete tonight's games".
 | Tap | Leads to | Records | IDs |
 |---|---|---|---|
@@ -324,6 +324,20 @@ Not changed: "Welcome back." after a reload during a night job (it shows only th
 - **J-Q2 → MF15:** if someone peeks at a night job, the game carries on and the peeker promises to forget, as with a human
   moderator. "Deal again" stays for before night 1 only; How to play says so: "Saw someone's screen? Keep it to yourself and
   carry on. Before the first night, Deal again instead."
+
+## L. Jev check of draft 3 (23 October): what changed
+Source: `jev-check.md` (271 Jev decisions; 15 of 20 screens asked; one answer per question, so values near a band edge may
+move). Basis for each change: Jev's read plus our own shipped precedent where there is one.
+| Finding (Jev) | Change |
+|---|---|
+| S1, S2: "How to play" picked over the main (0.37, 0.56; first-time host 0.93–0.95) | "How to play" is a small text link on setup screens, as Impostor's M27 did for "See my word again"; the read-aloud card (S3) teaches the room anyway |
+| Y1: "Start 2-minute timer" picked over "Time to vote" (0.64 v 0.29); way out not seen (0.35) | Timer becomes a small text link; quiet "← Home" added |
+| V3: way out not seen (0.28), purpose unclear (0.37) | Quiet "← Home" on the second-tie screen; the heading words stay (Impostor's shipped M22a wording) |
+| Labels: "Put Kabir out" 0.22, "Deal the roles" 0.32, "Out players: your ghost guess." 0.16, "New to Mafia?" 0.37, "Mafia most often" 0.27, "Sharpest eyes" 0.38 | "Vote Kabir out", "Give everyone a role", "You're out: pick who you think is Mafia.", "First time? What this role means", "Arjun was Mafia in 2 games", "Best Mafia spotter" |
+| B2, N2: the reveal picked before "Done" | Expected: the reveal must come first. No change |
+| "Not Riya? ← Back" 0.44, "Who got the most fingers?" 0.49, "Tap everyone who is tied" 0.43, "Tap instead" 0.47 | **Kept**: shipped in Impostor and used by families since 1.3.0 without a report; real use outranks one Jev read |
+| D1–D8, "App hidden…", "A name" and punctuation scraps rated low | Not real labels: the tool read row names and descriptions. Tool note for the tester: skip dialog IDs and rows that aren't buttons |
+| A1, S4, N0, N3, V1 not asked (fewer than 2 buttons) | Re-ask in the prototype read, where every state is a real screen |
 
 ## K. Prototype script (what the tap-through shows)
 Same rendering rules as Secret Words K3 (one state per screen, real labels, K4-style outcomes), with this data.
