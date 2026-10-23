@@ -78,7 +78,7 @@ export const THANKS = 'Thanks! Your report is on its way.';
 export const NOT_SHARED = "Not shared. It's kept in Settings, under Reports to share.";
 export const COPIED = 'Report copied. Paste it in a message to whoever shared this app.';
 const NOT_COPIED = "Could not copy it. It's kept in Settings, under Reports to share.";
-export const WAITS = 'Kept. It can be shared when this game ends.';
+export const WAITS = 'Kept. You can share it when this game ends.';
 
 let migrated = false;
 function stored(): Report[] {
