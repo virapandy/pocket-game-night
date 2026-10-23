@@ -5,6 +5,7 @@
 // never fetches a web page, never prints the key. Every question is a Choice with an "uncertain" option.
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
+import { runSim, simReport, selfTest, NOBODY, rngOf, type Chooser, type PoliceShares } from './sim-mafia.ts';
 import { makeBudget, makeJev, loadJevKey, USAGE_FILE, isoWeek, type Budget, type ChoiceAnswer, type ChoiceQuestion } from '../../sim/jev.ts';
 
 const ROOT = new URL('../../../', import.meta.url).pathname;
@@ -27,6 +28,7 @@ function parseArgs(argv: string[]) {
   for (let i = 0; i < argv.length; i++) {
     const k = argv[i]!;
     if (!k.startsWith('--')) throw new Error(`Unexpected argument: ${k}`);
+    if (k === '--self-test') { a['self-test'] = '1'; continue; }
     const v = argv[i + 1];
     if (v === undefined || v.startsWith('--')) throw new Error(`Missing value for ${k}`);
     a[k.slice(2)] = v; i++;
@@ -57,6 +59,8 @@ export function parseMap(text: string): Screen[] {
         if (/^\|[\s:|-]+\|?$/.test(line)) { headerSeen = true; continue; }
         if (!headerSeen) continue; // the header row
         const first = clean(line.replace(/^\|/, '').split('|')[0] ?? '');
+        // not buttons: dialog row IDs (D1, D2 ...) and the rows describing what is on screen rather than tapped
+        if (/^D\d+\b/.test(first) || /^(App hidden|A name)\b/i.test(first)) continue;
         if (first && first !== '—' && !buttons.includes(first)) buttons.push(first.slice(0, 90));
       } else if (!inTable && line) wordLines.push(line);
       else if (inTable && !line) { inTable = false; headerSeen = false; }
@@ -139,7 +143,13 @@ const SENSITIVE = 'Is this word political or religiously sensitive, so that it c
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
-  if (!args.map && !args.words) throw new Error('Give --map and/or --words. See tests/tools/jev-design/README.md');
+  if (args['self-test'] !== undefined) {
+    const lines = await selfTest(); console.log(lines.join('\n'));
+    process.exit(lines[lines.length - 1]!.startsWith('SELF-TEST OK') ? 0 : 1);
+  }
+  if (args.sim && args.sim !== 'mafia') throw new Error('--sim must be mafia');
+  if (!args.sim && !args.texts && !args.map && !args.words) throw new Error('Give --map, --words, --texts or --sim mafia. See tests/tools/jev-design/README.md');
+  if (args.texts && !args.column) throw new Error('--texts needs --column <name>');
   if (!args.out) throw new Error('Give --out <report path>');
   const mode = args.budget ?? 'test';
   if (mode !== 'product' && mode !== 'test') throw new Error('--budget must be product or test');
@@ -155,6 +165,105 @@ async function main() {
   const budget = product ? makeProductBudget(shared, product) : shared;
   const sharedBefore = shared.used(), productBefore = product ? product.used() : 0;
   const jev = makeJev({ key, budget });
+  const footer = (extra: string[]) => [
+    '## Decisions used', '',
+    `- This run: ${budget.thisRun} decisions, ${jev.stats.calls} calls.`,
+    ...(product ? [`- Product count this ISO week (${isoWeek(Date.now())}): ${productBefore} before, ${product.used()} after, of ${PRODUCT_CAP}.`] : []),
+    `- Shared count this ISO week: ${sharedBefore} before, ${shared.used()} after, of ${shared.cap}.`,
+    `- Stopped early: ${jev.stats.capReached ? 'yes, by ' + (budget.stoppedBy ?? 'a limit') : 'no'}.`, ...extra, '',
+    '## Tool faults (kept apart from findings)', '',
+    ...(jev.stats.failures.length ? jev.stats.failures.map((x) => '- ' + x) : ['- None: every call answered on the first try.']), ''];
+  const finish = (body: string[], extra: string[] = []) => {
+    mkdirSync(dirname(resolve(args.out!)), { recursive: true });
+    writeFileSync(resolve(args.out!), [...body, ...footer(extra)].join('\n'));
+    console.log(`done: ${budget.thisRun} decisions (${mode}); shared ${sharedBefore}->${shared.used()}` + (product ? `; product ${productBefore}->${product.used()}` : '') +
+      (jev.stats.capReached ? `; STOPPED by ${budget.stoppedBy}` : '') + `; failures ${jev.stats.failures.length}; report ${args.out}`);
+  };
+
+  // ---------- text check: one Choice call per row, four questions ----------
+  if (args.texts) {
+    const rows = parseCsv(readFileSync(resolve(args.texts), 'utf8'));
+    const header = (rows[0] ?? []).map((h) => h.trim().toLowerCase());
+    const ci = header.indexOf(args.column!.toLowerCase());
+    if (ci < 0) throw new Error(`No column "${args.column}" in ${args.texts} (columns: ${header.join(', ')})`);
+    const ii = header.indexOf('id') >= 0 ? header.indexOf('id') : 0;
+    const all = rows.slice(1).filter((r) => (r[ci] ?? '').trim());
+    const take = args['max-rows'] ? Number(args['max-rows']) : Infinity;
+    const res: { id: string; text: string; a: Probs | null; b: Probs | null; c: Probs | null; d: Probs | null }[] = [];
+    const tskipped: string[] = [];
+    for (const r of all.slice(0, take)) {
+      const text = r[ci]!.trim();
+      const st = { context: `A line of text shown in a family party game (${game}) played in English in India. {NAME} stands for a player's name.`, text };
+      const ans = await jev.choose(st, {
+        a: yesNo('Is this text family-friendly?', { text }),
+        b: yesNo('Would a mixed-region Indian family (ages 8 to 80, including someone from Tirunelveli who does not speak Hindi) understand this text at once?', { text }),
+        c: yesNo('Would this text be scary for a 7-year-old?', { text }),
+        d: yesNo('Would this text get a laugh from a family?', { text }),
+      });
+      if (!ans) { tskipped.push(r[ii] ?? text.slice(0, 20)); if (jev.stats.capReached) break; continue; }
+      res.push({ id: r[ii] ?? '', text, a: probsOf(ans.a), b: probsOf(ans.b), c: probsOf(ans.c), d: probsOf(ans.d) });
+    }
+    const y = (p: Probs | null) => p?.yes ?? 0;
+    const flagged = res.filter((x) => (x.a && y(x.a) < 0.5) || (x.b && y(x.b) < 0.5) || (x.c && y(x.c) > 0.5));
+    const body = [`# Jev design check: ${game}, text check`, '',
+      `Run: ${new Date().toISOString().slice(0, 10)}, budget \`${mode}\`. Tool: \`tests/tools/jev-design/run.ts --texts\`. Source: column \`${args.column}\` of \`${args.texts.split('/').slice(-3).join('/')}\`. Findings only. One Jev answer per question (no repeats). Questions: (a) family-friendly; (b) understood by a mixed-region Indian family; (c) scary for a 7-year-old; (d) would get a laugh. Each has an "uncertain" option. Values are P(yes).`, '',
+      '## Text check', '',
+      `- Rows asked: ${res.length} of ${all.length}.`,
+      `- **Flagged** (a or b under 0.5, or c over 0.5): ${flagged.length ? flagged.map((x) => x.id).join(', ') : 'none'}.`,
+      `- Unsure (top answer "uncertain" on any question): ${res.filter((x) => [x.a, x.b, x.c, x.d].some((p) => !p || top(p)[0] === UNSURE)).map((x) => x.id).join(', ') || 'none'}.`,
+      `- Laugh (d) under 0.5 (not a flag): ${res.filter((x) => x.d && y(x.d) < 0.5).map((x) => x.id).join(', ') || 'none'}.`, '',
+      '### Flagged rows', '',
+      flagged.length ? '| ID | Text | (a) friendly | (b) understood | (c) scary | (d) laugh |\n|---|---|---|---|---|---|\n' + flagged.map((x) => `| ${x.id} | ${cell(x.text)} | ${pct(y(x.a))} | ${pct(y(x.b))} | ${pct(y(x.c))} | ${pct(y(x.d))} |`).join('\n') : 'None.', '',
+      '### All rows', '', '| ID | (a) | (b) | (c) | (d) |', '|---|---|---|---|---|',
+      ...res.map((x) => `| ${x.id} | ${pct(y(x.a))} | ${pct(y(x.b))} | ${pct(y(x.c))} | ${pct(y(x.d))} |`), ''];
+    finish(body, [`- Skipped: ${tskipped.length ? tskipped.join(', ') : 'nothing'}.`]);
+    return;
+  }
+
+  // ---------- Mafia table simulation ----------
+  if (args.sim) {
+    const sizes = (args.players ?? '6').split(',').map(Number);
+    if (sizes.some((n) => !Number.isInteger(n) || n < 5 || n > 16)) throw new Error('--players must be numbers from 5 to 16, e.g. 6,8,10');
+    const games = Number(args.games ?? 1);
+    const shares = (args['police-shares'] ?? 'when-found').split(',') as PoliceShares[];
+    if (shares.some((x) => x !== 'never' && x !== 'when-found')) throw new Error('--police-shares must be never, when-found or never,when-found');
+    const seed = Number(args.seed ?? 1);
+    const maxDecisions = Number(args['max-decisions'] ?? 8000);
+    const replay: string[] | null = args.replay ? (JSON.parse(readFileSync(resolve(args.replay), 'utf8')).choices as string[]) : null;
+    let used = 0, uncertain = 0, ri = 0;
+    const pick = rngOf(seed + 99);
+    const chooserFor = (): Chooser => async (q) => {
+      if (replay) return replay[ri++] ?? null;
+      if (used >= maxDecisions) return null;
+      const crit: Record<string, string> = Object.fromEntries(q.options.map((o) => [o, o === NOBODY ? 'nobody (no one is pointed at)' : `the player ${o}`]));
+      const task = q.kind === 'night-mafia' ? 'You are in the Mafia. Choose who to put out tonight (a Mafia partner may already have picked: choose the same name to agree).'
+        : q.kind === 'night-doctor' ? 'You are the Doctor. Choose who to protect tonight.'
+        : q.kind === 'night-police' ? 'You are the Police. Choose who to check tonight (you learn Mafia or Not Mafia).'
+        : q.kind === 'day' ? 'It is day. The room points at a player at the same moment. Choose who you point at, or nobody.'
+        : 'The first point was tied. Point again among the tied names.';
+      const ans = await jev.choose(
+        { game: 'Mafia, played with one phone passed round. The Village wins when every Mafia is out; the Mafia win when they are as many as everyone else.', you: q.player, facts: q.facts },
+        { pick: { type: 'choice', instructions: { question: task, note: 'Play to win for your side. A player must always point or pick, so there is no "uncertain" option here.' }, criteria: crit } });
+      const p = ans && probsOf(ans.pick);
+      if (!p) return null;
+      used++;
+      const ranked = Object.entries(p).filter(([k]) => q.options.includes(k)).sort((a, b) => b[1] - a[1]);
+      if (top(p)[0] === UNSURE || !ranked.length) uncertain++;
+      if (!ranked.length) return q.options[Math.floor(pick() * q.options.length)]!;
+      const best = ranked.filter(([, v]) => v === ranked[0]![1]);
+      return best[Math.floor(pick() * best.length)]![0];
+    };
+    const res = await runSim({ sizes, games, shares, seed, maxDecisions, chooserFor });
+    const side = resolve(args.out) + '.json';
+    mkdirSync(dirname(resolve(args.out)), { recursive: true });
+    writeFileSync(side, JSON.stringify({ seed, sizes, games, shares, choices: res.cells.flatMap((c) => c.logs.flatMap((l) => l.choices)),
+      games_log: res.cells.flatMap((c) => c.logs.map((l) => ({ size: c.size, shares: c.shares, game: l.game, seed: l.seed, winner: l.winner, rounds: l.rounds, roles: l.roles }))) }));
+    const body = [`# Jev design check: ${game}, Mafia table simulation`, '',
+      `Run: ${new Date().toISOString().slice(0, 10)}, budget \`${mode}\`. Tool: \`tests/tools/jev-design/run.ts --sim mafia\`. Sizes ${sizes.join(', ')}; police shares ${shares.join(', ')}; seed ${seed}. Findings only.`, '',
+      ...simReport(res, { seed, games, maxDecisions, extra: [] })];
+    finish(body, [`- Picks where Jev's answer named no legal name (a legal name was then chosen at random): ${uncertain}.`, `- Choices log (for \`--replay\`): ${side}`]);
+    return;
+  }
 
   const screens = args.map ? parseMap(readFileSync(resolve(args.map), 'utf8')) : [];
   const askable = screens.filter((s) => s.buttons.length >= 2).slice(0, maxScreens);
