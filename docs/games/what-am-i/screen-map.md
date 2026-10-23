@@ -1,6 +1,6 @@
 # What Am I?: screen map (draft 3, product owner, 23 October 2026)
 
-**Status: draft 3** (critic pass, section J; six persona walks, section L, `map-walk-2026-10-23.md`; where J or L and a row differ, the later section wins). Jev's check is pending (handover). Stage 1 of `docs/proposals/design-before-code.md` (step 1b of `docs/new-game-process.md`). Drawn from
+**Status: draft 3** (critic pass, section J; six persona walks, section L; word guidelines, section M, `map-walk-2026-10-23.md`; where J or L and a row differ, the later section wins). Jev's check is pending (handover). Stage 1 of `docs/proposals/design-before-code.md` (step 1b of `docs/new-game-process.md`). Drawn from
 `guide.md`, `fit-and-stories.md`, `words.md` and decisions WA1–WA10 (`docs/decisions.md`, 23 October). No scenarios exist
 yet, so the IDs column says which future scenario file a row belongs to (`WAI-01 setup` … `WAI-10 lifecycle`). Where a
 later `scenarios.md` differs from this map, the scenarios win.
@@ -269,7 +269,25 @@ a tie for the win; 2 players; 20 players.
 14. **Fairness.** On T4, a word moved shows ↺ ("Owl ↺"); after Save score the turn is locked (Undo above reopens it). R1
     and G1 show turns played: "Arjun 14 (2 turns) · Zoya 6 (1 turn)". Ties stay shared (WA7).
 15. **A1 resume row** in two lines: "What Am I? · Round 2 · Arjun's turn" / "Riya, Arjun +4 · 8:05 pm · Tap to resume".
-16. **G2:** "Oops, keep playing" becomes "Back to the game".
+16. ~~**G2:** "Oops, keep playing" becomes "Back to the game".~~ Reversed by M2: word guideline A8 keeps "Oops, keep playing".
+
+## M. Word guidelines check (`docs/word-guidelines.md`, 23 October)
+1. **Buttons as a verb and its object (A3):** "Keep Kabir" → "Don't remove Kabir"; "Tap only" → "Use taps instead";
+   "Carry on" → "Carry on playing" (D1, S2 from R1, the Skip dialog); "Skip" in the Skip dialog → "Skip Riya's turn".
+2. **"Oops" stays (A8):** G2 keeps "Oops, keep playing"; L16 is reversed.
+3. **The main button names the person (A4):** T1's "I'm ready" → "I'm Riya: start" (the 1 s guard applies to it).
+4. **One word per idea (A1):** a **turn** is one player's 30–90 s; a **round** is everyone once; a **game** runs from Start
+   to "End the game"; **tonight** is the game night ("End for tonight"). Never "session" or "evening" on screen. A word on
+   screen is a **word**, never a "card" or "clue".
+5. **Plurals counted (A9):** "1 word", "2 words"; "1 turn", "2 turns"; "1 player" never shown (2 is the minimum).
+6. **Say what a choice does (A6):** every S2 choice already has its line; the pack list adds a line under Mix of all:
+   "Words from every pack."
+7. **Content words (Part B):** `words.csv` edition 1 is checked by B1–B7 and the length rule (B5: at most 22 characters,
+   two lines on the sideways word screen at 568 × 320, checked by code before approval).
+8. **Packs grown (23 October):** 97–100 words a pack, 789 in all (`words.md`). S2 shows each pack's real count, leaving out
+   non-veg words while that switch is off: "Animals · 97 words", "Food · 89 words" (100 with non-veg), "Mix of all · 776
+   words". Open item H1 (packs running out after 4 turns) is closed: a pack now lasts about 10 turns, and the T1 warning
+   and Mix-of-all fallback stay for big groups.
 
 ## K. Prototype script (what the tap-through shows)
 Same rendering rules as Secret Words K3 (one state per screen, real labels, K4-style outcomes), with this data.
