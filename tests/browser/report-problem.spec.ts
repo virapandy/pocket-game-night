@@ -161,8 +161,13 @@ async function fakeShare(page: Page, can: Can = 'files', result: Result = 'ok') 
       configurable: true,
       value: async (data: { title?: string; text?: string; files?: File[] }) => {
         if (can === 'text' && data?.files && data.files.length) throw new TypeError('This phone cannot share files');
+        // On WebKit, reading a file while the phone is offline can fail; that must not hide that the sheet was opened.
         const files: Shared['files'] = [];
-        for (const f of data?.files ?? []) files.push({ name: f.name, type: f.type, text: await f.text() });
+        for (const f of data?.files ?? []) {
+          let text = '';
+          try { text = await f.text(); } catch { /* unreadable while offline on WebKit */ }
+          files.push({ name: f.name, type: f.type, text });
+        }
         const entries = log();
         entries.push({ title: data?.title, text: data?.text, files, online: navigator.onLine });
         localStorage.setItem('__pgnShareLog', JSON.stringify(entries));
@@ -586,35 +591,59 @@ test.describe('PLT-203: crashes are caught, the game is safe, and a report is on
   });
 });
 
-test.describe('PLT-202: with no internet, a report waits and goes by itself when the connection returns', () => {
-  // NOT changed by the share sheet version (the 22 October draft leaves PLT-202 as it was). It still uses the old
-  // sending hook (`window.__pgnSendReport`). A share sheet needs a person's tap, so "goes by itself" cannot hold for it:
-  // see reports/latest.md, "Questions for the owner". Do not remove the hook until the owner has ruled.
-  test('sent offline after a game, it goes when the connection returns during the next game, without interrupting it', async ({ page, context }) => {
+test.describe('PLT-202: a report waits until someone taps Share; nothing goes by itself, online or offline', () => {
+  // Orchestrator's ruling, 23 Oct 2026 (specs/platform/03-feedback.md): replaces the old "goes by itself" test.
+  test('offline then back online: nothing is shared or requested, and the report is still waiting on Home and in Settings', async ({ page, context }) => {
     test.setTimeout(60_000);
-    await fakeSender(page, 'ok');
+    await fakeShare(page, 'files', 'ok');
+    const requests = await watchNetwork(context);
     await setUpPaperGame(page, { players: NAMES });
     await callMany(page, 3);
-    await endGame(page);
-    await context.setOffline(true);
     await openReport(page);
-    await writeReport(page, 'Sent offline');
+    await writeReport(page, 'Written offline');
     await sendButton(page).click();
-    await expect(page.getByRole('dialog')).toHaveCount(0);
-    await page.waitForTimeout(1000);
-    expect(await sentCount(page), 'sent with no connection').toBe(0);
+    await expect(toast(page, KEPT_MID_GAME)).toBeVisible();
+    await endGame(page);
+    await page.goto(HOME);
+    await waitOutTapGuard(page);
+    await expect(page.getByText(HOME_ROW)).toBeVisible();
+    await context.setOffline(true);
 
-    await page.getByRole('button', { name: 'Play again' }).click();
-    await confirmPrizes(page);
-    const n = await call(page);
+    const before = requests.length;
+    await page.waitForTimeout(1500);
     await context.setOffline(false);
-    await expect.poll(() => sentCount(page), { message: 'sent when the connection returns', timeout: 10_000 }).toBe(1);
-    const got = (await sent(page))[0]!;
-    expect(JSON.parse(got.text).what).toBe('Sent offline');
-    // Never interrupts the game: no dialog, the number stays, calling goes on.
-    await expect(page.getByRole('dialog')).toHaveCount(0);
-    await expect(currentNumber(page)).toHaveText(String(n));
-    await call(page);
+    await page.waitForTimeout(2500);
+    expect(await shareCount(page), 'shared by itself').toBe(0);
+    expect(requests.slice(before), 'network requests after the connection returned').toEqual([]);
+    await expectNothingLeft(page, requests);
+    await expect(page.getByText(HOME_ROW)).toBeVisible();
+    await openWaiting(page);
+    await expect(waitingReports(page)).toHaveCount(1);
+    await expect(waitingReports(page).first()).toContainText('Written offline');
+    expect(await shareCount(page)).toBe(0);
+  });
+
+  test('a report kept at Home offline stays waiting when the connection returns, and only a tap on Share shares it', async ({ page, context }) => {
+    test.setTimeout(60_000);
+    await fakeShare(page, 'files', 'cancel');
+    const requests = await watchNetwork(context);
+    await page.goto(HOME);
+    await openReport(page);
+    await writeReport(page, 'Kept offline at Home');
+    await context.setOffline(true);
+    await sendButton(page).click();
+    await expect(toast(page, NOT_SHARED)).toBeVisible();
+    const before = requests.length;
+    await context.setOffline(false);
+    expect(await shareCount(page), 'the sheet was opened once (read once the phone is online again)').toBe(1);
+    await page.reload();
+    await page.waitForTimeout(2500);
+    expect(await shareCount(page), 'shared again by itself').toBe(1);
+    expect(requests.slice(before).filter((r) => r.method !== 'GET'), 'anything sent').toEqual([]);
+    await expectNothingLeft(page, requests);
+    await openWaiting(page);
+    await expect(waitingReports(page)).toHaveCount(1);
+    await expect(waitingReports(page).first()).toContainText('Kept offline at Home');
   });
 });
 

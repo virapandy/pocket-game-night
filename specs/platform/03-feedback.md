@@ -21,15 +21,18 @@ And it does include the game's money numbers: the contribution per ticket, the p
 (what each person paid and won), with the names in them replaced too, so money bugs can be replayed (PLT-204)
 And the host sees exactly what will be sent before sending it
 
-## PLT-202: Reports wait for a connection
-Status: approved, owner, 2026-10-01 (docs/decisions.md 2026-10-01: reports kept by the stub are listed as waiting); was approved, owner, 2026-09-29 (Phase 7 sign-off, with the product owner's verdict of 2026-09-28: approve)
+## PLT-202: Reports wait until someone taps Share
+Status: approved, owner, 2026-10-01 (docs/decisions.md 2026-10-01: reports kept by the stub are listed as waiting); was approved, owner, 2026-09-29 (Phase 7 sign-off, with the product owner's verdict of 2026-09-28: approve). Reworded 2026-10-23 by the orchestrator's ruling (below), listed for the owner to overrule.
 Phase: Phase 7
-Given the phone has no internet
-When the host sends a report
-Then it is kept on the phone and sent automatically when a connection returns
+Given a report has been written and not yet shared, with or without internet
+Then it waits on the phone: Home shows "A problem report is ready to share" with a Share button, and
+Settings → "Reports to share" lists it (PLT-209), until someone taps Share
+And nothing is sent automatically: going offline, or the connection returning, sends nothing and makes no network request
 And it never interrupts a game
-And while sending is not set up yet (the stub, PLT-208), every report kept on the phone is listed under
-"Reports waiting to send" (PLT-209) with the note "Kept on this phone: sending isn't set up yet"
+
+Note, 2026-10-23 (orchestrator's ruling, for the owner to overrule): this scenario used to say a report "is sent
+automatically when a connection returns". The owner's decided 22 October share-sheet text says "nothing is sent anywhere
+by the app itself" (PLT-208), so nothing goes by itself, online or offline; a person always taps Share.
 
 ## PLT-203: Crashes are caught and offered as reports
 Status: approved, owner, 2026-09-29 (Phase 7 sign-off, with the product owner's verdict of 2026-09-28: approve)

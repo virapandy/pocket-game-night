@@ -501,8 +501,7 @@ PLT-209. What a report holds is defined in `tests/contract/README.md`, "Problem 
   game is ended with `End game` or discarded, Home shows "A problem report is ready to share" and a button `Share`, which
   opens the share sheet with the seeds added (the id, the words and the moves as they were); after sharing the row is gone.
 - A share still open is not started twice; the report is removed only after a share completes, never twice.
-- **Not changed (PLT-202):** the one test "with no internet, a report waits and goes by itself" still uses the old hook
-  `window.__pgnSendReport(text)`; see `reports/latest.md`, questions for the owner.
+- **PLT-202 (23 Oct 2026 ruling):** reports wait until someone taps Share; offline then online sends nothing and makes no request (no use of `window.__pgnSendReport` any more).
 
 ### After a crash (PLT-203)
 An uncaught error (`window` `error` event) or an unhandled promise rejection during a game: the game stays saved (a
