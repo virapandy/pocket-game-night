@@ -109,6 +109,11 @@ product side runs them through the jev-design helper with `--budget product`.
 Tell the product owner when both are pushed; it runs them and merges the findings. The persona walks still wait for the
 prototype renderer to draw `docs/games/mafia/screen-map.md` (draft 4), also after What Am I?.
 
+### PLT-208 wording, confirmed (product owner, 23 October)
+1. Share tapped mid-game: toast "Kept. You can share it when this game ends." ("You can share it" rather than "It can be shared").
+2. A report started from Home leaves the game out of its first line: "Problem report · app <version> · <date and time>".
+Both are in `docs/scenario-drafts/plt-208-209-share-sheet.md`.
+
 ### Secret Words version 3.7 (23 October): the owner's four questions are answered
 1. P1–P10: yes, written as "Version 3.7" paragraphs (SWD-010, 031, 033, 034, 043, 102, 103, 110, 112, 120, 124, 126, 127; Terms
    "Small line colour"). 2. Jev's flagged words: reworded in 3.7 (most were already reworded in 3.5–3.6; the prototype shows old
