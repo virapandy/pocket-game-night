@@ -1,6 +1,6 @@
-# What Am I?: screen map (draft 2, product owner, 23 October 2026)
+# What Am I?: screen map (draft 3, product owner, 23 October 2026)
 
-**Status: draft 2** (critic pass of draft 1 applied, section J; where J and a row differ, J wins). Stage 1 of `docs/proposals/design-before-code.md` (step 1b of `docs/new-game-process.md`). Drawn from
+**Status: draft 3** (critic pass, section J; six persona walks, section L, `map-walk-2026-10-23.md`; where J or L and a row differ, the later section wins). Jev's check is pending (handover). Stage 1 of `docs/proposals/design-before-code.md` (step 1b of `docs/new-game-process.md`). Drawn from
 `guide.md`, `fit-and-stories.md`, `words.md` and decisions WA1–WA10 (`docs/decisions.md`, 23 October). No scenarios exist
 yet, so the IDs column says which future scenario file a row belongs to (`WAI-01 setup` … `WAI-10 lifecycle`). Where a
 later `scenarios.md` differs from this map, the scenarios win.
@@ -238,6 +238,38 @@ a tie for the win; 2 players; 20 players.
 13. **WAI-08 is not used** (as MAF-08 in Mafia). New paths: T1 (rotation, ringer, awake lines); T3 (re-level before the
     next tilt; edge taps ignored); T4→A1; T4→(undo)T4; D3→"2 players needed"; T1→"All words used"; A1→(resume)T4|R1|G1
     exactly as left.
+
+## L. Six persona walks of draft 2 (23 October): what changed
+1. **Pause in a turn (T3).** A clear "Pause" button (words and icon, at least 48 px) in the top corner the room sees, kept
+   outside the Got it / Pass tap zones (taps there never mark). Laying the phone flat, face up, for 1.5 s pauses. The
+   phone's Back gesture pauses (never leaves the turn).
+2. **Tap guards** keep the shared look (Secret Words decision 2). A tap during a guard is dropped, never carried to the
+   next screen's button.
+3. **Exits.** The menu item becomes "Home (game saved)", the same words as the buttons. D5 adds "Shows this game's winner.
+   You can play again with the same people."; D6 adds "Shows tonight's summary. Every score is kept in History."
+4. **When the game ends.** S3's last sentence becomes "Play as many rounds as you like; tap End the game to see who got
+   the most." R1 shows the same line, small, above its buttons.
+5. **S3** says the chosen length: "You have 30 seconds." / "60 seconds" / "90 seconds".
+6. **No undo mid-turn** (it would cost the turn's time). S3 adds "Marked wrong? Fix it when time's up."; T4 is where it's fixed.
+7. **T1, less clutter.** At most one tip line at a time, in this order: joining line, pack running out, phone tip. The
+   phone tips (ringer, rotation lock, screen on) show on the first turn on this phone only. "Not Riya? Someone else first"
+   becomes "Someone else goes first".
+8. **The rule on every T1:** under the instruction, always: "Tilt down: Got it · Tilt up: Pass" (tap mode: "Tap bottom:
+   Got it · Tap top: Pass"). T0 shows the same as a small drawing.
+9. **Getting in.** A2 card: "Phone on your forehead, the room gives clues · One phone, passed round · 2–20 players".
+   A visible quiet "Players (6) ›" on T1 and R1 opens D2, whose top line reads "Add a name to join. New players go after
+   the last player in this round."
+10. **Undo after Save score** stays on screen until the next "I'm ready" (not 10 s), as "Riya: 5 saved · Undo".
+11. **S2 words.** Pack list shows a tick on the chosen pack (Mix of all ticked at first). Switch "Include non-veg food
+    (chicken, fish, egg)" off; switch "Sounds" on with "So the guesser knows a word counted."; off: "The guesser won't
+    know a word counted."
+12. **Skip this turn** (D1) opens "Skip Riya's turn? Words marked so far still count." with Skip · **Carry on** (main).
+13. **After any pause**, Carry on counts 3, 2, 1 and shows a **new** word; the hidden word goes back to the pack unused.
+    The time left is kept.
+14. **Fairness.** On T4, a word moved shows ↺ ("Owl ↺"); after Save score the turn is locked (Undo above reopens it). R1
+    and G1 show turns played: "Arjun 14 (2 turns) · Zoya 6 (1 turn)". Ties stay shared (WA7).
+15. **A1 resume row** in two lines: "What Am I? · Round 2 · Arjun's turn" / "Riya, Arjun +4 · 8:05 pm · Tap to resume".
+16. **G2:** "Oops, keep playing" becomes "Back to the game".
 
 ## K. Prototype script (what the tap-through shows)
 Same rendering rules as Secret Words K3 (one state per screen, real labels, K4-style outcomes), with this data.
