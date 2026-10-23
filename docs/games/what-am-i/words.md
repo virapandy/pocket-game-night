@@ -1,8 +1,8 @@
 # What Am I?: word packs (edition 1, draft, 23 October 2026)
 
-`words.csv` holds **755 words** after the first Jev check (23 October): Animals 93, Food 99 (10 non-veg), Around the house
-100, Jobs 96, Sports and cricket 95, Festivals and places 96, Act it out 100, Famous Indians 76. "Mix of all" (the default)
-draws from every pack: 743 words with non-veg off. Grown on 23 October from 40 a pack by four
+`words.csv` holds **726 words** after the second Jev check (23 October): Animals 92, Food 98 (10 non-veg), Around the house
+100, Jobs 94, Sports and cricket 87, Festivals and places 91, Act it out 100, Famous Indians 64. "Mix of all" (the default)
+draws from every pack: 714 words with non-veg off (724 on). Grown on 23 October from 40 a pack by four
 helpers in parallel, two packs each, under `docs/word-guidelines.md` Part B; rows WAIW-321 on carry "grown 23 Oct" and the
 helper's doubt, if any, in notes.
 
@@ -50,4 +50,23 @@ results: near-twins (Leopard / Cheetah, Rooster / Hen, Wicket / Stumps / Pitch, 
 pin / Needle and thread); cricket terms non-fans may miss (Free hit, Super over, Howzat); words a region may not know
 (Sandesh, Seven stones, Cherrapunji, Sundarbans); people children may not know (Anju Bobby George, KS Chithra, Karnam
 Malleswari, Salim Ali, Verghese Kurien, Indra Nooyi, Bachendri Pal, Sheetal Devi).
+
+## Second Jev check, with control words (23 October 2026, `jev-words-2.md`)
+2,292 decisions. **The controls passed:** the three made-up words scored 0.01–0.04 "known" and were rated hard to act; the six
+everyday controls (Elephant, Banana, Doctor, Cricket, Diwali, Chair) all scored above 0.5 on every question. So Jev's scale is
+sound at the ends, but strict: 399 of 755 words fell below 0.5 "known", including Idli (0.28) and Sambar (0.39), which every
+Tirunelveli family knows. As before, a word was removed only where Jev put it below 0.2 **and** another check already doubted
+it (a helper's note when growing or writing clues, word guideline B4, or a near-twin), **29 words**:
+- **Famous Indians (12):** Jagadish Chandra Bose, KS Chithra, Salim Ali, Verghese Kurien, Indra Nooyi, Karnam Malleswari,
+  Bachendri Pal, Sheetal Devi, Rohan Bopanna, Satya Nadella, Rani Rampal, Deepika Kumari (also mixed up with a film star).
+- **Sports and cricket (8):** Skiing, Surfing, Seven stones, Hopscotch (both called by regional names), Bouncer, Pitch (near
+  Wicket and Stumps), Clean bowled (near Bowler), Super over.
+- **Festivals and places (5):** Cherrapunji, Sundarbans, Kaziranga, Goa Carnival, Iftar party (Eid stays).
+- **Jobs (2):** Welder, Parking attendant. **Animals (1):** Silkworm. **Food (1):** Sandesh (little known in the south).
+- **Kept although Jev rated them low:** regional festivals and foods (Bihu, Lohri, Baisakhi, Onam, Durga Puja, Appam, Payasam,
+  Rasam, Dhokla, Poha, Modak) for balance across regions (B1); cartoon characters children know (Chhota Bheem, Motu Patlu,
+  Tenali Raman, Little Singham); cricketers and athletes in school books (Mithali Raj, Harmanpreet Kaur, Mirabai Chanu, Hima
+  Das, Kalpana Chawla, Sunita Williams). **Sensitive:** Cow 0.86 again, **kept by the owner** (23 October) as an everyday animal to act; Mosque 0.58 and Golden Temple
+  0.52 kept for balance with Temple and Church.
+- **Still to come:** J2 (fits its pack) and J3 (guessable from a clue, `clues.csv`, now 726 rows) when the tester adds them.
 

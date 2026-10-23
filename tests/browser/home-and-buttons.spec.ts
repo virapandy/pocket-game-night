@@ -50,7 +50,7 @@ test.describe('PLT-300: Home: "Host a game" and "Join a game"', () => {
     await expect(hostAGame(page)).toContainText(/this phone/i);
     // P11 (owner, 4 October; SWD-002 until Secret Words ships): title "Join a game", line "Tambola ticket from the host".
     await expect(joinWithMyTicket(page).getByText('Join a game', { exact: true })).toBeVisible();
-    await expect(joinWithMyTicket(page).getByText('Tambola ticket from the host', { exact: true })).toBeVisible();
+    await expect(joinWithMyTicket(page).getByText(/^Tambola ticket( or Secret Words map)? from the host$/)).toBeVisible(); // SWD-002 (rule 11): the line gains "or Secret Words map" when Secret Words ships (lane A; tested strictly in secret-words-a-home.spec.ts)
     await expect(page.getByText(/Join with my ticket|Got a QR or code from the host\?/), 'the old wording is gone').toHaveCount(0);
     await expectOneMainButton(page, 'Home', null);
   });
@@ -102,8 +102,8 @@ test.describe('PLT-300: Home: "Host a game" and "Join a game"', () => {
     await joinWithMyTicket(guest).click();
     await expect(guest.getByRole('heading', { name: 'Join a game', exact: true }), 'P11: the Join screen\'s heading').toBeVisible();
     await expect(guest.getByText(/camera/i).first(), 'scanning the host\'s QR with the camera is offered').toBeVisible();
-    await expect(guest.getByRole('button', { name: /^Type the code/ })).toBeVisible();
-    await guest.getByRole('button', { name: /^Type the code/ }).click();
+    await expect(guest.getByRole('button', { name: /^Type (a ticket|the) code/ })).toBeVisible(); // SWD-002 (rule 11): "Type a ticket code" once Secret Words ships
+    await guest.getByRole('button', { name: /^Type (a ticket|the) code/ }).click();
     await guest.getByLabel('Ticket code', { exact: true }).fill(h.code);
     await guest.getByRole('button', { name: 'Open ticket', exact: true }).click();
     await expect(phoneTicket(guest, h.ticket)).toBeVisible();

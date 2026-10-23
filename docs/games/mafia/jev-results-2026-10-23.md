@@ -53,3 +53,26 @@ Village wins, 20 games a cell; the referee applied MF1–MF15 and the MF5 table:
 ## For the owner
 Nothing to decide now. Suggested for next week, when the Jev budget resets: (a) the stories re-check (about 44 decisions);
 (b) the simulation rerun without "nobody" at 8, 12 and 16 players (about 6,000 decisions).
+
+## 3. Rerun without "Nobody today" (`jev-sim-2.md`, 7,260 decisions, all 120 games finished)
+Same referee and seed; Jev had to point at a player each day (ties still pointed again, then nobody).
+
+| Players (Mafia) | Police keeps findings private | Police tells the room | Rounds a game | First player out sits out |
+|---|---|---|---|---|
+| 8 (2) | 50% | 70% | 3 | about 2 rounds |
+| 12 (3) | 75% | 75% | 5 | about 4 rounds |
+| 16 (4) | 55% | 45% | 7.5 | about 6.5 rounds |
+
+**What it says**
+1. **The 16-player "0%" of the first run was the "nobody" effect, not the rules.** With players pointing as real families do,
+   every size lands between 45% and 75% for the Village: **the convention table (MF5) is fair**. With 20 games a cell, a
+   difference of 10–15 points is within chance. No rule change.
+2. **The Police sharing what they found matters most in small games** (8 players: 50% → 70%); in big games it washes out.
+3. **16 players is long**: about 7.5 rounds, and the first player out waits about 6.5 of them. The ghost guess (MF11) is
+   needed most here; How to play can suggest "With 14 or more, two games of 8 are quicker." *(Product owner's note, not a
+   rule; for the owner when How to play is written.)*
+4. The Mafia never disagreed; Doctor saves grow with size (0.6–2 a game); no tool faults.
+
+**Across all four runs** (random votes, 12 AI talkers, Jev with "nobody", Jev without): only the random-vote model, which is
+the least like real players, said the convention favours the Mafia strongly. The other three put the Village between 35% and
+90%. The convention stands; families' first games are the final word.

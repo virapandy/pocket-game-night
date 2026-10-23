@@ -1,25 +1,6 @@
 # Test report
-**Lane-d (PLT-208/209, "Report a problem" through the share sheet): tests written first, RED as expected. Specs replaced (decided 22 Oct), 9 rule tests + 20 reworked browser tests per phone fail only because the share sheet is not built yet.**
-## Lane-d, PLT-208 and PLT-209 (share sheet), tests first
-Commit tested: 6e41b7e code + new tests (no coder work yet)   Date: 2026-10-23
-Result: RED (expected: feature not built).
-- Rule: `tests/contract/report-share.test.ts`, 9 tests, all fail with "shareParts is not exported from src/engine yet"; the other 850 rule tests pass.
-- Browser, `report-problem.spec.ts`, both phones, local: 6 passed, 34 failed. Failures: no `Share report` button yet (and the Home row, list names and toasts); PLT-202's offline test fails only because it now looks for `Share report`.
-### Changed existing tests (all in `tests/browser/report-problem.spec.ts`, only where PLT-208/209 now say so)
-- Button `Send report` -> `Share report`; `fakeSender` hook replaced by `fakeShare` (stubbed `navigator.share`/`canShare`/clipboard) everywhere except the PLT-202 test.
-- PLT-200/201/208 payout test, "exactly what the preview showed" test, PLT-200 Cancel and "no words" tests, PLT-203 crash tests, PLT-207/208 player test: "kept on this phone" / hook assertions -> share sheet calls and the thanks toast. The no-network checks stay.
-- PLT-206 tests: "Your report will be sent when this game ends" -> "This report can be shared when the game ends, so it can't give away the game."; "sent after End game" -> Home row "A problem report is ready to share" + `Share`.
-- PLT-209 tests: "Reports waiting to send" -> "Reports to share"; the offline/online/hang/fail-once retry tests replaced by cancelled-then-shared, share-in-flight and never-twice tests; the two "stub note" tests replaced (note must be gone; kept reports listed with Share/Delete, newest first, Delete asks "Delete this report? It hasn't been shared." with main "Keep it"; mid-game report has Share disabled with "Waiting for the game to end").
-- Left UNCHANGED, still on the old hook: PLT-202 "goes by itself when the connection returns" (see questions).
-## Questions for the owner
-1. PLT-202 ("sent automatically when a connection returns") cannot hold with a share sheet, which needs a tap. The 22 Oct draft says PLT-202 is unchanged. Its one test is untouched and will fail once the old hook is gone. Needs a ruling: reword or retire PLT-202 (and its closing "stub" sentence, and PLT-206's old "will be sent" line).
-2. The button is `Share report` (decided draft) not `Send report` (handover wording); tests follow the draft.
-3. Not specified, so not tested: whether a copied report (no share sheet) stays in the list; the header's game title for a report made on Home; what the replay-code text does with the "Replay attached" line (tests read: it is replaced by "Replay code:" + code).
-## Requests for the Build workspace
-- Export `shareParts` from `src/engine` (contract in `tests/contract/README.md`, "Sharing a report").
-- Copy with `navigator.clipboard.writeText`; detect files with `navigator.canShare({ files })`; treat an `AbortError` as "closed without sharing". Stubs and ids: `tests/browser/README.md`, "Sharing".
----
-## Earlier report (kept below)
+**23 October, lane-a (Test lane): Secret Words screen lane A tests written (scenarios v3.7): 132 browser tests in 2 files, all expected-to-fail until the screens exist (2 plain regression checks); rule tests 850 of 850; Tambola wording helpers accept old and new. Not a build verdict.**
+**Lane-b, Secret Words screen lane B tests first (scenarios 3.7, 23 October): written and pushed, RED as intended.** 138 lane B browser tests per phone (shared pieces 19, turn screens 63, dialogs/menu/timer/reload 36 + 1 marked, 6 C3 checks unmarked), all failing at the picker ("Secret Words" card not built; lane A's setup leads there) on both phones locally; the other 12 C3 checks stay marked for lanes A, C, D; SWD-099 passes. Rule tests 850 of 850. Coder note: `specs/secret-words/screens-b.md`.
 **Lane-e at merge 88354ab (lane-e 0ebb60d + origin/main): GREEN. Quick verify 39815492509 green (all shards). Local: npm test 849 of 849, build ok, Secret Words browser file 38 of 38 on both phones (nice -n 10, 2 workers). SWD-103, 090, 042, 099 all pass.**
 ## Lane-e, Secret Words rules engine + owner answers of 22 October (SWD-090, 042, 099, 103)
 Commit tested: c86f220 (app 0ff9800, Secret Words rules engine; tests c86f220)   Date: 2026-10-22

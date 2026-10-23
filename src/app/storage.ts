@@ -200,6 +200,12 @@ function keyed(prefix: string): Preferences {
   };
 }
 
+/** This app's own `pgn.*` keys outside games and preferences (Secret Words' saved map, `pgn.secretWords.map`, SWD-036). */
+export const appKeys: Preferences = keyed(KEY_ROOT);
+
+/** Secret Words' screen state (SWD-048): `pgn.secretWords-ui.<id>`. */
+export const secretWordsUi: Preferences = keyed(`${KEY_ROOT}secretWords-ui.`);
+
 /** Impostor's screen state that is not a move (the paused timer, when the summary was shown): `pgn.impostor-ui.<id>`. */
 export const impostorUi: Preferences = keyed(`${KEY_ROOT}impostor-ui.`);
 

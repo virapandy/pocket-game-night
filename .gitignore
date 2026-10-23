@@ -11,3 +11,6 @@ reports/runs/
 .claude/settings.local.json
 .DS_Store
 *.pdf
+
+# Lane screenshots (Build role), never committed
+.screens/

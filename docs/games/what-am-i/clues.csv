@@ -367,7 +367,6 @@ WAIW-369,Seagull,White bird that flies over beaches,Steals chips from tourists; 
 WAIW-370,Centipede,Creepy crawler with very many legs,Lives under rocks; long and thin
 WAIW-372,Moth,Night insect that circles around lights,Cousin of the butterfly; eats clothes
 WAIW-373,Beetle,Hard-shelled insect that crawls and flies,Volkswagen's famous small car looks like it
-WAIW-375,Silkworm,Tiny creature that spins thread for expensive sarees,Fed on mulberry leaves; Kanchipuram
 WAIW-376,Termite,Tiny insect that eats wooden furniture,Builds tall mud mounds; the white ones
 WAIW-377,Chimpanzee,Clever ape that is very close to humans,Uses tools; cheeky relative of the gorilla
 WAIW-378,Vada,Crispy fried ring-shaped savoury snack with a hole,Soaked in sambar or eaten with chutney
@@ -388,7 +387,6 @@ WAIW-392,Khichdi,Simple mushy mix of rice and lentils,Eaten when you are unwell;
 WAIW-393,Dal,Cooked lentils served as a thin curry,Tadka kind with rice is a home meal
 WAIW-394,Pakoda,Fried fritters of gram flour batter and vegetables,Eaten with tea when it rains
 WAIW-395,Rasgulla,Spongy white balls soaked in light sugar syrup,Bengal sweet; made from curdled milk
-WAIW-396,Sandesh,Soft milk-based sweet from Bengal,"Made from fresh cottage cheese, moulded in shapes"
 WAIW-397,Momos,Steamed dumplings from Tibet with a filling,Served with red spicy chutney
 WAIW-398,Dhokla,Spongy yellow steamed Gujarati snack,Made from gram flour; with a mustard seed topping
 WAIW-399,Pav bhaji,Mashed spicy vegetable curry with buttered soft rolls,Mumbai street food; served with onion and lemon
@@ -530,11 +528,9 @@ WAIW-537,Writer,"Pens novels, stories and books","Sits with paper and ink, think
 WAIW-538,Poet,Composes verses that rhyme and have deep feelings,Tagore and Bharathiyar were famous ones
 WAIW-539,Quiz master,Asks tough questions in a contest show,"Says ""Is that your final answer?"""
 WAIW-540,Scuba diver,Goes underwater with an oxygen tank,Wears flippers and a mask in the deep sea
-WAIW-541,Welder,Joins metal pieces with sparks and a mask,Fixes iron gates and grills
 WAIW-542,Skydiver,Jumps from a plane with a parachute,Falls fast then floats down
 WAIW-543,Salesperson,Visits homes or stores to sell products,"Talks a lot, ""Sir, this offer is only today"""
 WAIW-544,Call centre agent,Answers customer phones with a headset,"Says ""Your request is important to us"""
-WAIW-545,Parking attendant,Collects money for leaving your vehicle at a mall,Gives a slip at the entrance
 WAIW-546,Woodcutter,Chops big trees in the forest with an axe,"Makes the thud sound, logs fall down"
 WAIW-547,Coal miner,Digs black fuel under the earth,"Wears a helmet with a lamp, goes underground"
 WAIW-548,Inventor,Creates a brand new machine nobody has seen,Edison and Graham Bell were famous ones
@@ -558,8 +554,6 @@ WAIW-567,Gymnastics,"Flips, balance beam and rings, with graceful moves",Dipa Ka
 WAIW-568,Karate,"Fighting art with kicks and chops, wearing a white outfit",Black belt is the top
 WAIW-569,Judo,Throw your opponent to the mat using his own weight,Wear a white jacket tied with a belt
 WAIW-570,Skating,Glide on wheels or blades under your feet,Ice rinks and roller shoes
-WAIW-571,Surfing,Stand on a board and ride tall waves,Goa and Kovalam beaches see it
-WAIW-572,Skiing,Slide down snowy slopes on two long boards,Gulmarg in Kashmir is famous for it
 WAIW-573,Golf,Hit a tiny white sphere into a distant hole,Played on a huge green lawn with a caddie
 WAIW-576,Snooker,"Colored spheres, a long stick and a green table","Pocket the reds first, then the colors"
 WAIW-577,Diving,Jump headfirst from a high board into a pool,Judges give scores for the splash
@@ -572,8 +566,6 @@ WAIW-583,Statue game,Freeze like stone when the music stops,Anyone who wobbles i
 WAIW-584,Snakes and ladders,"Roll a die, climb up, but slide down a reptile",Board has a hundred squares
 WAIW-585,Spinning top,Wind a string and throw this wooden toy to twirl,Called a lattu in many homes
 WAIW-586,Marbles,Small glass balls you flick to hit others,Played on the ground with friends
-WAIW-587,Hopscotch,Draw boxes on the ground and hop on one leg,Throw a flat stone and pick it up
-WAIW-588,Seven stones,"Stack flat pebbles, hit them with a ball, rebuild",Run to rebuild before getting hit
 WAIW-589,Push-ups,"Lower your chest to the floor, then raise your body",Fitness test of fifty
 WAIW-590,Somersault,Tuck your head and roll all the way over,Kids do it on a soft bed
 WAIW-591,Cartwheel,Spin sideways on your hands with legs flying,Gymnasts do it without stopping
@@ -591,13 +583,9 @@ WAIW-602,Century,A hundred runs by one batter,Raising the bat and helmet to the 
 WAIW-603,Hat-trick,Three wickets in three deliveries in a row,Three goals by one player also
 WAIW-604,No ball,"Illegal delivery, and the umpire stretches an arm",Gives the batter an extra run
 WAIW-605,Wide ball,Delivery too far from the batter to hit,Umpire spreads both arms sideways
-WAIW-606,Clean bowled,Stumps are knocked down without the bat touching anything,Middle stump cartwheels away
 WAIW-607,Boundary,Rope or line at the edge of the field,Gives four or six runs
-WAIW-608,Super over,Tie-breaker with a single six-ball turn each side,Used after both teams score equally
-WAIW-609,Bouncer,Fast delivery that rises to the batter's head,Batter ducks quickly
 WAIW-610,World Cup,"Biggest tournament where countries compete, held every four years",India won in 1983 and 2011
 WAIW-611,Fielder,Stands out on the ground to stop and collect hits,Dives to save runs
-WAIW-612,Pitch,Strip of dry earth in the middle of the ground,Twenty-two yards long
 WAIW-613,Howzat,Whole team asks the umpire for a decision,Everyone yells it together
 WAIW-614,Man of the match,Award for the best player of the game,Given at the end by the presenter
 WAIW-615,Durga Puja,Bengal festival with huge decorated pandals and a ten-armed goddess,Dhak drums and sweets
@@ -608,8 +596,6 @@ WAIW-619,Rath Yatra,Giant chariots are pulled by crowds in Puri,Lord Jagannath g
 WAIW-620,Easter,Spring Christian festival with painted eggs and a bunny,Children hunt for chocolate eggs
 WAIW-621,Guru Nanak Jayanti,"Birthday of the first Sikh teacher, with prayers and langar",Gurdwara is lit and everyone eats together
 WAIW-622,Buddha Purnima,Full moon day remembering the Enlightened One's birth,"Candles, flowers and quiet prayers"
-WAIW-623,Iftar party,Evening gathering to break the fast with dates,Held in Ramzan after sunset
-WAIW-624,Goa Carnival,"Colorful parades with music, floats and masks in February",King Momo leads the fun
 WAIW-625,Children's Day,"Fourteenth November, with school fun and a famous Chacha",Nehru loved roses and kids
 WAIW-626,Teachers' Day,Students give cards and flowers to those who teach them,"Fifth September, remembering Radhakrishnan"
 WAIW-627,Gandhi Jayanti,"Second October, remembering the Father of the Nation",Spinning wheel and a walking stick
@@ -632,11 +618,8 @@ WAIW-644,Backwaters,"Kerala's calm canals, where houseboats float",Coconut palms
 WAIW-645,Howrah Bridge,Big steel crossing in Kolkata over the Hooghly,Taxis and trams cross it
 WAIW-646,Victoria Memorial,White marble building and gardens in Kolkata,Named for an old British queen
 WAIW-647,Darjeeling,Hill town known for tea and a toy train,Views of Kanchenjunga
-WAIW-648,Sundarbans,"Mangrove swamp in Bengal, home of a famous cat",Boats take you in to look
 WAIW-649,Gateway of India,Stone arch by the sea in Mumbai,Taj Hotel stands behind it
 WAIW-650,Ajanta Caves,Ancient rock hollows with old painted walls in Maharashtra,Monks carved them long ago
-WAIW-651,Kaziranga,Assam park famous for one-horned animals,Jeep safari in tall grass
-WAIW-652,Cherrapunji,"One of the rainiest spots on Earth, in Meghalaya",Living root bridges nearby
 WAIW-653,Eiffel Tower,Iron landmark in Paris that lights up at night,France's most famous symbol
 WAIW-654,Pyramids,Giant stone triangles with mummies in Egypt,Built for pharaohs and guarded by a Sphinx
 WAIW-655,Great Wall of China,Very long ancient barrier snaking across hills,"Visible from space, people say"
@@ -719,30 +702,18 @@ WAIW-731,Scratching an itch,Rub nails on the skin where it tickles,A mosquito bi
 WAIW-732,Dipa Karmakar,Gymnast who nearly won a medal at the Rio Olympics,Performed a very risky jump called Produnova
 WAIW-733,Lovlina Borgohain,Boxer from Assam who won Olympic bronze in Tokyo,Fights in the ring wearing gloves
 WAIW-736,Anju Bobby George,Jumper from Kerala who won a world bronze in 2003,First Indian to win a medal in athletics there
-WAIW-741,Deepika Kumari,Archer from Ranchi who once was world number one,"Shoots arrows with a bow, from Jharkhand"
-WAIW-742,Rani Rampal,Captain of the women's hockey team in Tokyo,Daughter of a cart puller from Haryana
 WAIW-743,Shreya Ghoshal,Playback singer with a sweet voice from Bengal,Sang Deewani Mastani in Bajirao Mastani
 WAIW-744,Asha Bhosle,"Veteran singer, younger sister of the Nightingale of India",Sang Dum Maro Dum and Piya Tu
-WAIW-745,Indra Nooyi,Indian-born boss of a cold drink and chips company,Led PepsiCo for twelve years
 WAIW-746,Aishwarya Rai,Actress crowned Miss World in 1994,Starred in Devdas and Jodhaa Akbar
-WAIW-747,Bachendri Pal,First Indian woman to climb Mount Everest,"From Uttarakhand, climbed it in 1984"
-WAIW-751,Sheetal Devi,Armless archer who won Paralympic medals,Shoots using her feet and shoulder
-WAIW-753,Karnam Malleswari,First Indian woman to win an Olympic medal,Weightlifter from Andhra who won bronze in Sydney 2000
-WAIW-756,KS Chithra,Called the Little Nightingale of the south,Sang in Tamil and Malayalam films
 WAIW-757,APJ Abdul Kalam,The Missile Man loved by children,Wrote Wings of Fire and was called the People's President
-WAIW-758,Jagadish Chandra Bose,Scientist who proved plants react like living things,Pioneer of radio and wireless waves from Bengal
 WAIW-759,R Ashwin,Spin bowler from Chennai who is also a batsman,Known for the carrom ball and cricket analysis
 WAIW-760,Sunil Gavaskar,Little Master opening batsman of the 1970s,First man to score ten thousand Test runs
 WAIW-761,Ravindra Jadeja,All-rounder who twirls his bat like a sword,Nicknamed Sir and fields like a rocket
 WAIW-762,Shubman Gill,"Young opening batsman from Punjab, India's Test captain",Scored a one-day double century at age 23
 WAIW-763,Rishabh Pant,Wicketkeeper who bats with fearless shots,Survived a car accident and returned to play
-WAIW-767,Satya Nadella,Hyderabad-born boss of the company that makes Windows,Also loves cricket
 WAIW-768,SP Balasubrahmanyam,Legendary singer who sang in sixteen languages,Sang Tere Mere Beech Mein for the hero
 WAIW-769,Shankar Mahadevan,Famous for the song Breathless in a single breath,Sang the Kal Ho Naa Ho title song
-WAIW-772,Salim Ali,Birdman of India,Wrote books about feathered creatures
 WAIW-775,Tenzing Norgay,Sherpa from Darjeeling who reached the top of Everest,Climbed with Edmund Hillary
-WAIW-776,Verghese Kurien,Milkman of India,Father of the White Revolution and Amul
-WAIW-777,Rohan Bopanna,Tennis doubles player who became number one at age 43,Won the Australian Open in 2024
 WAIW-778,Sanju Samson,Wicketkeeper from Kerala who plays for Rajasthan Royals,Hit a century in a T20 against South Africa
 WAIW-779,Virender Sehwag,Fearless opener who hit two triple centuries,Called the Nawab of Najafgarh
 WAIW-780,Kishore Kumar,Singer who also acted and yodeled,Sang Roop Tera Mastana and Mere Sapno Ki Rani
