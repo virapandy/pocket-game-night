@@ -162,7 +162,7 @@ rotation lock on, the word is drawn turned to fit a sideways phone.
 | hands-free: any phone movement (a bump, a slide) | ignored; only taps mark | — | WAI-02 |
 | 10 s left | three quick ticks, then ticking to the end | — | WAI-02 |
 | time up | long buzz + "Time's up!" sound → T4; the word on screen counts as passed | `timeUp` | WAI-02 |
-| Pause, phone's Back, the app hidden, or (in the hand) the phone laid flat face up for 1.5 s | D1 Paused; clock stopped; word hidden | `pause` | WAI-06 |
+| Pause, phone's Back, or the app hidden (laying the phone flat is not a pause: it would mark Pass first; scenarios R1) | D1 Paused; clock stopped; word hidden | `pause` | WAI-06 |
 | pack runs out | words continue from Mix of all without stopping | — | WAI-03 |
 
 ### T4. Time's up (end of turn)
