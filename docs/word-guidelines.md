@@ -99,7 +99,10 @@ with (SWD-023).
    Content words: known at once and family-friendly, every edition.
 4. **Simulated table games** for games with word boards or clues: words confused on dealt boards, clue rules that trip people.
 5. **Reader checks** confirm every string is exact and appears once in its final form.
-6. **Before release,** grep the game's screens for the words it must never use (A1, A14).
+6. **Jev design jobs** (owner, 23 October; `docs/proposals/jev-for-design.md`): J1 known at once (Tirunelveli family,
+   grandparent, 10-year-old), J2 fits its pack, J3 guessable from a clue, J4 laugh and difficulty balance, J7 read-aloud
+   understood, with control words in every run. Below 0.5 is replaced or reworded (item 3).
+7. **Before release,** grep the game's screens for the words it must never use (A1, A14).
 
 ## Lessons by game (the record)
 | Game | Word problem | What fixed it |

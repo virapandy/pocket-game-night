@@ -64,6 +64,11 @@ played by the owner on their phone, by the same six persona agents in a browser 
 state, and walked by a script that runs the design rule checks. Output: one gap list by screen, worked down to zero or to
 conscious decisions, before step 4. Then the **critic pass** (stage 3 of the proposal), and a **design freeze** before build.
 
+**Jev design jobs (owner, 23 October 2026; `docs/proposals/jev-for-design.md`):** word lists get J1 known at once, J2 fits its
+pack, J3 guessable from a clue (or the game's own simulated turn) and J4 laugh and difficulty balance before approval; the
+screen map and prototype get J5 screen read; the rule book and scenarios get J6 rule clarity before the tester reads them;
+every read-aloud and How to play gets J7. Run by the `jev-design` helper for the product owner, within 15,000 decisions a week.
+
 ## Step 2: Game setup, anchor/host role and controls
 - **Setup screen by screen:** every choice, its default, and the target time to the first action.
 - **Settings:** each house rule becomes a setting whose default is the convention.

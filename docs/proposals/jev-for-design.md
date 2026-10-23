@@ -1,4 +1,6 @@
-# Using Jev before code: a strategy (product owner, proposal, 23 October 2026)
+# Using Jev before code: a strategy (product owner, 23 October 2026)
+
+**Status: approved by the owner on 23 October 2026, as written, with up to 15,000 decisions a week for the product side** (`docs/decisions.md`).
 
 Owner, 23 October: the tester tests code; anything before code is the product side's, and Jev or any tool may be used
 for it (`docs/decisions.md`). This proposal says **where Jev earns its place before code, how we ask it, what it costs,

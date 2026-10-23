@@ -44,7 +44,11 @@ the intent on 23 October; show the owner the exact diff before committing.
 3. **Jev tool** it can run without the Test clone's test runner: a copy of `tests/tools/jev-map-walk.ts` generalised to
    take `--game`, `--map` and `--words` paths (the tester writes it, as a tool, not a test), reusing `tests/sim/jev.ts`
    (key, weekly cap, retry, redaction).
-4. When done, tell the product owner; it runs the What Am I? check below itself. **Until then, the request below stays
+4. **Budget (owner, 23 October):** the product side may use up to **15,000** of the 50,000 weekly Jev decisions; the
+   tester keeps the rest. Give `jev-design` its own usage count (for example a `--budget product` option writing
+   `reports/runs/jev-usage-product.json`, gitignored) that stops at 15,000 and also counts towards the shared 50,000.
+   The strategy it serves is approved: `docs/proposals/jev-for-design.md` (jobs J1–J7).
+5. When done, tell the product owner; it runs the What Am I? check below itself. **Until then, the request below stays
    with the tester as written.**
 
 ### What Am I? (game four, 23 October): Jev check of the screen map and word packs (tester, mid-size model, after Secret Words work in hand)
