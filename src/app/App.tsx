@@ -85,8 +85,13 @@ function mapLinkRoute(text: string, stay: Route | null): { route: Route; ask: Bo
 function firstRoute(): Route {
   const link = phoneLink();
   if (link) return link;
+  // SWD-063: game nights left more than 12 hours end as the app opens, before anything is shown.
+  secretWords.sweep(gameStore, secretWordsUi, Date.now());
   const route = routeFromAddress();
   if (route.name !== 'home') return route;
+  // SWD-048: a game night at game over, or with a "Game ended" or summary not yet left, opens again at that step.
+  const night = secretWords.nightToOpen(gameStore, secretWordsUi);
+  if (night) return { name: 'sw', start: { kind: 'resume', id: night } };
   // IMP-101: an Impostor summary that was showing and not left shows again.
   const summary = impostor.pendingSummary(gameStore, impostorUi);
   if (summary) return { name: 'game', gameId: 'impostor', open: { id: summary, action: 'resume' } };
@@ -489,6 +494,8 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
     if (route.name === 'session') return <SessionScreen id={route.id} onBack={() => setRoute({ name: 'sessions' })} />;
     if (route.name === 'past') {
       const saved = gameStore.get(route.id);
+      // SWD-064: a Secret Words game night: its games (E1) and one game (E1a).
+      if (saved && secretWords.isNight(saved)) return <secretWords.PastNight saved={saved} onBack={() => setRoute({ name: 'history' })} />;
       const game = saved && gameOf(saved.gameType);
       if (saved && game) {
         const PastGame = game.PastGame as (p: { saved: SavedGame; onBack: () => void; actions?: ReactNode; prefs?: Preferences }) => ReactNode;
@@ -674,8 +681,9 @@ function Home({
     return () => document.removeEventListener('keydown', onKey);
   }, [menu]);
   const [unfinished] = useState<SavedGame[]>(() => {
-    // IMP-104: an Impostor evening left more than 12 hours ends by itself before the list is made.
+    // IMP-104: an Impostor evening left more than 12 hours ends by itself before the list is made; SWD-063 likewise.
     impostor.sweep(gameStore, impostorUi);
+    secretWords.sweep(gameStore, secretWordsUi, Date.now());
     return gameStore
       .list()
       .filter((g) => (g.status === 'in-progress' || g.status === 'paused') && (gameOf(g.gameType) || secretWords.isNight(g)))
@@ -874,6 +882,7 @@ function PickGame({
 }) {
   const [unfinished] = useState(() => {
     impostor.sweep(gameStore, impostorUi);
+    secretWords.sweep(gameStore, secretWordsUi, Date.now());
     return impostor.unfinished(gameStore);
   });
   const [night] = useState(() => secretWords.resumeCard(gameStore));

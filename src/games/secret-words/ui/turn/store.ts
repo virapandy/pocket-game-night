@@ -61,10 +61,17 @@ function toSaved(prev: SavedGame, match: NightMatch, now: number): Night {
 }
 
 /** Records moves by the host, in order, and saves once (PLT-003). Null when the rules refuse any of them. */
-export function recordMoves(store: SavedGameStore, saved: SavedGame, match: NightMatch, moves: readonly SecretWordsMove[]): { saved: Night; match: NightMatch } | null {
+export function recordMoves(
+  store: SavedGameStore,
+  saved: SavedGame,
+  match: NightMatch,
+  moves: readonly SecretWordsMove[],
+  /** When they happened (SWD-063 records at the last move + 12 hours); now by default. */
+  when: number = Date.now(),
+): { saved: Night; match: NightMatch } | null {
   let m = match;
   const last = m.records[m.records.length - 1];
-  const at = Math.max(Date.now(), last?.at ?? 0);
+  const at = Math.max(when, last?.at ?? 0);
   for (const move of moves) {
     const r = play(secretWordsRules, m, move, { by: HOST, at });
     if (!r.ok) return null;

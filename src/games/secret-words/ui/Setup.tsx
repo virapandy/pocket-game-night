@@ -23,12 +23,15 @@ export function WhosPlaying({
   onChange,
   past,
   onBack,
+  backLabel = '← Back',
   onNext,
 }: {
   names: readonly string[];
   onChange: (next: string[]) => void;
   past: readonly string[];
   onBack: () => void;
+  /** From game over: "← Back to the game" (SWD-112). */
+  backLabel?: string;
   onNext: () => void;
 }) {
   const [toast, showToast, clearToast] = useToast();
@@ -72,7 +75,7 @@ export function WhosPlaying({
   return (
     <Screen className="sw-setup">
       <header className="sw-bar">
-        <QuietButton onClick={onBack}>← Back</QuietButton>
+        <QuietButton onClick={onBack}>{backLabel}</QuietButton>
       </header>
       <ScrollArea>
         <h1 className="pgn-title">Who's playing?</h1>
@@ -313,7 +316,7 @@ export function MakeTeams({
 // ---------------------------------------------------------------- S2a Clue givers sheet
 
 /** SWD-007, SWD-014, SWD-123: per team, the clue giver, an optional partner and the "Doesn't give clues" switches. */
-function ClueGiversSheet({ draft, names, onDone }: { draft: TeamsDraft; names: SecretWordsTeamNames; onDone: (next: TeamsDraft) => void }) {
+export function ClueGiversSheet({ draft, names, onDone }: { draft: TeamsDraft; names: SecretWordsTeamNames; onDone: (next: TeamsDraft) => void }) {
   const [d, setD] = useState<TeamsDraft>(draft);
   const [partnerOpen, setPartnerOpen] = useState<Record<Team, boolean>>({ orange: draft.partners.orange !== null, teal: draft.partners.teal !== null });
   const id = useId();

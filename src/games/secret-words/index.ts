@@ -33,6 +33,9 @@ import {
   readMapLink, resumeCard, SavedMapRow, startNewAsk, StartNewNightDialog, type MapCodeError, type MapToOpen,
 } from './ui/MapOpen';
 import { isNight } from './ui/evening';
+// Screen lane D (after the game): the 12-hour limit and opening on game over (SWD-063, 048), History (SWD-064).
+import { nightToOpen, sweepNights } from './ui/after/lifecycle';
+import { historyTitle, PastNight } from './ui/after/History';
 
 export type { SecretWordsStart, MapCodeError as SecretWordsMapCodeError, MapToOpen as SecretWordsMapToOpen };
 
@@ -62,6 +65,13 @@ export const secretWords = {
   CodeEntry,
   MapPhone,
   SavedMapRow,
+  /** SWD-063: game nights left more than 12 hours end (when the app opens or Home shows). */
+  sweep: sweepNights,
+  /** SWD-048: the game night the app opens on (game over, or a pending "Game ended" or summary), or null. */
+  nightToOpen,
+  /** SWD-064: History's evening row ("Secret Words · 3 games"), and the evening's games (E1, E1a). */
+  historyTitle,
+  PastNight,
   /** SWD-002: Secret Words' line on "Join a game". */
   joinLine: "Secret Words clue givers: scan the host's code to get your secret map.",
 };

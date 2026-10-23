@@ -21,6 +21,8 @@ export interface GridCell {
   readonly kind?: Kind;
   /** A map cell faded as found (SWD-031, 035, 051). */
   readonly found?: boolean;
+  /** Game over's whole map (SWD-051 v3.6): a face-down cell, faded, named ", not found". */
+  readonly notFound?: boolean;
 }
 
 const KIND_NAME: Record<Kind, string> = { orange: 'orange team', teal: 'teal team', nobody: "nobody's word", landmine: 'the Landmine' };
@@ -28,7 +30,7 @@ const KIND_NAME: Record<Kind, string> = { orange: 'orange team', teal: 'teal tea
 /** SWD-093: a cell's accessible name. */
 export function cellName(c: GridCell): string {
   if (!c.kind) return `${c.word}, face down`;
-  return `${c.word}, ${KIND_NAME[c.kind]}${c.found ? ', found' : ''}`;
+  return `${c.word}, ${KIND_NAME[c.kind]}${c.found ? ', found' : ''}${c.notFound ? ', not found' : ''}`;
 }
 
 const MIN = 12;
@@ -195,7 +197,7 @@ export function BoardGrid({
               data-testid={testId}
               data-index={i}
               aria-label={cellName({ ...c, kind })}
-              className={['sw-cell', `sw-kind-${kind}`, c.found && 'sw-found', zoom && 'sw-zoomed'].filter(Boolean).join(' ')}
+              className={['sw-cell', `sw-kind-${kind}`, c.found && 'sw-found', c.notFound && 'sw-faded', zoom && 'sw-zoomed'].filter(Boolean).join(' ')}
               onClick={() => tap(i)}
             >
               <span className="sw-cell-icon" aria-hidden="true">

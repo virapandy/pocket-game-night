@@ -12,7 +12,9 @@ import {
 import { Choices, MakeTeams, SettingsScreen, WhosPlaying } from './Setup';
 import { drawNames, drawSplit, fromSplit, keepTeams, movePlayer, teamOf, otherTeam, type TeamsDraft } from './teams';
 import { HowToPlay, ReadAloud } from './Texts';
-import { SecretWordsPlay } from './turn/Turn';
+import { dealNext, SecretWordsNight } from './after/Night';
+import type { NextGivers } from './after/facts';
+import type { SecretWordsMove } from '../rules';
 import './secret-words.css';
 
 /** How the screen opens: a new game night (from the picker), "Play again with these teams" (Home), or a resume. */
@@ -85,6 +87,75 @@ export function SecretWordsScreen({
   const [larger, setLarger] = useState(() => prefs.get<boolean>(PREF.largerText, false) === true);
   const [settingsFrom, setSettingsFrom] = useState<Step>('aloud');
   const [night, setNight] = useState<{ saved: Night; match: NightMatch } | null>(init.night);
+  /** SWD-112: "Change teams, players, phones or board" from game over: setup for the next game of this night. */
+  const [changing, setChanging] = useState<string | null>(null);
+
+  const startChange = (next: NextGivers) => {
+    if (!night) return;
+    const saved = store.get(night.saved.id);
+    const match = saved && loadNight(saved);
+    if (!match) return;
+    const s = match.state;
+    setNames([...s.players]);
+    setTeams({
+      seed: teamSeedFor(testSeedsRaw(), release),
+      k: 0,
+      m: 0,
+      names: s.teams.names,
+      draft: {
+        orange: [...s.teams.orange],
+        teal: [...s.teams.teal],
+        clueGivers: { ...next.clueGivers },
+        partners: { ...next.partners },
+        guessOnly: [...next.guessOnly],
+      },
+      fixedNames: true,
+    });
+    setChoices({ ...s.choices });
+    setLandmineSet(true);
+    setChanging(night.saved.id);
+    setStep('names');
+  };
+  /** "Start the game" after changes: no read-aloud; the changes (tap → move table), then the deal (SWD-112). */
+  const changeDeal = () => {
+    if (!changing || !teams || choices.map === null) return;
+    const saved = store.get(changing);
+    const match = saved && loadNight(saved);
+    if (!match) return;
+    const s = match.state;
+    const d = teams.draft;
+    const t = {
+      orange: [...d.orange],
+      teal: [...d.teal],
+      clueGivers: { ...d.clueGivers },
+      partners: { ...d.partners },
+      names: s.teams.names,
+      guessOnly: [...d.guessOnly],
+    };
+    const same = (a: readonly string[], b: readonly string[]) => a.length === b.length && a.every((x, i) => x === b[i]);
+    const sameSet = (a: readonly string[], b: readonly string[]) => a.length === b.length && a.every((x) => b.includes(x));
+    const moves: SecretWordsMove[] = [];
+    if (!sameSet(names, s.players)) moves.push({ type: 'setPlayers', players: [...names], teams: t });
+    else if (!same(d.orange, s.teams.orange) || !same(d.teal, s.teams.teal) || !sameSet(d.guessOnly, s.teams.guessOnly)) {
+      moves.push({ type: 'setTeams', teams: t, splits: Math.max(s.splits, teams.k) });
+    } else if (
+      d.clueGivers.orange !== s.teams.clueGivers.orange ||
+      d.clueGivers.teal !== s.teams.clueGivers.teal ||
+      d.partners.orange !== s.teams.partners.orange ||
+      d.partners.teal !== s.teams.partners.teal
+    ) {
+      moves.push({ type: 'setClueGivers', clueGivers: { ...d.clueGivers }, partners: { ...d.partners } });
+    }
+    const c: SecretWordsChoices = { map: choices.map, board: choices.board, landmine: choices.landmine, words: choices.words };
+    const sc = s.choices;
+    if (c.map !== sc.map || c.board !== sc.board || c.landmine !== sc.landmine || c.words !== sc.words) moves.push({ type: 'setChoices', choices: c });
+    const made = dealNext(store, prefs, ui, changing, moves);
+    if (!made) return;
+    setNight(made);
+    setChanging(null);
+    setPreview(false);
+    setStep('playing');
+  };
 
   const toTeams = () => {
     if (teams) {
@@ -124,7 +195,20 @@ export function SecretWordsScreen({
   let screen: ReactNode;
   switch (step) {
     case 'names':
-      screen = <WhosPlaying names={names} onChange={setNames} past={past} onBack={() => onBack(names)} onNext={toTeams} />;
+      screen = (
+        <WhosPlaying
+          names={names}
+          onChange={setNames}
+          past={past}
+          {...(changing ? { backLabel: '← Back to the game' } : {})}
+          onBack={() => {
+            if (!changing) return onBack(names);
+            setChanging(null);
+            setStep('playing');
+          }}
+          onNext={toTeams}
+        />
+      );
       break;
     case 'teams':
       if (!teams) return null;
@@ -174,6 +258,7 @@ export function SecretWordsScreen({
           onHowToPlay={() => setStep('how')}
           onBack={() => setStep('teams')}
           onStart={() => {
+            if (changing) return changeDeal();
             // SWD-010: the read-aloud card when no game has been dealt yet in this session; otherwise deal at once.
             if (readAloudDue(store, sessions, Date.now())) setStep('aloud');
             else deal();
@@ -222,7 +307,7 @@ export function SecretWordsScreen({
       break;
     default:
       screen = night && (
-        <SecretWordsPlay
+        <SecretWordsNight
           id={night.saved.id}
           store={store}
           prefs={prefs}
@@ -230,6 +315,8 @@ export function SecretWordsScreen({
           {...(preview ? { start: 'preview' as const } : {})}
           onHome={onExit}
           onHistory={onHistory}
+          onChangeSetup={startChange}
+          onSomethingElse={(list) => onBack(list)}
           onSettings={() => {
             setSettingsFrom('playing');
             setStep('settings');
