@@ -65,10 +65,10 @@ needs at least 2 players." (main disabled); over 20: "Up to 20 players." (Add di
 
 ### S2. Words and time
 *Words:* heading "Words and time".
-"Which words?" (one choice, tick on the chosen one): **Mix of all · 743 words** with "Words from every pack." (ticked at
-first) · Animals · 93 words · Food · 89 words · Around the house · 100 words · Jobs · 96 words · Sports and cricket · 95 words ·
-Festivals and places · 96 words · Act it out · 100 words · Famous Indians · 76 words (counts leave out non-veg words while
-that switch is off; Food 99 and Mix 753 with it on).
+"Which words?" (one choice, tick on the chosen one): **Mix of all · 714 words** with "Words from every pack." (ticked at
+first) · Animals · 92 words · Food · 88 words · Around the house · 100 words · Jobs · 94 words · Sports and cricket · 87 words ·
+Festivals and places · 91 words · Act it out · 100 words · Famous Indians · 64 words (counts leave out non-veg words while
+that switch is off; Food 98 and Mix 724 with it on).
 "Time for each turn": 30 s · **60 s** · 90 s with "30 s for small kids, 90 s for grandparents".
 "How to hold the phone": **In the guesser's hand** with "Forehead or chest; the guesser moves it to answer." ·
 **Hands-free** with "The phone stands behind the guesser; one clue giver taps to answer. Good for grandparents and small
@@ -80,7 +80,7 @@ Line above the main button: "Ready as it is, or change anything above."; quiet "
 *Intentions:* back, help.
 | Tap | Leads to | Records | IDs |
 |---|---|---|---|
-| each option: "Mix of all · 743 words" … "Famous Indians · 76 words"; "30 s" · "60 s" · "90 s"; "In the guesser's hand" · "Hands-free"; the two switches | choice shown selected (✓) | setup | WAI-01, 03 |
+| each option: "Mix of all · 714 words" … "Famous Indians · 64 words"; "30 s" · "60 s" · "90 s"; "In the guesser's hand" · "Hands-free"; the two switches | choice shown selected (✓) | setup | WAI-01, 03 |
 | How to play | S4 → back | — | WAI-09 |
 | ← Back | S1 (names kept) | — | WAI-01 |
 | Start with these words | S3 Read this aloud (first What Am I? game tonight) or T1 for the first player | `start` (word order from the word seed) | WAI-01 |

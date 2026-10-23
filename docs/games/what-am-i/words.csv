@@ -367,7 +367,6 @@ WAIW-369,Seagull,Animals,family,no,1,,grown 23 Oct
 WAIW-370,Centipede,Animals,family,no,1,,grown 23 Oct
 WAIW-372,Moth,Animals,family,no,1,,grown 23 Oct
 WAIW-373,Beetle,Animals,family,no,1,,grown 23 Oct
-WAIW-375,Silkworm,Animals,family,no,1,,grown 23 Oct
 WAIW-376,Termite,Animals,family,no,1,,grown 23 Oct; also called white ant
 WAIW-377,Chimpanzee,Animals,family,no,1,,grown 23 Oct; close to Monkey and Gorilla
 WAIW-378,Vada,Food,family,no,1,,grown 23 Oct
@@ -388,7 +387,6 @@ WAIW-392,Khichdi,Food,family,no,1,,grown 23 Oct
 WAIW-393,Dal,Food,family,no,1,,grown 23 Oct
 WAIW-394,Pakoda,Food,family,no,1,,grown 23 Oct
 WAIW-395,Rasgulla,Food,family,no,1,,grown 23 Oct
-WAIW-396,Sandesh,Food,family,no,1,,grown 23 Oct; east sweet; less known in the south
 WAIW-397,Momos,Food,family,no,1,,grown 23 Oct; veg and non-veg kinds; kept on
 WAIW-398,Dhokla,Food,family,no,1,,grown 23 Oct
 WAIW-399,Pav bhaji,Food,family,no,1,,grown 23 Oct
@@ -530,11 +528,9 @@ WAIW-537,Writer,Jobs,family,no,1,,grown 23 Oct
 WAIW-538,Poet,Jobs,family,no,1,,grown 23 Oct
 WAIW-539,Quiz master,Jobs,family,no,1,,grown 23 Oct
 WAIW-540,Scuba diver,Jobs,family,no,1,,grown 23 Oct
-WAIW-541,Welder,Jobs,family,no,1,,grown 23 Oct
 WAIW-542,Skydiver,Jobs,family,no,1,,grown 23 Oct
 WAIW-543,Salesperson,Jobs,family,no,1,,grown 23 Oct
 WAIW-544,Call centre agent,Jobs,family,no,1,,grown 23 Oct
-WAIW-545,Parking attendant,Jobs,family,no,1,,grown 23 Oct
 WAIW-546,Woodcutter,Jobs,family,no,1,,grown 23 Oct
 WAIW-547,Coal miner,Jobs,family,no,1,,grown 23 Oct
 WAIW-548,Inventor,Jobs,family,no,1,,grown 23 Oct
@@ -558,8 +554,6 @@ WAIW-567,Gymnastics,Sports and cricket,family,no,1,,grown 23 Oct
 WAIW-568,Karate,Sports and cricket,family,no,1,,grown 23 Oct
 WAIW-569,Judo,Sports and cricket,family,no,1,,grown 23 Oct
 WAIW-570,Skating,Sports and cricket,family,no,1,,grown 23 Oct
-WAIW-571,Surfing,Sports and cricket,family,no,1,,grown 23 Oct
-WAIW-572,Skiing,Sports and cricket,family,no,1,,grown 23 Oct
 WAIW-573,Golf,Sports and cricket,family,no,1,,grown 23 Oct
 WAIW-576,Snooker,Sports and cricket,family,no,1,,grown 23 Oct
 WAIW-577,Diving,Sports and cricket,family,no,1,,grown 23 Oct
@@ -572,8 +566,6 @@ WAIW-583,Statue game,Sports and cricket,family,no,1,,grown 23 Oct
 WAIW-584,Snakes and ladders,Sports and cricket,family,no,1,,grown 23 Oct
 WAIW-585,Spinning top,Sports and cricket,family,no,1,,grown 23 Oct
 WAIW-586,Marbles,Sports and cricket,family,no,1,,grown 23 Oct
-WAIW-587,Hopscotch,Sports and cricket,family,no,1,,grown 23 Oct; Nondi/Stapu by region; English name taught in schools
-WAIW-588,Seven stones,Sports and cricket,family,no,1,,grown 23 Oct; also Lagori/Pittu by region
 WAIW-589,Push-ups,Sports and cricket,family,no,1,,grown 23 Oct
 WAIW-590,Somersault,Sports and cricket,family,no,1,,grown 23 Oct
 WAIW-591,Cartwheel,Sports and cricket,family,no,1,,grown 23 Oct
@@ -591,13 +583,9 @@ WAIW-602,Century,Sports and cricket,family,no,1,,grown 23 Oct
 WAIW-603,Hat-trick,Sports and cricket,family,no,1,,grown 23 Oct
 WAIW-604,No ball,Sports and cricket,family,no,1,,grown 23 Oct
 WAIW-605,Wide ball,Sports and cricket,family,no,1,,grown 23 Oct
-WAIW-606,Clean bowled,Sports and cricket,family,no,1,,grown 23 Oct; cricket term; shares root with Bowler
 WAIW-607,Boundary,Sports and cricket,family,no,1,,grown 23 Oct
-WAIW-608,Super over,Sports and cricket,family,no,1,,grown 23 Oct
-WAIW-609,Bouncer,Sports and cricket,family,no,1,,grown 23 Oct
 WAIW-610,World Cup,Sports and cricket,family,no,1,,grown 23 Oct
 WAIW-611,Fielder,Sports and cricket,family,no,1,,grown 23 Oct
-WAIW-612,Pitch,Sports and cricket,family,no,1,,grown 23 Oct
 WAIW-613,Howzat,Sports and cricket,family,no,1,,grown 23 Oct; cricket appeal; funny to act
 WAIW-614,Man of the match,Sports and cricket,family,no,1,,grown 23 Oct
 WAIW-615,Durga Puja,Festivals and places,family,no,1,,grown 23 Oct
@@ -608,8 +596,6 @@ WAIW-619,Rath Yatra,Festivals and places,family,no,1,,grown 23 Oct
 WAIW-620,Easter,Festivals and places,family,no,1,,grown 23 Oct
 WAIW-621,Guru Nanak Jayanti,Festivals and places,family,no,1,,grown 23 Oct
 WAIW-622,Buddha Purnima,Festivals and places,family,no,1,,grown 23 Oct
-WAIW-623,Iftar party,Festivals and places,family,no,1,,grown 23 Oct; Ramzan evening meal; Eid already in list
-WAIW-624,Goa Carnival,Festivals and places,family,no,1,,grown 23 Oct
 WAIW-625,Children's Day,Festivals and places,family,no,1,,grown 23 Oct
 WAIW-626,Teachers' Day,Festivals and places,family,no,1,,grown 23 Oct
 WAIW-627,Gandhi Jayanti,Festivals and places,family,no,1,,grown 23 Oct
@@ -632,11 +618,8 @@ WAIW-644,Backwaters,Festivals and places,family,no,1,,grown 23 Oct; Kerala
 WAIW-645,Howrah Bridge,Festivals and places,family,no,1,,grown 23 Oct
 WAIW-646,Victoria Memorial,Festivals and places,family,no,1,,grown 23 Oct
 WAIW-647,Darjeeling,Festivals and places,family,no,1,,grown 23 Oct
-WAIW-648,Sundarbans,Festivals and places,family,no,1,,grown 23 Oct
 WAIW-649,Gateway of India,Festivals and places,family,no,1,,grown 23 Oct
 WAIW-650,Ajanta Caves,Festivals and places,family,no,1,,grown 23 Oct
-WAIW-651,Kaziranga,Festivals and places,family,no,1,,grown 23 Oct
-WAIW-652,Cherrapunji,Festivals and places,family,no,1,,grown 23 Oct
 WAIW-653,Eiffel Tower,Festivals and places,family,no,1,,grown 23 Oct
 WAIW-654,Pyramids,Festivals and places,family,no,1,,grown 23 Oct
 WAIW-655,Great Wall of China,Festivals and places,family,no,1,,grown 23 Oct
@@ -719,30 +702,18 @@ WAIW-731,Scratching an itch,Act it out,family,no,1,,grown 23 Oct
 WAIW-732,Dipa Karmakar,Famous Indians,family,no,1,,grown 23 Oct
 WAIW-733,Lovlina Borgohain,Famous Indians,family,no,1,,grown 23 Oct
 WAIW-736,Anju Bobby George,Famous Indians,family,no,1,,grown 23 Oct
-WAIW-741,Deepika Kumari,Famous Indians,family,no,1,,grown 23 Oct
-WAIW-742,Rani Rampal,Famous Indians,family,no,1,,grown 23 Oct
 WAIW-743,Shreya Ghoshal,Famous Indians,family,no,1,,grown 23 Oct
 WAIW-744,Asha Bhosle,Famous Indians,family,no,1,,grown 23 Oct
-WAIW-745,Indra Nooyi,Famous Indians,family,no,1,,grown 23 Oct; business; may be less known to children
 WAIW-746,Aishwarya Rai,Famous Indians,family,no,1,,grown 23 Oct; film star known in every state
-WAIW-747,Bachendri Pal,Famous Indians,family,no,1,,grown 23 Oct
-WAIW-751,Sheetal Devi,Famous Indians,family,no,1,,grown 23 Oct
-WAIW-753,Karnam Malleswari,Famous Indians,family,no,1,,grown 23 Oct; older fame; may be less known to children
-WAIW-756,KS Chithra,Famous Indians,family,no,1,,grown 23 Oct; singer; better known in the south
 WAIW-757,APJ Abdul Kalam,Famous Indians,family,no,1,,grown 23 Oct; scientist; was President but not a party politician
-WAIW-758,Jagadish Chandra Bose,Famous Indians,family,no,1,,grown 23 Oct
 WAIW-759,R Ashwin,Famous Indians,family,no,1,,grown 23 Oct
 WAIW-760,Sunil Gavaskar,Famous Indians,family,no,1,,grown 23 Oct
 WAIW-761,Ravindra Jadeja,Famous Indians,family,no,1,,grown 23 Oct
 WAIW-762,Shubman Gill,Famous Indians,family,no,1,,grown 23 Oct
 WAIW-763,Rishabh Pant,Famous Indians,family,no,1,,grown 23 Oct
-WAIW-767,Satya Nadella,Famous Indians,family,no,1,,grown 23 Oct
 WAIW-768,SP Balasubrahmanyam,Famous Indians,family,no,1,,grown 23 Oct
 WAIW-769,Shankar Mahadevan,Famous Indians,family,no,1,,grown 23 Oct
-WAIW-772,Salim Ali,Famous Indians,family,no,1,,grown 23 Oct; school textbooks; may be less known to children
 WAIW-775,Tenzing Norgay,Famous Indians,family,no,1,,grown 23 Oct; born outside India; lived in Darjeeling
-WAIW-776,Verghese Kurien,Famous Indians,family,no,1,,grown 23 Oct; Amul; may be less known to children
-WAIW-777,Rohan Bopanna,Famous Indians,family,no,1,,grown 23 Oct
 WAIW-778,Sanju Samson,Famous Indians,family,no,1,,grown 23 Oct
 WAIW-779,Virender Sehwag,Famous Indians,family,no,1,,grown 23 Oct
 WAIW-780,Kishore Kumar,Famous Indians,family,no,1,,grown 23 Oct; older fame
