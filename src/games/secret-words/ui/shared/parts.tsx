@@ -140,7 +140,7 @@ export function SwDialog({
         {...(testId ? { 'data-testid': testId } : {})}
       >
         {heading ? (
-          <h2 id={id} className="sw-dialog-heading">
+          <h2 id={id} className="sw-dlg-heading">
             {title}
           </h2>
         ) : (

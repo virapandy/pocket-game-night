@@ -48,7 +48,7 @@ export function PickerDialog({ guessers, current, onPick, onCancel }: { guessers
     <SwDialog title="Who taps Reveal this turn?" onDismiss={onCancel}>
       <div className="sw-dialog-buttons">
         {guessers.map((g) => (
-          <button key={g} type="button" className={g === current ? 'sw-option sw-selected' : 'sw-option'} aria-pressed={g === current} onClick={() => onPick(g)}>
+          <button key={g} type="button" className={g === current ? 'sw-pick-option sw-selected' : 'sw-pick-option'} aria-pressed={g === current} onClick={() => onPick(g)}>
             {g === current && (
               <span className="sw-tick" aria-hidden="true">
                 ✓{' '}

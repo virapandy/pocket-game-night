@@ -13,7 +13,7 @@ export function HowToPlayFallback({ onDone, at }: { onDone: () => void; at?: 'cl
     <div className="sw-sheet" role="dialog" aria-modal="true" aria-label="How to play">
       <div className="sw-sheet-body">
         <h1 className="sw-h1">How to play</h1>
-        <h2 ref={rules} className="sw-h2">
+        <h2 ref={rules} className="sw-heading2">
           Clue rules
         </h2>
         <ol>

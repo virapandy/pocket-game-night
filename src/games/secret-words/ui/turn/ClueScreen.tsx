@@ -99,9 +99,9 @@ export function ClueScreen({
   );
   const input = (
     <label className="sw-field">
-      <span className="sw-field-label">Clue word (optional)</span>
+      <span className="sw-clue-label">Clue word (optional)</span>
       <input
-        className="sw-input"
+        className="sw-clue-input"
         data-testid="clue-word"
         type="text"
         value={word}
