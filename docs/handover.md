@@ -90,6 +90,16 @@ including a non-Hindi speaker from Tirunelveli) would not know, could not act or
 religious-sensitive. Within the weekly Jev cap. Tell the product owner when the report is pushed; it merges the findings
 into the map. The six persona walks are already done by the product owner.
 
+### Mafia (game five, 23 October, later): two small changes to the jev-design tool (tester, mid-size model)
+The two additions below are **done** (stories checked, 147 simulated games; `docs/games/mafia/jev-results-2026-10-23.md`).
+Jev chose "Nobody today" on up to 8 days a game, far more than people would, which skews the results towards the Mafia.
+1. **`--no-nobody`** for `--sim mafia`: the day point offers only the players still in (no "nobody"); ties and the second tie
+   stay as now. The report says which setting ran.
+2. **Product budget raised (owner, 23 October: "we can increase jev budget"):** `PRODUCT_CAP` from 15,000 to **30,000** a
+   week; the shared 50,000 stays the outer limit.
+Tell the product owner when pushed; it reruns the simulation at 8, 12 and 16 players with `--no-nobody` (about 6,000–8,000
+decisions).
+
 ### Mafia (game five, 23 October): two additions to the jev-design tool (tester, mid-size model; owner asked, 23 October)
 Design only; nothing to build. **Always after What Am I?** (owner, 23 October): do this after any What Am I? tester work in
 hand. The Jev per-screen read of the Mafia map is **done** by the product side (`docs/games/mafia/jev-check.md`, 271
