@@ -329,10 +329,12 @@ export function SecretWordsNight(props: SecretWordsNightProps) {
         }}
         onHome={() => {
           recordEvening();
+          writeUi(ui, id, { showing: false });
           onHome();
         }}
         onSomethingElse={() => {
           recordEvening();
+          writeUi(ui, id, { showing: false });
           onSomethingElse([...(reload()?.match.state.players ?? match.state.players)]);
         }}
         onDelete={() => {

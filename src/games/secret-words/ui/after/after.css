@@ -28,7 +28,7 @@
 }
 .sw-over > * { flex: none; }
 .sw-over-stacked { padding-bottom: 168px; }
-.sw-over-land { max-width: none; }
+.sw-over-land { max-width: none; margin: 0 390px 0 0; }
 .sw-over-line { line-height: 1.4; }
 .sw-over-board { height: calc(5 * 52px + 16px); }
 .sw-over-board-easy { height: calc(4 * 52px + 12px); }

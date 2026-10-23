@@ -28,19 +28,24 @@ export function sweepNights(store: SavedGameStore, ui: Preferences, now: number)
 }
 
 /**
- * SWD-048: the game night the app opens on: one at game over, or with a pending "Game ended" or summary, that was not
- * left with "← Home" (newest first); null otherwise.
+ * SWD-048: the game night the app opens on: one at game over, or with a pending "Game ended" or summary (a summary whose
+ * end was recorded as the app was hidden or reloaded shows again, without "Oops, keep playing"), that was not left with
+ * "← Home" (newest first); null otherwise.
  */
 export function nightToOpen(store: SavedGameStore, ui: Preferences): string | null {
   const list = store
     .list()
-    .filter((g) => g.gameType === 'secret-words' && g.status === 'in-progress')
+    .filter((g) => g.gameType === 'secret-words' && (g.status === 'in-progress' || g.status === 'ended'))
     .sort((a, b) => b.updatedAt - a.updatedAt);
   for (const g of list) {
     const u = readUi(ui, g.id);
     if (u.showing === false) continue;
     const match = loadNight(g);
-    if (!match || match.state.ended) continue;
+    if (!match) continue;
+    if (match.state.ended) {
+      if (u.step === 'summary' && u.showing === true) return g.id;
+      continue;
+    }
     const over = match.state.game?.step === 'over';
     if (u.step === 'summary' || u.step === 'game-over' || over) return g.id;
   }
