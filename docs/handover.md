@@ -52,6 +52,18 @@ the intent on 23 October; show the owner the exact diff before committing.
 5. When done, tell the product owner; it runs the What Am I? check below itself. **Until then, the request below stays
    with the tester as written.**
 
+### Jev design tool: three fixes before the next What Am I? run (product owner, 23 October; tester writes them)
+The first run worked (2,563 decisions, no faults; `docs/games/what-am-i/jev-check.md`). Three fixes, then tell the product owner:
+1. **Control words** (`docs/proposals/jev-for-design.md` §3): ask 10 controls with every word run (known: Elephant, Banana,
+   Doctor, Cricket, Diwali, Chair; not known: three made-up words such as Flurbix; one regional pair such as Idli and
+   Dhokla). Report the controls first; if a known control falls below 0.8 or a made-up word rises above 0.2, mark the run
+   "controls failed" (this run rated Idli 0.25 and Hen 0.49, so absolute scores were not usable).
+2. **Read the map's later sections:** where a section like "J.", "L.", "M." or "N. … what changed" renames a button or line,
+   use the new wording; ignore table codes (D1–D6) and markup scraps (";", ",", "on with") as labels.
+3. **J2 and J3:** "Which pack does this word belong in?" (the packs, "none of these", "uncertain"); and "guessable from a
+   clue": take two clues per word from a `--clues <csv>` file the product owner writes (word, clue1, clue2) and ask Jev to
+   pick the word from it plus 5 others from the same pack.
+
 ### What Am I? (game four, 23 October): Jev check of the screen map and word packs (tester, mid-size model, after Secret Words work in hand)
 Design only; nothing to build. Owner asked for the Jev check on 23 October. Two jobs, report to `reports/jev-map-what-am-i.md`:
 (1) **Jev per-screen read** of `docs/games/what-am-i/screen-map.md` draft 2 (on-screen *Words* and buttons only, as for the

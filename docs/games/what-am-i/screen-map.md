@@ -1,6 +1,6 @@
 # What Am I?: screen map (draft 3, product owner, 23 October 2026)
 
-**Status: draft 3** (critic pass, section J; six persona walks, section L; word guidelines, section M, `map-walk-2026-10-23.md`; where J or L and a row differ, the later section wins). Jev's check is pending (handover). Stage 1 of `docs/proposals/design-before-code.md` (step 1b of `docs/new-game-process.md`). Drawn from
+**Status: draft 3** (critic pass, section J; six persona walks, section L; word guidelines, section M; first Jev check, section N, `map-walk-2026-10-23.md`; where J or L and a row differ, the later section wins). Jev's check is pending (handover). Stage 1 of `docs/proposals/design-before-code.md` (step 1b of `docs/new-game-process.md`). Drawn from
 `guide.md`, `fit-and-stories.md`, `words.md` and decisions WA1–WA10 (`docs/decisions.md`, 23 October). No scenarios exist
 yet, so the IDs column says which future scenario file a row belongs to (`WAI-01 setup` … `WAI-10 lifecycle`). Where a
 later `scenarios.md` differs from this map, the scenarios win.
@@ -288,6 +288,23 @@ a tie for the win; 2 players; 20 players.
    non-veg words while that switch is off: "Animals · 97 words", "Food · 89 words" (100 with non-veg), "Mix of all · 776
    words". Open item H1 (packs running out after 4 turns) is closed: a pack now lasts about 10 turns, and the T1 warning
    and Mix-of-all fallback stay for big groups.
+
+## N. First Jev check (23 October, `jev-check.md`): what changed
+The tool read the base rows, not sections J, L and M, so several findings were already fixed (T1's "← Home (game saved)"
+and the renamed "Someone else goes first" and "I'm Riya: start"). Labels "D1"–"D6" and scraps like ";" are the tool reading
+markup, not findings. Changes below are where Jev and an earlier check agree (`docs/proposals/jev-for-design.md` §4):
+1. **"Tilt" is not understood** (Jev: "Mark words by tilting?" 0.07, "Allow tilt" 0.07; the grandparent walk). One word,
+   **nod**, with the drawing: T0 heading "Answer by nodding the phone?", line "Nod it down for Got it, up for Pass. Your
+   phone will ask once.", buttons "Use taps instead" · **"Yes, nod the phone"**. T1's rule line: "Nod down: Got it · Nod up:
+   Pass". S3: "Got it? Nod the phone down. Stuck? Nod it up to pass." Settings: "Answer by nodding the phone". "Tilt" stays
+   in code and scenarios only (word guideline A2).
+2. **S2's labels** (Jev: "Turn length" 0.20, "Word pack" 0.25; first-time host walk wanted defaults): headings become
+   "Which words?" and "Time for each turn". Above the main button: "Ready as it is, or change anything above." Main
+   button: **"Start with these words"** (Jev picked How to play over Start, 0.42 to 0.07).
+3. **T3's purpose** (Jev 0.24): a small line at the top of the word screen, for the room: "Give clues. Don't say the word!"
+4. **Not changed:** G1 and G2 (personas lean to Home at the end of a night; both are visible, which is right); S1 (first-timers
+   reaching for How to play is what that button is for); A2, T2 (no main button by design).
+5. **Re-run** J5 on this draft once the tool reads the latest section for each screen.
 
 ## K. Prototype script (what the tap-through shows)
 Same rendering rules as Secret Words K3 (one state per screen, real labels, K4-style outcomes), with this data.

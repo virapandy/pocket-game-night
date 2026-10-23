@@ -308,13 +308,11 @@ WAIW-306,Kalpana Chawla,Famous Indians,family,no,1,,
 WAIW-307,CV Raman,Famous Indians,family,no,1,,
 WAIW-308,Srinivasa Ramanujan,Famous Indians,family,no,1,,
 WAIW-309,Jasprit Bumrah,Famous Indians,family,no,1,,"replaced Aryabhata (critic pass, 23 Oct)"
-WAIW-310,Smriti Mandhana,Famous Indians,family,no,1,,"replaced Shakuntala Devi (critic pass, 23 Oct)"
 WAIW-311,Rabindranath Tagore,Famous Indians,family,no,1,,
 WAIW-312,Swami Vivekananda,Famous Indians,family,no,1,,
 WAIW-313,Hima Das,Famous Indians,family,no,1,,"replaced Mother Teresa (critic pass, 23 Oct)"
 WAIW-314,Ratan Tata,Famous Indians,family,no,1,,
 WAIW-315,Sundar Pichai,Famous Indians,family,no,1,,
-WAIW-316,D Gukesh,Famous Indians,family,no,1,,"replaced Satyajit Ray (critic pass, 23 Oct)"
 WAIW-317,Harmanpreet Kaur,Famous Indians,family,no,1,,"replaced RK Laxman (critic pass, 23 Oct)"
 WAIW-318,Anil Kumble,Famous Indians,family,no,1,,"replaced Bismillah Khan (critic pass, 23 Oct)"
 WAIW-319,Sourav Ganguly,Famous Indians,family,no,1,,"replaced Homi Bhabha (critic pass, 23 Oct)"
@@ -327,7 +325,6 @@ WAIW-325,Gorilla,Animals,family,no,1,,grown 23 Oct
 WAIW-326,Panda,Animals,family,no,1,,grown 23 Oct
 WAIW-327,Cheetah,Animals,family,no,1,,grown 23 Oct
 WAIW-328,Leopard,Animals,family,no,1,,grown 23 Oct; close to Cheetah when acted
-WAIW-329,Pig,Animals,family,no,1,,grown 23 Oct
 WAIW-330,Sheep,Animals,family,no,1,,grown 23 Oct
 WAIW-331,Rat,Animals,family,no,1,,grown 23 Oct
 WAIW-332,Rooster,Animals,family,no,1,,grown 23 Oct; close to Hen; kept for the crowing act
@@ -340,7 +337,6 @@ WAIW-338,Flamingo,Animals,family,no,1,,grown 23 Oct
 WAIW-339,Woodpecker,Animals,family,no,1,,grown 23 Oct
 WAIW-340,Cuckoo,Animals,family,no,1,,grown 23 Oct
 WAIW-341,Myna,Animals,family,no,1,,grown 23 Oct
-WAIW-342,Hummingbird,Animals,family,no,1,,grown 23 Oct
 WAIW-343,Crab,Animals,family,no,1,,grown 23 Oct
 WAIW-344,Octopus,Animals,family,no,1,,grown 23 Oct
 WAIW-345,Jellyfish,Animals,family,no,1,,grown 23 Oct
@@ -369,10 +365,8 @@ WAIW-367,Dinosaur,Animals,family,no,1,,grown 23 Oct; extinct
 WAIW-368,Bull,Animals,family,no,1,,grown 23 Oct; close to Cow and Buffalo
 WAIW-369,Seagull,Animals,family,no,1,,grown 23 Oct
 WAIW-370,Centipede,Animals,family,no,1,,grown 23 Oct
-WAIW-371,Bedbug,Animals,family,no,1,,grown 23 Oct
 WAIW-372,Moth,Animals,family,no,1,,grown 23 Oct
 WAIW-373,Beetle,Animals,family,no,1,,grown 23 Oct
-WAIW-374,Pelican,Animals,family,no,1,,grown 23 Oct; less known to older players
 WAIW-375,Silkworm,Animals,family,no,1,,grown 23 Oct
 WAIW-376,Termite,Animals,family,no,1,,grown 23 Oct; also called white ant
 WAIW-377,Chimpanzee,Animals,family,no,1,,grown 23 Oct; close to Monkey and Gorilla
@@ -434,7 +428,6 @@ WAIW-432,Tandoori chicken,Food,family,yes,1,,grown 23 Oct; Chicken curry exists;
 WAIW-433,Chicken 65,Food,family,yes,1,,grown 23 Oct; Chicken curry exists; a different dish
 WAIW-434,Prawns,Food,family,yes,1,,grown 23 Oct
 WAIW-435,Kebab,Food,family,yes,1,,grown 23 Oct
-WAIW-436,Shawarma,Food,family,yes,1,,grown 23 Oct
 WAIW-437,Cotton candy,Food,family,no,1,,grown 23 Oct
 WAIW-438,Sofa,Around the house,family,no,1,,grown 23 Oct
 WAIW-439,Curtain,Around the house,family,no,1,,grown 23 Oct
@@ -514,7 +507,6 @@ WAIW-512,Film director,Jobs,family,no,1,,grown 23 Oct
 WAIW-513,Cartoonist,Jobs,family,no,1,,grown 23 Oct
 WAIW-514,Architect,Jobs,family,no,1,,grown 23 Oct
 WAIW-515,Construction worker,Jobs,family,no,1,,grown 23 Oct
-WAIW-516,Crane operator,Jobs,family,no,1,,grown 23 Oct
 WAIW-517,Receptionist,Jobs,family,no,1,,grown 23 Oct
 WAIW-518,Accountant,Jobs,family,no,1,,grown 23 Oct
 WAIW-519,Programmer,Jobs,family,no,1,,grown 23 Oct
@@ -524,7 +516,6 @@ WAIW-522,DJ,Jobs,family,no,1,,grown 23 Oct
 WAIW-523,Tour guide,Jobs,family,no,1,,grown 23 Oct
 WAIW-524,Juggler,Jobs,family,no,1,,grown 23 Oct
 WAIW-525,Clown,Jobs,family,no,1,,grown 23 Oct
-WAIW-526,Ringmaster,Jobs,family,no,1,,grown 23 Oct
 WAIW-527,Acrobat,Jobs,family,no,1,,grown 23 Oct
 WAIW-528,Detective,Jobs,family,no,1,,grown 23 Oct
 WAIW-529,Spy,Jobs,family,no,1,,grown 23 Oct
@@ -548,7 +539,6 @@ WAIW-546,Woodcutter,Jobs,family,no,1,,grown 23 Oct
 WAIW-547,Coal miner,Jobs,family,no,1,,grown 23 Oct
 WAIW-548,Inventor,Jobs,family,no,1,,grown 23 Oct
 WAIW-549,Translator,Jobs,family,no,1,,grown 23 Oct
-WAIW-550,Puppeteer,Jobs,family,no,1,,grown 23 Oct; the word may be harder than puppet show
 WAIW-551,Sculptor,Jobs,family,no,1,,grown 23 Oct
 WAIW-552,Toy maker,Jobs,family,no,1,,grown 23 Oct
 WAIW-553,Mimicry artist,Jobs,family,no,1,,grown 23 Oct
@@ -562,7 +552,6 @@ WAIW-560,High jump,Sports and cricket,family,no,1,,grown 23 Oct
 WAIW-561,Javelin throw,Sports and cricket,family,no,1,,grown 23 Oct
 WAIW-562,Shot put,Sports and cricket,family,no,1,,grown 23 Oct
 WAIW-563,Discus throw,Sports and cricket,family,no,1,,grown 23 Oct
-WAIW-564,Pole vault,Sports and cricket,family,no,1,,grown 23 Oct
 WAIW-565,Relay race,Sports and cricket,family,no,1,,grown 23 Oct
 WAIW-566,Hurdles,Sports and cricket,family,no,1,,grown 23 Oct
 WAIW-567,Gymnastics,Sports and cricket,family,no,1,,grown 23 Oct
@@ -572,8 +561,6 @@ WAIW-570,Skating,Sports and cricket,family,no,1,,grown 23 Oct
 WAIW-571,Surfing,Sports and cricket,family,no,1,,grown 23 Oct
 WAIW-572,Skiing,Sports and cricket,family,no,1,,grown 23 Oct
 WAIW-573,Golf,Sports and cricket,family,no,1,,grown 23 Oct
-WAIW-574,Rugby,Sports and cricket,family,no,1,,grown 23 Oct
-WAIW-575,Baseball,Sports and cricket,family,no,1,,grown 23 Oct
 WAIW-576,Snooker,Sports and cricket,family,no,1,,grown 23 Oct
 WAIW-577,Diving,Sports and cricket,family,no,1,,grown 23 Oct
 WAIW-578,Tug of war,Sports and cricket,family,no,1,,grown 23 Oct
@@ -627,7 +614,6 @@ WAIW-625,Children's Day,Festivals and places,family,no,1,,grown 23 Oct
 WAIW-626,Teachers' Day,Festivals and places,family,no,1,,grown 23 Oct
 WAIW-627,Gandhi Jayanti,Festivals and places,family,no,1,,grown 23 Oct
 WAIW-628,Mother's Day,Festivals and places,family,no,1,,grown 23 Oct
-WAIW-629,Baby shower,Festivals and places,family,no,1,,grown 23 Oct
 WAIW-630,Housewarming,Festivals and places,family,no,1,,grown 23 Oct
 WAIW-631,Anniversary,Festivals and places,family,no,1,,grown 23 Oct
 WAIW-632,Farewell party,Festivals and places,family,no,1,,grown 23 Oct
@@ -732,13 +718,7 @@ WAIW-730,Smelling something bad,Act it out,family,no,1,,grown 23 Oct
 WAIW-731,Scratching an itch,Act it out,family,no,1,,grown 23 Oct
 WAIW-732,Dipa Karmakar,Famous Indians,family,no,1,,grown 23 Oct
 WAIW-733,Lovlina Borgohain,Famous Indians,family,no,1,,grown 23 Oct
-WAIW-734,Manika Batra,Famous Indians,family,no,1,,grown 23 Oct
-WAIW-735,Jhulan Goswami,Famous Indians,family,no,1,,grown 23 Oct
 WAIW-736,Anju Bobby George,Famous Indians,family,no,1,,grown 23 Oct
-WAIW-737,Manu Bhaker,Famous Indians,family,no,1,,grown 23 Oct
-WAIW-738,Nikhat Zareen,Famous Indians,family,no,1,,grown 23 Oct
-WAIW-739,Koneru Humpy,Famous Indians,family,no,1,,grown 23 Oct
-WAIW-740,Divya Deshmukh,Famous Indians,family,no,1,,grown 23 Oct
 WAIW-741,Deepika Kumari,Famous Indians,family,no,1,,grown 23 Oct
 WAIW-742,Rani Rampal,Famous Indians,family,no,1,,grown 23 Oct
 WAIW-743,Shreya Ghoshal,Famous Indians,family,no,1,,grown 23 Oct
@@ -746,14 +726,8 @@ WAIW-744,Asha Bhosle,Famous Indians,family,no,1,,grown 23 Oct
 WAIW-745,Indra Nooyi,Famous Indians,family,no,1,,grown 23 Oct; business; may be less known to children
 WAIW-746,Aishwarya Rai,Famous Indians,family,no,1,,grown 23 Oct; film star known in every state
 WAIW-747,Bachendri Pal,Famous Indians,family,no,1,,grown 23 Oct
-WAIW-748,Avani Lekhara,Famous Indians,family,no,1,,grown 23 Oct
-WAIW-749,Deepti Sharma,Famous Indians,family,no,1,,grown 23 Oct
-WAIW-750,Jemimah Rodrigues,Famous Indians,family,no,1,,grown 23 Oct
 WAIW-751,Sheetal Devi,Famous Indians,family,no,1,,grown 23 Oct
-WAIW-752,Dutee Chand,Famous Indians,family,no,1,,grown 23 Oct
 WAIW-753,Karnam Malleswari,Famous Indians,family,no,1,,grown 23 Oct; older fame; may be less known to children
-WAIW-754,Bhavani Devi,Famous Indians,family,no,1,,grown 23 Oct; may be less known outside Tamil Nadu
-WAIW-755,Shafali Verma,Famous Indians,family,no,1,,grown 23 Oct
 WAIW-756,KS Chithra,Famous Indians,family,no,1,,grown 23 Oct; singer; better known in the south
 WAIW-757,APJ Abdul Kalam,Famous Indians,family,no,1,,grown 23 Oct; scientist; was President but not a party politician
 WAIW-758,Jagadish Chandra Bose,Famous Indians,family,no,1,,grown 23 Oct
@@ -762,24 +736,16 @@ WAIW-760,Sunil Gavaskar,Famous Indians,family,no,1,,grown 23 Oct
 WAIW-761,Ravindra Jadeja,Famous Indians,family,no,1,,grown 23 Oct
 WAIW-762,Shubman Gill,Famous Indians,family,no,1,,grown 23 Oct
 WAIW-763,Rishabh Pant,Famous Indians,family,no,1,,grown 23 Oct
-WAIW-764,Lakshya Sen,Famous Indians,family,no,1,,grown 23 Oct
-WAIW-765,PR Sreejesh,Famous Indians,family,no,1,,grown 23 Oct
-WAIW-766,Mariyappan Thangavelu,Famous Indians,family,no,1,,grown 23 Oct
 WAIW-767,Satya Nadella,Famous Indians,family,no,1,,grown 23 Oct
 WAIW-768,SP Balasubrahmanyam,Famous Indians,family,no,1,,grown 23 Oct
 WAIW-769,Shankar Mahadevan,Famous Indians,family,no,1,,grown 23 Oct
-WAIW-770,Prabhas,Famous Indians,family,no,1,,grown 23 Oct; film star known in every state
-WAIW-771,Shubhanshu Shukla,Famous Indians,family,no,1,,grown 23 Oct
 WAIW-772,Salim Ali,Famous Indians,family,no,1,,grown 23 Oct; school textbooks; may be less known to children
-WAIW-773,Ruskin Bond,Famous Indians,family,no,1,,grown 23 Oct
-WAIW-774,RK Narayan,Famous Indians,family,no,1,,grown 23 Oct; Malgudi Days; may be less known to children
 WAIW-775,Tenzing Norgay,Famous Indians,family,no,1,,grown 23 Oct; born outside India; lived in Darjeeling
 WAIW-776,Verghese Kurien,Famous Indians,family,no,1,,grown 23 Oct; Amul; may be less known to children
 WAIW-777,Rohan Bopanna,Famous Indians,family,no,1,,grown 23 Oct
 WAIW-778,Sanju Samson,Famous Indians,family,no,1,,grown 23 Oct
 WAIW-779,Virender Sehwag,Famous Indians,family,no,1,,grown 23 Oct
 WAIW-780,Kishore Kumar,Famous Indians,family,no,1,,grown 23 Oct; older fame
-WAIW-781,Jeremy Lalrinnunga,Famous Indians,family,no,1,,grown 23 Oct; may be less known outside the northeast
 WAIW-782,Chhota Bheem,Famous Indians,family,no,1,,grown 23 Oct; character
 WAIW-783,Tenali Raman,Famous Indians,family,no,1,,grown 23 Oct; character
 WAIW-784,Birbal,Famous Indians,family,no,1,,grown 23 Oct; character
