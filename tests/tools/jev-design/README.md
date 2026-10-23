@@ -22,7 +22,7 @@ Small slices for trials: `--screens N`, `--max-words N`, `--max-labels N`.
   including a non-Hindi speaker from Tirunelveli), can be acted or described, political or religious-sensitive.
 - Every question is a Choice with an "uncertain" option.
 - Budget: `test` counts only towards the shared 50,000 a week (`reports/runs/jev-usage.json`). `product` also keeps
-  `reports/runs/jev-usage-product.json` (gitignored, per ISO week) and stops at 15,000; each decision counts in both files.
+  `reports/runs/jev-usage-product.json` (gitignored, per ISO week) and stops at 30,000 (raised from 15,000 on 23 October; the shared 50,000 stays the outer limit, both are counted); each decision counts in both files.
   The run stops cleanly at either limit and the report says which.
 
 ## Text check (`--texts`)
@@ -45,6 +45,9 @@ node tests/tools/jev-design/run.ts --budget product --game mafia --sim mafia \
   --players 6,8,10,12,16 --games 20 --police-shares never,when-found --seed 1 --max-decisions 8000 \
   --out <report path>
 ```
+
+`--no-nobody` (a flag, no value): the day point offers only the players still in, with no "nobody" (Jev chose "nobody" far
+more than real people do). Ties and the second tie work as before. The report says which setting ran.
 
 The referee is code (`sim-mafia.ts`: rules from `docs/games/mafia/guide.md`, MF1 to MF15); Jev only picks one name per
 player per night or day, from the legal names (plus "nobody" by day, no "uncertain" option), given a fact list the code
