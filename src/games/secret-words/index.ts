@@ -15,6 +15,9 @@ export {
   type Kind as SecretWordsKind,
 } from './rules';
 
+// Screen lane B: the turn on the host (src/games/secret-words/ui/turn/Turn.tsx, how the app uses it at its top).
+export { SecretWordsPlay, type SecretWordsPlayProps } from './ui/turn/Turn';
+
 export const secretWordsInfo: GameInfo = {
   id: 'secret-words',
   title: 'Secret Words',
