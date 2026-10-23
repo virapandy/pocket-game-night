@@ -1,9 +1,9 @@
 # 09-usability.md: Usability (C1/C2)
 
-Copied from `docs/games/secret-words/scenarios.md` (version 3.6, approved by the owner 22 October 2026), the binding contract. Where a scenario ends with a paragraph headed "Version 3.6", that paragraph wins over the text above it. Terms, canonical strings, the menu table and the test hooks: [README.md](README.md). Rule API for the tests: [api.md](api.md).
+Copied from `docs/games/secret-words/scenarios.md` (version 3.7, approved by the owner 23 October 2026), the binding contract. Where a scenario ends with a paragraph headed "Version 3.7", that paragraph wins over the text above it, then its "Version 3.6" paragraph. Terms, canonical strings, the menu table and the test hooks: [README.md](README.md). Rule API for the tests: [api.md](api.md).
 
 ## SWD-090: Board text and portrait layout
-Status: approved, owner, 2026-10-22 (version 3.6)
+Status: approved, owner, 2026-10-23 (version 3.7)
 Phase: Secret Words 1
 Portrait board: 8 px side margins, 4 px gaps; cells (width − 16 − gaps) / columns wide (Full at 360: 65.6 px; at 390: 71.6
 px). Cell height 56 px, shrinking to no less than 48 px so the page doesn't scroll. One font size for all words of a board:
@@ -13,7 +13,7 @@ Larger text doesn't change it. Status lines and the full height budget: SWD-041.
 **Version 3.6 (owner, 22 October):** **Words that don't fit at 12 px (owner, 22 October):** the board's one font size is chosen as before (22 down to 12 px). A word that still doesn't fit in one line at 12 px shrinks alone, in 0.5 px steps, to a floor of 10 px; only that cell is smaller. Known cases on test phones: Boundary, Rickshaw, Puncture, Mosquito, Monsoon, Homework, Umbrella, Diamond, Germany, Himalaya. Such a word is never replaced for size. The tap zoom of SWD-042 lets anyone read it large.
 
 ## SWD-091: Landscape board
-Status: approved, owner, 2026-10-22 (version 3.6)
+Status: approved, owner, 2026-10-23 (version 3.7)
 Phase: Secret Words 1
 812 × 375: grid at the left (margins 16 px left and bottom, 8 px under the team bar); a 200 px panel at the right (16 px right
 margin, 12 px gap). Panel, top to bottom: `hurry-timer` row (48 px, when running); a row with "↻" (44 × 44) and "··· Menu" (48
@@ -29,7 +29,7 @@ row 48 + middle part ≥ 84 + slot 48 + main 60 + bottom 8 + 4 gaps of 4 px = 32
 Cell sizes are measured on the unturned board.
 
 ## SWD-092: Narrow portrait
-Status: approved, owner, 2026-10-22 (version 3.6)
+Status: approved, owner, 2026-10-23 (version 3.7)
 Phase: Secret Words 1
 On the board screens, the private map and the map phone, narrow portrait shows `turn-sideways` in place of the grid; the other
 parts of the screen stay (on the board, "Sunita: Reveal" stays disabled). Turning to landscape shows the grid. All other screens
@@ -37,18 +37,18 @@ work at 320 × 568 portrait.
 **Version 3.6 (owner, 22 October):** **Easy board in narrow portrait:** at `innerWidth < 360` in portrait an **Easy** board shows as a 4 × 4 grid with SWD-090's 8 px margins and 4 px gaps: cells (innerWidth − 16 − 12) / 4 wide (73 px at 320), 48 px tall, one font size by SWD-090's rule (22 down to 12 px); the page may scroll as one with the main fixed. Easy never shows `turn-sideways`; its cells are buttons and "Reveal" works as everywhere. A **Full** board keeps `turn-sideways` "Turn your phone sideways to see the board." and, on host board screens only, the small line `turn-sideways-hint` "Or choose the Easy board for the next game." The private map and the map phone show an Easy board's grid in narrow portrait (replacing, for Easy only, SWD-031's and SWD-034's narrow-portrait list or sideways line): the private map keeps SWD-031's 3.6 slots (pad 64 px) with the 4 × 4 grid as its map area, the content above the main scrolling inside when it doesn't fit. A Full board keeps their existing narrow rules.
 
 ## SWD-093: Never colour alone
-Status: approved, owner, 2026-10-22 (version 3.6)
+Status: approved, owner, 2026-10-23 (version 3.7)
 Phase: Secret Words 1
 Every turned-over cell and every map cell has its kind's icon and an accessible name: "Kite, orange team" / "Kite, teal
 team" / "Kite, blank word" / "Kite, the Landmine" (+ ", found" or ", not found" where SWD-031, SWD-035 and SWD-051 say).
 
 ## SWD-094: Targets
-Status: approved, owner, 2026-10-22 (version 3.6)
+Status: approved, owner, 2026-10-23 (version 3.7)
 Phase: Secret Words 1
 Every button at least 44 × 44 px; board cells per SWD-090/091; keys per SWD-040.
 
 ## SWD-095: Screen readers
-Status: approved, owner, 2026-10-22 (version 3.6)
+Status: approved, owner, 2026-10-23 (version 3.7)
 Phase: Secret Words 1
 The announcer reads: the clue ("Clue for Chai Champions: 1 word" / "2 words" / "0 words" / "as many as you like"; with a word,
 as typed, "Clue for Chai Champions: Cricket, 1 word" / "Cricket, 2 words" / "Cricket, 0 words" / "Cricket, as many as you like";
@@ -57,25 +57,25 @@ heading then the line ("Chai Champions win! All 9 words found."). It never annou
 (SWD-125). Map cells are reachable by name only on map screens.
 
 ## SWD-096: Reduce motion
-Status: approved, owner, 2026-10-22 (version 3.6)
+Status: approved, owner, 2026-10-23 (version 3.7)
 Phase: Secret Words 1
 With `prefers-reduced-motion: reduce`: no cell turn and no animations (`document.getAnimations().length === 0` on board
 screens); everything else the same.
 
 ## SWD-097: Sound and vibration
-Status: approved, owner, 2026-10-22 (version 3.6)
+Status: approved, owner, 2026-10-23 (version 3.7)
 Phase: Secret Words 1
 Sounds (Impostor's sound hook, `window.__sounds`): `ding` (own word), `thud` (nobody's, the other team's, a broken-rule
 turn), `boom` (the Landmine), `chime` (time's up); peak gains of `thud`, `boom` and `chime` ≤ `ding`'s. Vibration 50 ms on every
 reveal, 200 ms on the Landmine. The private map and the map phone make no sound and no vibration.
 
 ## SWD-098: One main button
-Status: approved, owner, 2026-10-22 (version 3.6)
+Status: approved, owner, 2026-10-23 (version 3.7)
 Phase: Secret Words 1
 At most one main button per screen, always the next step. (The Start new dialog has none: Terms.)
 
 ## SWD-099: Word list check (C3, content)
-Status: approved, owner, 2026-10-22 (version 3.6)
+Status: approved, owner, 2026-10-23 (version 3.7)
 Phase: Secret Words 1
 `content/secret-words/words.json` is built from `words.csv` (`{ id, word, meanings, category, audience, nonveg, edition,
 retired_in }[]`). **Checks:** ids unique; words 3–8 letters A–Z, unique ignoring case; every edition's candidates ≤ 775.

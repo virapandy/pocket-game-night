@@ -1,9 +1,9 @@
 # 01-setup.md: Setup
 
-Copied from `docs/games/secret-words/scenarios.md` (version 3.6, approved by the owner 22 October 2026), the binding contract. Where a scenario ends with a paragraph headed "Version 3.6", that paragraph wins over the text above it. Terms, canonical strings, the menu table and the test hooks: [README.md](README.md). Rule API for the tests: [api.md](api.md).
+Copied from `docs/games/secret-words/scenarios.md` (version 3.7, approved by the owner 23 October 2026), the binding contract. Where a scenario ends with a paragraph headed "Version 3.7", that paragraph wins over the text above it, then its "Version 3.6" paragraph. Terms, canonical strings, the menu table and the test hooks: [README.md](README.md). Rule API for the tests: [api.md](api.md).
 
 ## SWD-001: Picking Secret Words
-Status: approved, owner, 2026-10-22 (version 3.6)
+Status: approved, owner, 2026-10-23 (version 3.7)
 Phase: Secret Words 1
 Home's "Host a game" reads "Tambola, Impostor or Secret Words on this phone" (titles joined with ", ", and " or " before the last). Its picker "What shall we play?" shows three cards
 of equal width and height (±1 px) in the order Tambola, Impostor, Secret Words; tapping Secret Words opens "Who's playing?". With an
@@ -12,7 +12,7 @@ tapping the Secret Words card then opens the Start new dialog (SWD-115): "Start 
 (SWD-067) and opens "Who's playing?"; "Carry on that one" resumes it.
 
 ## SWD-002: Join a game, and the map code
-Status: approved, owner, 2026-10-22 (version 3.6)
+Status: approved, owner, 2026-10-23 (version 3.7)
 Phase: Secret Words 1
 Home's second card reads **"Join a game"** with the line "Tambola ticket or Secret Words map from the host" (owner, 4
 October), and opens the Join screen, now headed "Join a game". (Until Secret Words ships, the line reads "Tambola ticket from
@@ -36,7 +36,7 @@ there goes to the Join screen. Opening a map never changes an unfinished host ga
 **Version 3.6 (owner, 22 October):** **Opening a map on the board phone (D2).** On a phone holding an unfinished Secret Words game night (one with no `endEvening` recorded), opening a map by any route (the QR link, the Join scanner, a typed code, Home's saved map) shows, **after** the code is found valid (invalid and newer codes show their errors first, as before), the dialog `board-phone-dialog` (`role="dialog"`, named by its heading) "This phone is the board. Open the map here?" with the paragraph "Clue givers use their own phone. To show the map on this phone, use Show the map to a clue giver in the game's menu." (one-phone game nights: "Clue givers use their own phone. With one phone, pass this phone to the clue giver when the game says so."), quiet "Open the map here" and main "No, keep the board" (800 ms guard, SWD-114). "No, keep the board" returns to the screen the map was opened from (the Join screen, the code entry, Home); opened from the camera with the app closed, to Home. "Open the map here" continues as before. A phone with no unfinished game night never asks.
 
 ## SWD-003: Who's playing?
-Status: approved, owner, 2026-10-22 (version 3.6)
+Status: approved, owner, 2026-10-23 (version 3.7)
 Phase: Secret Words 1
 Impostor's names screen (IMP-003) **without** the "Sit in a circle…" line and without ▲ ▼ (order means nothing here):
 tonight's names filled in, "Clear list", past names. "Next" is disabled while there are fewer than 4 names, with "Add at
@@ -45,7 +45,7 @@ most." and adds nothing. "← Back" → the picker (opened from game over: "← 
 and keeps the field focused (SWD-132).
 
 ## SWD-004: Make teams
-Status: approved, owner, 2026-10-22 (version 3.6)
+Status: approved, owner, 2026-10-23 (version 3.7)
 Phase: Secret Words 1
 The first time in a new evening's setup: names are shuffled with ``shuffle(names, createRng(`${teamSeed}:${k}`))``, k = 1;
 the first ⌈n/2⌉ go to the orange team and the rest to the teal team, each in shuffled order; the draw is accepted by SWD-130's
@@ -58,7 +58,7 @@ Columns side by side, each (screen width − 32 − 8) / 2 px wide; names may wr
 under the name. This screen may scroll (page); the main button stays fixed.
 
 ## SWD-005: Moving a player
-Status: approved, owner, 2026-10-22 (version 3.6)
+Status: approved, owner, 2026-10-23 (version 3.7)
 Phase: Secret Words 1
 Each name is a button with accessible name "Move Om to Coffee Commandos" (`aria-label`; the badge is not part of the name). A tap
 moves the player to the end of the other team and shows "Om moved to Coffee Commandos · Undo". If they were their team's clue giver,
@@ -68,29 +68,29 @@ restores teams and clue givers exactly as before that move. Only the latest move
 old one). A second tap within 500 ms of the first does nothing.
 
 ## SWD-006: Shuffle teams
-Status: approved, owner, 2026-10-22 (version 3.6)
+Status: approved, owner, 2026-10-23 (version 3.7)
 Phase: Secret Words 1
 "Shuffle teams" draws a new split with the next k (SWD-004), accepted by SWD-130's rule, at most 10 draws in all, keeping the
 10th. Clue givers by SWD-007. Toast "Teams shuffled · Undo" (Undo as SWD-005). k counts every draw of the evening and is saved
 (`splits`).
 
 ## SWD-007: Clue givers
-Status: approved, owner, 2026-10-22 (version 3.6)
+Status: approved, owner, 2026-10-23 (version 3.7)
 Phase: Secret Words 1
 Each team's suggested clue giver is its eligible member credited with the **fewest games this evening** (won and ended early;
 replaced boards don't count; a partner's games count, SWD-123); ties go to the earliest in that team's list. (Game 1: each
-team's first eligible player.) A suggestion never has a partner. "Change clue givers" (Make teams) and "Swap clue givers" (game over,
+team's first eligible player.) A suggestion never has a partner. "Choose clue givers" (Make teams) and "Swap clue givers" (game over,
 SWD-112) open the Clue givers sheet: per team, the current one selected; tapping another selects it; "Done" applies; closing it
 any other way changes nothing.
 
 ## SWD-008: Team minimum
-Status: approved, owner, 2026-10-22 (version 3.6)
+Status: approved, owner, 2026-10-23 (version 3.7)
 Phase: Secret Words 1
 While either team has fewer than 2 players, "Next" is disabled and "Each team needs at least 2 players." shows. Teams may
 differ in size by any amount.
 
 ## SWD-009: How do you want to play?
-Status: approved, owner, 2026-10-22 (version 3.6)
+Status: approved, owner, 2026-10-23 (version 3.7)
 Phase: Secret Words 1
 Three groups, each showing only its chosen option's line (the phone cards always show their own text).
 **How many phones?**: three equal cards (±1 px) in this order: "One phone", "Two phones" (with the small line "Recommended"
@@ -111,16 +111,17 @@ Who's playing? → Make teams → this screen (SWD-112).
 **Version 3.6 (owner, 22 October):** Quiet "How to play" (full width, 48 px, no tap guard) sits directly under the heading (and under "Same as last time" when shown); it opens How to play (SWD-011), whose "Done" returns to Choices with every choice as it was. Returning mounts Choices again, so "Start the game" waits its 800 ms (SWD-114).
 
 ## SWD-010: Read this aloud
-Status: approved, owner, 2026-10-22 (version 3.6)
+Status: approved, owner, 2026-10-23 (version 3.7)
 Phase: Secret Words 1
 Due when no Secret Words game has been dealt yet in the current session (PLT-016); checked when "Start the game" is tapped in a
 new evening. Lines: 1 "Two teams, Chai Champions and Coffee Commandos. Each has a clue giver who sees the secret map." (the evening's names) 2 "Clue givers: say
 one word and a number. 'Monsoon, 2' means two of our words go with monsoon." 3 "Guessers: talk, then turn over words one at
 a time. Wrong word? Your turn ends." 4 "Find all your words first. Step on the Landmine and you lose!" (Lose your turn: "Find all your words first. Step on the
 Landmine and your turn ends!"; Easy: "Find all your words first!"). "Let's play" deals; "Show me the board first" deals and opens the preview board (SWD-012).
+**Version 3.7 (owner, 23 October):** **Larger text hint (P10):** while Larger text is off, under the card's numbered lines (whichever variant shows), small line `larger-text-hint` "Small text? Turn on Larger text in Settings." where "Settings" is a link to Settings; Settings' "← Back" returns to Read this aloud exactly as it was. While Larger text is on, the hint is absent.
 
 ## SWD-011: How to play (detail of SWD-010)
-Status: approved, owner, 2026-10-22 (version 3.6)
+Status: approved, owner, 2026-10-23 (version 3.7)
 Phase: Secret Words 1
 Menu → "How to play": h2 "Read this aloud" and its 4 lines, then h2 "The rules": 1 "Clue givers see the secret map.
 Everyone else sees only the words." 2 "A clue is one word and one number. It must be about meaning, not spelling or where a
@@ -132,17 +133,17 @@ gets a word free."; Easy: without the Landmine sentence) 6 "First team to find a
 Chvátil. Codenames is a trademark of Czech Games Edition. Secret Words is an independent free game and is not made, sponsored or
 endorsed by Czech Games Edition." (plain text, no styling; `docs/games/secret-words/legal.md`) Main "Done" returns (opened from
 the dispute dialog's "Clue rules": to that dialog, SWD-124). The page may scroll. Nothing about the map appears.
-**Version 3.6 (owner, 22 October):** "The rules" has 7 lines: line 7 "The host phone stays at the table: it's the board." Opened from the map phone's "Clue rules" (SWD-034), How to play opens with h2 "Clue rules" at the top of the viewport; while it is open the map is removed from the DOM; its "Done" returns to the map phone with the map hidden ("Show map"), whatever SWD-121's clock says.
+**Version 3.6 (owner, 22 October):** "The rules" has 7 lines: line 7 "Keep the host phone on the table: it shows the board." Opened from the map phone's "Clue rules" (SWD-034), How to play opens with h2 "Clue rules" at the top of the viewport; while it is open the map is removed from the DOM; its "Done" returns to the map phone with the map hidden ("Show map"), whatever SWD-121's clock says.
 
 ## SWD-012: The preview board (detail of SWD-010)
-Status: approved, owner, 2026-10-22 (version 3.6)
+Status: approved, owner, 2026-10-23 (version 3.7)
 Phase: Secret Words 1
 After "Show me the board first": the board with every cell locked, `turn-line` "Chai Champions start" (the starting team), the
 counts, and main "Start", which leads to the scan screen (two or three phones) or the pass screen (one phone). No clue line, no tips.
 **Version 3.6 (owner, 22 October):** h1 "The board, before you start" (the h1 style of every Secret Words step, 1 line) above `turn-line`; in the SWD-041 budget it takes the place of the clue block (48 px), so the preview fits wherever guessing fits. The preview has `pause-button` (SWD-110).
 
 ## SWD-013: Funny team names (owner, 4 October, K25)
-Status: approved, owner, 2026-10-22 (version 3.6)
+Status: approved, owner, 2026-10-23 (version 3.7)
 Phase: Secret Words 1
 Each evening the two teams get a random pair from `team-names.csv` (20 pairs, column `id` e.g. `SWDT-01`; the first name goes to
 the orange team, the second to the teal team). The pair is drawn on first entering Make teams for a new evening:
@@ -157,7 +158,7 @@ religion, caste, gender or body). `team-names.csv` changes like the word list: b
 its names as text, with the pair id.
 
 ## SWD-014: Doesn't give clues (P7)
-Status: approved, owner, 2026-10-22 (version 3.6)
+Status: approved, owner, 2026-10-23 (version 3.7)
 Phase: Secret Words 1
 In the Clue givers sheet each player row has the name button and, on its own line under it, a switch "Doesn't give clues" (`role="switch"`,
 `aria-checked`, accessible name "Riya: doesn't give clues"), off by default; the sheet scrolls inside. Changes apply on "Done", like the
@@ -169,5 +170,5 @@ or shuffle on Make teams leaves a team with no eligible player, Make teams shows
 teams shows the small line "Doesn't give clues" (`guess-only-tag`) under such names. In "Players" (SWD-127), "Remove" is disabled
 for a team's last eligible player; added players start with the switch as set when added. Kept in `teams.guessOnly` (recorded
 with `setTeams`, or `setPlayers` for players added in a game), carried by name into a new evening from the latest Secret Words
-evening of the same session. The Clue givers sheet opens from Make teams ("Change clue givers") and from game over ("Swap clue givers",
+evening of the same session. The Clue givers sheet opens from Make teams ("Choose clue givers") and from game over ("Swap clue givers",
 SWD-112), nowhere else.
