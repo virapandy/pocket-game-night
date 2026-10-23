@@ -40,7 +40,7 @@ night. **With the app: one phone.** Nobody sits out, roles are fair, every night
 |---|---|---|---|
 | 1 | Night comes first | Plotkin's rules; Wikipedia | |
 | 2 | Roles: Mafia, Doctor, Police, Villagers | The classic four (Wikipedia; gameonfamily) | "Police" for Detective (M4) |
-| 3 | Number of Mafia from the player count: 5–7 → 1, 8–11 → 2, 12–15 → 3, 16 → 4; host may change it by one (M5) | About 1 in 3 to 1 in 4 (Davidoff; gameonfamily; event guides) | Exact table ours |
+| 3 | Number of Mafia from the player count: 5–7 → 1, 8–11 → 2, 12–15 → 3, 16 → 4; host may change it by one (MF5) | About 1 in 3 to 1 in 4 (Davidoff; gameonfamily; event guides) | Exact table ours |
 | 4 | Doctor and Police only with 6 or more players; with 5, one Mafia and four Villagers | Small-table convention (apps) | |
 | 5 | Mafia must agree on one name at night | Unanimous (Wikipedia) | How they agree with one phone: M1 |
 | 6 | Doctor may protect anyone, but not the same player two nights running; themselves once a game (M7) | Self-save allowed, same player twice barred (Wikipedia) | Self "once a game": ours |

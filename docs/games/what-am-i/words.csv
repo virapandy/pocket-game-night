@@ -1,0 +1,756 @@
+id,word,pack,audience,nonveg,edition,retired_in,notes
+WAIW-001,Elephant,Animals,family,no,1,,
+WAIW-002,Tiger,Animals,family,no,1,,
+WAIW-003,Lion,Animals,family,no,1,,
+WAIW-004,Monkey,Animals,family,no,1,,
+WAIW-005,Cow,Animals,family,no,1,,
+WAIW-006,Buffalo,Animals,family,no,1,,
+WAIW-007,Goat,Animals,family,no,1,,
+WAIW-008,Dog,Animals,family,no,1,,
+WAIW-009,Cat,Animals,family,no,1,,
+WAIW-010,Horse,Animals,family,no,1,,
+WAIW-011,Donkey,Animals,family,no,1,,
+WAIW-012,Camel,Animals,family,no,1,,
+WAIW-013,Peacock,Animals,family,no,1,,
+WAIW-014,Parrot,Animals,family,no,1,,
+WAIW-015,Crow,Animals,family,no,1,,
+WAIW-016,Owl,Animals,family,no,1,,
+WAIW-017,Eagle,Animals,family,no,1,,
+WAIW-018,Duck,Animals,family,no,1,,
+WAIW-019,Hen,Animals,family,no,1,,
+WAIW-020,Snake,Animals,family,no,1,,
+WAIW-021,Frog,Animals,family,no,1,,
+WAIW-022,Crocodile,Animals,family,no,1,,
+WAIW-023,Tortoise,Animals,family,no,1,,
+WAIW-024,Rabbit,Animals,family,no,1,,
+WAIW-025,Squirrel,Animals,family,no,1,,
+WAIW-026,Giraffe,Animals,family,no,1,,
+WAIW-027,Zebra,Animals,family,no,1,,
+WAIW-028,Kangaroo,Animals,family,no,1,,
+WAIW-029,Penguin,Animals,family,no,1,,
+WAIW-030,Bear,Animals,family,no,1,,
+WAIW-031,Deer,Animals,family,no,1,,
+WAIW-032,Fish,Animals,family,no,1,,
+WAIW-033,Shark,Animals,family,no,1,,
+WAIW-034,Dolphin,Animals,family,no,1,,
+WAIW-035,Butterfly,Animals,family,no,1,,
+WAIW-036,Mosquito,Animals,family,no,1,,
+WAIW-037,Ant,Animals,family,no,1,,
+WAIW-038,Spider,Animals,family,no,1,,
+WAIW-039,Lizard,Animals,family,no,1,,
+WAIW-040,Bat,Animals,family,no,1,,
+WAIW-041,Idli,Food,family,no,1,,
+WAIW-042,Dosa,Food,family,no,1,,
+WAIW-043,Samosa,Food,family,no,1,,
+WAIW-044,Biryani,Food,family,no,1,,veg and non-veg kinds; kept on
+WAIW-045,Chapati,Food,family,no,1,,
+WAIW-046,Rice,Food,family,no,1,,
+WAIW-047,Curd,Food,family,no,1,,
+WAIW-048,Pickle,Food,family,no,1,,
+WAIW-049,Ice cream,Food,family,no,1,,
+WAIW-050,Banana,Food,family,no,1,,
+WAIW-051,Mango,Food,family,no,1,,
+WAIW-052,Coconut,Food,family,no,1,,
+WAIW-053,Watermelon,Food,family,no,1,,
+WAIW-054,Grapes,Food,family,no,1,,
+WAIW-055,Apple,Food,family,no,1,,
+WAIW-056,Onion,Food,family,no,1,,
+WAIW-057,Tomato,Food,family,no,1,,
+WAIW-058,Potato,Food,family,no,1,,
+WAIW-059,Chilli,Food,family,no,1,,
+WAIW-060,Lemon,Food,family,no,1,,
+WAIW-061,Jalebi,Food,family,no,1,,
+WAIW-062,Laddu,Food,family,no,1,,
+WAIW-063,Payasam,Food,family,no,1,,
+WAIW-064,Popcorn,Food,family,no,1,,
+WAIW-065,Pizza,Food,family,no,1,,
+WAIW-066,Noodles,Food,family,no,1,,
+WAIW-067,Sandwich,Food,family,no,1,,
+WAIW-068,Egg,Food,family,yes,1,,
+WAIW-069,Chicken curry,Food,family,yes,1,,
+WAIW-070,Fish fry,Food,family,yes,1,,
+WAIW-071,Mutton,Food,family,yes,1,,
+WAIW-072,Tea,Food,family,no,1,,
+WAIW-073,Coffee,Food,family,no,1,,
+WAIW-074,Lassi,Food,family,no,1,,
+WAIW-075,Juice,Food,family,no,1,,
+WAIW-076,Chocolate,Food,family,no,1,,
+WAIW-077,Cake,Food,family,no,1,,
+WAIW-078,Biscuit,Food,family,no,1,,
+WAIW-079,Bread,Food,family,no,1,,
+WAIW-080,Pani puri,Food,family,no,1,,
+WAIW-081,Fan,Around the house,family,no,1,,
+WAIW-082,Bucket,Around the house,family,no,1,,
+WAIW-083,Broom,Around the house,family,no,1,,
+WAIW-084,Pillow,Around the house,family,no,1,,
+WAIW-085,Blanket,Around the house,family,no,1,,
+WAIW-086,Mirror,Around the house,family,no,1,,
+WAIW-087,Dustbin,Around the house,family,no,1,,"replaced Comb (critic pass, 23 Oct)"
+WAIW-088,Towel,Around the house,family,no,1,,"replaced Toothbrush (critic pass, 23 Oct)"
+WAIW-089,Soap,Around the house,family,no,1,,
+WAIW-090,Umbrella,Around the house,family,no,1,,
+WAIW-091,Television,Around the house,family,no,1,,
+WAIW-092,Remote,Around the house,family,no,1,,
+WAIW-093,Mobile phone,Around the house,family,no,1,,
+WAIW-094,Pressure cooker,Around the house,family,no,1,,
+WAIW-095,Mixie,Around the house,family,no,1,,Indian English for mixer-grinder
+WAIW-096,Fridge,Around the house,family,no,1,,
+WAIW-097,Washing machine,Around the house,family,no,1,,
+WAIW-098,Clock,Around the house,family,no,1,,
+WAIW-099,Lock and key,Around the house,family,no,1,,
+WAIW-100,Door,Around the house,family,no,1,,
+WAIW-101,Window,Around the house,family,no,1,,
+WAIW-102,Chair,Around the house,family,no,1,,
+WAIW-103,Bed,Around the house,family,no,1,,
+WAIW-104,Slippers,Around the house,family,no,1,,
+WAIW-105,Spoon,Around the house,family,no,1,,
+WAIW-106,Plate,Around the house,family,no,1,,
+WAIW-107,Tumbler,Around the house,family,no,1,,
+WAIW-108,Kettle,Around the house,family,no,1,,
+WAIW-109,Candle,Around the house,family,no,1,,
+WAIW-110,Torch,Around the house,family,no,1,,
+WAIW-111,Scissors,Around the house,family,no,1,,
+WAIW-112,Newspaper,Around the house,family,no,1,,
+WAIW-113,Calendar,Around the house,family,no,1,,
+WAIW-114,Iron box,Around the house,family,no,1,,Indian English for iron
+WAIW-115,Gas stove,Around the house,family,no,1,,
+WAIW-116,Chappal stand,Around the house,family,no,1,,Chappal known everywhere
+WAIW-117,Water bottle,Around the house,family,no,1,,
+WAIW-118,Ceiling,Around the house,family,no,1,,
+WAIW-119,Stairs,Around the house,family,no,1,,
+WAIW-120,Doorbell,Around the house,family,no,1,,
+WAIW-121,Doctor,Jobs,family,no,1,,
+WAIW-122,Nurse,Jobs,family,no,1,,
+WAIW-123,Teacher,Jobs,family,no,1,,
+WAIW-124,Police,Jobs,family,no,1,,
+WAIW-125,Postman,Jobs,family,no,1,,
+WAIW-126,Farmer,Jobs,family,no,1,,
+WAIW-127,Auto driver,Jobs,family,no,1,,
+WAIW-128,Bus conductor,Jobs,family,no,1,,
+WAIW-129,Pilot,Jobs,family,no,1,,
+WAIW-130,Cook,Jobs,family,no,1,,
+WAIW-131,Barber,Jobs,family,no,1,,
+WAIW-132,Tailor,Jobs,family,no,1,,
+WAIW-133,Carpenter,Jobs,family,no,1,,
+WAIW-134,Plumber,Jobs,family,no,1,,
+WAIW-135,Electrician,Jobs,family,no,1,,
+WAIW-136,Painter,Jobs,family,no,1,,
+WAIW-137,Dentist,Jobs,family,no,1,,
+WAIW-138,Lawyer,Jobs,family,no,1,,
+WAIW-139,Shopkeeper,Jobs,family,no,1,,
+WAIW-140,Watchman,Jobs,family,no,1,,
+WAIW-141,Milkman,Jobs,family,no,1,,
+WAIW-142,Fisherman,Jobs,family,no,1,,
+WAIW-143,Soldier,Jobs,family,no,1,,
+WAIW-144,Firefighter,Jobs,family,no,1,,
+WAIW-145,Astronaut,Jobs,family,no,1,,
+WAIW-146,Singer,Jobs,family,no,1,,
+WAIW-147,Dancer,Jobs,family,no,1,,
+WAIW-148,Magician,Jobs,family,no,1,,
+WAIW-149,Photographer,Jobs,family,no,1,,
+WAIW-150,Cricket umpire,Jobs,family,no,1,,
+WAIW-151,Zookeeper,Jobs,family,no,1,,"replaced Traffic police (critic pass, 23 Oct)"
+WAIW-152,Vegetable seller,Jobs,family,no,1,,
+WAIW-153,Delivery rider,Jobs,family,no,1,,
+WAIW-154,Priest,Jobs,family,no,1,,
+WAIW-155,Engineer,Jobs,family,no,1,,
+WAIW-156,Scientist,Jobs,family,no,1,,
+WAIW-157,Waiter,Jobs,family,no,1,,
+WAIW-158,Mechanic,Jobs,family,no,1,,
+WAIW-159,Newsreader,Jobs,family,no,1,,
+WAIW-160,Gardener,Jobs,family,no,1,,"replaced Wedding photographer (critic pass, 23 Oct)"
+WAIW-161,Cricket,Sports and cricket,family,no,1,,
+WAIW-162,Football,Sports and cricket,family,no,1,,
+WAIW-163,Kabaddi,Sports and cricket,family,no,1,,
+WAIW-164,Kho kho,Sports and cricket,family,no,1,,
+WAIW-165,Badminton,Sports and cricket,family,no,1,,
+WAIW-166,Chess,Sports and cricket,family,no,1,,
+WAIW-167,Carrom,Sports and cricket,family,no,1,,
+WAIW-168,Tennis,Sports and cricket,family,no,1,,
+WAIW-169,Hockey,Sports and cricket,family,no,1,,
+WAIW-170,Swimming,Sports and cricket,family,no,1,,
+WAIW-171,Running race,Sports and cricket,family,no,1,,
+WAIW-172,Table tennis,Sports and cricket,family,no,1,,"replaced Cycling (critic pass, 23 Oct)"
+WAIW-173,Boxing,Sports and cricket,family,no,1,,
+WAIW-174,Wrestling,Sports and cricket,family,no,1,,
+WAIW-175,Volleyball,Sports and cricket,family,no,1,,
+WAIW-176,Basketball,Sports and cricket,family,no,1,,
+WAIW-177,Skipping,Sports and cricket,family,no,1,,
+WAIW-178,Yoga,Sports and cricket,family,no,1,,
+WAIW-179,Ludo,Sports and cricket,family,no,1,,"replaced Gilli danda (critic pass, 23 Oct)"
+WAIW-180,Hide and seek,Sports and cricket,family,no,1,,
+WAIW-181,Six,Sports and cricket,family,no,1,,
+WAIW-182,Four,Sports and cricket,family,no,1,,
+WAIW-183,Wicket,Sports and cricket,family,no,1,,
+WAIW-184,Bowler,Sports and cricket,family,no,1,,
+WAIW-185,Batsman,Sports and cricket,family,no,1,,
+WAIW-186,Wicketkeeper,Sports and cricket,family,no,1,,
+WAIW-187,Catch,Sports and cricket,family,no,1,,
+WAIW-188,Run out,Sports and cricket,family,no,1,,
+WAIW-189,Free hit,Sports and cricket,family,no,1,,
+WAIW-190,Helmet,Sports and cricket,family,no,1,,
+WAIW-191,Bat,Sports and cricket,family,no,1,,also in another pack: never twice in one evening
+WAIW-192,Ball,Sports and cricket,family,no,1,,
+WAIW-193,Stumps,Sports and cricket,family,no,1,,
+WAIW-194,Trophy,Sports and cricket,family,no,1,,
+WAIW-195,Medal,Sports and cricket,family,no,1,,
+WAIW-196,Goalkeeper,Sports and cricket,family,no,1,,
+WAIW-197,Penalty,Sports and cricket,family,no,1,,
+WAIW-198,Referee,Sports and cricket,family,no,1,,
+WAIW-199,Marathon,Sports and cricket,family,no,1,,
+WAIW-200,Olympics,Sports and cricket,family,no,1,,
+WAIW-201,Diwali,Festivals and places,family,no,1,,
+WAIW-202,Pongal,Festivals and places,family,no,1,,
+WAIW-203,Holi,Festivals and places,family,no,1,,
+WAIW-204,Christmas,Festivals and places,family,no,1,,
+WAIW-205,Eid,Festivals and places,family,no,1,,
+WAIW-206,Onam,Festivals and places,family,no,1,,
+WAIW-207,Navratri,Festivals and places,family,no,1,,
+WAIW-208,Ganesh Chaturthi,Festivals and places,family,no,1,,
+WAIW-209,Raksha Bandhan,Festivals and places,family,no,1,,
+WAIW-210,Birthday party,Festivals and places,family,no,1,,
+WAIW-211,Wedding,Festivals and places,family,no,1,,
+WAIW-212,New Year,Festivals and places,family,no,1,,
+WAIW-213,Independence Day,Festivals and places,family,no,1,,
+WAIW-214,Republic Day,Festivals and places,family,no,1,,
+WAIW-215,Taj Mahal,Festivals and places,family,no,1,,
+WAIW-216,Beach,Festivals and places,family,no,1,,
+WAIW-217,Temple,Festivals and places,family,no,1,,
+WAIW-218,Railway station,Festivals and places,family,no,1,,
+WAIW-219,Airport,Festivals and places,family,no,1,,
+WAIW-220,Hospital,Festivals and places,family,no,1,,
+WAIW-221,School,Festivals and places,family,no,1,,
+WAIW-222,Cinema hall,Festivals and places,family,no,1,,
+WAIW-223,Market,Festivals and places,family,no,1,,
+WAIW-224,Zoo,Festivals and places,family,no,1,,
+WAIW-225,Park,Festivals and places,family,no,1,,
+WAIW-226,Bus stand,Festivals and places,family,no,1,,
+WAIW-227,Bank,Festivals and places,family,no,1,,
+WAIW-228,Library,Festivals and places,family,no,1,,
+WAIW-229,Mountain,Festivals and places,family,no,1,,
+WAIW-230,River,Festivals and places,family,no,1,,
+WAIW-231,Forest,Festivals and places,family,no,1,,
+WAIW-232,Desert,Festivals and places,family,no,1,,
+WAIW-233,Village,Festivals and places,family,no,1,,
+WAIW-234,Circus,Festivals and places,family,no,1,,
+WAIW-235,Exhibition,Festivals and places,family,no,1,,"replaced Fair (critic pass, 23 Oct)"
+WAIW-236,Mosque,Festivals and places,family,no,1,,"replaced Swimming pool (critic pass, 23 Oct)"
+WAIW-237,Museum,Festivals and places,family,no,1,,
+WAIW-238,Church,Festivals and places,family,no,1,,"replaced Lighthouse (critic pass, 23 Oct)"
+WAIW-239,Petrol pump,Festivals and places,family,no,1,,
+WAIW-240,Post office,Festivals and places,family,no,1,,
+WAIW-241,Brushing teeth,Act it out,family,no,1,,
+WAIW-242,Flying a kite,Act it out,family,no,1,,
+WAIW-243,Riding a bicycle,Act it out,family,no,1,,
+WAIW-244,Driving a car,Act it out,family,no,1,,
+WAIW-245,Taking a selfie,Act it out,family,no,1,,
+WAIW-246,Sneezing,Act it out,family,no,1,,
+WAIW-247,Yawning,Act it out,family,no,1,,
+WAIW-248,Sleeping,Act it out,family,no,1,,
+WAIW-249,Snoring,Act it out,family,no,1,,
+WAIW-250,Dancing,Act it out,family,no,1,,
+WAIW-251,Swimming,Act it out,family,no,1,,also in another pack: never twice in one evening
+WAIW-252,Climbing a tree,Act it out,family,no,1,,
+WAIW-253,Cutting vegetables,Act it out,family,no,1,,
+WAIW-254,Rolling chapati,Act it out,family,no,1,,
+WAIW-255,Washing clothes,Act it out,family,no,1,,
+WAIW-256,Blowing out candles,Act it out,family,no,1,,"replaced Drinking tea (critic pass, 23 Oct)"
+WAIW-257,Eating with hands,Act it out,family,no,1,,
+WAIW-258,Combing hair,Act it out,family,no,1,,
+WAIW-259,Putting on a saree,Act it out,family,no,1,,
+WAIW-260,Tying shoelaces,Act it out,family,no,1,,
+WAIW-261,Playing the drums,Act it out,family,no,1,,
+WAIW-262,Playing the guitar,Act it out,family,no,1,,
+WAIW-263,Bowling a ball,Act it out,family,no,1,,
+WAIW-264,Rocking a baby,Act it out,family,no,1,,"replaced Fishing (critic pass, 23 Oct)"
+WAIW-265,Rowing a boat,Act it out,family,no,1,,
+WAIW-266,Catching a bus,Act it out,family,no,1,,
+WAIW-267,Sweeping the floor,Act it out,family,no,1,,
+WAIW-268,Typing on a phone,Act it out,family,no,1,,
+WAIW-269,Making a phone call,Act it out,family,no,1,,
+WAIW-270,Crying,Act it out,family,no,1,,
+WAIW-271,Laughing,Act it out,family,no,1,,
+WAIW-272,Walking a dog,Act it out,family,no,1,,
+WAIW-273,Carrying a heavy bag,Act it out,family,no,1,,
+WAIW-274,Opening an umbrella,Act it out,family,no,1,,
+WAIW-275,Blowing a balloon,Act it out,family,no,1,,
+WAIW-276,Lighting a lamp,Act it out,family,no,1,,
+WAIW-277,Washing hands,Act it out,family,no,1,,"replaced Doing yoga (critic pass, 23 Oct)"
+WAIW-278,Kicking a football,Act it out,family,no,1,,"replaced Jumping rope (critic pass, 23 Oct)"
+WAIW-279,Waving goodbye,Act it out,family,no,1,,
+WAIW-280,Hiccups,Act it out,family,no,1,,
+WAIW-281,Sachin Tendulkar,Famous Indians,family,no,1,,
+WAIW-282,MS Dhoni,Famous Indians,family,no,1,,
+WAIW-283,Virat Kohli,Famous Indians,family,no,1,,
+WAIW-284,Kapil Dev,Famous Indians,family,no,1,,
+WAIW-285,Rohit Sharma,Famous Indians,family,no,1,,
+WAIW-286,Mithali Raj,Famous Indians,family,no,1,,
+WAIW-287,PV Sindhu,Famous Indians,family,no,1,,
+WAIW-288,Saina Nehwal,Famous Indians,family,no,1,,
+WAIW-289,Mary Kom,Famous Indians,family,no,1,,
+WAIW-290,Neeraj Chopra,Famous Indians,family,no,1,,
+WAIW-291,Viswanathan Anand,Famous Indians,family,no,1,,
+WAIW-292,Sunil Chhetri,Famous Indians,family,no,1,,
+WAIW-293,Milkha Singh,Famous Indians,family,no,1,,
+WAIW-294,PT Usha,Famous Indians,family,no,1,,
+WAIW-295,Mirabai Chanu,Famous Indians,family,no,1,,"replaced Dhyan Chand (critic pass, 23 Oct)"
+WAIW-296,Rakesh Sharma,Famous Indians,family,no,1,,"replaced Abhinav Bindra (critic pass, 23 Oct)"
+WAIW-297,Sania Mirza,Famous Indians,family,no,1,,
+WAIW-298,AR Rahman,Famous Indians,family,no,1,,
+WAIW-299,Lata Mangeshkar,Famous Indians,family,no,1,,
+WAIW-300,Zakir Hussain,Famous Indians,family,no,1,,
+WAIW-301,Sunita Williams,Famous Indians,family,no,1,,"replaced Ravi Shankar (critic pass, 23 Oct)"
+WAIW-302,Yuvraj Singh,Famous Indians,family,no,1,,"replaced Arijit Singh (critic pass, 23 Oct)"
+WAIW-303,Leander Paes,Famous Indians,family,no,1,,"replaced Rajinikanth (critic pass, 23 Oct)"
+WAIW-304,Amitabh Bachchan,Famous Indians,family,no,1,,film star known in every state
+WAIW-305,Shah Rukh Khan,Famous Indians,family,no,1,,film star known in every state
+WAIW-306,Kalpana Chawla,Famous Indians,family,no,1,,
+WAIW-307,CV Raman,Famous Indians,family,no,1,,
+WAIW-308,Srinivasa Ramanujan,Famous Indians,family,no,1,,
+WAIW-309,Jasprit Bumrah,Famous Indians,family,no,1,,"replaced Aryabhata (critic pass, 23 Oct)"
+WAIW-311,Rabindranath Tagore,Famous Indians,family,no,1,,
+WAIW-312,Swami Vivekananda,Famous Indians,family,no,1,,
+WAIW-313,Hima Das,Famous Indians,family,no,1,,"replaced Mother Teresa (critic pass, 23 Oct)"
+WAIW-314,Ratan Tata,Famous Indians,family,no,1,,
+WAIW-315,Sundar Pichai,Famous Indians,family,no,1,,
+WAIW-317,Harmanpreet Kaur,Famous Indians,family,no,1,,"replaced RK Laxman (critic pass, 23 Oct)"
+WAIW-318,Anil Kumble,Famous Indians,family,no,1,,"replaced Bismillah Khan (critic pass, 23 Oct)"
+WAIW-319,Sourav Ganguly,Famous Indians,family,no,1,,"replaced Homi Bhabha (critic pass, 23 Oct)"
+WAIW-320,Rahul Dravid,Famous Indians,family,no,1,,"replaced Vikram Sarabhai (critic pass, 23 Oct)"
+WAIW-321,Fox,Animals,family,no,1,,grown 23 Oct
+WAIW-322,Wolf,Animals,family,no,1,,grown 23 Oct
+WAIW-323,Rhino,Animals,family,no,1,,grown 23 Oct
+WAIW-324,Hippo,Animals,family,no,1,,grown 23 Oct
+WAIW-325,Gorilla,Animals,family,no,1,,grown 23 Oct
+WAIW-326,Panda,Animals,family,no,1,,grown 23 Oct
+WAIW-327,Cheetah,Animals,family,no,1,,grown 23 Oct
+WAIW-328,Leopard,Animals,family,no,1,,grown 23 Oct; close to Cheetah when acted
+WAIW-330,Sheep,Animals,family,no,1,,grown 23 Oct
+WAIW-331,Rat,Animals,family,no,1,,grown 23 Oct
+WAIW-332,Rooster,Animals,family,no,1,,grown 23 Oct; close to Hen; kept for the crowing act
+WAIW-333,Pigeon,Animals,family,no,1,,grown 23 Oct
+WAIW-334,Sparrow,Animals,family,no,1,,grown 23 Oct
+WAIW-335,Vulture,Animals,family,no,1,,grown 23 Oct
+WAIW-336,Ostrich,Animals,family,no,1,,grown 23 Oct
+WAIW-337,Swan,Animals,family,no,1,,grown 23 Oct
+WAIW-338,Flamingo,Animals,family,no,1,,grown 23 Oct
+WAIW-339,Woodpecker,Animals,family,no,1,,grown 23 Oct
+WAIW-340,Cuckoo,Animals,family,no,1,,grown 23 Oct
+WAIW-341,Myna,Animals,family,no,1,,grown 23 Oct
+WAIW-343,Crab,Animals,family,no,1,,grown 23 Oct
+WAIW-344,Octopus,Animals,family,no,1,,grown 23 Oct
+WAIW-345,Jellyfish,Animals,family,no,1,,grown 23 Oct
+WAIW-346,Starfish,Animals,family,no,1,,grown 23 Oct
+WAIW-347,Whale,Animals,family,no,1,,grown 23 Oct
+WAIW-348,Seal,Animals,family,no,1,,grown 23 Oct; also means a stamp; the pack makes it clear
+WAIW-349,Seahorse,Animals,family,no,1,,grown 23 Oct
+WAIW-350,Bee,Animals,family,no,1,,grown 23 Oct
+WAIW-351,Cockroach,Animals,family,no,1,,grown 23 Oct
+WAIW-352,Housefly,Animals,family,no,1,,grown 23 Oct
+WAIW-353,Earthworm,Animals,family,no,1,,grown 23 Oct
+WAIW-354,Snail,Animals,family,no,1,,grown 23 Oct
+WAIW-355,Scorpion,Animals,family,no,1,,grown 23 Oct
+WAIW-356,Firefly,Animals,family,no,1,,grown 23 Oct
+WAIW-357,Dragonfly,Animals,family,no,1,,grown 23 Oct
+WAIW-358,Grasshopper,Animals,family,no,1,,grown 23 Oct
+WAIW-359,Caterpillar,Animals,family,no,1,,grown 23 Oct
+WAIW-360,Yak,Animals,family,no,1,,grown 23 Oct
+WAIW-361,Mongoose,Animals,family,no,1,,grown 23 Oct
+WAIW-362,Porcupine,Animals,family,no,1,,grown 23 Oct
+WAIW-363,Hyena,Animals,family,no,1,,grown 23 Oct
+WAIW-364,Jackal,Animals,family,no,1,,grown 23 Oct
+WAIW-365,Koala,Animals,family,no,1,,grown 23 Oct
+WAIW-366,Chameleon,Animals,family,no,1,,grown 23 Oct
+WAIW-367,Dinosaur,Animals,family,no,1,,grown 23 Oct; extinct
+WAIW-368,Bull,Animals,family,no,1,,grown 23 Oct; close to Cow and Buffalo
+WAIW-369,Seagull,Animals,family,no,1,,grown 23 Oct
+WAIW-370,Centipede,Animals,family,no,1,,grown 23 Oct
+WAIW-372,Moth,Animals,family,no,1,,grown 23 Oct
+WAIW-373,Beetle,Animals,family,no,1,,grown 23 Oct
+WAIW-375,Silkworm,Animals,family,no,1,,grown 23 Oct
+WAIW-376,Termite,Animals,family,no,1,,grown 23 Oct; also called white ant
+WAIW-377,Chimpanzee,Animals,family,no,1,,grown 23 Oct; close to Monkey and Gorilla
+WAIW-378,Vada,Food,family,no,1,,grown 23 Oct
+WAIW-379,Upma,Food,family,no,1,,grown 23 Oct
+WAIW-380,Sambar,Food,family,no,1,,grown 23 Oct
+WAIW-381,Rasam,Food,family,no,1,,grown 23 Oct
+WAIW-382,Appam,Food,family,no,1,,grown 23 Oct
+WAIW-383,Mysore pak,Food,family,no,1,,grown 23 Oct
+WAIW-384,Murukku,Food,family,no,1,,grown 23 Oct; south name; called chakli in the west
+WAIW-385,Halwa,Food,family,no,1,,grown 23 Oct
+WAIW-386,Paratha,Food,family,no,1,,grown 23 Oct
+WAIW-387,Chole bhature,Food,family,no,1,,grown 23 Oct
+WAIW-388,Rajma,Food,family,no,1,,grown 23 Oct
+WAIW-389,Paneer,Food,family,no,1,,grown 23 Oct
+WAIW-390,Kulfi,Food,family,no,1,,grown 23 Oct
+WAIW-391,Gulab jamun,Food,family,no,1,,grown 23 Oct
+WAIW-392,Khichdi,Food,family,no,1,,grown 23 Oct
+WAIW-393,Dal,Food,family,no,1,,grown 23 Oct
+WAIW-394,Pakoda,Food,family,no,1,,grown 23 Oct
+WAIW-395,Rasgulla,Food,family,no,1,,grown 23 Oct
+WAIW-396,Sandesh,Food,family,no,1,,grown 23 Oct; east sweet; less known in the south
+WAIW-397,Momos,Food,family,no,1,,grown 23 Oct; veg and non-veg kinds; kept on
+WAIW-398,Dhokla,Food,family,no,1,,grown 23 Oct
+WAIW-399,Pav bhaji,Food,family,no,1,,grown 23 Oct
+WAIW-400,Poha,Food,family,no,1,,grown 23 Oct
+WAIW-401,Modak,Food,family,no,1,,grown 23 Oct; Ganesh Chaturthi sweet; festival already in the list
+WAIW-402,Burger,Food,family,no,1,,grown 23 Oct
+WAIW-403,French fries,Food,family,no,1,,grown 23 Oct
+WAIW-404,Pasta,Food,family,no,1,,grown 23 Oct
+WAIW-405,Fried rice,Food,family,no,1,,grown 23 Oct; Rice exists; a different dish
+WAIW-406,Honey,Food,family,no,1,,grown 23 Oct
+WAIW-407,Butter,Food,family,no,1,,grown 23 Oct
+WAIW-408,Ghee,Food,family,no,1,,grown 23 Oct
+WAIW-409,Jam,Food,family,no,1,,grown 23 Oct
+WAIW-410,Fish curry,Food,family,yes,1,,grown 23 Oct; Fish fry exists; a different dish
+WAIW-411,Milk,Food,family,no,1,,grown 23 Oct
+WAIW-412,Buttermilk,Food,family,no,1,,grown 23 Oct
+WAIW-413,Sugarcane,Food,family,no,1,,grown 23 Oct
+WAIW-414,Sweet corn,Food,family,no,1,,grown 23 Oct
+WAIW-415,Peanuts,Food,family,no,1,,grown 23 Oct
+WAIW-416,Cucumber,Food,family,no,1,,grown 23 Oct
+WAIW-417,Carrot,Food,family,no,1,,grown 23 Oct
+WAIW-418,Brinjal,Food,family,no,1,,grown 23 Oct
+WAIW-419,Ladies finger,Food,family,no,1,,grown 23 Oct
+WAIW-420,Cabbage,Food,family,no,1,,grown 23 Oct
+WAIW-421,Cauliflower,Food,family,no,1,,grown 23 Oct
+WAIW-422,Pumpkin,Food,family,no,1,,grown 23 Oct
+WAIW-423,Garlic,Food,family,no,1,,grown 23 Oct
+WAIW-424,Drumstick,Food,family,no,1,,grown 23 Oct; the vegetable; chicken drumstick could confuse
+WAIW-425,Bitter gourd,Food,family,no,1,,grown 23 Oct
+WAIW-426,Pineapple,Food,family,no,1,,grown 23 Oct
+WAIW-427,Guava,Food,family,no,1,,grown 23 Oct
+WAIW-428,Orange,Food,family,no,1,,grown 23 Oct
+WAIW-429,Pomegranate,Food,family,no,1,,grown 23 Oct
+WAIW-430,Jackfruit,Food,family,no,1,,grown 23 Oct
+WAIW-431,Omelette,Food,family,yes,1,,grown 23 Oct; Egg exists; a different dish
+WAIW-432,Tandoori chicken,Food,family,yes,1,,grown 23 Oct; Chicken curry exists; a different dish
+WAIW-433,Chicken 65,Food,family,yes,1,,grown 23 Oct; Chicken curry exists; a different dish
+WAIW-434,Prawns,Food,family,yes,1,,grown 23 Oct
+WAIW-435,Kebab,Food,family,yes,1,,grown 23 Oct
+WAIW-437,Cotton candy,Food,family,no,1,,grown 23 Oct
+WAIW-438,Sofa,Around the house,family,no,1,,grown 23 Oct
+WAIW-439,Curtain,Around the house,family,no,1,,grown 23 Oct
+WAIW-440,Tap,Around the house,family,no,1,,grown 23 Oct
+WAIW-441,Mug,Around the house,family,no,1,,grown 23 Oct
+WAIW-442,Shampoo,Around the house,family,no,1,,grown 23 Oct
+WAIW-443,Charger,Around the house,family,no,1,,grown 23 Oct
+WAIW-444,Laptop,Around the house,family,no,1,,grown 23 Oct
+WAIW-445,Headphones,Around the house,family,no,1,,grown 23 Oct
+WAIW-446,Light bulb,Around the house,family,no,1,,grown 23 Oct
+WAIW-447,Air conditioner,Around the house,family,no,1,,grown 23 Oct
+WAIW-448,Hair dryer,Around the house,family,no,1,,grown 23 Oct
+WAIW-449,Nail cutter,Around the house,family,no,1,,grown 23 Oct
+WAIW-450,Safety pin,Around the house,family,no,1,,grown 23 Oct
+WAIW-451,Needle and thread,Around the house,family,no,1,,grown 23 Oct
+WAIW-452,Photo frame,Around the house,family,no,1,,grown 23 Oct
+WAIW-453,Cupboard,Around the house,family,no,1,,grown 23 Oct
+WAIW-454,Bookshelf,Around the house,family,no,1,,grown 23 Oct
+WAIW-455,Dining table,Around the house,family,no,1,,grown 23 Oct; shares a word with Table tennis but a different thing
+WAIW-456,Stool,Around the house,family,no,1,,grown 23 Oct
+WAIW-457,Doormat,Around the house,family,no,1,,grown 23 Oct; close to Door and Doorbell but a different thing
+WAIW-458,Suitcase,Around the house,family,no,1,,grown 23 Oct
+WAIW-459,Tiffin box,Around the house,family,no,1,,grown 23 Oct
+WAIW-460,Flask,Around the house,family,no,1,,grown 23 Oct
+WAIW-461,Frying pan,Around the house,family,no,1,,grown 23 Oct
+WAIW-462,Matchbox,Around the house,family,no,1,,grown 23 Oct
+WAIW-463,Vacuum cleaner,Around the house,family,no,1,,grown 23 Oct
+WAIW-464,Mop,Around the house,family,no,1,,grown 23 Oct
+WAIW-465,Shower,Around the house,family,no,1,,grown 23 Oct
+WAIW-466,Thermometer,Around the house,family,no,1,,grown 23 Oct
+WAIW-467,First aid box,Around the house,family,no,1,,grown 23 Oct
+WAIW-468,Spectacles,Around the house,family,no,1,,grown 23 Oct
+WAIW-469,Hanger,Around the house,family,no,1,,grown 23 Oct
+WAIW-470,Balcony,Around the house,family,no,1,,grown 23 Oct
+WAIW-471,Kitchen,Around the house,family,no,1,,grown 23 Oct
+WAIW-472,Terrace,Around the house,family,no,1,,grown 23 Oct
+WAIW-473,Gate,Around the house,family,no,1,,grown 23 Oct
+WAIW-474,Swing,Around the house,family,no,1,,grown 23 Oct
+WAIW-475,Piggy bank,Around the house,family,no,1,,grown 23 Oct; shares a word with Bank but a different thing
+WAIW-476,Doll,Around the house,family,no,1,,grown 23 Oct
+WAIW-477,Pencil,Around the house,family,no,1,,grown 23 Oct
+WAIW-478,Rat trap,Around the house,family,no,1,,grown 23 Oct
+WAIW-479,Weighing scale,Around the house,family,no,1,,grown 23 Oct
+WAIW-480,Measuring tape,Around the house,family,no,1,,grown 23 Oct
+WAIW-481,Hammer,Around the house,family,no,1,,grown 23 Oct
+WAIW-482,Screwdriver,Around the house,family,no,1,,grown 23 Oct
+WAIW-483,Ladder,Around the house,family,no,1,,grown 23 Oct
+WAIW-484,Microwave,Around the house,family,no,1,,grown 23 Oct
+WAIW-485,Flower pot,Around the house,family,no,1,,grown 23 Oct
+WAIW-486,Wi-Fi,Around the house,family,no,1,,grown 23 Oct
+WAIW-487,Power cut,Around the house,family,no,1,,grown 23 Oct; an event not an object; fun to act
+WAIW-488,Tissue paper,Around the house,family,no,1,,grown 23 Oct
+WAIW-489,Perfume,Around the house,family,no,1,,grown 23 Oct
+WAIW-490,Talcum powder,Around the house,family,no,1,,grown 23 Oct
+WAIW-491,Hair oil,Around the house,family,no,1,,grown 23 Oct
+WAIW-492,Radio,Around the house,family,no,1,,grown 23 Oct
+WAIW-493,Raincoat,Around the house,family,no,1,,grown 23 Oct
+WAIW-494,Sweater,Around the house,family,no,1,,grown 23 Oct
+WAIW-495,Socks,Around the house,family,no,1,,grown 23 Oct
+WAIW-496,Pyjamas,Around the house,family,no,1,,grown 23 Oct
+WAIW-497,Lungi,Around the house,family,no,1,,grown 23 Oct; South Indian dress known across India; balances Putting on a saree
+WAIW-498,Vet,Jobs,family,no,1,,grown 23 Oct
+WAIW-499,Judge,Jobs,family,no,1,,grown 23 Oct
+WAIW-500,Pharmacist,Jobs,family,no,1,,grown 23 Oct
+WAIW-501,Principal,Jobs,family,no,1,,grown 23 Oct
+WAIW-502,Librarian,Jobs,family,no,1,,grown 23 Oct
+WAIW-503,Cashier,Jobs,family,no,1,,grown 23 Oct
+WAIW-504,Lifeguard,Jobs,family,no,1,,grown 23 Oct
+WAIW-505,Sailor,Jobs,family,no,1,,grown 23 Oct
+WAIW-506,Flight attendant,Jobs,family,no,1,,grown 23 Oct; most families say air hostess; kept gender-neutral
+WAIW-507,Ticket checker,Jobs,family,no,1,,grown 23 Oct
+WAIW-508,Gym trainer,Jobs,family,no,1,,grown 23 Oct
+WAIW-509,Sports coach,Jobs,family,no,1,,grown 23 Oct
+WAIW-510,Commentator,Jobs,family,no,1,,grown 23 Oct
+WAIW-511,Actor,Jobs,family,no,1,,grown 23 Oct
+WAIW-512,Film director,Jobs,family,no,1,,grown 23 Oct
+WAIW-513,Cartoonist,Jobs,family,no,1,,grown 23 Oct
+WAIW-514,Architect,Jobs,family,no,1,,grown 23 Oct
+WAIW-515,Construction worker,Jobs,family,no,1,,grown 23 Oct
+WAIW-517,Receptionist,Jobs,family,no,1,,grown 23 Oct
+WAIW-518,Accountant,Jobs,family,no,1,,grown 23 Oct
+WAIW-519,Programmer,Jobs,family,no,1,,grown 23 Oct
+WAIW-520,YouTuber,Jobs,family,no,1,,grown 23 Oct; known to kids; grandparents may need a clue
+WAIW-521,Radio jockey,Jobs,family,no,1,,grown 23 Oct
+WAIW-522,DJ,Jobs,family,no,1,,grown 23 Oct
+WAIW-523,Tour guide,Jobs,family,no,1,,grown 23 Oct
+WAIW-524,Juggler,Jobs,family,no,1,,grown 23 Oct
+WAIW-525,Clown,Jobs,family,no,1,,grown 23 Oct
+WAIW-527,Acrobat,Jobs,family,no,1,,grown 23 Oct
+WAIW-528,Detective,Jobs,family,no,1,,grown 23 Oct
+WAIW-529,Spy,Jobs,family,no,1,,grown 23 Oct
+WAIW-530,Bodyguard,Jobs,family,no,1,,grown 23 Oct
+WAIW-531,Beekeeper,Jobs,family,no,1,,grown 23 Oct
+WAIW-532,Baker,Jobs,family,no,1,,grown 23 Oct
+WAIW-533,Fashion designer,Jobs,family,no,1,,grown 23 Oct
+WAIW-534,Makeup artist,Jobs,family,no,1,,grown 23 Oct
+WAIW-535,Stunt artist,Jobs,family,no,1,,grown 23 Oct
+WAIW-536,Comedian,Jobs,family,no,1,,grown 23 Oct
+WAIW-537,Writer,Jobs,family,no,1,,grown 23 Oct
+WAIW-538,Poet,Jobs,family,no,1,,grown 23 Oct
+WAIW-539,Quiz master,Jobs,family,no,1,,grown 23 Oct
+WAIW-540,Scuba diver,Jobs,family,no,1,,grown 23 Oct
+WAIW-541,Welder,Jobs,family,no,1,,grown 23 Oct
+WAIW-542,Skydiver,Jobs,family,no,1,,grown 23 Oct
+WAIW-543,Salesperson,Jobs,family,no,1,,grown 23 Oct
+WAIW-544,Call centre agent,Jobs,family,no,1,,grown 23 Oct
+WAIW-545,Parking attendant,Jobs,family,no,1,,grown 23 Oct
+WAIW-546,Woodcutter,Jobs,family,no,1,,grown 23 Oct
+WAIW-547,Coal miner,Jobs,family,no,1,,grown 23 Oct
+WAIW-548,Inventor,Jobs,family,no,1,,grown 23 Oct
+WAIW-549,Translator,Jobs,family,no,1,,grown 23 Oct
+WAIW-551,Sculptor,Jobs,family,no,1,,grown 23 Oct
+WAIW-552,Toy maker,Jobs,family,no,1,,grown 23 Oct
+WAIW-553,Mimicry artist,Jobs,family,no,1,,grown 23 Oct
+WAIW-554,Bodybuilder,Jobs,family,no,1,,grown 23 Oct
+WAIW-555,Tightrope walker,Jobs,family,no,1,,grown 23 Oct
+WAIW-556,Weather reporter,Jobs,family,no,1,,grown 23 Oct; on TV like Newsreader but acted differently
+WAIW-557,Archery,Sports and cricket,family,no,1,,grown 23 Oct
+WAIW-558,Weightlifting,Sports and cricket,family,no,1,,grown 23 Oct
+WAIW-559,Long jump,Sports and cricket,family,no,1,,grown 23 Oct
+WAIW-560,High jump,Sports and cricket,family,no,1,,grown 23 Oct
+WAIW-561,Javelin throw,Sports and cricket,family,no,1,,grown 23 Oct
+WAIW-562,Shot put,Sports and cricket,family,no,1,,grown 23 Oct
+WAIW-563,Discus throw,Sports and cricket,family,no,1,,grown 23 Oct
+WAIW-565,Relay race,Sports and cricket,family,no,1,,grown 23 Oct
+WAIW-566,Hurdles,Sports and cricket,family,no,1,,grown 23 Oct
+WAIW-567,Gymnastics,Sports and cricket,family,no,1,,grown 23 Oct
+WAIW-568,Karate,Sports and cricket,family,no,1,,grown 23 Oct
+WAIW-569,Judo,Sports and cricket,family,no,1,,grown 23 Oct
+WAIW-570,Skating,Sports and cricket,family,no,1,,grown 23 Oct
+WAIW-571,Surfing,Sports and cricket,family,no,1,,grown 23 Oct
+WAIW-572,Skiing,Sports and cricket,family,no,1,,grown 23 Oct
+WAIW-573,Golf,Sports and cricket,family,no,1,,grown 23 Oct
+WAIW-576,Snooker,Sports and cricket,family,no,1,,grown 23 Oct
+WAIW-577,Diving,Sports and cricket,family,no,1,,grown 23 Oct
+WAIW-578,Tug of war,Sports and cricket,family,no,1,,grown 23 Oct
+WAIW-579,Sack race,Sports and cricket,family,no,1,,grown 23 Oct
+WAIW-580,Lemon and spoon race,Sports and cricket,family,no,1,,grown 23 Oct; shares Lemon with Food; different thing
+WAIW-581,Three-legged race,Sports and cricket,family,no,1,,grown 23 Oct
+WAIW-582,Musical chairs,Sports and cricket,family,no,1,,grown 23 Oct
+WAIW-583,Statue game,Sports and cricket,family,no,1,,grown 23 Oct
+WAIW-584,Snakes and ladders,Sports and cricket,family,no,1,,grown 23 Oct
+WAIW-585,Spinning top,Sports and cricket,family,no,1,,grown 23 Oct
+WAIW-586,Marbles,Sports and cricket,family,no,1,,grown 23 Oct
+WAIW-587,Hopscotch,Sports and cricket,family,no,1,,grown 23 Oct; Nondi/Stapu by region; English name taught in schools
+WAIW-588,Seven stones,Sports and cricket,family,no,1,,grown 23 Oct; also Lagori/Pittu by region
+WAIW-589,Push-ups,Sports and cricket,family,no,1,,grown 23 Oct
+WAIW-590,Somersault,Sports and cricket,family,no,1,,grown 23 Oct
+WAIW-591,Cartwheel,Sports and cricket,family,no,1,,grown 23 Oct
+WAIW-592,Dumbbells,Sports and cricket,family,no,1,,grown 23 Oct
+WAIW-593,Whistle,Sports and cricket,family,no,1,,grown 23 Oct
+WAIW-594,Stopwatch,Sports and cricket,family,no,1,,grown 23 Oct
+WAIW-595,Scoreboard,Sports and cricket,family,no,1,,grown 23 Oct
+WAIW-596,Jersey,Sports and cricket,family,no,1,,grown 23 Oct
+WAIW-597,Racket,Sports and cricket,family,no,1,,grown 23 Oct
+WAIW-598,Shuttlecock,Sports and cricket,family,no,1,,grown 23 Oct
+WAIW-599,Stadium,Sports and cricket,family,no,1,,grown 23 Oct
+WAIW-600,Captain,Sports and cricket,family,no,1,,grown 23 Oct
+WAIW-601,Toss,Sports and cricket,family,no,1,,grown 23 Oct
+WAIW-602,Century,Sports and cricket,family,no,1,,grown 23 Oct
+WAIW-603,Hat-trick,Sports and cricket,family,no,1,,grown 23 Oct
+WAIW-604,No ball,Sports and cricket,family,no,1,,grown 23 Oct
+WAIW-605,Wide ball,Sports and cricket,family,no,1,,grown 23 Oct
+WAIW-606,Clean bowled,Sports and cricket,family,no,1,,grown 23 Oct; cricket term; shares root with Bowler
+WAIW-607,Boundary,Sports and cricket,family,no,1,,grown 23 Oct
+WAIW-608,Super over,Sports and cricket,family,no,1,,grown 23 Oct
+WAIW-609,Bouncer,Sports and cricket,family,no,1,,grown 23 Oct
+WAIW-610,World Cup,Sports and cricket,family,no,1,,grown 23 Oct
+WAIW-611,Fielder,Sports and cricket,family,no,1,,grown 23 Oct
+WAIW-612,Pitch,Sports and cricket,family,no,1,,grown 23 Oct
+WAIW-613,Howzat,Sports and cricket,family,no,1,,grown 23 Oct; cricket appeal; funny to act
+WAIW-614,Man of the match,Sports and cricket,family,no,1,,grown 23 Oct
+WAIW-615,Durga Puja,Festivals and places,family,no,1,,grown 23 Oct
+WAIW-616,Bihu,Festivals and places,family,no,1,,grown 23 Oct
+WAIW-617,Lohri,Festivals and places,family,no,1,,grown 23 Oct
+WAIW-618,Baisakhi,Festivals and places,family,no,1,,grown 23 Oct
+WAIW-619,Rath Yatra,Festivals and places,family,no,1,,grown 23 Oct
+WAIW-620,Easter,Festivals and places,family,no,1,,grown 23 Oct
+WAIW-621,Guru Nanak Jayanti,Festivals and places,family,no,1,,grown 23 Oct
+WAIW-622,Buddha Purnima,Festivals and places,family,no,1,,grown 23 Oct
+WAIW-623,Iftar party,Festivals and places,family,no,1,,grown 23 Oct; Ramzan evening meal; Eid already in list
+WAIW-624,Goa Carnival,Festivals and places,family,no,1,,grown 23 Oct
+WAIW-625,Children's Day,Festivals and places,family,no,1,,grown 23 Oct
+WAIW-626,Teachers' Day,Festivals and places,family,no,1,,grown 23 Oct
+WAIW-627,Gandhi Jayanti,Festivals and places,family,no,1,,grown 23 Oct
+WAIW-628,Mother's Day,Festivals and places,family,no,1,,grown 23 Oct
+WAIW-630,Housewarming,Festivals and places,family,no,1,,grown 23 Oct
+WAIW-631,Anniversary,Festivals and places,family,no,1,,grown 23 Oct
+WAIW-632,Farewell party,Festivals and places,family,no,1,,grown 23 Oct
+WAIW-633,Picnic,Festivals and places,family,no,1,,grown 23 Oct
+WAIW-634,Annual day,Festivals and places,family,no,1,,grown 23 Oct
+WAIW-635,Qutub Minar,Festivals and places,family,no,1,,grown 23 Oct
+WAIW-636,India Gate,Festivals and places,family,no,1,,grown 23 Oct
+WAIW-637,Red Fort,Festivals and places,family,no,1,,grown 23 Oct
+WAIW-638,Golden Temple,Festivals and places,family,no,1,,grown 23 Oct; landmark; shares word with Temple
+WAIW-639,Hawa Mahal,Festivals and places,family,no,1,,grown 23 Oct
+WAIW-640,Charminar,Festivals and places,family,no,1,,grown 23 Oct
+WAIW-641,Mysore Palace,Festivals and places,family,no,1,,grown 23 Oct
+WAIW-642,Kanyakumari,Festivals and places,family,no,1,,grown 23 Oct
+WAIW-643,Ooty,Festivals and places,family,no,1,,grown 23 Oct
+WAIW-644,Backwaters,Festivals and places,family,no,1,,grown 23 Oct; Kerala
+WAIW-645,Howrah Bridge,Festivals and places,family,no,1,,grown 23 Oct
+WAIW-646,Victoria Memorial,Festivals and places,family,no,1,,grown 23 Oct
+WAIW-647,Darjeeling,Festivals and places,family,no,1,,grown 23 Oct
+WAIW-648,Sundarbans,Festivals and places,family,no,1,,grown 23 Oct
+WAIW-649,Gateway of India,Festivals and places,family,no,1,,grown 23 Oct
+WAIW-650,Ajanta Caves,Festivals and places,family,no,1,,grown 23 Oct
+WAIW-651,Kaziranga,Festivals and places,family,no,1,,grown 23 Oct
+WAIW-652,Cherrapunji,Festivals and places,family,no,1,,grown 23 Oct
+WAIW-653,Eiffel Tower,Festivals and places,family,no,1,,grown 23 Oct
+WAIW-654,Pyramids,Festivals and places,family,no,1,,grown 23 Oct
+WAIW-655,Great Wall of China,Festivals and places,family,no,1,,grown 23 Oct
+WAIW-656,Mount Everest,Festivals and places,family,no,1,,grown 23 Oct; shares idea with Mountain
+WAIW-657,North Pole,Festivals and places,family,no,1,,grown 23 Oct
+WAIW-658,Waterfall,Festivals and places,family,no,1,,grown 23 Oct
+WAIW-659,Island,Festivals and places,family,no,1,,grown 23 Oct
+WAIW-660,Volcano,Festivals and places,family,no,1,,grown 23 Oct
+WAIW-661,Farm,Festivals and places,family,no,1,,grown 23 Oct
+WAIW-662,Playground,Festivals and places,family,no,1,,grown 23 Oct
+WAIW-663,Shopping mall,Festivals and places,family,no,1,,grown 23 Oct
+WAIW-664,Restaurant,Festivals and places,family,no,1,,grown 23 Oct
+WAIW-665,Tea shop,Festivals and places,family,no,1,,grown 23 Oct
+WAIW-666,Water park,Festivals and places,family,no,1,,grown 23 Oct
+WAIW-667,Aquarium,Festivals and places,family,no,1,,grown 23 Oct
+WAIW-668,Igloo,Festivals and places,family,no,1,,grown 23 Oct
+WAIW-669,Haunted house,Festivals and places,family,no,1,,grown 23 Oct
+WAIW-670,Hill station,Festivals and places,family,no,1,,grown 23 Oct
+WAIW-671,Moon,Festivals and places,family,no,1,,grown 23 Oct; place for fun; check fit
+WAIW-672,Threading a needle,Act it out,family,no,1,,grown 23 Oct
+WAIW-673,Watering plants,Act it out,family,no,1,,grown 23 Oct
+WAIW-674,Eating something spicy,Act it out,family,no,1,,grown 23 Oct
+WAIW-675,Walking on hot sand,Act it out,family,no,1,,grown 23 Oct
+WAIW-676,Jumping in puddles,Act it out,family,no,1,,grown 23 Oct
+WAIW-677,Slipping on wet floor,Act it out,family,no,1,,grown 23 Oct
+WAIW-678,Using binoculars,Act it out,family,no,1,,grown 23 Oct
+WAIW-679,Seeing a cockroach,Act it out,family,no,1,,grown 23 Oct
+WAIW-680,Opening a tight jar,Act it out,family,no,1,,grown 23 Oct
+WAIW-681,Bargaining,Act it out,family,no,1,,grown 23 Oct; harder to mime; kept for the laugh
+WAIW-682,Taking a cold bath,Act it out,family,no,1,,grown 23 Oct
+WAIW-683,Shaving a beard,Act it out,family,no,1,,grown 23 Oct
+WAIW-684,Putting on lipstick,Act it out,family,no,1,,grown 23 Oct
+WAIW-685,Buttoning a shirt,Act it out,family,no,1,,grown 23 Oct
+WAIW-686,Cleaning your glasses,Act it out,family,no,1,,grown 23 Oct
+WAIW-687,Writing an exam,Act it out,family,no,1,,grown 23 Oct
+WAIW-688,Sharpening a pencil,Act it out,family,no,1,,grown 23 Oct
+WAIW-689,Hammering a nail,Act it out,family,no,1,,grown 23 Oct
+WAIW-690,Digging a hole,Act it out,family,no,1,,grown 23 Oct
+WAIW-691,Pushing a stuck car,Act it out,family,no,1,,grown 23 Oct
+WAIW-692,Changing a tyre,Act it out,family,no,1,,grown 23 Oct
+WAIW-693,Riding a scooter,Act it out,family,no,1,,grown 23 Oct
+WAIW-694,Swinging on a swing,Act it out,family,no,1,,grown 23 Oct
+WAIW-695,Going down a slide,Act it out,family,no,1,,grown 23 Oct
+WAIW-696,Spinning a top,Act it out,family,no,1,,grown 23 Oct; top is lattu or pambaram; check English word is known
+WAIW-697,Shuffling cards,Act it out,family,no,1,,grown 23 Oct
+WAIW-698,Juggling,Act it out,family,no,1,,grown 23 Oct
+WAIW-699,Doing push-ups,Act it out,family,no,1,,grown 23 Oct
+WAIW-700,Lifting weights,Act it out,family,no,1,,grown 23 Oct
+WAIW-701,Shooting an arrow,Act it out,family,no,1,,grown 23 Oct
+WAIW-702,Watching a scary film,Act it out,family,no,1,,grown 23 Oct
+WAIW-703,Singing in the shower,Act it out,family,no,1,,grown 23 Oct
+WAIW-704,Whistling,Act it out,family,no,1,,grown 23 Oct
+WAIW-705,Clapping,Act it out,family,no,1,,grown 23 Oct
+WAIW-706,Stung by a bee,Act it out,family,no,1,,grown 23 Oct
+WAIW-707,Waking up late,Act it out,family,no,1,,grown 23 Oct
+WAIW-708,Walking on tiptoe,Act it out,family,no,1,,grown 23 Oct
+WAIW-709,Midnight snacking,Act it out,family,no,1,,grown 23 Oct
+WAIW-710,Opening a gift,Act it out,family,no,1,,grown 23 Oct
+WAIW-711,Chewing gum,Act it out,family,no,1,,grown 23 Oct
+WAIW-712,Taking bitter medicine,Act it out,family,no,1,,grown 23 Oct
+WAIW-713,Getting an injection,Act it out,family,no,1,,grown 23 Oct
+WAIW-714,Knitting a sweater,Act it out,family,no,1,,grown 23 Oct
+WAIW-715,Playing the flute,Act it out,family,no,1,,grown 23 Oct
+WAIW-716,Walking a tightrope,Act it out,family,no,1,,grown 23 Oct
+WAIW-717,Stuck in a lift,Act it out,family,no,1,,grown 23 Oct
+WAIW-718,Building a sandcastle,Act it out,family,no,1,,grown 23 Oct
+WAIW-719,Giving a hug,Act it out,family,no,1,,grown 23 Oct
+WAIW-720,Shaking hands,Act it out,family,no,1,,grown 23 Oct
+WAIW-721,Counting money,Act it out,family,no,1,,grown 23 Oct
+WAIW-722,Getting a shock,Act it out,family,no,1,,grown 23 Oct
+WAIW-723,Walking like a robot,Act it out,family,no,1,,grown 23 Oct
+WAIW-724,Making a paper boat,Act it out,family,no,1,,grown 23 Oct
+WAIW-725,Playing a video game,Act it out,family,no,1,,grown 23 Oct
+WAIW-726,Doing homework,Act it out,family,no,1,,grown 23 Oct
+WAIW-727,Packing a suitcase,Act it out,family,no,1,,grown 23 Oct
+WAIW-728,Cheering for your team,Act it out,family,no,1,,grown 23 Oct
+WAIW-729,Giving a speech,Act it out,family,no,1,,grown 23 Oct
+WAIW-730,Smelling something bad,Act it out,family,no,1,,grown 23 Oct
+WAIW-731,Scratching an itch,Act it out,family,no,1,,grown 23 Oct
+WAIW-732,Dipa Karmakar,Famous Indians,family,no,1,,grown 23 Oct
+WAIW-733,Lovlina Borgohain,Famous Indians,family,no,1,,grown 23 Oct
+WAIW-736,Anju Bobby George,Famous Indians,family,no,1,,grown 23 Oct
+WAIW-741,Deepika Kumari,Famous Indians,family,no,1,,grown 23 Oct
+WAIW-742,Rani Rampal,Famous Indians,family,no,1,,grown 23 Oct
+WAIW-743,Shreya Ghoshal,Famous Indians,family,no,1,,grown 23 Oct
+WAIW-744,Asha Bhosle,Famous Indians,family,no,1,,grown 23 Oct
+WAIW-745,Indra Nooyi,Famous Indians,family,no,1,,grown 23 Oct; business; may be less known to children
+WAIW-746,Aishwarya Rai,Famous Indians,family,no,1,,grown 23 Oct; film star known in every state
+WAIW-747,Bachendri Pal,Famous Indians,family,no,1,,grown 23 Oct
+WAIW-751,Sheetal Devi,Famous Indians,family,no,1,,grown 23 Oct
+WAIW-753,Karnam Malleswari,Famous Indians,family,no,1,,grown 23 Oct; older fame; may be less known to children
+WAIW-756,KS Chithra,Famous Indians,family,no,1,,grown 23 Oct; singer; better known in the south
+WAIW-757,APJ Abdul Kalam,Famous Indians,family,no,1,,grown 23 Oct; scientist; was President but not a party politician
+WAIW-758,Jagadish Chandra Bose,Famous Indians,family,no,1,,grown 23 Oct
+WAIW-759,R Ashwin,Famous Indians,family,no,1,,grown 23 Oct
+WAIW-760,Sunil Gavaskar,Famous Indians,family,no,1,,grown 23 Oct
+WAIW-761,Ravindra Jadeja,Famous Indians,family,no,1,,grown 23 Oct
+WAIW-762,Shubman Gill,Famous Indians,family,no,1,,grown 23 Oct
+WAIW-763,Rishabh Pant,Famous Indians,family,no,1,,grown 23 Oct
+WAIW-767,Satya Nadella,Famous Indians,family,no,1,,grown 23 Oct
+WAIW-768,SP Balasubrahmanyam,Famous Indians,family,no,1,,grown 23 Oct
+WAIW-769,Shankar Mahadevan,Famous Indians,family,no,1,,grown 23 Oct
+WAIW-772,Salim Ali,Famous Indians,family,no,1,,grown 23 Oct; school textbooks; may be less known to children
+WAIW-775,Tenzing Norgay,Famous Indians,family,no,1,,grown 23 Oct; born outside India; lived in Darjeeling
+WAIW-776,Verghese Kurien,Famous Indians,family,no,1,,grown 23 Oct; Amul; may be less known to children
+WAIW-777,Rohan Bopanna,Famous Indians,family,no,1,,grown 23 Oct
+WAIW-778,Sanju Samson,Famous Indians,family,no,1,,grown 23 Oct
+WAIW-779,Virender Sehwag,Famous Indians,family,no,1,,grown 23 Oct
+WAIW-780,Kishore Kumar,Famous Indians,family,no,1,,grown 23 Oct; older fame
+WAIW-782,Chhota Bheem,Famous Indians,family,no,1,,grown 23 Oct; character
+WAIW-783,Tenali Raman,Famous Indians,family,no,1,,grown 23 Oct; character
+WAIW-784,Birbal,Famous Indians,family,no,1,,grown 23 Oct; character
+WAIW-785,Motu Patlu,Famous Indians,family,no,1,,grown 23 Oct; character
+WAIW-786,Shaktimaan,Famous Indians,family,no,1,,grown 23 Oct; character; older TV hero
+WAIW-787,Mowgli,Famous Indians,family,no,1,,"grown 23 Oct; character; Jungle Book, set in India"
+WAIW-788,Little Singham,Famous Indians,family,no,1,,grown 23 Oct; character
+WAIW-789,Krrish,Famous Indians,family,no,1,,grown 23 Oct; character; film superhero

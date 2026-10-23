@@ -24,7 +24,8 @@ phone.** Nobody sits out, nobody has seen the words, every turn is the same leng
 
 ## How to play
 1. Type the names (or keep tonight's). Pick a word pack (WA8).
-2. The phone says "Riya, you're guessing" and shows how to hold it: **sideways, screen to the room, on your forehead**.
+2. The phone says "Riya, you're guessing" and shows how to hold it: **sideways, screen to the room, on your forehead or
+   chest**. Or, **hands-free**: stand the phone behind the guesser and one clue giver taps for them (owner, 23 October).
 3. "3, 2, 1": the first word appears big for the room.
 4. The room gives clues. The guesser **tilts down for Got it** or **up for Pass** (or taps the big buttons, WA2). Each
    mark plays a sound and a buzz, because the guesser can't see the screen. The next word appears at once.

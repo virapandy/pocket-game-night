@@ -199,3 +199,7 @@ speed [8]. Our users:
 **Evidence notes:** no source gives a target size for tipsy users; our sizes are the accessibility
 AAA figures applied as a safety margin. Hold-to-confirm came from a practitioner blog only, so we
 use specific confirmations instead. Several academic sources were behind paywalls and are not cited.
+
+50. **Words.** What screens say and what games play with follow `docs/word-guidelines.md` (23 October 2026): one word per
+    idea, family words not designer words, verbs on buttons, a key for every colour, known-everywhere content, and the checks
+    in its Part C before every hand-over.

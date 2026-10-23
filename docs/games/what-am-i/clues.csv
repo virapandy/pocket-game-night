@@ -1,0 +1,756 @@
+id,word,clue1,clue2
+WAIW-001,Elephant,Giant grey animal with a long trunk,Ganesh has this head; seen in temple processions
+WAIW-002,Tiger,Big striped orange wild cat,India's national animal; Sher Khan in Jungle Book
+WAIW-003,Lion,Big cat with a golden mane,King of the jungle; roars loudly
+WAIW-004,Monkey,Jumps between trees and loves bananas,Hanuman's army; steals food from tourists
+WAIW-005,Cow,Gives us milk; sacred to many Hindus,Says moo; roams the streets
+WAIW-006,Buffalo,"Black, heavy milk giver that loves mud",Yamraj rides one; grazes in ponds
+WAIW-007,Goat,Farm animal that says meh and eats anything,Bakrid sacrifice; Gandhiji drank its milk
+WAIW-008,Dog,Loyal pet that guards the house,Barks at strangers; wags its tail
+WAIW-009,Cat,Small pet that purrs and chases mice,Says meow; sits on the wall
+WAIW-010,Horse,Fast animal you can ride,Pulls a tonga; gallops
+WAIW-011,Donkey,Grey animal that carries heavy loads,Washermen use it; known as stubborn
+WAIW-012,Camel,Desert animal with humps on its back,Ship of the Rajasthan desert
+WAIW-013,Peacock,Colourful bird that spreads its feathers,India's national bird; dances in rain
+WAIW-014,Parrot,Green bird that copies human speech,Astrologer's fortune cards; loves chillies
+WAIW-015,Crow,Black bird that caws and steals food,Pitru offerings; clever one drank water with pebbles
+WAIW-016,Owl,Night bird with big round eyes,Goddess Lakshmi's ride; says hoot
+WAIW-017,Eagle,Huge bird that soars high and hunts,Garuda is the king of these; bald one is America's
+WAIW-018,Duck,Waddling water bird that says quack,Donald is a famous cartoon one
+WAIW-019,Hen,Farm bird that lays eggs,Mother of chicks; says cluck
+WAIW-020,Snake,"Long, slithering creature with no legs",Cobra is one; charmers play the pungi
+WAIW-021,Frog,Green jumper that croaks in the rain,Starts as a tadpole; sits on lily pads
+WAIW-022,Crocodile,Dangerous green reptile with big teeth in rivers,Lies still in water; snapping jaws
+WAIW-023,Tortoise,Slow animal with a hard shell on its back,Won the race against the hare
+WAIW-024,Rabbit,Fluffy pet with long ears that hops,Loves carrots; Bugs Bunny
+WAIW-025,Squirrel,Small striped animal with a bushy tail,Climbs trees; helped Rama build the bridge
+WAIW-026,Giraffe,"Tallest animal, with a very long neck",Eats leaves from treetops; has spots
+WAIW-027,Zebra,Black and white striped horse-like animal,Road crossing with white stripes is named after it
+WAIW-028,Kangaroo,Australian animal that hops with a baby in a pouch,Boxing one is a funny sight
+WAIW-029,Penguin,Black and white bird that cannot fly but swims,Waddles on ice in Antarctica
+WAIW-030,Bear,Big furry animal that loves honey,Sleeps all winter; Baloo in Jungle Book
+WAIW-031,Deer,Graceful forest animal with antlers,Spotted one; Santa's sleigh is pulled by them
+WAIW-032,Fish,Lives in water and breathes with gills,Swims in a tank; Matsya avatar
+WAIW-033,Shark,Feared sea hunter with a tall back fin,Jaws is a scary film about one
+WAIW-034,Dolphin,"Clever, friendly sea animal that jumps and clicks",Performs tricks in water shows
+WAIW-035,Butterfly,Colourful winged creature that flutters over flowers,Starts as a caterpillar in a cocoon
+WAIW-036,Mosquito,Tiny buzzing insect that bites at night,Causes malaria; you use a coil or net
+WAIW-037,Ant,Tiny insect that walks in lines carrying food,Works hard in a colony; loves sugar
+WAIW-038,Spider,Eight-legged creature that spins webs,The superhero Peter Parker is named after it
+WAIW-039,Lizard,Small reptile that climbs walls at home,Gauli shastra; drops its tail
+WAIW-040,Bat,Flying animal that hangs upside down in caves,Sleeps by day; a caped hero is named after it
+WAIW-041,Idli,"White, round, soft steamed breakfast cake",Eaten with sambar and chutney
+WAIW-042,Dosa,"Thin, crispy South Indian pancake made from batter",Masala filling with potato; folded on a tava
+WAIW-043,Samosa,"Triangle snack stuffed with potato, deep fried",Tea-time favourite; served with green chutney
+WAIW-044,Biryani,Fragrant layered rice with spices and meat or vegetables,Hyderabadi one is famous; served with raita
+WAIW-045,Chapati,Round flat wheat bread rolled on a board,Served with curry; puffs on the flame
+WAIW-046,Rice,Small white grains cooked in a pot,Staple of every meal; thrown at weddings
+WAIW-047,Curd,White sour set milk eaten with meals,Mixed with rice at the end; makes lassi
+WAIW-048,Pickle,Spicy sour side dish kept in a jar,Mango one is made in summer by grandmother
+WAIW-049,Ice cream,Frozen sweet treat in a cone or cup,"Vanilla, chocolate; melts in the sun"
+WAIW-050,Banana,Long yellow fruit with a peel,Monkeys love it; leaf used as a plate
+WAIW-051,Mango,"Sweet yellow summer fruit, the king of fruits",Alphonso and Totapuri; eaten in season
+WAIW-052,Coconut,Hard hairy brown nut with sweet water inside,Broken before puja; tender one sold by roadside
+WAIW-053,Watermelon,Big green summer fruit with red juicy middle,Black seeds; cools you in the heat
+WAIW-054,Grapes,Small round fruits that grow in bunches,Green or purple; wine is made from them
+WAIW-055,Apple,Round red crunchy fruit,Keeps the doctor away; Newton's tree
+WAIW-056,Onion,Layered vegetable that makes you cry when cut,Used in almost every curry; Tadka starts with it
+WAIW-057,Tomato,Round red vegetable used in curries and sauce,Ketchup is made from it; sometimes thrown at festivals
+WAIW-058,Potato,Brown underground vegetable that is boiled or fried,Aloo; chips and fries are made from it
+WAIW-059,Chilli,"Small, fiery green or red pod that burns your tongue",Makes food spicy; hung with lemon for luck
+WAIW-060,Lemon,Sour yellow fruit squeezed for juice,Hung with chilli at shops; used in nimbu pani
+WAIW-061,Jalebi,Orange crispy swirl dipped in sugar syrup,Eaten hot with milk or rabri
+WAIW-062,Laddu,Round sweet ball offered at temples,Tirupati one is famous; Motichoor kind
+WAIW-063,Payasam,Sweet milky pudding with vermicelli served at feasts,Served on banana leaf at weddings and Onam
+WAIW-064,Popcorn,Corn kernels that burst in heat and snack at cinemas,Buttery and salty; pops loudly
+WAIW-065,Pizza,Round Italian baked flatbread topped with cheese,Delivered in a box; sliced into triangles
+WAIW-066,Noodles,"Long thin strands, boiled and stir-fried",Maggi is a famous brand; eaten with chopsticks
+WAIW-067,Sandwich,Two slices of bread with filling inside,Grilled at street stalls; tiffin box favourite
+WAIW-068,Egg,"Oval food with a shell, laid by a hen","Boiled, fried or scrambled; yolk and white"
+WAIW-069,Chicken curry,Spicy gravy dish with pieces of bird meat,Sunday lunch favourite; eaten with rice or roti
+WAIW-070,Fish fry,"Crisp spiced slices of sea or river catch, pan fried",Served with lemon and onion rings
+WAIW-071,Mutton,Meat from a goat or sheep,Cooked in curry or biryani on Sundays
+WAIW-072,Tea,"Hot milky drink made with leaves, sipped in mornings",Chai; Assam and Darjeeling grow it
+WAIW-073,Coffee,Dark hot drink from roasted beans that wakes you up,Filter kind is served in a steel tumbler
+WAIW-074,Lassi,"Thick sweet drink from yogurt, popular in Punjab",Served in a tall glass with cream on top
+WAIW-075,Juice,Drink squeezed from fruits,Orange or apple; served with a straw
+WAIW-076,Chocolate,Sweet brown treat made from cocoa,Dairy Milk; melts in your hand
+WAIW-077,Cake,Sweet baked treat with candles on birthdays,Cut with a knife; layered with icing
+WAIW-078,Biscuit,Crisp round snack dunked in tea,Parle-G is a famous one
+WAIW-079,Bread,Baked loaf sliced for toast,Eaten with butter or jam in the morning
+WAIW-080,Pani puri,Crispy hollow ball filled with spicy water,Street snack; also called golgappa
+WAIW-081,Fan,Spins on the ceiling to keep you cool,"Summer must, switch it on when sweating"
+WAIW-082,Bucket,Plastic or steel pot for carrying water to the bathroom,Used with a mug for bathing
+WAIW-083,Broom,Long sticks tied together for sweeping the floor,Witches fly on one in stories
+WAIW-084,Pillow,Soft thing under your head while sleeping,Kids fight with these in play
+WAIW-085,Blanket,Cover you pull over yourself on cold nights,Linus carries one in cartoons
+WAIW-086,Mirror,You look into it to comb your hair,Snow White's stepmother asked one questions
+WAIW-087,Dustbin,Where you throw the rubbish at home,Banana peels and wrappers end up here
+WAIW-088,Towel,Rub it on wet hair after a bath,Hangs on a rod in the bathroom
+WAIW-089,Soap,Makes bubbles and washes your hands clean,"Lux, Dettol, Cinthol are brands"
+WAIW-090,Umbrella,Opens above your head when it rains,Hold it against the sun as well
+WAIW-091,Television,Whole family watches serials and cricket on this,"Has channels, ads and a screen"
+WAIW-092,Remote,Small thing everyone fights over to change channels,"Uses batteries, always lost in the sofa"
+WAIW-093,Mobile phone,Everyone checks this hundred times a day,"You call, text and take selfies with it"
+WAIW-094,Pressure cooker,Makes a loud whistle while rice and dal cook,"Every Indian kitchen has one, hisses with steam"
+WAIW-095,Mixie,Kitchen machine that grinds chutney with a loud noise,"Like a blender, name sounds like a bug"
+WAIW-096,Fridge,Cold box in kitchen where milk and vegetables stay,"Door has a light inside, makes ice"
+WAIW-097,Washing machine,Spins your dirty clothes in soapy water,"Mothers love it, replaces beating on stones"
+WAIW-098,Clock,Hangs on the wall and tells you the hour,Has hands that go round and a tick sound
+WAIW-099,Lock and key,Pair of things that keeps the house safe,Turn to open the almirah or gate
+WAIW-100,Door,You knock on it before entering a room,"It swings open and shut, has a handle"
+WAIW-101,Window,Opening in the wall with grills to see outside,"Curtains cover it, you peep out of it"
+WAIW-102,Chair,"Four legs and a back, you sit on it",Grandpa's favourite one is by the verandah
+WAIW-103,Bed,You lie on it every night to sleep,Has a mattress; kids jump on it
+WAIW-104,Slippers,"Wear these at home, not outside on the road","Flip-flops in Tamil style, left outside the house"
+WAIW-105,Spoon,"Eat curd rice with this, no hands needed",Tea sugar is stirred with a small one
+WAIW-106,Plate,Round flat dish you eat dinner on,Idli and dosa are served on it
+WAIW-107,Tumbler,Steel cup used for drinking filter coffee,Pairs with a small bowl called davara
+WAIW-108,Kettle,Boils water with a spout and a handle,Whistles when tea water is ready
+WAIW-109,Candle,Gives a small flame during a power cut,"Birthday cake has many, you blow them out"
+WAIW-110,Torch,Handheld light with a button and batteries,Shine it in the dark while walking
+WAIW-111,Scissors,Two blades that cut paper and cloth,Children are told never to run with these
+WAIW-112,Newspaper,Comes every morning with the day's headlines,Grandpa reads it with his coffee
+WAIW-113,Calendar,Hangs on the wall with dates and festival days,New one comes every January 1st
+WAIW-114,Iron box,Makes your crumpled shirt flat and smooth,"Hot flat metal, mothers say ""careful it's hot"""
+WAIW-115,Gas stove,Where you light the flame to make dosa,Cylinder is connected to it
+WAIW-116,Chappal stand,Wooden shelf near the entrance for outside footwear,Lots of pairs sit here by the front door
+WAIW-117,Water bottle,Carry it to school filled with drinking liquid,Keep it in the fridge and it gets chilled
+WAIW-118,Ceiling,Top of the room above your head,"Lizards walk on it, fan hangs from it"
+WAIW-119,Stairs,Climb up and down to reach the next floor,"Alternative to the lift, you can slip on them"
+WAIW-120,Doorbell,Visitors press this button to tell you they have arrived,Ding-dong at the entrance
+WAIW-121,Doctor,Wears a white coat and checks your fever,You visit when you are sick
+WAIW-122,Nurse,Helps the doctor and gives injections in hospital,"Wears white or blue uniform, cares for patients"
+WAIW-123,Teacher,Stands in front of the class and gives homework,Students call her Miss or Sir
+WAIW-124,Police,Wears khaki and catches thieves,You call number 100 for them
+WAIW-125,Postman,Brings letters and parcels to your door,Rides a cycle with a bag
+WAIW-126,Farmer,Grows rice and vegetables in the field,Ploughs the land and waits for rain
+WAIW-127,Auto driver,Drives a three-wheeler for short rides in the city,"Yellow and black vehicle, meter running"
+WAIW-128,Bus conductor,Gives you the ticket inside a moving bus,"Shouts ""Next stop"" and rings the bell"
+WAIW-129,Pilot,Flies the plane from the front cabin,"Talks to passengers: ""We are now cruising"""
+WAIW-130,Cook,Makes your food in the kitchen all day,"Mother does it daily, restaurants have a head one"
+WAIW-131,Barber,Trims your locks at a salon,Clips and shaves with a razor
+WAIW-132,Tailor,Stitches your clothes with a sewing machine,Takes your measurements before Diwali
+WAIW-133,Carpenter,Makes tables and doors from wood,"Uses a saw, nails and a hammer"
+WAIW-134,Plumber,Fixes leaking pipes and taps,Called when the bathroom has a water problem
+WAIW-135,Electrician,"Fixes wires, switches and fans","Called during a power problem, be careful of shocks"
+WAIW-136,Painter,Brings colour to the walls of your house,Uses a brush and a roller before festivals
+WAIW-137,Dentist,Looks at your teeth and pulls out the aching one,Drill sound at a clinic scares kids
+WAIW-138,Lawyer,Wears a black coat and argues in court,"Says ""Objection, my lord!"""
+WAIW-139,Shopkeeper,Sits in the small store and sells groceries,You pay money and he gives chocolates as change
+WAIW-140,Watchman,Guards the gate of your apartment at night,Blows a whistle and carries a stick
+WAIW-141,Milkman,Brings packets or cans of white drink every morning,Rings the cycle bell at dawn
+WAIW-142,Fisherman,Goes into the sea in a boat to catch food,Throws a net into the water
+WAIW-143,Soldier,Guards the country border in uniform,"Salutes the flag, fights for the nation"
+WAIW-144,Firefighter,Rushes in a red truck to put out blazes,"Climbs ladders, uses water hoses"
+WAIW-145,Astronaut,Wears a big suit and goes to the moon,"Floats in space, Rakesh Sharma was one"
+WAIW-146,Singer,Sings songs on stage with a microphone,Lata Mangeshkar and Arijit are famous ones
+WAIW-147,Dancer,Moves to music with graceful steps,Bharatanatyam and Kathak are their art
+WAIW-148,Magician,Pulls rabbits out of hats,"Says ""abracadabra"" and tricks you"
+WAIW-149,Photographer,"Says ""smile!"" and clicks with a camera",Hired for weddings and family portraits
+WAIW-150,Cricket umpire,Stands on the pitch ground and raises a finger,"Says ""out"" or ""not out"", signals four and six"
+WAIW-151,Zookeeper,"Feeds lions, elephants and monkeys in a park",Takes care of caged animals every day
+WAIW-152,Vegetable seller,Pushes a cart shouting prices of tomatoes and onions,Weighs tomatoes and bargains with you
+WAIW-153,Delivery rider,Brings your food order on a bike,"Phone app shows him coming, wears a coloured bag"
+WAIW-154,Priest,Does puja in the temple,Gives you prasad and chants mantras
+WAIW-155,Engineer,"Builds bridges, machines and buildings",Many Indian parents want their kids to become one
+WAIW-156,Scientist,Works in a lab and makes discoveries,"Wears a lab coat, Einstein and Kalam were great ones"
+WAIW-157,Waiter,Brings food to your table in a restaurant,"Asks ""What would you like to order?"""
+WAIW-158,Mechanic,Fixes broken bikes and cars in a garage,Hands are dirty with oil and grease
+WAIW-159,Newsreader,Reads the headlines on TV in a neat voice,"Says ""Good evening, here is the news"""
+WAIW-160,Gardener,Looks after plants and cuts the grass,Waters the flowers in your compound
+WAIW-161,Cricket,"Bat and leather sphere, eleven players on each team","Sachin, Dhoni and Kohli play it"
+WAIW-162,Football,Eleven players kick a round thing into a net,Messi and Ronaldo are famous for it
+WAIW-163,Kabaddi,Players hold their breath while touching rivals and racing back,Raiders chant a word again and again
+WAIW-164,Kho kho,Chasers tap a sitting teammate to send him running,Played in a line on school grounds
+WAIW-165,Badminton,Hit a feathered flyer over a high net,Sindhu and Saina won medals in it
+WAIW-166,Chess,"Black and white squares, kings and queens, think hard",Checkmate ends it
+WAIW-167,Carrom,Flick a disc with a finger into corner pockets,Powder is sprinkled on the wooden board
+WAIW-168,Tennis,Strike a yellow fuzzy sphere with strings across a court,Wimbledon and Federer
+WAIW-169,Hockey,Sticks push a small hard disc into a goal,India's national team has won many golds in it
+WAIW-170,Swimming,Move through a pool using strokes like butterfly,You wear goggles and a cap
+WAIW-171,Running race,Everyone sprints and the fastest to the line wins,Sports day at school starts with it
+WAIW-172,Table tennis,Small white sphere bounces on a green board,Played with little paddles on a dining board
+WAIW-173,Boxing,Two fighters in gloves punch inside a ring,Muhammad Ali was the greatest
+WAIW-174,Wrestling,Two strong people grapple on a mat to pin,Bajrang and Phogat sisters
+WAIW-175,Volleyball,Teams keep a light sphere in air over a net,Spike and smash with your palms
+WAIW-176,Basketball,Throw an orange sphere through a hoop high up,Players bounce it while they walk
+WAIW-177,Skipping,Jump over a swinging rope again and again,Girls chant counting games with it
+WAIW-178,Yoga,"Sit still, stretch and breathe slowly on a mat","Surya Namaskar, done early in the morning"
+WAIW-179,Ludo,Roll a die and move four colored pieces home,"Board with red, green, yellow and blue corners"
+WAIW-180,Hide and seek,One counts with eyes shut while the others go conceal,"Come out, come out wherever you are"
+WAIW-181,Six,Batter hits it over the rope without bouncing,Umpire raises both arms straight up
+WAIW-182,Four,Ball bounces and crosses the rope along the ground,Umpire waves one arm sideways
+WAIW-183,Wicket,"Three sticks behind the batter, topped with two small pieces","When it falls, the batter walks back"
+WAIW-184,Bowler,Runs in and throws the ball down the pitch,Bumrah and Ashwin
+WAIW-185,Batsman,"Stands holding a wooden paddle, tries to score runs",Opens the innings at the crease
+WAIW-186,Wicketkeeper,Crouches behind the batter wearing big gloves,Dhoni was brilliant at this job
+WAIW-187,Catch,Grab a flying thing before it lands,Fielders shout it in the outfield
+WAIW-188,Run out,Batter is short of the crease when stumps are hit,Happens in a mix-up between two partners
+WAIW-189,Free hit,"After a foul delivery, the batter can't be bowled",Happens when the bowler oversteps the line
+WAIW-190,Helmet,Hard cap protecting the head while batting or riding,Wear one on a two-wheeler
+WAIW-191,Bat,Flat wooden club used to strike in cricket,Made from willow and held with both hands
+WAIW-192,Ball,"Round and red or white, thrown and struck","Kids kick, throw or bounce it"
+WAIW-193,Stumps,Three wooden sticks standing in the ground,Pulled out at the end of a day's play
+WAIW-194,Trophy,Shiny cup the winning team lifts up,Placed on a shelf and photographed
+WAIW-195,Medal,Round award hung around a winner's neck,"Gold, silver or bronze"
+WAIW-196,Goalkeeper,Only player allowed to use hands in football,Stands in front of the net and dives
+WAIW-197,Penalty,"Free shot from a spot, only a goalie to beat",A shootout after a draw
+WAIW-198,Referee,Person with a whistle and cards who decides fouls,"Shows yellow, then red"
+WAIW-199,Marathon,"Very long road race, more than forty kilometres",Runners wear numbers and thousands join in
+WAIW-200,Olympics,Athletes from every country compete every four years,Five rings and a flame
+WAIW-201,Diwali,"Festival of lights with lamps, sweets and crackers",Rangoli at the doorstep and new clothes
+WAIW-202,Pongal,Harvest festival where rice is boiled until it overflows,Celebrated in Tamil Nadu in January
+WAIW-203,Holi,"Festival of colors, where powder is thrown at everyone",Celebrated with sweets and water
+WAIW-204,Christmas,"December twenty-fifth, with a decorated tree and Santa","Carols, cake and gifts"
+WAIW-205,Eid,"Festival after a month of fasting, with new clothes","Biryani, and the greeting is Mubarak"
+WAIW-206,Onam,Kerala harvest festival with a feast on a banana leaf,Flower carpets and boat races
+WAIW-207,Navratri,"Nine nights of dancing, garba and dandiya sticks",Celebrates the goddess in colorful clothes
+WAIW-208,Ganesh Chaturthi,Clay idol of the elephant-headed god is brought home,Idol is immersed after some days
+WAIW-209,Raksha Bandhan,Sister ties a thread on her brother's wrist,Brother promises to protect her and gives a gift
+WAIW-210,Birthday party,"Cake, candles to blow out, and balloons",Everyone sings a famous song for one person
+WAIW-211,Wedding,"Bride, groom, garlands and a big feast","Lots of relatives dressed up, with music"
+WAIW-212,New Year,"Midnight on December thirty-first, with fireworks and countdown",Resolutions are made
+WAIW-213,Independence Day,"August fifteenth, flag hoisting and sweets at school",Prime Minister speaks from a fort
+WAIW-214,Republic Day,"January twenty-sixth, with a grand march in Delhi",Tableaux and soldiers on parade
+WAIW-215,Taj Mahal,"White marble monument in Agra, built for a queen",Shah Jahan built it for Mumtaz
+WAIW-216,Beach,"Sand, waves and shells by the sea",Kids build castles there
+WAIW-217,Temple,"Place of worship with bells, flowers and a tall tower",Remove your footwear before going in
+WAIW-218,Railway station,"Platforms where trains arrive, with chai and coolies",Announcement says the train is running late
+WAIW-219,Airport,Planes take off here and you check in bags,Security check and boarding pass
+WAIW-220,Hospital,Doctors and nurses treat sick people here,Ambulance parks outside
+WAIW-221,School,"Children go with bags, teachers and a bell",Uniform and homework
+WAIW-222,Cinema hall,Dark room with a huge screen and popcorn,Interval comes in the middle
+WAIW-223,Market,Vendors shout prices and you bargain for vegetables,Crowded street with many stalls
+WAIW-224,Zoo,"Cages with lions, monkeys and giraffes to see",Children go on a school trip
+WAIW-225,Park,"Green space with swings, benches and morning walkers",Uncles walk there at dawn
+WAIW-226,Bus stand,Buses wait here and conductors call out the places,Passengers buy tickets and queue
+WAIW-227,Bank,"Keeps your money safe, with tellers and lockers",Visit it for a loan or a passbook
+WAIW-228,Library,Quiet place with shelves where you borrow stories,Silence please
+WAIW-229,Mountain,Very tall rock land that touches clouds,Climbers carry ropes and bags
+WAIW-230,River,Long stream of water flowing to the sea,Ganga and Kaveri
+WAIW-231,Forest,"Dense trees, birds and animals, with no houses",Tigers hide in it
+WAIW-232,Desert,Dry sandy land with camels and little rain,Rajasthan has one called Thar
+WAIW-233,Village,"Small place with farms, a well and few houses",Cows and a pond at the edge
+WAIW-234,Circus,"Big tent where clowns, trapeze artists and animals perform",Joker with a red nose
+WAIW-235,Exhibition,Large event where stalls display goods and toys,Giant wheel and stalls in the evening
+WAIW-236,Mosque,Place of worship with domes and minarets,Call to prayer rings out from it
+WAIW-237,Museum,"Old statues, coins and paintings kept behind glass",Do not touch the exhibits
+WAIW-238,Church,Place of worship with a cross and a bell,Christians gather there on Sundays
+WAIW-239,Petrol pump,Vehicles line up to fill fuel here,Attendant says zero before filling
+WAIW-240,Post office,"Red box outside, where letters and parcels go",Stamps and a mailman
+WAIW-241,Brushing teeth,Morning job with paste and a small bristled stick,Done twice a day to keep a smile white
+WAIW-242,Flying a kite,Hold a string while a paper diamond rises in wind,Done on Makar Sankranti from the terrace
+WAIW-243,Riding a bicycle,Sit on two wheels and push pedals with feet,Hold the handlebars and ring the bell
+WAIW-244,Driving a car,Hold the steering wheel and press the pedals,Papa does this when taking children to school
+WAIW-245,Taking a selfie,Hold the phone at arm's length and pose,Smile and click a photo of yourself
+WAIW-246,Sneezing,The nose tickles and then it bursts out loudly,Say aaa-choo and cover the face
+WAIW-247,Yawning,Open the mouth wide when feeling tired,Happens at bedtime or when class is boring
+WAIW-248,Sleeping,"Lie down, close the eyes and rest at night",Dreams happen during this
+WAIW-249,Snoring,Loud noise some people make through the nose at night,Grandpa does it on the sofa after lunch
+WAIW-250,Dancing,Move the body to music with fun steps,Everyone does this at a wedding procession
+WAIW-251,Swimming,Move arms and kick legs in a pool,Done in the sea or river to stay afloat
+WAIW-252,Climbing a tree,Use hands and feet to go up a trunk,Monkeys and squirrels are good at it
+WAIW-253,Cutting vegetables,Chop onions and tomatoes with a knife,Mummy does it before cooking sabzi
+WAIW-254,Rolling chapati,Flatten dough into a thin circle with a wooden stick,Done on a flat board before the tawa
+WAIW-255,Washing clothes,Scrub shirts with soap and water and squeeze them,Hang them out on a line afterwards
+WAIW-256,Blowing out candles,Take a big breath and puff at little flames,Done on a birthday cake after a song
+WAIW-257,Eating with hands,Mix rice and curry using fingers instead of a spoon,Grandparents say food tastes better this way
+WAIW-258,Combing hair,Make the head neat with a tool with many teeth,Done before school and before a plait
+WAIW-259,Putting on a saree,Wrap a six-yard cloth around the body and tuck pleats,Mummy does this carefully before a wedding
+WAIW-260,Tying shoelaces,Make a bow with the strings on the shoes,Little children find this hard to learn
+WAIW-261,Playing the drums,Hit round skins with two sticks to make a beat,Band members do this on stage
+WAIW-262,Playing the guitar,Hold a wooden instrument and strum its six strings,Rock stars do this on stage
+WAIW-263,Bowling a ball,Run up and fling the red leather thing at stumps,"Fast or spin, done in cricket"
+WAIW-264,Rocking a baby,Hold a little one in the arms and sway gently,Mummy sings a lullaby while doing this
+WAIW-265,Rowing a boat,"Pull long paddles through water, sitting backwards",Tourists and fishermen do this on a lake
+WAIW-266,Catching a bus,Run to the stop and jump on before it leaves,Wave your hand so the driver waits
+WAIW-267,Sweeping the floor,Push a broom across the ground to remove dust,Done every morning in front of the house
+WAIW-268,Typing on a phone,Tap tiny letters with thumbs to send a message,Done on WhatsApp all day long
+WAIW-269,Making a phone call,Hold a device to the ear and talk far away,Say hello and wait for the other person
+WAIW-270,Crying,Tears roll down the face and you sob,A small child does this after falling
+WAIW-271,Laughing,Make a happy loud noise when something is funny,Ha ha ha at a good joke
+WAIW-272,Walking a dog,Hold a leash while a furry pet goes outside,Done each evening in the park
+WAIW-273,Carrying a heavy bag,Lift a load that weighs a lot and bend,A porter does this at the railway station
+WAIW-274,Opening an umbrella,Pop up a cover over the head to stay dry,Done when it pours and there is no raincoat
+WAIW-275,Blowing a balloon,Puff air into a rubber shape until it grows big,Done for birthday party decorations
+WAIW-276,Lighting a lamp,Strike a match to a wick soaked in oil,Done in front of god during Diwali
+WAIW-277,Washing hands,Rub soap on fingers under the tap,Do it for twenty seconds before eating
+WAIW-278,Kicking a football,Swing a leg to send a round thing flying,Done by eleven players on a green field
+WAIW-279,Waving goodbye,Raise a palm and move it side to side,Done at the station when a relative leaves
+WAIW-280,Hiccups,Sudden little jumps in the chest that make a sound,Grandma says someone is remembering you
+WAIW-281,Sachin Tendulkar,Cricket legend known as the Master Blaster,Scored one hundred international centuries and wore number ten
+WAIW-282,MS Dhoni,Calm cricketer who finished matches with big sixes,Led India to win the 2011 World Cup
+WAIW-283,Virat Kohli,Aggressive batsman who scores centuries in run chases,Former captain of India who wears number 18
+WAIW-284,Kapil Dev,Captain who lifted the first World Cup for India,Known as the Haryana Hurricane
+WAIW-285,Rohit Sharma,Opening batsman nicknamed Hitman,Has scored three double centuries in one-day cricket
+WAIW-286,Mithali Raj,Greatest run scorer in women's cricket,Captained India's women in two World Cup finals
+WAIW-287,PV Sindhu,Badminton star who won Olympic silver and bronze,From Hyderabad and very tall
+WAIW-288,Saina Nehwal,Badminton player who won Olympic bronze in 2012,Once became number one in the world
+WAIW-289,Mary Kom,Boxer from Manipur who is a six-time world champion,A film about her life starred a famous actress
+WAIW-290,Neeraj Chopra,Threw a javelin the farthest to win Olympic gold,"Young athlete from Haryana, gold in Tokyo"
+WAIW-291,Viswanathan Anand,Chess grandmaster from Chennai and former world champion,Called the Tiger of Madras
+WAIW-292,Sunil Chhetri,Captain of India's football team who scores many goals,Wears number 11 and has scored over ninety goals
+WAIW-293,Milkha Singh,Runner called the Flying Sikh,A film about his races starred Farhan Akhtar
+WAIW-294,PT Usha,Runner known as the Payyoli Express,Missed an Olympic bronze by a tiny gap in 1984
+WAIW-295,Mirabai Chanu,Weightlifter who won Olympic silver in Tokyo,From Manipur and lifts huge weights
+WAIW-296,Rakesh Sharma,First Indian to go to space in 1984,Said India looks better than all the world from there
+WAIW-297,Sania Mirza,Tennis star who won many doubles Grand Slams,Played with Martina Hingis and is from Hyderabad
+WAIW-298,AR Rahman,Music director from Chennai who won two Oscars,Composed Jai Ho and is called Mozart of Madras
+WAIW-299,Lata Mangeshkar,Legendary singer called the Nightingale of India,Sang Ae Mere Watan Ke Logon
+WAIW-300,Zakir Hussain,Tabla maestro with curly hair,Appeared in the famous Taj Mahal tea advertisement
+WAIW-301,Sunita Williams,Astronaut of Indian origin who stayed long in space,Her father came from Gujarat
+WAIW-302,Yuvraj Singh,Hit six sixes in one over in a T20 Cup,Beat cancer and came back to play cricket
+WAIW-303,Leander Paes,Tennis player who won Olympic bronze in 1996,Played doubles for India in seven Olympics
+WAIW-304,Amitabh Bachchan,Tall film star with a deep voice,Hosts Kaun Banega Crorepati and was in Sholay
+WAIW-305,Shah Rukh Khan,Film star called the King of Bollywood,Famous for opening arms wide in romantic films
+WAIW-306,Kalpana Chawla,Indian-born woman from Karnal who flew on a space shuttle,A school and a satellite are named after her
+WAIW-307,CV Raman,Scientist who won India's first science Nobel Prize,National Science Day celebrates his discovery about light
+WAIW-308,Srinivasa Ramanujan,Self-taught maths genius from Kumbakonam,A film called The Man Who Knew Infinity shows him
+WAIW-309,Jasprit Bumrah,Fast bowler with a strange running action,Famous for deadly yorkers
+WAIW-311,Rabindranath Tagore,Poet who wrote our national anthem,First Asian to win the Nobel Prize for literature
+WAIW-312,Swami Vivekananda,Monk who spoke in Chicago in 1893,His birthday is celebrated as National Youth Day
+WAIW-313,Hima Das,Runner from Assam called the Dhing Express,Won a world junior gold in the 400 metres
+WAIW-314,Ratan Tata,Famous businessman who loved dogs and led a big group,"Made the Nano, the cheapest car"
+WAIW-315,Sundar Pichai,"Boss of Google, born in Madurai",Leads the company behind the search engine we use
+WAIW-317,Harmanpreet Kaur,Captain of India's women cricket team,Hit a stunning 171 not out against Australia
+WAIW-318,Anil Kumble,Spin bowler who took all ten wickets in one innings,Did it against Pakistan in Delhi in 1999
+WAIW-319,Sourav Ganguly,Left-handed batsman called Dada,Waved his shirt from the Lord's balcony after a win
+WAIW-320,Rahul Dravid,Calm batsman called The Wall,Later coached India to win a T20 World Cup
+WAIW-321,Fox,Clever orange animal with a bushy tail,Cunning one reached for sour grapes
+WAIW-322,Wolf,Wild dog-like hunter that howls at the moon,Lives in packs; Mowgli was raised by them
+WAIW-323,Rhino,Heavy grey animal with a horn on its nose,One-horned ones live in Kaziranga
+WAIW-324,Hippo,Huge round river animal with a big mouth,Spends the day in water in Africa
+WAIW-325,Gorilla,Strong black ape that beats its chest,King Kong was a giant one
+WAIW-326,Panda,Black and white bear from China that eats bamboo,Cuddly and loved by children
+WAIW-327,Cheetah,"Fastest animal on land, with black spots",Brought back to India from Africa
+WAIW-328,Leopard,Spotted wild cat that climbs trees,Panther in Jungle Book is a black one
+WAIW-330,Sheep,Fluffy farm animal that gives wool,Says baa; Shaun is a cartoon one
+WAIW-331,Rat,Small gray rodent that nibbles grain,Ganesh's vehicle; Karni Mata temple
+WAIW-332,Rooster,Male farm bird that wakes everyone at dawn,Cock-a-doodle-doo; has a red comb
+WAIW-333,Pigeon,Grey city bird that coos on rooftops,Carries messages; fed grain at temples
+WAIW-334,Sparrow,Tiny brown house bird that chirps,Disappearing from cities; nests in homes
+WAIW-335,Vulture,Large bird that eats dead animals,Jatayu was one in the Ramayana
+WAIW-336,Ostrich,Biggest bird; it runs fast but cannot fly,Said to bury its head in sand
+WAIW-337,Swan,Graceful white bird on a lake with a curved neck,Saraswati's ride; ugly duckling became one
+WAIW-338,Flamingo,Tall pink bird that stands on one leg,Gathers in flocks in shallow lakes
+WAIW-339,Woodpecker,Bird that knocks on tree trunks with its beak,Makes holes in wood; Woody is a cartoon one
+WAIW-340,Cuckoo,Bird whose sweet call announces spring,Koel sings in mango season; clock named after it
+WAIW-341,Myna,Dark bird with yellow beak that can mimic speech,Often kept near the parrot; common in gardens
+WAIW-343,Crab,Sea creature that walks sideways with claws,Cancer zodiac sign; lives on beaches
+WAIW-344,Octopus,Sea creature with eight arms,Paul predicted football winners; squirts ink
+WAIW-345,Jellyfish,Soft see-through sea creature that stings,Floats in the ocean like an umbrella
+WAIW-346,Starfish,Sea creature shaped like a five-pointed shape,Found on beaches; has arms but no head
+WAIW-347,Whale,Largest animal in the ocean,Sprays water from its blowhole; Moby Dick
+WAIW-348,Seal,Sea animal that claps flippers and balances balls,Lives on cold coasts; loves to eat fish
+WAIW-349,Seahorse,Tiny ocean creature with a horse-like head,The male carries the babies
+WAIW-350,Bee,Buzzing insect that makes sweet golden stuff,Stings; lives in a hive with a queen
+WAIW-351,Cockroach,Brown crawling pest in kitchens that Mummy screams at,Hit it with a chappal; survives anything
+WAIW-352,Housefly,Tiny buzzing pest that lands on food,Swat it; it has two wings
+WAIW-353,Earthworm,"Long, pink wriggler in the soil",Farmers' friend; appears after rain
+WAIW-354,Snail,Slow creature with a spiral home on its back,Leaves a slimy trail; hides in a shell
+WAIW-355,Scorpion,Crawling creature with pincers and a stinging tail,Lives under stones in the desert
+WAIW-356,Firefly,Tiny insect that glows in the dark,Flickers on summer evenings in gardens
+WAIW-357,Dragonfly,Thin insect with big see-through wings near ponds,Hovers over water; has huge eyes
+WAIW-358,Grasshopper,Green insect that jumps in fields and chirps,Hungry one in the story did not store food
+WAIW-359,Caterpillar,"Long, hairy crawler that eats leaves",Becomes a butterfly later
+WAIW-360,Yak,Furry mountain animal of Himalayan areas,Carries loads in Ladakh; gives milk
+WAIW-361,Mongoose,Small animal famous for fighting cobras,Rikki-Tikki-Tavi was a brave one
+WAIW-362,Porcupine,Animal covered in sharp spiky quills,Shoots needles when scared
+WAIW-363,Hyena,Wild scavenger with a laughing sound,Lives in Africa; steals the lion's food
+WAIW-364,Jackal,Wild dog-like animal that howls at night,Shere Khan's helper Tabaqui; sly villain in stories
+WAIW-365,Koala,Sleepy furry Australian animal that hugs eucalyptus trees,Looks like a teddy; is not a bear
+WAIW-366,Chameleon,Lizard that changes colour to blend in,Has a long sticky tongue; people compare it to cheats
+WAIW-367,Dinosaur,Giant creature that lived millions of years ago,T-Rex; Jurassic Park
+WAIW-368,Bull,Strong male farm animal with horns,Nandi is Shiva's ride; jallikattu festival
+WAIW-369,Seagull,White bird that flies over beaches,Steals chips from tourists; cries loudly
+WAIW-370,Centipede,Creepy crawler with very many legs,Lives under rocks; long and thin
+WAIW-372,Moth,Night insect that circles around lights,Cousin of the butterfly; eats clothes
+WAIW-373,Beetle,Hard-shelled insect that crawls and flies,Volkswagen's famous small car looks like it
+WAIW-375,Silkworm,Tiny creature that spins thread for expensive sarees,Fed on mulberry leaves; Kanchipuram
+WAIW-376,Termite,Tiny insect that eats wooden furniture,Builds tall mud mounds; the white ones
+WAIW-377,Chimpanzee,Clever ape that is very close to humans,Uses tools; cheeky relative of the gorilla
+WAIW-378,Vada,Crispy fried ring-shaped savoury snack with a hole,Soaked in sambar or eaten with chutney
+WAIW-379,Upma,Soft savoury semolina dish for breakfast,"Cooked with mustard seeds, onion and curry leaves"
+WAIW-380,Sambar,Tangy lentil stew with vegetables,Goes with idli and dosa; has drumstick pieces
+WAIW-381,Rasam,"Thin, peppery, sour soup eaten with rice",Good for a cold; made with tamarind and tomato
+WAIW-382,Appam,Bowl-shaped soft pancake with crispy lace edges,Kerala breakfast; eaten with stew
+WAIW-383,Mysore pak,Rich golden sweet block made of gram flour and ghee,Melts in the mouth; from a famous royal city
+WAIW-384,Murukku,Crunchy spiral snack made of rice flour,Diwali favourite; breaks with a loud snap
+WAIW-385,Halwa,"Soft, sticky sweet cooked with ghee and sugar",Carrot one is a winter special
+WAIW-386,Paratha,"Layered flat bread fried on a tava, often stuffed",Aloo kind with butter for breakfast
+WAIW-387,Chole bhature,Spicy chickpea curry with big puffed fried bread,Punjabi Sunday brunch
+WAIW-388,Rajma,Red kidney bean curry eaten with rice,Punjabi comfort food; eaten with chawal
+WAIW-389,Paneer,Soft white Indian cheese in cubes,Tikka and butter masala are made from it
+WAIW-390,Kulfi,Dense Indian frozen dessert on a stick,Pistachio and malai flavours; sold by a cart
+WAIW-391,Gulab jamun,Soft brown fried balls soaked in sugar syrup,Served warm at weddings and festivals
+WAIW-392,Khichdi,Simple mushy mix of rice and lentils,Eaten when you are unwell; comforting
+WAIW-393,Dal,Cooked lentils served as a thin curry,Tadka kind with rice is a home meal
+WAIW-394,Pakoda,Fried fritters of gram flour batter and vegetables,Eaten with tea when it rains
+WAIW-395,Rasgulla,Spongy white balls soaked in light sugar syrup,Bengal sweet; made from curdled milk
+WAIW-396,Sandesh,Soft milk-based sweet from Bengal,"Made from fresh cottage cheese, moulded in shapes"
+WAIW-397,Momos,Steamed dumplings from Tibet with a filling,Served with red spicy chutney
+WAIW-398,Dhokla,Spongy yellow steamed Gujarati snack,Made from gram flour; with a mustard seed topping
+WAIW-399,Pav bhaji,Mashed spicy vegetable curry with buttered soft rolls,Mumbai street food; served with onion and lemon
+WAIW-400,Poha,Flattened rice breakfast with peanuts and turmeric,Indori speciality; lemon squeezed on top
+WAIW-401,Modak,Sweet dumpling of coconut and jaggery steamed,Lord Ganesh's favourite offering
+WAIW-402,Burger,"Round bun holding a patty, cheese and lettuce",Fast food; sold by McDonald's and Wendy's
+WAIW-403,French fries,Thin golden fried sticks served with ketchup,Eaten with a burger; salty finger snack
+WAIW-404,Pasta,Italian dish of boiled shapes like penne in sauce,Red or white sauce; cooked al dente
+WAIW-405,Fried rice,Chinese-style grains tossed in a wok with vegetables,Eaten with Manchurian
+WAIW-406,Honey,Sweet golden liquid made by insects,Mixed with warm water and lemon in the morning
+WAIW-407,Butter,Yellow creamy spread made by churning cream,Put on toast; Krishna stole pots of it
+WAIW-408,Ghee,Golden clarified fat poured over hot rice or roti,Made by heating butter; used in the lamp
+WAIW-409,Jam,Sweet fruit spread put on bread,Mixed fruit kind comes in a bottle
+WAIW-410,Fish curry,Tangy spicy gravy with pieces of sea or river catch,Kerala style with kokum; eaten with rice
+WAIW-411,Milk,"White drink from cows, boiled each morning",Poured on cereal; the dairy man delivers it
+WAIW-412,Buttermilk,Thin salty cooling drink made from curd and water,Called moru or chaas; drunk in summer lunch
+WAIW-413,Sugarcane,Tall sweet stalk pressed for juice,Roadside crushing machine; Pongal needs it
+WAIW-414,Sweet corn,Yellow kernels boiled or roasted on a cob,Monsoon street snack with lemon and masala
+WAIW-415,Peanuts,"Small crunchy nuts in a shell, roasted at the beach",Groundnut; paper cone snack
+WAIW-416,Cucumber,Long green cool salad vegetable,Slices placed on eyes; eaten with salt
+WAIW-417,Carrot,Long orange root vegetable that rabbits love,Good for eyes; used in halwa
+WAIW-418,Brinjal,Purple oval vegetable used in bharta and curries,Also called aubergine
+WAIW-419,Ladies finger,Green slender vegetable with sticky insides,Bhindi; fried with spices
+WAIW-420,Cabbage,Round green leafy vegetable with layers,Used in stir-fry and manchurian
+WAIW-421,Cauliflower,White flower-like vegetable that is cooked in gobi dishes,Aloo gobi and Manchurian
+WAIW-422,Pumpkin,Large orange round vegetable carved at Halloween,Cinderella's coach was made of it
+WAIW-423,Garlic,Small bulb with cloves and a strong smell,Crushed in tadka; keeps vampires away
+WAIW-424,Drumstick,Long green pods used in sambar,Not a bird's leg; the tree vegetable
+WAIW-425,Bitter gourd,Green bumpy vegetable that tastes unpleasant,Karela; children refuse it; good for sugar patients
+WAIW-426,Pineapple,Spiky yellow tropical fruit with a crown on top,Sweet and tangy; the rings go on pizzas
+WAIW-427,Guava,"Green round fruit with many seeds, eaten with salt",Peru in Hindi; sold by street vendors
+WAIW-428,Orange,Round juicy citrus fruit with segments,Nagpur is famous for it; same name as a colour
+WAIW-429,Pomegranate,Fruit full of tiny red seeds like jewels,Anaar; its juice is good for the blood
+WAIW-430,Jackfruit,Huge spiky green fruit with sweet yellow pods,Kerala's state fruit; chips are made from it
+WAIW-431,Omelette,Beaten and pan fried with chopped onion and chilli,Breakfast with bread; folded in half
+WAIW-432,Tandoori chicken,Red spicy bird roasted in a clay oven,Restaurant starter served with mint chutney
+WAIW-433,Chicken 65,Red spicy fried bites of bird from Chennai,Restaurant starter with curry leaves
+WAIW-434,Prawns,Pink curled sea creatures cooked in masala,Seafood; peeled before eating
+WAIW-435,Kebab,Spiced minced meat grilled on skewers,Seekh is a popular type; Lucknow is famous for it
+WAIW-437,Cotton candy,Fluffy pink sugar spun onto a stick at fairs,Melts in your mouth; sold at melas
+WAIW-438,Sofa,Soft seat for three people in the hall,Guests sit here and kids jump on it
+WAIW-439,Curtain,Cloth hung over windows to block the sun,Pull it across for privacy or open it
+WAIW-440,Tap,Turn the handle and water comes out,"Left dripping in the bathroom, wastes water"
+WAIW-441,Mug,Small handled cup for tea or coffee,Funny sayings are printed on this gift
+WAIW-442,Shampoo,Liquid you rub on your head to wash it,Sold in small sachets for one rupee
+WAIW-443,Charger,Cord you plug in when your battery is low,Everyone borrows one from guests at home
+WAIW-444,Laptop,Foldable computer you carry to work,Open the lid and start typing
+WAIW-445,Headphones,Worn on both ears to listen to songs privately,Wire gets tangled in your pocket
+WAIW-446,Light bulb,Glass globe that glows when you press the switch,Edison made it famous
+WAIW-447,Air conditioner,"Cools a room, box fixed high on the wall","Remote sets 24 degrees, big summer bill"
+WAIW-448,Hair dryer,Blows warm air to dry a wet head,Held in one hand after a shampoo
+WAIW-449,Nail cutter,Small tool for trimming fingertips,"Clipping sound, tiny bits fly across the room"
+WAIW-450,Safety pin,Tiny metal pin that holds a dupatta or saree,"Holds cloth together, has a small cap"
+WAIW-451,Needle and thread,Used together by grandma to fix a torn shirt,"Thin steel, you pass the string through the eye"
+WAIW-452,Photo frame,Holds a family picture on the wall,Garlands hang on it for departed elders
+WAIW-453,Cupboard,Big wooden box with doors for keeping clothes,"Mother's sarees are kept inside, almirah"
+WAIW-454,Bookshelf,Wooden stand where books sit in rows,"Library at home, kids' stories go here"
+WAIW-455,Dining table,Family meals are eaten around this,Big flat top with chairs on sides
+WAIW-456,Stool,Small seat with no back,Climb on it to reach high shelf
+WAIW-457,Doormat,Cloth square at the entrance to wipe your feet,"Says ""Welcome"" in many houses"
+WAIW-458,Suitcase,Bag with wheels for travel,Pack your clothes for a train trip
+WAIW-459,Tiffin box,Round steel box to carry lunch to school,"Has stacked layers for rice, sabzi"
+WAIW-460,Flask,Keeps hot tea hot for hours,"Steel or plastic, used on picnics"
+WAIW-461,Frying pan,Flat round pot with a long handle,Used for omelettes and shallow oil cooking
+WAIW-462,Matchbox,Small box with sticks to light a flame,Rub the red head on the side
+WAIW-463,Vacuum cleaner,Machine that sucks up dust from the floor,"Loud noise, pushes along carpets"
+WAIW-464,Mop,Stick with a wet cloth to clean the floor,Maid pushes it in swirls every day
+WAIW-465,Shower,Water falls from above while you bathe,"Hung high in bathroom, wets your head"
+WAIW-466,Thermometer,Tells you the number when you have fever,Put it under your tongue or arm
+WAIW-467,First aid box,Box with bandages for cuts and bruises,"Red cross symbol, kept for emergencies"
+WAIW-468,Spectacles,Worn on the nose so you can see clearly,Grandpa keeps losing his on his head
+WAIW-469,Hanger,Holds your shirt in the wardrobe,"Made of wood, plastic or wire"
+WAIW-470,Balcony,Small open area outside your flat to dry clothes,"Evening tea is enjoyed here, watching the street"
+WAIW-471,Kitchen,Room where mother prepares all meals,"Has stove, mixie, pots and smells of tadka"
+WAIW-472,Terrace,Open roof of the house on top,Kids fly kites and clothes dry up there
+WAIW-473,Gate,Metal entrance you open to enter the compound,"Squeaks when pushed, dog barks behind"
+WAIW-474,Swing,"Seat hung from ropes, kids go back and forth",Kids love this at the park and old houses
+WAIW-475,Piggy bank,Clay pot for saving small coins,Smash it open when it is full
+WAIW-476,Doll,Toy that looks like a small girl,"Barbie is a famous one, kept in Golu"
+WAIW-477,Pencil,"Kids write with it, sharpen the tip","Has rubber at the end, wooden stick"
+WAIW-478,Rat trap,Cage with cheese to catch a small house pest,Tom wants to catch Jerry using it
+WAIW-479,Weighing scale,Stand on it to see how heavy you are,Dieters fear the number on it
+WAIW-480,Measuring tape,Long roll with numbers to find the length,Tailors wear it around the neck
+WAIW-481,Hammer,Hit nails into the wall with it,"Heavy head on a handle, Thor carries one"
+WAIW-482,Screwdriver,Turns the screws in a tool box,Has a plastic handle and flat or star tip
+WAIW-483,Ladder,Climb it to reach high places,"Two rails with steps, leans against the wall"
+WAIW-484,Microwave,Heats food in a minute without fire,"Beeps when ready, you press a start button"
+WAIW-485,Flower pot,Plant grows in this clay container,Placed in the garden or balcony
+WAIW-486,Wi-Fi,Invisible signal that lets phones go online,Everyone asks for the password at friend's house
+WAIW-487,Power cut,Lights go off suddenly in the whole area,"Kids cheer, you light a candle in the dark"
+WAIW-488,Tissue paper,Soft sheet used to wipe hands or nose,Comes in a box or a roll
+WAIW-489,Perfume,Spray it to smell good,Comes in a small bottle for special occasions
+WAIW-490,Talcum powder,White dust you pat on baby after a bath,"Smells sweet, Ponds is one name"
+WAIW-491,Hair oil,Mother applies it on your head every Sunday,"Coconut or amla, makes your locks shiny"
+WAIW-492,Radio,Plays songs and cricket commentary without a picture,Grandpa listens to All India news on it
+WAIW-493,Raincoat,Wear it when the monsoon pours,"Plastic cover for your body, keeps you dry"
+WAIW-494,Sweater,Knitted woolen wear for cold weather,Grandma makes it with needles and wool
+WAIW-495,Socks,Cover for your feet inside shoes,Always one goes missing from the pair
+WAIW-496,Pyjamas,Loose trousers you wear at bedtime,Comfortable night clothes with an elastic waist
+WAIW-497,Lungi,Cloth tied around the waist like a short veshti,"Men at home wear this, checked pattern"
+WAIW-498,Vet,Treats pet dogs and cats for sickness,"Takes care of cows too, gives them injections"
+WAIW-499,Judge,Sits in court and gives the final decision,"Bangs the small wooden hammer and says ""Order"""
+WAIW-500,Pharmacist,Gives you tablets as the doctor wrote,Works at the medical shop
+WAIW-501,Principal,Head of the whole school,"Scares children, sits in a big room"
+WAIW-502,Librarian,Keeps quiet in a room full of books,"Says ""Shh"" and stamps your borrowing card"
+WAIW-503,Cashier,Takes your money at the counter of a shop,Gives you the bill and change
+WAIW-504,Lifeguard,Watches swimmers at the beach and rescues people,Sits on high chair with a whistle
+WAIW-505,Sailor,Works on a ship across the oceans,Wears a white cap and a striped shirt
+WAIW-506,Flight attendant,Serves food and snacks on a plane,Shows you how to wear a seatbelt
+WAIW-507,Ticket checker,Walks through the train asking for your journey papers,Wears a black coat and punches them
+WAIW-508,Gym trainer,Helps you lift weights and lose belly fat,"Shouts ""One more rep!"" at the gym"
+WAIW-509,Sports coach,Teaches a team how to win matches,"Shouts from the sideline, trains players"
+WAIW-510,Commentator,Describes a match live on TV or radio,Ravi Shastri and Harsha Bhogle do it
+WAIW-511,Actor,Plays a part in films or plays,Shah Rukh Khan and Rajinikanth are this
+WAIW-512,Film director,"Shouts ""Action! Cut!"" on a movie set",Rajamouli and Karan Johar are famous ones
+WAIW-513,Cartoonist,Draws funny pictures for newspapers and magazines,R.K. Laxman did Common Man drawings
+WAIW-514,Architect,Designs buildings and house plans on paper,Draws a blueprint before the house is built
+WAIW-515,Construction worker,Carries bricks and cement at building sites,"Wears a yellow helmet, works in the sun"
+WAIW-517,Receptionist,Sits at the front desk and greets visitors,"Answers the phone and says ""Please wait, sir"""
+WAIW-518,Accountant,Counts money and keeps the books for a company,"Busy at tax time, loves numbers and Excel"
+WAIW-519,Programmer,Types code on a computer to make apps,Works in a big IT park in Bangalore
+WAIW-520,YouTuber,Makes videos and asks you to subscribe,"Presses the bell icon, millions of views"
+WAIW-521,Radio jockey,Talks between songs on FM and speaks fast,"Says ""Hello Chennai!"" in a cheery voice"
+WAIW-522,DJ,Mixes songs at weddings and parties,Stands behind big speakers and turntables
+WAIW-523,Tour guide,Walks in front of visitors and explains history,"Holds a flag or umbrella, group follows"
+WAIW-524,Juggler,Keeps many balls in the air at once,"Circus act, never drops them"
+WAIW-525,Clown,Wears a red nose and a funny costume,Makes children laugh at the circus
+WAIW-527,Acrobat,Flips and balances in the air at the circus,"Very bendy body, jumps from swings"
+WAIW-528,Detective,Finds clues to solve a mystery,Sherlock Holmes and Byomkesh Bakshi were this
+WAIW-529,Spy,Secretly collects information for a country,James Bond is a famous fictional one
+WAIW-530,Bodyguard,Stays near a VIP to protect them,Wears dark glasses and an earpiece
+WAIW-531,Beekeeper,Looks after boxes of buzzing insects for honey,"Wears a net on the face, gets stung"
+WAIW-532,Baker,"Makes bread, cakes and biscuits in an oven",Wakes up early to knead dough
+WAIW-533,Fashion designer,Draws and stitches new clothing styles,Shows creations on the ramp at a style week
+WAIW-534,Makeup artist,"Puts lipstick, kajal and powder on brides",Works on the faces of actors and brides
+WAIW-535,Stunt artist,Falls from buildings and crashes cars in films,Does dangerous things for the hero
+WAIW-536,Comedian,Makes people laugh on stage with jokes,Kapil Sharma and Vadivelu are well-known ones
+WAIW-537,Writer,"Pens novels, stories and books","Sits with paper and ink, thinks of characters"
+WAIW-538,Poet,Composes verses that rhyme and have deep feelings,Tagore and Bharathiyar were famous ones
+WAIW-539,Quiz master,Asks tough questions in a contest show,"Says ""Is that your final answer?"""
+WAIW-540,Scuba diver,Goes underwater with an oxygen tank,Wears flippers and a mask in the deep sea
+WAIW-541,Welder,Joins metal pieces with sparks and a mask,Fixes iron gates and grills
+WAIW-542,Skydiver,Jumps from a plane with a parachute,Falls fast then floats down
+WAIW-543,Salesperson,Visits homes or stores to sell products,"Talks a lot, ""Sir, this offer is only today"""
+WAIW-544,Call centre agent,Answers customer phones with a headset,"Says ""Your request is important to us"""
+WAIW-545,Parking attendant,Collects money for leaving your vehicle at a mall,Gives a slip at the entrance
+WAIW-546,Woodcutter,Chops big trees in the forest with an axe,"Makes the thud sound, logs fall down"
+WAIW-547,Coal miner,Digs black fuel under the earth,"Wears a helmet with a lamp, goes underground"
+WAIW-548,Inventor,Creates a brand new machine nobody has seen,Edison and Graham Bell were famous ones
+WAIW-549,Translator,Changes what is said from one language to another,Helps people from different countries understand
+WAIW-551,Sculptor,Carves stone into statues,Works with chisel and a hammer in temples
+WAIW-552,Toy maker,Builds little playthings for children,Works in a factory of wooden cars and dolls
+WAIW-553,Mimicry artist,Copies voices of film stars and animals,Makes you think another person is talking
+WAIW-554,Bodybuilder,Has huge muscles after years at the gym,"Flexes arms, wins Mr India titles"
+WAIW-555,Tightrope walker,Walks across a thin rope high up,Balances with a long pole in the circus
+WAIW-556,Weather reporter,Tells you if it will be rainy or sunny tomorrow,Shows clouds and temperature on TV map
+WAIW-557,Archery,Pull a string and shoot a pointed shaft,Bullseye in the middle of the target
+WAIW-558,Weightlifting,Raise a heavy bar over your head,Mirabai Chanu won a medal in it
+WAIW-559,Long jump,"Sprint, leap and land as far as possible in sand",Measured in metres from the board
+WAIW-560,High jump,Leap and clear a bar set far above the ground,Land on a big soft mat backwards
+WAIW-561,Javelin throw,Hurl a long spear as far as possible,Neeraj Chopra won gold in it
+WAIW-562,Shot put,"Push a heavy metal sphere from the shoulder, not throw",Thrown from a small circle
+WAIW-563,Discus throw,Spin around and fling a flat round plate,Ancient Greek statue shows the pose
+WAIW-565,Relay race,Teammates run in turn and pass a stick,"Four runners, one baton"
+WAIW-566,Hurdles,Run fast while leaping over low barriers,Ten of them stand in a lane
+WAIW-567,Gymnastics,"Flips, balance beam and rings, with graceful moves",Dipa Karmakar did a famous vault
+WAIW-568,Karate,"Fighting art with kicks and chops, wearing a white outfit",Black belt is the top
+WAIW-569,Judo,Throw your opponent to the mat using his own weight,Wear a white jacket tied with a belt
+WAIW-570,Skating,Glide on wheels or blades under your feet,Ice rinks and roller shoes
+WAIW-571,Surfing,Stand on a board and ride tall waves,Goa and Kovalam beaches see it
+WAIW-572,Skiing,Slide down snowy slopes on two long boards,Gulmarg in Kashmir is famous for it
+WAIW-573,Golf,Hit a tiny white sphere into a distant hole,Played on a huge green lawn with a caddie
+WAIW-576,Snooker,"Colored spheres, a long stick and a green table","Pocket the reds first, then the colors"
+WAIW-577,Diving,Jump headfirst from a high board into a pool,Judges give scores for the splash
+WAIW-578,Tug of war,Two teams pull a long rope in opposite directions,The middle ribbon crosses the line
+WAIW-579,Sack race,Hop forward with your legs inside a bag,A picnic and sports-day favorite
+WAIW-580,Lemon and spoon race,Walk fast with a fruit balanced in your mouth,Fruit must not drop
+WAIW-581,Three-legged race,Two people's inside legs are tied together as they hurry,Partners must move in step
+WAIW-582,Musical chairs,"Dance around seats, and when the tune stops, grab one",Someone is always left standing
+WAIW-583,Statue game,Freeze like stone when the music stops,Anyone who wobbles is out
+WAIW-584,Snakes and ladders,"Roll a die, climb up, but slide down a reptile",Board has a hundred squares
+WAIW-585,Spinning top,Wind a string and throw this wooden toy to twirl,Called a lattu in many homes
+WAIW-586,Marbles,Small glass balls you flick to hit others,Played on the ground with friends
+WAIW-587,Hopscotch,Draw boxes on the ground and hop on one leg,Throw a flat stone and pick it up
+WAIW-588,Seven stones,"Stack flat pebbles, hit them with a ball, rebuild",Run to rebuild before getting hit
+WAIW-589,Push-ups,"Lower your chest to the floor, then raise your body",Fitness test of fifty
+WAIW-590,Somersault,Tuck your head and roll all the way over,Kids do it on a soft bed
+WAIW-591,Cartwheel,Spin sideways on your hands with legs flying,Gymnasts do it without stopping
+WAIW-592,Dumbbells,Heavy weights lifted in each hand at the gym,Used to build biceps
+WAIW-593,Whistle,Blow into it to make a loud sharp sound,"Referees, PT teachers and watchmen carry one"
+WAIW-594,Stopwatch,Press start and stop to measure exact time,Coach holds it at a race
+WAIW-595,Scoreboard,Big screen showing who is ahead,Lights up with numbers in a stadium
+WAIW-596,Jersey,Team shirt with a name and number at the back,Fans buy replicas of their hero's
+WAIW-597,Racket,Strung frame used to hit in tennis and badminton,Strings can snap
+WAIW-598,Shuttlecock,Little feathered cone hit across a net,Never touch the ground
+WAIW-599,Stadium,Huge ground with thousands of seats around it,Eden Gardens and Wankhede
+WAIW-600,Captain,"The leader of a team, who wears a special armband",Chooses heads or tails at the start
+WAIW-601,Toss,Flip a coin to decide who goes first,Heads or tails
+WAIW-602,Century,A hundred runs by one batter,Raising the bat and helmet to the crowd
+WAIW-603,Hat-trick,Three wickets in three deliveries in a row,Three goals by one player also
+WAIW-604,No ball,"Illegal delivery, and the umpire stretches an arm",Gives the batter an extra run
+WAIW-605,Wide ball,Delivery too far from the batter to hit,Umpire spreads both arms sideways
+WAIW-606,Clean bowled,Stumps are knocked down without the bat touching anything,Middle stump cartwheels away
+WAIW-607,Boundary,Rope or line at the edge of the field,Gives four or six runs
+WAIW-608,Super over,Tie-breaker with a single six-ball turn each side,Used after both teams score equally
+WAIW-609,Bouncer,Fast delivery that rises to the batter's head,Batter ducks quickly
+WAIW-610,World Cup,"Biggest tournament where countries compete, held every four years",India won in 1983 and 2011
+WAIW-611,Fielder,Stands out on the ground to stop and collect hits,Dives to save runs
+WAIW-612,Pitch,Strip of dry earth in the middle of the ground,Twenty-two yards long
+WAIW-613,Howzat,Whole team asks the umpire for a decision,Everyone yells it together
+WAIW-614,Man of the match,Award for the best player of the game,Given at the end by the presenter
+WAIW-615,Durga Puja,Bengal festival with huge decorated pandals and a ten-armed goddess,Dhak drums and sweets
+WAIW-616,Bihu,Assam festival with traditional dance and a colorful gamosa,Spring celebration with drums and songs
+WAIW-617,Lohri,"Punjab bonfire night with popcorn, peanuts and dancing",Done in January with bhangra
+WAIW-618,Baisakhi,Spring harvest festival of Punjab,Fairs and bhangra dancing
+WAIW-619,Rath Yatra,Giant chariots are pulled by crowds in Puri,Lord Jagannath goes out in a procession
+WAIW-620,Easter,Spring Christian festival with painted eggs and a bunny,Children hunt for chocolate eggs
+WAIW-621,Guru Nanak Jayanti,"Birthday of the first Sikh teacher, with prayers and langar",Gurdwara is lit and everyone eats together
+WAIW-622,Buddha Purnima,Full moon day remembering the Enlightened One's birth,"Candles, flowers and quiet prayers"
+WAIW-623,Iftar party,Evening gathering to break the fast with dates,Held in Ramzan after sunset
+WAIW-624,Goa Carnival,"Colorful parades with music, floats and masks in February",King Momo leads the fun
+WAIW-625,Children's Day,"Fourteenth November, with school fun and a famous Chacha",Nehru loved roses and kids
+WAIW-626,Teachers' Day,Students give cards and flowers to those who teach them,"Fifth September, remembering Radhakrishnan"
+WAIW-627,Gandhi Jayanti,"Second October, remembering the Father of the Nation",Spinning wheel and a walking stick
+WAIW-628,Mother's Day,A day to thank mom with cards and breakfast,Second Sunday of May
+WAIW-630,Housewarming,"Guests visit a new home, and milk is boiled",Prayers before moving in
+WAIW-631,Anniversary,Couple remembers the day they got married each year,"Flowers, cake and a gift for the spouse"
+WAIW-632,Farewell party,School or office gathers to say goodbye to someone,"Speeches, gifts and a few tears"
+WAIW-633,Picnic,Take food outdoors and eat on a mat,Family goes to a park or lake
+WAIW-634,Annual day,"School event with dances, plays and prizes in the evening",Parents clap from chairs
+WAIW-635,Qutub Minar,Tall red tower in Delhi that is very old,Stone pillar with five floors
+WAIW-636,India Gate,Delhi memorial arch for soldiers where families eat ice cream,Republic Day parade passes it
+WAIW-637,Red Fort,Big red sandstone stronghold in Delhi,Prime Minister hoists the flag there
+WAIW-638,Golden Temple,"Shiny gold Sikh shrine in Amritsar, surrounded by a pool",Free meals are served to everyone
+WAIW-639,Hawa Mahal,Pink palace of windows in Jaipur,Called the palace of breezes
+WAIW-640,Charminar,Four-minaret monument in Hyderabad,Pearls and bangles are sold nearby
+WAIW-641,Mysore Palace,Grand lit-up royal home in Karnataka,Lights up for Dasara
+WAIW-642,Kanyakumari,Southern tip of India where three seas meet,People go to see the sunrise and a rock statue
+WAIW-643,Ooty,Cool Nilgiri hills town with tea gardens,Toy train and chocolates
+WAIW-644,Backwaters,"Kerala's calm canals, where houseboats float",Coconut palms line the sides
+WAIW-645,Howrah Bridge,Big steel crossing in Kolkata over the Hooghly,Taxis and trams cross it
+WAIW-646,Victoria Memorial,White marble building and gardens in Kolkata,Named for an old British queen
+WAIW-647,Darjeeling,Hill town known for tea and a toy train,Views of Kanchenjunga
+WAIW-648,Sundarbans,"Mangrove swamp in Bengal, home of a famous cat",Boats take you in to look
+WAIW-649,Gateway of India,Stone arch by the sea in Mumbai,Taj Hotel stands behind it
+WAIW-650,Ajanta Caves,Ancient rock hollows with old painted walls in Maharashtra,Monks carved them long ago
+WAIW-651,Kaziranga,Assam park famous for one-horned animals,Jeep safari in tall grass
+WAIW-652,Cherrapunji,"One of the rainiest spots on Earth, in Meghalaya",Living root bridges nearby
+WAIW-653,Eiffel Tower,Iron landmark in Paris that lights up at night,France's most famous symbol
+WAIW-654,Pyramids,Giant stone triangles with mummies in Egypt,Built for pharaohs and guarded by a Sphinx
+WAIW-655,Great Wall of China,Very long ancient barrier snaking across hills,"Visible from space, people say"
+WAIW-656,Mount Everest,"Highest peak in the world, in Nepal",Hillary and Tenzing reached the top
+WAIW-657,North Pole,Icy top of the Earth where Santa lives,Polar bears live nearby
+WAIW-658,Waterfall,River drops from a high cliff with mist and noise,Jog Falls and Niagara
+WAIW-659,Island,Land with the sea on every side,Andaman and Lakshadweep
+WAIW-660,Volcano,Mountain that erupts with hot lava and ash,Smoke pours from the top
+WAIW-661,Farm,"Fields, a tractor, cows and a scarecrow",Grows crops and sells them
+WAIW-662,Playground,"Slides, swings and see-saws for kids",Recess happens here
+WAIW-663,Shopping mall,"Huge building with many shops, escalators and a food court",Cool air-conditioning and big sales
+WAIW-664,Restaurant,"Sit, read the menu and a waiter serves",Bill comes at the end
+WAIW-665,Tea shop,Small roadside stall with boiling kettles and biscuits,Uncles chat there reading the newspaper
+WAIW-666,Water park,Slides and wave pools for a splashy day out,Wear swimwear and tubes
+WAIW-667,Aquarium,Glass tanks with colorful fish and sharks,Dolphin shows sometimes happen
+WAIW-668,Igloo,Round house made of ice blocks,Eskimos live in one
+WAIW-669,Haunted house,Spooky old building with ghosts and creaky doors,Bats and cobwebs at night
+WAIW-670,Hill station,"Cool, misty town up high where people escape summer","Ooty, Kodaikanal and Shimla"
+WAIW-671,Moon,Shines at night and astronauts have walked on it,Chandrayaan landed on it
+WAIW-672,Threading a needle,Push a thin string through a tiny hole for stitching,Grandparents squint hard to do this
+WAIW-673,Watering plants,Pour from a can on things growing in pots,Done every morning in the garden
+WAIW-674,Eating something spicy,The mouth burns and eyes water from too much chilli,You fan your mouth and gulp water
+WAIW-675,Walking on hot sand,Feet burn so you hop quickly across the beach,Happens at noon in summer by the sea
+WAIW-676,Jumping in puddles,Splash through small pools of rain on the road,Children do this in boots or bare feet
+WAIW-677,Slipping on wet floor,Feet fly up and you nearly fall,"Happens just after mopping, so watch your step"
+WAIW-678,Using binoculars,Hold two small tubes to the eyes to see far,Bird watchers and cricket fans at the stadium do this
+WAIW-679,Seeing a cockroach,Jump back and scream at a brown insect indoors,Mummy grabs a slipper or a spray
+WAIW-680,Opening a tight jar,"Twist a lid with all your strength, it won't move",The pickle is inside and grandpa has to help
+WAIW-681,Bargaining,Argue to pay less at a market stall,"Say too costly, reduce the price, to a shopkeeper"
+WAIW-682,Taking a cold bath,Pour icy water over the body and shiver,Brrr in winter when the geyser has stopped
+WAIW-683,Shaving a beard,Scrape a blade over the face to make it smooth,Papa does this in front of the mirror with foam
+WAIW-684,Putting on lipstick,Paint the mouth red using a small tube,Done in front of a mirror before a party
+WAIW-685,Buttoning a shirt,"Close the front of a top, one tiny disc each",Done from the bottom to the neck before school
+WAIW-686,Cleaning your glasses,Wipe the lenses you see through with a soft cloth,Grandpa does it often to read the newspaper
+WAIW-687,Writing an exam,Sit silently and fill pages of answers with a pen,The teacher walks around and says time is up
+WAIW-688,Sharpening a pencil,Twist a school writing tool in a small blade holder,Wood shavings fall out and the point gets sharp
+WAIW-689,Hammering a nail,Hit a small metal pin into wood with a tool,Done to hang a picture on the wall
+WAIW-690,Digging a hole,Use a spade to remove mud from the ground,Done before planting a sapling
+WAIW-691,Pushing a stuck car,Lean on a vehicle and shove it forward,Everyone helps at the back on a muddy road
+WAIW-692,Changing a tyre,Use a jack and spanner on the roadside,Replace a flat round rubber wheel part
+WAIW-693,Riding a scooter,Sit on a two-wheeler and twist the handle to go,Papa takes the family to the market on it
+WAIW-694,Swinging on a swing,Sit on a seat tied to ropes and go to-and-fro,Kids do it in the park and shout higher
+WAIW-695,Going down a slide,Sit on a smooth ramp and zoom to the bottom,Playground fun that ends with a bump
+WAIW-696,Spinning a top,A pointed wooden toy that twirls on the ground,Wrap a string around it and throw hard
+WAIW-697,Shuffling cards,Mix up the pack before a game of rummy,Done by the dealer before every round
+WAIW-698,Juggling,Throw three balls in the air and keep catching them,Circus clowns are good at it
+WAIW-699,Doing push-ups,Lie face down and raise the body with the arms,Gym trainers say do twenty of them
+WAIW-700,Lifting weights,Raise a heavy iron bar over the head,It makes the muscles big
+WAIW-701,Shooting an arrow,"Pull back a string on a curved stick, let go",Arjuna did this in the stories
+WAIW-702,Watching a scary film,Cover the eyes and jump at a ghost on screen,Done in a dark cinema hall with popcorn
+WAIW-703,Singing in the shower,Belt out a song in the bathroom under falling water,Echoes make everyone think they sound great
+WAIW-704,Whistling,Blow air through rounded lips to make a sharp sound,Done to call a friend from far away
+WAIW-705,Clapping,Hit the palms together to make a noise,Done after a performance to say well done
+WAIW-706,Stung by a bee,A tiny buzzing insect pricked the arm and it swells,Honey makers get cross and leave a sharp pain
+WAIW-707,Waking up late,Open the eyes at noon and rush in a panic,Mummy shouts and the school van has left
+WAIW-708,Walking on tiptoe,Move quietly standing only on the front of the feet,Done so nobody hears when sneaking in at night
+WAIW-709,Midnight snacking,Sneak into the kitchen at 2 am for food,Open the fridge in the dark and nibble
+WAIW-710,Opening a gift,Tear the wrapping paper to see what is inside,Happens on a birthday or at Diwali
+WAIW-711,Chewing gum,Munch on a sweet rubbery thing without swallowing,You can blow big bubbles with it
+WAIW-712,Taking bitter medicine,Make a sour face while swallowing a syrup,Mummy says it will make you well
+WAIW-713,Getting an injection,The doctor pokes a sharp needle in the arm,Kids cry before the nurse even does it
+WAIW-714,Knitting a sweater,Click two sticks with wool to make a warm top,Grandmother does it in winter
+WAIW-715,Playing the flute,Blow across a thin pipe and move fingers on holes,Lord Krishna holds one
+WAIW-716,Walking a tightrope,Balance on a thin wire high in the air,Circus performers do this carefully
+WAIW-717,Stuck in a lift,Trapped in a small metal room that goes between floors,Press the alarm button and shout for help
+WAIW-718,Building a sandcastle,Pile wet beach grains into towers using a bucket,Waves wash it away at the sea
+WAIW-719,Giving a hug,Wrap both arms around someone you love,Done when meeting grandparents after a long time
+WAIW-720,Shaking hands,Grip another person's palm and move it up and down,Done politely when meeting someone new
+WAIW-721,Counting money,Go through rupee notes one by one for the total,A shopkeeper does this at night with the cash
+WAIW-722,Getting a shock,A sudden jolt from a live wire makes you jerk,Switch off the power before fixing the plug
+WAIW-723,Walking like a robot,Move with stiff arms and legs and beep,Metal machines in sci-fi films move that way
+WAIW-724,Making a paper boat,Fold a sheet into a toy that floats in rainwater,Kids float it in a puddle after rain
+WAIW-725,Playing a video game,Press buttons on a controller to beat levels,Kids ask for one more hour on the console
+WAIW-726,Doing homework,Sit at the desk and finish school tasks at night,Mummy says finish it before TV
+WAIW-727,Packing a suitcase,Fold shirts and fit them in a travel box,Squeeze everything in and sit on the lid to zip
+WAIW-728,Cheering for your team,Shout and wave a flag while the match is on,Done in a stadium or in front of the TV
+WAIW-729,Giving a speech,Stand on a stage and talk to a big crowd,Done at school annual day with a microphone
+WAIW-730,Smelling something bad,Pinch the nose and make a disgusted face,Happens near a garbage heap or a rotten egg
+WAIW-731,Scratching an itch,Rub nails on the skin where it tickles,A mosquito bite makes you do this
+WAIW-732,Dipa Karmakar,Gymnast who nearly won a medal at the Rio Olympics,Performed a very risky jump called Produnova
+WAIW-733,Lovlina Borgohain,Boxer from Assam who won Olympic bronze in Tokyo,Fights in the ring wearing gloves
+WAIW-736,Anju Bobby George,Jumper from Kerala who won a world bronze in 2003,First Indian to win a medal in athletics there
+WAIW-741,Deepika Kumari,Archer from Ranchi who once was world number one,"Shoots arrows with a bow, from Jharkhand"
+WAIW-742,Rani Rampal,Captain of the women's hockey team in Tokyo,Daughter of a cart puller from Haryana
+WAIW-743,Shreya Ghoshal,Playback singer with a sweet voice from Bengal,Sang Deewani Mastani in Bajirao Mastani
+WAIW-744,Asha Bhosle,"Veteran singer, younger sister of the Nightingale of India",Sang Dum Maro Dum and Piya Tu
+WAIW-745,Indra Nooyi,Indian-born boss of a cold drink and chips company,Led PepsiCo for twelve years
+WAIW-746,Aishwarya Rai,Actress crowned Miss World in 1994,Starred in Devdas and Jodhaa Akbar
+WAIW-747,Bachendri Pal,First Indian woman to climb Mount Everest,"From Uttarakhand, climbed it in 1984"
+WAIW-751,Sheetal Devi,Armless archer who won Paralympic medals,Shoots using her feet and shoulder
+WAIW-753,Karnam Malleswari,First Indian woman to win an Olympic medal,Weightlifter from Andhra who won bronze in Sydney 2000
+WAIW-756,KS Chithra,Called the Little Nightingale of the south,Sang in Tamil and Malayalam films
+WAIW-757,APJ Abdul Kalam,The Missile Man loved by children,Wrote Wings of Fire and was called the People's President
+WAIW-758,Jagadish Chandra Bose,Scientist who proved plants react like living things,Pioneer of radio and wireless waves from Bengal
+WAIW-759,R Ashwin,Spin bowler from Chennai who is also a batsman,Known for the carrom ball and cricket analysis
+WAIW-760,Sunil Gavaskar,Little Master opening batsman of the 1970s,First man to score ten thousand Test runs
+WAIW-761,Ravindra Jadeja,All-rounder who twirls his bat like a sword,Nicknamed Sir and fields like a rocket
+WAIW-762,Shubman Gill,"Young opening batsman from Punjab, India's Test captain",Scored a one-day double century at age 23
+WAIW-763,Rishabh Pant,Wicketkeeper who bats with fearless shots,Survived a car accident and returned to play
+WAIW-767,Satya Nadella,Hyderabad-born boss of the company that makes Windows,Also loves cricket
+WAIW-768,SP Balasubrahmanyam,Legendary singer who sang in sixteen languages,Sang Tere Mere Beech Mein for the hero
+WAIW-769,Shankar Mahadevan,Famous for the song Breathless in a single breath,Sang the Kal Ho Naa Ho title song
+WAIW-772,Salim Ali,Birdman of India,Wrote books about feathered creatures
+WAIW-775,Tenzing Norgay,Sherpa from Darjeeling who reached the top of Everest,Climbed with Edmund Hillary
+WAIW-776,Verghese Kurien,Milkman of India,Father of the White Revolution and Amul
+WAIW-777,Rohan Bopanna,Tennis doubles player who became number one at age 43,Won the Australian Open in 2024
+WAIW-778,Sanju Samson,Wicketkeeper from Kerala who plays for Rajasthan Royals,Hit a century in a T20 against South Africa
+WAIW-779,Virender Sehwag,Fearless opener who hit two triple centuries,Called the Nawab of Najafgarh
+WAIW-780,Kishore Kumar,Singer who also acted and yodeled,Sang Roop Tera Mastana and Mere Sapno Ki Rani
+WAIW-782,Chhota Bheem,Cartoon boy from Dholakpur who eats laddoos for strength,His friends are Chutki and Raju
+WAIW-783,Tenali Raman,Clever jester in the court of Krishnadevaraya,Famous for a story about a cat and milk
+WAIW-784,Birbal,Clever minister in Emperor Akbar's court,"Hero of many funny, wise stories"
+WAIW-785,Motu Patlu,Cartoon pair in Furfuri Nagar who love samosas,John the Don and Dr Jhatka are neighbours
+WAIW-786,Shaktimaan,Old TV superhero who spins like a top,Gangadhar the journalist changes into him
+WAIW-787,Mowgli,Boy raised by wolves in the jungle,Friends with Baloo the bear and Bagheera
+WAIW-788,Little Singham,"Cartoon child dressed as a police officer, punches bad guys",Based on a film cop and roars like a lion
+WAIW-789,Krrish,Indian film superhero in a black mask and boots,"Played by Hrithik Roshan, friend of the alien Jadoo"

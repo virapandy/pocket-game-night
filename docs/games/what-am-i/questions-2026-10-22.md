@@ -1,5 +1,7 @@
 # What Am I?: questions for the owner (product owner, 22 October 2026)
 
+**Decided 23 October 2026: owner, "follow your recommendations on WA1 to WA10".** Rows copied to `docs/decisions.md`.
+
 These change how the game plays, so they are the owner's (rule decisions are asked, never decided silently). Each has
 the convention marked **norm** and the product owner's recommendation. Answered rows move to `docs/decisions.md` as
 WA1, WA2, ….

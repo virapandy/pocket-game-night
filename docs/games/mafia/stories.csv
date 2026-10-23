@@ -1,0 +1,25 @@
+id,kind,text,notes
+MAFS-01,out,The Mafia knocked on {NAME}'s door at midnight. {NAME} is out.,the example in screen-map.md M1
+MAFS-02,out,The Mafia sent {NAME} far away on a very slow bus. {NAME} is out.,rewritten 23 October after the Jev check (understood under 0.4); re-check
+MAFS-03,out,{NAME} went out for a late-night samosa and never came back. {NAME} is out.,
+MAFS-04,out,The Mafia locked {NAME} in the store room with the old newspapers. {NAME} is out.,
+MAFS-05,out,"{NAME} was found fast asleep on the terrace, far from the game. {NAME} is out.",
+MAFS-07,out,{NAME} answered the phone. It was the Mafia. {NAME} is out.,
+MAFS-08,out,The Mafia hid {NAME}'s slippers. {NAME} went looking for them and never came back. {NAME} is out.,rewritten 23 October after the Jev check (understood under 0.4); re-check
+MAFS-09,out,{NAME} followed the smell of hot jalebis straight into a trap. {NAME} is out.,
+MAFS-10,out,"The power went off. When it came back, {NAME} was gone. {NAME} is out.",
+MAFS-11,out,The Mafia sent {NAME} to watch a very long cricket match. It still hasn't finished. {NAME} is out.,rewritten 23 October after the Jev check (understood under 0.4); re-check
+MAFS-13,out,The Mafia sat {NAME} in front of a TV show that never ends. {NAME} is out.,rewritten 23 October after the Jev check (understood under 0.4); re-check
+MAFS-14,out,{NAME} went to check on a strange noise. Never check on strange noises. {NAME} is out.,
+MAFS-15,out,The Mafia sent {NAME} to the kitchen to wash every vessel in the house. {NAME} is out.,
+MAFS-16,saved,"The Mafia came knocking, but the Doctor got there first with a hot cup of turmeric milk. Nobody is out!",the example in screen-map.md M1
+MAFS-17,saved,"The Mafia crept in at midnight, but the Doctor was already sitting there with a torch. Nobody is out!",
+MAFS-18,saved,"The Mafia tried their best, but the Doctor's ginger tea fixes everything. Nobody is out!",
+MAFS-19,saved,The Mafia slipped on a banana peel the Doctor left by the door. Nobody is out!,
+MAFS-20,saved,The Mafia rang the bell. The Doctor opened the door and sent them away. Nobody is out!,rewritten 23 October after the Jev check (understood under 0.4); re-check
+MAFS-21,saved,The Mafia had a plan. The Doctor had a better plan. Nobody is out!,
+MAFS-22,saved,"The Mafia came with a sack, but the Doctor came with a bigger sack. Nobody is out!",
+MAFS-23,saved,"The Mafia waited all night, but the Doctor's alarm clock rang first. Nobody is out!",
+MAFS-24,saved,The Mafia tiptoed in. The Doctor's pet dog had other ideas. Nobody is out!,
+MAFS-25,saved,A quiet night. Too quiet. The Doctor smiled. Nobody is out!,
+MAFS-26,saved,"The Mafia came for someone, but the Doctor sent them home with a lecture about sleep. Nobody is out!",

@@ -1,6 +1,7 @@
 # Handover: start here
 
 ## Now: status and what's next (product owner, updated 22 October 2026)
+**DO NOW, before anything else (owner, 23 October):** the `jev-design` helper, guard change, tool and 15,000-a-week counter in the "DO NOW" section below.
 **State on 22 October.** Live on the families' link: Tambola 1.2.0 and Impostor 1.3.1 (v1.3.1, 8 October). The faster-cycles
 setup is done on both sides (rules acb35a2; lane CI, shipped font, four shards, shared blocks in `src/blocks`; clock,
 area map, incremental mutation, quarantine; critic and player helpers installed). Last app change: 12 October. Secret
@@ -25,6 +26,101 @@ family game on the preview build and answers five questions (the product owner s
 A new orchestrator session starts here: read this section, then work through **"Next, in order"** from the
 top, reporting to the owner after each. The product owner keeps this section
 current; instructions live here, not in chat. History from Phase 0 and 1a is further down.
+
+### DO NOW (owner, 23 October): Jev for design checks, run by the product side: the jev-design helper and guard change, then the What Am I? check moves to the product owner
+The owner: the tester tests code; anything before code (word lists, screen maps, prototypes) is the product owner's, the UX
+designer's and the player helpers' job, and they may use Jev. To keep the lethal trifecta rule (16 October), add **one new
+helper, `jev-design`**, and teach the role guard about it. Project rules, so owner-approved changes only; the owner approved
+the intent on 23 October; show the owner the exact diff before committing.
+1. **Agent file** `.claude/workspace/agents/jev-design.md`: "Runs Jev design checks for the product owner: the word-list
+   check and the per-screen read of a screen map, from our own docs only. Holds the Jev key. Reads only
+   `pocket-game-night-product/docs/` and the Jev tools; never the web, the preview, a browser, test output or other helpers'
+   reports; edits nothing in any clone; never commits or pushes. Writes its report only to the product owner's scratchpad
+   (or `pocket-game-night-product/docs/games/<game>/jev-*.md` as an uncommitted file) and replies with a summary." Tools:
+   Read, Glob, Grep, Bash, Write.
+2. **Role guard** (`.claude/hooks/role-guard.mjs`): add `'jev-design': 'jevdesign'` to `AGENT_ROLE`; let `jevdesign` read
+   `SECRET_FILES` (as `test` does); deny it `WEB_TOOLS`, browser and preview tools (as for `test`); deny every `git`
+   command except `git -C <product clone> pull` and `status`; deny edits and writes outside the product clone's `docs/games/`
+   and the session scratchpad; deny reading `reports/` and any helper output folder.
+3. **Jev tool** it can run without the Test clone's test runner: a copy of `tests/tools/jev-map-walk.ts` generalised to
+   take `--game`, `--map` and `--words` paths (the tester writes it, as a tool, not a test), reusing `tests/sim/jev.ts`
+   (key, weekly cap, retry, redaction).
+4. **Budget (owner, 23 October):** the product side may use up to **15,000** of the 50,000 weekly Jev decisions; the
+   tester keeps the rest. Give `jev-design` its own usage count (for example a `--budget product` option writing
+   `reports/runs/jev-usage-product.json`, gitignored) that stops at 15,000 and also counts towards the shared 50,000.
+   The strategy it serves is approved: `docs/proposals/jev-for-design.md` (jobs J1–J7).
+5. When done, tell the product owner; it runs the What Am I? check below itself. **Until then, the request below stays
+   with the tester as written.**
+
+### Jev design tool: three fixes before the next What Am I? run (product owner, 23 October; tester writes them)
+The first run worked (2,563 decisions, no faults; `docs/games/what-am-i/jev-check.md`). Three fixes, then tell the product owner:
+1. **Control words** (`docs/proposals/jev-for-design.md` §3): ask 10 controls with every word run (known: Elephant, Banana,
+   Doctor, Cricket, Diwali, Chair; not known: three made-up words such as Flurbix; one regional pair such as Idli and
+   Dhokla). Report the controls first; if a known control falls below 0.8 or a made-up word rises above 0.2, mark the run
+   "controls failed" (this run rated Idli 0.25 and Hen 0.49, so absolute scores were not usable).
+2. ~~**Read the map's later sections**~~: no longer needed; the What Am I? map is draft 4 with every change written into the
+   screens. Still ignore table codes (D1–D7) and markup scraps (";", ",", "on with") as labels.
+3. **J2 and J3:** "Which pack does this word belong in?" (the packs, "none of these", "uncertain"); and "guessable from a
+   clue": take two clues per word from a `--clues <csv>` file (ready: `docs/games/what-am-i/clues.csv`, columns id, word, clue1,
+   clue2, 755 rows) and ask Jev to
+   pick the word from it plus 5 others from the same pack.
+
+### What Am I? prototype: re-render from map draft 4.1 (product owner, 23 October; same coder lane)
+The first render drew row descriptions as buttons and left out lists, so three persona walks got stuck on A1 and T3
+(`docs/games/what-am-i/prototype-walk-2026-10-23.md`). The map now quotes real labels and gives **K4, exact states for the
+renderer** (A1's "Host a game", T3's word TIGER with tap halves, S2's radios with ✓, S4's lines, the scoreboards, D2's names,
+word chips that move on T4). Also in the renderer, for every game: never draw the word "quiet" or the quote marks; a double tap
+on a guarded main button counts once; browser Back goes to the previous screen, not the index. Re-render
+`/preview/proto/what-am-i/` and tell the product owner.
+
+### What Am I? prototype (product owner, 23 October; one coder lane, C1, after the Jev tool fixes or in parallel)
+Feed `docs/games/what-am-i/screen-map.md` **draft 4** to the generic prototype renderer at `/preview/proto/what-am-i/`, as for
+Secret Words (`/preview/proto/secret-words/`), with the K1–K3 data. The word screen (T3) is shown sideways at 812 × 375 and
+568 × 320, and "Got it" / "Pass" are taps on the bottom / top halves (no motion in the prototype). Tell the product owner
+when it is live; the product owner runs the six persona walks and the Jev screen read on it. Design only: no game code.
+
+### What Am I? (game four, 23 October): Jev check of the screen map and word packs (tester, mid-size model, after Secret Words work in hand)
+Design only; nothing to build. Owner asked for the Jev check on 23 October. Two jobs, report to `reports/jev-map-what-am-i.md`:
+(1) **Jev per-screen read** of `docs/games/what-am-i/screen-map.md` draft 2 (on-screen *Words* and buttons only, as for the
+Secret Words map): for each screen, "which button would a person press next?" and any label Jev rates unclear; (2) **Jev
+word-list check** of `docs/games/what-am-i/words.csv` (789 words): flag words a mixed-region Indian family (ages 8–80,
+including a non-Hindi speaker from Tirunelveli) would not know, could not act or describe, or that are political or
+religious-sensitive. Within the weekly Jev cap. Tell the product owner when the report is pushed; it merges the findings
+into the map. The six persona walks are already done by the product owner.
+
+### Mafia (game five, 23 October): two additions to the jev-design tool (tester, mid-size model; owner asked, 23 October)
+Design only; nothing to build. **Always after What Am I?** (owner, 23 October): do this after any What Am I? tester work in
+hand. The Jev per-screen read of the Mafia map is **done** by the product side (`docs/games/mafia/jev-check.md`, 271
+decisions); this replaces the two jobs that were here. Both additions are tools in `tests/tools/jev-design/`, not tests; the
+product side runs them through the jev-design helper with `--budget product`.
+1. **Text check** (`--texts <csv> --column <name>`): one Choice call per row, each question with "uncertain": (a)
+   family-friendly; (b) understood by a mixed-region Indian family (ages 8–80, including a non-Hindi speaker from
+   Tirunelveli); (c) **scary for a 7-year-old?**; (d) would it get a laugh? First use: `docs/games/mafia/stories.csv`, column
+   `text` (26 morning stories, about 104 decisions). A report section lists rows under 0.5 on (a) or (b), or over 0.5 on (c).
+   Also, from the Mafia map run: skip dialog row IDs (D1…) and table rows that aren't buttons ("App hidden…", "A name").
+2. **Mafia table simulation** (`--sim mafia`): a referee script that deals and applies the rules in `docs/games/mafia/guide.md`
+   and decisions MF1–MF15 (`docs/decisions.md`): night first; Mafia pick (first picks, later Mafia agree or change, random if
+   they differ); Doctor (themselves once a game, never the same player two nights running); Police (Mafia or Not Mafia,
+   private); role shown when out; point at once, tie → point again among the tied → nobody out; "Nobody today"; Mafia win when
+   equal to the rest. Mafia counts by MF5 (5–7 → 1, 8–11 → 2, 12–15 → 3, 16 → 4); Doctor and Police from 6. **Code computes
+   the facts; Jev only chooses**: each player's night pick and day point is one Choice over the legal names (plus "nobody" by
+   day), given a short fact list the code writes for that player (who is out and their role, who pointed at whom each day, and
+   only their own private facts: Mafia partners and picks, the Doctor's past protections, the Police's results). Jev cannot
+   talk, so the Police's behaviour is a setting: `--police-shares never|when-found` (when-found: the Police's Mafia findings
+   join every player's facts on the next day). Seeds per game; the run is replayable.
+   First use: 6, 8, 10, 12 and 16 players × 20 games × both Police settings (200 games, about 6,000–8,000 decisions), with
+   `--max-decisions 8000` so it stops cleanly. Report: Village wins per size and setting, rounds per game, how long the first
+   player out sits out, Doctor saves, Mafia disagreements, ties and second ties, nobody-today days, decisions used.
+   Why: two rough models disagree (random votes: the Mafia win most games, `docs/games/mafia/balance-2026-10-23.md`; AI
+   players who talk: the Village won 11 of 12, `docs/games/mafia/sim-table-2026-10-23.md`). Jev players sit between them and
+   cost decisions instead of millions of tokens.
+Tell the product owner when both are pushed; it runs them and merges the findings. The persona walks still wait for the
+prototype renderer to draw `docs/games/mafia/screen-map.md` (draft 4), also after What Am I?.
+
+### PLT-208 wording, confirmed (product owner, 23 October)
+1. Share tapped mid-game: toast "Kept. You can share it when this game ends." ("You can share it" rather than "It can be shared").
+2. A report started from Home leaves the game out of its first line: "Problem report · app <version> · <date and time>".
+Both are in `docs/scenario-drafts/plt-208-209-share-sheet.md`.
 
 ### Secret Words version 3.7 (23 October): the owner's four questions are answered
 1. P1–P10: yes, written as "Version 3.7" paragraphs (SWD-010, 031, 033, 034, 043, 102, 103, 110, 112, 120, 124, 126, 127; Terms
