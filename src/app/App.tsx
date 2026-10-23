@@ -68,6 +68,10 @@ type BoardAsk = { map: SecretWordsMapToOpen; onePhone: boolean };
 function mapLinkRoute(text: string, stay: Route | null): { route: Route; ask: BoardAsk | null } | null {
   const link = secretWords.readMapLink(text);
   if (!link) return null;
+  // Privacy (SWD-002, D11): the code leaves the address bar as soon as it is read, before any dialog shows.
+  if (typeof location !== 'undefined' && location.hash.includes('#map=')) {
+    history.replaceState(history.state, '', `${location.pathname}${location.search}`);
+  }
   const code = secretWords.readMapCode(link.raw);
   if (code === 'invalid' || code === 'newer') return { route: { name: 'sw-code', text: link.raw, error: code, nonce: Date.now() }, ask: null };
   const map: SecretWordsMapToOpen = { code, ...(link.t ? { t: link.t } : {}), ...(link.p ? { p: link.p } : {}) };
@@ -80,8 +84,6 @@ function mapLinkRoute(text: string, stay: Route | null): { route: Route; ask: Bo
 function firstRoute(): Route {
   const link = phoneLink();
   if (link) return link;
-  const map = typeof location === 'undefined' ? null : mapLinkRoute(location.hash, null);
-  if (map) return map.route;
   const route = routeFromAddress();
   if (route.name !== 'home') return route;
   // IMP-101: an Impostor summary that was showing and not left shows again.
@@ -269,8 +271,13 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
     needRefresh: [needRefresh],
     updateServiceWorker,
   } = useRegisterSW();
-  const [boardAsk, setBoardAsk] = useState<BoardAsk | null>(() => (typeof location === 'undefined' ? null : mapLinkRoute(location.hash, null)?.ask ?? null));
-  const [route, setRoute] = useState<Route>(firstRoute);
+  // A map link is read once, here (it then leaves the address at once): its route and any D11 question.
+  const [opened] = useState(() => {
+    const map = typeof location === 'undefined' ? null : mapLinkRoute(location.hash, null);
+    return map ? { route: map.route, ask: map.ask } : { route: firstRoute(), ask: null };
+  });
+  const [boardAsk, setBoardAsk] = useState<BoardAsk | null>(opened.ask);
+  const [route, setRoute] = useState<Route>(opened.route);
   const initialRoute = useRef(route);
   /** SWD-002: opens a valid map, asking D11 first on a phone that is the board of an unfinished game night. */
   const openMap = (map: SecretWordsMapToOpen) => {

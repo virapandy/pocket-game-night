@@ -293,21 +293,22 @@ export function PhoneTickets({
     return (
       <main className={`screen ${rootClass}`}>
         <header className="top-bar">
-          {s.typing ? (
-            <button type="button" className="button button-quiet" onClick={game ? openTickets : leave}>
-              <span aria-hidden="true">← </span>
-              {game ? 'Back' : 'Home'}
-            </button>
-          ) : (
-            <button type="button" className="button button-quiet" onClick={game ? openTickets : leave}>
-              ← Back
-            </button>
-          )}
+          <button type="button" className="button button-quiet" onClick={game ? openTickets : leave}>
+            {/* SWD-002 (screen map J1): the Join screen's way back reads "← Back"; the ticket code form is unchanged. */}
+            {s.typing ? (
+              <>
+                <span aria-hidden="true">← </span>
+                {game ? 'Back' : 'Home'}
+              </>
+            ) : (
+              '← Back'
+            )}
+          </button>
         </header>
         <h1 className="step-title">{s.typing ? 'Type the code' : 'Join a game'}</h1>
         {!s.typing ? (
           <>
-            <p className="lead">Point this phone's camera at the QR on the host's phone.</p>
+            <p className="lead">Scan the QR on the host's phone with your phone's camera. Your ticket opens here.</p>
             <JoinScanner
               onRead={(text) => {
                 const i = text.indexOf('#t=');
@@ -318,6 +319,7 @@ export function PhoneTickets({
                 return onScan?.(text) ?? false;
               }}
             />
+            <p className="note">No QR to scan? The host's screen also shows a code under it.</p>
             <button type="button" className="button button-quiet button-big" onClick={() => setScreen({ name: 'enter', text: s.text, error: null, typing: true })}>
               Type a ticket code
             </button>
