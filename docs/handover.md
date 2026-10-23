@@ -1,6 +1,7 @@
 # Handover: start here
 
 ## Now: status and what's next (product owner, updated 22 October 2026)
+**DO NOW, before anything else (owner, 23 October):** the `jev-design` helper, guard change, tool and 15,000-a-week counter in the "DO NOW" section below.
 **State on 22 October.** Live on the families' link: Tambola 1.2.0 and Impostor 1.3.1 (v1.3.1, 8 October). The faster-cycles
 setup is done on both sides (rules acb35a2; lane CI, shipped font, four shards, shared blocks in `src/blocks`; clock,
 area map, incremental mutation, quarantine; critic and player helpers installed). Last app change: 12 October. Secret
@@ -26,7 +27,7 @@ A new orchestrator session starts here: read this section, then work through **"
 top, reporting to the owner after each. The product owner keeps this section
 current; instructions live here, not in chat. History from Phase 0 and 1a is further down.
 
-### Jev for design checks, run by the product side (owner, 23 October): a guard change, then the What Am I? check moves to the product owner
+### DO NOW (owner, 23 October): Jev for design checks, run by the product side: the jev-design helper and guard change, then the What Am I? check moves to the product owner
 The owner: the tester tests code; anything before code (word lists, screen maps, prototypes) is the product owner's, the UX
 designer's and the player helpers' job, and they may use Jev. To keep the lethal trifecta rule (16 October), add **one new
 helper, `jev-design`**, and teach the role guard about it. Project rules, so owner-approved changes only; the owner approved
