@@ -56,7 +56,7 @@ Each persona from `docs/proposals/player-agent.md`, for every stage, plus the mo
 
 ### Guest who just opened the link
 - I want to join the next game without the game stopping, so that I'm not left out (M1, M2).
-- I want to learn by playing a Villager first, so that I'm not Mafia on my first game: a "new player" choice? (decision M9)
+- I want to learn by playing a Villager first, so that I'm not Mafia on my first game: decided instead (MF14): a private "New to Mafia? What this means" on every role card, since a tick would tell the room
 
 ### Every game must also handle (room moments)
 | Moment | Mafia's special case |
@@ -66,6 +66,6 @@ Each persona from `docs/proposals/player-agent.md`, for every stage, plus the mo
 | Dinner mid-night (M11) | The night is saved at the exact step; when we come back the phone says whose turn it is to take it |
 | Someone forgot their role (M19) | "See my role again" during the day, held privately; never at night out of turn |
 | Wrong person took the phone at night (M17) | "Not Riya? ← Back" before anything shows |
-| Someone peeked at another's role (M20) | "Deal again" before the first night only |
+| Someone peeked at another's role (M20) | "Deal again" before the first night only; after that, carry on and forget it (MF15) |
 | Play again (M15) | Same people, new roles, one tap |
 | Who won the night (M16) | Games won by the Mafia and by the Village; who was Mafia most |

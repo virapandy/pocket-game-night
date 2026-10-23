@@ -1,6 +1,6 @@
-# Mafia: screen map (draft 2, product owner, 22 October 2026)
+# Mafia: screen map (draft 3, product owner, 23 October 2026)
 
-**Status: draft 2** (critic pass of draft 1 applied, section J). Stage 1 of `docs/proposals/design-before-code.md` (step 1b of `docs/new-game-process.md`). Drawn from
+**Status: draft 3** (critic pass of draft 1 applied, section J; owner's answers J-Q1 and J-Q2, 23 October). Stage 1 of `docs/proposals/design-before-code.md` (step 1b of `docs/new-game-process.md`). Drawn from
 `guide.md`, `fit-and-stories.md` and decisions MF1–MF13 (`docs/decisions.md`, 22 October). No scenarios exist yet, so
 the IDs column says which future scenario file a row belongs to (`MAF-01 setup` … `MAF-10 lifecycle`). Where a later
 `scenarios.md` differs from this map, the scenarios win.
@@ -51,14 +51,13 @@ Riya, Arjun +6 · Night 2" + where-line + "Tap to resume".
 
 ### S1. Who's playing?
 *Words:* heading "Who's playing?"; tonight's names already in the list (from another game tonight); input "Player name" +
-"Add"; per name "✕" and a small tick "First time" (MF9; **open, J-Q1**: the room can read who is ticked); counter "8 players"; under 5: "Mafia needs at least 5 players."
+"Add"; per name "✕"; counter "8 players"; under 5: "Mafia needs at least 5 players."
 (main disabled); over 16: "Up to 16 players." (Add disabled); quiet "How to play"; quiet "← Back"; main "Next".
 *Intentions:* back, help.
 | Tap | Leads to | Records | IDs |
 |---|---|---|---|
 | Add / Enter | name added, input cleared (every Enter adds, however fast, M3); same name: "Riya is already playing. Add an initial, like Riya S." | — | MAF-01 |
 | ✕ | name removed, toast "Kabir removed · Undo" | — | MAF-01 |
-| First time (tick) | ticked; nothing under the name says what it does (J-Q1) | setup | MAF-04 |
 | How to play | S4 How to play → Done → back here | — | MAF-09 |
 | ← Back | A2 picker | — | MAF-01 |
 | Next | S2 Roles | — | MAF-01 |
@@ -88,7 +87,7 @@ else."; quiet "← Back"; quiet "How to play"; main "Pass the phone round".
 | How to play | S4 → back | — | MAF-09 |
 
 ### S4. How to play (setup screens, menu)
-*Words:* the guide's "How to play" steps 1–7 and the rules box of S2, in short lines; "Done".
+*Words:* the guide's "How to play" steps 1–7 and the rules box of S2, in short lines; the peek line of MF15; "Done".
 | Tap | Leads to | IDs |
 |---|---|---|
 | Done | the screen it was opened from | MAF-09 |
@@ -109,12 +108,18 @@ else."; quiet "← Back"; quiet "How to play"; main "Pass the phone round".
 - **DOCTOR** · "At night, pick someone to protect from the Mafia. Yourself once a game. Never the same person two nights running."
 - **POLICE** · "At night, check one person. The phone tells only you: Mafia or Not Mafia."
 - **VILLAGER** · "You have no night power. By day, talk, watch and find the Mafia."
+While the role shows, a quiet "New to Mafia? What this means" (on **every** role card, so opening it tells nobody anything;
+MF14) opens, on the same private screen, three short lines for that role, e.g. Mafia: "Your side wins when the Mafia are as
+many as everyone else." · "At night, pick who goes out." · "By day, join in and point at others. Stay calm!"; Villager: "Your
+side wins when every Mafia is out." · "At night, pick who you think is Mafia. Only you see it." · "By day, listen, ask
+questions and vote." It closes with the role. Also in "See my role again" (D5).
 "Not Riya? ← Back" under the pad until the first hold; after the first hold: quiet "Someone saw my role", main "Done, pass to
 Arjun" (last player: "Done, everyone's seen"). No menu.
 | Tap | Leads to | Records | IDs |
 |---|---|---|---|
 | Hold / let go (or Tap instead → "Tap to see" / "Tap to hide") | role shown / hidden | — | MAF-05 |
 | Not Riya? ← Back | B1 for Riya | — | MAF-05 |
+| New to Mafia? What this means / hide | the three lines for this role shown / hidden; hidden with the role | — | MAF-04 |
 | Someone saw my role | D4 Deal again | — | MAF-05 |
 | Done, pass to Arjun | B1 for Arjun | `seen` | MAF-05 |
 | Done, everyone's seen | N0 Night begins | `seen` | MAF-02 |
@@ -288,7 +293,7 @@ Rule branches to reach at least once: three and four Mafia agreeing and differin
 who was the Mafia's target; Play again below 5 players; Doctor saves the Mafia's pick; Doctor's self-protect used then greyed; Doctor's
 "protected last night"; Mafia agree; Mafia differ (random); Police sees Mafia and Not Mafia; night ends the game; vote ends
 the game (both sides); first tie then decided; second tie; Nobody today; a leaver who was the last Mafia; a leaver who makes
-the Mafia equal; "First time" tick; 5 players (no Doctor or Police); 16 players with 4 Mafia; Mafia count ±1.
+the Mafia equal; "New to Mafia?" on each role; 5 players (no Doctor or Police); 16 players with 4 Mafia; Mafia count ±1.
 
 ## I. Open in draft 1 (for the persona walks, the critic and Jev to test)
 1. **Night pass with out players** (MF11): out players take the phone too, for their ghost guess. It adds about 10 s per out
@@ -313,13 +318,12 @@ is Mafia? Think, then pick" so Villagers take a moment too; "turmeric milk", "wh
 dialogs. MAF-08 (prizes) is not used: Mafia has no prizes.
 Not changed: "Welcome back." after a reload during a night job (it shows only that the holder's phone was interrupted; low).
 
-**Open for the owner:**
-- **J-Q1. The "First time" tick (MF9) tells the room something.** Whoever is ticked is publicly "not Mafia". Options: (a)
-  drop the tick; instead every role card has a "New to Mafia? What this means" line the player can open privately
-  (**recommended**: no leak at all); (b) keep it as "never Mafia" (they can still be Doctor or Police), and accept the room
-  knows they're on the Village side; (c) keep MF9 as decided (always a Villager).
-- **J-Q2. Someone peeks at a night job.** There is no redeal after night 1. Options: (a) the room carries on and the peeker
-  promises to forget (**recommended**, as in a real game with a moderator); (b) "End the game" and play again.
+**Owner's answers (23 October):**
+- **J-Q1 → MF14:** no "First time" tick (it told the room who wasn't Mafia). Every role card has a private "New to Mafia? What
+  this means" instead (B2, D5). Replaces MF9.
+- **J-Q2 → MF15:** if someone peeks at a night job, the game carries on and the peeker promises to forget, as with a human
+  moderator. "Deal again" stays for before night 1 only; How to play says so: "Saw someone's screen? Keep it to yourself and
+  carry on. Before the first night, Deal again instead."
 
 ## K. Prototype script (what the tap-through shows)
 Same rendering rules as Secret Words K3 (one state per screen, real labels, K4-style outcomes), with this data.
