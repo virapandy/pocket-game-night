@@ -181,4 +181,5 @@ Jev never writes text, counts or decides a rule; it sorts, scores and says yes o
 - [ ] Scenarios cross-checked three ways
 - [ ] Owner approval recorded in each scenario's status
 - [ ] Jev word list check run and its short list settled (word games and any game with a word file)
+- [ ] Screen and content words follow `docs/word-guidelines.md`; its Part C checks done
 - [ ] Screen map and prototype checked by Jev and the six persona agents; gap list at zero or decided; critic pass done; design frozen

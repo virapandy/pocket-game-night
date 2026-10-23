@@ -26,6 +26,15 @@ A new orchestrator session starts here: read this section, then work through **"
 top, reporting to the owner after each. The product owner keeps this section
 current; instructions live here, not in chat. History from Phase 0 and 1a is further down.
 
+### What Am I? (game four, 23 October): Jev check of the screen map and word packs (tester, mid-size model, after Secret Words work in hand)
+Design only; nothing to build. Owner asked for the Jev check on 23 October. Two jobs, report to `reports/jev-map-what-am-i.md`:
+(1) **Jev per-screen read** of `docs/games/what-am-i/screen-map.md` draft 2 (on-screen *Words* and buttons only, as for the
+Secret Words map): for each screen, "which button would a person press next?" and any label Jev rates unclear; (2) **Jev
+word-list check** of `docs/games/what-am-i/words.csv` (320 words): flag words a mixed-region Indian family (ages 8–80,
+including a non-Hindi speaker from Tirunelveli) would not know, could not act or describe, or that are political or
+religious-sensitive. Within the weekly Jev cap. Tell the product owner when the report is pushed; it merges the findings
+into the map. The six persona walks are already done by the product owner.
+
 ### Secret Words version 3.7 (23 October): the owner's four questions are answered
 1. P1–P10: yes, written as "Version 3.7" paragraphs (SWD-010, 031, 033, 034, 043, 102, 103, 110, 112, 120, 124, 126, 127; Terms
    "Small line colour"). 2. Jev's flagged words: reworded in 3.7 (most were already reworded in 3.5–3.6; the prototype shows old
