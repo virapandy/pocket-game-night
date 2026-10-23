@@ -26,6 +26,27 @@ A new orchestrator session starts here: read this section, then work through **"
 top, reporting to the owner after each. The product owner keeps this section
 current; instructions live here, not in chat. History from Phase 0 and 1a is further down.
 
+### Jev for design checks, run by the product side (owner, 23 October): a guard change, then the What Am I? check moves to the product owner
+The owner: the tester tests code; anything before code (word lists, screen maps, prototypes) is the product owner's, the UX
+designer's and the player helpers' job, and they may use Jev. To keep the lethal trifecta rule (16 October), add **one new
+helper, `jev-design`**, and teach the role guard about it. Project rules, so owner-approved changes only; the owner approved
+the intent on 23 October; show the owner the exact diff before committing.
+1. **Agent file** `.claude/workspace/agents/jev-design.md`: "Runs Jev design checks for the product owner: the word-list
+   check and the per-screen read of a screen map, from our own docs only. Holds the Jev key. Reads only
+   `pocket-game-night-product/docs/` and the Jev tools; never the web, the preview, a browser, test output or other helpers'
+   reports; edits nothing in any clone; never commits or pushes. Writes its report only to the product owner's scratchpad
+   (or `pocket-game-night-product/docs/games/<game>/jev-*.md` as an uncommitted file) and replies with a summary." Tools:
+   Read, Glob, Grep, Bash, Write.
+2. **Role guard** (`.claude/hooks/role-guard.mjs`): add `'jev-design': 'jevdesign'` to `AGENT_ROLE`; let `jevdesign` read
+   `SECRET_FILES` (as `test` does); deny it `WEB_TOOLS`, browser and preview tools (as for `test`); deny every `git`
+   command except `git -C <product clone> pull` and `status`; deny edits and writes outside the product clone's `docs/games/`
+   and the session scratchpad; deny reading `reports/` and any helper output folder.
+3. **Jev tool** it can run without the Test clone's test runner: a copy of `tests/tools/jev-map-walk.ts` generalised to
+   take `--game`, `--map` and `--words` paths (the tester writes it, as a tool, not a test), reusing `tests/sim/jev.ts`
+   (key, weekly cap, retry, redaction).
+4. When done, tell the product owner; it runs the What Am I? check below itself. **Until then, the request below stays
+   with the tester as written.**
+
 ### What Am I? (game four, 23 October): Jev check of the screen map and word packs (tester, mid-size model, after Secret Words work in hand)
 Design only; nothing to build. Owner asked for the Jev check on 23 October. Two jobs, report to `reports/jev-map-what-am-i.md`:
 (1) **Jev per-screen read** of `docs/games/what-am-i/screen-map.md` draft 2 (on-screen *Words* and buttons only, as for the
