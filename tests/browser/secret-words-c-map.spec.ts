@@ -27,6 +27,8 @@ const END_LINE = 'Game over: tap Done with this game. New board on the host: tap
 const MISMATCH = "Doesn't match? Scan the host's code again.";
 const WARNING = 'Still looking? Tap to keep the map';
 const idx = (b: typeof B, k: string) => b.kinds.map((x, i) => (x === k ? i : -1)).filter((i) => i >= 0);
+/** Lets Date.now() run on again after `freshPhone({ fixed: true })` (Playwright's setFixedTime), from the same time. */
+async function unfixClock(page: Page) { await page.clock.setSystemTime(await page.evaluate(() => Date.now())); }
 const landmineWord = (b: typeof B) => b.words[b.kinds.indexOf('landmine')]!;
 
 // =============================================================== privacy first (SWD-025, 031, 032, 121)
@@ -726,13 +728,13 @@ test.describe('SWD-036: clearing and replacing maps', () => {
   });
 
   test.describe('Home\'s saved-map row (A1 is lane A\'s screen)', () => {
-    test.beforeEach(() => { aheadOfSecretWordsScreens("lane A: Home's saved-map row"); });
     const H6 = 6 * 3_600_000;
     test('up to 6 hours: a button "Secret Words map 27P-3QX8 · Tap to open" that opens the map with its found marks', async ({ page }) => {
       await freshPhone(page, { fixed: true, storage: { 'pgn.secretWords.map': { code: CODE, savedAt: T0 - H6, found: [3], t: PAIR.id } } });
       const row = page.getByRole('button', { name: `Secret Words map ${shown(CODE)} · Tap to open`, exact: true });
       await expect(page.getByTestId('saved-map')).toBeVisible();
       await expect(row).toBeVisible();
+      await unfixClock(page); // the row is read at the fixed time; taps need the clock to run (500 ms guard)
       await waitGuards(page);
       await row.click();
       await expect(mapHeading(page)).toBeVisible();
@@ -746,6 +748,7 @@ test.describe('SWD-036: clearing and replacing maps', () => {
       await expect(row).toContainText(`Secret Words map ${shown(CODE)}`);
       await expect(row).not.toContainText('Tap to open');
       await expect(row.getByRole('button', { name: 'Open', exact: true })).toBeVisible();
+      await unfixClock(page); // the row is read at the fixed time; taps need the clock to run (500 ms guard)
       await waitGuards(page);
       await row.getByRole('button', { name: 'Remove', exact: true }).click();
       const d = dialogNamed(page, 'Remove this map from your phone?');
@@ -898,7 +901,6 @@ test.describe('SWD-034 (v3.6): "I give clues for:" with three phones', () => {
 
 test.describe('SWD-034 v3.6: "Clue rules" (How to play is lane A\'s screen)', () => {
   test('opens How to play at "Clue rules", nothing about the map in it; "Done" returns to the map phone', async ({ page }) => {
-    aheadOfSecretWordsScreens('lane A: How to play (S5)');
     await openMapPhone(page, { t: PAIR.id });
     await waitGuards(page);
     await button(page, 'Clue rules').click();
@@ -912,7 +914,6 @@ test.describe('SWD-034 v3.6: "Clue rules" (How to play is lane A\'s screen)', ()
 
 test.describe('SWD-117: a typed code never shows team names or my-team (code entry is lane A\'s screen)', () => {
   test('Join → "Type the host\'s code" → "27p-3qx8" → the map phone: no map-teams, no my-team, "· Orange/Teal team goes first"', async ({ page }) => {
-    aheadOfSecretWordsScreens('lane A: Join and code entry');
     await freshPhone(page);
     await waitGuards(page);
     await page.getByRole('button', { name: /^Join a game/ }).click();
