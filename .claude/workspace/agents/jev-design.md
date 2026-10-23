@@ -19,11 +19,11 @@ How you work
 2. Run the Jev design tool from the Test clone with the product budget, for example
    `cd /Users/virat/Documents/Game_On/pocket-game-night-testing && node tests/tools/jev-design/run.ts --budget product
    --game <game> --map <path to screen-map.md> --words <path to words.csv> --out <report path>`
-   (its README gives the exact options). The product side may use 15,000 of the 50,000 weekly Jev decisions; the tool stops
+   (its README gives the exact options). The product side may use 30,000 of the 50,000 weekly Jev decisions; the tool stops
    at the limit. Never change the limit, the key or the tool.
 3. Write the report only to the product owner's scratchpad or `pocket-game-night-product/docs/games/<game>/jev-*.md`, and
    leave it uncommitted: the product owner reads, merges and commits.
-4. Reply with a summary: what was checked, the decisions used of the 15,000, and the findings Jev rates clearly (above 0.8),
+4. Reply with a summary: what was checked, the decisions used of the 30,000, and the findings Jev rates clearly (above 0.8),
    worth a look (0.5–0.8) and unsure (below 0.5 or "uncertain"), kept apart from any tool faults.
 
 Never edit anything else, never commit or push, never run tests, builds or other commands.

@@ -59,6 +59,29 @@ Read this and the top of `reports/latest.md` before starting. Keep it short: rep
 - Finding for the owner: the engine has no pass move (a clue needs at least one guess; only "Clue not allowed" ends a turn with none, and it gives the other team a word). A team out of planned clues therefore ends the board and is counted; asked for "pass with clue 0, no guesses" was not possible.
 - Jev decisions: one per guess; run limit 6000 (SIM_TABLE_RUN_LIMIT).
 
-## 23 October: Secret Words screen lane C tests (lane-e)
-- `tests/browser/secret-words-c-map.spec.ts` + helpers `secret-words-c.ts`; coder note `specs/secret-words/screens-c.md`. M1 is opened by the `#map=` link on a fresh phone (lane A also owns/tests that link). When lane A/B/D land, remove the `aheadOfSecretWordsScreens` calls that then pass.
-- **Port clash:** Playwright's preview server is fixed at port 4173 with `reuseExistingServer`; two testers running browser tests at once share (or kill) each other's server and test the other lane's build. Run browser tests one tester at a time, or check `curl localhost:4173/pocket-game-night/` serves your own build first.
+## 23 October: Secret Words screen lane A tests (lane-a, scenarios v3.7)
+- Written: `tests/browser/secret-words-a-home.spec.ts` (Home, picker, Start new, Join, code entry, QR link, D11 board-phone dialog with privacy checks),
+  `secret-words-a-setup.spec.ts` (S1 to S5, the Clue givers sheet, five sizes, small-line colour), shared `secret-words-a.ts`. Coder's note of ids and roles:
+  `tests/games/secret-words/screens-a.md`. Specs under `specs/secret-words/` are still v3.6 (the other tester updates them); these tests read v3.7 straight from
+  `docs/games/secret-words/scenarios.md`. All 132 tests are marked `aheadOfSecretWordsScreens` except two that already hold (Home menu "History"; no last night on an empty
+  phone). Run as real checks with `PGN_IGNORE_AHEAD=1`. Remove each mark when Playwright says "expected to fail, but passed".
+- The tests have never met a real screen: expect to adjust selectors (not checks) on the first green attempt. Models inside: SWD-004/006/130 team draws (`drawSplit`),
+  saved nights from `secret-words-saved-evenings-v1.json` (`phoneWithNights`, `variant`), codes with the right check symbol (`codeFromValues`).
+- Tambola helpers now accept both old and new wording for "Type the code" / "Type a ticket code" and Home's second-card line (SWD-002, rule 11); strip the old forms after lane A merges.
+- Not tested: SWD-007 "closing it any other way" (undefined), SWD-130 from game 2 (needs a played game), "Add a partner" behaviour (SWD-123, lane B). Open questions: `docs/test-questions.md` (23 October rows).
+
+## Lane A tests, 23 Oct (tester)
+Merged origin/main (PGN_PORT per lane: lane-a 4174). Lane A area: 129 of 132 pass on Android (PGN_IGNORE_AHEAD=1). The 3 failures end on the map phone (lane C): secret-words-a-home.spec.ts lines 323, 358, 418. Four coder questions answered in docs/test-questions.md (all test problems, fixed).
+
+## 23 October: Secret Words 3.7 specs (main) and lane B tests first (lane-b)
+- Specs: `specs/secret-words/` is scenarios 3.7 (db2398d). The split was regenerated from `docs/games/secret-words/scenarios.md`
+  (sections by their `→ specs/...` headings; `### SWD-nnn Title` → `## SWD-nnn: Title` + Status/Phase lines; README = the
+  front matter + Test hooks). Rule tests needed no change for 3.7 (SWD-101/131: the warning stays a hint).
+- Lane B (the turn on the host): `secret-words-shared.spec.ts`, `secret-words-turn.spec.ts`, `secret-words-dialogs.spec.ts`,
+  helpers `secret-words-b.ts`, coder note `specs/secret-words/screens-b.md`. They reach the turn through lane A's setup, so
+  they fail at the picker until lane A is merged and lane-b rebased (done 23 Oct). Six lane B checks in `secret-words-c3.spec.ts` are real
+  checks now (SWD-090, 042 ×2, 033 QR ×2, 129); the other 12 stay `aheadOfSecretWordsScreens` (lanes A, C, D).
+- Never run against a real screen: expect to adjust selectors (not checks) the first time, as with the C3 browser checks.
+
+## Lane B fixes, 23 Oct (tester)
+`pass screen` checks in the SWD-094/098 test wait out the 1 s guard; `toGuessing` waits for `clue-line`. Both questions answered in docs/test-questions.md.

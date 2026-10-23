@@ -5,7 +5,7 @@
 // present), SIM_RUN (a name that makes this run's seeds), JEV_DECISIONS (most Jev decisions per job, default 400).
 import { defineConfig, devices } from '@playwright/test';
 
-const PORT = 4173;
+const PORT = Number(process.env.PGN_PORT ?? 4173);
 export const APP_URL = `http://localhost:${PORT}/pocket-game-night/`;
 
 export default defineConfig({

@@ -2,8 +2,8 @@
 // SWD-099 and SWD-090 v3.6 (every word fits its cell; a too-wide word shrinks alone), SWD-042 v3.6 (tap to zoom), SWD-022 (host board = map phone for the same code), SWD-025 (no kind of a
 // face-down cell in a room screen's DOM), SWD-117 (the QR format and team names on the map phone), SWD-129 (Show the
 // map code again records nothing). Rules: tests/games/secret-words/. Helpers: secret-words.ts.
-// Tests that need the Secret Words screens are marked `aheadOfSecretWordsScreens` (expected to fail until built);
-// lane C's own checks (SWD-117's link, unknown t and my-team on the map phone) are real checks since 23 October (lane-e).
+// Tests that need screens from lanes A, C or D are marked `aheadOfSecretWordsScreens` (expected to fail until built);
+// lane B's own checks (SWD-090, 042, 033 QR, 129) are real checks since 23 October (lane-b tests first).
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { expect, test, type Page } from './fixtures';
@@ -82,7 +82,6 @@ async function guessingOn(page: Page, code: string, seed: string, n: number | 'i
 test.describe('SWD-090 (v3.6): a word that doesn\'t fit at 12 px shrinks alone', () => {
   test.use({ viewport: { width: 360, height: 640 } });
   test('360 × 640: one board size from 22 to 12 px; only a word that doesn\'t fit at 12 px is smaller, by 0.5 px steps, never below 10 px; every word fits in 1 line', async ({ page }) => {
-    aheadOfSecretWordsScreens('board screens (SWD-090 v3.6 shrink alone)');
     await guessingOn(page, WIDE_CODE, 'shrink-alone');
     const cells = await boardCells(page).evaluateAll((els) => els.map((el) => {
       const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, { acceptNode: (n) => ((n.textContent ?? '').trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP) });
@@ -177,11 +176,10 @@ async function expectZoomOver(page: Page, index: number, word: string) {
 test.describe('SWD-042 (v3.6): tap to zoom', () => {
   test.use({ viewport: { width: 390, height: 844 } });
   test('guessing: a tap picks and zooms; the zoom follows the pick, goes when unpicked or revealed; same look for every kind', async ({ page }) => {
-    aheadOfSecretWordsScreens('board screens (SWD-042 v3.6 word-zoom)');
     const b = oracleBoard(WIDE_CODE);
     await guessingOn(page, WIDE_CODE, 'zoom-guess', 2);
     await expect(page.getByTestId('word-zoom')).toHaveCount(0);
-    // A wide word first (face down: nothing is turned yet), then one of the team's own words and a blank word, all different.
+    // A wide word first (face down: nothing is turned yet), then one of the team's own words and a nobody's word, all different.
     const wide = b.words.findIndex((w) => WIDE_WORDS.includes(w));
     const own = b.kinds.map((k, i) => (k === b.starts && i !== wide ? i : -1)).filter((i) => i >= 0);
     const blank = b.kinds.findIndex((k, i) => k === 'nobody' && i !== wide);
@@ -210,7 +208,6 @@ test.describe('SWD-042 (v3.6): tap to zoom', () => {
   });
 
   test('a turned-over cell: a tap only zooms, for 2 000 ms; another tap within that time moves it', async ({ page }) => {
-    aheadOfSecretWordsScreens('board screens (SWD-042 v3.6 word-zoom on turned-over cells)');
     const b = oracleBoard(WIDE_CODE);
     await guessingOn(page, WIDE_CODE, 'zoom-turned', 2);
     const own = b.kinds.map((k, i) => (k === b.starts ? i : -1)).filter((i) => i >= 0);
@@ -239,6 +236,7 @@ test.describe('SWD-117: the map phone from the host\'s QR link', () => {
   const starter = b.starts === 'orange' ? pair.orange : pair.teal;
 
   test('#map=27P3QX8&t=SWDT-01 opens the map phone with team names; the hash is removed; the map is the code\'s', async ({ page }) => {
+    aheadOfSecretWordsScreens('map phone (SWD-034, 117)');
     await freshPhone(page);
     await page.goto('about:blank');
     await page.goto(`./#map=${code}&t=${pair.id}`);
@@ -260,6 +258,7 @@ test.describe('SWD-117: the map phone from the host\'s QR link', () => {
   });
 
   test('an unknown t is ignored: no map-teams, "Host\'s code 27P-3QX8 · Orange team goes first" (or Teal)', async ({ page }) => {
+    aheadOfSecretWordsScreens('map phone (SWD-117)');
     await freshPhone(page);
     await page.goto('about:blank');
     await page.goto(`./#map=${code}&t=SWDT-99`);
@@ -269,6 +268,7 @@ test.describe('SWD-117: the map phone from the host\'s QR link', () => {
   });
 
   test('&p=own (three phones): my-team "I give clues for:" with the two team names; saved with the map', async ({ page }) => {
+    aheadOfSecretWordsScreens('map phone my-team (SWD-034, 117, v3.6)');
     await freshPhone(page);
     await page.goto('about:blank');
     await page.goto(`./#map=${code}&t=${pair.id}&p=own`);
@@ -281,7 +281,6 @@ test.describe('SWD-117: the map phone from the host\'s QR link', () => {
 
   for (const phones of ['Two phones', 'Three phones'] as const) {
     test(`the host's scan QR (${phones}) is <origin><BASE_URL>#map=<code>&t=<pair id>${phones === 'Three phones' ? '&p=own' : ''}`, async ({ page }) => {
-      aheadOfSecretWordsScreens('scan screen (SWD-033, 117)');
       await hostEvening(page, { phones, boards: [code], seed: 'qr' });
       await expect(scanHeading(page)).toBeVisible();
       await expect(page.getByTestId('map-code-text')).toContainText(shown(code));
@@ -319,7 +318,7 @@ async function hostBoardAtGameOver(page: Page, code: string) {
 test.describe('SWD-022: the host board and a map phone given the same code agree', () => {
   for (const code of CODES) {
     test(`code ${shown(code)}: the same words in the same cells, the same kinds, the same starting team`, async ({ page, browser }, testInfo) => {
-      aheadOfSecretWordsScreens('lanes B and D: the host\'s board and game over (SWD-022 browser check; the map phone is lane C)');
+      aheadOfSecretWordsScreens('host board and map phone (SWD-022 browser check)');
       const b: OracleBoard = oracleBoard(code);
       const host = await hostBoardAtGameOver(page, code);
       expect(host.during.map((c) => c.word)).toEqual(b.words);
@@ -339,7 +338,6 @@ test.describe('SWD-022: the host board and a map phone given the same code agree
 
 test.describe('SWD-129: Show the map code again', () => {
   test('two phones, at the clue screen: the scan screen for the current board, no menu, "Back to the game" returns; nothing is recorded', async ({ page }) => {
-    aheadOfSecretWordsScreens('Show the map code again (SWD-129)');
     const code = CODES[3]!;
     await hostEvening(page, { phones: 'Two phones', boards: [code], seed: 'again' });
     await tapMain(page, /^The map phone has the map$/);
@@ -397,7 +395,7 @@ async function faceDownUniform(page: Page): Promise<string[]> {
 test.describe('SWD-025: room screens carry no kind of a face-down cell', () => {
   for (const phones of ['One phone', 'Two phones', 'Three phones'] as const) {
     test(`${phones}: 10 seeded games, at every step`, async ({ page }) => {
-      aheadOfSecretWordsScreens('board screens (SWD-025 browser check)');
+      aheadOfSecretWordsScreens('game over heading, G1 in lane D (SWD-025 browser check; its board screens are lane B)');
       test.setTimeout(10 * 60_000);
       for (let g = 0; g < 10; g++) {
         const code = oracleCode({ edition: 1, board: 'full', words: 'family' }, 10_007 * (g + 1), g);
@@ -412,7 +410,7 @@ test.describe('SWD-025: room screens carry no kind of a face-down cell', () => {
           if (phones === 'One phone') { await check('pass screen'); await passToClue(page); }
         };
         if (phones !== 'One phone') await tapMain(page, /^(The map phone has the map|Both have the map)$/);
-        // Turn 1: one of the team's own words, then a blank word (turn over).
+        // Turn 1: one of the team's own words, then a nobody's word (turn over).
         await toClue();
         await check('clue screen');
         await giveClue(page, 2);
@@ -442,7 +440,7 @@ test.describe('SWD-025: room screens carry no kind of a face-down cell', () => {
 
 test.describe('SWD-117 / SWD-022: a typed code opens the same map, without team names', () => {
   test('the code entry with "27p-3qx8" opens the map phone: no map-teams, the code\'s words', async ({ page }) => {
-    aheadOfSecretWordsScreens('lane A: Join and code entry (SWD-002, 117; the map phone is lane C)');
+    aheadOfSecretWordsScreens('Join → code entry → map phone (SWD-002, 117)');
     await freshPhone(page);
     await waitGuards(page);
     await page.getByRole('button', { name: /^Join a game/ }).click();
