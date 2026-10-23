@@ -17,6 +17,7 @@ export {
 
 // Screen lane B: the turn on the host (src/games/secret-words/ui/turn/Turn.tsx, how the app uses it at its top).
 export { SecretWordsPlay, type SecretWordsPlayProps } from './ui/turn/Turn';
+export { showingNight as secretWordsShowingNight } from './ui/turn/store';
 
 export const secretWordsInfo: GameInfo = {
   id: 'secret-words',

@@ -19,6 +19,8 @@ export interface SwUiState {
   readonly pickerOverride?: string | null;
   /** SWD-102 v3.7: the evening's first flip has shown its toast. */
   readonly flipped?: boolean;
+  /** The turn screens are on the phone's screen (cleared by "Home (keep this game)"): a reload opens them again. */
+  readonly showing?: boolean;
 }
 
 export function readUi(ui: Preferences, id: string): SwUiState {
@@ -74,3 +76,13 @@ export function recordMoves(store: SavedGameStore, saved: SavedGame, match: Nigh
 }
 
 export const otherTeam = (t: Team): Team => (t === 'orange' ? 'teal' : 'orange');
+
+/**
+ * SWD-048: the game night whose turn screens were showing when the app was closed or reloaded, so the app opens on it
+ * again; null when none (after "Home (keep this game)" the app opens on Home).
+ */
+export function showingNight(store: SavedGameStore, ui: Preferences): string | null {
+  const list = store.list().filter((g) => g.gameType === 'secret-words' && g.status === 'in-progress').sort((a, b) => b.updatedAt - a.updatedAt);
+  for (const g of list) if (readUi(ui, g.id).showing === true && loadNight(g)) return g.id;
+  return null;
+}

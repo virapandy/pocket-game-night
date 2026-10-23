@@ -119,8 +119,7 @@ export function SecretWordsPlay(props: SecretWordsPlayProps) {
   };
   const [uiState, setUiState] = useState<SwUiState>(() => {
     const cur = readUi(ui, id);
-    if (props.start === 'preview' && cur.step === undefined) return writeUi(ui, id, { step: 'preview' });
-    return cur;
+    return writeUi(ui, id, { showing: true, ...(props.start === 'preview' && cur.step === undefined ? { step: 'preview' } : {}) });
   });
   const patchUi = useCallback((p: Partial<SwUiState>) => setUiState(writeUi(ui, id, p)), [ui, id]);
 
@@ -355,7 +354,10 @@ export function SecretWordsPlay(props: SecretWordsPlayProps) {
   const codeAgain = item('Show the map code again', () => go({ name: 'again', back: screen }));
   const fix = [item('New board', () => setOverlay('newBoard'))];
   const leave = (endGame: boolean) => [
-    item('Home (keep this game)', onHome),
+    item('Home (keep this game)', () => {
+      patchUi({ showing: false });
+      onHome();
+    }),
     ...(endGame ? [item('End the game', () => onMenu?.('end-game'))] : []),
     item('End for tonight', () => onMenu?.('end-tonight')),
   ];
