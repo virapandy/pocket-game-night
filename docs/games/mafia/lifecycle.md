@@ -37,7 +37,7 @@ draft 3. Decisions: MF1–MF15 (`docs/decisions.md`).
   the story IDs used, and the role seed, so the game replays exactly.
 - Nothing secret is left behind: roles are already shown at game over, so keeping them spoils nothing (unlike a word game's
   word list).
-- History line: "Mafia · 9:10 pm · 8 players · The Village won · 3 nights".
+- History line: "Mafia · 9:10 pm · 9 players · The Village won · 3 nights".
 
 ## Anything that must never be lost
 Nothing beyond the shared rules: no money, no prizes, no roll-overs. The score of tonight is kept with the game night like

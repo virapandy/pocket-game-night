@@ -51,7 +51,7 @@ Riya, Arjun +6 · Night 2" + where-line + "Tap to resume".
 
 ### S1. Who's playing?
 *Words:* heading "Who's playing?"; tonight's names already in the list (from another game tonight); input "Player name" +
-"Add"; per name "✕"; counter "8 players"; under 5: "Mafia needs at least 5 players."
+"Add"; per name "✕"; counter "9 players"; under 5: "Mafia needs at least 5 players."
 (main disabled); over 16: "Up to 16 players." (Add disabled); quiet "How to play"; quiet "← Back"; main "Next".
 *Intentions:* back, help.
 | Tap | Leads to | Records | IDs |
@@ -63,9 +63,9 @@ Riya, Arjun +6 · Night 2" + where-line + "Tap to resume".
 | Next | S2 Roles | — | MAF-01 |
 
 ### S2. Roles
-*Words:* heading "Roles for 8 players"; line "Mafia: 2" with "−" and "+" and "We suggest 2 for 8 players."; lines "Doctor:
-1", "Police: 1", "Villagers: 4" (counts only, no buttons); with 5 players: "With 5 players: 1 Mafia and 4 Villagers. Doctor and
-Police join at 6." ; rules box "Night comes first · Doctor can protect themselves once a game, never the same person two
+*Words:* heading "Roles for 9 players"; line "Mafia: 2" with "−" and "+" and "We suggest 2 for 9 players."; lines "Doctor:
+1", "Police: 1", "Villagers: 5" (counts only, no buttons); suggestion 5–8 → 1, 9–12 → 2, 13–16 → 3 (MF16, **on hold**: the convention 5–7 → 1, 8–11 → 2, 12–15 → 3, 16 → 4 may return); with 5 players:
+"With 5 players: 1 Mafia, a Doctor and 3 Villagers. The Police joins at 6." (MF17, **on hold**: may return to 1 Mafia and 4 Villagers); rules box "Night comes first · Doctor can protect themselves once a game, never the same person two
 nights running · Police learns Mafia or Not Mafia · A tie: point again once, then nobody is out"; quiet "How to play";
 quiet "← Back"; main "Deal the roles". *Intentions:* back, help.
 | Tap | Leads to | Records | IDs |
@@ -95,7 +95,7 @@ else."; quiet "← Back"; quiet "How to play"; main "Pass the phone round".
 ## C. The deal (pass the phone, once per game)
 
 ### B1. Pass screen (deal)
-*Words:* "Player 2 of 8"; "Pass the phone to"; RIYA (large); "Everyone else, look away!"; main "I'm Riya" (1 s guard).
+*Words:* "Player 2 of 9"; "Pass the phone to"; RIYA (large); "Everyone else, look away!"; main "I'm Riya" (1 s guard).
 *Intentions:* pause (icon), menu: How to play · Players · Deal again · Pause · Home · End the game.
 | Tap | Leads to | Records | IDs |
 |---|---|---|---|
@@ -103,7 +103,7 @@ else."; quiet "← Back"; quiet "How to play"; main "Pass the phone round".
 | Pause icon | D1 | — | MAF-06 |
 
 ### B2. Role card (private)
-*Words:* "Player 2 of 8"; RIYA; quiet "Tap instead" under the name; pad "Hold here to see your role"; while held one of:
+*Words:* "Player 2 of 9"; RIYA; quiet "Tap instead" under the name; pad "Hold here to see your role"; while held one of:
 - **MAFIA** · "You and Zoya are the Mafia." (three or four: "You, Zoya and Dev are the Mafia."; one: "You are the only Mafia."; in "See my role again" after a partner is out: "Zoya is out. You're the only Mafia left.") · "At night, you pick who goes out. By day, act like a Villager."
 - **DOCTOR** · "At night, pick someone to protect from the Mafia. Yourself once a game. Never the same person two nights running."
 - **POLICE** · "At night, check one person. The phone tells only you: Mafia or Not Mafia."
@@ -137,7 +137,7 @@ Done, pass it on." (Night uses tap to see, not hold: names must be tapped while 
 | Start the night | N1 for the first player in the night order | — | MAF-02 |
 
 ### N1. Pass screen (night)
-*Words:* "Night 1 · 3 of 8"; "Pass the phone to"; MEENA; "Everyone else, look away!"; main "I'm Meena" (1 s guard). Players who
+*Words:* "Night 1 · 3 of 9"; "Pass the phone to"; MEENA; "Everyone else, look away!"; main "I'm Meena" (1 s guard). Players who
 are out are in the order too, with "Out players: your ghost guess." under the name (MF11). *Intentions:* pause, menu as B1
 without "Deal again".
 | Tap | Leads to | Records | IDs |
@@ -178,7 +178,7 @@ help, stop, home (menu: How to play · Players · Pause · Home · End the game 
 *Words:* "Morning, day 1"; one story, then the line for who is out (examples):
 - Out: "The Mafia knocked on KABIR's door at midnight. Kabir is out. Kabir was a Villager." (role shown, MF3)
 - Saved: "The Mafia came knocking, but the Doctor got there first with a hot cup of turmeric milk. Nobody is out!" (never names who was saved: the Mafia never pick their own, so it would clear them)
-- Then: "7 players left · Mafia caught: 0 of 2". Only Mafia **shown** as Mafia count as caught; a player who left (D3) never changes this line, so the room can't learn a leaver's role.
+- Then: "9 players left · Mafia caught: 0 of 2". Only Mafia **shown** as Mafia count as caught; a player who left (D3) never changes this line, so the room can't learn a leaver's role.
 A story is picked at random from a short list (`stories.csv`, later), never the same twice in a game; stories never name
 the Doctor or say who the Police checked. Quiet "See my role again"; main "Start talking" (or "See who won" when the night ended the game); quiet "End the game" and "← Home" when
 "Start talking" is the main. *Intentions:* pause, stop, home; help (menu).
@@ -268,7 +268,7 @@ again". *Intentions:* stop, home, play on, change (visible); help, Settings, His
 | Undo (toast after End the game) | the step it came from | nothing | MAF-07 |
 
 ### G2. Summary "Tonight's Mafia"
-*Words:* "8 players · 3 games"; "Village 2 · Mafia 1"; "Mafia most often: Arjun (2 games)"; "Sharpest eyes tonight: Om"; quiet
+*Words:* "9 players · 3 games"; "Village 2 · Mafia 1"; "Mafia most often: Arjun (2 games)"; "Sharpest eyes tonight: Om"; quiet
 "Oops, keep playing"; quiet "← Home"; main "Play something else". Menu: only "Delete tonight's games".
 | Tap | Leads to | Records | IDs |
 |---|---|---|---|
@@ -293,7 +293,7 @@ Rule branches to reach at least once: three and four Mafia agreeing and differin
 who was the Mafia's target; Play again below 5 players; Doctor saves the Mafia's pick; Doctor's self-protect used then greyed; Doctor's
 "protected last night"; Mafia agree; Mafia differ (random); Police sees Mafia and Not Mafia; night ends the game; vote ends
 the game (both sides); first tie then decided; second tie; Nobody today; a leaver who was the last Mafia; a leaver who makes
-the Mafia equal; "New to Mafia?" on each role; 5 players (no Doctor or Police); 16 players with 4 Mafia; Mafia count ±1.
+the Mafia equal; "New to Mafia?" on each role; 5 players (a Doctor, no Police); 16 players with 3 Mafia (4 with "+"); Mafia count ±1.
 
 ## I. Open in draft 1 (for the persona walks, the critic and Jev to test)
 1. **Night pass with out players** (MF11): out players take the phone too, for their ghost guess. It adds about 10 s per out
@@ -328,15 +328,15 @@ Not changed: "Welcome back." after a reload during a night job (it shows only th
 ## K. Prototype script (what the tap-through shows)
 Same rendering rules as Secret Words K3 (one state per screen, real labels, K4-style outcomes), with this data.
 
-**K1. The example game night.** Players in seat order: Riya, Arjun, Meena, Kabir, Zoya, Dev, Om, Sunita. Mafia: Arjun and
-Zoya. Doctor: Meena. Police: Dev. Villagers: Riya, Kabir, Om, Sunita. Game 2 of the night; tally Village 1 · Mafia 0.
-Shown state: night 1, Meena's turn (3 of 8).
+**K1. The example game night.** Players in seat order: Riya, Arjun, Meena, Kabir, Zoya, Dev, Om, Sunita, Neha. Mafia: Arjun and
+Zoya. Doctor: Meena. Police: Dev. Villagers: Riya, Kabir, Om, Sunita, Neha. Game 2 of the night; tally Village 1 · Mafia 0.
+Shown state: night 1, Meena's turn (3 of 9).
 
 **K2. Night 1:** Arjun picks Kabir; Zoya agrees; Meena protects Kabir; Dev checks Zoya (MAFIA); Riya suspects Arjun, Kabir
 suspects Dev, Om suspects Zoya, Sunita suspects Riya. Morning: Kabir saved, nobody out. Day 1: tie between Om and Zoya, point
 again, Om is voted out (Villager). Night 2: Arjun picks Dev; Zoya changes to Meena; the phone picks Dev; Meena protects
 herself; Dev is out (Police). Day 2: Zoya voted out (MAFIA). Night 3: Arjun picks Meena, Meena protects Riya; Meena out.
-Players left: Riya, Arjun, Kabir, Sunita (1 Mafia v 3). Day 3: Arjun voted out → "The Village wins!".
+Players left: Riya, Arjun, Kabir, Sunita, Neha (1 Mafia v 4). Day 3: Arjun voted out → "The Village wins!".
 
 **K3. Which outcome a tap follows.** N2 role shown follows K1 for the named player (Meena: DOCTOR). "Read the morning" after
 night 1 shows the "Saved" story. "Put Om out" → V4 "Om was a Villager." "Start talking" always leads to Y1 in the prototype; G1 is reached by
