@@ -8,7 +8,7 @@ import type { Preferences, SavedGameStore } from '../../../engine';
 import { BlocksRoot, QuietButton, Screen } from '../../../blocks';
 import { parseMapCode, WORDS } from '../rules';
 import {
-  endNight, homeRowLine, lastNight, loadNight, resumeCardLine, startNewText, unfinishedNight, whereLine, type Night,
+  endNight, homeRowLine, isNight, lastNight, loadNight, resumeCardLine, startNewText, unfinishedNight, whereLine, type Night,
 } from './evening';
 import { GuardedMain } from './guard';
 import './secret-words.css';
@@ -45,8 +45,16 @@ export function readMapLink(text: string): { raw: string; t?: string; p?: string
 
 /** D11: whether opening a map here asks first, and which paragraph it shows. Null on a phone with no unfinished game night. */
 export function boardPhoneAsk(store: SavedGameStore): { onePhone: boolean } | null {
-  const n = unfinishedNight(store);
-  return n ? { onePhone: n.match.state.choices.map === 'pass' } : null;
+  // Read from the saved moves themselves, so a game night that no longer replays still protects its board.
+  const nights = store
+    .list()
+    .filter((g): g is Night => isNight(g) && g.status === 'in-progress' && !g.records.some((r) => r.move.type === 'endEvening'))
+    .sort((a, b) => b.updatedAt - a.updatedAt);
+  const n = nights[0];
+  if (!n) return null;
+  let map = n.setup.config?.choices?.map;
+  for (const r of n.records) if (r.move.type === 'setChoices') map = r.move.choices.map;
+  return { onePhone: map === 'pass' };
 }
 
 // ---------------------------------------------------------------- J2 code entry

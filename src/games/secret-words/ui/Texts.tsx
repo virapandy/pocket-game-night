@@ -104,7 +104,9 @@ export function ReadAloud({
 }
 
 export function HowToPlay({ names, choices, onDone }: { names: SecretWordsTeamNames; choices: RuleChoices; onDone: () => void }) {
-  useEffect(() => window.scrollTo(0, 0), []);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   return (
     <Screen page className="sw-setup sw-how">
       <h1 className="pgn-title">How to play</h1>

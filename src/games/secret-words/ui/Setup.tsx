@@ -578,7 +578,9 @@ export function Choices({
 
 /** Larger text and the rest of this phone's settings (SWD-132, SWD-010's link): the app's own panel, with "← Back". */
 export function SettingsScreen({ panel, onBack }: { panel: ReactNode; onBack: () => void }) {
-  useEffect(() => window.scrollTo(0, 0), []);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   return (
     <Screen page className="sw-setup">
       <header className="sw-bar">
