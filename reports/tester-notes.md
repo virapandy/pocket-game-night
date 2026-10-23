@@ -19,6 +19,10 @@ Read this and the top of `reports/latest.md` before starting. Keep it short: rep
   reason; tag `@quarantine` + annotation in the test; never skip or retry.
 
 ## Open items for the next tester
+- **Lane-d (PLT-208/209 share sheet, 23 October):** specs replaced; `tests/contract/report-share.test.ts` (9, need `shareParts`);
+  `report-problem.spec.ts` reworked on `fakeShare` (stubs documented in `tests/browser/README.md`, "Sharing"). After the coder:
+  run `report-problem` on both phones; if the Home row or list ids differ from the README, read the failure before touching a
+  test. PLT-202's test still uses the old `__pgnSendReport` hook and waits for the owner's ruling (latest.md, questions).
 - **Secret Words C3 (lane-e, 22 October):** specs copied to `specs/secret-words/` (v3.6; each scenario's "Version 3.6"
   paragraph wins); rule API for the coder `specs/secret-words/api.md`; rule tests `tests/games/secret-words/` (140 with
   the contract suite) fail only for "not built yet" until the coder's lane lands. `oracle.ts` = the scenarios' own

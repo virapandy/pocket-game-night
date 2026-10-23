@@ -474,22 +474,33 @@ PLT-209. What a report holds is defined in `tests/contract/README.md`, "Problem 
   ended (with its seeds), on home no game. `phone` names the phone: it contains "Android" on the Android test phone
   (Pixel 7) and "iPhone" on the iPhone. No e-mail or password field anywhere in the flow (PLT-208).
 
-### Sending
-- **The sending hook** (tests only): when `window.__pgnSendReport` exists, the app sends a report by calling
-  `window.__pgnSendReport(text)` with exactly the preview's `data-payload` text (or, for a report that waited for its
-  game to end, that report with the seeds added) instead of the stub. Resolving means the report arrived: it leaves
-  the waiting list and is never sent again. Rejecting means it did not: it stays waiting and is tried again later (at
-  the latest on the next `online` event). The app never calls it while `navigator.onLine` is false, tries every waiting
-  report when the `online` event fires (and when the app opens), and never starts a second send of a report while one
-  is still going (PLT-209). Reports are kept in the phone's storage, so they survive a reload.
-- **The stub** (no hook, the real app for now, PLT-208): `Send report` keeps the report on the phone and shows a line
-  containing "kept on this phone". Nothing leaves the phone: every request the app makes is a GET to its own address,
-  and `navigator.sendBeacon` is never called — also on app start, during a game and after a crash.
-- A game in progress or paused (PLT-206): the form says "Your report will be sent when this game ends"; the report is
-  kept without seeds and is sent (hook) or kept (stub) only once that game is ended with `End game` or discarded.
-  Then the seeds are added; the id, the words and the moves stay as they were when reported.
-- No connection (PLT-202): the report waits; when the connection returns it goes by itself, without any dialog and
-  without changing the screen (a game on the calling screen carries on untouched).
+### Sharing (PLT-208, decided 22 October 2026; replaces the stub and the `window.__pgnSendReport` hook)
+- **The button** is `Share report` (was `Send report`; the draft's words win over the handover's), enabled even with nothing typed.
+  `Cancel` closes the form and shares nothing. Nothing is shared before the tap.
+- **The share sheet is stubbed by the tests** (`fakeShare` in `report-problem.spec.ts`, installed before the page loads):
+  `navigator.share(data)` records `{ title, text, files }` (each file with its name, type and text) and resolves (shared),
+  or rejects with a `DOMException` named `AbortError` (closed without sharing), or stays pending. `navigator.canShare(data)`
+  says no when `data.files` is set on a phone that "can share text but not files" (and `share()` then rejects a call with
+  files with a `TypeError`). On a phone "with no share sheet" `navigator.share` and `navigator.canShare` do not exist at all
+  (deleted from `Navigator.prototype`), and `navigator.clipboard.writeText(text)` records what is copied
+  (`readText` returns it). **The app must copy with `navigator.clipboard.writeText`.**
+- **What is passed:** `title` "Pocket Game Night problem report"; `text` three lines (header, words or
+  "(nothing written)", "Replay attached. Please send this to whoever shared the app with you."); one file
+  `pgn-report-YYYYMMDD-HHMM.json` (type containing "json"), whose text is exactly the preview's `data-payload`.
+  Where files cannot be shared, `share({ title, text })` with no `files`, the text ending `Replay code:` and the code.
+  Pure formatting: `tests/contract/README.md`, "Sharing a report".
+- **Toasts** (text anywhere on screen): "Thanks! Your report is on its way." after sharing (the report is removed);
+  "Not shared. It's kept in Settings, under Reports to share." after an `AbortError` (the report stays);
+  "Report copied. Paste it in a message to whoever shared this app." after copying. Apostrophes straight or curly.
+- Nothing leaves the phone by itself: every request the app makes is a GET to its own address and
+  `navigator.sendBeacon` is never called, also on app start, during a game, after a crash and on Share.
+- A game in progress or paused (PLT-206): the form says "This report can be shared when the game ends, so it can't give
+  away the game."; the report is kept without seeds and **never reaches the share sheet while the game is going**. When the
+  game is ended with `End game` or discarded, Home shows "A problem report is ready to share" and a button `Share`, which
+  opens the share sheet with the seeds added (the id, the words and the moves as they were); after sharing the row is gone.
+- A share still open is not started twice; the report is removed only after a share completes, never twice.
+- **Not changed (PLT-202):** the one test "with no internet, a report waits and goes by itself" still uses the old hook
+  `window.__pgnSendReport(text)`; see `reports/latest.md`, questions for the owner.
 
 ### After a crash (PLT-203)
 An uncaught error (`window` `error` event) or an unhandled promise rejection during a game: the game stays saved (a
@@ -498,16 +509,15 @@ name starts `Report` and a `Not now` button. Nothing is sent unless the host goe
 button opens the same form; its report has `error.message` with the error's message. `Not now` closes the message and
 the game carries on.
 
-### Reports waiting to send (PLT-209)
+### Reports to share (PLT-209, renamed 22 October 2026 from "Reports waiting to send")
 Settings (the home screen's `Settings` if there is one, otherwise the Tambola start screen's `Settings`) has
-`Reports waiting to send` (a button or link). It lists one `waiting-report` per report not yet sent (also those
-waiting for their game to end), each with its date ("29 Sep") and the first line of its words, and a button starting
-`Delete` (a confirming `dialog` with a button starting `Delete` is allowed). A deleted report is never sent. The list
-updates by itself when reports are sent. The tests reach it by taps only (no page load), also offline.
-While sending is not set up yet (the stub, no sending hook; product owner, 1 October 2026): every report the stub keeps
-is listed there as a `waiting-report` (also one kept while offline, and one that waited for its game to end), and the
-screen shows the note "Kept on this phone: sending isn't set up yet" (straight or curly apostrophe). They stay listed
-after a reload and after the connection returns, and can be deleted the same way.
+`Reports to share` (a button or link). It lists one `waiting-report` per report not yet shared (closed without sharing, or
+waiting for its game to end), **newest first**, each with its date ("29 Sep"), the first line of its words, a button
+`Share` and a button starting `Delete`. While the report's game is still being played `Share` is disabled and the item shows
+"Waiting for the game to end". `Delete` opens a `dialog` that says "Delete this report? It hasn't been shared." with a
+button `Delete` and the main-look button `Keep it` (`Keep it` keeps the report). `Share` in the list opens the share sheet
+as above. The old note "Kept on this phone: sending isn't set up yet" and the old name are gone. Reports survive a reload.
+The list is reached by taps only from Home (also while a game is being played; Home resumes it).
 
 ## UX list of 1 October 2026 (owner approved the behaviour; `docs/handover.md` step 2 and 2b, rows 1, 1a and 2 to 7)
 

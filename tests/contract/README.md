@@ -58,7 +58,7 @@ an empty list. The tests check "fewest" against their own count for up to 8 peop
 
 Money is calculated, never moved: nothing here makes or asks for a payment (TAM-090).
 
-## Problem reports (Phase 7: PLT-200 to PLT-208, owner sign-off 29 September 2026)
+## Problem reports (Phase 7: PLT-200 to PLT-209, owner sign-off 29 September 2026; sharing, 22 October 2026)
 
 Tests: `reports.test.ts` (and `tests/replays/replays.test.ts`, which also replays saved reports, PLT-204). Every
 function below is imported from **`src/engine`** (the engine's `index.ts`). They are pure: no network, no storage, no
@@ -132,6 +132,23 @@ Once the reported game has ended (`saved.status` `'ended'`, also after a discard
 same game (same `setup.gameId`): the same report (same `id`, `what`, `records`) with `game.setup.seeds` set to the
 game's seeds and `waitingForGameEnd: false`. It then replays the game **as it was when reported**. For the same game
 still in progress or paused, or for another game: the report unchanged (still waiting, no seed).
+
+### Sharing a report: `shareParts(report, { gameTitle, when, at })` (PLT-208, decided 22 October 2026)
+Pure formatting for the phone's share sheet; exported from `src/engine` next to `reportText`. `gameTitle` is the title of the
+reported game ("Tambola"), `when` the date and time already written in the phone's format, `at` a `Date` for the file name
+(the phone's own time zone). It sends nothing and never touches the network.
+```ts
+=> { title: string; text: string; textWithCode: string; fileName: string; fileText: string; replayCode: string }
+```
+- `title`: exactly "Pocket Game Night problem report".
+- `text`: three lines joined by `\n`: `Problem report · <gameTitle> · app <report.appVersion> · <when>`; `report.what` (or
+  `(nothing written)` when empty); `Replay attached. Please send this to whoever shared the app with you.`
+- `textWithCode` (for phones that can share text but not files): the first two lines of `text`, then `Replay code:`, then
+  `replayCode`, each on its own line (so the third line "Replay attached" is gone).
+- `fileName`: `pgn-report-YYYYMMDD-HHMM.json` from `at`, with leading zeros.
+- `fileText`: exactly `reportText(report)`; `replayCode`: that text as UTF-8 bytes in standard base64, on one line.
+Where `gameTitle` is not known (a report from Home with no game) the header's shape is for the coder to choose; the
+tests do not pin it.
 
 ### `sortReports(reports, { now })` (PLT-205)
 ```ts
