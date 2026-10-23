@@ -37,7 +37,7 @@ const TEST_RUNNERS =
   /\b(vitest|playwright|stryker|jest|mocha|appium)\b|\b(npm|pnpm|yarn|bun)\s+(run\s+)?(test|e2e|sim|mutation)\b|\bnpm\s+t\b/;
 const WEAKENING = /\.(skip|only|todo)\s*\(|\bx(it|describe|test)\s*\(/;
 const READ_TOOLS = ['Read', 'Grep', 'Glob'];
-const AGENT_ROLE = { coder: 'build', tester: 'test', 'ux-designer': 'ux', reviewer: 'review', critic: 'critic', player: 'player' };
+const AGENT_ROLE = { coder: 'build', tester: 'test', 'ux-designer': 'ux', reviewer: 'review', critic: 'critic', player: 'player', 'jev-design': 'jevdesign' };
 // Coders may run these in their lane (never mutation, mass simulation or the emulator).
 const LANE_TEST_RUNNERS = /\b(vitest|playwright)\b|\bnpm\s+(run\s+)?(test|test:browser|screenshots)\b|\bnpm\s+t\b/;
 const HEAVY_RUNNERS = /\b(stryker|appium)\b|\b(npm|pnpm|yarn|bun)\s+(run\s+)?(sim|mutation|e2e)\b/;
@@ -47,6 +47,12 @@ const PLAYER_FORBIDDEN = /(^|\/)(specs\/|docs\/decisions\.md$|docs\/ux-guideline
 // which holds the key, never fetches web pages or drives a browser.
 const SECRET_FILES = /(^|[\/\s'"*])(\.env\.local|\.claude\/settings\.local\.json|settings\.local\.json)\b/;
 const WEB_TOOLS = /^(WebFetch|WebSearch|mcp__browser__.*)$/;
+// The jev-design helper (owner, 23 October 2026): holds the Jev key for design checks, so it reads only the product docs
+// and the Jev tools, never reports or other helpers' output, writes only design reports, and never commits or pushes.
+const JEV_TOOLS = /^tests\/(tools\/jev[^/]*|sim\/jev[^/]*)$|^tests\/tools\/jev-design\//;
+const JEV_GIT = /^\s*git\s+-C\s+("[^"]*pocket-game-night-product"|'[^']*pocket-game-night-product'|\S*pocket-game-night-product)\/?\s+(pull|status)\b[^;&|`$<>]*$/;
+const NETWORK_COMMANDS = /\b(curl|wget|gh|ssh|scp|nc|open)\b/;
+const SCRATCH = /^\/(private\/)?tmp\/claude-/;
 // The reviewer may only look at changes: git diff, log, show, status (optionally after `cd <folder> &&`).
 const READ_ONLY_GIT = /^\s*(cd\s+("[^"]*"|'[^']*'|[^\s;&|]+)\s*&&\s*)?git\s+(diff|log|show|status)\b[^;&|`$<>]*$/;
 
@@ -99,7 +105,7 @@ let role = entry === 'claude-desktop'
   ? (inside(projectDir, FOLDER.test) ? 'test' : 'product')
   : projectDir === WORKSPACE ? 'orchestrator' : 'build';
 let agent = null; // 'coder', 'tester' or 'ux-designer' when a subagent is acting
-const NAME = { build: 'Build role', test: 'Test role', orchestrator: 'orchestrator', product: 'product owner', ux: 'UX designer', review: 'reviewer', critic: 'critic', player: 'player' };
+const NAME = { build: 'Build role', test: 'Test role', orchestrator: 'orchestrator', product: 'product owner', ux: 'UX designer', review: 'reviewer', critic: 'critic', player: 'player', jevdesign: 'jev-design helper' };
 const who = () => (agent ? `${agent} subagent` : NAME[role]);
 
 const git = (args, cwd) => execSync(`git ${args}`, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
@@ -126,7 +132,8 @@ function ownerOf(rel) {
 }
 
 // May this role change a file with this owner in this clone? (Rule files ask separately.)
-function allowed(clone, owner) {
+function allowed(clone, owner, rel = '') {
+  if (role === 'jevdesign') return clone === 'product' && rel.startsWith('docs/games/');
   if (owner === 'governance') return true;
   if (role === 'orchestrator') return owner === 'shared' && clone === 'build';
   if (role === 'product') return owner === 'shared' && clone === 'product';
@@ -164,17 +171,47 @@ function incoming(root) {
   return () => false;
 }
 
+// The jev-design helper: reads the product docs, the Jev tools and the key; runs the Jev tool; writes only design
+// reports in the product docs' game folders or a scratchpad; no other git than pulling and checking the product clone.
+function jevDesign(tool, ti, cwd) {
+  const why = 'The jev-design helper holds the Jev key, so it reads only the product docs and the Jev tools, ' +
+    'never reports, test output, the web or other helpers\' work, and changes only design reports (never all three in one helper).';
+  if (READ_TOOLS.includes(tool)) {
+    const asked = [ti.file_path, ti.path, ti.pattern, ti.glob].join(' ');
+    if (SECRET_FILES.test(' ' + asked)) process.exit(0);
+    const loc = locate(path.resolve(cwd, ti.file_path || ti.path || '.'));
+    const ok = loc && ((loc.clone === 'product' && loc.rel.startsWith('docs/')) || (loc.clone === 'test' && JEV_TOOLS.test(loc.rel)));
+    if (!ok) decide('deny', `${why} Give the tool a path inside pocket-game-night-product/docs/ or a Jev tool.`);
+    process.exit(0);
+  }
+  if (tool === 'Bash') {
+    const cmd = ti.command || '';
+    if (/\bgit\b/.test(cmd) && !JEV_GIT.test(cmd)) decide('deny', `${why} Its only git commands are \`git -C <product clone> pull\` and \`status\`.`);
+    if (NETWORK_COMMANDS.test(cmd)) decide('deny', why);
+    if (/(^|[\s\/'"=])reports\//.test(cmd)) decide('deny', why);
+    return; // the shared shell checks below still apply (no test runners; files changed are checked afterwards)
+  }
+  const file = ti.file_path || ti.notebook_path;
+  if (!file) process.exit(0);
+  const full = path.resolve(cwd, file);
+  const loc = locate(full);
+  if (SCRATCH.test(real(path.dirname(full))) && !loc) process.exit(0);
+  if (loc && allowed(loc.clone, ownerOf(loc.rel), loc.rel)) process.exit(0);
+  decide('deny', `${why} It writes only to pocket-game-night-product/docs/games/<game>/ (left uncommitted) or the scratchpad.`);
+}
+
 function pre(input) {
   const tool = input.tool_name;
   const ti = input.tool_input || {};
   const cwd = input.cwd || projectDir;
 
-  // Never all three in one helper: the key files are the tester's alone, and the tester never goes on the web.
-  if (role === 'test' && WEB_TOOLS.test(tool)) {
-    decide('deny', 'The tester holds the Jev key, so it never fetches web pages, searches the web or drives a browser ' +
+  // Never all three in one helper: the key files are for the tester and the jev-design helper alone, and neither goes on the web.
+  if ((role === 'test' || role === 'jevdesign') && WEB_TOOLS.test(tool)) {
+    decide('deny', `The ${who()} holds the Jev key, so it never fetches web pages, searches the web or drives a browser ` +
       '(never all three in one helper). Report the link or page you need instead.');
   }
-  if (role !== 'test') {
+  if (role === 'jevdesign') jevDesign(tool, ti, cwd);
+  if (role !== 'test' && role !== 'jevdesign') {
     const looked = tool === 'Bash' ? ti.command : READ_TOOLS.includes(tool) ? [ti.file_path, ti.path, ti.pattern, ti.glob].join(' ') : '';
     if (looked && SECRET_FILES.test(' ' + looked)) {
       decide('deny', `.env.local and .claude/settings.local.json hold the Jev key; only the tester reads them (never all ` +
@@ -289,7 +326,10 @@ function post(input) {
     // Several agents work at once (product owner, tester, coders in lanes), so each checks only its own
     // working copies; another agent's work landing meanwhile is not this command's doing. The orchestrator
     // (which edits only docs/ in the Build clone) checks the Build clone only: coders work in the lanes meanwhile.
-    if (clone !== own || (role === 'orchestrator' && key !== 'build')) continue;
+    // The jev-design helper may only leave design reports behind: it checks the Build and Product clones.
+    const mine = role === 'jevdesign' ? key === 'build' || key === 'product'
+      : clone === own && !(role === 'orchestrator' && key !== 'build');
+    if (!mine) continue;
     const now = changedFiles(root);
     // Without a snapshot, check the role's own clone fully and skip the other one.
     const was = new Set(before ? before[key] ?? [] : clone === own ? [] : now);
@@ -299,7 +339,7 @@ function post(input) {
       const rel = line.slice(3).split(' -> ').pop().replace(/^"|"$/g, '');
       // Staged as it came from the other branch, with no edit on top: not this role's change.
       if (line[1] === ' ' && fromBranch(rel)) continue;
-      if (!allowed(clone, ownerOf(rel))) stray.push(`${path.basename(root)}/${rel}`);
+      if (!allowed(clone, ownerOf(rel), rel)) stray.push(`${path.basename(root)}/${rel}`);
     }
   }
   if (stray.length) {
