@@ -322,6 +322,13 @@ function post(input) {
   try { before = JSON.parse(readFileSync(snapshotFile(input), 'utf8')); unlinkSync(snapshotFile(input)); } catch { /* none */ }
   const own = role === 'test' ? 'test' : role === 'product' ? 'product' : 'build';
   const stray = [];
+  // The working copies this command ran in (its folder, or `cd <folder> && …`). Owner, 23 October 2026: with several
+  // coders and testers in lanes at once, a command is checked only against the folder it worked in, so another lane's
+  // work in progress is never blamed on it (and never "undone" by it).
+  const cwd = real(input.cwd || projectDir);
+  const m = /^\s*cd\s+("([^"]*)"|'([^']*)'|([^\s;&|]+))/.exec(input.tool_input?.command || '');
+  const dirs = [cwd, ...(m ? [real(path.resolve(cwd, m[2] ?? m[3] ?? m[4]))] : [])];
+  const here = new Set(ROOTS.filter(([, root]) => dirs.some((d) => inside(d, root))).map(([key]) => key));
   for (const [key, root, clone] of ROOTS) {
     // Several agents work at once (product owner, tester, coders in lanes), so each checks only its own
     // working copies; another agent's work landing meanwhile is not this command's doing. The orchestrator
@@ -330,6 +337,9 @@ function post(input) {
     const mine = role === 'jevdesign' ? key === 'build' || key === 'product'
       : clone === own && !(role === 'orchestrator' && key !== 'build');
     if (!mine) continue;
+    // A helper that ran in one of its working copies is checked there only; from elsewhere (the workspace folder),
+    // only its main clone.
+    if (role !== 'jevdesign' && role !== 'orchestrator' && (here.size ? !here.has(key) : key !== clone)) continue;
     const now = changedFiles(root);
     // Without a snapshot, check the role's own clone fully and skip the other one.
     const was = new Set(before ? before[key] ?? [] : clone === own ? [] : now);
@@ -346,7 +356,7 @@ function post(input) {
     out({
       decision: 'block',
       reason: `That command changed files the ${who()} must not touch: ${stray.slice(0, 10).join(', ')}. ` +
-        'Undo those changes now (git restore / remove new files) and report the need instead.',
+        'Undo those changes now (git restore / remove new files), only inside the folder you worked in, and report the need instead.',
     });
   }
   process.exit(0);
