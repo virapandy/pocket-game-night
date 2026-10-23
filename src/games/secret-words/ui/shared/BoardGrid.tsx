@@ -75,22 +75,32 @@ export function fitWords(words: readonly string[], room: number, family: string)
   return { size, alone };
 }
 
-/** The grid's cell width, kept up to date. */
-function useCellWidth(ref: React.RefObject<HTMLDivElement | null>, columns: number): number {
-  const [w, setW] = useState(0);
+/**
+ * The grid's cell size, kept up to date, in whole layout units (1/64 px). Every column (and row) gets exactly this size,
+ * so no cell differs from another by a rounding of `1fr` (SWD-025: every face-down cell looks the same, wherever it is).
+ * `h` is 0 where the rows have a fixed height of their own (the scrolling Easy board in narrow portrait).
+ */
+function useCellSize(ref: React.RefObject<HTMLDivElement | null>, columns: number, rows: number): { w: number; h: number } {
+  const [size, setSize] = useState({ w: 0, h: 0 });
   useLayoutEffect(() => {
     const el = ref.current;
     if (!el) return;
+    const unit = (x: number) => Math.max(0, Math.floor(x * 64) / 64);
     const read = () => {
-      const gap = parseFloat(getComputedStyle(el).columnGap) || 0;
-      setW((el.clientWidth - gap * (columns - 1)) / columns);
+      const cs = getComputedStyle(el);
+      const colGap = parseFloat(cs.columnGap) || 0;
+      const rowGap = parseFloat(cs.rowGap) || 0;
+      const w = unit((parseFloat(cs.width) - colGap * (columns - 1)) / columns);
+      const fixedRows = !!el.closest('.sw-board-scroll');
+      const h = fixedRows ? 0 : unit((parseFloat(cs.height) - rowGap * (rows - 1)) / rows);
+      setSize((cur) => (cur.w === w && cur.h === h ? cur : { w, h }));
     };
     read();
     const ro = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(read);
     ro?.observe(el);
     return () => ro?.disconnect();
-  }, [ref, columns]);
-  return w;
+  }, [ref, columns, rows]);
+  return size;
 }
 
 /** SWD-090: the font sizes for these words at this cell width, re-measured once the app's font has loaded. */
@@ -143,7 +153,8 @@ export function BoardGrid({
   className?: string;
 }) {
   const ref = useRef<HTMLDivElement | null>(null);
-  const cellWidth = useCellWidth(ref, columns);
+  const cellSize = useCellSize(ref, columns, Math.ceil(cells.length / columns));
+  const cellWidth = cellSize.w;
   const words = cells.map((c) => c.word);
   const fit = useFit(ref, words, cellWidth);
   const gridId = useId().replace(/[^a-zA-Z0-9_-]/g, '');
@@ -171,7 +182,12 @@ export function BoardGrid({
   };
 
   const rules = [...fit.alone].map(([i, px]) => `[data-sw-grid="${gridId}"] [data-index="${i}"] .sw-word{font-size:${px}px}`).join('');
-  const style = { '--sw-word': `${fit.size}px`, '--sw-cols': columns } as CSSProperties;
+  const style = {
+    '--sw-word': `${fit.size}px`,
+    '--sw-cols': columns,
+    ...(cellSize.w > 0 ? { '--sw-col-w': `${cellSize.w}px` } : {}),
+    ...(cellSize.h > 0 ? { '--sw-row-h': `${cellSize.h}px` } : {}),
+  } as CSSProperties;
   return (
     <div
       ref={ref}
