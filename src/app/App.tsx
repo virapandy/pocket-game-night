@@ -2,12 +2,14 @@ import { Fragment, useCallback, useEffect, useRef, useState, type ReactNode, typ
 import { useRegisterSW } from 'virtual:pwa-register/react';
 import { BlocksRoot, useTapGuard } from '../blocks';
 import { makePlayerReport, makeReport, type Preferences, type Report, type ReportSubject, type SavedGame } from '../engine';
-import { games, hostGames, impostor, phoneGames, tambola, type GameId, type HostGameId, type PhoneGameId } from './games';
+import { games, hostGames, impostor, phoneGames, secretWords, tambola, type GameId, type HostGameId, type PhoneGameId } from './games';
+import { secretWordsShowingNight } from '../games/secret-words';
+import type { SecretWordsMapCodeError, SecretWordsMapToOpen, SecretWordsStart } from '../games/secret-words';
 import { History, isPast, unsettledSessionName, type Deleted } from './History';
 import { CrashNotice, ReportForm, ReportToast, WaitingReports } from './Report';
 import { APP_VERSION, hasRealDestination, phoneType, queueReport, startReportSender } from './reports';
 import { Dialog, SessionList, SessionScreen } from './Sessions';
-import { gameStore, impostorUi, IS_RELEASE, preferences, sessionPicker, testSeedsRaw } from './storage';
+import { appKeys, gameStore, impostorUi, secretWordsUi, IS_RELEASE, preferences, sessionPicker, testSeedsRaw } from './storage';
 
 const TWELVE_HOURS = 12 * 3600_000;
 const TIP_KEY = 'install-tip.seen';
@@ -18,7 +20,13 @@ type OpenAction = 'resume' | 'end' | 'discard' | 'reuse';
 type Route =
   | { name: 'home' }
   /** "What shall we play?" (IMP-001), after Home's "Host a game". */
-  | { name: 'pick'; impostorPlayers?: string[]; names?: string[] }
+  | { name: 'pick'; impostorPlayers?: string[]; names?: string[]; swNames?: string[] }
+  /** Secret Words on the host phone: setup, or a game night (SWD-001, SWD-115). */
+  | { name: 'sw'; start: SecretWordsStart }
+  /** SWD-002: "Type the host's code", maybe filled in from a map link that can't be opened. */
+  | { name: 'sw-code'; text: string; error: SecretWordsMapCodeError | null; nonce: number }
+  /** SWD-034: the map phone (lane C). */
+  | { name: 'sw-map'; map: SecretWordsMapToOpen; nonce: number }
   /** `backTo`: History opened from an Impostor evening's menu, with "← Back" to that evening (IMP-075). */
   | { name: 'history'; backTo?: string }
   | { name: 'past'; id: string }
@@ -50,6 +58,29 @@ function phoneLink(): Extract<Route, { name: 'phone' }> | null {
   return null;
 }
 
+/** SWD-002 D11: a map waiting for "This phone is the board. Open the map here?". */
+type BoardAsk = { map: SecretWordsMapToOpen; onePhone: boolean };
+
+/**
+ * SWD-002: a map link (`#map=27P3QX8&t=SWDT-01`, or the same scanned by the Join screen): a code that can't be opened
+ * goes to "Type the host's code" with it filled in and its error; a valid one asks D11 on a board phone, else opens the
+ * map phone. `stay`: the screen to keep under D11 (null: Home).
+ */
+function mapLinkRoute(text: string, stay: Route | null): { route: Route; ask: BoardAsk | null } | null {
+  const link = secretWords.readMapLink(text);
+  if (!link) return null;
+  // Privacy (SWD-002, D11): the code leaves the address bar as soon as it is read, before any dialog shows.
+  if (typeof location !== 'undefined' && location.hash.includes('#map=')) {
+    history.replaceState(history.state, '', `${location.pathname}${location.search}`);
+  }
+  const code = secretWords.readMapCode(link.raw);
+  if (code === 'invalid' || code === 'newer') return { route: { name: 'sw-code', text: link.raw, error: code, nonce: Date.now() }, ask: null };
+  const map: SecretWordsMapToOpen = { code, ...(link.t ? { t: link.t } : {}), ...(link.p ? { p: link.p } : {}) };
+  const asks = secretWords.boardPhoneAsk(gameStore);
+  if (asks) return { route: stay ?? { name: 'home' }, ask: { map, onePhone: asks.onePhone } };
+  return { route: { name: 'sw-map', map, nonce: Date.now() }, ask: null };
+}
+
 /** Where the app opens: a scanned ticket, a place kept in the address, or a player's tickets (TAM-171). */
 function firstRoute(): Route {
   const link = phoneLink();
@@ -70,6 +101,11 @@ function routeFromAddress(): Route {
   if (h === 'sessions') return { name: 'sessions' };
   if (h.startsWith('session/')) return { name: 'session', id: h.slice(8) };
   if (h.startsWith('past/')) return { name: 'past', id: h.slice(5) };
+  // SWD-048: a reload during a Secret Words game night opens its turn screens again, at the same step.
+  if (h === 'sw') {
+    const id = secretWordsShowingNight(gameStore, secretWordsUi);
+    if (id) return { name: 'sw', start: { kind: 'resume', id } };
+  }
   return { name: 'home' };
 }
 
@@ -82,6 +118,8 @@ function addressOf(route: Route): string {
       return `session/${route.id}`;
     case 'past':
       return `past/${route.id}`;
+    case 'sw':
+      return 'sw';
     default:
       return '';
   }
@@ -241,14 +279,32 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
     needRefresh: [needRefresh],
     updateServiceWorker,
   } = useRegisterSW();
-  const [route, setRoute] = useState<Route>(firstRoute);
+  // A map link is read once, here (it then leaves the address at once): its route and any D11 question.
+  const [opened] = useState(() => {
+    const map = typeof location === 'undefined' ? null : mapLinkRoute(location.hash, null);
+    return map ? { route: map.route, ask: map.ask } : { route: firstRoute(), ask: null };
+  });
+  const [boardAsk, setBoardAsk] = useState<BoardAsk | null>(opened.ask);
+  const [route, setRoute] = useState<Route>(opened.route);
   const initialRoute = useRef(route);
+  /** SWD-002: opens a valid map, asking D11 first on a phone that is the board of an unfinished game night. */
+  const openMap = (map: SecretWordsMapToOpen) => {
+    const asks = secretWords.boardPhoneAsk(gameStore);
+    if (asks) setBoardAsk({ map, onePhone: asks.onePhone });
+    else setRoute({ name: 'sw-map', map, nonce: Date.now() });
+  };
   routeName.current = route.name;
   // Scanning another ticket while the app is open changes only the address's "#t=…" part.
   useEffect(() => {
     const onHash = () => {
       const link = phoneLink();
-      if (link) setRoute(link);
+      if (link) return setRoute(link);
+      // SWD-002: a map link opened while the app is open (D11 then returns to Home).
+      const map = mapLinkRoute(location.hash, { name: 'home' });
+      if (map) {
+        setRoute(map.route);
+        setBoardAsk(map.ask);
+      }
     };
     window.addEventListener('hashchange', onHash);
     // A ticket link that arrived while the app was still starting (before this listener) is kept, not dropped.
@@ -262,7 +318,9 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
     if (decodeURIComponent(location.hash.slice(1)) === want) return;
     history.replaceState(history.state, '', want ? `#${encodeURIComponent(want).replace(/%2F/g, '/')}` : `${location.pathname}${location.search}`);
   }, [route]);
-  useBackGuard(route.name === 'game');
+  // SWD-111: phone Back does nothing while a game night is played; setup keeps its own "← Back".
+  const [swPlaying, setSwPlaying] = useState(false);
+  useBackGuard(route.name === 'game' || (route.name === 'sw' && swPlaying));
   const home = () => setRoute({ name: 'home' });
   const expire = useCallback(() => setDeleted(null), []);
 
@@ -273,140 +331,221 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
     return () => clearTimeout(t);
   }, [deleted, expire]);
 
-  if (route.name === 'game' && route.gameId === 'impostor') {
-    const open = route.open;
-    return (
-      <impostor.Screen
-        onExit={home}
-        onBack={(players) => setRoute({ name: 'pick', impostorPlayers: players })}
-        onHistory={(backTo) => setRoute(backTo ? { name: 'history', backTo } : { name: 'history' })}
-        onSomethingElse={(names) => setRoute({ name: 'pick', names })}
-        store={gameStore}
-        prefs={preferences}
-        ui={impostorUi}
-        sessions={sessionPicker}
-        testSeedsRaw={testSeedsRaw}
-        release={IS_RELEASE}
-        {...(open && (open.action === 'resume' || open.action === 'reuse') ? { open: { id: open.id, action: open.action } } : {})}
-        {...(route.players ? { players: route.players } : {})}
-      />
-    );
-  }
-  if (route.name === 'game' && route.gameId === tambola.info.id) {
-    return (
-      <tambola.Screen
-        onExit={home}
-        store={gameStore}
-        prefs={preferences}
-        sessions={sessionPicker}
-        onSession={(id) => setRoute({ name: 'session', id })}
-        onReport={onReport}
-        settingsExtra={
-          <>
-            {/* IMP-014, IMP-109: Impostor's switches, in its own sizes. */}
+  const renderRoute = (): ReactNode => {
+    if (route.name === 'game' && route.gameId === 'impostor') {
+      const open = route.open;
+      return (
+        <impostor.Screen
+          onExit={home}
+          onBack={(players) => setRoute({ name: 'pick', impostorPlayers: players })}
+          onHistory={(backTo) => setRoute(backTo ? { name: 'history', backTo } : { name: 'history' })}
+          onSomethingElse={(names) => setRoute({ name: 'pick', names })}
+          store={gameStore}
+          prefs={preferences}
+          ui={impostorUi}
+          sessions={sessionPicker}
+          testSeedsRaw={testSeedsRaw}
+          release={IS_RELEASE}
+          {...(open && (open.action === 'resume' || open.action === 'reuse') ? { open: { id: open.id, action: open.action } } : {})}
+          {...(route.players ? { players: route.players } : {})}
+        />
+      );
+    }
+    if (route.name === 'game' && route.gameId === tambola.info.id) {
+      return (
+        <tambola.Screen
+          onExit={home}
+          store={gameStore}
+          prefs={preferences}
+          sessions={sessionPicker}
+          onSession={(id) => setRoute({ name: 'session', id })}
+          onReport={onReport}
+          settingsExtra={
+            <>
+              {/* IMP-014, IMP-109: Impostor's switches, in its own sizes. */}
+              <BlocksRoot className="imp">
+                <impostor.Settings prefs={preferences} />
+              </BlocksRoot>
+              <WaitingReports />
+            </>
+          }
+          {...(route.open ? { open: route.open } : {})}
+          {...(route.startAt ? { startAt: route.startAt } : {})}
+          {...(route.players ? { names: route.players } : {})}
+        />
+      );
+    }
+    if (route.name === 'sw') {
+      return (
+        <secretWords.Screen
+          key={JSON.stringify(route.start)}
+          start={route.start}
+          store={gameStore}
+          prefs={preferences}
+          sessions={sessionPicker}
+          testSeedsRaw={testSeedsRaw}
+          release={IS_RELEASE}
+          settingsPanel={
             <BlocksRoot className="imp">
               <impostor.Settings prefs={preferences} />
             </BlocksRoot>
-            <WaitingReports />
-          </>
-        }
-        {...(route.open ? { open: route.open } : {})}
-        {...(route.startAt ? { startAt: route.startAt } : {})}
-        {...(route.players ? { names: route.players } : {})}
-      />
-    );
-  }
-  if (route.name === 'pick') {
-    return (
-      <PickGame
-        onBack={home}
-        onPick={(id) => {
-          // IMP-003: Impostor's list comes back in the same visit; IMP-102: tonight's names go to Tambola's setup.
-          const players = id === impostor.info.id ? route.impostorPlayers : route.names;
-          setRoute(players ? { name: 'game', gameId: id, players } : { name: 'game', gameId: id });
-        }}
-        onResume={(id) => setRoute({ name: 'game', gameId: 'impostor', open: { id, action: 'resume' } })}
-      />
-    );
-  }
-  if (route.name === 'phone') {
-    const game = phoneGameOf(route.gameId);
-    if (game) {
-      return (
-        <game.phone.Screen
-          prefs={preferences}
-          link={route.link}
-          enter={route.enter}
-          nonce={route.nonce}
-          onHome={home}
-          onReport={onReport}
-          joinNote={impostor.joinNote}
-        />
-      );
-    }
-  }
-  if (route.name === 'history') {
-    const backTo = route.backTo;
-    return (
-      <History
-        onBack={backTo ? () => setRoute({ name: 'game', gameId: 'impostor', open: { id: backTo, action: 'resume' } }) : home}
-        backLabel={backTo ? '← Back' : '← Home'}
-        onOpen={(id) => {
-          // IMP-094: an Impostor evening in progress is resumed, never looked back at.
-          const g = gameStore.get(id);
-          if (g?.gameType === impostor.info.id && g.status === 'in-progress') setRoute({ name: 'game', gameId: 'impostor', open: { id, action: 'resume' } });
-          else setRoute({ name: 'past', id });
-        }}
-        deleted={deleted}
-        onUndoDelete={() => {
-          for (const g of deleted?.games ?? []) gameStore.put(g);
-          setDeleted(null);
-        }}
-      />
-    );
-  }
-  if (route.name === 'sessions') return <SessionList onBack={home} onOpen={(id) => setRoute({ name: 'session', id })} />;
-  if (route.name === 'session') return <SessionScreen id={route.id} onBack={() => setRoute({ name: 'sessions' })} />;
-  if (route.name === 'past') {
-    const saved = gameStore.get(route.id);
-    const game = saved && gameOf(saved.gameType);
-    if (saved && game) {
-      const PastGame = game.PastGame as (p: { saved: SavedGame; onBack: () => void; actions?: ReactNode; prefs?: Preferences }) => ReactNode;
-      return (
-        <PastGame
-          saved={saved}
-          prefs={preferences}
-          onBack={() => setRoute({ name: 'history' })}
-          actions={
-            <PastGameActions
-              saved={saved}
-              reuseLabel={game.info.id === impostor.info.id ? impostor.reuseLabel : 'Use this setup'}
-              onReuse={() => setRoute({ name: 'game', gameId: game.info.id as GameId, open: { id: saved.id, action: 'reuse' } })}
-              onCarryOn={(id) => setRoute({ name: 'game', gameId: 'impostor', open: { id, action: 'resume' } })}
-              onDelete={() => {
-                gameStore.remove(saved.id);
-                setDeleted({ games: [saved], at: Date.now() });
-                setRoute({ name: 'history' });
-              }}
-            />
           }
+          onExit={home}
+          onBack={(names) => setRoute({ name: 'pick', swNames: names })}
+          ui={secretWordsUi}
+          onHistory={() => setRoute({ name: 'history' })}
+          onPlaying={setSwPlaying}
         />
       );
     }
-  }
+    if (route.name === 'sw-code') {
+      return (
+        <secretWords.CodeEntry
+          key={route.nonce}
+          initialText={route.text}
+          initialError={route.error}
+          onBack={() => setRoute({ name: 'phone', gameId: phoneGames[0].info.id, link: null, enter: 'join', nonce: Date.now() })}
+          onOpen={(code) => openMap({ code })}
+        />
+      );
+    }
+    if (route.name === 'sw-map') return <secretWords.MapPhone key={route.nonce} map={route.map} onHome={home} />;
+    if (route.name === 'pick') {
+      return (
+        <PickGame
+          onBack={home}
+          onPick={(id) => {
+            // SWD-003: Secret Words' list comes back in the same visit, or tonight's names from "Play something else".
+            if (id === secretWords.info.id) {
+              const names = route.swNames ?? route.names;
+              return setRoute({ name: 'sw', start: names ? { kind: 'new', names } : { kind: 'new' } });
+            }
+            // IMP-003: Impostor's list comes back in the same visit; IMP-102: tonight's names go to Tambola's setup.
+            const players = id === impostor.info.id ? route.impostorPlayers : route.names;
+            setRoute(players ? { name: 'game', gameId: id as GameId, players } : { name: 'game', gameId: id as GameId });
+          }}
+          onResume={(id) => setRoute({ name: 'game', gameId: 'impostor', open: { id, action: 'resume' } })}
+          onResumeNight={(id) => setRoute({ name: 'sw', start: { kind: 'resume', id } })}
+        />
+      );
+    }
+    if (route.name === 'phone') {
+      const game = phoneGameOf(route.gameId);
+      if (game) {
+        return (
+          <game.phone.Screen
+            prefs={preferences}
+            link={route.link}
+            enter={route.enter}
+            nonce={route.nonce}
+            onHome={home}
+            onReport={onReport}
+            joinNote={impostor.joinNote}
+            joinMore={
+              <>
+                <p className="note">{secretWords.joinLine}</p>
+                <button
+                  type="button"
+                  className="button button-quiet button-big"
+                  onClick={() => setRoute({ name: 'sw-code', text: '', error: null, nonce: Date.now() })}
+                >
+                  Type the host's code
+                </button>
+              </>
+            }
+            onScan={(text) => {
+              // SWD-133: a map QR read by the Join screen; D11 keeps the Join screen under it.
+              const map = mapLinkRoute(text, route);
+              if (!map) return false;
+              setRoute(map.route);
+              setBoardAsk(map.ask);
+              return true;
+            }}
+          />
+        );
+      }
+    }
+    if (route.name === 'history') {
+      const backTo = route.backTo;
+      return (
+        <History
+          onBack={backTo ? () => setRoute({ name: 'game', gameId: 'impostor', open: { id: backTo, action: 'resume' } }) : home}
+          backLabel={backTo ? '← Back' : '← Home'}
+          onOpen={(id) => {
+            // IMP-094: an Impostor evening in progress is resumed, never looked back at.
+            const g = gameStore.get(id);
+            if (g?.gameType === impostor.info.id && g.status === 'in-progress') setRoute({ name: 'game', gameId: 'impostor', open: { id, action: 'resume' } });
+            else setRoute({ name: 'past', id });
+          }}
+          deleted={deleted}
+          onUndoDelete={() => {
+            for (const g of deleted?.games ?? []) gameStore.put(g);
+            setDeleted(null);
+          }}
+        />
+      );
+    }
+    if (route.name === 'sessions') return <SessionList onBack={home} onOpen={(id) => setRoute({ name: 'session', id })} />;
+    if (route.name === 'session') return <SessionScreen id={route.id} onBack={() => setRoute({ name: 'sessions' })} />;
+    if (route.name === 'past') {
+      const saved = gameStore.get(route.id);
+      const game = saved && gameOf(saved.gameType);
+      if (saved && game) {
+        const PastGame = game.PastGame as (p: { saved: SavedGame; onBack: () => void; actions?: ReactNode; prefs?: Preferences }) => ReactNode;
+        return (
+          <PastGame
+            saved={saved}
+            prefs={preferences}
+            onBack={() => setRoute({ name: 'history' })}
+            actions={
+              <PastGameActions
+                saved={saved}
+                reuseLabel={game.info.id === impostor.info.id ? impostor.reuseLabel : 'Use this setup'}
+                onReuse={() => setRoute({ name: 'game', gameId: game.info.id as GameId, open: { id: saved.id, action: 'reuse' } })}
+                onCarryOn={(id) => setRoute({ name: 'game', gameId: 'impostor', open: { id, action: 'resume' } })}
+                onDelete={() => {
+                  gameStore.remove(saved.id);
+                  setDeleted({ games: [saved], at: Date.now() });
+                  setRoute({ name: 'history' });
+                }}
+              />
+            }
+          />
+        );
+      }
+    }
 
+    return (
+      <Home
+        needRefresh={needRefresh}
+        onUpdate={() => void updateServiceWorker(true)}
+        onHost={() => setRoute({ name: 'pick' })}
+        onGame={(gameId, open) => setRoute(open ? { name: 'game', gameId, open } : { name: 'game', gameId })}
+        onHistory={() => setRoute({ name: 'history' })}
+        onSessions={() => setRoute({ name: 'sessions' })}
+        onTickets={(enter) => setRoute({ name: 'phone', gameId: phoneGames[0].info.id, link: null, enter, nonce: Date.now() })}
+        onSettings={() => setRoute({ name: 'game', gameId: games[0].info.id as GameId, startAt: 'settings' })}
+        onReport={() => onReport(null)}
+        onNight={(start) => setRoute({ name: 'sw', start })}
+        onSavedMap={openMap}
+      />
+    );
+  };
   return (
-    <Home
-      needRefresh={needRefresh}
-      onUpdate={() => void updateServiceWorker(true)}
-      onHost={() => setRoute({ name: 'pick' })}
-      onGame={(gameId, open) => setRoute(open ? { name: 'game', gameId, open } : { name: 'game', gameId })}
-      onHistory={() => setRoute({ name: 'history' })}
-      onSessions={() => setRoute({ name: 'sessions' })}
-      onTickets={(enter) => setRoute({ name: 'phone', gameId: phoneGames[0].info.id, link: null, enter, nonce: Date.now() })}
-      onSettings={() => setRoute({ name: 'game', gameId: games[0].info.id as GameId, startAt: 'settings' })}
-      onReport={() => onReport(null)}
-    />
+    <>
+      {renderRoute()}
+      {boardAsk && (
+        <secretWords.BoardPhoneDialog
+          onePhone={boardAsk.onePhone}
+          onOpenHere={() => {
+            const map = boardAsk.map;
+            setBoardAsk(null);
+            setRoute({ name: 'sw-map', map, nonce: Date.now() });
+          }}
+          onKeep={() => setBoardAsk(null)}
+        />
+      )}
+    </>
   );
 }
 
@@ -502,8 +641,14 @@ function Home({
   onTickets,
   onSettings,
   onReport,
+  onNight,
+  onSavedMap,
 }: {
   needRefresh: boolean;
+  /** Secret Words: resume a game night, or "Play again with these teams" (SWD-115). */
+  onNight: (start: SecretWordsStart) => void;
+  /** SWD-036: Home's saved map. */
+  onSavedMap: (map: SecretWordsMapToOpen) => void;
   /** Phase 7: "Report a problem" (PLT-200). */
   onReport: () => void;
   onUpdate: () => void;
@@ -533,10 +678,18 @@ function Home({
     impostor.sweep(gameStore, impostorUi);
     return gameStore
       .list()
-      .filter((g) => (g.status === 'in-progress' || g.status === 'paused') && gameOf(g.gameType))
+      .filter((g) => (g.status === 'in-progress' || g.status === 'paused') && (gameOf(g.gameType) || secretWords.isNight(g)))
       .sort((a, b) => b.updatedAt - a.updatedAt);
   });
   const [now] = useState(() => Date.now());
+  /** SWD-115: "Last game night", and "Start a new game night?" before "Play again with these teams" if one is unfinished. */
+  const [lastNight] = useState(() => secretWords.lastNightRow(gameStore, Date.now()));
+  const [startNew, setStartNew] = useState<{ id: string; text: string } | null>(null);
+  const playAgain = (id: string) => {
+    const open = secretWords.startNewAsk(gameStore);
+    if (open) setStartNew(open);
+    else onNight({ kind: 'again', id });
+  };
   const pick = (run: () => void) => () => {
     setMenu(false);
     run();
@@ -588,11 +741,11 @@ function Home({
       <div className="home-choices">
         <button type="button" className="choice-card home-card" onClick={onHost}>
           <span className="choice-card-title">Host a game</span>
-          <span className="choice-card-text">{hostGames.map((g) => g.info.title).join(' or ')} on this phone</span>
+          <span className="choice-card-text">{listOr(hostGames.map((g) => g.info.title))} on this phone</span>
         </button>
         <button type="button" className="choice-card home-card" onClick={() => onTickets('join')}>
           <span className="choice-card-title">Join a game</span>
-          <span className="choice-card-text">Tambola ticket from the host</span>
+          <span className="choice-card-text">Tambola ticket or Secret Words map from the host</span>
         </button>
       </div>
 
@@ -606,6 +759,7 @@ function Home({
       {phoneGames.map((g) => (
         <g.phone.SavedTickets key={g.info.id} prefs={preferences} onOpen={() => onTickets(false)} />
       ))}
+      <secretWords.SavedMapRow keys={appKeys} onOpen={onSavedMap} />
 
       {unfinished.length > 0 && (
         <section aria-labelledby="unfinished-title" className="stack-tight">
@@ -614,6 +768,15 @@ function Home({
           </h2>
           <ul className="unfinished" data-testid="unfinished-games">
             {unfinished.map((g) => {
+              if (secretWords.isNight(g)) {
+                // SWD-115 (version 3.6): three lines, one button.
+                const row = secretWords.homeRow(g);
+                return row ? (
+                  <li key={g.id} className="unfinished-row">
+                    <secretWords.NightRowButton row={row} className="sw-night-row" onClick={() => onNight({ kind: 'resume', id: g.id })} />
+                  </li>
+                ) : null;
+              }
               const game = gameOf(g.gameType)!;
               const id = game.info.id as GameId;
               // IMP-001: an Impostor evening is never "stale" here; IMP-104 ends it after 12 hours instead.
@@ -647,8 +810,31 @@ function Home({
           </ul>
         </section>
       )}
+      {lastNight && (
+        <section className="sw-last-night">
+          <p data-testid="last-night">{lastNight.text}</p>
+          <button type="button" className="button button-quiet" onClick={() => playAgain(lastNight.id)}>
+            Play again with these teams
+          </button>
+        </section>
+      )}
+      {startNew && (
+        <secretWords.StartNewNightDialog
+          text={startNew.text}
+          onCarryOn={() => onNight({ kind: 'resume', id: startNew.id })}
+          onStartNew={() => {
+            secretWords.endUnfinished(gameStore, startNew.id);
+            if (lastNight) onNight({ kind: 'again', id: lastNight.id });
+          }}
+        />
+      )}
     </main>
   );
+}
+
+/** "Tambola, Impostor or Secret Words" (SWD-001): joined with ", " and " or " before the last. */
+function listOr(items: readonly string[]): string {
+  return items.length <= 1 ? (items[0] ?? '') : `${items.slice(0, -1).join(', ')} or ${items[items.length - 1]}`;
 }
 
 /**
@@ -678,16 +864,22 @@ function PickGame({
   onBack,
   onPick,
   onResume,
+  onResumeNight,
 }: {
   onBack: () => void;
   onPick: (id: HostGameId) => void;
   onResume: (id: string) => void;
+  /** SWD-115: the unfinished Secret Words game night. */
+  onResumeNight: (id: string) => void;
 }) {
   const [unfinished] = useState(() => {
     impostor.sweep(gameStore, impostorUi);
     return impostor.unfinished(gameStore);
   });
+  const [night] = useState(() => secretWords.resumeCard(gameStore));
   const [asking, setAsking] = useState(false);
+  // SWD-115: the Secret Words card asks once per tap; its quiet buttons never wait (SWD-114), so not part of the guard.
+  const [askingNight, setAskingNight] = useState<{ id: string; text: string } | null>(null);
   // I29: the 500 ms tap guard from when this screen shows, and again when "Start a new game?" opens or closes.
   const guard = useTapGuard(asking);
   return (
@@ -704,13 +896,21 @@ function PickGame({
           <span className="choice-card-text">Tap to resume</span>
         </button>
       )}
+      {night && (
+        <secretWords.NightRowButton row={night.row} className="choice-card sw-resume-card" testId="resume-card" onClick={() => onResumeNight(night.id)} />
+      )}
       <div className="home-choices">
         {hostGames.map((g) => (
           <button
             key={g.info.id}
             type="button"
             className="choice-card"
-            onClick={() => (g.info.id === impostor.info.id && unfinished ? setAsking(true) : onPick(g.info.id))}
+            onClick={() => {
+              if (g.info.id === impostor.info.id && unfinished) return setAsking(true);
+              const open = g.info.id === secretWords.info.id ? secretWords.startNewAsk(gameStore) : null;
+              if (open) setAskingNight(open);
+              else onPick(g.info.id);
+            }}
           >
             <span className="choice-card-title">{g.info.title}</span>
             <span className="choice-card-text">
@@ -726,6 +926,16 @@ function PickGame({
           onStartNew={() => {
             impostor.endNow(gameStore, impostorUi, unfinished.id);
             onPick(impostor.info.id);
+          }}
+        />
+      )}
+      {askingNight && (
+        <secretWords.StartNewNightDialog
+          text={askingNight.text}
+          onCarryOn={() => onResumeNight(askingNight.id)}
+          onStartNew={() => {
+            secretWords.endUnfinished(gameStore, askingNight.id);
+            onPick(secretWords.info.id);
           }}
         />
       )}

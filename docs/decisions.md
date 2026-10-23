@@ -147,6 +147,7 @@
 
 "Convention" means the established Tambola rule in `docs/games/tambola/guide.md`, chosen because the owner asked
 Claude to follow game conventions. Every Tambola rule above is also a host setting with this default.
+| 2026-10-23 | **What Am I?: Cow stays in Animals**, although Jev rated it religiously sensitive twice (0.84, 0.86): an everyday animal to act out. | Owner ("Keep Cow in Animals") |
 | 2026-10-23 | **What Am I? drafting calls R1–R4 kept** (`docs/games/what-am-i/scenarios.md`): no lay-flat pause (it would mark Pass first); a word hidden by a pause goes to the end of the unused words; Mix of all lists a two-pack word once; a leaver keeps their points, marked "(left)", and can't win unless they rejoin. | Owner ("keep R1 to R4") |
 | 2026-10-23 | **What Am I?: easier ways to hold the phone.** The guesser holds it on the forehead **or chest**, screen to the room; or, a setup choice (and per player on the pass screen), **hands-free**: the phone stands behind the guesser and one clue giver taps bottom for Got it, top for Pass, with phone movement ignored. Same rules and scoring. Map section O. | Owner ("Add both") |
 | 2026-10-23 | **What Am I?: the screens say "Move the phone down: Got it · up: Pass"** ("Phone down / Phone up" on the pass screen), never "tilt" or "nod". Map section N1. | Owner (chose "phone down / up" over nod, tip, bend, face down) |
