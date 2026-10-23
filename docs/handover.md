@@ -58,11 +58,17 @@ The first run worked (2,563 decisions, no faults; `docs/games/what-am-i/jev-chec
    Doctor, Cricket, Diwali, Chair; not known: three made-up words such as Flurbix; one regional pair such as Idli and
    Dhokla). Report the controls first; if a known control falls below 0.8 or a made-up word rises above 0.2, mark the run
    "controls failed" (this run rated Idli 0.25 and Hen 0.49, so absolute scores were not usable).
-2. **Read the map's later sections:** where a section like "J.", "L.", "M." or "N. … what changed" renames a button or line,
-   use the new wording; ignore table codes (D1–D6) and markup scraps (";", ",", "on with") as labels.
+2. ~~**Read the map's later sections**~~: no longer needed; the What Am I? map is draft 4 with every change written into the
+   screens. Still ignore table codes (D1–D7) and markup scraps (";", ",", "on with") as labels.
 3. **J2 and J3:** "Which pack does this word belong in?" (the packs, "none of these", "uncertain"); and "guessable from a
    clue": take two clues per word from a `--clues <csv>` file the product owner writes (word, clue1, clue2) and ask Jev to
    pick the word from it plus 5 others from the same pack.
+
+### What Am I? prototype (product owner, 23 October; one coder lane, C1, after the Jev tool fixes or in parallel)
+Feed `docs/games/what-am-i/screen-map.md` **draft 4** to the generic prototype renderer at `/preview/proto/what-am-i/`, as for
+Secret Words (`/preview/proto/secret-words/`), with the K1–K3 data. The word screen (T3) is shown sideways at 812 × 375 and
+568 × 320, and "Got it" / "Pass" are taps on the bottom / top halves (no motion in the prototype). Tell the product owner
+when it is live; the product owner runs the six persona walks and the Jev screen read on it. Design only: no game code.
 
 ### What Am I? (game four, 23 October): Jev check of the screen map and word packs (tester, mid-size model, after Secret Words work in hand)
 Design only; nothing to build. Owner asked for the Jev check on 23 October. Two jobs, report to `reports/jev-map-what-am-i.md`:
