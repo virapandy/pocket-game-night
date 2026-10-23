@@ -9,7 +9,7 @@ import { expect, test, type Page } from './fixtures';
 import { closePhones } from './phone';
 import { hostAGame } from './helpers';
 import { freshPhone, mainButton } from './impostor';
-import { aheadOfSecretWordsScreens, boardCells, fromMenu, giveClue, hostEvening, menuButton, tapMain } from './secret-words';
+import { boardCells, fromMenu, giveClue, hostEvening, menuButton, tapMain } from './secret-words';
 import {
   bare, box, button, CODE, dialogNamed, easyCode, fakeWakeLock, fullCode, hideAppAndLook, hideMap, listButton, lockHeld,
   mapCell, mapCells, mapCellsOf, mapGrid, mapHeading, mapInPage, nextCode, openLinkAgain, openMapPhone, oracleBoard, PAIR,
@@ -223,7 +223,6 @@ async function faceDownUniform(page: Page): Promise<string[]> {
 
 test.describe('SWD-025: a board phone that opened the map keeps its room screens free of the map', () => {
   test('host (two phones) → Home (keep this game) → the same code\'s link → "Open the map here" → "← Back" → resume: the clue and guessing screens hold no kind, no map, no code', async ({ page }) => {
-    aheadOfSecretWordsScreens('lanes A and B: the host\'s turn screens, Home\'s row and the board-phone dialog');
     const code = fullCode(31_337, 2);
     await hostEvening(page, { phones: 'Two phones', boards: [code], seed: 'lane-c-025' });
     await expect(page.getByTestId('map-code-text')).toContainText(shown(code));
