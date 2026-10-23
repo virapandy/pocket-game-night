@@ -1,4 +1,5 @@
 # Test report
+**Progress 23 Oct 2026 (lane-e, Secret Words screen lane C, the map phone, tests first): `tests/browser/secret-words-c-map.spec.ts` 63 tests per phone (SWD-025, 031, 032, 034–036, 038, 039, 117, 120, 121; privacy first): 57 fail for the right reason (no map phone yet: heading "Secret Words map" not found), 5 marked expected-to-fail for lanes A, B, D, 1 already holds (Home never opens a saved map by itself); `secret-words-c3.spec.ts`: SWD-117's three map-phone checks made real (fail the same way), SWD-022 and the typed-code check re-marked for lanes B/D and A; coder note `specs/secret-words/screens-c.md`; npm test 850 of 850; the verdict below stands.**
 **Lane-e at merge 88354ab (lane-e 0ebb60d + origin/main): GREEN. Quick verify 39815492509 green (all shards). Local: npm test 849 of 849, build ok, Secret Words browser file 38 of 38 on both phones (nice -n 10, 2 workers). SWD-103, 090, 042, 099 all pass.**
 ## Lane-e, Secret Words rules engine + owner answers of 22 October (SWD-090, 042, 099, 103)
 Commit tested: c86f220 (app 0ff9800, Secret Words rules engine; tests c86f220)   Date: 2026-10-22

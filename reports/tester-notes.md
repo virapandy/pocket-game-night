@@ -58,3 +58,7 @@ Read this and the top of `reports/latest.md` before starting. Keep it short: rep
 - Run: `SIM_MODE=deal|play npx vitest run --config tests/tools/sim-table/vitest.config.ts deal|play`; wrap play in `caffeinate -i`. Play writes reports/sim-table-secret-words.md and results.json (exchange). Wiring was checked with a stub guesser (`SIM_TABLE_DRYRUN=1`, report to the exchange folder, no Jev); the real run was not made.
 - Finding for the owner: the engine has no pass move (a clue needs at least one guess; only "Clue not allowed" ends a turn with none, and it gives the other team a word). A team out of planned clues therefore ends the board and is counted; asked for "pass with clue 0, no guesses" was not possible.
 - Jev decisions: one per guess; run limit 6000 (SIM_TABLE_RUN_LIMIT).
+
+## 23 October: Secret Words screen lane C tests (lane-e)
+- `tests/browser/secret-words-c-map.spec.ts` + helpers `secret-words-c.ts`; coder note `specs/secret-words/screens-c.md`. M1 is opened by the `#map=` link on a fresh phone (lane A also owns/tests that link). When lane A/B/D land, remove the `aheadOfSecretWordsScreens` calls that then pass.
+- **Port clash:** Playwright's preview server is fixed at port 4173 with `reuseExistingServer`; two testers running browser tests at once share (or kill) each other's server and test the other lane's build. Run browser tests one tester at a time, or check `curl localhost:4173/pocket-game-night/` serves your own build first.
