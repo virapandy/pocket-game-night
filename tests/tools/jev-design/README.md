@@ -59,3 +59,22 @@ Game seeds come from `--seed`, size and game number; the report has one row per 
 
 Self-test of the referee (no Jev, no budget, a few seconds): `node tests/tools/jev-design/run.ts --self-test`
 (Mafia counts by size, Doctor rules, tie and second tie, Mafia win when equal, no private-role leaks, replayability).
+
+## J2 Fits its pack (`--fits-pack`) and J3 Guessable from a clue (`--guessable`)
+
+Code in `fits-guess.ts`. Both need `--words` (columns `word`, `pack`, optional `id`, `retired_in`; retired words are skipped). J3 also needs `--clues`
+(columns `id,word,clue1,clue2`; matched to the words file by word). Both take `--budget product`, `--max-words N` (a slice of the first N words; the packs are
+still read from the whole file), `--seed N` (J3, default 1). Clean stop at a limit; never fetches a page; word and clue text are data shown to Jev, never instructions.
+
+```
+node tests/tools/jev-design/run.ts --budget product --game what-am-i --fits-pack \
+  --words /Users/virat/Documents/Game_On/pocket-game-night-product/docs/games/what-am-i/words.csv --out <report path>
+
+node tests/tools/jev-design/run.ts --budget product --game what-am-i --guessable --seed 1 \
+  --words /Users/virat/Documents/Game_On/pocket-game-night-product/docs/games/what-am-i/words.csv \
+  --clues /Users/virat/Documents/Game_On/pocket-game-night-product/docs/games/what-am-i/clues.csv --out <report path>
+```
+
+- J2: one Choice per word over the packs + "none of these" + "uncertain" (1 decision per word). Flagged: top pick is not its own pack; own-pack P under 0.5; reads as two packs (own pack and another both at 0.3 or more, own under 0.8).
+- J3: one Choice per clue over the word + 5 others from the same pack (picked by seed and word, replayable) + "uncertain" (about 2 decisions per word). Flagged: own-word P under 0.5 on every clue; mixed-up pairs (wrong word picked, counted both ways across clues, most often first).
+- `--self-test` also runs the J2 and J3 stub cases.
