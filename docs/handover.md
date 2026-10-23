@@ -61,7 +61,8 @@ The first run worked (2,563 decisions, no faults; `docs/games/what-am-i/jev-chec
 2. ~~**Read the map's later sections**~~: no longer needed; the What Am I? map is draft 4 with every change written into the
    screens. Still ignore table codes (D1–D7) and markup scraps (";", ",", "on with") as labels.
 3. **J2 and J3:** "Which pack does this word belong in?" (the packs, "none of these", "uncertain"); and "guessable from a
-   clue": take two clues per word from a `--clues <csv>` file the product owner writes (word, clue1, clue2) and ask Jev to
+   clue": take two clues per word from a `--clues <csv>` file (ready: `docs/games/what-am-i/clues.csv`, columns id, word, clue1,
+   clue2, 755 rows) and ask Jev to
    pick the word from it plus 5 others from the same pack.
 
 ### What Am I? prototype (product owner, 23 October; one coder lane, C1, after the Jev tool fixes or in parallel)
