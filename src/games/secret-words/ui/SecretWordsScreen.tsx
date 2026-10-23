@@ -1,0 +1,263 @@
+// Secret Words on the host phone: setup (lane A: "Who's playing?", "Make teams", "How do you want to play?", "Read this
+// aloud", "How to play") up to the first deal, then the game. The game's own screens (the turn, the board, game over)
+// are lanes B to D; until they are built, `Playing` is a plain stand-in that shows no part of the map.
+import { useState, type ReactNode } from 'react';
+import type { Preferences, SavedGameStore, SessionPicker } from '../../../engine';
+import { BlocksRoot, QuietButton, Screen } from '../../../blocks';
+import type { SecretWordsChoices, SecretWordsTeamNames } from '../rules';
+import {
+  landmineDefault, loadNight, pastNames, PREF, readAloudDue, readLastChoices, recentPairIds, startNight, teamSeedFor, tonightsNames,
+  type ChoicesDraft, type Night, type NightMatch,
+} from './evening';
+import { Choices, MakeTeams, SettingsScreen, WhosPlaying } from './Setup';
+import { drawNames, drawSplit, fromSplit, keepTeams, movePlayer, teamOf, otherTeam, type TeamsDraft } from './teams';
+import { HowToPlay, ReadAloud } from './Texts';
+import './secret-words.css';
+
+/** How the screen opens: a new game night (from the picker), "Play again with these teams" (Home), or a resume. */
+export type SecretWordsStart =
+  | { readonly kind: 'new'; readonly names?: readonly string[] }
+  | { readonly kind: 'again'; readonly id: string }
+  | { readonly kind: 'resume'; readonly id: string };
+
+type Step = 'names' | 'teams' | 'choices' | 'how' | 'aloud' | 'settings' | 'playing';
+
+interface TeamsState {
+  readonly seed: string;
+  /** Draws so far (SWD-006: k counts every draw of the evening). */
+  readonly k: number;
+  /** "New team names" draws so far (SWD-013: m). */
+  readonly m: number;
+  readonly names: SecretWordsTeamNames;
+  readonly draft: TeamsDraft;
+  /** SWD-013, SWD-115: no "New team names" once the names are fixed ("Play again with these teams"). */
+  readonly fixedNames: boolean;
+}
+
+export function SecretWordsScreen({
+  start,
+  store,
+  prefs,
+  sessions,
+  testSeedsRaw,
+  release,
+  settingsPanel,
+  onExit,
+  onBack,
+}: {
+  start: SecretWordsStart;
+  store: SavedGameStore;
+  prefs: Preferences;
+  sessions: SessionPicker;
+  /** `localStorage['pgn.test.seeds']` (Test hooks item 2). */
+  testSeedsRaw: () => string | null;
+  release: boolean;
+  /** This phone's settings (Larger text and the rest), shown under "Settings" with "← Back". */
+  settingsPanel: ReactNode;
+  /** Home. */
+  onExit: () => void;
+  /** "← Back" on "Who's playing?": the picker, with the names as they are, kept for this visit. */
+  onBack: (names: string[]) => void;
+}) {
+  const [init] = useState(() => opening(start, store, sessions, testSeedsRaw(), release));
+  const [step, setStep] = useState<Step>(init.step);
+  const [names, setNames] = useState<string[]>(init.names);
+  const [past] = useState(() => pastNames(store));
+  const [teams, setTeams] = useState<TeamsState | null>(init.teams);
+  const [last] = useState(() => readLastChoices(prefs));
+  const [choices, setChoices] = useState<ChoicesDraft>(last.choices);
+  /** SWD-119: the host tapped a Landmine option in this setup (or one was saved): Words no longer changes it. */
+  const [landmineSet, setLandmineSet] = useState(last.landmineSaved);
+  /** SWD-009: "Same as last time" is decided when the choices open and stays until they are left. */
+  const [sameShown, setSameShown] = useState(false);
+  /** Choices mount again after "How to play" (SWD-009 v3.6: "Start the game" waits its 800 ms again). */
+  const [mount, setMount] = useState(0);
+  const [larger, setLarger] = useState(() => prefs.get<boolean>(PREF.largerText, false) === true);
+  const [settingsFrom, setSettingsFrom] = useState<Step>('aloud');
+  const [night, setNight] = useState<{ saved: Night; match: NightMatch } | null>(init.night);
+
+  const toTeams = () => {
+    if (teams) {
+      setTeams({ ...teams, draft: keepTeams(teams.draft, names) });
+    } else {
+      // SWD-004: the team seed is made (or read from the test hook) on first entering Make teams for a new evening.
+      const seed = teamSeedFor(testSeedsRaw(), release);
+      const split = drawSplit(names, seed, 1);
+      setTeams({ seed, k: split.k, m: 1, names: drawNames(seed, 1, recentPairIds(store)), draft: fromSplit(split, []), fixedNames: false });
+    }
+    setStep('teams');
+  };
+  const toChoices = () => {
+    setSameShown(last.same);
+    setStep('choices');
+  };
+  const deal = (): boolean => {
+    if (!teams || choices.map === null) return false;
+    const c: SecretWordsChoices = { map: choices.map, board: choices.board, landmine: choices.landmine, words: choices.words };
+    const made = startNight({
+      store, prefs, sessions, players: names, teams: teams.draft, names: teams.names, splits: teams.k, teamSeed: teams.seed,
+      choices: c, testSeedsRaw: testSeedsRaw(), release,
+    });
+    if (!made) return false;
+    setNight(made);
+    setStep('playing');
+    return true;
+  };
+
+  let screen: ReactNode;
+  switch (step) {
+    case 'names':
+      screen = <WhosPlaying names={names} onChange={setNames} past={past} onBack={() => onBack(names)} onNext={toTeams} />;
+      break;
+    case 'teams':
+      if (!teams) return null;
+      screen = (
+        <MakeTeams
+          draft={teams.draft}
+          names={teams.names}
+          canRename={!teams.fixedNames}
+          onMove={(p) => {
+            const before = teams;
+            const to = otherTeam(teamOf(teams.draft, p));
+            setTeams({ ...teams, draft: movePlayer(teams.draft, p) });
+            return { text: `${p} moved to ${teams.names[to]}`, undo: () => setTeams((cur) => (cur ? { ...cur, draft: before.draft } : cur)) };
+          }}
+          onShuffle={() => {
+            const before = teams.draft;
+            const split = drawSplit(names, teams.seed, teams.k + 1, { guessOnly: teams.draft.guessOnly, now: teams.draft });
+            setTeams({ ...teams, k: split.k, draft: fromSplit(split, teams.draft.guessOnly) });
+            return () => setTeams((cur) => (cur ? { ...cur, draft: before } : cur));
+          }}
+          onNewNames={() => {
+            const before = teams.names;
+            const m = teams.m + 1;
+            setTeams({ ...teams, m, names: drawNames(teams.seed, m, recentPairIds(store), teams.names.id) });
+            return () => setTeams((cur) => (cur ? { ...cur, names: before } : cur));
+          }}
+          onClueGivers={(draft) => setTeams({ ...teams, draft })}
+          onBack={() => setStep('names')}
+          onNext={toChoices}
+        />
+      );
+      break;
+    case 'choices':
+      screen = (
+        <Choices
+          key={mount}
+          choices={choices}
+          sameAsLast={sameShown}
+          playerCount={names.length}
+          onPhones={(map) => setChoices({ ...choices, map })}
+          onBoard={(board) => setChoices({ ...choices, board })}
+          onLandmine={(landmine) => {
+            setLandmineSet(true);
+            setChoices({ ...choices, landmine });
+          }}
+          onWords={(words) => setChoices({ ...choices, words, ...(landmineSet ? {} : { landmine: landmineDefault(words) }) })}
+          onHowToPlay={() => setStep('how')}
+          onBack={() => setStep('teams')}
+          onStart={() => {
+            // SWD-010: the read-aloud card when no game has been dealt yet in this session; otherwise deal at once.
+            if (readAloudDue(store, sessions, Date.now())) setStep('aloud');
+            else deal();
+          }}
+        />
+      );
+      break;
+    case 'how':
+      screen = (
+        <HowToPlay
+          names={teams?.names ?? { id: '', orange: 'Orange team', teal: 'Teal team' }}
+          choices={choices}
+          onDone={() => {
+            setMount((n) => n + 1);
+            setStep('choices');
+          }}
+        />
+      );
+      break;
+    case 'aloud':
+      screen = teams && (
+        <ReadAloud
+          names={teams.names}
+          choices={choices}
+          larger={larger}
+          onBack={() => setStep('choices')}
+          onPlay={deal}
+          onPreview={deal}
+          onSettings={() => {
+            setSettingsFrom('aloud');
+            setStep('settings');
+          }}
+        />
+      );
+      break;
+    case 'settings':
+      screen = (
+        <SettingsScreen
+          panel={settingsPanel}
+          onBack={() => {
+            setLarger(prefs.get<boolean>(PREF.largerText, false) === true);
+            setStep(settingsFrom);
+          }}
+        />
+      );
+      break;
+    default:
+      screen = <Playing night={night} onHome={onExit} />;
+  }
+  return (
+    <BlocksRoot className="sw" larger={larger}>
+      {screen}
+    </BlocksRoot>
+  );
+}
+
+/** Where the screen opens, and with what (SWD-003 names, SWD-115 "Play again with these teams", a resume). */
+function opening(
+  start: SecretWordsStart,
+  store: SavedGameStore,
+  sessions: SessionPicker,
+  testSeedsRaw: string | null,
+  release: boolean,
+): { step: Step; names: string[]; teams: TeamsState | null; night: { saved: Night; match: NightMatch } | null } {
+  if (start.kind === 'resume') {
+    const saved = store.get(start.id) as Night | undefined;
+    const match = saved && loadNight(saved);
+    return { step: 'playing', names: [], teams: null, night: saved && match ? { saved, match } : null };
+  }
+  if (start.kind === 'again') {
+    const saved = store.get(start.id);
+    const match = saved && loadNight(saved);
+    if (match) {
+      // SWD-115: the same players, teams, team names (reused) and "Doesn't give clues" switches; clue givers by SWD-007.
+      const s = match.state;
+      const seed = teamSeedFor(testSeedsRaw, release);
+      return {
+        step: 'teams',
+        names: [...s.players],
+        teams: { seed, k: 0, m: 0, names: s.teams.names, draft: fromSplit(s.teams, s.teams.guessOnly), fixedNames: true },
+        night: null,
+      };
+    }
+  }
+  const names = start.kind === 'new' && start.names ? [...start.names] : tonightsNames(store, sessions, Date.now());
+  return { step: 'names', names, teams: null, night: null };
+}
+
+/**
+ * PLACEHOLDER (lane A): the game after its deal. The scan screen, pass screen, board and game over are lanes B to D;
+ * this stand-in only says the game is on and shows no word, kind or map.
+ */
+function Playing({ night, onHome }: { night: { saved: Night; match: NightMatch } | null; onHome: () => void }) {
+  const names = night?.match.state.teams.names;
+  return (
+    <Screen className="sw-setup">
+      <header className="sw-bar">
+        <QuietButton onClick={onHome}>← Home</QuietButton>
+      </header>
+      <h1 className="pgn-title">Secret Words</h1>
+      {names && <p className="sw-body">{`${names.orange} v ${names.teal}: the game is on.`}</p>}
+    </Screen>
+  );
+}

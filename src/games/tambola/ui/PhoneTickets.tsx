@@ -6,6 +6,7 @@ import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type 
 import type { PlayerTicketInput, Preferences, ReportSubject } from '../../../engine';
 import { decodeTicket, decodeTypedCode, encodeClaim, PATTERN_NAMES, type Pattern } from '../rules';
 import { QrCode } from './qr';
+import { startScanner, type CameraFailure } from './scanner';
 import {
   addTicket,
   AWAY_KEY,
@@ -157,6 +158,8 @@ export function PhoneTickets({
   onHome,
   onReport,
   joinNote,
+  joinMore,
+  onScan,
 }: {
   prefs: Preferences;
   link: string | null;
@@ -168,6 +171,10 @@ export function PhoneTickets({
   onReport?: (subject: ReportSubject) => void;
   /** IMP-002: the app's last line on "Join a game" for games played on the host's phone alone. */
   joinNote?: string;
+  /** SWD-002: other games' lines and buttons, last on "Join a game". */
+  joinMore?: ReactNode;
+  /** SWD-133: a scanned QR that is not a ticket (a Secret Words map); true when it was taken. */
+  onScan?: (text: string) => boolean;
 }) {
   const [game, setGame] = useState<PhoneGameFacts | null>(() => loadPhoneGame(prefs));
   const [screen, setScreen] = useState<Screen>(() =>
@@ -191,8 +198,7 @@ export function PhoneTickets({
   };
 
   // A scanned ticket: added to this game's tickets, or replacing an old game's (TAM-171).
-  useEffect(() => {
-    if (!link) return;
+  const takeTicket = (link: string) => {
     const d = decodeTicket(link);
     if (!d.ok) {
       setLinkError(d.reason);
@@ -227,6 +233,9 @@ export function PhoneTickets({
     setSelected(t.ticket);
     setScreen({ name: 'tickets' });
     setPopup(null);
+  };
+  useEffect(() => {
+    if (link) takeTicket(link);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nonce]);
 
@@ -284,20 +293,36 @@ export function PhoneTickets({
     return (
       <main className={`screen ${rootClass}`}>
         <header className="top-bar">
-          <button type="button" className="button button-quiet" onClick={game ? openTickets : leave}>
-            <span aria-hidden="true">← </span>
-            {game ? 'Back' : 'Home'}
-          </button>
+          {s.typing ? (
+            <button type="button" className="button button-quiet" onClick={game ? openTickets : leave}>
+              <span aria-hidden="true">← </span>
+              {game ? 'Back' : 'Home'}
+            </button>
+          ) : (
+            <button type="button" className="button button-quiet" onClick={game ? openTickets : leave}>
+              ← Back
+            </button>
+          )}
         </header>
         <h1 className="step-title">{s.typing ? 'Type the code' : 'Join a game'}</h1>
         {!s.typing ? (
           <>
-            <p className="lead">Scan the QR on the host's phone with your phone's camera. Your ticket opens here.</p>
-            <p className="note">No QR to scan? The host's screen also shows a code under it.</p>
+            <p className="lead">Point this phone's camera at the QR on the host's phone.</p>
+            <JoinScanner
+              onRead={(text) => {
+                const i = text.indexOf('#t=');
+                if (i >= 0) {
+                  takeTicket(text.slice(i + 3));
+                  return true;
+                }
+                return onScan?.(text) ?? false;
+              }}
+            />
             <button type="button" className="button button-quiet button-big" onClick={() => setScreen({ name: 'enter', text: s.text, error: null, typing: true })}>
-              Type the code
+              Type a ticket code
             </button>
             {joinNote && <p className="note">{joinNote}</p>}
+            {joinMore}
           </>
         ) : (
           <>
@@ -888,6 +913,50 @@ function Popup({ label, children, onClose }: { label: string; children: ReactNod
       <div className="sheet" role="dialog" aria-modal="true" aria-label={label}>
         {children}
       </div>
+    </div>
+  );
+}
+
+/**
+ * SWD-133: the Join screen's scanner, "Scan a ticket or secret map". It starts the camera at once (through the same
+ * camera hook as the claim scanner) and reads ticket QRs and Secret Words map QRs; anything else is passed over.
+ */
+function JoinScanner({ onRead }: { onRead: (text: string) => boolean }) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [failed, setFailed] = useState<CameraFailure | null>(null);
+  const [attempt, setAttempt] = useState(0);
+  const read = useRef(onRead);
+  read.current = onRead;
+  useEffect(() => {
+    let done = false;
+    const stop = startScanner(
+      videoRef.current,
+      (text) => {
+        if (done) return;
+        if (read.current(text)) {
+          done = true;
+          stop();
+        } else if (!(window as unknown as { __pgnCamera?: unknown }).__pgnCamera) {
+          // Not a ticket or a map: the phone's camera stops after a read, so it starts again.
+          done = true;
+          stop();
+          setAttempt((a) => a + 1);
+        }
+      },
+      (why) => setFailed(why),
+    );
+    return () => {
+      done = true;
+      stop();
+    };
+  }, [attempt]);
+  return (
+    <div className="scanner-frame join-scanner" role="group" aria-label="Scan a ticket or secret map">
+      {failed === null && <video ref={videoRef} className="scanner-video join-scanner-video" muted playsInline />}
+      <p className="join-scanner-label">Scan a ticket or secret map</p>
+      {failed !== null && (
+        <p className="note">{failed === 'denied' ? "The camera isn't allowed. Type the code instead." : 'No camera here. Type the code instead.'}</p>
+      )}
     </div>
   );
 }
