@@ -320,7 +320,7 @@ sw.version-3-6-strings.11,Change,Version 3.6 strings,"SWD-002, 011, 033, 034, 04
 sw.version-3-6-strings.13,Or choose the Easy board for the next game.,Version 3.6 strings,"SWD-002, 011, 033, 034, 041, 092, 110, 116",
 sw.v37.map-key.1,Chai Champions,map key,"SWD-031, 034",yes
 sw.v37.map-key.2,Coffee Commandos,map key,"SWD-031, 034",yes
-sw.v37.map-key.3,nobody,map key,"SWD-031, 034",
+sw.v37.map-key.3,nobody's word,map key,"SWD-031, 034",
 sw.v37.map-key.4,Landmine: never guess,map key,"SWD-031, 034",
 sw.v37.larger-text-hint.1,Small text? Turn on Larger text in Settings.,Read this aloud,SWD-010,
 sw.v37.flip.1,↻ Flip,board,SWD-102,
