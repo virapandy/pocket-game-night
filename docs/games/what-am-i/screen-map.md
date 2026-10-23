@@ -293,11 +293,12 @@ a tie for the win; 2 players; 20 players.
 The tool read the base rows, not sections J, L and M, so several findings were already fixed (T1's "← Home (game saved)"
 and the renamed "Someone else goes first" and "I'm Riya: start"). Labels "D1"–"D6" and scraps like ";" are the tool reading
 markup, not findings. Changes below are where Jev and an earlier check agree (`docs/proposals/jev-for-design.md` §4):
-1. **"Tilt" is not understood** (Jev: "Mark words by tilting?" 0.07, "Allow tilt" 0.07; the grandparent walk). One word,
-   **nod**, with the drawing: T0 heading "Answer by nodding the phone?", line "Nod it down for Got it, up for Pass. Your
-   phone will ask once.", buttons "Use taps instead" · **"Yes, nod the phone"**. T1's rule line: "Nod down: Got it · Nod up:
-   Pass". S3: "Got it? Nod the phone down. Stuck? Nod it up to pass." Settings: "Answer by nodding the phone". "Tilt" stays
-   in code and scenarios only (word guideline A2).
+1. **"Tilt" is not understood** (Jev: "Mark words by tilting?" 0.07, "Allow tilt" 0.07; the grandparent walk). Plain
+   words, no new verb (owner, 23 October: not "nod"; "phone down / up"), with the drawing: T0 heading "Answer by moving the
+   phone?", line "Move the phone down for Got it, up for Pass. Your phone will ask once.", buttons "Use taps instead" ·
+   **"Yes, move the phone"**. T1's rule line: "Phone down: Got it · Phone up: Pass" (tap mode: "Tap bottom: Got it · Tap
+   top: Pass"). S3: "Got it? Move the phone down. Stuck? Move it up to pass." Settings: "Answer by moving the phone".
+   "Tilt" stays in code and scenarios only (word guideline A2).
 2. **S2's labels** (Jev: "Turn length" 0.20, "Word pack" 0.25; first-time host walk wanted defaults): headings become
    "Which words?" and "Time for each turn". Above the main button: "Ready as it is, or change anything above." Main
    button: **"Start with these words"** (Jev picked How to play over Start, 0.42 to 0.07).
