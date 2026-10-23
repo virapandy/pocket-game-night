@@ -58,3 +58,14 @@ Read this and the top of `reports/latest.md` before starting. Keep it short: rep
 - Run: `SIM_MODE=deal|play npx vitest run --config tests/tools/sim-table/vitest.config.ts deal|play`; wrap play in `caffeinate -i`. Play writes reports/sim-table-secret-words.md and results.json (exchange). Wiring was checked with a stub guesser (`SIM_TABLE_DRYRUN=1`, report to the exchange folder, no Jev); the real run was not made.
 - Finding for the owner: the engine has no pass move (a clue needs at least one guess; only "Clue not allowed" ends a turn with none, and it gives the other team a word). A team out of planned clues therefore ends the board and is counted; asked for "pass with clue 0, no guesses" was not possible.
 - Jev decisions: one per guess; run limit 6000 (SIM_TABLE_RUN_LIMIT).
+
+## 23 October: Secret Words screen lane A tests (lane-a, scenarios v3.7)
+- Written: `tests/browser/secret-words-a-home.spec.ts` (Home, picker, Start new, Join, code entry, QR link, D11 board-phone dialog with privacy checks),
+  `secret-words-a-setup.spec.ts` (S1 to S5, the Clue givers sheet, five sizes, small-line colour), shared `secret-words-a.ts`. Coder's note of ids and roles:
+  `tests/games/secret-words/screens-a.md`. Specs under `specs/secret-words/` are still v3.6 (the other tester updates them); these tests read v3.7 straight from
+  `docs/games/secret-words/scenarios.md`. All 132 tests are marked `aheadOfSecretWordsScreens` except two that already hold (Home menu "History"; no last night on an empty
+  phone). Run as real checks with `PGN_IGNORE_AHEAD=1`. Remove each mark when Playwright says "expected to fail, but passed".
+- The tests have never met a real screen: expect to adjust selectors (not checks) on the first green attempt. Models inside: SWD-004/006/130 team draws (`drawSplit`),
+  saved nights from `secret-words-saved-evenings-v1.json` (`phoneWithNights`, `variant`), codes with the right check symbol (`codeFromValues`).
+- Tambola helpers now accept both old and new wording for "Type the code" / "Type a ticket code" and Home's second-card line (SWD-002, rule 11); strip the old forms after lane A merges.
+- Not tested: SWD-007 "closing it any other way" (undefined), SWD-130 from game 2 (needs a played game), "Add a partner" behaviour (SWD-123, lane B). Open questions: `docs/test-questions.md` (23 October rows).
