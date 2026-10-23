@@ -318,7 +318,9 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
     if (decodeURIComponent(location.hash.slice(1)) === want) return;
     history.replaceState(history.state, '', want ? `#${encodeURIComponent(want).replace(/%2F/g, '/')}` : `${location.pathname}${location.search}`);
   }, [route]);
-  useBackGuard(route.name === 'game' || route.name === 'sw');
+  // SWD-111: phone Back does nothing while a game night is played; setup keeps its own "← Back".
+  const [swPlaying, setSwPlaying] = useState(false);
+  useBackGuard(route.name === 'game' || (route.name === 'sw' && swPlaying));
   const home = () => setRoute({ name: 'home' });
   const expire = useCallback(() => setDeleted(null), []);
 
@@ -392,6 +394,7 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
           onBack={(names) => setRoute({ name: 'pick', swNames: names })}
           ui={secretWordsUi}
           onHistory={() => setRoute({ name: 'history' })}
+          onPlaying={setSwPlaying}
         />
       );
     }

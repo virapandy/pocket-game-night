@@ -1,7 +1,7 @@
 // Secret Words on the host phone: setup (lane A: "Who's playing?", "Make teams", "How do you want to play?", "Read this
 // aloud", "How to play") up to the first deal, then the game. The game's own screens (the turn, the board, game over)
 // are lanes B to D: after the first deal this shows lane B's turn screens (ui/turn/Turn.tsx).
-import { useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import type { Preferences, SavedGameStore, SessionPicker } from '../../../engine';
 import { BlocksRoot } from '../../../blocks';
 import type { SecretWordsChoices, SecretWordsTeamNames } from '../rules';
@@ -47,7 +47,10 @@ export function SecretWordsScreen({
   onBack,
   ui,
   onHistory,
+  onPlaying,
 }: {
+  /** True while a game night's turn screens show (the app then keeps phone Back in the game), false on setup. */
+  onPlaying?: (playing: boolean) => void;
   /** `pgn.secretWords-ui.*` (SWD-048), the turn screens' state. */
   ui: Preferences;
   /** History, from the game's menu. */
@@ -113,6 +116,10 @@ export function SecretWordsScreen({
     setStep('playing');
     return true;
   };
+
+  useEffect(() => {
+    onPlaying?.(step === 'playing');
+  }, [step, onPlaying]);
 
   let screen: ReactNode;
   switch (step) {

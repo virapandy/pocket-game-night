@@ -56,9 +56,9 @@ type Screen =
   | { readonly name: 'preview' }
   | { readonly name: 'scan' }
   | { readonly name: 'again'; readonly back: Screen }
-  | { readonly name: 'pass'; readonly welcome: boolean; readonly fromHide?: boolean }
+  | { readonly name: 'pass'; readonly welcome: boolean }
   | { readonly name: 'map'; readonly again: boolean }
-  | { readonly name: 'showPass'; readonly team: Team; readonly back: Screen; readonly welcome?: boolean; readonly fromHide?: boolean }
+  | { readonly name: 'showPass'; readonly team: Team; readonly back: Screen; readonly welcome?: boolean }
   | { readonly name: 'showMap'; readonly team: Team; readonly back: Screen }
   | { readonly name: 'clue'; readonly changing: boolean }
   | { readonly name: 'board' }
@@ -200,10 +200,10 @@ export function SecretWordsPlay(props: SecretWordsPlayProps) {
       setTimer((t) => (t && t.kind === 'run' ? { kind: 'paused' } : t));
       if (screen.name === 'map') {
         setHiddenCover(true);
-        go({ name: 'pass', welcome: true, fromHide: true });
+        go({ name: 'pass', welcome: true });
       } else if (screen.name === 'showMap') {
         setHiddenCover(true);
-        go({ name: 'showPass', team: screen.team, back: screen.back, welcome: true, fromHide: true });
+        go({ name: 'showPass', team: screen.team, back: screen.back, welcome: true });
       }
     },
     () => setHiddenCover(false),
@@ -221,9 +221,7 @@ export function SecretWordsPlay(props: SecretWordsPlayProps) {
   const guardKey = screen.name === 'board' ? `${seq}:board:${boardPhase}` : `${seq}:${screen.name}`;
   const guardMs =
     screen.name === 'pass' || screen.name === 'showPass'
-      ? screen.fromHide
-        ? 0
-        : 1000
+      ? 1000
       : screen.name === 'board' && boardPhase === 'over'
         ? 1500
         : 800;

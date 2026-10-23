@@ -3,7 +3,7 @@
 //     in 1 line within its cell minus 4 px each side; a word that still doesn't fit at 12 px shrinks alone in 0.5 px
 //     steps to 10 px (v3.6). Larger text never changes it. Word text: weight 600, never transformed.
 //   SWD-093: every turned-over cell and every map cell has its kind's icon (SVG, aria-hidden, 16 × 16, top left, 2 px in)
-//     and an accessible name ("Kite, orange team" / "teal team" / "blank word" / "the Landmine", ", found").
+//     and an accessible name ("Kite, orange team" / "teal team" / "nobody's word" / "the Landmine", ", found").
 //   SWD-042: face-down cells are buttons ("Kite, face down", `aria-pressed`); a tap picks; turned-over cells are not
 //     buttons. Tap to zoom (v3.6): `word-zoom`, the word at 28 px weight 700 over the cell, up to 2 cells wide, kept
 //     inside the board; while picking it follows the pick; on locked and turned-over cells it shows for 2 000 ms.
@@ -23,7 +23,7 @@ export interface GridCell {
   readonly found?: boolean;
 }
 
-const KIND_NAME: Record<Kind, string> = { orange: 'orange team', teal: 'teal team', nobody: 'blank word', landmine: 'the Landmine' };
+const KIND_NAME: Record<Kind, string> = { orange: 'orange team', teal: 'teal team', nobody: "nobody's word", landmine: 'the Landmine' };
 
 /** SWD-093: a cell's accessible name. */
 export function cellName(c: GridCell): string {
