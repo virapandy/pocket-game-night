@@ -42,7 +42,7 @@ sw.make-teams.7,Tap a name to move it to the other team.,Make teams,"SWD-004–0
 sw.make-teams.8,Doesn't give clues,Make teams,"SWD-004–008, 014",
 sw.make-teams.9,Shuffle teams,Make teams,"SWD-004–008, 014",
 sw.make-teams.10,New team names,Make teams,"SWD-004–008, 014",
-sw.make-teams.11,Change clue givers,Make teams,"SWD-004–008, 014",
+sw.make-teams.11,Choose clue givers,Make teams,"SWD-004–008, 014",
 sw.make-teams.12,Next,Make teams,"SWD-004–008, 014",
 sw.make-teams.13,Each team needs at least 2 players.,Make teams,"SWD-004–008, 014",yes
 sw.make-teams.14,Each team needs someone who can give clues.,Make teams,"SWD-004–008, 014",
@@ -101,7 +101,7 @@ sw.scan-screen.2,"On the other phone: open the app, tap Join a game, scan this."
 sw.scan-screen.3,Riya and Arjun: sit side by side and share one map phone.,Scan screen,SWD-033,yes
 sw.scan-screen.4,"Riya (Chai Champions, orange) and Arjun (Coffee Commandos, teal): scan on your own phones.",Scan screen,SWD-033,yes
 sw.scan-screen.5,Nana + Aarav,Scan screen,SWD-033,yes
-sw.scan-screen.6,or type: 27P-3QX8,Scan screen,SWD-033,yes
+sw.scan-screen.6,Or type this code: 27P-3QX8,Scan screen,SWD-033,yes
 sw.scan-screen.7,Guessers: don't scan this one!,Scan screen,SWD-033,
 sw.scan-screen.8,The map phone has the map,Scan screen,SWD-033,
 sw.scan-screen.9,Both have the map,Scan screen,SWD-033,
@@ -123,8 +123,8 @@ sw.pass-screen.6,Clue givers for Chai Champions (orange),Pass screen,"SWD-030, 1
 sw.pass-screen.7,Start 90-second timer,Pass screen,"SWD-030, 123",yes
 sw.pass-screen.8,I'm Riya,Pass screen,"SWD-030, 123",yes
 sw.pass-screen.9,We're Nana and Aarav,Pass screen,"SWD-030, 123",yes
-sw.waiting-line.1,Coffee Commandos: guess how many Riya will say!,Waiting line,SWD-126,yes
-sw.waiting-line.2,Coffee Commandos: guess how many Nana and Aarav will say!,Waiting line,SWD-126,yes
+sw.waiting-line.1,"While you wait, Coffee Commandos: guess how many words Riya's clue will be for.",Waiting line,SWD-126,yes
+sw.waiting-line.2,"While you wait, Coffee Commandos: guess how many words Nana and Aarav's clue will be for.",Waiting line,SWD-126,yes
 sw.welcome-back.1,Welcome back.,Welcome back,SWD-032,
 sw.where-line.1,Turn 4 · clue for Chai Champions,Where-line,"SWD-032, 110, 115",yes
 sw.where-line.2,Chai Champions guessing · 3 guesses left,Where-line,"SWD-032, 110, 115",yes
@@ -174,7 +174,7 @@ sw.map-phone-toasts.3,No more maps from this code. Scan the host's new code.,Map
 sw.map-phone-dialogs.1,Remove this map from your phone?,Map phone dialogs,"SWD-036, 039",
 sw.map-phone-dialogs.2,Remove,Map phone dialogs,"SWD-036, 039",
 sw.map-phone-dialogs.3,Keep it,Map phone dialogs,"SWD-036, 039",
-sw.map-phone-dialogs.4,Next map? Only when the host has dealt the next board.,Map phone dialogs,"SWD-036, 039",
+sw.map-phone-dialogs.4,Next map? Only after the host starts the next game.,Map phone dialogs,"SWD-036, 039",
 sw.map-phone-dialogs.6,Not yet,Map phone dialogs,"SWD-036, 039",
 sw.saved-map-row-home.1,Secret Words map 27P-3QX8 · Tap to open,Saved map row (Home),SWD-036,yes
 sw.saved-map-row-home.2,Secret Words map 27P-3QX8,Saved map row (Home),SWD-036,yes
@@ -227,13 +227,13 @@ sw.result-lines.2,Chai Champions ended their turn.,Result lines,"SWD-043, 044, 1
 sw.result-lines.3,"Oops, keep guessing",Result lines,"SWD-043, 044, 125",
 sw.turn-over-main.1,Other team's turn,Turn-over main,SWD-045,
 sw.dispute.1,Clue not allowed? Both clue givers decide together.,Dispute,SWD-124,
-sw.dispute.3,"Turn ends, they get a word",Dispute,SWD-124,
+sw.dispute.3,"Turn ends, and one of their words is turned over for them",Dispute,SWD-124,
 sw.dispute.5,Let it go,Dispute,SWD-124,
 sw.broke-a-rule.1,"The clue broke a rule, so the other team got a free word.",Broke a rule,SWD-046,
 sw.timer.3,Time's up!,Timer,SWD-047,
 sw.timer.4,Paused,Timer,SWD-047,
 sw.timer.6,Stop timer,Timer,SWD-047,
-sw.recap.1,Last turn: Coffee Commandos found 2 words; Train was blank.,Recap,SWD-103,yes
+sw.recap.1,Last turn: Coffee Commandos found 2 words; Train was nobody's.,Recap,SWD-103,yes
 sw.do-not-disturb-tip.1,Tip: turn on Do Not Disturb so messages don't pop up on the board.,Do Not Disturb tip,SWD-104,
 sw.earlier-clues-sheet.1,Earlier clues,Earlier clues sheet,SWD-041,
 sw.earlier-clues-sheet.2,Chai Champions: CRICKET 2,Earlier clues sheet,SWD-041,yes
@@ -284,7 +284,7 @@ sw.delete-tonight-s-games.2,Delete,Delete tonight's games,SWD-065,
 sw.players-sheet.1,Players,Players sheet,SWD-127,
 sw.players-sheet.4,Rename Kabir,Players sheet,SWD-127,yes
 sw.players-sheet.5,Player name,Players sheet,SWD-127,
-sw.players-sheet.7,Move to Coffee Commandos,Players sheet,SWD-127,yes
+sw.players-sheet.7,Switch team,Players sheet,SWD-127,yes
 sw.players-sheet.8,Move Zoya to Coffee Commandos,Players sheet,SWD-127,yes
 sw.players-sheet.10,Remove Kabir,Players sheet,SWD-127,yes
 sw.players-sheet.12,Type a name…,Players sheet,SWD-127,
@@ -296,7 +296,7 @@ sw.players-sheet.19,Kabir left · Undo,Players sheet,SWD-127,yes
 sw.new-clue-giver.1,Who gives clues for Coffee Commandos now?,New clue giver,SWD-127,yes
 sw.team-of-one.1,Coffee Commandos would be left with only Om. Move someone over?,Team of one,SWD-127,yes
 sw.team-of-one.2,Move Zoya over,Team of one,SWD-127,yes
-sw.team-of-one.3,Keep Kabir,Team of one,SWD-127,yes
+sw.team-of-one.3,Don't remove Kabir,Team of one,SWD-127,yes
 sw.team-of-one.4,No one can move over.,Team of one,SWD-127,
 sw.show-the-map-sheet.1,Show the map to,Show the map sheet,SWD-037,
 sw.show-the-map-sheet.2,Riya (Chai Champions),Show the map sheet,SWD-037,yes
@@ -312,9 +312,16 @@ sw.version-3-6-strings.1,This phone is the board. Open the map here?,Version 3.6
 sw.version-3-6-strings.2,"Clue givers use their own phone. To show the map on this phone, use Show the map to a clue giver in the game's menu.",Version 3.6 strings,"SWD-002, 011, 033, 034, 041, 092, 110, 116",
 sw.version-3-6-strings.3,Open the map here,Version 3.6 strings,"SWD-002, 011, 033, 034, 041, 092, 110, 116",
 sw.version-3-6-strings.4,"No, keep the board",Version 3.6 strings,"SWD-002, 011, 033, 034, 041, 092, 110, 116",
-sw.version-3-6-strings.5,The host phone stays at the table: it's the board.,Version 3.6 strings,"SWD-002, 011, 033, 034, 041, 092, 110, 116",
+sw.version-3-6-strings.5,Keep the host phone on the table: it shows the board.,Version 3.6 strings,"SWD-002, 011, 033, 034, 041, 092, 110, 116",
 sw.version-3-6-strings.6,Doesn't match? Scan this code again.,Version 3.6 strings,"SWD-002, 011, 033, 034, 041, 092, 110, 116",
 sw.version-3-6-strings.7,Doesn't match? Scan the host's code again.,Version 3.6 strings,"SWD-002, 011, 033, 034, 041, 092, 110, 116",
 sw.version-3-6-strings.10,I give clues for: Chai Champions,Version 3.6 strings,"SWD-002, 011, 033, 034, 041, 092, 110, 116",yes
 sw.version-3-6-strings.11,Change,Version 3.6 strings,"SWD-002, 011, 033, 034, 041, 092, 110, 116",
 sw.version-3-6-strings.13,Or choose the Easy board for the next game.,Version 3.6 strings,"SWD-002, 011, 033, 034, 041, 092, 110, 116",
+sw.v37.map-key.1,Chai Champions,map key,"SWD-031, 034",yes
+sw.v37.map-key.2,Coffee Commandos,map key,"SWD-031, 034",yes
+sw.v37.map-key.3,nobody,map key,"SWD-031, 034",
+sw.v37.map-key.4,Landmine: never guess,map key,"SWD-031, 034",
+sw.v37.larger-text-hint.1,Small text? Turn on Larger text in Settings.,Read this aloud,SWD-010,
+sw.v37.flip.1,↻ Flip,board,SWD-102,
+sw.v37.two-phone-line.1,"Riya and Arjun give clues for different teams but share one map phone, as at a real table: sit side by side.",scan screen,SWD-033,yes
