@@ -1,6 +1,6 @@
 // Problem reports (Phase 7, specs/platform/03-feedback.md, PLT-200 to PLT-208). Pure: no network, no storage,
-// no screen, and the clock only through `at` / `now`. The app decides where a report goes (for now a stub that
-// keeps it on the phone, PLT-208).
+// no screen, and the clock only through `at` / `now`. A report leaves the phone only when a person
+// shares it through the phone's share sheet (PLT-208); `shareParts` formats what the sheet is given.
 //
 // A report never holds a name or a session name (PLT-201): each game says how to take names out of its setup and
 // moves (`GameRules.forReport`). The money numbers stay in (owner, 2026-10-01), so money bugs replay (PLT-204). A report about a game still being played holds no seed until
@@ -212,6 +212,59 @@ export function addSeeds(report: Report, saved: SavedGame): Report {
 /** The exact text shown in the preview and sent. The same report always gives the same text. */
 export function reportText(report: Report): string {
   return JSON.stringify(report);
+}
+
+// ----- Sharing (PLT-208) -----
+
+export const SHARE_TITLE = 'Pocket Game Night problem report';
+const REPLAY_LINE = 'Replay attached. Please send this to whoever shared the app with you.';
+
+export interface ShareParts {
+  readonly title: string;
+  /** Three lines: the header, the words, the "Replay attached" line. */
+  readonly text: string;
+  /** For phones that can share text but not files: the first two lines, "Replay code:" and the code. */
+  readonly textWithCode: string;
+  readonly fileName: string;
+  /** Exactly `reportText(report)`. */
+  readonly fileText: string;
+  /** `fileText` as UTF-8 bytes in standard base64, on one line. */
+  readonly replayCode: string;
+}
+
+const B64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+/** Standard base64 of the text's UTF-8 bytes (plain code, no DOM). */
+function base64Utf8(text: string): string {
+  const bytes = new TextEncoder().encode(text);
+  let out = '';
+  for (let i = 0; i < bytes.length; i += 3) {
+    const a = bytes[i]!, b = bytes[i + 1], c = bytes[i + 2];
+    const n = (a << 16) | ((b ?? 0) << 8) | (c ?? 0);
+    out += B64[(n >> 18) & 63]! + B64[(n >> 12) & 63]! + (b === undefined ? '=' : B64[(n >> 6) & 63]!) + (c === undefined ? '=' : B64[n & 63]!);
+  }
+  return out;
+}
+
+/**
+ * What "Share report" hands to the phone's share sheet (PLT-208). Pure formatting: it sends nothing. `when` is the date
+ * and time already written in the phone's format; `at` gives the file name's stamp in the phone's own time zone.
+ * With no `gameTitle` (a report from Home), the header leaves the game out.
+ */
+export function shareParts(report: Report, opts: { gameTitle?: string | null; when: string; at: Date }): ShareParts {
+  const header = ['Problem report', ...(opts.gameTitle ? [opts.gameTitle] : []), `app ${report.appVersion}`, opts.when].join(' · ');
+  const words = report.what.trim() === '' ? '(nothing written)' : report.what;
+  const fileText = reportText(report);
+  const replayCode = base64Utf8(fileText);
+  const d = opts.at;
+  const z = (n: number) => String(n).padStart(2, '0');
+  return {
+    title: SHARE_TITLE,
+    text: [header, words, REPLAY_LINE].join('\n'),
+    textWithCode: [header, words, 'Replay code:', replayCode].join('\n'),
+    fileName: `pgn-report-${d.getFullYear()}${z(d.getMonth() + 1)}${z(d.getDate())}-${z(d.getHours())}${z(d.getMinutes())}.json`,
+    fileText,
+    replayCode,
+  };
 }
 
 /** Reads a report's text back (PLT-204). Never throws. */
