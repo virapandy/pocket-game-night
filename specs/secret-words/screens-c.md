@@ -26,6 +26,7 @@ Tests: `tests/browser/secret-words-c-map.spec.ts` (63 per phone) and lane C's th
 | After a reload, "← Back" (→ Home), "Hide map", 60 s, "Remove": the page holds no map: none of those test ids, no accessible name with ", orange team" / ", teal team" / ", blank word" / ", nobody's word" / ", the Landmine", no "Orange words (", "Teal words (", "Never guess:" in the HTML | SWD-025, 031, 032, 121 |
 | `hide-warning` (`role="status"`) "Still looking? Tap to keep the map" from 50 000 ms; map removed at 60 000 ms, "Show map", lock released. Each `pointerdown` restarts the clock; while the warning shows the first `pointerdown` only removes it (no fade, no dialog). "Show map" and "Next map" start the clock | SWD-121 |
 | Lock held while shown; released on "Hide map"; asked again on "Show map" | SWD-034 |
+| After the map is hidden (app hidden, "Hide map", 60 s, reload, "← Back", "Remove"; and Home on a board phone that opened the map): no board word anywhere in `document.body`, hidden or off-screen text and aria-label/title/alt/placeholder/value included, except the map phone's `first-words` (and words the app's own fixed text uses, such as "Tap") | SWD-025, 032, 121 |
 
 ## M1 test ids and roles
 | Part | Looked for |

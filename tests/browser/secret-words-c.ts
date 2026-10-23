@@ -5,7 +5,9 @@
 import { expect, type Locator, type Page } from '@playwright/test';
 import { freezeClock, freshPhone, T0 } from './impostor';
 import { kindOf, shown, waitGuards } from './secret-words';
-import { codeParts, oracleBoard, oracleCode, lastN, TEAM_PAIRS, type Kind } from '../games/secret-words/oracle';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { codeParts, oracleBoard, oracleCode, lastN, parseCsv, TEAM_PAIRS, type Kind } from '../games/secret-words/oracle';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -197,3 +199,45 @@ export async function tapAt(page: Page, l: Locator) {
 }
 
 export { waitGuards, oracleBoard };
+
+/**
+ * Words the app's own fixed text uses (`text.csv` rows without example values, e.g. "Tap" in "Tap to resume"): a board word
+ * that is one of them can't be told apart from the screen's own words, so `boardWordsInPage` leaves it out.
+ */
+const UI_WORDS: Set<string> = (() => {
+  const rows = parseCsv(readFileSync(fileURLToPath(new URL('../../docs/games/secret-words/text.csv', import.meta.url)), 'utf8'));
+  const head = rows[0]!;
+  const text = head.indexOf('text'); const ex = head.indexOf('has_example_values');
+  const out = new Set<string>();
+  for (const r of rows.slice(1)) if ((r[ex] ?? '').trim() !== 'yes') for (const w of (r[text] ?? '').match(/\p{L}+/gu) ?? []) out.add(w);
+  return out;
+})();
+
+/**
+ * Board words left anywhere in document.body once the map is hidden (SWD-025, 032, 121): every text node, visible or not
+ * (off-screen measuring spans included), and the aria-label, title, alt, placeholder and value attributes. `allowed` are
+ * the words the scenarios keep on screen (the map phone's `first-words`). Whole words, as written in the list.
+ */
+export async function boardWordsInPage(page: Page, words: readonly string[], allowed: readonly string[] = []): Promise<string[]> {
+  allowed = [...allowed, ...words.filter((w) => UI_WORDS.has(w))];
+  return page.evaluate(({ words, allowed }) => {
+    const check = words.filter((w) => !allowed.includes(w));
+    const esc = (w: string) => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const res = check.map((w) => ({ w, re: new RegExp(`(^|[^\\p{L}])${esc(w)}($|[^\\p{L}])`, 'u') }));
+    const where = (el: Element | null) => (el ? `${el.tagName.toLowerCase()}${el.getAttribute('data-testid') ? `[data-testid=${el.getAttribute('data-testid')}]` : ''}${el.className && typeof el.className === 'string' ? `.${el.className.split(' ')[0]}` : ''}` : '?');
+    const hits = new Set<string>();
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    let n: Node | null;
+    while ((n = walker.nextNode())) {
+      const t = n.textContent ?? '';
+      for (const { w, re } of res) if (re.test(t)) hits.add(`"${w}" in ${where(n.parentElement)}`);
+    }
+    for (const el of document.body.querySelectorAll('*')) {
+      for (const a of ['aria-label', 'title', 'alt', 'placeholder', 'value']) {
+        const v = el.getAttribute(a);
+        if (v) for (const { w, re } of res) if (re.test(v)) hits.add(`"${w}" in ${where(el)} @${a}`);
+      }
+    }
+    return [...hits];
+  }, { words: [...words], allowed: [...allowed] });
+}

@@ -11,7 +11,7 @@ import { hostAGame } from './helpers';
 import { freshPhone, mainButton } from './impostor';
 import { boardCells, fromMenu, giveClue, hostEvening, menuButton, tapMain } from './secret-words';
 import {
-  bare, box, button, CODE, dialogNamed, easyCode, fakeWakeLock, fullCode, hideAppAndLook, hideMap, listButton, lockHeld,
+  bare, box, button, CODE, dialogNamed, easyCode, fakeWakeLock, fullCode, boardWordsInPage, hideAppAndLook, hideMap, listButton, lockHeld,
   mapCell, mapCells, mapCellsOf, mapGrid, mapHeading, mapInPage, nextCode, openLinkAgain, openMapPhone, oracleBoard, PAIR,
   savedMap, showApp, showMap, shown, SIZES, T0, tapAt, textMetrics, toast, waitGuards,
 } from './secret-words-c';
@@ -44,6 +44,7 @@ test.describe('SWD-032: leaving the map phone (privacy)', () => {
     await expect(mapHeading(page)).toBeVisible();
     await expect(showMap(page)).toBeVisible();
     expect(await mapInPage(page), 'the map returns hidden (SWD-034)').toEqual([]);
+    expect(await boardWordsInPage(page, B.words, B.words.slice(0, 3)), 'no board word left anywhere in the page but the first words').toEqual([]);
     await waitGuards(page);
     await showMap(page).click();
     await expect(mapCells(page)).toHaveCount(25);
@@ -58,6 +59,7 @@ test.describe('SWD-032: leaving the map phone (privacy)', () => {
     expect(seen.mapParts).toBe(0);
     await showApp(page);
     expect(await mapInPage(page)).toEqual([]);
+    expect(await boardWordsInPage(page, B.words, B.words.slice(0, 3)), 'no board word left anywhere in the page but the first words').toEqual([]);
   });
 
   test('a reload on the map phone shows no map until it is asked for again', async ({ page }) => {
@@ -67,6 +69,7 @@ test.describe('SWD-032: leaving the map phone (privacy)', () => {
     await page.waitForLoadState('load');
     await waitGuards(page);
     expect(await mapInPage(page)).toEqual([]);
+    expect(await boardWordsInPage(page, B.words, B.words.slice(0, 3)), 'no board word left anywhere in the page but the first words').toEqual([]);
   });
 
   test('"← Back" → Home: Home holds no map (no grid, no kinds, no lists)', async ({ page }) => {
@@ -76,6 +79,7 @@ test.describe('SWD-032: leaving the map phone (privacy)', () => {
     await expect(hostAGame(page)).toBeVisible();
     await expect(mapHeading(page)).toHaveCount(0);
     expect(await mapInPage(page)).toEqual([]);
+    expect(await boardWordsInPage(page, B.words, []), 'no board word left anywhere in the page (Home)').toEqual([]);
   });
 });
 
@@ -87,6 +91,7 @@ test.describe('SWD-034 / SWD-031: "Hide map" removes the map (privacy)', () => {
     await expect(showMap(page)).toBeVisible();
     await expect(hideMap(page)).toHaveCount(0);
     expect(await mapInPage(page)).toEqual([]);
+    expect(await boardWordsInPage(page, B.words, B.words.slice(0, 3)), 'no board word left anywhere in the page but the first words').toEqual([]);
     // The rest of the screen stays.
     await expect(page.getByTestId('map-code-line')).toBeVisible();
     await expect(button(page, 'Done with this game')).toBeVisible();
@@ -103,6 +108,7 @@ test.describe('SWD-034 / SWD-031: "Hide map" removes the map (privacy)', () => {
     await waitGuards(page);
     await hideMap(page).click();
     expect(await mapInPage(page)).toEqual([]);
+    expect(await boardWordsInPage(page, B.words, B.words.slice(0, 3)), 'no board word left anywhere in the page but the first words').toEqual([]);
   });
 
   test('screen-on lock: asked for ("screen") while the map shows, let go on "Hide map", asked for again on "Show map"', async ({ page }) => {
@@ -134,6 +140,7 @@ test.describe('SWD-121: the map phone hides the map after 60 seconds', () => {
     await expect(mapCells(page)).toHaveCount(25);
     await page.clock.runFor(300); // 60 100 ms
     expect(await mapInPage(page)).toEqual([]);
+    expect(await boardWordsInPage(page, B.words, B.words.slice(0, 3)), 'no board word left anywhere in the page but the first words').toEqual([]);
     await expect(showMap(page)).toBeVisible();
     await expect(page.getByTestId('hide-warning')).toHaveCount(0);
     await expect.poll(() => lockHeld(page)).toBe(false);
@@ -185,6 +192,7 @@ test.describe('SWD-121: the map phone hides the map after 60 seconds', () => {
     await expect(mapCells(page)).toHaveCount(25);
     await page.clock.runFor(400);
     expect(await mapInPage(page)).toEqual([]);
+    expect(await boardWordsInPage(page, B.words, B.words.slice(0, 3)), 'no board word left anywhere in the page but the first words').toEqual([]);
   });
 
   test('"Next map" shows the map even when hidden, and starts the clock again', async ({ page }) => {
@@ -202,6 +210,7 @@ test.describe('SWD-121: the map phone hides the map after 60 seconds', () => {
     await expect(mapCells(page)).toHaveCount(25);
     await page.clock.runFor(600);
     expect(await mapInPage(page)).toEqual([]);
+    expect(await boardWordsInPage(page, oracleBoard(nextCode(code)!).words, oracleBoard(nextCode(code)!).words.slice(0, 3)), 'no board word left anywhere in the page but the first words').toEqual([]);
   });
 });
 
@@ -237,6 +246,7 @@ test.describe('SWD-025: a board phone that opened the map keeps its room screens
     await button(page, '← Back').click();
     await expect(hostAGame(page)).toBeVisible();
     expect(await mapInPage(page), 'Home').toEqual([]);
+    expect(await boardWordsInPage(page, oracleBoard(code).words, []), 'no board word left anywhere in the page (Home)').toEqual([]);
     await waitGuards(page);
     await page.getByTestId('unfinished-games').getByText('Tap to resume').click();
     await tapMain(page, /^The map phone has the map$/);
@@ -715,6 +725,7 @@ test.describe('SWD-036: clearing and replacing maps', () => {
     await expect(hostAGame(page)).toBeVisible();
     expect(await savedMap(page)).toBeNull();
     expect(await mapInPage(page)).toEqual([]);
+    expect(await boardWordsInPage(page, B.words, []), 'no board word left anywhere in the page (Home)').toEqual([]);
     await expect(page.getByTestId('saved-map')).toHaveCount(0);
   });
 
@@ -724,6 +735,7 @@ test.describe('SWD-036: clearing and replacing maps', () => {
     await expect(hostAGame(page)).toBeVisible();
     await expect(mapHeading(page)).toHaveCount(0);
     expect(await mapInPage(page)).toEqual([]);
+    expect(await boardWordsInPage(page, B.words, []), 'no board word left anywhere in the page (Home)').toEqual([]);
   });
 
   test.describe('Home\'s saved-map row (A1 is lane A\'s screen)', () => {
