@@ -33,6 +33,7 @@ const NOT_SHARED = /Not shared\. It['\u2019]s kept in Settings, under Reports to
 const COPIED = 'Report copied. Paste it in a message to whoever shared this app.';
 const WAITS_FOR_END = /This report can be shared when the game ends, so it can['\u2019]t give away the game\./;
 const OLD_WAITS_FOR_END = /Your report will be sent when this game ends/;
+const KEPT_MID_GAME = 'Kept. You can share it when this game ends.';
 const HOME_ROW = 'A problem report is ready to share';
 const TITLE = 'Pocket Game Night problem report';
 const REPLAY_LINE = 'Replay attached. Please send this to whoever shared the app with you.';
@@ -179,11 +180,11 @@ const settleShare = (page: Page) => page.evaluate(() => (window as any).__pgnSha
 const copied = (page: Page): Promise<string[]> => page.evaluate(() => JSON.parse(localStorage.getItem('__pgnClipboardLog') ?? '[]'));
 /** Text lines of a shared text, empty lines left out. */
 const linesOf = (text: string | undefined) => (text ?? '').split('\n').map((l) => l.trim()).filter(Boolean);
-/** The replay code at the end of a text: the line after "Replay code:" (or on the same line), read as UTF-8 base64. */
+/** The replay code at the end of a text: its own line after the "Replay code:" line, standard base64, read as UTF-8. */
 function replayCodeIn(text: string | undefined): string {
-  const m = /Replay code:\s*([A-Za-z0-9+/_-]+=*)\s*$/.exec(text ?? '');
+  const m = /(?:^|\n)Replay code:[ \t]*\n([A-Za-z0-9+/]+=*)[ \t]*\n?$/.exec(text ?? '');
   expect(m, 'the text ends with "Replay code:" and the report as one line of base64').not.toBeNull();
-  return Buffer.from(m![1]!.replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf8');
+  return Buffer.from(m![1]!, 'base64').toString('utf8');
 }
 /** YYYYMMDD-HHMM of a moment in the phone's own time (the file name's stamp). */
 const stamp = (page: Page) => page.evaluate(() => {
@@ -453,6 +454,24 @@ test.describe('PLT-200: "Report a problem" on every screen, in the menu, never i
   });
 });
 
+test.describe('PLT-208: a report started from Home has no game in its first line', () => {
+  test('first line is "Problem report · app <version> · <date and time>", nothing else changed', async ({ page }) => {
+    test.setTimeout(60_000);
+    await fakeShare(page, 'files', 'ok');
+    await page.goto(HOME);
+    await openReport(page);
+    const { report } = await writeReport(page, 'From Home');
+    const got = await shareAndGet(page);
+    const lines = linesOf(got.text);
+    expect(lines.length, 'three lines, one item per line').toBe(3);
+    expect(lines[0]).toMatch(/^Problem report · app \S+ · .+$/);
+    expect(lines[0]!).toContain(`app ${report.appVersion} ·`);
+    expect(lines[0]).not.toMatch(/Problem report · [^·]*· app/);
+    expect(lines[1]).toBe('From Home');
+    expect(lines[2]).toBe(REPLAY_LINE);
+  });
+});
+
 test.describe('PLT-206, PLT-208: a report about a game still being played waits until the game ends', () => {
   test('mid-game: no seeds, "This report can be shared when the game ends, so it can\'t give away the game."; Home offers "A problem report is ready to share" after End game, and Share then gives the seeds and the moves as they were', async ({ page }) => {
     test.setTimeout(60_000);
@@ -467,6 +486,7 @@ test.describe('PLT-206, PLT-208: a report about a game still being played waits 
     await expect(page.getByText(WAITS_FOR_END).first()).toBeVisible();
     await expect(page.getByText(OLD_WAITS_FOR_END)).toHaveCount(0);
     await sendButton(page).click();
+    await expect(toast(page, KEPT_MID_GAME), 'PLT-208: Share tapped mid-game').toBeVisible();
 
     // The game carries on, and nothing is shared while it does.
     await expect(nextNumber(page)).toBeVisible();

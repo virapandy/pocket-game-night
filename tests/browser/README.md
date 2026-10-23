@@ -492,6 +492,8 @@ PLT-209. What a report holds is defined in `tests/contract/README.md`, "Problem 
 - **Toasts** (text anywhere on screen): "Thanks! Your report is on its way." after sharing (the report is removed);
   "Not shared. It's kept in Settings, under Reports to share." after an `AbortError` (the report stays);
   "Report copied. Paste it in a message to whoever shared this app." after copying. Apostrophes straight or curly.
+- Header without a game: a report started from Home has first line `Problem report · app <version> · <date and time>`.
+  Share tapped while the game is going: nothing opens, toast "Kept. You can share it when this game ends." (23 Oct 2026).
 - Nothing leaves the phone by itself: every request the app makes is a GET to its own address and
   `navigator.sendBeacon` is never called, also on app start, during a game, after a crash and on Share.
 - A game in progress or paused (PLT-206): the form says "This report can be shared when the game ends, so it can't give

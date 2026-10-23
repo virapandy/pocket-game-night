@@ -43,6 +43,14 @@ describe('PLT-208: what the share sheet is given', () => {
     expect(p.textWithCode.split('\n')[1]).toBe('(nothing written)');
   });
 
+  it('edge: a report started from Home (no game) leaves the game out: "Problem report · app <version> · <date and time>"', () => {
+    for (const gameTitle of [undefined, null, '']) {
+      const p = parts('From Home', { gameTitle });
+      expect(p.text.split('\n')[0]).toBe('Problem report · app 1.7.0 · 22 Oct 2026, 7:05 am');
+      expect(p.textWithCode.split('\n')[0]).toBe('Problem report · app 1.7.0 · 22 Oct 2026, 7:05 am');
+    }
+  });
+
   it('the file is named pgn-report-YYYYMMDD-HHMM.json from the phone\'s own time, with leading zeros', () => {
     expect(parts('x').fileName).toBe('pgn-report-20261022-0705.json');
     const early = shareParts(report('x'), { gameTitle: 'Tambola', when: WHEN, at: new Date(2026, 0, 3, 0, 9, 59) });

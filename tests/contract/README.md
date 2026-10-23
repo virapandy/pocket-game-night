@@ -147,8 +147,8 @@ reported game ("Tambola"), `when` the date and time already written in the phone
   `replayCode`, each on its own line (so the third line "Replay attached" is gone).
 - `fileName`: `pgn-report-YYYYMMDD-HHMM.json` from `at`, with leading zeros.
 - `fileText`: exactly `reportText(report)`; `replayCode`: that text as UTF-8 bytes in standard base64, on one line.
-Where `gameTitle` is not known (a report from Home with no game) the header's shape is for the coder to choose; the
-tests do not pin it.
+Where `gameTitle` is not known (absent, `null` or empty: a report from Home with no game) the game is left out of the
+header (product owner, 23 October 2026): `Problem report · app <report.appVersion> · <when>`.
 
 ### `sortReports(reports, { now })` (PLT-205)
 ```ts

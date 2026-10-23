@@ -87,7 +87,8 @@ And it needs no account, no sign-in and no server of ours, and costs nothing
 When the person taps the report screen's main button "Share report"
 Then the app calls the share sheet with:
 - title "Pocket Game Night problem report"
-- text, in this order, one item per line: "Problem report · <game title> · app <version> · <date and time, phone's format>";
+- text, in this order, one item per line: "Problem report · <game title> · app <version> · <date and time, phone's format>"
+  (a report started from Home, with no game, leaves the game out: "Problem report · app <version> · <date and time>");
   the "What happened?" text (or "(nothing written)"); "Replay attached. Please send this to whoever shared the app with you."
 - the replay as a file `pgn-report-<YYYYMMDD-HHMM>.json` (the report of PLT-201, as JSON)
 And where the phone can share text but not files, the text ends instead with "Replay code:" and the report as one line of
@@ -98,6 +99,8 @@ And when the share sheet closes after sharing, the toast reads "Thanks! Your rep
 from the phone
 And when the share sheet is closed without sharing, the toast reads "Not shared. It's kept in Settings, under Reports to
 share." and the report stays (PLT-209)
+And when "Share report" is tapped while its game is still being played, nothing opens and the toast reads "Kept. You can
+share it when this game ends." (confirmed by the product owner, 23 October 2026)
 And a game still being played follows PLT-206: its report waits, with the line "This report can be shared when the game
 ends, so it can't give away the game.", and when that game ends or is discarded Home shows the row "A problem report is ready
 to share" with the button "Share", which opens the same share sheet
