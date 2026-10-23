@@ -308,7 +308,8 @@ test.describe('S2 Make teams (SWD-004 to SWD-008, SWD-013)', () => {
     await toTeams(page, { names: ['Riya', 'Arjun', 'Meena', 'Kabir', 'Zoya', 'Dev'] });
     const t = await teamsOnScreen(page);
     expect(t.orange).toHaveLength(3);
-    for (const p of t.teal.slice(0, 2)) { await waitGuards(page); await moveButton(page, p, t.names.orange).click(); }
+    await waitGuards(page);
+    await moveButton(page, t.teal[0]!, t.names.orange).click(); // 4 v 2: teams may differ in size by any amount
     await expect(page.getByText('Each team needs at least 2 players.')).toHaveCount(0);
     await expect(mainText(page, 'Next')).toBeEnabled();
     await waitGuards(page);
@@ -317,7 +318,6 @@ test.describe('S2 Make teams (SWD-004 to SWD-008, SWD-013)', () => {
     await expect(page.getByRole('alert').filter({ hasText: 'Each team needs at least 2 players.' })).toBeVisible();
     await waitGuards(page);
     await moveButton(page, t.teal[2]!, t.names.teal).click();
-    await moveButton(page, t.teal[1]!, t.names.teal).click();
     await expect(mainText(page, 'Next')).toBeEnabled();
   });
 });
@@ -657,7 +657,7 @@ test.describe('S4 Read this aloud (SWD-010)', () => {
     const t = await teamsOnScreen(page);
     await mainText(page, 'Next').click();
     await waitGuards(page);
-    await choose(page, { phones: 'Two phones' });
+    await choose(page, { phones: 'Two phones', landmine: 'Lose the game' });
     await mainText(page, 'Start the game').click();
     await expect(heading(page, 'Read this aloud')).toBeVisible();
     expect(await readLines(page)).toEqual([
@@ -750,7 +750,7 @@ async function toHowToPlay(page: Page, o: Boot & { choose?: Parameters<typeof ch
 
 test.describe('S5 How to play (SWD-011, SWD-131)', () => {
   test('h1 "How to play"; h2 "Read this aloud" with its 4 lines, h2 "The rules" with 7, h2 "Clue rules" with 4, in that order, then the `credit` line; main "Done"', async ({ page }) => {
-    await toHowToPlay(page);
+    await toHowToPlay(page, { choose: { landmine: 'Lose the game' } });
     const order = await page.evaluate(() => [...document.querySelectorAll('h1, h2')].map((h) => (h.textContent ?? '').trim()));
     expect(order.filter((t) => ['How to play', 'Read this aloud', 'The rules', 'Clue rules'].includes(t))).toEqual(['How to play', 'Read this aloud', 'The rules', 'Clue rules']);
     const aloud = await listAfter(page, 'Read this aloud');

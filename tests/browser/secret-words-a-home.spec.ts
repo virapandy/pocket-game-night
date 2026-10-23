@@ -522,7 +522,7 @@ test.describe('SWD-002 (v3.6) D11: opening a map on the board phone', () => {
     await expect(no).toBeVisible();
     await expect(no).toHaveAttribute('data-guard', 'on');
     await page.clock.runFor(400);
-    await no.click();
+    await no.click({ force: true }); // aria-disabled while the guard runs; force so the tap really lands inside it
     await expect(boardDialog(page)).toBeVisible();
     await page.clock.runFor(500);
     await expect(no).not.toHaveAttribute('data-guard', 'on');

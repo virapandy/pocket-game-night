@@ -69,3 +69,6 @@ Read this and the top of `reports/latest.md` before starting. Keep it short: rep
   saved nights from `secret-words-saved-evenings-v1.json` (`phoneWithNights`, `variant`), codes with the right check symbol (`codeFromValues`).
 - Tambola helpers now accept both old and new wording for "Type the code" / "Type a ticket code" and Home's second-card line (SWD-002, rule 11); strip the old forms after lane A merges.
 - Not tested: SWD-007 "closing it any other way" (undefined), SWD-130 from game 2 (needs a played game), "Add a partner" behaviour (SWD-123, lane B). Open questions: `docs/test-questions.md` (23 October rows).
+
+## Lane A tests, 23 Oct (tester)
+Merged origin/main (PGN_PORT per lane: lane-a 4174). Lane A area: 129 of 132 pass on Android (PGN_IGNORE_AHEAD=1). The 3 failures end on the map phone (lane C): secret-words-a-home.spec.ts lines 323, 358, 418. Four coder questions answered in docs/test-questions.md (all test problems, fixed).

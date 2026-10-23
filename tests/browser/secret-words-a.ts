@@ -40,7 +40,9 @@ export const lastCode = (g: any): string => [...g.records].reverse().find((r: an
 export function variant(g: any, o: { id: string; shift: number; names?: { id: string; orange: string; teal: string }; keep?: number; end?: boolean; map?: 'pass' | 'shared' | 'own' }): any {
   const v = clone(g);
   v.id = o.id;
-  const records = v.records.slice(0, o.keep ?? v.records.length);
+  let records = v.records.slice(0, o.keep ?? v.records.length);
+  // "The map is seen once" (`mapSeen`) is a one-phone move: with two or three phones the rules refuse it, so the copy drops those records.
+  if (o.map && o.map !== 'pass') records = records.filter((r: any) => r.move.type !== 'mapSeen').map((r: any, i: number) => ({ ...r, seq: i + 1 }));
   if (o.end) records.push({ v: 1, seq: records.length + 1, at: records.at(-1).at + 7000, by: 'host', move: { type: 'endEvening' } });
   for (const r of records) r.at += o.shift;
   v.records = records;
