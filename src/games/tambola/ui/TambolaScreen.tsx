@@ -76,7 +76,7 @@ export function TambolaScreen({
   startAt?: 'settings';
   /** Phase 7: "Report a problem" on the calling screen and the payouts (PLT-200). */
   onReport?: (subject: ReportSubject) => void;
-  /** Phase 7: the app's "Reports waiting to send", shown in Settings (PLT-209). */
+  /** Phase 7: the app's "Reports to share", shown in Settings (PLT-209). */
   settingsExtra?: ReactNode;
   /** Opens a session's screen (TAM-197). */
   onSession?: (sessionId: string) => void;

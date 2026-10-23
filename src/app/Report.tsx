@@ -1,8 +1,8 @@
 // "Report a problem" (Phase 7, PLT-200 to PLT-203, PLT-206 to PLT-209): the form with its preview of exactly what
-// will be sent, the calm message after a crash, and the list of reports waiting to send (in Settings).
+// will be shared, the calm message after a crash, and the list of reports to share (in Settings).
 import { useEffect, useMemo, useState } from 'react';
 import { reportText, type Report } from '../engine';
-import { deleteWaiting, hasRealDestination, listedReports, onReportsChange } from './reports';
+import { deleteWaiting, isSharing, listedReports, onReportsChange, shareReport } from './reports';
 import { Dialog } from './Sessions';
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -25,7 +25,7 @@ function moneyLine(report: Report): string | null {
     .join('; ');
 }
 
-/** The form: "What happened?", a preview of exactly what will be sent (PLT-201), Send report and Cancel. */
+/** The form: "What happened?", a preview of exactly what will be shared (PLT-201), Share report and Cancel. */
 export function ReportForm({
   build,
   onSend,
@@ -57,9 +57,11 @@ export function ReportForm({
           <textarea id="report-what" rows={3} value={what} onChange={(e) => setWhat(e.target.value)} />
         </div>
         <p className="note">Optional. Player names are changed to Player 1, Player 2 … The game's money amounts are included.</p>
-        {report.waitingForGameEnd && <p className="note report-wait">Your report will be sent when this game ends.</p>}
-        <section className="report-preview" data-testid="report-preview" data-payload={text} aria-label="What will be sent">
-          <h3 className="report-preview-title">What will be sent</h3>
+        {report.waitingForGameEnd && (
+          <p className="note report-wait">This report can be shared when the game ends, so it can't give away the game.</p>
+        )}
+        <section className="report-preview" data-testid="report-preview" data-payload={text} aria-label="What will be shared">
+          <h3 className="report-preview-title">What will be shared</h3>
           <p>Words: {report.what === '' ? '(none)' : report.what}</p>
           <p>App version: {report.appVersion}</p>
           <p>Phone: {report.phone}</p>
@@ -79,7 +81,7 @@ export function ReportForm({
         </section>
         <div className="row">
           <button type="button" className="button" onClick={() => onSend(report)}>
-            Send report
+            Share report
           </button>
           <button type="button" className="button button-quiet" onClick={onCancel}>
             Cancel
@@ -117,7 +119,7 @@ export function ReportToast({ text }: { text: string }) {
   );
 }
 
-/** PLT-209: Settings → "Reports waiting to send": each with its date and first line, and Delete. */
+/** PLT-209: Settings → "Reports to share": each with its date and first line, Share and Delete, newest first. */
 export function WaitingReports() {
   const [list, setList] = useState<Report[]>(listedReports);
   const [open, setOpen] = useState(false);
@@ -134,43 +136,52 @@ export function WaitingReports() {
   return (
     <section className="stack-tight" aria-label="Problem reports">
       <button type="button" className="button button-quiet" aria-expanded={open} onClick={() => setOpen(!open)}>
-        Reports waiting to send ({list.length})
+        Reports to share ({list.length})
       </button>
-      {open && !hasRealDestination() && <p className="note">Kept on this phone: sending isn't set up yet</p>}
       {open &&
         (list.length === 0 ? (
-          <p className="note">No reports waiting.</p>
+          <p className="note">No reports to share.</p>
         ) : (
           <ul className="waiting-list">
             {list.map((r) => (
               <li key={r.id} className="waiting-row" data-testid="waiting-report">
                 <span>
                   <strong>{day(r.at)}</strong> {firstLine(r)}
-                  {r.waitingForGameEnd && <span className="note"> (waits for its game to end)</span>}
+                  {r.waitingForGameEnd && <span className="note waiting-note">Waiting for the game to end</span>}
                 </span>
-                <button type="button" className="button button-quiet" onClick={() => setAsking(r)}>
-                  Delete…
-                </button>
+                <span className="row">
+                  <button
+                    type="button"
+                    className="button button-quiet"
+                    disabled={r.waitingForGameEnd || isSharing(r.id)}
+                    onClick={() => shareReport(r)}
+                  >
+                    Share
+                  </button>
+                  <button type="button" className="button button-quiet" onClick={() => setAsking(r)}>
+                    Delete…
+                  </button>
+                </span>
               </li>
             ))}
           </ul>
         ))}
       {asking && (
         <Dialog>
-          <p className="lead">Delete this report? It will not be sent.</p>
+          <p className="lead">Delete this report? It hasn't been shared.</p>
           <div className="row">
+            <button type="button" className="button" onClick={() => setAsking(null)}>
+              Keep it
+            </button>
             <button
               type="button"
-              className="button"
+              className="button button-quiet"
               onClick={() => {
                 deleteWaiting(asking.id);
                 setAsking(null);
               }}
             >
-              Delete report
-            </button>
-            <button type="button" className="button button-quiet" onClick={() => setAsking(null)}>
-              Keep
+              Delete
             </button>
           </div>
         </Dialog>

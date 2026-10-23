@@ -147,8 +147,8 @@
 
 /* ----- Board grid (SWD-090, 093, 042, 102) ----- */
 .sw-grid {
-  position: relative; box-sizing: border-box; height: 100%; display: grid; grid-template-columns: repeat(var(--sw-cols), 1fr);
-  grid-auto-rows: 1fr; gap: 4px; font-size: var(--sw-word);
+  position: relative; box-sizing: border-box; height: 100%; display: grid;
+  grid-template-columns: repeat(var(--sw-cols), var(--sw-col-w, 1fr)); grid-auto-rows: var(--sw-row-h, 1fr); gap: 4px; font-size: var(--sw-word);
 }
 .sw-grid[data-angle='180'] { transform: rotate(180deg); }
 .sw-cell {
@@ -164,8 +164,17 @@
 .sw-kind-teal { background: var(--team-teal); color: var(--sw-on-team); border-color: var(--team-teal); }
 .sw-kind-nobody { background: var(--sw-nobody); color: var(--text); border-color: var(--sw-nobody); }
 .sw-kind-landmine { background: var(--sw-landmine); color: var(--bg); border-color: var(--sw-landmine); }
-.sw-found { opacity: 0.4; }
+/* Found (turned over) on a map, and the faded whole map (3.7 R15, P10): a lighter fill, full-strength dark text, the
+   word struck through, the icon kept in the kind's colour. Never lowered opacity. */
+.sw-found { color: var(--text); }
 .sw-found .sw-word { text-decoration: line-through; }
+.sw-kind-orange.sw-found { background: color-mix(in srgb, var(--team-orange) 22%, var(--surface)); border-color: var(--team-orange); }
+.sw-kind-teal.sw-found { background: color-mix(in srgb, var(--team-teal) 22%, var(--surface)); border-color: var(--team-teal); }
+.sw-kind-nobody.sw-found { background: color-mix(in srgb, var(--sw-nobody) 45%, var(--surface)); }
+.sw-kind-landmine.sw-found { background: color-mix(in srgb, var(--sw-landmine) 18%, var(--surface)); border-color: var(--sw-landmine); }
+.sw-kind-orange.sw-found .sw-cell-icon { color: var(--team-orange); }
+.sw-kind-teal.sw-found .sw-cell-icon { color: var(--team-teal); }
+.sw-kind-landmine.sw-found .sw-cell-icon { color: var(--sw-landmine); }
 .sw-picked { outline: 3px solid var(--accent); outline-offset: -3px; background: var(--chosen-bg); }
 .sw-pick-tick { position: absolute; right: 4px; top: 1px; font-size: 13px; font-weight: 800; color: var(--accent); }
 .sw-zoomed { z-index: 3; }

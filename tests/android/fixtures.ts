@@ -5,7 +5,7 @@ import { execFileSync } from 'node:child_process';
 import { _android, test as base, expect, type AndroidDevice, type BrowserContext, type Page } from '@playwright/test';
 
 export { expect };
-const PORT = 4173;
+const PORT = Number(process.env.PGN_PORT ?? 4173);
 export const APP_URL = `http://localhost:${PORT}/pocket-game-night/`;
 
 /** Phone screens in CSS pixels, at 3 device pixels per CSS pixel (density 480). */
