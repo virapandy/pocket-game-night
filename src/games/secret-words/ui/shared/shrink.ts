@@ -28,7 +28,7 @@ export function useShrinkToFit<T extends HTMLElement>(max: number, min: number, 
       el.style.fontSize = `${s}px`;
     }
     el.style.whiteSpace = ws;
-    el.style.fontSize = '';
+    el.style.fontSize = `${s}px`;
     setSize(s);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [max, min, tick, ...deps]);

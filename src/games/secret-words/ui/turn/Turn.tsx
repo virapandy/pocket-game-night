@@ -826,7 +826,7 @@ function HowToPlaySheet({ at, children }: { at: 'clue-rules' | undefined; childr
     h2?.scrollIntoView({ block: 'start' });
   }, [at]);
   return (
-    <div className="sw-sheet sw-howto" ref={ref}>
+    <div className={at ? 'sw-sheet sw-howto sw-howto-at' : 'sw-sheet sw-howto'} ref={ref}>
       {children}
     </div>
   );

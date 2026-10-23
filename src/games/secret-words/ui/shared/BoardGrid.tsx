@@ -252,7 +252,8 @@ function Zoom({ word, grid }: { word: string; grid: React.RefObject<HTMLDivEleme
     left = Math.max(0, Math.min(left, g.clientWidth - width));
     let top = cell.offsetTop + (ch - h) / 2;
     top = Math.max(0, Math.min(top, g.clientHeight - h));
-    setPos({ left: left - cell.offsetLeft, top: top - cell.offsetTop, width });
+    // Absolute positions start inside the cell's border.
+    setPos({ left: left - cell.offsetLeft - cell.clientLeft, top: top - cell.offsetTop - cell.clientTop, width });
   }, [word, grid]);
   return (
     <span

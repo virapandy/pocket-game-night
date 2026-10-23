@@ -132,6 +132,9 @@
 .sw-pause-cover { width: 100%; height: 100%; max-height: none; border-radius: 0; background: var(--bg); justify-content: center; padding: 24px; }
 .sw-earlier { padding-left: 20px; display: flex; flex-direction: column; gap: 6px; }
 .sw-sheet { position: fixed; inset: 0; z-index: 45; overflow-y: auto; padding: 16px 16px 92px; background: var(--bg); box-sizing: border-box; }
+.sw-howto { padding: 0; }
+/* Room below the last line, so "Clue rules" can scroll to the top (SWD-124). */
+.sw-howto-at::after { content: ''; display: block; height: 100dvh; }
 .sw-sheet-body { display: flex; flex-direction: column; gap: 12px; max-width: 640px; margin: 0 auto; }
 .sw-toast {
   position: fixed; z-index: 60; left: 50%; bottom: 96px; transform: translateX(-50%); width: max-content;
