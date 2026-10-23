@@ -65,7 +65,17 @@ The first run worked (2,563 decisions, no faults; `docs/games/what-am-i/jev-chec
    clue2, 755 rows) and ask Jev to
    pick the word from it plus 5 others from the same pack.
 
-### What Am I? prototype (product owner, 23 October; one coder lane, C1, after the Jev tool fixes or in parallel)
+### DO NOW (owner, 23 October): What Am I? prototype: teach the renderer this map (C1, one coder lane beside the Secret Words lanes)
+Correction: nobody built the first What Am I? prototype by hand. The renderer draws every pushed `docs/games/<game>/screen-map.md`
+by itself on each preview build, so What Am I? appeared automatically, drawn without its section K (the script reader knows
+Secret Words' shape: teams and a board). The owner asked for it now (23 October), in its own lane so Secret Words is not held up:
+The first render drew row descriptions as buttons and left out lists, so three persona walks got stuck on A1 and T3
+(`docs/games/what-am-i/prototype-walk-2026-10-23.md`). The map now quotes real labels and gives **K4, exact states for the
+renderer** (A1's "Host a game", T3's word TIGER with tap halves, S2's radios with ✓, S4's lines, the scoreboards, D2's names,
+word chips that move on T4). Also in the renderer, for every game: never draw the word "quiet" or the quote marks; a double tap
+on a guarded main button counts once; browser Back goes to the previous screen, not the index. Then tell the product owner.
+
+### ~~What Am I? prototype~~ (done by itself: the renderer drew the pushed map; see the item above)
 Feed `docs/games/what-am-i/screen-map.md` **draft 4** to the generic prototype renderer at `/preview/proto/what-am-i/`, as for
 Secret Words (`/preview/proto/secret-words/`), with the K1–K3 data. The word screen (T3) is shown sideways at 812 × 375 and
 568 × 320, and "Got it" / "Pass" are taps on the bottom / top halves (no motion in the prototype). Tell the product owner
@@ -79,6 +89,16 @@ word-list check** of `docs/games/what-am-i/words.csv` (789 words): flag words a 
 including a non-Hindi speaker from Tirunelveli) would not know, could not act or describe, or that are political or
 religious-sensitive. Within the weekly Jev cap. Tell the product owner when the report is pushed; it merges the findings
 into the map. The six persona walks are already done by the product owner.
+
+### Mafia (game five, 23 October, later): two small changes to the jev-design tool (tester, mid-size model)
+The two additions below are **done** (stories checked, 147 simulated games; `docs/games/mafia/jev-results-2026-10-23.md`).
+Jev chose "Nobody today" on up to 8 days a game, far more than people would, which skews the results towards the Mafia.
+1. **`--no-nobody`** for `--sim mafia`: the day point offers only the players still in (no "nobody"); ties and the second tie
+   stay as now. The report says which setting ran.
+2. **Product budget raised (owner, 23 October: "we can increase jev budget"):** `PRODUCT_CAP` from 15,000 to **30,000** a
+   week; the shared 50,000 stays the outer limit.
+Tell the product owner when pushed; it reruns the simulation at 8, 12 and 16 players with `--no-nobody` (about 6,000–8,000
+decisions).
 
 ### Mafia (game five, 23 October): two additions to the jev-design tool (tester, mid-size model; owner asked, 23 October)
 Design only; nothing to build. **Always after What Am I?** (owner, 23 October): do this after any What Am I? tester work in
@@ -108,6 +128,11 @@ product side runs them through the jev-design helper with `--budget product`.
    cost decisions instead of millions of tokens.
 Tell the product owner when both are pushed; it runs them and merges the findings. The persona walks still wait for the
 prototype renderer to draw `docs/games/mafia/screen-map.md` (draft 4), also after What Am I?.
+
+### PLT-208 wording, confirmed (product owner, 23 October)
+1. Share tapped mid-game: toast "Kept. You can share it when this game ends." ("You can share it" rather than "It can be shared").
+2. A report started from Home leaves the game out of its first line: "Problem report · app <version> · <date and time>".
+Both are in `docs/scenario-drafts/plt-208-209-share-sheet.md`.
 
 ### Secret Words version 3.7 (23 October): the owner's four questions are answered
 1. P1–P10: yes, written as "Version 3.7" paragraphs (SWD-010, 031, 033, 034, 043, 102, 103, 110, 112, 120, 124, 126, 127; Terms
