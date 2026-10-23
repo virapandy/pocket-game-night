@@ -1,11 +1,10 @@
 // Secret Words screen lane A, part 2: setup. "Who's playing?" (S1), "Make teams" (S2) and its "Clue givers" sheet (S2a), "How do you
 // want to play?" (S3), "Read this aloud" (S4), "How to play" (S5). Scenarios v3.7 (23 October 2026): SWD-003 to SWD-014, SWD-009
 // (v3.6), SWD-010 (v3.7 larger-text hint), SWD-011, SWD-066 ("Same as last time"), SWD-119, SWD-130, SWD-131, SWD-132.
-// Written before the screens exist: every test is marked expected-to-fail (`aheadOfSecretWordsScreens`); PGN_IGNORE_AHEAD=1 runs
-// them unmarked. What the screens need: tests/games/secret-words/screens-a.md.
+// Written before the screens exist: the expected-to-fail marks were removed when lane A was built. What the screens need: tests/games/secret-words/screens-a.md.
 import { expect, test } from './fixtures';
 import { freezeClock } from './impostor';
-import { aheadOfSecretWordsScreens, waitGuards } from './secret-words';
+import { waitGuards } from './secret-words';
 import { TEAM_PAIRS } from '../games/secret-words/oracle';
 import {
   box, boot, choose, codeFor, drawSplit, ended, END_AT, firstEligible, group, H, heading, mainButton, mainText, NAMES, noSidewaysScroll,
@@ -15,7 +14,6 @@ import {
 import type { Locator, Page } from '@playwright/test';
 
 test.use({ timezoneId: TZ, viewport: { width: 390, height: 844 } });
-test.beforeEach(() => aheadOfSecretWordsScreens('lane A: setup screens S1 to S5'));
 
 const SEED = 'teams-a';
 const removeButtons = (page: Page) => page.getByRole('button', { name: /^Remove / });

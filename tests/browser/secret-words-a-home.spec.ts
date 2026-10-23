@@ -1,7 +1,6 @@
 // Secret Words screen lane A, part 1: Home (A1), the picker (A2), "Start a new game night?" (A3), Join (J1), code entry (J2) and
 // "This phone is the board" (D11). Scenarios v3.7 (23 October 2026): SWD-001, SWD-002 (D11: privacy, tested first), SWD-115,
-// SWD-067 (Start new), SWD-133. Written before the screens exist: every test is marked expected-to-fail
-// (`aheadOfSecretWordsScreens`); PGN_IGNORE_AHEAD=1 runs them unmarked. What the screens need: tests/games/secret-words/screens-a.md.
+// SWD-067 (Start new), SWD-133. Written before the screens exist; lane A is built, so only the three tests that end on the map phone (lane C) stay marked expected-to-fail. What the screens need: tests/games/secret-words/screens-a.md.
 import { expect, test } from './fixtures';
 import { fakeCamera, showToCamera } from './phone';
 import { hostAGame, joinAGame } from './helpers';
@@ -16,10 +15,13 @@ import {
 import type { Page } from '@playwright/test';
 
 test.use({ timezoneId: TZ, viewport: { width: 390, height: 844 } });
-// Two checks already hold on the current build (Home has a menu "History"; a phone with nothing saved shows no last night):
-// they stay as plain regression checks, unmarked.
-const HOLDS_ALREADY = ['a phone with no saved game night shows no "Last game night" line', "Home's own menu gains \"History\""];
-test.beforeEach(({}, testInfo) => { if (!HOLDS_ALREADY.includes(testInfo.title)) aheadOfSecretWordsScreens('lane A: Home, picker, Join, board-phone dialog'); });
+// Only the tests that end on the map phone (lane C) stay expected to fail, until lane C is merged.
+const NEEDS_MAP_PHONE = [
+  'SWD-133: a map QR shown to the scanner opens the map phone with the team names from `t`',
+  'a valid code opens the map phone without team names; dashes, spaces and small letters are fine',
+  '`#map=27P3QX8&t=SWDT-01` opens the map phone directly with the team names, and the hash is removed from the address',
+];
+test.beforeEach(({}, testInfo) => { if (NEEDS_MAP_PHONE.includes(testInfo.title)) aheadOfSecretWordsScreens('lane C: the map phone'); });
 
 const NOW = START_AT + 10 * 60_000;
 const dialogNamed = (page: Page, name: string) => page.getByRole('dialog', { name, exact: true });
