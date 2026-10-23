@@ -1,4 +1,5 @@
 # Test report
+**Lane-f (Secret Words screen lane D, after the game), tests first on ab714d5, 23 October: 87 browser tests per phone (G1 38, D6 5, New board 1, D8/G2 12, D9 2, SWD-063 5, SWD-067 1, D7 18, E1/E1a 5; 16 need lane A or B and are marked expected-to-fail), SWD-025's game-over step written out, 33 new rule tests replaying the saved evenings (npm test 883 of 883). Locally both phones: every lane D check fails only because game over, the summary, History's Secret Words rows and the 12-hour ending aren't built. Questions: docs/test-questions.md, 23 October.**
 **Lane-e at merge 88354ab (lane-e 0ebb60d + origin/main): GREEN. Quick verify 39815492509 green (all shards). Local: npm test 849 of 849, build ok, Secret Words browser file 38 of 38 on both phones (nice -n 10, 2 workers). SWD-103, 090, 042, 099 all pass.**
 ## Lane-e, Secret Words rules engine + owner answers of 22 October (SWD-090, 042, 099, 103)
 Commit tested: c86f220 (app 0ff9800, Secret Words rules engine; tests c86f220)   Date: 2026-10-22

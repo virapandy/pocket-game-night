@@ -437,6 +437,21 @@ test.describe('SWD-025: room screens carry no kind of a face-down cell', () => {
           await check(`guessing, turn 2, after cell ${c}`);
         }
         await expect(page.getByTestId('game-heading')).toBeVisible();
+        // Game over (G1, lane D; SWD-025 ends here, SWD-051, 093): the other team won with all its words; from now on the
+        // whole map is shown, every cell named with its kind (face-down cells ", not found"), none "face down".
+        const winner = b.starts === 'orange' ? 'teal' : 'orange';
+        const teamNames = await page.evaluate(() => {
+          for (let i = 0; i < localStorage.length; i++) {
+            const k = localStorage.key(i)!;
+            if (!k.startsWith('pgn.game.')) continue;
+            try { const s = JSON.parse(localStorage.getItem(k)!); if (s?.gameType === 'secret-words') return s.setup.config.teams.names; } catch { /* not ours */ }
+          }
+          return null;
+        });
+        await expect(page.getByTestId('game-heading'), `game ${g + 1}`).toHaveText(`${teamNames[winner]} win!`);
+        await expect(page.getByTestId('result-line'), `game ${g + 1}`).toHaveText(`All ${theirs.length} words found.`);
+        const over = await cellsOf(boardCells(page));
+        expect(over.map((c) => kindOf(c.name)), `game ${g + 1}: the whole map at game over`).toEqual(b.kinds);
       }
     });
   }

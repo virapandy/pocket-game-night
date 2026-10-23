@@ -58,3 +58,15 @@ Read this and the top of `reports/latest.md` before starting. Keep it short: rep
 - Run: `SIM_MODE=deal|play npx vitest run --config tests/tools/sim-table/vitest.config.ts deal|play`; wrap play in `caffeinate -i`. Play writes reports/sim-table-secret-words.md and results.json (exchange). Wiring was checked with a stub guesser (`SIM_TABLE_DRYRUN=1`, report to the exchange folder, no Jev); the real run was not made.
 - Finding for the owner: the engine has no pass move (a clue needs at least one guess; only "Clue not allowed" ends a turn with none, and it gives the other team a word). A team out of planned clues therefore ends the board and is counted; asked for "pass with clue 0, no guesses" was not possible.
 - Jev decisions: one per guess; run limit 6000 (SIM_TABLE_RUN_LIMIT).
+
+## 23 October: Secret Words lane D tests first (lane-f)
+- Files: `secret-words-game-over.spec.ts` (G1, D6, New board, Play again, v3.7 bottom bar, D8, G2, D9, SWD-063, 067),
+  `secret-words-players-history.spec.ts` (D7/D7a/D7b, E1, E1a), helpers `secret-words-d.ts`, coder note
+  `specs/secret-words/screens-d.md`; SWD-025's game-over step in `secret-words-c3.spec.ts` is now written out (heading,
+  result line, whole map by kind); its `aheadOfSecretWordsScreens` line was left as is so lane-b's edit of that line merges.
+- Most lane D tests open the app on a saved game night written move by move (`secret-words-d-evenings.ts`: the rules
+  module can't load in Playwright, its words.json import needs a JSON import attribute; every flow is replayed through the
+  rules by `tests/games/secret-words/lane-d-evenings.test.ts`, so add new flows to `ALL_FLOWS`) and reload (SWD-048): real checks now, failing until lane D builds. Tests through lane A or B screens use
+  `needsLanes(...)` (expected to fail); remove the call when Playwright says "expected to fail, but passed".
+- New area entry in `areas.json` (its own block near the end, so lane A's and B's edits of the Secret Words block merge).
+- Questions of 23 October in docs/test-questions.md (bar gap 8 vs 16 px; SWD-051 Landmine wording; credit order etc.).
