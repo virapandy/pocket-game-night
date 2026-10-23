@@ -65,6 +65,14 @@ The first run worked (2,563 decisions, no faults; `docs/games/what-am-i/jev-chec
    clue2, 755 rows) and ask Jev to
    pick the word from it plus 5 others from the same pack.
 
+### What Am I? prototype: re-render from map draft 4.1 (product owner, 23 October; same coder lane)
+The first render drew row descriptions as buttons and left out lists, so three persona walks got stuck on A1 and T3
+(`docs/games/what-am-i/prototype-walk-2026-10-23.md`). The map now quotes real labels and gives **K4, exact states for the
+renderer** (A1's "Host a game", T3's word TIGER with tap halves, S2's radios with ✓, S4's lines, the scoreboards, D2's names,
+word chips that move on T4). Also in the renderer, for every game: never draw the word "quiet" or the quote marks; a double tap
+on a guarded main button counts once; browser Back goes to the previous screen, not the index. Re-render
+`/preview/proto/what-am-i/` and tell the product owner.
+
 ### What Am I? prototype (product owner, 23 October; one coder lane, C1, after the Jev tool fixes or in parallel)
 Feed `docs/games/what-am-i/screen-map.md` **draft 4** to the generic prototype renderer at `/preview/proto/what-am-i/`, as for
 Secret Words (`/preview/proto/secret-words/`), with the K1–K3 data. The word screen (T3) is shown sideways at 812 × 375 and

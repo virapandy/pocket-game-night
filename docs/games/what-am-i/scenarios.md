@@ -165,6 +165,8 @@ in 04).
     or "card"; "clue" appears only in "Give clues", "gives clues", "Clue givers", "clue giver".
 49. New hooks: **WAI-H1b** seed in the browser (`window.__waiTest.setSeed('t1')`); **WAI-H9** fire `visibilitychange` and the
     Back gesture (`popstate`); **WAI-H10** wall clock and time zone; **WAI-H11** clear this phone's stored state.
+50. **T1 without Players** (second Jev read and three prototype walks, 23 October): T1 has no "Players (6) ›"; Players is
+    on R1 and in the menu. WAI-012's and the Canonical strings' mentions of it on the pass screen are withdrawn.
 
 ## Terms
 Terms defined in `docs/games/impostor/scenarios.md` mean exactly the same here: **main button, quiet button, selected, tint,

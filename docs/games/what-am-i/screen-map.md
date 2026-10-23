@@ -1,6 +1,6 @@
 # What Am I?: screen map (draft 4, product owner, 23 October 2026)
 
-**Status: draft 4.** Every change from the critic pass, the six persona walks, the word guidelines check, the first Jev
+**Status: draft 4.1** (23 October: T1 loses "Players (6) ›", which stays on R1 and in the menu, after the second Jev read and three prototype walks agreed T1 is crowded; section K4 gives the prototype renderer exact states). Every change from the critic pass, the six persona walks, the word guidelines check, the first Jev
 check and the owner's hold choices (drafts 2–3, sections J–O) is now written into the screens themselves; section H lists
 where each came from. Stage 1 of `docs/proposals/design-before-code.md` (step 1b of `docs/new-game-process.md`). Drawn from
 `guide.md`, `fit-and-stories.md`, `words.md` and the What Am I? decisions in `docs/decisions.md` (WA1–WA10 and the 23 October
@@ -38,7 +38,7 @@ what it records. *Intentions* says which of the common next wishes are visible w
 "Riya, Arjun +4 · 8:05 pm · Tap to resume".
 | Tap | Leads to | Records | IDs |
 |---|---|---|---|
-| Unfinished What Am I? row | the game's last screen exactly as left (T1, T4, R1 or G1), with "Welcome back." and the where-line; a turn in progress resumes on D1 Paused | — | WAI-10 |
+| "What Am I? · Round 2 · Arjun's turn" (the unfinished row) | the game's last screen exactly as left (T1, T4, R1 or G1), with "Welcome back." and the where-line; a turn in progress resumes on D1 Paused | — | WAI-10 |
 
 ### A2. What shall we play? (new card)
 *Words:* card "What Am I?" · "Phone on your forehead, the room gives clues · One phone, passed round · 2–20 players".
@@ -58,7 +58,7 @@ needs at least 2 players." (main disabled); over 20: "Up to 20 players." (Add di
 |---|---|---|---|
 | Add / Enter | name added, input cleared (every Enter adds, however fast); same name: "Riya is already playing. Add an initial, like Riya S." | — | WAI-01 |
 | ✕ | name removed, toast "Kabir removed · Undo" | — | WAI-01 |
-| Drag a name | turn order changes | — | WAI-01 |
+| drag handle "Move Riya" | turn order changes | — | WAI-01 |
 | How to play | S4 → Done → back here | — | WAI-09 |
 | ← Back | A2 picker | — | WAI-01 |
 | Next | S2 Words and time | — | WAI-01 |
@@ -80,7 +80,7 @@ Line above the main button: "Ready as it is, or change anything above."; quiet "
 *Intentions:* back, help.
 | Tap | Leads to | Records | IDs |
 |---|---|---|---|
-| a pack / a time / a hold / a switch | choice shown selected | setup | WAI-01, 03 |
+| each option: "Mix of all · 743 words" … "Famous Indians · 76 words"; "30 s" · "60 s" · "90 s"; "In the guesser's hand" · "Hands-free"; the two switches | choice shown selected (✓) | setup | WAI-01, 03 |
 | How to play | S4 → back | — | WAI-09 |
 | ← Back | S1 (names kept) | — | WAI-01 |
 | Start with these words | S3 Read this aloud (first What Am I? game tonight) or T1 for the first player | `start` (word order from the word seed) | WAI-01 |
@@ -115,12 +115,12 @@ score line "Round 1 · turn 1 of 6"; at most one tip line, in this order: "Joini
 words left. After that, words come from Mix of all." · "All words used tonight. Words from earlier games come back, oldest
 first." · a phone tip on this phone's first turn only ("Turn your ringer on so you hear each word count." on iPhone /
 "Screen not turning? Turn off rotation lock." / "Keep your screen on during the turn."); quiet "Someone else goes first";
-quiet "Hands-free for Riya"; quiet "Players (6) ›"; quiet "← Home (game saved)"; Pause; "··· Menu"; main **"I'm Riya:
+quiet "Hands-free for Riya"; quiet "← Home (game saved)"; Pause; "··· Menu"; main **"I'm Riya:
 start"**.
 *Words, hands-free:* "Riya, you're guessing"; "Stand the phone behind Riya, facing the room. Riya, don't turn round!";
 drawing of a phone leaning on a cushion or glass behind a seated player; rule line "One clue giver taps: bottom half Got it
 · top half Pass"; score line and tip line as above; "Hands-free (Riya's choice)" when it is her choice in a hand-mode game;
-quiet "Riya will hold it"; quiet "Someone else goes first"; quiet "Players (6) ›"; quiet "← Home (game saved)"; Pause;
+quiet "Riya will hold it"; quiet "Someone else goes first"; quiet "← Home (game saved)"; Pause;
 "··· Menu"; main **"Start Riya's turn"**.
 *Intentions:* pause, home, change (visible); help, stop (menu).
 | Tap | Leads to | Records | IDs |
@@ -129,7 +129,6 @@ quiet "Riya will hold it"; quiet "Someone else goes first"; quiet "Players (6) �
 | Start Riya's turn (hands-free) | T2 (T0 never shown) | — | WAI-02 |
 | Someone else goes first | D2 Players, pick who goes now; Riya goes next | `reorder` | WAI-06 |
 | Hands-free for Riya / Riya will hold it | T1 in the other way, kept for Riya for the rest of the game | setup | WAI-02 |
-| Players (6) › | D2 | — | WAI-06 |
 | ← Home (game saved) | A1 | — | WAI-10 |
 | Pause / ··· Menu | D1 / menu | — | WAI-06 |
 
@@ -245,6 +244,48 @@ running out mid-turn; every word used tonight; non-veg on and off; 30, 60 and 90
 word; skip after a pause; a player added mid-round; a leaver mid-round, the leaver on T1, a leave down to 1 player;
 "Someone else goes first"; a tie for the win; 2 players; 20 players; rotation lock on.
 
+## K. Prototype script (what the tap-through shows)
+Same rendering rules as Secret Words K3 (one state per screen, real labels, K4-style outcomes), with this data.
+
+**K1. The example game night.** Players in turn order: Riya, Arjun, Meena, Kabir, Zoya, Dev. Words: Animals, 60 s, in the
+guesser's hand, sounds on, non-veg off; Kabir chooses hands-free on his turn. Game 1 of the night.
+
+**K2. Round 1:** Riya gets Tiger, Owl, Camel, Duck, Bat, passes Penguin, Zebra (5); Arjun 7; Meena 5; Kabir 3 (hands-free);
+Zoya 4; Dev 6. Round 2 adds Arjun 7, Meena 8, Riya 4, Dev 5, Zoya 3, Kabir 4. End: Arjun 14 wins. Words nobody got: Penguin,
+Zebra, Kangaroo. Best turn: Meena, 8 words. G1's tally line reads "Tonight: Arjun 1 win" (game 1).
+
+**K4. Exact states for the renderer** (K3 of Secret Words applies: one state per screen; button labels are the quoted words
+only, never a row's description; the word "quiet" and the quote marks are never drawn).
+- **A1:** a main button "Host a game" (→ A2) above the unfinished row, a button of two lines "What Am I? · Round 2 · Arjun's
+  turn" / "Riya, Arjun +4 · 8:05 pm · Tap to resume" (→ D1 over Arjun's turn).
+- **A2:** the card button "What Am I?" with its line "Phone on your forehead, the room gives clues · One phone, passed round ·
+  2–20 players".
+- **S1:** the six names of K1 as a list, each with a drag handle and "✕"; the input "Player name" and "Add"; the small line; "6
+  players"; quiet "How to play" (→ S4), "← Back" (→ A2); main "Next" (→ S2).
+- **S2:** three radio groups drawn as rows with a ✓ on the chosen one (Mix of all, 60 s, In the guesser's hand), every option
+  with its line; two switches (non-veg off, Sounds on); the "Ready as it is…" line; main "Start with these words" (→ S3). The
+  page scrolls; the main button never covers other text.
+- **S4:** the seven lines of the scenarios' How to play (version 1.1 item 42) and the three drawings as labelled boxes; "Done".
+- **T1:** the hand-hold state for Riya ("Round 1 · turn 1 of 6", no tip line); "Hands-free for Riya" switches to the hands-free
+  state (shown as Kabir's turn in K2); main → T0 the first time, then T2.
+- **T2:** "3" with the line; main absent; after 3 s (or a tap anywhere) → T3.
+- **T3:** sideways frame (812 × 375 by default for this screen); the top line, the word **TIGER** large, "Animals", "0:34",
+  and the Pause button; the bottom half of the screen is one tap area labelled small "Got it" and the top half one labelled
+  "Pass" (labels for the prototype only). Each tap shows the next K2 word; after the seventh, T4. No row descriptions drawn.
+- **T4:** the h1 with the count; the two lists as word chips that move between lists on tap (with ↺, count updating); "Next:
+  Arjun"; Pause, "← Home (game saved)", "Menu"; main "Save score" (→ T1 for Arjun, toast "Riya: 5 saved · Undo"; Undo → T4).
+- **R1, G1:** the full scoreboard of K2 as a list ("Arjun 7 (1 turn)", "Dev 6 (1 turn)", … after round 1; "Arjun 14 (2 turns)",
+  "Meena 13 (2 turns)", … at game over).
+- **D2:** the six names with "✕" and handles, the add row, the top line, "Done".
+- **D1:** "Carry on playing" (main), "Skip Riya's turn", "← Home (game saved)" (no "quiet" text).
+- **Guards:** a double tap on a main button counts once (the 800 ms / 1 s guard), so T1 never skips T2.
+- **Back:** the browser Back goes to the previous prototype screen, not the index.
+
+**K3. Which outcome a tap follows.** T3 shows "Tiger" first; "Got it" and "Pass" both lead to the next word in K2's order;
+the prototype's clock jumps to T4 after the seventh word. A word tapped on T4 moves list with ↺. "Save score" after Dev
+leads to R1. "Hands-free for Kabir" on Kabir's T1 shows the hands-free T1. A1 resume → D1 over Arjun's turn with "Welcome
+back." and the where-line "Round 2 · Arjun guessing, 34 s left".
+
 ## H. Where draft 4's changes came from
 | Source | What it changed |
 |---|---|
@@ -256,18 +297,3 @@ word; skip after a pause; a player added mid-round; a leaver mid-round, the leav
 
 Still open, for the prototype walks and the next Jev read: whether "phone down" is read the same way from the chest as from
 the forehead; whether a clue giver finds the hands-free tap halves without looking twice.
-
-## K. Prototype script (what the tap-through shows)
-Same rendering rules as Secret Words K3 (one state per screen, real labels, K4-style outcomes), with this data.
-
-**K1. The example game night.** Players in turn order: Riya, Arjun, Meena, Kabir, Zoya, Dev. Words: Animals, 60 s, in the
-guesser's hand, sounds on, non-veg off; Kabir chooses hands-free on his turn. Game 1 of the night.
-
-**K2. Round 1:** Riya gets Tiger, Owl, Camel, Duck, Bat, passes Penguin, Zebra (5); Arjun 7; Meena 5; Kabir 3 (hands-free);
-Zoya 4; Dev 6. Round 2 adds Arjun 7, Meena 8, Riya 4, Dev 5, Zoya 3, Kabir 4. End: Arjun 14 wins. Words nobody got: Penguin,
-Zebra, Kangaroo. Best turn: Meena, 8 words. G1's tally line reads "Tonight: Arjun 1 win" (game 1).
-
-**K3. Which outcome a tap follows.** T3 shows "Tiger" first; "Got it" and "Pass" both lead to the next word in K2's order;
-the prototype's clock jumps to T4 after the seventh word. A word tapped on T4 moves list with ↺. "Save score" after Dev
-leads to R1. "Hands-free for Kabir" on Kabir's T1 shows the hands-free T1. A1 resume → D1 over Arjun's turn with "Welcome
-back." and the where-line "Round 2 · Arjun guessing, 34 s left".
