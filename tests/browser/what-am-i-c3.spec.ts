@@ -146,11 +146,13 @@ test.describe('WAI-021: what is ignored', () => {
     await expect(flash(page)).toHaveText('Got it!');
     const f = await flash(page).evaluate((el) => {
       const r = el.getBoundingClientRect();
-      const good = getComputedStyle(document.documentElement).getPropertyValue('--good').trim();
+      // --good as it applies to the flash (the game may scope its colours to its own screens)
+      const good = getComputedStyle(el).getPropertyValue('--good').trim();
       const probe = document.createElement('i'); probe.style.color = good; document.body.append(probe);
       const want = getComputedStyle(probe).color; probe.remove();
-      return { w: r.width, h: r.height, bg: getComputedStyle(el).backgroundColor, want };
+      return { w: r.width, h: r.height, bg: getComputedStyle(el).backgroundColor, want, good };
     });
+    expect(f.good, '--good is set where the flash is').not.toBe('');
     expect(f.w).toBeGreaterThanOrEqual(812 - 1);
     expect(f.h).toBeGreaterThanOrEqual(375 - 1);
     expect(f.bg).toBe(f.want);

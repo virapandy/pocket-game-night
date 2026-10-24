@@ -229,4 +229,52 @@ test.describe('WAI-032 / WAI-033: scoreboards and Round over', () => {
     expect(await boardRows(page)).toEqual(['Arjun 2 (1 turn)', 'Riya 1 (1 turn)']);
     await guards(page);
   });
+
+  test('Version 1.1 item 33 from R1: ✕ → "Kabir has to leave?" → "Kabir leaves" records leave at once; a new name records addPlayer; a drag records reorder; "← Back to the game" and an unchanged "Carry on playing" record nothing more', async ({ page }) => {
+    test.setTimeout(90_000); // three whole turns plus the edits: about 30 s on a low-priority Mac
+    await startNight(page, { seed: 'r1-edit', players: ['Riya', 'Arjun', 'Kabir'], turnTime: 30, pack: 'mix' });
+    await saveTurnsTo(page, 3);
+    await expect(heading(page, 'Round 1 done. Round 2 next.')).toBeVisible();
+    const before = (await moves(page)).length;
+    await tap(page, button(page, 'Change players or words'));
+    await expect(heading(page, "Who's playing?")).toBeVisible();
+    await tap(page, button(page, 'Remove Kabir'));
+    await tap(page, dialog(page, 'Kabir has to leave?').getByRole('button', { name: 'Kabir leaves', exact: true }));
+    let m = await moves(page);
+    expect(m.length).toBe(before + 1);
+    expect(m.at(-1)).toEqual({ type: 'leave', player: 'Kabir' });
+    await page.getByLabel('Player name', { exact: true }).fill('Om');
+    await button(page, 'Add').click();
+    m = await moves(page);
+    expect(m.length).toBe(before + 2);
+    expect(m.at(-1)).toEqual({ type: 'addPlayer', name: 'Om' });
+    // drag Om's handle onto Riya's place at the top
+    await guards(page);
+    const from = await box(button(page, 'Move Om'));
+    const to = await box(button(page, 'Move Riya'));
+    await page.mouse.move(from.x + from.width / 2, from.y + from.height / 2);
+    await page.mouse.down();
+    for (let i = 1; i <= 10; i++) {
+      await page.mouse.move(from.x + from.width / 2, from.y + from.height / 2 + ((to.y - from.y - to.height / 2) * i) / 10);
+      await page.clock.runFor(16);
+    }
+    await page.mouse.up();
+    await page.clock.runFor(100);
+    m = await moves(page);
+    expect(m.length).toBe(before + 3);
+    expect(m.at(-1)).toEqual({ type: 'reorder', order: ['Om', 'Riya', 'Arjun'] });
+    await tap(page, button(page, '← Back to the game'));
+    await expect(heading(page, 'Round 1 done. Round 2 next.')).toBeVisible();
+    expect((await moves(page)).length).toBe(before + 3);
+    await tap(page, button(page, 'Change players or words'));
+    await tap(page, mainButton(page)); // Next
+    await expect(heading(page, 'Words and time')).toBeVisible();
+    await expect(mainButton(page)).toHaveText('Carry on playing');
+    await tap(page, mainButton(page)); // choices unchanged
+    await expect(heading(page, "Om, you're guessing")).toBeVisible();
+    expect((await moves(page)).length).toBe(before + 3);
+  });
 });
+
+/** Plays `k` turns (one Got it each, 30 s turns) and saves each. */
+async function saveTurnsTo(page: import('@playwright/test').Page, k: number) { for (let i = 0; i < k; i++) { await playTurn(page, 'G'); await saveScore(page); } }
