@@ -120,17 +120,29 @@ export function shownPart(s: WaiState): string[] {
   return out;
 }
 
+/**
+ * WAI-010 (orchestrator's call, 25 October 2026): a word never comes back within the same turn. While a turn can show a word
+ * (T1 to T3, paused or not), words already shown in this turn are skipped; when every queued word was shown this turn, the
+ * queue is empty and time is up at once. Only tiny test lists reach this.
+ */
+function skipShownThisTurn(state: WaiState, ids: string[]): string[] {
+  const t = state.turn;
+  if (!t || t.shown.length === 0 || !(state.step === 'pass' || state.step === 'turn')) return ids;
+  const seen = new Set(t.shown.map((id) => textOf(state.words, id)));
+  return ids.filter((id) => !seen.has(textOf(state.words, id)));
+}
+
 /** WAI-H1: the remaining queue as word ids, next word first. Empty before the first start and when no game is open. */
 export function queueFor(state: WaiState): string[] {
   if (!gameOpen(state)) return [];
-  return [...state.unshown, ...shownPart(state)];
+  return skipShownThisTurn(state, [...state.unshown, ...shownPart(state)]);
 }
 
 /** The word on screen next: the queue's first word, or null when the queue is empty. */
 export function headOf(state: WaiState): string | null {
   if (!gameOpen(state)) return null;
-  if (state.unshown.length > 0) return state.unshown[0]!;
-  return shownPart(state)[0] ?? null;
+  if (state.unshown.length > 0 && !state.turn?.shown.length) return state.unshown[0]!;
+  return queueFor(state)[0] ?? null;
 }
 
 export const gameOpen = (s: WaiState): boolean => s.step === 'pass' || s.step === 'turn' || s.step === 'review';

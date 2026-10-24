@@ -156,6 +156,8 @@ export function TurnFlow(p: StepProps) {
     setShown(head);
     setPhase('word');
     ref.current.setUi({ wordShowing: true });
+    // WAI-010: every word left was already shown this turn, so time is up at once.
+    if (head === null) return timeUp();
     const on = () => ref.current.state.choices?.sounds !== false;
     for (const t of tickTimes(r.T)) if (t > r.elapsed0) after(t - r.elapsed0, () => playSound('tick', on()));
     const ten = r.T - 10000;
@@ -198,6 +200,8 @@ export function TurnFlow(p: StepProps) {
       shownRef.current = head;
       setShown(head);
       setFlash(null);
+      // WAI-010: no word left that this turn has not shown, so time is up at once.
+      if (head === null) timeUp();
     });
   };
 
