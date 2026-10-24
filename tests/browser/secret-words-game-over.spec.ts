@@ -788,3 +788,17 @@ test.describe('SWD-067: Start new (ends that one)', () => {
   });
 });
 
+
+// Found by the screen-simulation evenings (24 October 2026, seed t4-*): How to play opened from game over.
+test.describe('SWD-011, SWD-050/112: How to play opened from game over', () => {
+  test.use({ viewport: { width: 390, height: 844 } });
+
+  test('SWD-011: the only main button on How to play is "Done" (game over\'s "Play again" is not left showing)', async ({ page }) => {
+    await openGameOver(page, orangeWinsAtOnce());
+    await fromMenu(page, 'How to play');
+    await expect(page.getByRole('heading', { name: 'The rules', exact: true })).toBeVisible();
+    await expect(mainButton(page)).toHaveCount(1);
+    await expect(mainButton(page)).toHaveText('Done');
+    await expect(page.getByRole('button', { name: 'Play again', exact: true })).toHaveCount(0);
+  });
+});
