@@ -208,7 +208,8 @@ export function parseScreenMap(text: string): ProtoMap {
             continue;
           }
           rows.push({
-            label: seg.slice(0, arrow),
+            // "quiet "X"" / "main "X"": the label is X (the map's word for the look is never drawn).
+            label: seg.slice(0, arrow).replace(/^\s*(?:quiet|main)\s+(?=["“*])/i, ''),
             to: seg.slice(arrow).replace(/^\s*(→|->)\s*/, ''),
             ids: idsCol >= 0 ? (c[idsCol] ?? '') : '',
           });

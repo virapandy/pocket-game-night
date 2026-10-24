@@ -15,6 +15,8 @@ export function Frame({ game, map }: { game: string; map: ProtoMap }) {
   });
   const [at, setAt] = useState(hashId);
   const [note, setNote] = useState('');
+  // A screen the script shows sideways asks for its size while it shows; the switch's own choice comes back after it.
+  const [wants, setWants] = useState('');
   const [avail, setAvail] = useState(() => ({ w: innerWidth, h: innerHeight }));
   const [src] = useState(() => `${location.pathname}?frame=1${location.hash}`);
   const ref = useRef<HTMLIFrameElement>(null);
@@ -22,14 +24,16 @@ export function Frame({ game, map }: { game: string; map: ProtoMap }) {
   useEffect(() => {
     const onMessage = (e: MessageEvent) => {
       if (e.origin !== location.origin || typeof e.data !== 'object' || e.data === null) return;
-      const d = e.data as { proto?: string; id?: string; text?: string };
+      const d = e.data as { proto?: string; id?: string; text?: string; size?: string };
       if (d.proto === 'at' && typeof d.id === 'string') {
         setAt(d.id);
         setNote('');
         if (hashId() !== d.id) history.replaceState(null, '', `${location.pathname}${d.id ? `#${encodeURIComponent(d.id)}` : ''}`);
       }
       if (d.proto === 'note' && typeof d.text === 'string') setNote(d.text);
+      if (d.proto === 'size' && typeof d.size === 'string') setWants(SIZES.includes(d.size) ? d.size : '');
     };
+
     const onResize = () => setAvail({ w: innerWidth, h: innerHeight });
     addEventListener('message', onMessage);
     addEventListener('resize', onResize);
@@ -43,7 +47,8 @@ export function Frame({ game, map }: { game: string; map: ProtoMap }) {
     const w = ref.current?.contentWindow;
     if (w) w.location.hash = id;
   };
-  const [w, h] = size.split(' × ').map(Number) as [number, number];
+  const shown = wants || size;
+  const [w, h] = shown.split(' × ').map(Number) as [number, number];
   const scale = Math.min(1, (avail.w - 16) / w, (avail.h - BAR - 16) / h);
   const screen = map.screens.find((s) => s.id === at);
   const sections = [...new Set(map.screens.map((s) => s.section))];
@@ -77,8 +82,9 @@ export function Frame({ game, map }: { game: string; map: ProtoMap }) {
         </select>
         <select
           aria-label="Phone size"
-          value={size}
+          value={shown}
           onChange={(e) => {
+            setWants('');
             setSize(e.target.value);
             localStorage.setItem('pgn-proto-size', e.target.value);
           }}
@@ -92,7 +98,7 @@ export function Frame({ game, map }: { game: string; map: ProtoMap }) {
         <div style={{ width: w * scale, height: h * scale }}>
           <iframe
             ref={ref}
-            title={`Prototype screen, ${size}`}
+            title={`Prototype screen, ${shown}`}
             src={src}
             className="proto-frame"
             style={{ width: w, height: h, transform: `scale(${scale})` }}

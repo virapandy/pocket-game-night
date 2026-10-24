@@ -3,6 +3,8 @@
 // facts), the example board, which screens draw it, and which outcome a tap follows. Generic: it knows the script's
 // shape, never a game. A map without such a section has no script, and the prototype draws it as before.
 
+import { guardsOf, menuOf, statesOf, type Guards, type KPart } from './states';
+
 export interface Team {
   name: string;
   colour: string;
@@ -70,6 +72,14 @@ export interface Script {
   fullText: Record<string, string[]>;
   /** `term` "first quoted words" from anywhere in the map ("where-line" → "Turn 4 · Chai Champions' clue"). */
   terms: Record<string, string>;
+  /** The script's parts as written ("K1. The example game night." and its text). */
+  parts: KPart[];
+  /** Exact states for the renderer, by screen (a part titled "Exact states…"); none for most maps. */
+  states: Record<string, { text: string; index: number }>;
+  /** The map's visible tap guards. */
+  guards: Guards;
+  /** The "··· Menu" items the map's rules list ("*Menu*, in this order…: A · B · C."). */
+  menu: string[];
 }
 
 const NUM: Record<string, number> = { one: 1, two: 2, three: 3, four: 4 };
@@ -117,7 +127,7 @@ export function parseScript(text: string, screenIds: string[]): Script | undefin
 
   // The example night.
   const night = flat(part(/example|night/i)?.text ?? '');
-  const players = (/\bPlayers\s+([^.]+)\./.exec(night)?.[1] ?? '').split(/,\s*/).map((x) => x.trim()).filter(Boolean);
+  const players = (/\bPlayers\s+([^.]+)\./.exec(night)?.[1] ?? '').replace(/^[^:,]*:\s*/, '').split(/,\s*/).map((x) => x.trim()).filter(Boolean);
   const teams: Team[] = (/\bTeams:\s*([^.]+)\./.exec(night)?.[1] ?? '')
     .split(/;\s*/)
     .map((t) => /^(.+?)\s*\(([^)]+)\)\s*(.+)$/.exec(t.trim()))
@@ -221,6 +231,11 @@ export function parseScript(text: string, screenIds: string[]): Script | undefin
     const k = m[1] as string;
     if (!(k in terms)) terms[k] = m[2] as string;
   }
+  // …and the map's rule lines that define one: *Where-line:* "words".
+  for (const m of text.matchAll(/\*([A-Z][a-z]+-[a-z]+):\*\s*"([^"]+)"/g)) {
+    const k = (m[1] as string).toLowerCase();
+    if (!(k in terms)) terms[k] = m[2] as string;
+  }
 
   return {
     players,
@@ -239,6 +254,10 @@ export function parseScript(text: string, screenIds: string[]): Script | undefin
     lists,
     fullText,
     terms,
+    parts,
+    states: statesOf(parts, known),
+    guards: guardsOf(text),
+    menu: menuOf(text),
   };
 }
 

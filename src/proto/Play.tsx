@@ -3,24 +3,29 @@
 // and 6), the example board where the script says (rule 3), and every tap follows the script's outcome or the map's one
 // "Leads to" (rule 4); taps that stay change the screen (rule 5). Generic: the game is all in the map and its script.
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
-import { BlocksRoot, Dialog, HideMainButton, MainButton, OptionButton, QuietButton, Screen, ScreenContent, Sheet, Toast, useToast } from '../blocks';
+import { BlocksRoot, Dialog, HideMainButton, OptionButton, QuietButton, Screen, ScreenContent, Sheet, Toast, useToast } from '../blocks';
 import type { ProtoMap, ProtoScreen, RawRow } from './parse';
 import { fullText, numberedLines, stripParens, type Cell, type Kind, type Outcome, type Script, type Team } from './script';
 import { chosen, holds, isCondition, quotedIn, segmentsOf, tokenize, type Ctx, type Segment } from './words';
 import { Index } from './Proto';
-
-interface Arrive {
-  lines: string[];
-  heading?: string;
-  toast?: string;
-  from?: string;
-}
+import { GuardedMain, StateView, type Arrive } from './State';
+import { guardFor } from './states';
 
 interface Visit {
   turned: string[];
   revealed: boolean;
   swapped: boolean;
   arrive: Record<string, Arrive>;
+  /** The player a screen was opened for ("T1 for Arjun"), by screen. */
+  subject: Record<string, string>;
+  /** What has happened this visit ("the first time"). */
+  seen: string[];
+}
+
+const framed = () => window.parent !== window;
+/** Every screen is its own history entry, so the phone's Back goes to the previous screen. */
+function navigate(to: string) {
+  location.hash = to;
 }
 
 type Result = 'moved' | 'stay';
@@ -38,7 +43,7 @@ function tellBar(text: string) {
   if (window.parent !== window) window.parent.postMessage({ proto: 'note', text }, location.origin);
 }
 
-const freshVisit = (script: Script): Visit => ({ turned: [...script.turned], revealed: false, swapped: false, arrive: {} });
+const freshVisit = (script: Script): Visit => ({ turned: [...script.turned], revealed: false, swapped: false, arrive: {}, subject: {}, seen: [] });
 
 /** The phones a screen is for: its title or section says ("two or three phones"), else the example night. */
 function phonesOf(screen: ProtoScreen, script: Script): number {
@@ -605,22 +610,64 @@ export function Play({ map, script, scenarios }: { map: ProtoMap; script: Script
     return () => window.removeEventListener('hashchange', onHash);
   }, []);
 
+  // A screen the script shows sideways ("sideways frame (812 × 375 by default for this screen)") asks the frame for that size.
+  useEffect(() => {
+    if (!framed()) return;
+    const m = /\bsideways frame\s*\((\d+)\s*×\s*(\d+)/.exec(script.states[id]?.text ?? '');
+    window.parent.postMessage({ proto: 'size', size: m ? `${m[1]} × ${m[2]}` : '' }, location.origin);
+  }, [id, script]);
+
   const byId = new Map(map.screens.map((s) => [s.id, s]));
   const screen = byId.get(id);
   if (!screen) return <Index map={map} id={id} />;
 
-  const go = (to: string, arrive: Arrive, reset: boolean, swap: boolean) => {
+  const go = (to: string, arrive: Arrive, reset: boolean, swap: boolean, subject?: string) => {
     setVisit((v) => {
-      const base = reset ? { ...freshVisit(script), arrive: v.arrive } : v;
-      return { ...base, swapped: swap ? !base.swapped : base.swapped, arrive: { ...base.arrive, [to]: arrive } };
+      const base = reset ? { ...freshVisit(script), arrive: v.arrive, subject: v.subject, seen: v.seen } : v;
+      const subjects = { ...base.subject };
+      if (subject) subjects[to] = subject;
+      else delete subjects[to];
+      return { ...base, swapped: swap ? !base.swapped : base.swapped, arrive: { ...base.arrive, [to]: arrive }, subject: subjects };
     });
     if (to === id) setNav((n) => n + 1);
-    else location.hash = to;
+    else navigate(to);
   };
   const back = () => {
-    if (visited.current.length > 1) history.back();
-    else location.hash = '';
+    if (visited.current.length > 1) return history.back();
+    // Opened straight on this screen: "back" goes to the screen the map opens it from, never the index.
+    const from = map.screens.find((s) => s.id !== id && s.rows.some((r) => new RegExp(`\\b${id}\\b`).test(r.to.replace(/"[^"]*"/g, ' '))));
+    navigate(from ? from.id : '');
   };
+  const state = script.states[screen.id];
+  if (state) {
+    const underId = visited.current.length > 1 ? visited.current[visited.current.length - 2] : undefined;
+    const underScreen = underId ? byId.get(underId) : undefined;
+    const under =
+      screen.kind !== 'screen' && underScreen && underScreen.kind === 'screen' && underScreen.id !== screen.id ? (
+        <div inert>
+          <HideMainButton.Provider value>{drawStill(map, underScreen, script, visit, scenarios)}</HideMainButton.Provider>
+        </div>
+      ) : undefined;
+    return (
+      <StateView
+        key={`${id}:${nav}`}
+        map={map}
+        screen={screen}
+        script={script}
+        state={state}
+        arrive={visit.arrive[screen.id]}
+        subject={visit.subject[screen.id]}
+        seen={visit.seen}
+        scenarios={scenarios}
+        under={under}
+        nav={{
+          go: (to, arrive, subject) => go(to, arrive, false, false, subject),
+          back,
+          mark: (key) => setVisit((v) => (v.seen.includes(key) ? v : { ...v, seen: [...v.seen, key] })),
+        }}
+      />
+    );
+  }
 
   return (
     <View
@@ -652,6 +699,38 @@ export function Play({ map, script, scenarios }: { map: ProtoMap; script: Script
         go(to, { lines: withLines, from: label, ...(toast ? { toast } : {}) }, /\bdeal\b/.test(toText), false);
       }}
       onBack={back}
+    />
+  );
+}
+
+/** A screen drawn still, under a dialog. */
+function drawStill(map: ProtoMap, screen: ProtoScreen, script: Script, visit: Visit, scenarios: string): ReactNode {
+  const state = script.states[screen.id];
+  if (state)
+    return (
+      <StateView
+        map={map}
+        screen={screen}
+        script={script}
+        state={state}
+        arrive={visit.arrive[screen.id]}
+        subject={visit.subject[screen.id]}
+        seen={visit.seen}
+        scenarios={scenarios}
+        nav={{ go: () => undefined, back: () => undefined, mark: () => undefined }}
+      />
+    );
+  return (
+    <View
+      map={map}
+      screen={screen}
+      script={script}
+      visit={visit}
+      under={undefined}
+      onOutcome={() => 'stay'}
+      onReveal={() => undefined}
+      onGo={() => undefined}
+      onBack={() => undefined}
     />
   );
 }
@@ -693,7 +772,9 @@ function View({
   const [givers, setGivers] = useState<string[]>(script.clueGivers);
   const [menuOpen, setMenuOpen] = useState(false);
   const [toast, showToast, clearToast] = useToast();
-  const sub = swapper(script, visit.swapped);
+  const swap = swapper(script, visit.swapped);
+  // Never the map's "quiet" before a label, nor its quote marks.
+  const sub = (s: string) => swap(s).replace(/\bquiet\s+(?=["“])/gi, '').replace(/["“”]/g, '');
   const [portrait, setPortrait] = useState(() => innerHeight >= innerWidth);
   useEffect(() => {
     const r = () => setPortrait(innerHeight >= innerWidth);
@@ -843,6 +924,9 @@ function View({
     } else mainHidden = !appeared.has(lower(mainRow.label));
   }
   if (mainRow?.other && flipped.has(mainRow.label)) mainLabel = mainRow.other;
+
+  // The visible tap guard: the main button is greyed until its guard ends, and a double tap counts once.
+  const guardMs = mainRow ? guardFor(script.guards, mainLabel) : 0;
 
   // ——— Taps ———
   const say = (text: string) => showToast(sub(text), /· Undo$/.test(text) ? () => undefined : undefined);
@@ -1251,7 +1335,7 @@ function View({
         return (
           <label key={i} className="proto-input">
             {p.label && <span>{sub(p.label)}</span>}
-            <input type="text" placeholder={p.placeholder} aria-label={p.label ?? p.placeholder} />
+            <input type="text" placeholder={sub(p.placeholder)} aria-label={sub(p.label ?? p.placeholder)} />
           </label>
         );
       case 'options':
@@ -1262,8 +1346,8 @@ function View({
               const sel = choice[p.title] ?? p.options.find((x) => script.facts.includes(lower(x.text.replace(/^\+\s*/, ''))))?.text ?? p.options[0]?.text;
               return (
                 <OptionButton key={o.text} selected={sel === o.text} onClick={() => setChoice((c) => ({ ...c, [p.title]: o.text }))}>
-                  {o.text}
-                  {o.extra && <span className="proto-sub"> {o.extra}</span>}
+                  {sub(o.text)}
+                  {o.extra && <span className="proto-sub"> {sub(o.extra)}</span>}
                 </OptionButton>
               );
             })}
@@ -1338,12 +1422,13 @@ function View({
 
   const main =
     mainRow && !mainHidden ? (
-      <MainButton
+      <GuardedMain
+        ms={guardMs}
         disabled={mainDisabled}
         onClick={() => tap(mainRow.label, mainRow.raw.to, { row: mainRow, ...(pickTemplate && picked ? { word: picked } : {}) })}
       >
         {sub(mainLabel)}
-      </MainButton>
+      </GuardedMain>
     ) : null;
 
   if (screen.kind === 'dialog') {
@@ -1352,19 +1437,7 @@ function View({
       <BlocksRoot className="proto">
         {under && under.kind === 'screen' && under.id !== screen.id ? (
           <div inert>
-            <HideMainButton.Provider value>
-              <View
-                map={map}
-                screen={under}
-                script={script}
-                visit={visit}
-                under={undefined}
-                onOutcome={() => 'stay'}
-                onReveal={() => undefined}
-                onGo={() => undefined}
-                onBack={() => undefined}
-              />
-            </HideMainButton.Provider>
+            <HideMainButton.Provider value>{drawStill(map, under, script, visit, scenariosDoc)}</HideMainButton.Provider>
           </div>
         ) : (
           <Screen>
@@ -1378,9 +1451,9 @@ function View({
             {backs.map((r) => quiet(r))}
           </div>
           {mainRow && !mainHidden && (
-            <MainButton inline onClick={() => tap(mainRow.label, mainRow.raw.to, { row: mainRow })}>
+            <GuardedMain inline ms={guardMs} onClick={() => tap(mainRow.label, mainRow.raw.to, { row: mainRow })}>
               {sub(mainLabel)}
-            </MainButton>
+            </GuardedMain>
           )}
         </Dialog>
         <Toast toast={toast} onDone={clearToast} />
