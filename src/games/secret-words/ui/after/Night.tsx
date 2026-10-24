@@ -419,7 +419,7 @@ export function SecretWordsNight(props: SecretWordsNightProps) {
 
   return (
     <div className={`sw pgn${larger ? ' pgn-larger' : ''}`}>
-      {body}
+      {sheet === 'howto' && phase === 'over' ? null : body}
       {overlay}
       {toast && (
         <div className="sw-toast" data-testid={toast.undo ? 'undo-toast' : 'toast'} role="status">
