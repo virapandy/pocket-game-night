@@ -252,6 +252,31 @@ test('PLT-011 / MAF-093: "Clear all history" deletes ended Mafia nights and coun
   expect(left[0].records.length, 'kept unchanged').toBe(going[0].records.length);
 });
 
+test('MAF-P2 / MAF-093: opening #mafia-past/<id>/2 while game 2 is still being played shows no role, night pick or Police result', async ({ page }) => {
+  // Game 1 finished, game 2 dealt and in its first night: the night is still going.
+  const g2 = flow('game2-over');
+  const live = { ...g2, name: 'game2-live', moves: g2.moves.slice(0, -1) };
+  const id = 'mafia-g2-live';
+  await boot(page, { time: flowEnd(live), storage: { 'pgn.test.load': savedFlow(live, { id }) } });
+  await waitGuards(page);
+  const noLeak = async (how: string) => {
+    await waitGuards(page);
+    const text = (await page.locator('body').innerText()).replace(/\s+/g, ' ');
+    for (const bad of [/Who was who/i, /Night \d:/, /the Police checked/i, /the Mafia picked/i, /the Doctor protected/i, /\((Not )?Mafia\)/, /\b(Villager|Doctor|Police) ·/, /voted out day/i, /out night/i]) {
+      expect(text, `${how}: ${bad} must not show`).not.toMatch(bad);
+    }
+    expect(/Host a game|not found|can't find|cannot find/i.test(text), `${how}: Home or a not-found state`).toBe(true);
+  };
+  // 1. Left to Home (game is saved), then the address is typed in.
+  await fromMenu(page, 'Home (game is saved)');
+  await expect(hostAGame(page)).toBeVisible();
+  await page.evaluate((i) => { location.hash = `#mafia-past/${i}/2`; }, id);
+  await noLeak('from Home');
+  // 2. The same address opened fresh (a reload).
+  await page.reload();
+  await noLeak('after a reload');
+});
+
 /** The moves of the only Mafia game night on this phone, as types. */
 async function moveTypes(page: Page): Promise<string[]> {
   const all = await mafiaNights(page);
@@ -306,3 +331,4 @@ test('MAF-063 / SWD-060: at game over, hiding the app on Tonight\'s summary reco
   await expect(heading(page, "Tonight's Mafia")).toHaveCount(0);
   expect(await moveTypes(page), 'nothing more recorded').toEqual([...before, 'endEvening']);
 });
+
