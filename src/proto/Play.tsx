@@ -8,7 +8,8 @@ import type { ProtoMap, ProtoScreen, RawRow } from './parse';
 import { fullText, numberedLines, stripParens, type Cell, type Kind, type Outcome, type Script, type Team } from './script';
 import { chosen, holds, isCondition, quotedIn, segmentsOf, tokenize, type Ctx, type Segment } from './words';
 import { Index } from './Proto';
-import { GuardedMain, StateView, type Arrive } from './State';
+import { GuardedMain, StateView, type Arrive, type Game, type Progress } from './State';
+import { forgetMenu, goBack, hashId, navigate, retireDialogs, stepId, takePending, trackVisit, useMenu } from './history';
 import { guardFor } from './states';
 
 interface Visit {
@@ -23,14 +24,8 @@ interface Visit {
 }
 
 const framed = () => window.parent !== window;
-/** Every screen is its own history entry, so the phone's Back goes to the previous screen. */
-function navigate(to: string) {
-  location.hash = to;
-}
-
 type Result = 'moved' | 'stay';
 
-const hashId = () => decodeURIComponent(location.hash.slice(1));
 const lower = (s: string) => s.toLowerCase();
 const esc = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const ID_RE = /\b([A-Z]\d+[a-z]?)\b/g;
@@ -116,10 +111,14 @@ function rowsOf(screen: ProtoScreen, words: string): Row[] {
     seen.add(k);
     out.push(r);
   };
+  // "(1 left) Add a player · End the game": the buttons after a "(N left)" belong to that case too.
+  let carried: string | undefined;
   for (const raw of screen.rows) {
     let label = raw.label.trim();
     if (/^↳/.test(label) || /^(menu\s*(→|->)|menu items|other menu items)/i.test(label) || /\(toast\b/i.test(label) || /^from\s/i.test(label)) continue;
-    const cond = parenCond(label);
+    const own = parenCond(label);
+    if (own && /^\d+ left$/i.test(own)) carried = own;
+    const cond = own ?? carried;
     label = label.split(' · ').map((s) => s.trim()).filter((s) => !EVENT.test(stripParens(s).trim()))[0] ?? '';
     if (!label) continue;
     const head = (label.split(',')[0] ?? '').trim();
@@ -590,6 +589,24 @@ export function Play({ map, script, scenarios }: { map: ProtoMap; script: Script
   const [nav, setNav] = useState(0);
   const visited = useRef<string[]>([hashId()]);
   const [visit, setVisit] = useState<Visit>(() => freshVisit(script));
+  // The example night as it has got to (turns saved, the word shown, how the phone answers, who is hands-free, who is in).
+  const [roster, setRoster] = useState(script.players);
+  const [progress, setProgressState] = useState<Progress>(() => ({
+    turn: 0,
+    wordAt: 0,
+    mode: null,
+    free: script.players.filter((p) => script.facts.includes(`${p.toLowerCase()} chooses hands-free`)),
+  }));
+
+  // The turn each visited screen was opened at, so the phone's Back to a screen shows that turn (not the one saved after it).
+  const turnRef = useRef(0);
+  const turns = useRef<number[]>([0]);
+  const setProgress = (change: (p: Progress) => Progress) =>
+    setProgressState((p) => {
+      const next = change(p);
+      turnRef.current = next.turn;
+      return next;
+    });
 
   useEffect(() => {
     const report = () => {
@@ -598,9 +615,22 @@ export function Play({ map, script, scenarios }: { map: ProtoMap; script: Script
     report();
     const onHash = () => {
       const next = hashId();
-      const v = visited.current;
-      if (v[v.length - 2] === next) v.pop();
-      else v.push(next);
+      const before = visited.current.length;
+      const step = trackVisit(visited.current, next, takePending());
+      const after = visited.current.length;
+      if (step === 'skip') {
+        // Back landed on a closed dialog and went on: the turn bookkeeping steps once, the screen waits for the next change.
+        turns.current.pop();
+        return;
+      }
+      if (after > before) turns.current.push(turnRef.current);
+      else if (after < before) {
+        turns.current.pop();
+        const back = turns.current[turns.current.length - 1] ?? 0;
+        turnRef.current = back;
+        setProgressState((p) => (p.turn === back ? p : { ...p, turn: back, wordAt: 0 }));
+      } else turns.current[turns.current.length - 1] = turnRef.current;
+      forgetMenu();
       setId(next);
       setNav((n) => n + 1);
       window.scrollTo(0, 0);
@@ -629,23 +659,35 @@ export function Play({ map, script, scenarios }: { map: ProtoMap; script: Script
       else delete subjects[to];
       return { ...base, swapped: swap ? !base.swapped : base.swapped, arrive: { ...base.arrive, [to]: arrive }, subject: subjects };
     });
+    const target = byId.get(to);
+    const leavingDialog = screen.kind !== 'screen';
     if (to === id) setNav((n) => n + 1);
-    else navigate(to);
+    // "Don't remove Kabir" and the like: the dialog it was opened over is what Back would show, so go back to it.
+    else if (leavingDialog && stepId(visited.current[visited.current.length - 2]) === to && visited.current.length > 1) goBack();
+    // A dialog that leads to a screen is closed (with any dialog under it): Back never stops on it again.
+    else if (leavingDialog && target?.kind === 'screen') {
+      retireDialogs(visited.current, (i) => byId.get(i)?.kind !== 'screen');
+      navigate(to, true);
+    } else navigate(to);
   };
-  const back = () => {
-    if (visited.current.length > 1) return history.back();
+  const back = (arrive?: Arrive) => {
+    if (arrive) {
+      const to = visited.current[visited.current.length - 2];
+      if (to) setVisit((v) => ({ ...v, arrive: { ...v.arrive, [to]: arrive } }));
+    }
+    if (visited.current.length > 1) return goBack();
     // Opened straight on this screen: "back" goes to the screen the map opens it from, never the index.
     const from = map.screens.find((s) => s.id !== id && s.rows.some((r) => new RegExp(`\\b${id}\\b`).test(r.to.replace(/"[^"]*"/g, ' '))));
     navigate(from ? from.id : '');
   };
   const state = script.states[screen.id];
   if (state) {
-    const underId = visited.current.length > 1 ? visited.current[visited.current.length - 2] : undefined;
+    const underId = visited.current.length > 1 ? stepId(visited.current[visited.current.length - 2]) : undefined;
     const underScreen = underId ? byId.get(underId) : undefined;
     const under =
       screen.kind !== 'screen' && underScreen && underScreen.kind === 'screen' && underScreen.id !== screen.id ? (
         <div inert>
-          <HideMainButton.Provider value>{drawStill(map, underScreen, script, visit, scenarios)}</HideMainButton.Provider>
+          <HideMainButton.Provider value>{drawStill(map, underScreen, script, visit, scenarios, { progress, roster })}</HideMainButton.Provider>
         </div>
       ) : undefined;
     return (
@@ -660,10 +702,13 @@ export function Play({ map, script, scenarios }: { map: ProtoMap; script: Script
         seen={visit.seen}
         scenarios={scenarios}
         under={under}
+        game={{ progress, roster, ...(visited.current.length > 1 ? { origin: stepId(visited.current[visited.current.length - 2]) } : {}) }}
         nav={{
           go: (to, arrive, subject) => go(to, arrive, false, false, subject),
           back,
           mark: (key) => setVisit((v) => (v.seen.includes(key) ? v : { ...v, seen: [...v.seen, key] })),
+          setProgress: (change) => setProgress(change),
+          setRoster: (names) => setRoster(names),
         }}
       />
     );
@@ -676,7 +721,14 @@ export function Play({ map, script, scenarios }: { map: ProtoMap; script: Script
       screen={screen}
       script={script}
       visit={visit}
-      under={visited.current.length > 1 ? byId.get(visited.current[visited.current.length - 2] as string) : undefined}
+      under={visited.current.length > 1 ? byId.get(stepId(visited.current[visited.current.length - 2])) : undefined}
+      roster={roster}
+      progress={progress}
+      onLeave={(name, toast) => {
+        const before = roster;
+        setRoster(before.filter((x) => x !== name));
+        back(toast ? { lines: [], from: 'leaves', toast: toast.replace(new RegExp(`\\b${esc(script.players.find((p) => toast.includes(p)) ?? name)}\\b`, 'g'), name), onUndo: () => setRoster(before) } : undefined);
+      }}
       onOutcome={(o, label, word) => {
         const lines = [...o.lines, ...o.terms.map((t) => script.terms[t] ?? '').filter(Boolean)];
         const arrive: Arrive = { lines, from: label, ...(o.heading ? { heading: o.heading } : {}), ...(o.toast ? { toast: o.toast } : {}) };
@@ -695,7 +747,13 @@ export function Play({ map, script, scenarios }: { map: ProtoMap; script: Script
       onReveal={(word) => setVisit((v) => ({ ...v, turned: v.turned.includes(word) ? v.turned : [...v.turned, word], revealed: true }))}
       onGo={(to, label, toText) => {
         const withLines = quotes(toText.replace(/\b(toast|main)\s+"[^"]+"/g, '')).filter((q) => new RegExp(`with\\s+"${esc(q)}"`).test(toText));
-        const toast = /\btoast\s+"([^"]+)"/.exec(toText)?.[1];
+        // A toast inside brackets belongs to another case ("refused: T2 with taps only, toast …").
+        const toast = /\btoast\s+"([^"]+)"/.exec(stripParens(toText))?.[1];
+        // The "move the phone?" question: what was chosen decides the hints on the screens after it.
+        if (screen.rows.some((r) => /taps? instead/i.test(r.label))) {
+          if (/\bmove\b/i.test(label)) setProgress((p) => ({ ...p, mode: 'move' }));
+          else if (/\btaps?\b/i.test(label)) setProgress((p) => ({ ...p, mode: 'taps' }));
+        }
         go(to, { lines: withLines, from: label, ...(toast ? { toast } : {}) }, /\bdeal\b/.test(toText), false);
       }}
       onBack={back}
@@ -704,7 +762,7 @@ export function Play({ map, script, scenarios }: { map: ProtoMap; script: Script
 }
 
 /** A screen drawn still, under a dialog. */
-function drawStill(map: ProtoMap, screen: ProtoScreen, script: Script, visit: Visit, scenarios: string): ReactNode {
+function drawStill(map: ProtoMap, screen: ProtoScreen, script: Script, visit: Visit, scenarios: string, game: Game): ReactNode {
   const state = script.states[screen.id];
   if (state)
     return (
@@ -717,7 +775,8 @@ function drawStill(map: ProtoMap, screen: ProtoScreen, script: Script, visit: Vi
         subject={visit.subject[screen.id]}
         seen={visit.seen}
         scenarios={scenarios}
-        nav={{ go: () => undefined, back: () => undefined, mark: () => undefined }}
+        game={game}
+        nav={{ go: () => undefined, back: () => undefined, mark: () => undefined, setProgress: () => undefined, setRoster: () => undefined }}
       />
     );
   return (
@@ -727,6 +786,9 @@ function drawStill(map: ProtoMap, screen: ProtoScreen, script: Script, visit: Vi
       script={script}
       visit={visit}
       under={undefined}
+      roster={game.roster}
+      progress={game.progress}
+      onLeave={() => undefined}
       onOutcome={() => 'stay'}
       onReveal={() => undefined}
       onGo={() => undefined}
@@ -744,6 +806,9 @@ function View({
   onOutcome,
   onReveal,
   onGo,
+  roster,
+  progress,
+  onLeave,
   onBack,
 }: {
   map: ProtoMap;
@@ -754,6 +819,10 @@ function View({
   onOutcome: (o: Outcome, label: string, word?: string) => Result;
   onReveal: (word: string) => void;
   onGo: (to: string, label: string, toText: string) => void;
+  roster: string[];
+  progress: Progress;
+  /** A player leaves the night (their name, and the toast with an Undo that gives them back). */
+  onLeave: (name: string, toast: string | undefined) => void;
   onBack: () => void;
 }) {
   const arrive = visit.arrive[screen.id];
@@ -770,11 +839,18 @@ function View({
   const [teams, setTeams] = useState<Team[]>(script.teams);
   const [cleared, setCleared] = useState(false);
   const [givers, setGivers] = useState<string[]>(script.clueGivers);
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useMenu();
   const [toast, showToast, clearToast] = useToast();
   const swap = swapper(script, visit.swapped);
   // Never the map's "quiet" before a label, nor its quote marks.
-  const sub = (s: string) => swap(s).replace(/\bquiet\s+(?=["“])/gi, '').replace(/["“”]/g, '');
+  // The player a screen is about: named in its title (\"Kabir has to leave?\"), else whose turn it is; the example's first player stands in.
+  const subjectName = visit.subject[screen.id];
+  const aboutBase = script.players.find((p) => new RegExp(`\\b${esc(p)}\\b`).test(screen.title)) ?? script.players[0] ?? '';
+  const aboutName = subjectName ?? (aboutBase !== script.players[0] ? aboutBase : (roster[progress.turn % Math.max(1, roster.length)] ?? aboutBase));
+  const inGame = /turn|round|during a game/i.test(screen.section);
+  const who = (t: string) =>
+    aboutBase && aboutName !== aboutBase && (subjectName || (inGame && progress.turn > 0)) ? t.replace(new RegExp(`\\b${esc(aboutBase)}\\b`, 'g'), aboutName) : t;
+  const sub = (s: string) => who(swap(s).replace(/\bquiet\s+(?=["“])/gi, '').replace(/["“”]/g, ''));
   const [portrait, setPortrait] = useState(() => innerHeight >= innerWidth);
   useEffect(() => {
     const r = () => setPortrait(innerHeight >= innerWidth);
@@ -792,7 +868,8 @@ function View({
   const ctx: Ctx = {
     phones: phonesOf(screen, script),
     turn: script.turn,
-    players: script.players.length,
+    players: roster.length,
+    left: roster.length - 1,
     guessers: Math.max(0, (team?.members.length ?? 1) - 1),
     facts: script.facts,
     boardWords: script.board.flat().map((c) => c.word),
@@ -805,7 +882,11 @@ function View({
 
   // "*Words:* as S7 …": that screen's words.
   const asId = /^\s*as\s+([A-Z]\d+[a-z]?)\b/.exec(screen.wordsText)?.[1];
-  const words = (asId && map.screens.find((x) => x.id === asId)?.wordsText) || screen.wordsText;
+  // "If only 1 would be left: "…"": that line only when the night is that far.
+  const words = ((asId && map.screens.find((x) => x.id === asId)?.wordsText) || screen.wordsText).replace(
+    /\bif only (\d+) would be left\s*:\s*("[^"]*")/gi,
+    (_m, n: string, q: string) => (Number(n) === ctx.left ? q : ''),
+  );
   const rows = rowsOf(screen, words);
   const onlyRules = script.only.filter((o) => o.screen === screen.id);
   const onlyAll = onlyRules.flatMap((o) => o.lines);
@@ -856,6 +937,8 @@ function View({
     return undefined;
   };
   const visible = (r: Row) => {
+    // With two players left, nobody can leave ("2 players needed").
+    if (ctx.left === 1 && / leaves$/i.test(r.label)) return false;
     if (!holds(r.cond, ctx, r.label)) return false;
     const wc = fromWords(r);
     if (wc && isCondition(wc) && !holds(wc, ctx, r.label)) return false;
@@ -995,6 +1078,8 @@ function View({
       onReveal(opts.word);
       setPicked(null);
     }
+    // "Kabir leaves → back, toast …": they go from the night.
+    if (/ leaves$/i.test(label) && subjectName) return onLeave(subjectName, /\btoast\s+"([^"]+)"/.exec(stripParens(to))?.[1]);
     const res = resolve(to);
     if (res.kind === 'go') return onGo(res.id, label, to);
     if (res.kind === 'back') return onBack();
@@ -1437,7 +1522,7 @@ function View({
       <BlocksRoot className="proto">
         {under && under.kind === 'screen' && under.id !== screen.id ? (
           <div inert>
-            <HideMainButton.Provider value>{drawStill(map, under, script, visit, scenariosDoc)}</HideMainButton.Provider>
+            <HideMainButton.Provider value>{drawStill(map, under, script, visit, scenariosDoc, { progress: { turn: 0, wordAt: 0, mode: null, free: [] }, roster: script.players })}</HideMainButton.Provider>
           </div>
         ) : (
           <Screen>

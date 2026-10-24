@@ -35,11 +35,18 @@ export function Frame({ game, map }: { game: string; map: ProtoMap }) {
     };
 
     const onResize = () => setAvail({ w: innerWidth, h: innerHeight });
+    // The address edited by hand (#S2) shows that screen: the screens run in the frame, so tell the frame.
+    const onHash = () => {
+      const w = ref.current?.contentWindow;
+      if (w && decodeURIComponent(w.location.hash.slice(1)) !== hashId()) w.location.hash = hashId();
+    };
     addEventListener('message', onMessage);
     addEventListener('resize', onResize);
+    addEventListener('hashchange', onHash);
     return () => {
       removeEventListener('message', onMessage);
       removeEventListener('resize', onResize);
+      removeEventListener('hashchange', onHash);
     };
   }, []);
 

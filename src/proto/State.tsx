@@ -8,6 +8,7 @@ import { useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import { BlocksRoot, Dialog, HideMainButton, MainButton, OptionButton, QuietButton, Screen, ScreenContent, Sheet, Toast, useToast } from '../blocks';
 import type { ProtoMap, ProtoScreen } from './parse';
 import { stripParens, type Script } from './script';
+import { useMenu } from './history';
 import {
   WORD_NUM,
   clauses,
@@ -31,15 +32,38 @@ export interface Arrive {
   toast?: string;
   /** The screen the toast's Undo opens. */
   undo?: string;
+  /** What the toast's Undo gives back besides going back a screen (a turn saved, a player who left). */
+  onUndo?: () => void;
   from?: string;
+}
+
+/** Where the example night has got to, kept by the prototype while its screens come and go. */
+export interface Progress {
+  /** Turns saved so far: the player is the turn-th name of the roster, the round turn / players + 1. */
+  turn: number;
+  /** The word of the turn shown now (an index into the example word order); kept over a pause. */
+  wordAt: number;
+  /** How the phone answers, once chosen on the "move the phone?" screen. */
+  mode: 'move' | 'taps' | null;
+  /** Players whose turn is hands-free. */
+  free: string[];
+}
+
+/** The example night's state a screen draws from, with where the screen was opened from. */
+export interface Game {
+  progress: Progress;
+  roster: string[];
+  origin?: string;
 }
 
 export interface Nav {
   /** Opens a screen; `subject`: the player it is now for ("T1 for Arjun"). */
   go: (to: string, arrive: Arrive, subject?: string) => void;
-  back: () => void;
+  back: (arrive?: Arrive) => void;
   /** Remembers that something happened this visit ("the first time"). */
   mark: (key: string) => void;
+  setProgress: (change: (p: Progress) => Progress) => void;
+  setRoster: (names: string[]) => void;
 }
 
 /**
@@ -93,7 +117,7 @@ function tellBar(text: string) {
 
 type Part =
   | { t: 'h1'; text: string }
-  | { t: 'p'; text: string; small?: boolean }
+  | { t: 'p'; text: string; small?: boolean; raw?: boolean }
   | { t: 'button'; label: string; sub: string[]; to?: string }
   | { t: 'main' }
   | { t: 'input'; placeholder: string; add?: string }
@@ -168,6 +192,7 @@ export function StateView({
   seen,
   scenarios,
   under,
+  game,
   nav,
 }: {
   map: ProtoMap;
@@ -179,6 +204,7 @@ export function StateView({
   seen: string[];
   scenarios: string;
   under?: ReactNode;
+  game: Game;
   nav: Nav;
 }) {
   const st = state.text;
@@ -194,16 +220,33 @@ export function StateView({
   const known = new Set(map.screens.map((s) => s.id));
   const players = script.players;
   const variants = wordVariants(screen.kind === 'screen' ? screen.notes : `Words: ${screen.notes}`);
-  const [variant, setVariant] = useState(0);
-  const [names, setNames] = useState<string[]>(players);
+
+  // The example night as it has got to: whose turn it is, which round, which player of how many.
+  const names = game.roster;
+  const setNames = (v: string[] | ((all: string[]) => string[])) => nav.setRoster(typeof v === 'function' ? v(game.roster) : v);
+  const nPlayers = Math.max(1, names.length);
+  const turnNo = game.progress.turn;
+  // A dialog about one player ("Kabir has to leave?") names them in its title; the others are about the player whose turn it is.
+  const base = players.find((p) => new RegExp(`\\b${esc(p)}\\b`).test(screen.title)) ?? players[0] ?? '';
+  const turnPlayer = names[turnNo % nPlayers] ?? players[0] ?? '';
+  const cur = subject ?? (base !== players[0] ? base : turnPlayer);
+  const round = Math.floor(turnNo / nPlayers) + 1;
+  const place = (turnNo % nPlayers) + 1;
+  const nextPlayer = names[(turnNo + 1) % nPlayers] ?? cur;
+  const inGame = /turn|round|during a game/i.test(screen.section);
+  const doneScreen = /\bRound \d+ done\b/.test(screen.wordsText);
+  const shift = Math.max(0, doneScreen ? round - 2 : round - 1);
+  const isFree = game.progress.free.includes(cur);
+  const [variant, setVariant] = useState(() => (isFree ? Math.max(0, variants.findIndex((v) => /hands-free/.test(v.name))) : 0));
   const [typed, setTyped] = useState('');
   const [radio, setRadio] = useState<Record<string, number>>({});
   const [switches, setSwitches] = useState<Record<string, boolean>>({});
   const [chips, setChips] = useState<{ word: string; list: number; moved: boolean }[] | null>(null);
-  const [wordAt, setWordAt] = useState(0);
+  const wordAt = game.progress.wordAt;
+  const setWordAt = (change: (w: number) => number) => nav.setProgress((p) => ({ ...p, wordAt: change(p.wordAt) }));
   const [flash, setFlash] = useState<{ text: string; colour: string } | null>(null);
   const [tick, setTick] = useState(0);
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useMenu();
   const hideMain = useContext(HideMainButton);
   const [toast, showToast, clearToast] = useToast();
   const [portrait, setPortrait] = useState(() => innerHeight >= innerWidth);
@@ -211,7 +254,17 @@ export function StateView({
   const lastHalf = useRef(Date.now());
 
   // The player this screen is for: the script's first player, or the one a tap named ("T1 for Arjun").
-  const who = (s: string) => (subject && players[0] ? s.replace(new RegExp(`\\b${esc(players[0])}\\b`, 'g'), subject) : s);
+  const who = (s: string) => {
+    let t = s;
+    if (base && cur !== base && (inGame || subject)) t = t.replace(new RegExp(`\\b${esc(base)}\\b`, 'g'), cur);
+    if (inGame) {
+      t = t.replace(/\bRound (\d+)\b/g, (_m, d: string) => `Round ${Number(d) + shift}`);
+      t = t.replace(/\bplayer \d+ of \d+\b/, `player ${place} of ${nPlayers}`);
+      t = t.replace(/^Players \(\d+\)/, `Players (${names.length})`);
+      t = t.replace(/\bNext: (\S+)/, (m, name: string) => (players.includes(name) ? `Next: ${nextPlayer}` : m));
+    }
+    return t;
+  };
   const show = (s: string) => who(clean(s));
 
   // ——— Where taps lead ———
@@ -237,6 +290,16 @@ export function StateView({
 
   const follow = (label: string, to: string | undefined, extra = '') => {
     setMenuOpen(false);
+    // The "move the phone?" question: what was chosen decides the hints on the screens after it.
+    if (rows.some((r) => /taps? instead/i.test(clean(r.label)))) {
+      if (/\bmove\b/i.test(label)) nav.setProgress((p) => ({ ...p, mode: 'move' }));
+      else if (/\btaps?\b/i.test(label)) nav.setProgress((p) => ({ ...p, mode: 'taps' }));
+    }
+    // A row that resumes "Round 2 · Arjun's turn" puts the night there.
+    const resume = /\bRound (\d+) · (\p{L}+)/u.exec(label);
+    if (resume && names.includes(resume[2] as string)) {
+      nav.setProgress((p) => ({ ...p, turn: (Number(resume[1]) - 1) * nPlayers + names.indexOf(resume[2] as string), wordAt: 0 }));
+    }
     const o = outcomeFor(`${label} ${extra}`);
     if (o?.to) {
       // A term the script quotes itself ("the where-line "Round 2 · …"") is not added a second time.
@@ -245,8 +308,31 @@ export function StateView({
     }
     if (!to) return tellBar(`Not in the map: "${clean(label)}" leads nowhere.`);
     const first = (to.split(/;(?=(?:[^"]*"[^"]*")*[^"]*$)/)[0] ?? '').trim();
-    if (BACK.test(first)) return nav.back();
-    const id = firstId(to, known);
+    // A player leaves: they go from the night, and the toast can give them back.
+    const leaves = / leaves$/i.test(clean(label)) && !!subject;
+    const leaveToast = /\btoast\s+"([^"]+)"/.exec(first)?.[1];
+    if (BACK.test(first)) {
+      if (!leaves) return nav.back();
+      const before = names;
+      nav.setRoster(names.filter((x) => x !== cur));
+      return nav.back(leaveToast ? { lines: [], from: label, toast: who(leaveToast), onUndo: () => nav.setRoster(before) } : undefined);
+    }
+    let id = firstId(to, known);
+    // "T1 for the next player, or R1 when everyone has had a turn this round".
+    // (The script may name the next player itself, "T1 for Arjun"; the night works that out from the turns saved.)
+    const rowTo = rowFor(label) ?? to;
+    const advance = /\bfor the next player\b/i.test(stripParens(rowTo));
+    const roundEnd = /\bor\s+([A-Z]\d+[a-z]?)\s+when everyone has had a turn this round/i.exec(rowTo)?.[1];
+    if (advance && roundEnd && known.has(roundEnd) && place === nPlayers) id = roundEnd;
+    // Carry on after a pause: back to where it was paused (the countdown again for a turn in progress).
+    if (game.origin) {
+      const ids = [...stripParens(to.replace(/"[^"]*"/g, ' ')).matchAll(ID_RE)].map((m) => m[1] as string).filter((i) => known.has(i));
+      if (ids.length > 1) {
+        const text = (i: string) => script.states[i]?.text ?? '';
+        if (ids.includes(game.origin)) id = game.origin;
+        else if (/sideways|tap area|\bthe word\b/i.test(text(game.origin))) id = ids.find((i) => /\bafter \d+ s\b/.test(text(i))) ?? id;
+      }
+    }
     if (!id) {
       if (BACK.test(to)) return nav.back();
       const t = /\btoast\s+"([^"]+)"/.exec(to)?.[1];
@@ -259,12 +345,22 @@ export function StateView({
     }
     const outside = to.replace(/"[^"]*"/g, ' ');
     const forName = new RegExp(`\\b${id}\\b[^;]*?\\bfor\\s+([A-Z]\\w*)`).exec(outside)?.[1];
-    const toastText = /\btoast\s+"([^"]+)"/.exec(to)?.[1];
-    const undo = /\bUndo\s*(?:→|->)\s*([A-Z]\d+[a-z]?)/.exec(to)?.[1];
+    const toastText = /\btoast\s+"([^"]+)"/.exec(stripParens(to))?.[1];
+    let undo = /\bUndo\s*(?:→|->)\s*([A-Z]\d+[a-z]?)/.exec(to)?.[1];
+    // The toast's Undo opens the screen the map's "Undo (toast)" row names, and takes the saved turn back.
+    const undoRow = rows.find((r) => /^undo\b/i.test(clean(r.label)));
+    if (!undo && toastText && /· Undo$/.test(toastText) && undoRow) undo = firstId(undoRow.to, known);
+    if (advance) nav.setProgress((p) => ({ ...p, turn: p.turn + 1, wordAt: 0 }));
     nav.go(
       id,
-      { lines: [], from: label, ...(toastText ? { toast: counted(toastText) } : {}), ...(undo && known.has(undo) ? { undo } : {}) },
-      forName && players.includes(forName) ? forName : map.screens.find((x) => x.id === id)?.kind !== 'screen' ? subject : undefined,
+      {
+        lines: [],
+        from: label,
+        ...(toastText ? { toast: who(counted(toastText)) } : {}),
+        ...(undo && known.has(undo) ? { undo } : {}),
+        ...(advance ? { onUndo: () => nav.setProgress((p) => ({ ...p, turn: Math.max(0, p.turn - 1) })) } : {}),
+      },
+      advance ? undefined : forName && players.includes(forName) ? forName : map.screens.find((x) => x.id === id)?.kind !== 'screen' ? subject : undefined,
     );
   };
 
@@ -295,7 +391,21 @@ export function StateView({
   const bigWord = /\bthe word\s+\*\*([^*]+)\*\*/.exec(st)?.[1] ?? /\bthe word\s+([A-Z]{2,})\b/.exec(st)?.[1];
   const sequence = bigWord ? sequenceFrom(script.parts, bigWord.charAt(0) + low(bigWord.slice(1)), players) : [];
 
-  for (const c of clauses(words)) {
+  // Lines and buttons the words give for a state of the night only ("If only 1 would be left: "…"").
+  const ruleLines = map.screens.flatMap((sc) => [...sc.notes.matchAll(/rule line\s+"([^"]+)"(?:\s*\(taps only:\s*"([^"]+)"\))?/g)]);
+  const handRule = ruleLines.find((m) => m[2]);
+  const freeRule = ruleLines.find((m) => !m[2]);
+  const onlyLeft = (c: string) => {
+    const m = /\bif only (\d+) would be left\s*:\s*/i.exec(c);
+    return m ? { at: m.index, after: m.index + m[0].length, left: Number(m[1]) } : undefined;
+  };
+  const leftAfter = names.length - 1;
+  const allClauses = clauses(words).flatMap((c) => {
+    const cond = onlyLeft(c);
+    if (!cond) return [c];
+    return cond.left === leftAfter ? [c.slice(0, cond.at).trim(), c.slice(cond.after)].filter(Boolean) : [c.slice(0, cond.at).trim()].filter(Boolean);
+  });
+  for (const c of allClauses) {
     const lead = leadOf(c);
     const qs = quotesOf(c).filter((q) => !q.alt);
     const claimed = qs.find((q) => kButtons.has(q.text) || q.text === kMain);
@@ -315,7 +425,7 @@ export function StateView({
     if (/\bscoreboard\b/.test(lead) && rounds.length) {
       const phases = [...st.matchAll(/after round (\d+)|at game over/gi)];
       const ph = phases[state.index] ?? phases[0];
-      const upto = ph?.[1] ? Number(ph[1]) : rounds.length;
+      const upto = doneScreen ? Math.min(rounds.length, Math.max(1, round - 1)) : ph?.[1] ? Number(ph[1]) : rounds.length;
       const example = [...st.matchAll(/"([^"]+)"/g)].map((m) => m[1] as string).find((q) => players.some((p) => q.startsWith(`${p} `)));
       parts.push({ t: 'scores', lines: scoreboard(rounds, players, upto, /\bturns?\b/.test(example ?? c)) });
       continue;
@@ -411,15 +521,37 @@ export function StateView({
     }
     if (/\bthe\s+[a-z]+-[a-z]+\b/.test(c) && !qs.length) {
       const term = /\bthe\s+([a-z]+-[a-z]+)\b/.exec(c)?.[1] as string;
-      if (script.terms[term] && !arrive?.lines.length) parts.push({ t: 'p', text: script.terms[term] as string, small: true });
+      if (script.terms[term] && !arrive?.lines.length) {
+        // "Round 2 · Arjun's turn next": the round and name of the night as it is; over a turn in progress, "… guessing, 34 s left".
+        let text = script.terms[term] as string;
+        const origin = game.origin ?? '';
+        const originText = script.states[origin]?.text ?? '';
+        if (/^Round \d+ · \S+'s turn next$/.test(text)) {
+          const mid = origin === 'A1' || /sideways|tap area|\bafter \d+ s\b/i.test(originText);
+          const left = /"0:(\d\d)"/.exec(script.states[origin === 'A1' ? 'T3' : origin]?.text ?? '')?.[1] ?? '34';
+          const who1 = /\bNext:/.test(originText) ? nextPlayer : cur;
+          text = text.replace(/^Round \d+/, `Round ${round}`).replace(/(\S+)'s turn next$/, mid ? `${cur} guessing, ${Number(left)} s left` : `${who1}'s turn next`);
+        }
+        parts.push({ t: 'p', text, small: true, raw: true });
+      }
       continue;
     }
     const list = qs.length ? qs.map((q) => q.text) : /\b(name|label|title)\s*$/.test(lead) ? parenQuotes(c) : [];
+    // "(hands-free: "…")" and "(taps only: "…")" replace the first line for a hands-free turn / a phone that answers by taps.
+    const alt = /\(hands-free:\s*"([^"]+)"\)/.exec(c)?.[1];
+    const tapsOnly = /\(taps only:\s*"([^"]+)"\)/.exec(c)?.[1];
+    if (list.length && isFree && alt) list[0] = alt;
+    else if (list.length && !isFree && game.progress.mode === 'taps' && tapsOnly) list[0] = tapsOnly;
     for (const q of list) {
       if (screen.kind === 'screen' && rowFor(q) !== undefined && !/^\d/.test(q)) parts.push({ t: 'button', label: q, sub: [] });
       else parts.push({ t: 'p', text: q, small: /\bsmall\b/.test(lead) });
     }
   }
+
+  // The countdown tells how this phone answers (the rule line of the state reached: motion, taps, or a clue giver's taps).
+  const countAt = parts.findIndex((p) => p.t === 'big');
+  const hint = isFree ? freeRule?.[1] : game.progress.mode === 'taps' ? handRule?.[2] : handRule?.[1];
+  if (countAt >= 0 && hint && !parts.some((p) => p.t === 'p' && p.text === hint)) parts.push({ t: 'p', text: hint, small: true });
 
   // The heading: a "heading" clause, else the first line when the words start with it, else the screen's title.
   if (!parts.some((p) => p.t === 'h1')) {
@@ -438,8 +570,14 @@ export function StateView({
 
   // Dialogs: their buttons are the table's buttons.
   if (screen.kind !== 'screen') {
+    let leftCond: number | null = null;
     for (const r of rows) {
-      const l = clean(r.label);
+      const lm = /^\((\d+) left\)\s*/.exec(r.label.trim());
+      if (lm) leftCond = Number(lm[1]);
+      const l = clean(r.label).replace(/^\(\d+ left\)\s*/, '');
+      // Buttons "(1 left) …" and the ones after it belong to the night with that many players left; with that many, nobody can leave.
+      if (leftCond !== null && leftCond !== leftAfter) continue;
+      if (leftCond === null && leftAfter === 1 && / leaves$/i.test(l)) continue;
       if (/^from\b/i.test(l) || /^[✕×]$/.test(l) || parts.some((p) => p.t === 'button' && p.label === l)) continue;
       if (kMain && low(l) === low(kMain)) continue;
       parts.push({ t: 'button', label: l, sub: [], to: r.to });
@@ -471,7 +609,15 @@ export function StateView({
     addEventListener('resize', onResize);
     if (arrive?.toast) {
       const undo = arrive.undo;
-      showToast(arrive.toast, /· Undo$/.test(arrive.toast) ? () => (undo ? nav.back() : undefined) : undefined);
+      showToast(
+        arrive.toast,
+        /· Undo$/.test(arrive.toast)
+          ? () => {
+              arrive.onUndo?.();
+              if (undo) nav.back();
+            }
+          : undefined,
+      );
     }
     return () => {
       removeEventListener('resize', onResize);
@@ -495,6 +641,11 @@ export function StateView({
 
   const tapMain = () => {
     if (!mainLabel) return;
+    // A turn starts: its words begin again, and the hands-free choice is kept for this player.
+    if (variants.length > 1 && /\bhands-free\b/.test(variants.map((v) => v.name).join(' '))) {
+      const free = /hands-free/.test(variants[variant]?.name ?? '');
+      nav.setProgress((p) => ({ ...p, wordAt: 0, free: free ? [...new Set([...p.free, cur])] : p.free.filter((x) => x !== cur) }));
+    }
     if (firstTime) {
       const key = `${screen.id}:main`;
       const first = !seen.includes(key);
@@ -551,7 +702,7 @@ export function StateView({
   const crossTo = rows.find((r) => /^[✕×]$/.test(clean(r.label)))?.to;
   const removeName = (n: string) => {
     const id = crossTo ? firstId(crossTo, known) : undefined;
-    if (id) return nav.go(id, { lines: [], from: '✕' });
+    if (id) return nav.go(id, { lines: [], from: '✕' }, n);
     const before = names;
     setNames((all) => all.filter((x) => x !== n));
     const t = crossTo && /\btoast\s+"([^"]+)"/.exec(crossTo)?.[1];
@@ -567,7 +718,7 @@ export function StateView({
           </h1>
         ) : null;
       case 'p': {
-        const t = show(p.text);
+        const t = p.raw ? p.text : show(p.text);
         const n = /^\d+ (players?)$/.exec(t);
         return (
           <p key={i} className={p.small ? 'proto-small' : undefined}>

@@ -6,6 +6,8 @@ export interface Ctx {
   phones: number;
   turn: number;
   players: number;
+  /** Players who would be left if one left (the night as it is). */
+  left: number;
   guessers: number;
   /** The example night's text, lower case. */
   facts: string;
@@ -221,6 +223,7 @@ export function holds(raw: string | undefined, ctx: Ctx, line = ''): boolean {
   if ((m = /from turn (\d+)/.exec(c))) return ctx.turn >= Number(m[1]);
   if ((m = /(\d+)\+\s*guessers/.exec(c))) return ctx.guessers >= Number(m[1]);
   if ((m = /^(\d+)\+$/.exec(c))) return ctx.players >= Number(m[1]);
+  if ((m = /^(\d+) left$/.exec(c))) return ctx.left === Number(m[1]);
   if (/^(next day|older than)/.test(c)) return false;
   if ((m = /^under (\d+)$/.exec(c))) return ctx.players < Number(m[1]);
   if ((m = /\b(full|easy) only\b/.exec(c))) return ctx.facts.includes(m[1] as string);
@@ -242,7 +245,7 @@ export const isCondition = (raw: string | undefined) => {
   return (
     FALSE_START.test(c) ||
     phonesIn(c) !== null ||
-    /from turn|\d+\+|^under \d|(full|easy) only|on the board|shown|show\b|reveal|portrait|landscape/.test(c)
+    /from turn|\d+\+|^\d+ left$|^under \d|(full|easy) only|on the board|shown|show\b|reveal|portrait|landscape/.test(c)
   );
 };
 

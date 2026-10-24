@@ -4,6 +4,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { BlocksRoot, Dialog, HideMainButton, MainButton, QuietButton, Screen, ScreenContent, Sheet } from '../blocks';
 import type { ProtoMap, ProtoScreen, Tap } from './parse';
+import { forgetMenu, goBack, hashId, navigate, retireDialogs, stepId, takePending, trackVisit, useMenu } from './history';
 
 interface Note {
   text: string;
@@ -11,21 +12,18 @@ interface Note {
   missing: string[];
 }
 
-const hashId = () => decodeURIComponent(location.hash.slice(1));
-
 export function Proto({ game, map }: { game: string; map: ProtoMap }) {
   const [id, setId] = useState(hashId);
   const [note, setNote] = useState<Note | null>(null);
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useMenu();
   // Screens opened in this visit, so a "back" row can go back.
   const visited = useRef<string[]>([hashId()]);
 
   useEffect(() => {
     const onHash = () => {
       const next = hashId();
-      const v = visited.current;
-      if (v[v.length - 2] === next) v.pop();
-      else v.push(next);
+      if (trackVisit(visited.current, next, takePending()) === 'skip') return;
+      forgetMenu();
       setId(next);
       setNote(null);
       setMenuOpen(false);
@@ -37,15 +35,22 @@ export function Proto({ game, map }: { game: string; map: ProtoMap }) {
 
   const byId = new Map(map.screens.map((s) => [s.id, s]));
   const screen = byId.get(id);
+  // A dialog or sheet that is left forward gives up its history step, so Back never reopens it.
   const open = (to: string) => {
-    location.hash = to;
+    const leavingDialog = !!screen && screen.kind !== 'screen';
+    if (leavingDialog && stepId(visited.current[visited.current.length - 2]) === to && visited.current.length > 1) return goBack();
+    if (leavingDialog && byId.get(to)?.kind === 'screen') {
+      retireDialogs(visited.current, (i) => byId.get(i)?.kind !== 'screen');
+      return navigate(to, true);
+    }
+    navigate(to);
   };
 
   const tap = (t: Tap) => {
     setMenuOpen(false);
     const g = t.go;
     if (g.kind === 'go' && g.ids.length === 1 && g.missing.length === 0) return open(g.ids[0] as string);
-    if (g.kind === 'back' && visited.current.length > 1) return history.back();
+    if (g.kind === 'back' && visited.current.length > 1) return goBack();
     const text =
       g.kind === 'none'
         ? `Not in the map: "${t.label}" has no "Leads to".`
@@ -168,7 +173,7 @@ function Draw({
         <Sheet
           title={first ?? screen.title}
           doneLabel={done?.label ?? 'Done'}
-          onDone={() => (done ? tap(done) : history.back())}
+          onDone={() => (done ? tap(done) : goBack())}
         >
           {rest.map((w, i) => (
             <p key={i}>{w}</p>
