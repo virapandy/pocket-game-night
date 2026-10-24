@@ -28,11 +28,21 @@
 }
 .sw-over > * { flex: none; }
 .sw-over-stacked { padding-bottom: 168px; }
-.sw-over-land { max-width: none; margin: 0 390px 0 0; }
 .sw-over-line { line-height: 1.4; }
 .sw-over-board { height: calc(5 * 52px + 16px); }
 .sw-over-board-easy { height: calc(4 * 52px + 12px); }
-.sw-over-land .sw-over-board { height: calc(5 * 48px + 16px); }
+/* RC fix (landscape): as the board screens (SWD-091), the whole board fills the left of the screen at full height and
+   the lines and buttons scroll in the right column, 358 px wide, above the pinned bar; nothing sits under the bar. */
+.sw-over.sw-over-land { box-sizing: border-box; width: 390px; max-width: none; margin: 0 0 0 auto; padding: 8px 16px 168px; }
+.sw-over-land .sw-over-board, .sw-over-land .sw-over-board-easy {
+  position: fixed; left: 16px; top: 16px; bottom: 16px; right: 402px; height: auto;
+}
+/* 568 × 320: too short for a full-height board beside a 358 px column, so the board takes the 358 px above the stacked
+   bar and the lines and buttons scroll in the column at the left. */
+@media (max-height: 340px) {
+  .sw-over.sw-over-land { width: auto; margin: 0; padding: 8px 390px 16px 8px; }
+  .sw-over-land .sw-over-board, .sw-over-land .sw-over-board-easy { left: auto; right: 16px; width: 358px; top: 16px; bottom: 160px; }
+}
 .sw-over-board .sw-grid { height: 100%; }
 
 .sw-over-bar {
@@ -54,6 +64,11 @@
 
 /* ----- G2 summary ----- */
 .sw-summary > p { line-height: 1.4; }
+.sw-summary-buttons { display: flex; flex-direction: column; gap: 10px; }
+@media (orientation: landscape) and (max-height: 600px) {
+  .sw-summary-buttons { flex-direction: row; }
+  .sw-summary-buttons > .sw-full { flex: 1 1 0; width: auto; min-width: 0; }
+}
 
 /* ----- Toasts with Undo ----- */
 .sw-toast-undo {
@@ -63,12 +78,24 @@
 
 /* ----- D7 the Players sheet ----- */
 .sw-players-backdrop { align-items: stretch; }
-.sw-players { gap: 12px; }
+/* RC fix: the title keeps its top margin (nothing in the sheet shrinks), the list scrolls inside and "Done" is pinned. */
+.sw-players { gap: 12px; overflow: hidden; padding-top: max(20px, env(safe-area-inset-top)); }
+.sw-players > * { flex: none; }
+.sw-players > .sw-players-scroll {
+  flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; display: flex; flex-direction: column;
+  gap: 12px; padding-bottom: 4px; scroll-padding-bottom: 8px;
+}
+.sw-players-scroll > * { flex: none; }
+/* The toast in the sheet: in its flow, between the list and "Done". */
+.sw-players > .sw-toast { position: static; transform: none; align-self: center; max-width: 100%; }
 .sw-players-team { display: flex; flex-direction: column; gap: 6px; }
 .sw-players-list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 6px; }
 .sw-players-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+/* "Switch team" and ✕ stay together: beside the name, or both under it when the row is narrow (3.7 R16). */
+.sw-players-acts { flex: none; display: flex; align-items: center; gap: 6px; margin-left: auto; }
+.sw-players-switch { white-space: nowrap; }
 .sw-players-name {
-  flex: 1 1 auto; min-width: 0; min-height: 48px; padding: 0 12px; text-align: left; font: inherit; font-weight: 700;
+  flex: 1 1 96px; min-width: 0; min-height: 48px; padding: 0 12px; text-align: left; font: inherit; font-weight: 700;
   color: var(--text); background: var(--surface); border: 2px solid var(--border); border-radius: 12px; cursor: pointer;
   overflow-wrap: anywhere;
 }
@@ -82,3 +109,6 @@
 /* ----- E1 History's game night ----- */
 .sw-history-rounds { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 8px; }
 .sw-history-round { text-align: left; min-height: 48px; }
+
+/* RC fix: a toast never covers a screen's buttons: above game over's stacked bar. */
+.sw:has(.sw-over-stacked) .sw-toast { bottom: 160px; }

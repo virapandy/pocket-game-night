@@ -8,7 +8,7 @@ import { SwDialog, WhereLine } from '../shared/parts';
 export function DisputeDialog({ onTry, onBroke, onRules, onLetGo }: { onTry: () => void; onBroke: () => void; onRules: () => void; onLetGo: () => void }) {
   const until = useGuard('dispute');
   return (
-    <SwDialog title="Clue not allowed? Both clue givers decide together." onDismiss={onLetGo} className="sw-dialog-stack">
+    <SwDialog guardAll title="Clue not allowed? Both clue givers decide together." onDismiss={onLetGo} className="sw-dialog-stack">
       <div className="sw-dialog-buttons">
         <button type="button" className="sw-quiet sw-full" onClick={onTry}>
           Try another clue
@@ -82,6 +82,7 @@ export function NewBoardDialog({ onNewBoard, onKeep }: { onNewBoard: () => void;
   const until = useGuard('new-board');
   return (
     <SwDialog
+      guardAll
       title="New board? New words, same teams, fresh start. For when someone saw the map or the words are too hard. This board won't count."
       onDismiss={onKeep}
     >

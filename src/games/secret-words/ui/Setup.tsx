@@ -1,7 +1,7 @@
 // Setup on the host phone: "Who's playing?" (SWD-003, SWD-132), "Make teams" (SWD-004 to SWD-008, SWD-013, SWD-014) with
 // its "Clue givers" sheet (SWD-007, SWD-014, SWD-123), and "How do you want to play?" (SWD-009, SWD-066, SWD-119).
 // Nothing here is recorded: the deal records it all (Test hooks item 1, tap → move).
-import { useEffect, useId, useRef, useState, type FormEvent, type MouseEvent as ReactMouseEvent, type ReactNode } from 'react';
+import { useEffect, useId, useLayoutEffect, useRef, useState, type FormEvent, type MouseEvent as ReactMouseEvent, type ReactNode } from 'react';
 import { HideMainButton, OptionButton, QuietButton, Screen, ScreenContent, ScrollArea, Toast, useBackCloses, useToast } from '../../../blocks';
 import type { SecretWordsChoices, SecretWordsTeamNames } from '../rules';
 import type { ChoicesDraft } from './evening';
@@ -44,6 +44,11 @@ export function WhosPlaying({
   // again, so the list is read from what was last added, and the name from the field itself.
   const list = useRef(names);
   list.current = names;
+  // RC fix: as the list grows, the name box (and "Add") stays in view above "Next", never half hidden behind it.
+  useLayoutEffect(() => {
+    const form = field.current?.closest('form');
+    if (form && document.activeElement === field.current) form.scrollIntoView({ block: 'nearest' });
+  }, [names.length]);
   const add = (raw: string, fromField: boolean) => {
     const now = list.current;
     const name = raw.trim();

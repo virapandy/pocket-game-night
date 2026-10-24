@@ -249,6 +249,8 @@
 .sw-panel-middle .sw-clue-block { height: auto; }
 .sw-panel-middle .sw-clue-line { white-space: normal; overflow-wrap: anywhere; }
 .sw-panel-middle .sw-bottom-line { height: auto; }
+/* RC fix: both teams' counts always show in the panel: when the middle part scrolls, they stay pinned to its edge. */
+.sw-panel-middle > .sw-counts { position: sticky; top: 0; bottom: 0; z-index: 1; background: var(--bg); }
 .sw-h1-panel { font-size: 17px; }
 .sw-panel-slot { flex: none; display: flex; flex-direction: column; }
 .sw-panel-slot > .sw-quiet { height: 48px; width: 100%; padding: 0 4px; }
@@ -300,7 +302,11 @@
 .sw-clue-prompt { font-weight: 600; }
 .sw-clue-cols { flex: 1 1 auto; min-height: 0; display: flex; gap: 16px; }
 .sw-clue-cols > .sw-scroll { flex: 1 1 auto; }
+.sw-clue-buttons { flex: none; display: flex; flex-direction: column; gap: 8px; }
 .sw-clue-right { flex: none; width: 358px; display: flex; flex-direction: column; gap: 8px; }
+/* RC fix: at 812 × 375 the main sits under the right column only, so the left column runs to the bottom edge. */
+.sw-fixed.sw-clue-land { padding-bottom: 16px; }
+.sw-clue-land .sw-clue-right { padding-bottom: 76px; overflow-y: auto; }
 
 /* ----- Private map (SWD-031 v3.6/v3.7 fixed places, 360 × 640 budget) ----- */
 .sw-pm { padding: 0 16px 80px; gap: 4px; }
@@ -316,7 +322,8 @@
 .sw-pm-area .sw-grid { height: 100%; }
 .sw-pm-area .sw-our-words { height: 100%; overflow-y: auto; }
 .sw-map-key { height: 40px; display: flex; flex-direction: column; overflow: hidden; }
-.sw-key-line { display: flex; gap: 12px; white-space: nowrap; line-height: 20px; }
+.sw-key-line { display: flex; gap: 12px; white-space: nowrap; line-height: 20px; overflow: hidden; }
+.sw-pm > .sw-pm-slot, .sw-pm > .sw-pad { flex: none; }
 .sw-key { display: inline-flex; align-items: center; gap: 4px; }
 .sw-pm-row { height: 48px; display: flex; gap: 8px; }
 .sw-pad {
@@ -337,6 +344,8 @@
 }
 .sw-pm-land { position: fixed; inset: 0; }
 .sw-pm-land .sw-land-grid { top: 16px; }
+/* RC fix: the landscape map is placed as the board (SWD-091), left of the column; never full width under it. */
+.sw-pm-land > .sw-land-grid.sw-pm-area { position: absolute; height: auto; }
 .sw-col { position: absolute; right: 16px; top: 16px; bottom: 16px; width: 200px; display: flex; flex-direction: column; gap: 4px; }
 .sw-pm-land.sw-land-small .sw-col { right: 8px; bottom: 8px; width: 160px; }
 .sw-col-scroll { flex: 1 1 auto; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
@@ -360,6 +369,17 @@
 .sw-land-small .sw-scan-col { left: 184px; }
 .sw-scan-col-scroll { flex: 1 1 auto; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-bottom: 88px; }
 .sw-scan-col-scroll > * { flex: none; }
+
+/* ----- RC fix (24 October): nothing shows under a pinned main button. A page that scrolls as one keeps a strip of the
+   page colour behind the main, as tall as the space it reserves, so content scrolls under the strip instead of peeking out
+   beside or through the button (landscape's 358 px main, a disabled main's half-transparent look). A tap on the strip
+   reaches nothing hidden under it. ----- */
+.sw .pgn-screen:has(.pgn-main:not(.pgn-main-inline))::after,
+.sw .pgn-sheet::after,
+.sw-page:has(> .sw-main)::after {
+  content: ''; position: fixed; z-index: 4; left: 0; right: 0; bottom: 0; height: var(--pgn-foot, 92px); background: var(--bg);
+}
+.sw-page:has(> .sw-main)::after { height: 92px; }
 
 /* ----- Landscape main (Terms): 358 × 60 at the bottom right ----- */
 @media (orientation: landscape) and (max-height: 600px) {

@@ -1,7 +1,7 @@
 // D7 the Players sheet (SWD-127, SWD-014, SWD-123) with D7a "Who gives clues for … now?" and D7b the team-of-one
 // question. Opened from the game menu at every step that has "Players" and at game over. Each confirmed change is
 // handed to `onChange` (one `setPlayers`); toasts are the caller's, so they outlive the sheet.
-import { useEffect, useId, useState, type FormEvent } from 'react';
+import { useEffect, useId, useState, type FormEvent, type ReactNode } from 'react';
 import type { SecretWordsState, Team } from '../../rules';
 import { SwMain, useGuard } from '../shared/guard';
 import { SwDialog } from '../shared/parts';
@@ -24,6 +24,7 @@ export function PlayersSheet({
   onToast,
   onEndGame,
   onDone,
+  toast,
 }: {
   state: SecretWordsState;
   atGameOver: boolean;
@@ -33,6 +34,8 @@ export function PlayersSheet({
   /** D7b mid-game: "End the game" opens SWD-054's dialog. */
   onEndGame: () => void;
   onDone: () => void;
+  /** The current toast, shown between the list and "Done" (never over either). */
+  toast?: ReactNode;
 }) {
   const id = useId();
   const names = state.teams.names;
@@ -111,6 +114,8 @@ export function PlayersSheet({
         <h1 id={`${id}-title`} className="sw-dlg-heading">
           Players
         </h1>
+        {/* RC fix: the list scrolls inside; "Done" stays pinned under it, and a toast sits above "Done", never over it. */}
+        <div className="sw-players-scroll">
         {TEAMS.map((team) => (
           <section key={team} className="sw-players-team">
             <h2 className={`sw-heading2 sw-ink-${team}`}>{names[team]}</h2>
@@ -150,6 +155,7 @@ export function PlayersSheet({
                         {p}
                       </button>
                     )}
+                    <span className="sw-players-acts">
                     {isGuesser(state.teams, p) && (
                       <button
                         type="button"
@@ -174,6 +180,7 @@ export function PlayersSheet({
                     >
                       ✕
                     </button>
+                    </span>
                   </li>
                 );
               })}
@@ -189,9 +196,16 @@ export function PlayersSheet({
             maxLength={MAX_NAME}
             autoComplete="off"
             autoCapitalize="words"
+            enterKeyHint="done"
             onChange={(e) => {
               setText(e.target.value);
               setMessage(null);
+            }}
+            onKeyDown={(e) => {
+              // RC fix: Enter adds the name, as on "Who's playing?": to the team with fewer players (orange on a tie).
+              if (e.key !== 'Enter' || e.nativeEvent.isComposing) return;
+              e.preventDefault();
+              addTo(state.teams.teal.length < state.teams.orange.length ? 'teal' : 'orange');
             }}
           />
           <button type="button" role="switch" aria-checked={guessOnly} aria-label="Doesn't give clues" className="sw-switch" onClick={() => setGuessOnly(!guessOnly)}>
@@ -207,6 +221,8 @@ export function PlayersSheet({
           ))}
           {message && <p className="sw-alert sw-players-msg">{message}</p>}
         </div>
+        </div>
+        {toast}
         <SwMain className="sw-main-inline" until={until} onClick={onDone}>
           Done
         </SwMain>

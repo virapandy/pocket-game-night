@@ -112,6 +112,7 @@ export function SwDialog({
   onDismiss,
   className,
   testId,
+  guardAll,
 }: {
   title: ReactNode;
   /** The title is a heading ("Paused") rather than the dialog's first sentence. */
@@ -120,6 +121,8 @@ export function SwDialog({
   onDismiss?: () => void;
   className?: string;
   testId?: string;
+  /** A yes/no question opened by a tap: its quiet buttons wait as its main does. */
+  guardAll?: boolean;
 }) {
   const id = useId();
   const dismiss = useRef(onDismiss);
@@ -131,10 +134,11 @@ export function SwDialog({
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
   }, []);
-  // Every button of a dialog (quiet ones too) ignores taps for its first 800 ms (RC fix, SWD-114).
+  // `guardAll`: every button of the dialog (quiet ones too) ignores taps for its first 800 ms (RC fix, SWD-114), so the
+  // double tap that opened a yes/no question can't answer it.
   const wait = useTapWait();
   return (
-    <div className="sw-backdrop" onClickCapture={wait} onClick={(e) => e.target === e.currentTarget && onDismiss?.()}>
+    <div className="sw-backdrop" onClickCapture={guardAll ? wait : undefined} onClick={(e) => e.target === e.currentTarget && onDismiss?.()}>
       <div
         className={className ? `sw-dialog ${className}` : 'sw-dialog'}
         role="dialog"
@@ -197,10 +201,47 @@ export function Announcer({ text }: { text: string }) {
   );
 }
 
+/**
+ * SWD-031 v3.7 (P8): each map-key line shrinks in 1 px steps from its own size down to 13 px to stay on one line (only
+ * where it is kept to one line: portrait); if it still doesn't fit, team names show their first 12 characters and "…".
+ */
+function useKeyFit(deps: readonly unknown[]) {
+  const ref = useRef<HTMLDivElement | null>(null);
+  const [short, setShort] = useState(false);
+  const [tick, setTick] = useState(0);
+  useEffect(() => {
+    const onResize = () => setTick((n) => n + 1);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+  useLayoutEffect(() => {
+    const box = ref.current;
+    if (!box) return;
+    let tooWide = false;
+    for (const line of Array.from(box.querySelectorAll<HTMLElement>('.sw-key-line'))) {
+      line.style.fontSize = '';
+      if (getComputedStyle(line).whiteSpace !== 'nowrap') continue;
+      let px = Math.round(parseFloat(getComputedStyle(line).fontSize));
+      while (px > 13 && line.scrollWidth > line.clientWidth + 0.5) {
+        px -= 1;
+        line.style.fontSize = `${px}px`;
+      }
+      if (line.scrollWidth > line.clientWidth + 0.5) tooWide = true;
+    }
+    if (tooWide && !short) setShort(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tick, short, ...deps]);
+  return { ref, short };
+}
+
+const upTo12 = (name: string) => (name.length > 12 ? `${name.slice(0, 12)}…` : name);
+
 /** SWD-031 v3.7, SWD-034 v3.7: the map key, two lines under the map (Easy: line 2 is the dash entry only). */
-export function MapKey({ names, easy, hidden }: { names: { orange: string; teal: string }; easy: boolean; hidden?: boolean }) {
+export function MapKey({ names: full, easy, hidden }: { names: { orange: string; teal: string }; easy: boolean; hidden?: boolean }) {
+  const { ref, short } = useKeyFit([full.orange, full.teal, easy, hidden]);
+  const names = short ? { orange: upTo12(full.orange), teal: upTo12(full.teal) } : full;
   return (
-    <div className="sw-map-key sw-small" data-testid="map-key">
+    <div className="sw-map-key sw-small" data-testid="map-key" ref={ref}>
       {!hidden && (
         <>
           <p className="sw-key-line">

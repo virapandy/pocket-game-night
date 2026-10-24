@@ -180,6 +180,19 @@ export function SecretWordsNight(props: SecretWordsNightProps) {
     const t = setTimeout(() => setToast(null), Math.max(0, toast.at + TOAST_MS - Date.now()));
     return () => clearTimeout(t);
   }, [toast]);
+  // RC fix: a toast belongs to its screen: it ends when the night moves to another phase.
+  useEffect(() => {
+    setToast(null);
+  }, [phase]);
+  // RC fix: when a toast appears in the Players sheet (its list gets shorter), the field or button just used stays in view.
+  useLayoutEffect(() => {
+    if (!toast) return;
+    const list = document.querySelector('.sw-players-scroll');
+    const used = document.activeElement;
+    if (!list || !(used instanceof HTMLElement) || !list.contains(used)) return;
+    const over = used.getBoundingClientRect().bottom - (list.getBoundingClientRect().bottom - 4);
+    if (over > 0) list.scrollTop += over;
+  }, [toast]);
 
   usePageVisibility(
     () => {
@@ -346,6 +359,29 @@ export function SecretWordsNight(props: SecretWordsNightProps) {
     );
   }
 
+  // RC fix: over the Players sheet the toast sits in the sheet, between its list and "Done", so it covers nothing.
+  const toastNode = toast && (
+        <div className="sw-toast" data-testid={toast.undo ? 'undo-toast' : 'toast'} role="status">
+          {toast.undo ? (
+            <>
+              <span>{toast.text.replace(/Undo$/, '')}</span>
+              <button
+                type="button"
+                className="sw-toast-undo"
+                onClick={() => {
+                  const undo = toast.undo;
+                  setToast(null);
+                  undo?.();
+                }}
+              >
+                Undo
+              </button>
+            </>
+          ) : (
+            toast.text
+          )}
+        </div>
+  );
   const g = match.state.game;
   const midGame = !!g && g.step !== 'over';
   let overlay: ReactNode = null;
@@ -356,11 +392,16 @@ export function SecretWordsNight(props: SecretWordsNightProps) {
         atGameOver={phase === 'over'}
         onChange={onPlayersChange}
         onToast={(t) => setToast({ ...t, at: Date.now() })}
+        toast={toastNode}
         onEndGame={() => {
           setSheet(null);
           setDialog('end-game');
         }}
-        onDone={() => setSheet(null)}
+        onDone={() => {
+          // RC fix: a toast ends with its screen, so it never stays over the next one.
+          setToast(null);
+          setSheet(null);
+        }}
       />
     );
   } else if (sheet === 'swap') {
@@ -418,31 +459,10 @@ export function SecretWordsNight(props: SecretWordsNightProps) {
   }
 
   return (
-    <div className={`sw pgn${larger ? ' pgn-larger' : ''}`}>
+    <div className={`sw pgn${larger ? ' pgn-larger' : ''}${toast ? ' sw-toast-on' : ''}`}>
       {sheet === 'howto' && phase === 'over' ? null : body}
       {overlay}
-      {toast && (
-        <div className="sw-toast" data-testid={toast.undo ? 'undo-toast' : 'toast'} role="status">
-          {toast.undo ? (
-            <>
-              <span>{toast.text.replace(/Undo$/, '')}</span>
-              <button
-                type="button"
-                className="sw-toast-undo"
-                onClick={() => {
-                  const undo = toast.undo;
-                  setToast(null);
-                  undo?.();
-                }}
-              >
-                Undo
-              </button>
-            </>
-          ) : (
-            toast.text
-          )}
-        </div>
-      )}
+      {sheet !== 'players' && toastNode}
     </div>
   );
 }
@@ -461,7 +481,7 @@ function OverSignal({ onOver }: { onOver: () => void }) {
 function EndGameDialog({ onEnd, onKeep }: { onEnd: () => void; onKeep: () => void }) {
   const until = useGuard('end-game');
   return (
-    <SwDialog title="End this game with no winner?" onDismiss={onKeep}>
+    <SwDialog guardAll title="End this game with no winner?" onDismiss={onKeep}>
       <div className="sw-dialog-buttons">
         <button type="button" className="sw-quiet sw-full" onClick={onEnd}>
           End the game
@@ -479,6 +499,7 @@ function EndTonightDialog({ midGame, onEnd, onKeep }: { midGame: boolean; onEnd:
   const until = useGuard('end-tonight');
   return (
     <SwDialog
+      guardAll
       title={midGame ? "End for tonight? This game won't count in the tally." : "End for tonight? Tonight's tally stays in History."}
       onDismiss={onKeep}
     >

@@ -1,7 +1,7 @@
 // The board screens' layout (Terms "Board screens"): the preview (SWD-012), guessing (SWD-041), the end-turn line
 // (SWD-044) and turn over (SWD-045). Portrait: SWD-041's column and its 360 × 640 budget; landscape: SWD-091's grid at
 // the left and the 200 px (812 × 375) or 160 px (568 × 320) panel; narrow portrait: SWD-092.
-import type { ReactNode } from 'react';
+import { useLayoutEffect, useRef, type ReactNode } from 'react';
 import type { Team } from '../../rules';
 import { BoardGrid, type GridCell } from '../shared/BoardGrid';
 import { useViewport } from '../shared/device';
@@ -137,8 +137,19 @@ export function BoardScreen({
       {...(onPick ? { onPick } : {})}
     />
   );
+  // RC fix: in the landscape panel a new result line (or tip) is scrolled into view, so it is never cut off unseen.
+  const bottomRef = useRef<HTMLDivElement | null>(null);
+  const bottomText = bottom?.text ?? '';
+  useLayoutEffect(() => {
+    if (!land || !bottomText) return;
+    const el = bottomRef.current;
+    const box = el?.parentElement;
+    if (!el || !box) return;
+    const over = el.getBoundingClientRect().bottom - box.getBoundingClientRect().bottom;
+    if (over > 0) box.scrollTop += over;
+  }, [land, bottomText]);
   const bottomLine = (
-    <div className="sw-bottom-line">
+    <div className="sw-bottom-line" ref={bottomRef}>
       {bottom && (
         <p className="sw-small sw-result" data-testid={bottom.id}>
           {bottom.text}

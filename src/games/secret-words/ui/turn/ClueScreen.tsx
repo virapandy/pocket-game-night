@@ -139,6 +139,10 @@ export function ClueScreen({
           {recap}
         </p>
       )}
+    </>
+  );
+  const buttons = (
+    <>
       {onSeeMap && (
         <button type="button" className="sw-quiet sw-full" onClick={onSeeMap}>
           See the map again
@@ -185,6 +189,7 @@ export function ClueScreen({
             {head}
             {input}
             {rest}
+            {buttons}
           </div>
           <div className="sw-clue-right">
             {keys}
@@ -207,7 +212,10 @@ export function ClueScreen({
         {help}
         {input}
         {rest}
+        {vp.landscape && buttons}
       </div>
+      {/* RC fix: in portrait the quiet buttons sit pinned above the main, so none is ever half hidden behind it. */}
+      {!vp.landscape && <div className="sw-clue-buttons">{buttons}</div>}
       {main}
     </div>
   );

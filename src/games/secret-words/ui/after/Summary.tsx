@@ -43,14 +43,17 @@ export function Summary({
         {tallyLine(state)}
       </p>
       {credit && <p data-testid="clue-credit">{credit}</p>}
-      {canOops && (
-        <button type="button" className="sw-quiet sw-full" onClick={onOops}>
-          Oops, keep playing
+      {/* RC fix: side by side in landscape, so "← Home" is on the first screen above the pinned main. */}
+      <div className="sw-summary-buttons">
+        {canOops && (
+          <button type="button" className="sw-quiet sw-full" onClick={onOops}>
+            Oops, keep playing
+          </button>
+        )}
+        <button type="button" className="sw-quiet sw-full" onClick={onHome}>
+          ← Home
         </button>
-      )}
-      <button type="button" className="sw-quiet sw-full" onClick={onHome}>
-        ← Home
-      </button>
+      </div>
       {!deleting && (
         <SwMain until={until} onClick={onSomethingElse}>
           Play something else
@@ -64,7 +67,7 @@ export function Summary({
 function DeleteDialog({ onDelete, onKeep }: { onDelete: () => void; onKeep: () => void }) {
   const until = useGuard('delete');
   return (
-    <SwDialog title="Delete tonight's games? The games and tally will be lost." onDismiss={onKeep}>
+    <SwDialog guardAll title="Delete tonight's games? The games and tally will be lost." onDismiss={onKeep}>
       <div className="sw-dialog-buttons">
         <button type="button" className="sw-quiet sw-full" onClick={onDelete}>
           Delete

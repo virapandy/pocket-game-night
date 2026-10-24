@@ -261,9 +261,11 @@ export function PrivateMap({
         )}
         {!narrowList && <MapKey names={names} easy={easy} hidden={!visible} />}
         {!narrowList && row}
-        {padButton}
-        {slot}
       </div>
+      {/* RC fix: the pad and "Not Riya? Go back" stay pinned above the main (same order), so with Larger text or a short
+          screen only the part above them scrolls and neither is ever cut off at the bottom. */}
+      {padButton}
+      {slot}
       {main}
     </>,
     'sw-fixed sw-pm',

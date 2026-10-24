@@ -326,7 +326,8 @@ export function MapPhone({
 
   const buttons = (
     <>
-      <p className="swm-small">{TEXT.small}</p>
+      {/* RC fix (SWD-035, SWD-120: lists never fade): the fading hint shows only where a tap fades a word, the whole map. */}
+      {view === 'grid' && <p className="swm-small">{TEXT.small}</p>}
       {mapShown && (
         <div className="swm-stack">
           {[...listOrder, 'grid' as const].map((v) => (

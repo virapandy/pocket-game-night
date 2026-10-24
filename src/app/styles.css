@@ -1162,6 +1162,12 @@ button.tcell { cursor: pointer; }
 .ready { margin: 0; font-weight: 800; color: var(--ok); }
 /* Choices between equals look equal: same size (equal rows), same colours and weight. */
 .home-choices, .choice-cards { display: grid; grid-auto-rows: 1fr; gap: 12px; }
+/* RC fix (24 October): in landscape Home's cards and the game picker's cards stand side by side, so Home's "Unfinished
+   games" and the picker's Secret Words card are on the first screen, not below the fold. */
+@media (orientation: landscape) and (max-height: 600px) {
+  .home .home-choices, .pick-game .home-choices { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+  .home .home-choices .choice-card, .pick-game .home-choices .choice-card { min-height: 72px; padding-top: 10px; padding-bottom: 10px; }
+}
 .choice-card {
   position: relative;
   width: 100%;
