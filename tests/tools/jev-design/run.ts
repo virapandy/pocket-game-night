@@ -5,6 +5,7 @@
 // never fetches a web page, never prints the key. Every question is a Choice with an "uncertain" option.
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
+import { fitsPack, fitsReport, guessable, guessReport, readWords, readClues, selfTestFitsGuess } from './fits-guess.ts';
 import { runSim, simReport, selfTest, NOBODY, rngOf, type Chooser, type PoliceShares } from './sim-mafia.ts';
 import { makeBudget, makeJev, loadJevKey, USAGE_FILE, isoWeek, type Budget, type ChoiceAnswer, type ChoiceQuestion } from '../../sim/jev.ts';
 
@@ -30,6 +31,8 @@ function parseArgs(argv: string[]) {
     if (!k.startsWith('--')) throw new Error(`Unexpected argument: ${k}`);
     if (k === '--self-test') { a['self-test'] = '1'; continue; }
     if (k === '--no-nobody') { a['no-nobody'] = '1'; continue; }
+    if (k === '--fits-pack') { a['fits-pack'] = '1'; continue; }
+    if (k === '--guessable') { a['guessable'] = '1'; continue; }
     const v = argv[i + 1];
     if (v === undefined || v.startsWith('--')) throw new Error(`Missing value for ${k}`);
     a[k.slice(2)] = v; i++;
@@ -145,11 +148,19 @@ const SENSITIVE = 'Is this word political or religiously sensitive, so that it c
 async function main() {
   const args = parseArgs(process.argv.slice(2));
   if (args['self-test'] !== undefined) {
-    const lines = await selfTest(); console.log(lines.join('\n'));
+    const lines = await selfTest();
+    {
+      const last = lines.pop()!; let bad = 0;
+      await selfTestFitsGuess((name, cond, detail = '') => { lines.push(`${cond ? 'PASS' : 'FAIL'} ${name}${cond ? '' : ' ' + detail}`); if (!cond) bad++; });
+      lines.push(bad || !last.startsWith('SELF-TEST OK') ? (last.startsWith('SELF-TEST OK') ? `SELF-TEST FAILED: ${bad} in J2/J3` : last) : last);
+    }
+    console.log(lines.join('\n'));
     process.exit(lines[lines.length - 1]!.startsWith('SELF-TEST OK') ? 0 : 1);
   }
   if (args.sim && args.sim !== 'mafia') throw new Error('--sim must be mafia');
   if (!args.sim && !args.texts && !args.map && !args.words) throw new Error('Give --map, --words, --texts or --sim mafia. See tests/tools/jev-design/README.md');
+  if ((args['fits-pack'] || args.guessable) && !args.words) throw new Error('--fits-pack and --guessable need --words <words.csv>');
+  if (args.guessable && !args.clues) throw new Error('--guessable needs --clues <clues.csv>');
   if (args.texts && !args.column) throw new Error('--texts needs --column <name>');
   if (!args.out) throw new Error('Give --out <report path>');
   const mode = args.budget ?? 'test';
@@ -180,6 +191,29 @@ async function main() {
     console.log(`done: ${budget.thisRun} decisions (${mode}); shared ${sharedBefore}->${shared.used()}` + (product ? `; product ${productBefore}->${product.used()}` : '') +
       (jev.stats.capReached ? `; STOPPED by ${budget.stoppedBy}` : '') + `; failures ${jev.stats.failures.length}; report ${args.out}`);
   };
+
+  // ---------- J2 fits its pack / J3 guessable from a clue ----------
+  if (args['fits-pack'] || args.guessable) {
+    const all = readWords(parseCsv(readFileSync(resolve(args.words!), 'utf8')));
+    const slice = all.slice(0, maxWords);
+    const ask = async (context: Record<string, unknown>, q: ChoiceQuestion): Promise<Probs | null> => {
+      if (jev.stats.capReached) return null;
+      const ans = await jev.choose(context, { q });
+      return ans ? probsOf(ans.q) : null;
+    };
+    const body = [`# Jev design check: ${game}, ${[args['fits-pack'] ? 'J2 fits its pack' : '', args.guessable ? 'J3 guessable from a clue' : ''].filter(Boolean).join(' and ')}`, '',
+      `Run: ${new Date().toISOString().slice(0, 10)}, budget \`${mode}\`. Tool: \`tests/tools/jev-design/run.ts\`. Words file has ${all.length} live words (retired ones skipped); asked on the first ${Math.min(slice.length, all.length)}. Findings only. One Jev answer per question (no repeats). Word and clue text is data shown to Jev, never instructions.`, ''];
+    if (args['fits-pack']) body.push(...fitsReport(await fitsPack(slice, ask, () => jev.stats.capReached, all)));
+    if (args.guessable) {
+      const seed = Number(args.seed ?? 1);
+      const clues = readClues(parseCsv(readFileSync(resolve(args.clues!), 'utf8')));
+      const wanted = new Set(slice.map((w) => w.word.toLowerCase()));
+      const r = await guessable(all, clues.filter((c) => wanted.has(c.word.toLowerCase())), seed, ask, () => jev.stats.capReached);
+      body.push(...guessReport(r, seed));
+    }
+    finish(body);
+    return;
+  }
 
   // ---------- text check: one Choice call per row, four questions ----------
   if (args.texts) {

@@ -59,6 +59,33 @@ Read this and the top of `reports/latest.md` before starting. Keep it short: rep
 - Finding for the owner: the engine has no pass move (a clue needs at least one guess; only "Clue not allowed" ends a turn with none, and it gives the other team a word). A team out of planned clues therefore ends the board and is counted; asked for "pass with clue 0, no guesses" was not possible.
 - Jev decisions: one per guess; run limit 6000 (SIM_TABLE_RUN_LIMIT).
 
+## 23 October: Secret Words screen lane A tests (lane-a, scenarios v3.7)
+- Written: `tests/browser/secret-words-a-home.spec.ts` (Home, picker, Start new, Join, code entry, QR link, D11 board-phone dialog with privacy checks),
+  `secret-words-a-setup.spec.ts` (S1 to S5, the Clue givers sheet, five sizes, small-line colour), shared `secret-words-a.ts`. Coder's note of ids and roles:
+  `tests/games/secret-words/screens-a.md`. Specs under `specs/secret-words/` are still v3.6 (the other tester updates them); these tests read v3.7 straight from
+  `docs/games/secret-words/scenarios.md`. All 132 tests are marked `aheadOfSecretWordsScreens` except two that already hold (Home menu "History"; no last night on an empty
+  phone). Run as real checks with `PGN_IGNORE_AHEAD=1`. Remove each mark when Playwright says "expected to fail, but passed".
+- The tests have never met a real screen: expect to adjust selectors (not checks) on the first green attempt. Models inside: SWD-004/006/130 team draws (`drawSplit`),
+  saved nights from `secret-words-saved-evenings-v1.json` (`phoneWithNights`, `variant`), codes with the right check symbol (`codeFromValues`).
+- Tambola helpers now accept both old and new wording for "Type the code" / "Type a ticket code" and Home's second-card line (SWD-002, rule 11); strip the old forms after lane A merges.
+- Not tested: SWD-007 "closing it any other way" (undefined), SWD-130 from game 2 (needs a played game), "Add a partner" behaviour (SWD-123, lane B). Open questions: `docs/test-questions.md` (23 October rows).
+
+## Lane A tests, 23 Oct (tester)
+Merged origin/main (PGN_PORT per lane: lane-a 4174). Lane A area: 129 of 132 pass on Android (PGN_IGNORE_AHEAD=1). The 3 failures end on the map phone (lane C): secret-words-a-home.spec.ts lines 323, 358, 418. Four coder questions answered in docs/test-questions.md (all test problems, fixed).
+
+## 23 October: Secret Words 3.7 specs (main) and lane B tests first (lane-b)
+- Specs: `specs/secret-words/` is scenarios 3.7 (db2398d). The split was regenerated from `docs/games/secret-words/scenarios.md`
+  (sections by their `→ specs/...` headings; `### SWD-nnn Title` → `## SWD-nnn: Title` + Status/Phase lines; README = the
+  front matter + Test hooks). Rule tests needed no change for 3.7 (SWD-101/131: the warning stays a hint).
+- Lane B (the turn on the host): `secret-words-shared.spec.ts`, `secret-words-turn.spec.ts`, `secret-words-dialogs.spec.ts`,
+  helpers `secret-words-b.ts`, coder note `specs/secret-words/screens-b.md`. They reach the turn through lane A's setup, so
+  they fail at the picker until lane A is merged and lane-b rebased (done 23 Oct). Six lane B checks in `secret-words-c3.spec.ts` are real
+  checks now (SWD-090, 042 ×2, 033 QR ×2, 129); the other 12 stay `aheadOfSecretWordsScreens` (lanes A, C, D).
+- Never run against a real screen: expect to adjust selectors (not checks) the first time, as with the C3 browser checks.
+
+## Lane B fixes, 23 Oct (tester)
+`pass screen` checks in the SWD-094/098 test wait out the 1 s guard; `toGuessing` waits for `clue-line`. Both questions answered in docs/test-questions.md.
+
 ## 23 October: Secret Words lane D tests first (lane-f)
 - Files: `secret-words-game-over.spec.ts` (G1, D6, New board, Play again, v3.7 bottom bar, D8, G2, D9, SWD-063, 067),
   `secret-words-players-history.spec.ts` (D7/D7a/D7b, E1, E1a), helpers `secret-words-d.ts`, coder note
@@ -70,4 +97,4 @@ Read this and the top of `reports/latest.md` before starting. Keep it short: rep
   `needsLanes(...)` (expected to fail); remove the call when Playwright says "expected to fail, but passed".
 - New area entry in `areas.json` (its own block near the end, so lane A's and B's edits of the Secret Words block merge).
 - Questions of 23 October in docs/test-questions.md (bar gap 8 vs 16 px; SWD-051 Landmine wording; credit order etc.).
-- Round 2 (23 October): lane D marks all removed (they pass on 918c937). lane-f still needs origin/main merged: the merge conflicts in app files (the coder copied main's app in by hand, 48b6629), so the Build side must merge; test-owned files already match main where lane D doesn't change them (secret-words.ts, SWD-093, playwright configs, c3 spec + SWD-025 game-over step).
+- Round 2 (23 October): lane D marks all removed (they pass); SWD-025's 3 marks removed; lane-f has origin/main merged (coder 26c3fcd, tester 24 October) and lane D's area entry is back in `areas.json`.
