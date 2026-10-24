@@ -284,6 +284,8 @@ async function toCodeEntry(page: Page) {
 }
 const codeField = (page: Page) => page.getByLabel("Host's code", { exact: true });
 const openMapButton = (page: Page) => page.getByRole('button', { name: 'Open the map', exact: true });
+/** Opens the map link the way a guest's phone does, as a fresh page load. A hash-only change right after the app opened can beat the app's own link listener; a reload would not help, as the link is used once. */
+const openLinkCold = async (page: Page) => { await page.goto('about:blank'); await page.goto(`./#map=${CODE}&t=${PAIR.id}`); };
 const mapPhoneHeading = (page: Page) => heading(page, 'Secret Words map');
 
 test.describe('SWD-002 / SWD-133: the Join screen', () => {
@@ -413,7 +415,7 @@ test.describe('SWD-002: code entry', () => {
 test.describe('SWD-002: the QR link', () => {
   test('`#map=27P3QX8&t=SWDT-01` opens the map phone directly with the team names, and the hash is removed from the address', async ({ page }) => {
     await boot(page);
-    await page.goto(`./#map=${CODE}&t=${PAIR.id}`);
+    await openLinkCold(page);
     await expect(mapPhoneHeading(page)).toBeVisible();
     await expect(page.getByTestId('map-teams')).toHaveText('Chai Champions (orange) · Coffee Commandos (teal)');
     expect(await page.evaluate(() => location.hash)).toBe('');
@@ -569,11 +571,11 @@ test.describe('SWD-002 (v3.6) D11: opening a map on the board phone', () => {
 
   test('a phone with no unfinished game night never asks (none at all, or the night is ended): the map phone opens at once', async ({ page }) => {
     await boot(page);
-    await page.goto(`./#map=${CODE}&t=${PAIR.id}`);
+    await openLinkCold(page);
     await expect(mapPhoneHeading(page)).toBeVisible();
     await expect(boardDialog(page)).toHaveCount(0);
     await phoneWithNights(page, [ended()], { now: END_AT + H });
-    await page.goto(`./#map=${CODE}&t=${PAIR.id}`);
+    await openLinkCold(page);
     await expect(mapPhoneHeading(page)).toBeVisible();
     await expect(boardDialog(page)).toHaveCount(0);
   });
