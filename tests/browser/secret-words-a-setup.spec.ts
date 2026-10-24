@@ -606,6 +606,8 @@ test.describe('S3 How do you want to play? (SWD-009, SWD-066, SWD-119)', () => {
     await expect(page.getByText('Same as last time', { exact: true })).toHaveCount(0);
     await choose(page, { phones: 'Two phones', board: 'Easy: 16 words', words: '+ Harder words' });
     await mainText(page, 'Start the game').click();
+    await expect(heading(page, 'Read this aloud')).toBeVisible();
+    await waitGuards(page);
     await mainText(page, "Let's play").click();
     await expect.poll(async () => (await savedNights(page)).length).toBe(1);
     await page.goto('./');
