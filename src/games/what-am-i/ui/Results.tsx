@@ -36,12 +36,13 @@ export function RoundOverScreen(p: StepProps) {
         <Scoreboard rows={p.view.scoreboard} />
         {nobody && <p className="wai-body">{nobody}</p>}
         <p className="wai-small">Play as many rounds as you like; tap End the game to see who got the most.</p>
-        <div className="wai-stack">
-          <QuietButton onClick={p.openPlayers}>{`Players (${p.view.order.length}) ›`}</QuietButton>
-          <QuietButton onClick={p.onChangeSetup}>Change players or words</QuietButton>
-          <QuietButton onClick={p.openEndGame}>End the game</QuietButton>
-        </div>
       </ScrollArea>
+      {/* Kept out of the scroll, so "Change players or words" and "End the game" stay on screen (above the toast too). */}
+      <div className="wai-stack wai-stack-pinned">
+        <QuietButton onClick={p.openPlayers}>{`Players (${p.view.order.length}) ›`}</QuietButton>
+        <QuietButton onClick={p.onChangeSetup}>Change players or words</QuietButton>
+        <QuietButton onClick={p.openEndGame}>End the game</QuietButton>
+      </div>
       <Main guardKey={`${p.state.game}:${p.state.round}:R1`} onClick={() => p.setUi({ roundStarted: `${p.state.game}:${p.state.round}` })}>
         {`Round ${done + 1}`}
       </Main>

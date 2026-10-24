@@ -15,7 +15,7 @@ import {
 import type { StepProps, WaiScreen } from './Frame';
 import { platformOf } from './hooks';
 import { turnKey } from './night';
-import { HomeButton, Main, START_GUARD_MS, WaiDialog, useWaiBack } from './parts';
+import { HomeButton, Main, START_GUARD_MS, ToastHost, WaiDialog, useWaiBack } from './parts';
 import { Drawing } from './Setup';
 import {
   askAgainSilently, askMotion, asksFirst, clearSavedToast, gameKey, holdScreenOn, letScreenSleep, motionReady, motionWanted,
@@ -750,11 +750,11 @@ export function SavedToast({ p, screen, hidden }: { p: StepProps; screen: WaiScr
     (screen === 'R1' || (screen === 'T1' && prev.current !== 'R1'));
   if (!on || hidden) return null;
   return (
-    <div className="wai-toast-host">
+    <ToastHost>
       <Toast
         toast={{ id: s.saved.length, text: `${last.player}: ${last.got} saved · Undo`, undo: () => p.act({ type: 'undoScore' }) }}
         onDone={() => clearSavedToast()}
       />
-    </div>
+    </ToastHost>
   );
 }

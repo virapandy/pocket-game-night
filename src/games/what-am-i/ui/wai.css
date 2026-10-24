@@ -101,6 +101,19 @@
 .wai-where { font-weight: 700; }
 .wai-welcome { display: flex; flex-direction: column; gap: 2px; }
 .wai-toast-host { display: contents; }
+/* A toast never covers a button (C1, 25 October): while one shows, the game screen ends 8 px above it, so its content
+   scrolls above the toast. A page screen (T1) grows by the same amount, so scrolled to the end nothing lies under it. */
+.wai:has(.wai-toast-host > .pgn-toast) .pgn-screen.wai-game {
+  padding-bottom: calc(var(--pgn-foot) - 4px + var(--wai-toast-h, 44px) + 8px);
+}
+/* A page screen (T1) scrolls inside a box that ends above the toast while one shows, so no button passes under it. */
+.wai:has(.wai-toast-host > .pgn-toast) .pgn-screen.pgn-page.wai-game {
+  height: calc(100dvh - (var(--pgn-foot) - 4px + var(--wai-toast-h, 44px) + 8px));
+  min-height: 0;
+  overflow-y: auto;
+  padding-bottom: 8px;
+}
+.wai-stack.wai-stack-pinned { margin-top: 0; flex: 0 0 auto; }
 
 /* Dialogs (above sheets) and the Paused cover (the whole screen) */
 .wai-backdrop {

@@ -3,7 +3,7 @@
 // (Version 1.1 item 39), dialogs named by their h1, the where-line, the names list with drag handles (WAI-002, WAI-041)
 // and the scoreboard (WAI-032). The blocks (src/blocks) give the screen, quiet buttons, sheets and the toast bar.
 import {
-  useCallback, useContext, useEffect, useId, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type PointerEvent as ReactPointerEvent,
+  useCallback, useContext, useEffect, useId, useLayoutEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type PointerEvent as ReactPointerEvent,
   type ReactNode,
 } from 'react';
 import { HideMainButton, MainButton, QuietButton, type ToastState } from '../../../blocks';
@@ -402,5 +402,34 @@ export function HomeButton({ onClick }: { onClick: () => void }) {
       {'← Home '}
       <span className="wai-home-note">(game saved)</span>
     </QuietButton>
+  );
+}
+
+// ---------------------------------------------------------------- Toast host (C1, orchestrator 25 October)
+
+/**
+ * Holds a toast bar above the main button and keeps it clear of every button: while a toast shows, the game screen ends
+ * above it (wai.css; the toast's height is `--wai-toast-h` on the What Am I? root), so its content scrolls above the toast, never under it.
+ */
+export function ToastHost({ children }: { children: ReactNode }) {
+  const ref = useRef<HTMLDivElement | null>(null);
+  useLayoutEffect(() => {
+    const host = ref.current;
+    const root = host?.closest<HTMLElement>('.wai');
+    if (!host || !root) return;
+    const set = () => {
+      const t = host.querySelector('.pgn-toast');
+      if (t) root.style.setProperty('--wai-toast-h', `${Math.ceil(t.getBoundingClientRect().height)}px`);
+    };
+    set();
+    const ro = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(set);
+    const t = host.querySelector('.pgn-toast');
+    if (t) ro?.observe(t);
+    return () => ro?.disconnect();
+  });
+  return (
+    <div ref={ref} className="wai-toast-host">
+      {children}
+    </div>
   );
 }

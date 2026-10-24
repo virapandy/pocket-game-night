@@ -14,7 +14,7 @@ import {
 import { PlayersSheet } from './Players';
 import { ChoicesForm, HowToPlay } from './Setup';
 import { WaiSettings } from './Settings';
-import { GameMenu, Main, PauseButton, Scoreboard, WaiDialog, WaiSheet, WhereLine, useWaiBack, useWaiToast, type MenuEntry } from './parts';
+import { GameMenu, Main, PauseButton, Scoreboard, ToastHost, WaiDialog, WaiSheet, WhereLine, useWaiBack, useWaiToast, type MenuEntry } from './parts';
 import { GameOverScreen, PassScreen, RoundOverScreen, SummaryScreen, TurnScreen, TurnEndScreen } from './Screens';
 import { SavedToast } from './Turn';
 import { clearSavedToast } from './turnPhone';
@@ -362,9 +362,9 @@ export function WhatAmIGame({
 
 function FrameToast({ toast, onDone }: { toast: ToastState | null; onDone: () => void }) {
   return (
-    <div className="wai-toast-host">
+    <ToastHost>
       <Toast toast={toast} onDone={onDone} />
-    </div>
+    </ToastHost>
   );
 }
 
