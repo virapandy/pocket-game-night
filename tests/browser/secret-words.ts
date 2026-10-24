@@ -76,7 +76,7 @@ export async function hostEvening(page: Page, o: HostOptions) {
   await waitGuards(page);
 }
 
-export const scanHeading = (page: Page) => page.getByRole('heading', { name: 'Clue givers: scan to get the secret map' });
+export const scanHeading = (page: Page) => page.getByRole('heading', { name: 'Clue givers: scan this to see the secret map' });
 export const boardCells = (page: Page) => page.getByTestId('word-board').getByTestId('board-cell');
 export const mapCells = (page: Page) => page.getByTestId('map-grid').getByTestId('map-cell');
 export const menuButton = (page: Page) => page.getByRole('button', { name: /Menu/ });
@@ -121,11 +121,11 @@ export async function giveClue(page: Page, n: number | 'inf') {
   await tapMain(page, n === 'inf' ? /^Clue for ∞: start guessing$/ : new RegExp(`^Clue for ${n}: start guessing$`));
 }
 
-/** While guessing: picks a cell, taps "<picker>: Reveal <WORD>", and runs the clock past the 300 ms turn. */
+/** While guessing: picks a cell, taps "Reveal <WORD>", and runs the clock past the 300 ms turn. */
 export async function revealCell(page: Page, index: number) {
   await waitGuards(page);
   await page.locator(`[data-testid="board-cell"][data-index="${index}"]`).click();
-  await tapMain(page, /: Reveal /);
+  await tapMain(page, /^Reveal /);
   await page.clock.runFor(400);
 }
 

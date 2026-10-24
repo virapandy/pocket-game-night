@@ -16,6 +16,7 @@ is released (re-acquired on "Carry on" where the step holds it); a running timer
 (SWD-048).
 **Version 3.6 (owner, 22 October):** `pause-button` (icon button, accessible name "Pause", 44 × 44, our own SVG) on the preview, the scan screen, the pass screen, the clue screen, guessing, the end-turn line and turn over; placement SWD-041 (board screens) and directly left of "··· Menu" elsewhere; a tap does what the menu's "Pause" does. Not on the private map. **Menu groups:** play (Earlier clues · Start 90-second timer / Stop timer · Clue not allowed? · Change clue (568 × 320) · Flip the board (every board screen at 568 × 320) · Someone else taps Reveal · Players · Show the map to a clue giver · Show the map code again) · fix (New board) · leave (Pause · Home (keep this game) · End the game · End for tonight) · more (How to play · Settings · History); a 1 px `--border` rule (`role="separator"`) between groups that have items. **`where-line`** (small line, at most 2 lines, names never shortened) is shown under "Welcome back.", on the Pause cover under "Paused", and in Home's row and the resume card (SWD-115), for the step the game is on: preview "Before game 2"; scan screen "Scan the map, game 2"; pass screen, private map and clue screen "Turn 4 · clue for Chai Champions"; guessing "Chai Champions guessing · 3 guesses left" (the full allowance before the first reveal, then what is left; "1 guess left"; clue 0 or ∞ "Chai Champions guessing · as many as you like"); end-turn line "Turn 4 · Chai Champions ended their turn"; turn over "Turn 4 over · Coffee Commandos next"; game over "Game over, game 2"; summary "Game night over". Setup steps are never resumed (the evening starts at its first deal), so they have none.
 **Version 3.7 (owner, 23 October):** **Menu order (P2):** "Pause" is always the first item of every game menu that has it (before the play group). "New board" is its own group, always directly above the leave group, so it is always in the same place counted from the bottom. The menu sheet scrolls inside with its "Done" pinned at the bottom; while more items are below the fold, a 24 px fade shows at the list's bottom edge. Group order otherwise as 3.6.
+**Version 3.9 (product owner, 24 October; for 1.4.1):** **Home from Pause:** the Pause cover gains quiet "← Home (keep this game)" under "Carry on"; it does what the menu item does (SWD-111). Stop and home are now one tap from any game step that has Pause.
 
 ## SWD-111: Home during a game (E1, W2)
 Status: approved, owner, 2026-10-23 (version 3.7)
@@ -165,6 +166,7 @@ Reveal." Anyone may still tap; the name is a social cue, never enforced.
 
 A renamed picker's new name shows at once; a removed picker stays this turn's picker (the name still shows) until the turn
 ends; "Someone else taps Reveal" lists only current players.
+**Version 3.9 (product owner, 24 October; for 1.4.1):** **Who taps Reveal:** the main button reads "Reveal" (disabled) / "Reveal KITE", without the picker's name; the picker is named in `turn-line` instead: "Chai Champions guessing · Sunita taps Reveal" (the poker line still shows first for 3 s). The first-guess tip becomes "Tap a word to suggest it. Sunita taps Reveal this turn; it moves round each turn." The picker rule (K38) is unchanged; only where the name shows moves, because players read a name on the button as "only Sunita may tap".
 ## SWD-123: Pairs of clue givers (B2, K39, C3)
 Status: approved, owner, 2026-10-23 (version 3.7)
 Phase: Secret Words 1
@@ -268,6 +270,7 @@ Landmine count, no ranking of clue givers.
 
 A game in progress when "End for tonight" was tapped counts as ended early in `summary-line` (players, games, words found)
 and `clue-credit`, although it is recorded only when the summary is left.
+**Version 3.9 (product owner, 24 October; for 1.4.1):** **The night's result:** the summary's first line under the heading is `night-result` "Chai Champions won the night, 3–2" (more won games; orange first on the score), "A draw tonight, 2–2" on equal wins, and absent when no game was won. `summary-line` and the tally follow as before.
 ## SWD-129: Map code again (E9)
 Status: approved, owner, 2026-10-23 (version 3.7)
 Phase: Secret Words 1

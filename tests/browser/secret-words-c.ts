@@ -139,7 +139,7 @@ export async function mapInPage(page: Page): Promise<string[]> {
       if (/, (orange team|teal team|blank word|nobody's word|the Landmine)\b/.test(l)) found.push(`accessible name "${l}"`);
     }
     const html = document.documentElement.outerHTML.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '');
-    for (const t of ['Orange words (', 'Teal words (', 'Never guess:']) if (html.includes(t)) found.push(`text "${t}"`);
+    for (const t of ['Orange words (', 'Teal words (', 'never guess:']) if (html.includes(t)) found.push(`text "${t}"`);
     return found;
   });
 }

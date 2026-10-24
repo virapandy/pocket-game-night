@@ -310,7 +310,7 @@
       "name": "Secret Words: rules, screens, saved evenings, word list (every Secret Words browser file)",
       "lane": "shared",
       "paths": ["src/games/secret-words/**", "content/secret-words/**", "docs/games/secret-words/words.csv", "tests/browser/secret-words.ts", "tests/browser/secret-words-c.ts", "tests/browser/secret-words-a.ts", "tests/browser/secret-words-b.ts", "tests/browser/secret-words-*.spec.ts", "tests/games/secret-words/oracle.ts", "tests/browser/impostor.ts"],
-      "specs": ["secret-words-c3.spec.ts", "secret-words-a-home.spec.ts", "secret-words-a-setup.spec.ts", "secret-words-shared.spec.ts", "secret-words-turn.spec.ts", "secret-words-dialogs.spec.ts", "secret-words-c-map.spec.ts"]
+      "specs": ["secret-words-c3.spec.ts", "secret-words-a-home.spec.ts", "secret-words-a-setup.spec.ts", "secret-words-shared.spec.ts", "secret-words-turn.spec.ts", "secret-words-dialogs.spec.ts", "secret-words-v39.spec.ts", "secret-words-c-map.spec.ts"]
     },
     {
       "name": "Build, dependencies and test set-up: everything",

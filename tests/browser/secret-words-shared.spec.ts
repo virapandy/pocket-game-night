@@ -131,7 +131,7 @@ test.describe('SWD-092: narrow portrait (320 × 568)', () => {
     await expect(byId(page, 'turn-sideways')).toHaveText('Turn your phone sideways to see the board.');
     await expect(byId(page, 'turn-sideways-hint')).toHaveText('Or choose the Easy board for the next game.');
     await expect(boardCells(page)).toHaveCount(0);
-    await expect(mainButton(page)).toHaveText(/: Reveal$/);
+    await expect(mainButton(page)).toHaveText(/^Reveal$/);
     await expect(mainButton(page)).toBeDisabled();
     // Turning to landscape shows the grid.
     await page.setViewportSize({ width: 568, height: 320 });
@@ -285,14 +285,15 @@ async function expectPauseBeside(page: Page, where: string) {
 
 test.describe('SWD-110 (v3.6): pause-button', () => {
   test.use({ viewport: { width: 390, height: 844 } });
-  test('one phone: on the preview, pass, clue, guessing, end-turn line and turn over, left of "··· Menu"; not on the private map; a tap opens the Pause cover', async ({ page }) => {
+  test('one phone: on the preview, pass, clue, guessing, end-turn line and turn over, left of "··· Menu"; on the private map too, at the top left of its heading row (SWD-031 v3.9); a tap opens the Pause cover', async ({ page }) => {
     await host(page, { phones: 'One phone', boards: [CODE], seed: 'pause-btn', preview: true });
     await expectPauseBeside(page, 'preview');
     await tapMain(page, /^Start$/);
     await expectPauseBeside(page, 'pass screen');
     await tapMain(page, /^I'm /);
     await expect(holdPad(page)).toBeVisible();
-    await expect(pauseButton(page), 'private map: no pause-button').toHaveCount(0);
+    await expect(pauseButton(page), 'private map: pause-button (v3.9)').toBeVisible();
+    await expect(menuButton(page), 'private map: still no menu').toHaveCount(0);
     await waitGuards(page);
     await holdPad(page).click();
     await tapMain(page, /^I have my clue$/);
@@ -422,7 +423,7 @@ test.describe('SWD-114: taps right after a screen appears', () => {
     await expect(holdPad(page)).toBeVisible();
   });
 
-  test('a main disabled for another reason ("Pick a number", "<picker>: Reveal" with no pick) keeps its label and never has data-guard', async ({ page }) => {
+  test('a main disabled for another reason ("Pick a number", "Reveal" with no pick) keeps its label and never has data-guard', async ({ page }) => {
     await host(page, { phones: 'One phone', boards: [CODE], seed: 'guard-other' });
     await passToClue(page);
     await waitGuards(page);
@@ -433,7 +434,7 @@ test.describe('SWD-114: taps right after a screen appears', () => {
     await page.getByTestId('clue-key').filter({ hasText: /^2$/ }).click();
     await tapMain(page, /^Clue for 2: start guessing$/);
     await waitGuards(page);
-    await expect(mainButton(page)).toHaveText(/: Reveal$/);
+    await expect(mainButton(page)).toHaveText(/^Reveal$/);
     await expect(mainButton(page)).toBeDisabled();
     expect((await guardState(mainButton(page))).guard).toBeNull();
     expect((await guardState(mainButton(page))).opacity, 'a real reason still looks greyed').toBeLessThan(1);
@@ -444,7 +445,7 @@ test.describe('SWD-114: taps right after a screen appears', () => {
     await waitGuards(page);
     await freezeClock(page);
     await cellAt(page, indexesOf(B, 'nobody')[0]!).click();
-    await mainButton(page).filter({ hasText: /: Reveal / }).click(); // t = 0
+    await mainButton(page).filter({ hasText: /^Reveal / }).click(); // t = 0
     await page.clock.runFor(300 + 1450);
     const next = mainButton(page).filter({ hasText: /^Other team's turn$/ });
     expectLooksLive(await guardState(next), 'at t = 1 750 ms');

@@ -204,7 +204,7 @@ test.describe('SWD-042 (v3.6): tap to zoom', () => {
     await expect(page.getByTestId('word-zoom')).toHaveCount(0);
     await cell(own[0]!).click();
     await expectZoomOver(page, own[0]!, b.words[own[0]!]!);
-    await tapMain(page, /: Reveal /);
+    await tapMain(page, /^Reveal /);
     await page.clock.runFor(400);
     await expect(page.getByTestId('word-zoom')).toHaveCount(0);
   });
@@ -220,7 +220,7 @@ test.describe('SWD-042 (v3.6): tap to zoom', () => {
     const cell = (i: number) => page.locator(`[data-testid="word-board"] [data-index="${i}"]`);
     await cell(own[0]!).click();
     await expectZoomOver(page, own[0]!, b.words[own[0]!]!);
-    await expect(mainButton(page).filter({ hasText: /: Reveal$/ }), 'the tap picks nothing').toBeDisabled();
+    await expect(mainButton(page).filter({ hasText: /^Reveal$/ }), 'the tap picks nothing').toBeDisabled();
     await page.clock.runFor(1000);
     await cell(own[1]!).click(); // within 2 000 ms: moves the zoom
     await expectZoomOver(page, own[1]!, b.words[own[1]!]!);

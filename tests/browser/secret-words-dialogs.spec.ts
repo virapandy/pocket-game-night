@@ -179,12 +179,12 @@ test.describe('SWD-110: Pause', () => {
     await expect(byId(page, 'clue-line')).toHaveText('Clue: 2');
   });
 
-  test('no Pause at game over or on the private map (its own exits)', async ({ page }) => {
+  test('no Pause at game over; the private map has the pause-button but still no menu (SWD-031 v3.9)', async ({ page }) => {
     await host(page, { phones: 'One phone', boards: [CODE], seed: 'pause-none' });
     await tapMain(page, /^I'm /);
     await expect(holdPad(page)).toBeVisible();
     await expect(menuButton(page)).toHaveCount(0);
-    await expect(byId(page, 'pause-button')).toHaveCount(0);
+    await expect(byId(page, 'pause-button')).toBeVisible();
   });
 });
 
@@ -255,18 +255,18 @@ test.describe('SWD-055 / SWD-116: New board', () => {
   test.use({ viewport: { width: 390, height: 844 } });
   const newBoardDialog = (page: Page) => page.getByRole('dialog', { name: /^New board\?/ });
 
-  test('the dialog "New board? New words, same teams, fresh start. …" with "New board" / main "Keep playing"; "Keep playing" returns as it was', async ({ page }) => {
+  test('the dialog "New board? Fresh words, same teams. …" with "New board" / main "Keep playing"; "Keep playing" returns as it was', async ({ page }) => {
     await toGuessing(page, { phones: 'One phone', code: CODE, seed: 'nb-keep', n: 2 });
     await openMenuItem(page, 'New board');
     const d = newBoardDialog(page);
-    await expect(d).toContainText('New board? New words, same teams, fresh start. For when someone saw the map or the words are too hard. This board won\'t count.');
+    await expect(d).toContainText('New board? Fresh words, same teams. Use it if someone saw the map or the words are too hard. This board won\'t count.');
     await tapMain(page, /^Keep playing$/);
     await expect(d).toHaveCount(0);
     await expect(byId(page, 'clue-line')).toHaveText('Clue: 2');
     expect(await moveTypes(page)).not.toContain('dealNew');
   });
 
-  test('two phones, the next deal of the same deck, clue givers unchanged: the scan screen with "Tap Next map on the map phone and check it starts with: …"; turn numbers restart; the timer stops; no tips again', async ({ page }) => {
+  test('two phones, the next deal of the same deck, clue givers unchanged: the scan screen with "On the map phone, tap Next map. Its first words should be: …"; turn numbers restart; the timer stops; no tips again', async ({ page }) => {
     const next = fullCode(9001, 3);
     const nb = oracleBoard(next);
     await host(page, { phones: 'Two phones', boards: [CODE, next], seed: 'nb-same' });
@@ -280,8 +280,8 @@ test.describe('SWD-055 / SWD-116: New board', () => {
     await expect(scanHeading(page)).toBeVisible();
     await expect(byId(page, 'hurry-timer')).toHaveCount(0);
     await expect(byId(page, 'map-code-text')).toContainText(shown(next));
-    await expect(byId(page, 'board-check')).toHaveText(`Tap Next map on the map phone and check it starts with: ${nb.words.slice(0, 3).join(' · ')}`);
-    await expect(byId(page, 'mismatch-line')).toHaveText('Doesn\'t match? Scan this code again.');
+    await expect(byId(page, 'board-check')).toHaveText(`On the map phone, tap Next map. Its first words should be: ${nb.words.slice(0, 3).join(' · ')}`);
+    await expect(byId(page, 'mismatch-line')).toHaveText('First words different? Scan this code again.');
     await expect(byId(page, 'dnd-tip')).toHaveCount(0);
     expect((await moves(page)).at(-1)).toEqual({ type: 'dealNew', code: next });
     await waitGuards(page);
@@ -294,14 +294,14 @@ test.describe('SWD-055 / SWD-116: New board', () => {
     await expect(turnHeading(page)).toHaveText(`${(await teamsOf(page)).names[nb.starts]}, your turn`);
   });
 
-  test('three phones, a new deck: "New code: scan again. The map phones should start with: …"', async ({ page }) => {
+  test(`three phones, a new deck: "New code: scan it again. The map phones' first words should be: …"`, async ({ page }) => {
     const next = fullCode(123_457, 0);
     const nb = oracleBoard(next);
     await host(page, { phones: 'Three phones', boards: [CODE, next], seed: 'nb-deck' });
     await openMenuItem(page, 'New board');
     await waitGuards(page);
     await newBoardDialog(page).getByRole('button', { name: 'New board', exact: true }).click();
-    await expect(byId(page, 'board-check')).toHaveText(`New code: scan again. The map phones should start with: ${nb.words.slice(0, 3).join(' · ')}`);
+    await expect(byId(page, 'board-check')).toHaveText(`New code: scan it again. The map phones' first words should be: ${nb.words.slice(0, 3).join(' · ')}`);
   });
 
   test('one phone: the new starting team\'s pass screen; the recap restarts', async ({ page }) => {
@@ -434,7 +434,8 @@ test.describe('SWD-048: reload during play', () => {
     await page.reload();
     await expect(resultLine(page)).toHaveText(line);
     await expect(cellAt(page, ownOf(B.starts)[1]!)).toHaveAttribute('aria-pressed', 'false');
-    await expect(mainButton(page)).toHaveText(`${g[1]}: Reveal`);
+    await expect(mainButton(page)).toHaveText('Reveal');
+    await expect(page.getByTestId('turn-line')).toContainText(`${g[1]} taps Reveal`); // SWD-122 v3.9: the picker is named in the turn-line
     expect((await uiState(page))?.pickerOverride).toBe(g[1]);
   });
 
@@ -462,13 +463,13 @@ test.describe('SWD-048: reload during play', () => {
 
 test.describe('SWD-049: double taps', () => {
   test.use({ viewport: { width: 390, height: 844 } });
-  test('two taps on "<picker>: Reveal <Word>" 50 ms apart record one reveal; picks follow the last tap', async ({ page }) => {
+  test('two taps on "Reveal <Word>" 50 ms apart record one reveal; picks follow the last tap', async ({ page }) => {
     await toGuessing(page, { phones: 'One phone', code: CODE, seed: 'double', n: 'inf' });
     const [a, b] = ownOf(B.starts);
     await waitGuards(page);
     await cellAt(page, a!).click();
     await cellAt(page, b!).click();
-    await expect(mainButton(page)).toHaveText(new RegExp(`: Reveal ${B.words[b!]}$`));
+    await expect(mainButton(page)).toHaveText(new RegExp(`^Reveal ${B.words[b!]}$`));
     await freezeClock(page);
     await mainButton(page).click();
     await page.clock.runFor(50);
@@ -535,7 +536,7 @@ test.describe('SWD-129 / SWD-116: Show the map code again', () => {
       await expect(scanHeading(page)).toBeVisible();
       await expect(byId(page, 'map-code-text')).toContainText(shown(CODE));
       await expect(byId(page, 'board-check'), where).toHaveText(`The map phones should start with: ${B.words.slice(0, 3).join(' · ')}`);
-      await expect(byId(page, 'mismatch-line')).toHaveText('Doesn\'t match? Scan this code again.');
+      await expect(byId(page, 'mismatch-line')).toHaveText('First words different? Scan this code again.');
       await expect(byId(page, 'dnd-tip')).toHaveCount(0);
       await expect(menuButton(page)).toHaveCount(0);
       await tapMain(page, /^Back to the game$/);

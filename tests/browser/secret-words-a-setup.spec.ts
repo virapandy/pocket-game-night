@@ -432,8 +432,8 @@ const PHONES = [
 ] as const;
 const phoneCard = (page: Page, title: string) => page.getByRole('button', { name: title, exact: true });
 const LINE = {
-  full: '9 and 8 words to find, 7 blank, 1 Landmine.', easy: '6 and 5 words to find, 5 blank, no Landmine.',
-  lose: 'Step on it and your team loses.', turn: 'Step on it and your turn ends; the other team gets one word free.',
+  full: 'Each team finds 9 or 8 words. 7 belong to nobody, and 1 is the Landmine.', easy: 'Each team finds 6 or 5 words. 5 belong to nobody. No Landmine.',
+  lose: 'Guess the Landmine and your team loses.', turn: 'Guess the Landmine and your turn ends; the other team gets a free word.',
   family: 'Words kids and grandparents know.', harder: 'Adds words kids or elders may not know.',
 };
 

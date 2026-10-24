@@ -267,7 +267,7 @@ test.describe('SWD-115 / SWD-067: "Start a new game night?"', () => {
 
 // ---------------------------------------------------------------- J1 Join, J2 code entry
 
-const SW_LINE = "Secret Words clue givers: scan the host's code to get your secret map.";
+const SW_LINE = "Giving clues in Secret Words? Scan the host's code to see your secret map.";
 const IMP_LINE = "Playing Impostor? It's all on the host's phone. Nothing to join, just play along!";
 
 async function toJoin(page: Page) {
@@ -289,7 +289,7 @@ const openLinkCold = async (page: Page) => { await page.goto('about:blank'); awa
 const mapPhoneHeading = (page: Page) => heading(page, 'Secret Words map');
 
 test.describe('SWD-002 / SWD-133: the Join screen', () => {
-  test('headed "Join a game": the scanner "Scan a ticket or secret map", "Type a ticket code", Impostor\'s line, Secret Words\' line, then quiet "Type the host\'s code", in that order', async ({ page }) => {
+  test('headed "Join a game": the scanner "Scan a ticket or a secret map", "Type a ticket code", Impostor\'s line, Secret Words\' line, then quiet "Type the host\'s code", in that order', async ({ page }) => {
     await boot(page);
     await toJoin(page);
     const order = await page.evaluate(([scan, ticket, imp, sw, host]) => {
@@ -300,10 +300,10 @@ test.describe('SWD-002 / SWD-133: the Join screen', () => {
       };
       const label = (t: string) => where((el) => el.getAttribute('aria-label') === t || (el.children.length === 0 && el.textContent?.trim() === t));
       return [label(scan!), label(ticket!), label(imp!), label(sw!), label(host!)];
-    }, ['Scan a ticket or secret map', 'Type a ticket code', IMP_LINE, SW_LINE, "Type the host's code"]);
+    }, ['Scan a ticket or a secret map', 'Type a ticket code', IMP_LINE, SW_LINE, "Type the host's code"]);
     expect(order.every((y) => !Number.isNaN(y)), `all five parts are on the screen (${JSON.stringify(order)})`).toBe(true);
     expect([...order].sort((a, b) => a - b), 'in this order').toEqual(order);
-    await expect(page.getByText('Scan a ticket or secret map').first()).toBeVisible();
+    await expect(page.getByText('Scan a ticket or a secret map').first()).toBeVisible();
     await expect(quiet(page, 'Type a ticket code')).toBeVisible();
     await expect(page.getByText(IMP_LINE, { exact: true })).toBeVisible();
     await expect(page.getByText(SW_LINE, { exact: true })).toBeVisible();
@@ -444,7 +444,7 @@ test.describe('SWD-002: the QR link', () => {
 
 // ---------------------------------------------------------------- D11 "This phone is the board" (privacy: tested first)
 
-const BOARD_PARAGRAPH_MANY = "Clue givers use their own phone. To show the map on this phone, use Show the map to a clue giver in the game's menu.";
+const BOARD_PARAGRAPH_MANY = "Clue givers should use their own phones. To show the map here instead, use the menu: Show the map to a clue giver.";
 const BOARD_PARAGRAPH_ONE = 'Clue givers use their own phone. With one phone, pass this phone to the clue giver when the game says so.';
 const boardDialog = (page: Page) => page.getByTestId('board-phone-dialog');
 const SAVED_MAP = { code: CODE, savedAt: NOW - 60_000, found: [], t: PAIR.id };
@@ -494,12 +494,12 @@ test.describe('SWD-002 (v3.6) D11: opening a map on the board phone', () => {
         await expect(page.getByTestId(id), `${id} is not in the page`).toHaveCount(0);
       }
       const html = await page.evaluate(() => document.documentElement.outerHTML.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, ''));
-      for (const t of ['Orange words', 'Teal words', 'Never guess', "Orange team's words", "Teal team's words", 'Whole map']) {
+      for (const t of ['Orange words', 'Teal words', 'never guess', "Orange team's words", "Teal team's words", 'Whole map']) {
         expect(html, `"${t}" must not be in the page`).not.toContain(t);
       }
       const b = oracleBoard(CODE);
       const landmineWord = b.words[b.kinds.indexOf('landmine')]!;
-      expect(html, 'the Landmine word is not named as the Landmine').not.toContain(`Never guess: ${landmineWord}`);
+      expect(html, 'the Landmine word is not named as the Landmine').not.toContain(`Landmine, never guess: ${landmineWord}`);
     });
   }
 

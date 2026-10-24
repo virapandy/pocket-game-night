@@ -22,9 +22,9 @@ test.use({ viewport: { width: 390, height: 844 } });
 
 const B = oracleBoard(CODE);
 const STARTER = B.starts === 'orange' ? PAIR.orange : PAIR.teal;
-const SMALL_LINE = "Tap a word when it's found to fade it (optional). The host's board is what counts.";
-const END_LINE = 'Game over: tap Done with this game. New board on the host: tap Next map.';
-const MISMATCH = "Doesn't match? Scan the host's code again.";
+const SMALL_LINE = "Tap a word once it's been guessed, to fade it (optional). The board on the host's phone is what counts.";
+const END_LINE = 'When the game ends, tap Done with this game. If the host starts a new board, tap Next map.';
+const MISMATCH = "First words different? Scan the host's code again.";
 const WARNING = 'Still looking? Tap to keep the map';
 const idx = (b: typeof B, k: string) => b.kinds.map((x, i) => (x === k ? i : -1)).filter((i) => i >= 0);
 /** Lets Date.now() run on again after `freshPhone({ fixed: true })` (Playwright's setFixedTime), from the same time. */
@@ -195,22 +195,43 @@ test.describe('SWD-121: the map phone hides the map after 60 seconds', () => {
     expect(await boardWordsInPage(page, B.words, B.words.slice(0, 3)), 'no board word left anywhere in the page but the first words').toEqual([]);
   });
 
-  test('"Next map" shows the map even when hidden, and starts the clock again', async ({ page }) => {
+  test('SWD-039 (v3.9): "Next map" opens the new map hidden, whether the old one was shown or hidden: no map and no board word in the page but the first words, "Show map" visible; "Show map" starts the clock', async ({ page }) => {
     const code = fullCode(4242, 3);
+    const nb = oracleBoard(nextCode(code)!);
+    await openMapPhone(page, { code, t: PAIR.id, frozen: true });
+    await expect(mapCells(page), 'the map starts shown').toHaveCount(25);
+    await page.clock.runFor(1_000);
+    await button(page, 'Next map').click();
+    await page.clock.runFor(1_000);
+    await dialogNamed(page, 'Has the host started the next game? Then tap Next map.').getByRole('button', { name: 'Next map', exact: true }).click();
+    await expect(mapCells(page), 'shown before, hidden after Next map').toHaveCount(0);
+    await expect(showMap(page)).toBeVisible();
+    expect(await mapInPage(page)).toEqual([]);
+    expect(await boardWordsInPage(page, nb.words, nb.words.slice(0, 3)), 'no board word in the page but the first words').toEqual([]);
+    await page.clock.runFor(61_000);
+    await expect(mapCells(page), 'a hidden map stays hidden').toHaveCount(0);
+    await showMap(page).click();
+    await expect(mapCells(page)).toHaveCount(25);
+    expect((await mapCellsOf(page)).map((c) => c.word)).toEqual(nb.words);
+    await page.clock.runFor(59_500);
+    await expect(mapCells(page)).toHaveCount(25);
+    await page.clock.runFor(600);
+    expect(await mapInPage(page)).toEqual([]);
+    await expect(showMap(page)).toBeVisible();
+  });
+
+  test('SWD-039 (v3.9): the same when the old map was already hidden', async ({ page }) => {
+    const code = fullCode(4243, 3);
     await openMapPhone(page, { code, t: PAIR.id, frozen: true });
     await page.clock.runFor(60_200);
     await expect(showMap(page)).toBeVisible();
     await page.clock.runFor(1_000);
     await button(page, 'Next map').click();
     await page.clock.runFor(1_000);
-    await dialogNamed(page, 'Next map? Only after the host starts the next game.').getByRole('button', { name: 'Next map', exact: true }).click();
-    await expect(mapCells(page)).toHaveCount(25);
-    expect((await mapCellsOf(page)).map((c) => c.word)).toEqual(oracleBoard(nextCode(code)!).words);
-    await page.clock.runFor(59_500);
-    await expect(mapCells(page)).toHaveCount(25);
-    await page.clock.runFor(600);
+    await dialogNamed(page, 'Has the host started the next game? Then tap Next map.').getByRole('button', { name: 'Next map', exact: true }).click();
+    await expect(mapCells(page)).toHaveCount(0);
+    await expect(showMap(page)).toBeVisible();
     expect(await mapInPage(page)).toEqual([]);
-    expect(await boardWordsInPage(page, oracleBoard(nextCode(code)!).words, oracleBoard(nextCode(code)!).words.slice(0, 3)), 'no board word left anywhere in the page but the first words').toEqual([]);
   });
 });
 
@@ -556,7 +577,7 @@ test.describe('SWD-117: team names on the map phone', () => {
     await waitGuards(page);
     await button(page, 'Next map').click();
     await waitGuards(page);
-    await dialogNamed(page, 'Next map? Only after the host starts the next game.').getByRole('button', { name: 'Next map', exact: true }).click();
+    await dialogNamed(page, 'Has the host started the next game? Then tap Next map.').getByRole('button', { name: 'Next map', exact: true }).click();
     await expect(page.getByTestId('map-teams')).toHaveText(`${PAIR.orange} (orange) · ${PAIR.teal} (teal)`);
     await expect(page.getByTestId('map-code-line')).toHaveText(`Host's code ${shown(next)} · ${nb.starts === 'orange' ? PAIR.orange : PAIR.teal} go first`);
     expect(await savedMap(page)).toMatchObject({ t: PAIR.id });
@@ -574,7 +595,7 @@ test.describe('SWD-117: team names on the map phone', () => {
 
 test.describe('SWD-120: the lists', () => {
   for (const team of ['orange', 'teal'] as const) {
-    test(`"${team === 'orange' ? 'Orange' : 'Teal'} team's words": map-list replaces the grid: h2 "${team === 'orange' ? 'Orange' : 'Teal'} words (N)", the words as li in cell order at 24 px, then "Never guess: <WORD> (the Landmine)"; the button is pressed; "Whole map" returns the grid`, async ({ page }) => {
+    test(`"${team === 'orange' ? 'Orange' : 'Teal'} team's words": map-list replaces the grid: h2 "${team === 'orange' ? 'Orange' : 'Teal'} words (N)", the words as li in cell order at 24 px, then "Landmine, never guess: <WORD> (the Landmine)"; the button is pressed; "Whole map" returns the grid`, async ({ page }) => {
       await openMapPhone(page, { t: PAIR.id });
       const words = idx(B, team).map((i) => B.words[i]!);
       await listButton(page, team).click();
@@ -584,7 +605,7 @@ test.describe('SWD-120: the lists', () => {
       await expect(list.getByRole('heading', { level: 2 })).toHaveText(`${team === 'orange' ? 'Orange' : 'Teal'} words (${words.length})`);
       await expect(list.getByRole('listitem')).toHaveText(words);
       expect((await textMetrics(list.getByRole('listitem').first())).size).toBe(24);
-      await expect(page.getByTestId('avoid-line')).toHaveText(`Never guess: ${landmineWord(B)} (the Landmine)`);
+      await expect(page.getByTestId('avoid-line')).toHaveText(`Landmine, never guess: ${landmineWord(B)}`);
       expect(await page.getByTestId('avoid-line').locator('svg').count(), 'the landmine icon').toBeGreaterThanOrEqual(1);
       await expect(listButton(page, team)).toHaveAttribute('aria-pressed', 'true');
       await expect(listButton(page, 'whole')).toHaveAttribute('aria-pressed', 'false');
@@ -775,11 +796,11 @@ test.describe('SWD-036: clearing and replacing maps', () => {
 // =============================================================== SWD-039: Next map (M3)
 
 test.describe('SWD-039: Next map', () => {
-  test('asks "Next map? Only after the host starts the next game." (quiet "Next map", main "Not yet"); "Not yet" changes nothing', async ({ page }) => {
+  test('asks "Has the host started the next game? Then tap Next map." (quiet "Next map", main "Not yet"); "Not yet" changes nothing', async ({ page }) => {
     await openMapPhone(page, { t: PAIR.id });
     await waitGuards(page);
     await button(page, 'Next map').click();
-    const d = dialogNamed(page, 'Next map? Only after the host starts the next game.');
+    const d = dialogNamed(page, 'Has the host started the next game? Then tap Next map.');
     await expect(d).toBeVisible();
     await expect(d.getByRole('button', { name: 'Next map', exact: true })).toBeVisible();
     await expect(d.getByTestId('main-button')).toHaveText('Not yet');
@@ -790,7 +811,7 @@ test.describe('SWD-039: Next map', () => {
     expect((await mapCellsOf(page)).map((c) => c.word)).toEqual(B.words);
   });
 
-  test('"Next map" opens the next deal of the deck: its board, the toast "Next map. It should start with: A · B · C.", found cleared, savedAt now, t kept', async ({ page }) => {
+  test(`"Next map" opens the next deal of the deck: its board (hidden until "Show map"), the toast "Next map. Tap Show map when you're ready. Its first words should be: A · B · C.", found cleared, savedAt now, t kept`, async ({ page }) => {
     const code = fullCode(123_456, 5);
     const next = nextCode(code)!;
     const nb = oracleBoard(next);
@@ -801,8 +822,11 @@ test.describe('SWD-039: Next map', () => {
     await waitGuards(page);
     await button(page, 'Next map').click();
     await waitGuards(page);
-    await dialogNamed(page, 'Next map? Only after the host starts the next game.').getByRole('button', { name: 'Next map', exact: true }).click();
-    await expect(toast(page)).toHaveText(`Next map. It should start with: ${nb.words.slice(0, 3).join(' · ')}.`);
+    await dialogNamed(page, 'Has the host started the next game? Then tap Next map.').getByRole('button', { name: 'Next map', exact: true }).click();
+    await expect(toast(page)).toHaveText(`Next map. Tap Show map when you're ready. Its first words should be: ${nb.words.slice(0, 3).join(' · ')}.`);
+    await expect(mapCells(page), 'v3.9: the new map opens hidden').toHaveCount(0);
+    await waitGuards(page);
+    await showMap(page).click();
     const cells = await mapCellsOf(page);
     expect(cells.map((c) => c.word)).toEqual(nb.words);
     expect(cells.map((c) => c.kind)).toEqual(nb.kinds);
@@ -823,8 +847,8 @@ test.describe('SWD-039: Next map', () => {
     await waitGuards(page);
     await button(page, 'Next map').click();
     await waitGuards(page);
-    await dialogNamed(page, 'Next map? Only after the host starts the next game.').getByRole('button', { name: 'Next map', exact: true }).click();
-    await expect(toast(page)).toHaveText("No more maps from this code. Scan the host's new code.");
+    await dialogNamed(page, 'Has the host started the next game? Then tap Next map.').getByRole('button', { name: 'Next map', exact: true }).click();
+    await expect(toast(page)).toHaveText("This code has no more maps. Scan the host's new code.");
     const s = await savedMap(page);
     expect(bare(s.code)).toBe(last);
     expect(s.found).toEqual([2]);
@@ -838,7 +862,7 @@ test.describe('SWD-039: Next map', () => {
     await page.clock.runFor(2_000);
     await button(page, 'Next map').click();
     await page.clock.runFor(600);
-    const d = dialogNamed(page, 'Next map? Only after the host starts the next game.');
+    const d = dialogNamed(page, 'Has the host started the next game? Then tap Next map.');
     await d.getByRole('button', { name: 'Next map', exact: true }).click();
     await page.clock.runFor(100);
     await button(page, 'Next map').click(); // within 500 ms of the last tap
@@ -882,7 +906,7 @@ test.describe('SWD-034 (v3.6): "I give clues for:" with three phones', () => {
     await waitGuards(page);
     await button(page, 'Next map').click();
     await waitGuards(page);
-    await dialogNamed(page, 'Next map? Only after the host starts the next game.').getByRole('button', { name: 'Next map', exact: true }).click();
+    await dialogNamed(page, 'Has the host started the next game? Then tap Next map.').getByRole('button', { name: 'Next map', exact: true }).click();
     expect(await savedMap(page)).toMatchObject({ t: PAIR.id, p: 'own', team: 'teal' });
     await expect(page.getByTestId('my-team')).toContainText(`I give clues for: ${PAIR.teal}`);
     // "Change" shows the two buttons again.

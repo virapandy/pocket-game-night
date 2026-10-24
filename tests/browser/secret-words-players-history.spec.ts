@@ -208,7 +208,7 @@ test.describe('D7 the Players sheet at game over (SWD-127)', () => {
     const { sheet, n } = await playersSheet(page);
     await sheet.getByRole('button', { name: 'Remove Dev', exact: true }).click();
     await sheet.getByRole('button', { name: 'Remove Kabir', exact: true }).click();
-    const d = dialog(page, 'Coffee Commandos would be left with only Arjun. Move someone over?');
+    const d = dialog(page, 'Coffee Commandos would have only Arjun left. Move someone from Chai Champions?');
     await expect(d).toBeVisible();
     expect(await textOf(d.getByRole('button', { name: /^Move .+ over$/ }))).toEqual(['Move Meena over', 'Move Zoya over', 'Move Om over']);
     await expect(d.getByTestId('main-button')).toHaveText("Don't remove Kabir");
@@ -223,7 +223,7 @@ test.describe('D7 the Players sheet at game over (SWD-127)', () => {
     const { sheet, n } = await playersSheet(page);
     await sheet.getByRole('button', { name: 'Remove Dev', exact: true }).click();
     await sheet.getByRole('button', { name: 'Remove Kabir', exact: true }).click();
-    const d = dialog(page, 'Coffee Commandos would be left with only Arjun. Move someone over?');
+    const d = dialog(page, 'Coffee Commandos would have only Arjun left. Move someone from Chai Champions?');
     await d.getByRole('button', { name: 'Move Zoya over', exact: true }).click();
     const s = await lastSetPlayers(page, n);
     expect(s.count).toBe(2);
@@ -235,7 +235,7 @@ test.describe('D7 the Players sheet at game over (SWD-127)', () => {
   test('D7b: when no one can move: "No one can move over." with main "Don\'t remove Kabir" (no "End the game" at game over)', async ({ page }) => {
     const { sheet, n } = await playersSheet(page, exampleTeams({ orange: ['Riya', 'Meena'], teal: ['Arjun', 'Kabir'] }));
     await sheet.getByRole('button', { name: 'Remove Kabir', exact: true }).click();
-    const d = dialog(page, 'Coffee Commandos would be left with only Arjun. Move someone over?');
+    const d = dialog(page, 'Coffee Commandos would have only Arjun left. Move someone from Chai Champions?');
     await expect(d).toBeVisible();
     await expect(d.getByText('No one can move over.', { exact: true })).toBeVisible();
     await expect(d.getByRole('button', { name: /^Move .+ over$/ })).toHaveCount(0);
@@ -285,7 +285,7 @@ test.describe('D7 the Players sheet during a turn (SWD-127)', () => {
     await openOn(page, savedOf(ev), page.getByTestId('turn-line'));
     await fromMenu(page, 'Players');
     await dialog(page, 'Players').getByRole('button', { name: 'Remove Kabir', exact: true }).click();
-    const d = dialog(page, 'Coffee Commandos would be left with only Arjun. Move someone over?');
+    const d = dialog(page, 'Coffee Commandos would have only Arjun left. Move someone from Chai Champions?');
     await expect(d.getByText('No one can move over.', { exact: true })).toBeVisible();
     await d.getByRole('button', { name: 'End the game', exact: true }).click();
     await expect(dialog(page, 'End this game with no winner?')).toBeVisible();

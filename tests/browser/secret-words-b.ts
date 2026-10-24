@@ -167,11 +167,11 @@ export async function toGuessing(page: Page, o: Omit<LaneBHost, 'boards'> & { co
   return { b, teams: await teamsOf(page), team: b.starts, code: o.code };
 }
 
-/** Picks a cell and taps "<picker>: Reveal <WORD>"; runs the clock past the 300 ms turn. */
+/** Picks a cell and taps "Reveal <WORD>"; runs the clock past the 300 ms turn. */
 export async function guess(page: Page, i: number) {
   await waitGuards(page);
   await cellAt(page, i).click();
-  await tapMain(page, /: Reveal /);
+  await tapMain(page, /^Reveal /);
   await page.clock.runFor(400);
 }
 

@@ -198,7 +198,7 @@ export function screenOf(s: Snap): string | null {
   if (id('game-heading')) return 'game-over';
   if (id('hold-pad') || id('private-line')) return 'private-map';
   if (h(/^The board, before you start$/)) return 'preview';
-  if (h(/^Clue givers: scan to get the secret map$/)) return 'scan';
+  if (h(/^Clue givers: scan this to see the secret map$/)) return 'scan';
   if (id('clue-prompt')) return 'clue';
   if (id('word-board') && s.mains.some((m) => /^Other team's turn$/.test(m.label))) return 'turn-over';
   if (id('word-board') && (id('clue-line') || id('guess-line'))) return 'guessing';
@@ -393,11 +393,11 @@ function pickGuessing(s: Snap, ctx: Ctx, main: Option | undefined, quiet: Option
   if (r.chance(0.04)) return by(/^Oops, keep guessing$/)[0]?.key ?? by(/Menu/)[0]?.key ?? 'action:escape';
   if (ctx.cfg.endEarly[ctx.gameIndex] && ctx.turnsThisGame >= 3 && !ctx.ops[`ended${ctx.gameIndex}`]) return by(/Menu/)[0]?.key ?? 'action:escape';
   if (ctx.cfg.endMidGame && ctx.turnsThisGame >= 4 && !ctx.ops.midEnd) return by(/Menu/)[0]?.key ?? 'action:escape';
-  const readyMain = main && /: Reveal /.test(main.label);
+  const readyMain = main && /^Reveal /.test(main.label);
   if (readyMain && r.chance(0.88)) { ctx.ops.guessedThisTurn = (ctx.ops.guessedThisTurn ?? 0) + 1; return main!.key; }
   const endTurn = by(/^End our turn$/)[0];
   if (endTurn && (ctx.ops.guessedThisTurn ?? 0) >= 1 && r.chance(uncle ? 0.18 : p === 'grandparent' ? 0.3 : 0.12)) { ctx.ops.guessedThisTurn = 0; return endTurn.key; }
-  if (main && !/: Reveal /.test(main.label) && !main.label.startsWith('Pick') && r.chance(0.6)) return main.key;
+  if (main && !/^Reveal /.test(main.label) && !main.label.startsWith('Pick') && r.chance(0.6)) return main.key;
   if (cells.length) {
     // A guesser who has seen the map (uncle) leans on it; the others guess.
     const known = cells.filter((o) => ctx.kinds.get(o.label.replace(/, face down$/, '')) !== undefined);
@@ -471,7 +471,7 @@ function pickDialog(s: Snap, ctx: Ctx, main: Option | undefined): string {
   if (/^(Paused)$/.test(name)) return first(/^Carry on$/) ?? 'action:escape';
   if (/^Remove this map/.test(name)) return first(/^Keep it$/) ?? 'action:escape';
   if (/^This phone is the board/.test(name)) return first(/^No, keep the board$/) ?? 'action:escape';
-  if (/would be left with only/.test(name)) return first(/^Don't remove/) ?? 'action:escape';
+  if (/would have only/.test(name)) return first(/^Don't remove/) ?? 'action:escape';
   if (main) return main.key;
   const keep = by(/^(Keep playing|Keep it|Not yet|Cancel|Done|OK|Back)$/)[0];
   return keep?.key ?? r.pick(s.opts)?.key ?? 'action:escape';

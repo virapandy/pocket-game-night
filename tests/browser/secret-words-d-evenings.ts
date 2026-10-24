@@ -236,7 +236,7 @@ export const bestClueFlows: { name: string; build: () => SwEvening; dom: string 
     dom: 'Best clue: Ocean 2 · all 2 found', shown: 'OCEAN',
   },
   {
-    name: 'found more than its number: "Best clue: OCEAN 2 · 3 found"',
+    name: 'found more than its number: "Best clue: OCEAN for 2 · 3 words found"',
     build: () => {
       const ev = newEvening().clue(2, 'Ocean');
       for (const c of ev.faceDown('orange').slice(0, 3)) ev.mustReveal(c);
@@ -245,12 +245,12 @@ export const bestClueFlows: { name: string; build: () => SwEvening; dom: string 
       for (const c of ev.faceDown('orange')) ev.mustReveal(c);
       return ev;
     },
-    dom: 'Best clue: Ocean 2 · 3 found', shown: 'OCEAN',
+    dom: 'Best clue: Ocean for 2 · 3 words found', shown: 'OCEAN',
   },
   {
-    name: '∞ with a word: "Best clue: RAIN ∞ · 9 found"',
+    name: '∞ with a word: "Best clue: RAIN (any number) · 9 found"',
     build: () => { const ev = newEvening().clue('inf', 'Rain'); for (const c of ev.faceDown('orange')) ev.mustReveal(c); return ev; },
-    dom: 'Best clue: Rain ∞ · 9 found', shown: 'RAIN',
+    dom: 'Best clue: Rain (any number) · 9 found', shown: 'RAIN',
   },
   {
     name: '0 with a word: "Best clue: RAIN 0 · 9 found"',

@@ -334,7 +334,7 @@ test.describe('SWD-053/066: Play again', () => {
   test('two phones: then the scan screen', async ({ page }) => {
     await openGameOver(page, orangeWinsAtOnce({ choices: { map: 'shared' } }));
     await playAgain(page).click();
-    await expect(page.getByRole('heading', { name: 'Clue givers: scan to get the secret map' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Clue givers: scan this to see the secret map' })).toBeVisible();
   });
 });
 
@@ -555,16 +555,17 @@ test.describe('D8 End for tonight and G2 the summary (SWD-060, 128)', () => {
     expect(await movesOf(page, ID)).toHaveLength(ev.records.length);
   });
 
-  test('the summary: heading, summary-line, tally, clue-credit, "Oops, keep playing", "← Home", main "Play something else", in order; nothing recorded yet', async ({ page }) => {
+  test('the summary: heading, night-result (v3.9), summary-line, tally, clue-credit, "Oops, keep playing", "← Home", main "Play something else", in order; nothing recorded yet', async ({ page }) => {
     const ev = orangeWinsAtOnce();
     await toSummary(page, ev);
     await expect(page.getByRole('heading', { level: 1, name: "Tonight's Secret Words", exact: true })).toBeVisible();
+    await expect(page.getByTestId('night-result')).toHaveText('Chai Champions won the night, 1–0');
     await expect(summaryLine(page)).toHaveText('7 players · 1 game · 9 words found');
     await expect(tally(page)).toHaveText('Tonight: Chai Champions 1 · Coffee Commandos 0');
     await expect(clueCredit(page)).toHaveText('Clues tonight from Riya and Arjun');
     await expect(mainButton(page)).toHaveText('Play something else');
     expect(await inDomOrder(page, [
-      { id: 'summary-line' }, { id: 'tally' }, { id: 'clue-credit' }, { button: 'Oops, keep playing' }, { button: '← Home' },
+      { id: 'night-result' }, { id: 'summary-line' }, { id: 'tally' }, { id: 'clue-credit' }, { button: 'Oops, keep playing' }, { button: '← Home' },
     ])).toBe(true);
     // No Landmine count, no ranking of clue givers (SWD-128).
     expect(await page.evaluate(() => document.body.innerText)).not.toMatch(/Landmine/);
@@ -645,6 +646,35 @@ test.describe('D8 End for tonight and G2 the summary (SWD-060, 128)', () => {
     await expect(summaryLine(page)).toHaveText('7 players · 2 games · 18 words found');
     await expect(tally(page)).toHaveText('Tonight: Chai Champions 1 · Coffee Commandos 1');
     await expect(clueCredit(page)).toHaveText('Clues tonight from Riya, Arjun, Meena and Kabir');
+  });
+
+  test('SWD-128 (v3.9): night-result is the first line under the heading: "<team> won the night, <orange>–<teal>" for the team with more won games (orange first on the score)', async ({ page }) => {
+    await toSummary(page, flows.orangeWinsAtOnce());
+    await expect(page.getByTestId('night-result')).toHaveText('Chai Champions won the night, 1–0');
+    await expect(page.getByTestId('night-result')).toBeVisible();
+    const heading = await box(page.getByRole('heading', { level: 1, name: "Tonight's Secret Words", exact: true }));
+    const result = await box(page.getByTestId('night-result')), line = await box(summaryLine(page));
+    expect(result.y, 'under the heading').toBeGreaterThanOrEqual(heading.y + heading.height - 0.5);
+    expect(line.y, 'summary-line follows').toBeGreaterThanOrEqual(result.y + result.height - 0.5);
+  });
+
+  test('SWD-128 (v3.9): the other team ahead: "Coffee Commandos won the night, 0–1" (orange first on the score, whoever leads)', async ({ page }) => {
+    await toSummary(page, flows.tealWins());
+    await expect(page.getByTestId('night-result')).toHaveText('Coffee Commandos won the night, 0–1');
+    await expect(tally(page)).toHaveText('Tonight: Chai Champions 0 · Coffee Commandos 1');
+  });
+
+  test('SWD-128 (v3.9): equal won games: "A draw tonight, 1–1"', async ({ page }) => {
+    await toSummary(page, flows.twoGames());
+    await expect(page.getByTestId('night-result')).toHaveText('A draw tonight, 1–1');
+    await expect(summaryLine(page)).toHaveText('7 players · 2 games · 18 words found');
+  });
+
+  test('SWD-128 (v3.9): no game won (only an ended-early game): no night-result; summary-line and the tally follow as before', async ({ page }) => {
+    await toSummary(page, flows.oneWordEndedEarly());
+    await expect(page.getByTestId('night-result')).toHaveCount(0);
+    await expect(summaryLine(page)).toHaveText('7 players · 1 game · 1 word found');
+    await expect(tally(page)).toHaveText('Tonight: Chai Champions 0 · Coffee Commandos 0');
   });
 
   test('SWD-128: singulars and an ended-early game: "7 players · 1 game · 1 word found"; partners credited each on their own', async ({ page }) => {

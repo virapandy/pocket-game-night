@@ -1,4 +1,4 @@
-# Secret Words: scenarios (version 3.7, 23 October 2026)
+# Secret Words: scenarios (version 3.9, 24 October 2026; for 1.4.1)
 
 Copied from `docs/games/secret-words/scenarios.md` (version 3.7), the binding contract, split into one file per section as its headings name. Each scenario's paragraph headed "Version 3.7" wins over the text above it in the same scenario, then its "Version 3.6" paragraph. Rule API for the tests (Test hooks item 1 made exact): [api.md](api.md).
 
@@ -13,6 +13,48 @@ Copied from `docs/games/secret-words/scenarios.md` (version 3.7), the binding co
 | [07-sessions.md](07-sessions.md) | SWD-110 to SWD-133 |
 | [09-usability.md](09-usability.md) | SWD-090 to SWD-099 |
 | [10-later.md](10-later.md) | SWD-200 to SWD-206 (direction) |
+
+Version 3.9 (product owner, 24 October, for 1.4.1) adds a "Version 3.9" paragraph at the end of SWD-031, 039, 040, 041, 110, 122 and 128, which wins over earlier text in its scenario, and the wording list below. Version 3.8's invisible tap guards (SWD-114) stay; undo after a reveal stays out (K35).
+
+### What version 3.9 changes (rule 11; product owner, 24 October, from the release candidate's AI playthrough; for 1.4.1)
+Version 3.8 (owner, 24 October) made the tap guards invisible: main buttons look live at once, and taps inside a guard still
+do nothing; it lives in `specs/secret-words/` and SWD-114's greyed look is replaced by it. Version 3.9 adds, each as a
+"Version 3.9" paragraph that wins over earlier text in its scenario: SWD-031 (Pause on the private map), SWD-039 (Next map opens
+hidden), SWD-040/041 (team names on the counts), SWD-110 (Home on the Pause cover), SWD-122 (who taps Reveal), SWD-128 (the
+night's result on the summary). Unfamiliar words: a wording list after Jev's read of `text.csv` (`jev-text-1.4.1.md`).
+
+### Version 3.9 wording (product owner, 24 October; Jev's read of `text.csv`, `jev-text-1.4.1.md`; `docs/word-guidelines.md`)
+Every string below replaces its old form everywhere above this list. Jev's recheck (`jev-text-1.4.1-recheck.md`): median
+understood-at-once 0.37 → 0.45, 20 of 29 better; the two that scored worse were reverted (the "Best clue … all 2 found" line and
+the second-phone line) and are not in this list. The ∞ key keeps its sign with "many" under it; wherever a clue
+is written out, ∞ reads "any number". "Landmine" stays, always beside "never guess" or the map key. Old → new:
+  "9 and 8 words to find, 7 blank, 1 Landmine." → "Each team finds 9 or 8 words. 7 belong to nobody, and 1 is the Landmine.";
+  "6 and 5 words to find, 5 blank, no Landmine." → "Each team finds 6 or 5 words. 5 belong to nobody. No Landmine.";
+  "Step on it and your turn ends; the other team gets one word free." → "Guess the Landmine and your turn ends; the other team gets a free word.";
+  "Step on it and your team loses." → "Guess the Landmine and your team loses.";
+  "Tap Next map on the map phone and check it starts with: Kite · Tiffin · Rain" → "On the map phone, tap Next map. Its first words should be: Kite · Tiffin · Rain";
+  "Tap Next map on both map phones and check they start with: Kite · Tiffin · Rain" → "On both map phones, tap Next map. Their first words should be: Kite · Tiffin · Rain";
+  "New code: scan again. The map phone should start with: Kite · Tiffin · Rain" → "New code: scan it again. The map phone's first words should be: Kite · Tiffin · Rain";
+  "New code: scan again. The map phones should start with: Kite · Tiffin · Rain" → "New code: scan it again. The map phones' first words should be: Kite · Tiffin · Rain";
+  "Hand the map phone to Meena and Kabir, tap Next map, and check it starts with: Kite · Tiffin · Rain" → "Give the map phone to Meena and Kabir. They tap Next map; its first words should be: Kite · Tiffin · Rain";
+  "Doesn't match? Scan the host's code again." → "First words different? Scan the host's code again.";
+  "Doesn't match? Scan this code again." → "First words different? Scan this code again.";
+  "Clue givers use their own phone. To show the map on this phone, use Show the map to a clue giver in the game's menu." → "Clue givers should use their own phones. To show the map here instead, use the menu: Show the map to a clue giver.";
+  "Secret Words clue givers: scan the host's code to get your secret map." → "Giving clues in Secret Words? Scan the host's code to see your secret map.";
+  "Riya and Arjun give clues for different teams but share one map phone, as at a real table: sit side by side." → "Riya and Arjun: sit together and share one map phone (each gives clues for their own team).";
+  "Tip: turn on Do Not Disturb so messages don't pop up on the board." → "Tip: turn on Do Not Disturb, so messages don't pop up over the board.";
+  "No more maps from this code. Scan the host's new code." → "This code has no more maps. Scan the host's new code.";
+  "Game over: tap Done with this game. New board on the host: tap Next map." → "When the game ends, tap Done with this game. If the host starts a new board, tap Next map.";
+  "Never guess: Shadow (the Landmine)" → "Landmine, never guess: Shadow";
+  "Next map? Only after the host starts the next game." → "Has the host started the next game? Then tap Next map.";
+  "Tap a word when it's found to fade it (optional). The host's board is what counts." → "Tap a word once it's been guessed, to fade it (optional). The board on the host's phone is what counts.";
+  "Clue givers: scan to get the secret map" → "Clue givers: scan this to see the secret map";
+  "Coffee Commandos would be left with only Om. Move someone over?" → "Coffee Commandos would have only Om left. Move someone from Chai Champions?";
+  "New board? New words, same teams, fresh start. For when someone saw the map or the words are too hard. This board won't count." → "New board? Fresh words, same teams. Use it if someone saw the map or the words are too hard. This board won't count.";
+  "Scan a ticket or secret map" → "Scan a ticket or a secret map";
+  "Clue: ∞" → "Clue: any number";
+  "Best clue: RAIN ∞ · 4 found" → "Best clue: RAIN (any number) · 4 found";
+  "Best clue: MONSOON 2 · 3 found" → "Best clue: MONSOON for 2 · 3 words found";
 
 Status: **version 3.7 approved by the owner, 23 October 2026** (the prototype walks and Jev's prototype read, `prototype-walk-2026-10-22.md`); version 3.6 was approved on 22 October ("go ahead": the critic pass and UX review, `design-review-2026-10-22.md`); version 3.5 was approved on 11 October ("yes to all": the screen map's persona walks and Jev read, `map-walk-2026-10-11.md` §3 and §8); version 3.4 was approved on 4 October (SWD-001 to SWD-133; two-reader check of 3.3 and a final verification pass resolved) (version 3.2, SWD-001 to SWD-104, was approved on 4 October; 3.3
 added the owner's decisions K32–K41 as section 07; 3.4 folds section 07 into every earlier scenario it changes, with the

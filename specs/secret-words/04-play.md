@@ -28,6 +28,7 @@ case kept, and left out when empty (SWD-101).
   `clue-help`, above the main. 568 × 320: one column scrolling inside, keys in one row of 11 at 44 × 44 with 4 px gaps, main at
   the bottom right. No-scroll checks are made with the keyboard closed; when the input has focus it is scrolled into view.
 **Version 3.6 (owner, 22 October):** `anyone-line` "Anyone can tap the number." (small line) sits under the keys and above `clue-help`, at every size, on the clue screen of the evening's first turn only (also when that screen is shown again by a reload, "Change clue" or "Try another clue" in that turn). It never hides; when the clue screen's content doesn't fit, the content above the main scrolls inside (SWD-040's layout).
+**Version 3.9 (product owner, 24 October; for 1.4.1):** **Team names on the counts:** `word-counts` shows each team's name with its icon and number when both fit on one line at the screen's width ("● Chai Champions 9 left · ◆ Coffee Commandos 8 left"); otherwise each name shortens to its first word ("● Chai 9 · ◆ Coffee 8"), and if that still doesn't fit, icons and numbers only, as before. The accessible name is unchanged.
 
 ## SWD-041: Guessing and the allowance (P3, P5)
 Status: approved, owner, 2026-10-23 (version 3.7)
@@ -63,6 +64,7 @@ name "Flip the board") at its right end; the board; the tip or result line (at m
 in the same turn, and no turn ends by "End our turn" before one guess.
 **Version 3.6 (owner, 22 October):** **Top bar and panel rows.** Portrait top bar, right to left: "··· Menu", `pause-button` (44 × 44), `hurry-timer` when it runs. Landscape button row (pause stays here; the timer keeps its own row): 812 × 375 (200 px): "↻" 44, `pause-button` 44, "··· Menu" 104, 4 px gaps; 568 × 320 (160 px): `pause-button` 44, "··· Menu" 112, and "↻" becomes the menu item "Flip the board". **568 × 320 before the first reveal:** `guess-line` sits in the action slot (48 px) and is not in the middle part, which then holds `turn-line`, `clue-line`, counts and the tip or result line; "Change clue" and "Clue not allowed?" stay menu items. From the first reveal the slot holds "End our turn" and `guess-line` returns to the middle part directly under `clue-line`. **360 × 560** (browser bars): the shrink order applies (cells 56 → 48, then `clue-line` 22 → 17); if it still doesn't fit, the page scrolls as one with the main fixed.
 **Version 3.7 (owner, 23 October):** The counts row's right-end button is "↻ Flip", 72 × 44 px, in portrait (SWD-102, version 3.7); the counts keep the rest of the row. Landscape panel rows unchanged (icon-only "↻" at 812 × 375).
+**Version 3.9 (product owner, 24 October; for 1.4.1):** Counts follow SWD-040's version 3.9 paragraph; in the landscape panel each team is one line, name first word then number.
 
 ## SWD-042: Pick, then confirm
 Status: approved, owner, 2026-10-23 (version 3.7)

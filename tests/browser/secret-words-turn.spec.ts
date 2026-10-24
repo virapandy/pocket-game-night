@@ -84,8 +84,8 @@ test.describe('SWD-033: two or three phones, scan the map', () => {
     await host(page, { phones: 'Two phones', boards: [CODE], seed: 'scan-2' });
     const t = await teamsOf(page);
     const cgO = clueGiver(t, 'orange'), cgT = clueGiver(t, 'teal');
-    const heading = page.getByRole('heading', { level: 1, name: 'Clue givers: scan to get the secret map' });
-    const line = page.getByText(`${cgO} and ${cgT} give clues for different teams but share one map phone, as at a real table: sit side by side.`, { exact: true });
+    const heading = page.getByRole('heading', { level: 1, name: 'Clue givers: scan this to see the secret map' });
+    const line = page.getByText(`${cgO} and ${cgT}: sit together and share one map phone (each gives clues for their own team).`, { exact: true });
     const otherPhone = byId(page, 'other-phone-line');
     const guessers = page.getByText("Guessers: don't scan this one!", { exact: true });
     const qr = byId(page, 'map-qr');
@@ -96,8 +96,8 @@ test.describe('SWD-033: two or three phones, scan the map', () => {
     await expect(otherPhone).toHaveText('On the other phone: open the app, tap Join a game, scan this.');
     await expect(code).toHaveText(`Or type this code: ${shown(CODE)}`);
     await expect(check).toHaveText(`The map phone should start with: ${B.words.slice(0, 3).join(' · ')}`);
-    await expect(mismatch).toHaveText('Doesn\'t match? Scan this code again.');
-    await expect(dnd).toHaveText("Tip: turn on Do Not Disturb so messages don't pop up on the board.");
+    await expect(mismatch).toHaveText('First words different? Scan this code again.');
+    await expect(dnd).toHaveText("Tip: turn on Do Not Disturb, so messages don't pop up over the board.");
     await expect(qr).toHaveAccessibleName(`Map code ${shown(CODE)}`);
     const q = await box(qr);
     expect(Math.abs(q.width - 200) + Math.abs(q.height - 200), 'QR 200 × 200').toBeLessThanOrEqual(1);
@@ -184,7 +184,7 @@ test.describe('SWD-030: one phone, pass to the clue giver', () => {
     expect(await fontPx(pn), 'a short name: 48 px').toBe(48);
     await expect(page.getByText(`Clue giver for ${n.T} (${n.colour})`, { exact: true })).toBeVisible();
     await expect(byId(page, 'waiting-line')).toHaveText(`While you wait, ${n.O}: guess how many words ${n.cg}'s clue will be for.`);
-    await expect(byId(page, 'dnd-tip')).toHaveText("Tip: turn on Do Not Disturb so messages don't pop up on the board.");
+    await expect(byId(page, 'dnd-tip')).toHaveText("Tip: turn on Do Not Disturb, so messages don't pop up over the board.");
     await expect(byId(page, 'recap-line'), 'no recap on the board\'s first turn').toHaveCount(0);
     await expect(quiet(page, 'Start 90-second timer')).toBeVisible();
     await expect(mainButton(page)).toHaveText(`I'm ${n.cg}`);
@@ -358,7 +358,7 @@ async function toPrivateMap(page: Page, seed: string) {
 test.describe('SWD-031: one phone, the private map', () => {
   test.use({ viewport: { width: 390, height: 844 } });
 
-  test('before the first show: heading <NAME>, private-line, "You give clues for <team> (<colour>)", counts, pad "Tap to see the map", "Not <name>? Go back"; no map in the page, no main, no menu, no team bar, no pause', async ({ page }) => {
+  test('before the first show: heading <NAME>, private-line, "You give clues for <team> (<colour>)", counts, pad "Tap to see the map", "Not <name>? Go back"; no map in the page, no main, no menu, no team bar; the pause-button (v3.9) at the top left', async ({ page }) => {
     const n = await toPrivateMap(page, 'pm-before');
     await expect(page.getByRole('heading', { level: 1, name: n.cg })).toBeVisible();
     await expect(byId(page, 'private-line')).toHaveText(`Only ${n.cg} should see this screen.`);
@@ -371,7 +371,7 @@ test.describe('SWD-031: one phone, the private map', () => {
     await expect(mainButton(page)).toHaveCount(0);
     await expect(menuButton(page)).toHaveCount(0);
     await expect(byId(page, 'team-bar')).toHaveCount(0);
-    await expect(byId(page, 'pause-button')).toHaveCount(0);
+    await expect(byId(page, 'pause-button')).toBeVisible(); // SWD-031 v3.9
     // No kind of any word anywhere in the page before the show.
     expect(await page.evaluate(() => document.querySelectorAll('[data-testid="map-cell"]').length)).toBe(0);
   });
@@ -418,7 +418,7 @@ test.describe('SWD-031: one phone, the private map', () => {
     await expect(mapCells(page)).toHaveCount(0);
   });
 
-  test('"Our words": h2 "Your words (N left)", the team\'s face-down words as li in cell order, avoid-line "Never guess: <WORD> (the Landmine)"; the button reads "Whole map"', async ({ page }) => {
+  test('"Our words": h2 "Your words (N left)", the team\'s face-down words as li in cell order, avoid-line "Landmine, never guess: <WORD>"; the button reads "Whole map"', async ({ page }) => {
     await toPrivateMap(page, 'pm-list');
     await waitGuards(page);
     await holdPad(page).click();
@@ -428,7 +428,7 @@ test.describe('SWD-031: one phone, the private map', () => {
     await expect(list.getByRole('heading', { level: 2 })).toHaveText(`Your words (${mine.length} left)`);
     await expect(list.getByRole('listitem')).toHaveText(mine.map((i) => B.words[i]!));
     expect(await fontPx(list.getByRole('listitem').first())).toBe(24);
-    await expect(byId(page, 'avoid-line')).toHaveText(`Never guess: ${B.words[LANDMINE]} (the Landmine)`);
+    await expect(byId(page, 'avoid-line')).toHaveText(`Landmine, never guess: ${B.words[LANDMINE]}`);
     await expect(quiet(page, 'Whole map')).toBeVisible();
     await quiet(page, 'Whole map').click();
     await expect(mapCells(page)).toHaveCount(25);
@@ -722,7 +722,7 @@ test.describe('SWD-101: the clue word warning', () => {
     // Turn cell 0 over, then on the next team's clue screen its word no longer warns.
     if (B.kinds[0] === 'landmine') return; // the board's first word is the Landmine: no reveal (never for CODE)
     await guess(page, 0);
-    if (await mainButton(page).filter({ hasText: /: Reveal/ }).count()) await endOurTurn(page);
+    if (await mainButton(page).filter({ hasText: /^Reveal/ }).count()) await endOurTurn(page);
     else await tapMain(page, /^Other team's turn$/);
     await expect(byId(page, 'clue-prompt')).toBeVisible();
     await clueWord(page).fill(lower);
@@ -841,30 +841,29 @@ test.describe('SWD-041 / SWD-118: guessing and the allowance', () => {
 
 test.describe('SWD-042: pick, then confirm', () => {
   test.use({ viewport: { width: 390, height: 844 } });
-  test('face-down cells are buttons "<Word>, face down" with aria-pressed; a tap picks, a tap again unpicks, another moves the pick; main "<picker>: Reveal" (disabled) / "<picker>: Reveal <Word>"; the pick clears after the guess; turned-over cells are not buttons', async ({ page }) => {
-    const { teams } = await toGuessing(page, { phones: 'One phone', code: CODE, seed: 'pick', n: 'inf' });
-    const picker = guessersOf(teams, B.starts)[0]!;
+  test('face-down cells are buttons "<Word>, face down" with aria-pressed; a tap picks, a tap again unpicks, another moves the pick; main "Reveal" (disabled) / "Reveal <Word>"; the pick clears after the guess; turned-over cells are not buttons', async ({ page }) => {
+    await toGuessing(page, { phones: 'One phone', code: CODE, seed: 'pick', n: 'inf' });
     const [a, b] = ownOf(B.starts);
     await waitGuards(page);
     await expect(cellAt(page, a!)).toHaveAccessibleName(`${B.words[a!]}, face down`);
     await expect(cellAt(page, a!)).toHaveAttribute('aria-pressed', 'false');
-    await expect(mainButton(page)).toHaveText(`${picker}: Reveal`);
+    await expect(mainButton(page)).toHaveText('Reveal');
     await expect(mainButton(page)).toBeDisabled();
     await cellAt(page, a!).click();
     await expect(cellAt(page, a!)).toHaveAttribute('aria-pressed', 'true');
-    await expect(mainButton(page)).toHaveText(`${picker}: Reveal ${B.words[a!]}`);
+    await expect(mainButton(page)).toHaveText(`Reveal ${B.words[a!]}`);
     expect(await shownUpper(mainButton(page), B.words[a!]!), '<WORD> upper case by CSS, the name as typed').toBe(true);
     await cellAt(page, a!).click();
     await expect(cellAt(page, a!)).toHaveAttribute('aria-pressed', 'false');
-    await expect(mainButton(page)).toHaveText(`${picker}: Reveal`);
+    await expect(mainButton(page)).toHaveText('Reveal');
     await cellAt(page, a!).click();
     await cellAt(page, b!).click();
     await expect(cellAt(page, a!)).toHaveAttribute('aria-pressed', 'false');
     await expect(cellAt(page, b!)).toHaveAttribute('aria-pressed', 'true');
-    await tapMain(page, /: Reveal /);
+    await tapMain(page, /^Reveal /);
     await page.clock.runFor(400);
     expect((await moves(page)).filter((m) => m.type === 'reveal')).toEqual([{ type: 'reveal', cell: b }]);
-    await expect(mainButton(page)).toHaveText(`${picker}: Reveal`);
+    await expect(mainButton(page)).toHaveText('Reveal');
     const turned = await cellAt(page, b!).evaluate((el) => ({ tag: el.tagName, role: el.getAttribute('role') }));
     expect(turned.tag === 'BUTTON' || turned.role === 'button', 'a turned-over cell is not a button').toBe(false);
   });
@@ -881,7 +880,7 @@ test.describe('SWD-043: what a guess does', () => {
     expect(await byId(page, 'word-counts').getAttribute('aria-label')).not.toBe(before);
     await guess(page, ownOf(B.starts)[1]!);
     await expect(resultLine(page)).toHaveText(`✓ ${clueGiver(teams, B.starts)}'s clue works! 1 guess left.`);
-    await expect(mainButton(page)).toHaveText(/: Reveal$/);
+    await expect(mainButton(page)).toHaveText(/^Reveal$/);
   });
 
   test('clue 0 or ∞: "✓ <name>\'s clue works! Keep going, or end your turn."', async ({ page }) => {
@@ -948,23 +947,23 @@ test.describe('SWD-125: credit people, blame the board', () => {
     await page.clock.runFor(2900);
     await expect(turnLine(page)).toHaveText(`${n.cg}: no hints, no faces!`);
     await page.clock.runFor(200);
-    await expect(turnLine(page)).toHaveText(`${n.T} guessing`);
+    await expect(turnLine(page)).toHaveText(new RegExp(`^${n.T} guessing · .+ taps Reveal$`));
     expect((await announcer(page).count()) ? (await announcer(page).textContent()) ?? '' : '').not.toContain('no hints');
     await page.clock.resume();
     await page.reload();
-    await expect(turnLine(page)).toHaveText(`${n.T} guessing`);
+    await expect(turnLine(page)).toHaveText(new RegExp(`^${n.T} guessing · .+ taps Reveal$`));
   });
 });
 
 test.describe('SWD-122: the picker', () => {
   test.use({ viewport: { width: 390, height: 844 } });
-  test('picker = guessers[r mod n] (r = the team\'s earlier guessing turns on this board); the first-guess tip names them; turn-line has no picker; "Someone else taps Reveal" sets the picker for this turn only', async ({ page }) => {
+  test('picker = guessers[r mod n] (r = the team\'s earlier guessing turns on this board); the first-guess tip names them; the turn-line names them (v3.9), the Reveal button never does; "Someone else taps Reveal" sets the picker for this turn only', async ({ page }) => {
     const { teams } = await toGuessing(page, { phones: 'Two phones', code: CODE, seed: 'picker', n: 1 });
     const g = guessersOf(teams, B.starts), h = guessersOf(teams, other(B.starts));
-    await expect(mainButton(page)).toHaveText(`${g[0]}: Reveal`);
-    await expect(byId(page, 'tip')).toHaveText(`Tap a word to suggest it. ${g[0]} taps Reveal (it takes turns).`);
+    await expect(mainButton(page)).toHaveText('Reveal');
+    await expect(byId(page, 'tip')).toHaveText(`Tap a word to suggest it. ${g[0]} taps Reveal this turn; it moves round each turn.`);
     await page.clock.runFor(3100);
-    await expect(turnLine(page)).toHaveText(`${teams.names[B.starts]} guessing`);
+    await expect(turnLine(page)).toHaveText(`${teams.names[B.starts]} guessing · ${g[0]} taps Reveal`);
     // Someone else taps Reveal.
     await waitGuards(page);
     await menuButton(page).click();
@@ -974,17 +973,22 @@ test.describe('SWD-122: the picker', () => {
     await expect(d.getByRole('button').filter({ hasNotText: 'Cancel' })).toHaveCount(g.length);
     await d.getByRole('button', { name: g[1]!, exact: true }).click();
     await expect(d).toHaveCount(0);
-    await expect(mainButton(page)).toHaveText(`${g[1]}: Reveal`);
+    await expect(mainButton(page)).toHaveText('Reveal');
+    await expect(turnLine(page)).toHaveText(`${teams.names[B.starts]} guessing · ${g[1]} taps Reveal`);
     expect(await moveTypes(page), 'nothing recorded').toEqual(['deal', 'clue']);
     await guess(page, NOBODY[0]!);
     await tapMain(page, /^Other team's turn$/);
     await giveClue(page, 1);
-    await expect(mainButton(page)).toHaveText(`${h[0]}: Reveal`);
+    await expect(mainButton(page)).toHaveText('Reveal');
+    await page.clock.runFor(3100);
+    await expect(turnLine(page)).toHaveText(`${teams.names[other(B.starts)]} guessing · ${h[0]} taps Reveal`);
     await expect(byId(page, 'tip'), 'the tip only on the evening\'s first guessing turn').toHaveCount(0);
     await guess(page, NOBODY[1]!);
     await tapMain(page, /^Other team's turn$/);
     await giveClue(page, 1);
-    await expect(mainButton(page), 'rotation unaffected by the override').toHaveText(`${g[1 % g.length]}: Reveal`);
+    await expect(mainButton(page)).toHaveText('Reveal');
+    await page.clock.runFor(3100);
+    await expect(turnLine(page), 'rotation unaffected by the override').toHaveText(`${teams.names[B.starts]} guessing · ${g[1 % g.length]} taps Reveal`);
   });
 
   test('a team with one guesser: "Someone else taps Reveal" is hidden', async ({ page }) => {
@@ -1078,7 +1082,7 @@ test.describe('SWD-044: ending the turn early', () => {
     const before = await moveTypes(page);
     await quiet(page, 'Oops, keep guessing').click();
     await expect(quiet(page, 'End our turn')).toBeVisible();
-    await expect(mainButton(page)).toHaveText(/: Reveal$/);
+    await expect(mainButton(page)).toHaveText(/^Reveal$/);
     expect(await moveTypes(page)).toEqual(before);
     await endOurTurn(page);
     expect((await moveTypes(page)).slice(-2)).toEqual(['endTurn', 'nextTurn']);
