@@ -8,6 +8,30 @@ import type { Choices, PackChoice, WaiState, WaiWord } from './types';
 /** content/what-am-i/words.json, row for row with words.csv. */
 export const WORDS: readonly WaiWord[] = wordsJson as unknown as WaiWord[];
 
+/** WAI-092: the shipped list's current edition, the highest `edition` or `retired_in` in it. */
+export const whatAmIEdition: number = WORDS.reduce((n, w) => Math.max(n, w.edition, w.retired_in ?? 0), 1);
+
+const editionCache = new WeakMap<readonly WaiWord[], Map<number, readonly WaiWord[]>>();
+/**
+ * WAI-092: the list as it stood at `edition`: words of that edition or earlier that were not retired by then. A word retired
+ * only later counts as not retired (its `retired_in` is null here), so a saved night replays word for word on a later list.
+ */
+export function wordsAtEdition(list: readonly WaiWord[], edition: number): readonly WaiWord[] {
+  let m = editionCache.get(list);
+  if (!m) {
+    m = new Map();
+    editionCache.set(list, m);
+  }
+  const hit = m.get(edition);
+  if (hit) return hit;
+  const changed = list.some((w) => w.edition > edition || (w.retired_in !== null && w.retired_in > edition));
+  const out = !changed ? list : list
+    .filter((w) => w.edition <= edition && (w.retired_in === null || w.retired_in > edition))
+    .map((w) => (w.retired_in === null ? w : { ...w, retired_in: null }));
+  m.set(edition, out);
+  return out;
+}
+
 const byIdCache = new WeakMap<readonly WaiWord[], Map<string, WaiWord>>();
 /** The word with this id in this list. */
 export function wordById(list: readonly WaiWord[], id: string): WaiWord | undefined {

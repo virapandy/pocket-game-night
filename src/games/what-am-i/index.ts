@@ -10,7 +10,7 @@ import { whatAmIRules as whatAmIRulesForApp } from './rules';
 export {
   whatAmIRules, queueFor, headOf as whatAmIHead, packOf as whatAmIPackOf, wordText as whatAmIWordText, eligible as whatAmIEligible,
   packCount as whatAmIPackCount, validChoices as whatAmIValidChoices, playersProblem as whatAmIPlayersProblem,
-  readWhatAmINight, WORDS as whatAmIWords, PACKS as whatAmIPacks,
+  readWhatAmINight, WORDS as whatAmIWords, whatAmIEdition, PACKS as whatAmIPacks,
   pitch, countdownReference, steadyReference, startMotion, motionEvent, tapArea, pauseRect, timeLeftText, tickTimes,
   rotationEvent, startRotation, COUNTDOWN_BEEPS, FLASH_MS, GUARD_MS, HOLD_MS,
   whereLine as whatAmIWhereLine, homeLine1 as whatAmIHomeLine1, homeLine2 as whatAmIHomeLine2, clockText, playersShort,

@@ -30,6 +30,8 @@ export interface Choices {
 
 /** WAI-H7: `testWords` replaces the whole word list for this game night. */
 export interface WaiConfig {
+  /** WAI-092: the word list's edition this game night started with (missing: edition 1). */
+  readonly edition?: number;
   readonly testWords?: readonly WaiWord[];
 }
 

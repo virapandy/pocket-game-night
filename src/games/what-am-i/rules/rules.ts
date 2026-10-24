@@ -2,7 +2,7 @@
 // other than the seeded word order. The host phone is the referee; every move is the host's tap.
 import type { ActorId, GameRules, MoveContext, Verdict, Viewer } from '../../../engine';
 import {
-  WORDS, buildUnshown, gameOpen, headOf, hideWord, markShown, wordById,
+  WORDS, buildUnshown, gameOpen, headOf, hideWord, markShown, wordById, wordsAtEdition,
 } from './queue';
 import {
   PACKS, type Choices, type GameResult, type Hold, type OpenTurn, type PastGame, type SavedTurn, type Tonight, type WaiConfig,
@@ -98,6 +98,8 @@ export function tonightOf(s: WaiState): Tonight {
   const add = (p: string) => { if (!players.includes(p)) players.push(p); };
   for (const g of s.past) for (const t of g.turns) add(t.player);
   for (const t of s.saved) add(t.player);
+  // WAI-061, WAI-064: ties go by the current (last game's) turn order, then everyone else by their first turn tonight.
+  const ranked = [...s.order.filter((p) => players.includes(p)), ...players.filter((p) => !s.order.includes(p))];
   const counted = s.past.filter((g) => g.turns.length > 0);
   const got = new Map<string, number>();
   const wins = new Map<string, number>();
@@ -109,12 +111,12 @@ export function tonightOf(s: WaiState): Tonight {
     }
     for (const w of g.result.winners) wins.set(w, (wins.get(w) ?? 0) + 1);
   }
-  const winList = players
+  const winList = ranked
     .filter((p) => (wins.get(p) ?? 0) > 0)
     .map((p) => ({ player: p, wins: wins.get(p)! }))
     .sort((a, b) => b.wins - a.wins);
   let best: Tonight['best'] = null;
-  const guessers = players.filter((p) => got.has(p));
+  const guessers = ranked.filter((p) => got.has(p));
   if (guessers.length > 0) {
     const most = Math.max(...guessers.map((p) => got.get(p)!));
     best = { players: guessers.filter((p) => got.get(p) === most), got: most };
@@ -264,6 +266,8 @@ function applyMove(s: WaiState, move: WaiMove): Verdict<WaiState> {
       if (!Array.isArray(o) || o.length !== s.order.length || new Set(o).size !== o.length || !o.every((p) => s.order.includes(p))) {
         return no('A new order must hold the same players.');
       }
+      // WAI-041: only players still to play this round move; anyone who has played stays in place.
+      if (s.order.some((p, i) => s.played.includes(p) && o[i] !== p)) return no('Players who have played this round stay in place.');
       return ok({ ...s, order: [...o], undo: null });
     }
 
@@ -411,10 +415,16 @@ export const whatAmIRules: GameRules<WaiConfig, WaiState, WaiMove, WaiView> = {
   detailMoves: ['start', 'addPlayer', 'reorder', 'setHold', 'setChoices', 'setPlayers'],
 
   setup(input) {
+    // WAI-010: a game night needs its word seed.
+    const seed: unknown = input.seeds?.words;
+    if (typeof seed !== 'string' || seed === '') throw new Error('What Am I? needs a word seed (seeds.words).');
+    // WAI-092: a saved night with no edition is edition 1.
+    const edition = input.config?.edition ?? 1;
+    if (!Number.isInteger(edition) || edition < 1) throw new Error('The word list edition must be a whole number from 1.');
     const test = input.config?.testWords;
     return {
-      words: test ? [...test] : WORDS,
-      seed: input.seeds.words ?? '',
+      words: test ? [...test] : wordsAtEdition(WORDS, edition),
+      seed,
       step: 'new', paused: false, pausedTurn: false, game: 0, choices: null, order: [], left: [], holds: {}, scores: {},
       round: 0, played: [], joined: [], turn: null, saved: [], unshown: [], fallback: false, shownTonight: [], shownThisGame: [], undo: null,
       result: null, past: [],
