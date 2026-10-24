@@ -176,3 +176,7 @@ Merged origin/main (PGN_PORT per lane: lane-a 4174). Lane A area: 129 of 132 pas
   the app. Several game nights on one phone: `loadNight` sets `pgn.test.load` and reloads (clock kept).
 - Local runs with 3 workers under `taskpolicy -b` on a busy Mac: a forced click sometimes hangs 10 s (MAF-011, MAF-P7
   sizes; both pass alone) and three long rule properties time out at 120 s; check against the automation run.
+
+## 25 October: lane-k rebuilt on main 18d247e
+- Mafia test commits cherry-picked from lane-k-backup onto 18d247e; quick verify 40140895888 green at 83cc320.
+- `npx vitest run <file>` without `--config tests/vitest.config.ts` uses a 5 s timeout and fails the long properties; use `npm test -- <file>`.

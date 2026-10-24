@@ -1,6 +1,27 @@
 # Test report
-Commit tested: e55f749 (lane-k: app f63370e + landscape fix 45e1588 + tester e55f749)   Date: 2026-10-25
-Result: GREEN. Quick verify run 40136323734 (lane-k, e55f749): verify success (rule tests and the changed areas' browser tests).
+Commit tested: 83cc320 (lane-k: main 18d247e with What Am I? + Mafia bundle app code, plus the Mafia test commits 1914f02, af5f50a, e55f749, 5ad327d cherry-picked from lane-k-backup)   Date: 2026-10-25
+Result: GREEN. Quick verify run 40140895888 (lane-k, 83cc320): verify success. Rule tests 1165/1165; changed areas' browser tests 17 + 398 passed, 0 failed; 1 quarantined test passed.
+
+## This round
+- Cherry-picks: conflicts only in reports/tester-notes.md (kept both the What Am I? lane T and the Mafia lane-k notes) and
+  reports/latest.md (this file). tests/browser/areas.json and docs/test-questions.md merged by themselves with both games'
+  entries, no duplicate rows. Every Mafia test file is byte-for-byte the backup's; no check changed.
+- Rule tests, local (`npm test` under taskpolicy -b): 1162 passed, 3 timed out at 120 s (MAF-P5 stories, MAF-043/P6
+  winning, SWD-025 privacy). Rerun on their own at normal priority: 21/21 passed. Load only, not bugs.
+- Browser, Android, local, 3 workers, PGN_PORT=4191 after `npm run build`: every mafia-*.spec.ts, what-am-i-lifecycle,
+  home-and-buttons, history (the filter also took secret-words-players-history): 132 passed, 0 failed. The still-marked
+  `needsMafiaCardOrHomeRow` tests (all of mafia-setup.spec.ts and mafia-room MAF-055) failed as expected; they need the
+  picker's Mafia card / Home's row.
+
+## Real bugs
+- None.
+
+## Flaky or setup
+- The three 120 s property timeouts above, local only under low priority.
+
+---
+Earlier report (e55f749, run 40136323734) follows.
+
 
 ## This round
 - New `tests/browser/mafia-results.spec.ts` "MAF-P2 / MAF-093: opening #mafia-past/<id>/2 while game 2 is still being played ...":
