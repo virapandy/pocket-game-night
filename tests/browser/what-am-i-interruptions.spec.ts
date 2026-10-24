@@ -146,7 +146,7 @@ test.describe('WAI-041 / WAI-042: Players and leaving', () => {
     await d.getByLabel('Player name', { exact: true }).fill('Om');
     await d.getByRole('button', { name: 'Add', exact: true }).click();
     expect((await moves(page)).at(-1)).toEqual({ type: 'addPlayer', name: 'Om' });
-    await expect(d.getByRole('button', { name: 'Move Om' })).toBeVisible();
+    await expect(d.getByRole('button', { name: 'Move Om', exact: true })).toBeVisible();
   });
 
   test('Version 1.3 item 6: at 320 px the add row\'s "Add" keeps at least 72 × 48 px', async ({ page }) => {

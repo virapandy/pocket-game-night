@@ -23,9 +23,9 @@ const dialogNamed = (page: Page, name: string) => page.getByRole('dialog', { nam
 // ---------------------------------------------------------------- A1 Home
 
 test.describe('SWD-001 / SWD-002: Home', () => {
-  test('SWD-001: "Host a game" reads "Tambola, Impostor or Secret Words on this phone"', async ({ page }) => {
+  test('SWD-001 / WAI-001: "Host a game" reads "Tambola, Impostor, Secret Words or What Am I? on this phone"', async ({ page }) => {
     await boot(page);
-    await expect(hostAGame(page)).toContainText('Tambola, Impostor or Secret Words on this phone');
+    await expect(hostAGame(page)).toContainText('Tambola, Impostor, Secret Words or What Am I? on this phone');
   });
 
   test('SWD-002: the second card is "Join a game" with the line "Tambola ticket or Secret Words map from the host"; the old wording is gone', async ({ page }) => {
@@ -601,7 +601,7 @@ test.describe('SWD-001: the picker and Join at the five screen sizes', () => {
       await wide('Home');
       await toPicker(page);
       await wide('picker');
-      await quiet(page, '← Back').click();
+      await quiet(page, '← Home').click();
       await expect(hostAGame(page)).toBeVisible();
       await toNames(page, { viewport: size });
       await wide("Who's playing?");

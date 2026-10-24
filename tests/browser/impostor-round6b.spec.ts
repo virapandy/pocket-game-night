@@ -90,7 +90,7 @@ test.describe('R2, IMP-010 (I29): a tap within 500 ms of a screen change does no
     await expect(heading(page, "Who's playing?")).toBeVisible();
   });
 
-  test('Home: a tap at once after "← Back" from "What shall we play?" does nothing; after 500 ms "Host a game" works', async ({ page }) => {
+  test('Home: a tap at once after "← Home" from "What shall we play?" does nothing; after 500 ms "Host a game" works', async ({ page }) => {
     await phoneWith(page, [], { now: T0 });
     await settle(page);
     await hostAGame(page).click();
@@ -98,7 +98,7 @@ test.describe('R2, IMP-010 (I29): a tap within 500 ms of a screen change does no
     await settle(page);
     await freezeClock(page);
     await page.clock.runFor(500);
-    await page.getByRole('button', { name: /^(← )?Back$/ }).click();
+    await page.getByRole('button', { name: /^(← )?Home$/ }).click();
     await expect(hostAGame(page)).toBeVisible();
     await hostAGame(page).click();
     await expect(heading(page, 'What shall we play?'), 'Home stays').toHaveCount(0);
