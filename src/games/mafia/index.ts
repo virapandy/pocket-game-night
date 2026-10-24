@@ -1,6 +1,7 @@
 // Mafia's registration: the only file other code may import from this game.
-// The pure rules (specs/mafia/api.md, MAF-H1 to MAF-H6) and the screens (lane M2: setup S1–S4 and the room frame; the
-// private, day and results screens are stand-ins in ui/StandIns.tsx until their lanes replace them).
+// The pure rules (specs/mafia/api.md, MAF-H1 to MAF-H6) and the screens (lane M2: setup S1–S4 and the room frame; lane M4:
+// the morning, day and results in ui/Day.tsx and ui/Results.tsx; the private screens are stand-ins in ui/StandIns.tsx
+// until their lane replaces them).
 //   The rule API: mafiaRules, mafiaCounts, readMafiaNight, readTestSeeds.
 //   The morning stories content/mafia/stories.json (npm run build:stories, MAF-037).
 //   MAF-H6: `mafia.openTestLoad` opens `localStorage['pgn.test.load']` (development and preview builds only).
@@ -9,6 +10,7 @@
 import type { GameInfo } from '../../engine';
 import { mafiaRules as rules } from './rules';
 import { MafiaScreen } from './ui/MafiaScreen';
+import { historyRows } from './ui/history';
 import { homeRow, openTestLoad, unfinishedNight } from './ui/tonight';
 
 export type { MafiaStart } from './ui/MafiaScreen';
@@ -37,4 +39,6 @@ export const mafia = {
   unfinishedNight,
   /** MAF-091 / PO 30: Home's two lines for an unfinished game night. */
   homeRow,
+  /** MAF-093: History's rows for a saved game night, one per game that is over. */
+  historyRows,
 };

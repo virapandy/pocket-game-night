@@ -1,5 +1,5 @@
-// What every room and private screen gets from the room frame (Room.tsx). The screens themselves live in StandIns.tsx
-// (stand-ins until the private-screen and day lanes replace them); they draw their body and their one main button.
+// What every room and private screen gets from the room frame (Room.tsx). The screens live in StandIns.tsx (private
+// screens), Day.tsx (M1, Y1, V1–V4) and Results.tsx (G1, G2); they draw their body and their one main button.
 import type { MafiaMove, MafiaNight, MafiaPlayerView, MafiaView } from '../rules';
 import type { ScreenId } from './tonight';
 
@@ -33,4 +33,12 @@ export interface RoomCtx {
   readonly backFromSummary: () => void;
   readonly playAgain: () => void;
   readonly changePlayers: () => void;
+  /** The Paused cover is open (the day timer stops while it is, MAF-031). */
+  readonly paused: boolean;
+  /** This screen was opened by a resume or a reload ("Welcome back." showing): V4 shows its role line at once (item 22). */
+  readonly resumed: boolean;
+  /** The last move recorded tonight (G1's leaver line, MAF-041). */
+  readonly lastMove: MafiaMove | null;
+  /** The countdown's and the day timer's sounds (MAF-082), with sound on. */
+  readonly sound: (name: 'tick' | 'ding') => void;
 }

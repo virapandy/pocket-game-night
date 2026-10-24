@@ -84,15 +84,17 @@ function PauseGlyph() {
 }
 
 /** MAF-050, MAF-053: the Pause icon (name "Pause") beside "··· Menu" (name "Menu"), top right of every room screen. */
-export function TopBar({ items, onPause }: { items: readonly MenuItem[]; onPause: () => void }) {
+export function TopBar({ items, onPause }: { items: readonly MenuItem[]; onPause?: () => void }) {
   const [open, setOpen] = useState(false);
   useEscape(open, () => setOpen(false));
   return (
     <header className="maf-bar">
       <span className="maf-grow" />
-      <button type="button" className="maf-icon" aria-label={T.pause.button} onClick={onPause}>
-        <PauseGlyph />
-      </button>
+      {onPause && (
+        <button type="button" className="maf-icon" aria-label={T.pause.button} onClick={onPause}>
+          <PauseGlyph />
+        </button>
+      )}
       <button type="button" className="maf-menu-button" aria-label={T.menu.name} aria-haspopup="menu" aria-expanded={open} onClick={() => setOpen(!open)}>
         {T.menu.button}
       </button>

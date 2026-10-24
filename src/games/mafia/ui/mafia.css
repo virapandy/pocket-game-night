@@ -179,3 +179,43 @@
   .maf-pass-name { font-size: 1.5rem; }
   .maf-pad { min-height: 64px; }
 }
+
+/* ----- Morning, day, vote and results (Day.tsx, Results.tsx; lane M4) ----- */
+.maf-story { font-size: var(--pgn-body); line-height: 1.45; padding: 12px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }
+.maf-role-line { font-size: 1.25rem; font-weight: 800; }
+.maf-quiet-stack { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+.maf-timer-row { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.maf-timer { font-size: 1.6rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+.maf-timer-up { font-size: 1.25rem; font-weight: 800; }
+.maf-countdown-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; text-align: center; flex: 1; min-height: 0; }
+.maf-countdown-heading { font-size: 1.3rem; font-weight: 800; line-height: 1.3; }
+.maf-countdown { font-size: 5rem; font-weight: 800; line-height: 1; }
+.maf-vote .maf-names-box { flex: 0 1 auto; }
+.maf-not-sure { margin-bottom: -6px; }
+/* "It's a tie", "Count again", "Nobody today": three of equal width; at 320 px two, then "Nobody today" centred (MAF-033). */
+.maf-vote-links { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.maf-vote-links.maf-two { grid-template-columns: repeat(2, 1fr); }
+.maf-vote-links > * { width: 100%; min-width: 0; }
+@media (max-width: 340px) {
+  .maf-vote-links { grid-template-columns: repeat(2, 1fr); }
+  .maf-vote-links > :nth-child(3) { grid-column: 1 / -1; justify-self: center; width: 50%; }
+}
+.maf-night-lines { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 8px; font-size: var(--pgn-body); line-height: 1.4; }
+.maf-results .maf-day-list li { overflow-wrap: anywhere; }
+/* G1 (MAF-060): small rows and the quiet buttons side by side, so on a phone they sit above the pinned main button. */
+.maf-results { gap: 8px; }
+.maf-who-list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 2px; font-size: var(--pgn-small); line-height: 1.3; }
+.maf-fun { font-size: var(--pgn-small); line-height: 1.35; font-weight: 700; }
+.maf-quiet-row { display: flex; flex-wrap: wrap; gap: 8px; }
+/* Y1: players who are in, two to a row (seat order, read across); out players and leavers a full row each. */
+.maf-in-list { display: grid; grid-template-columns: 1fr 1fr; column-gap: 12px; row-gap: 2px; }
+.maf-in-list > .maf-greyed { grid-column: 1 / -1; }
+.maf-vote-links .pgn-quiet { font-size: var(--pgn-small); padding-left: 4px; padding-right: 4px; }
+.maf-vote-foot { display: flex; flex-direction: column; gap: 8px; }
+@media (orientation: landscape) and (max-height: 600px) {
+  .maf-vote .maf-names-box { grid-template-columns: repeat(4, 1fr); min-height: 96px; }
+  .maf-vote-foot { flex-direction: row; align-items: stretch; }
+  .maf-vote-foot > .maf-vote-links { flex: 3; }
+  .maf-vote-foot > .pgn-quiet { flex: 1; font-size: var(--pgn-small); padding: 0 6px; }
+  .maf-countdown { font-size: 3.5rem; }
+}

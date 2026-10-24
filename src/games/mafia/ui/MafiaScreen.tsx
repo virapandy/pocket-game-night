@@ -7,7 +7,8 @@ import { BlocksRoot } from '../../../blocks';
 import { mafiaCounts, mafiaRules, type MafiaConfig } from '../rules';
 import { MafiaRoom } from './Room';
 import { HowToPlay, ReadAloud, Roles, WhosPlaying } from './Setup';
-import { newNightId, newSetup, playMoves, saveNight, saveScreen } from './tonight';
+import { T } from './text';
+import { loadNight, newNightId, newSetup, playMoves, saveNight, saveScreen } from './tonight';
 import './mafia.css';
 
 export type MafiaStart =
@@ -65,6 +66,8 @@ export function MafiaScreen({
   const [room, setRoom] = useState<{ id: string; welcome: boolean } | null>(
     start.kind === 'resume' ? { id: start.id, welcome: start.welcome ?? true } : null,
   );
+  /** MAF-061: Who's playing? opened from G1 ("Change players or roles"): the next game's deal goes into this game night. */
+  const [changing, setChanging] = useState<string | null>(null);
   const [larger, setLarger] = useState(() => prefs.get<boolean>(LARGER, false) === true);
 
   useEffect(() => {
@@ -84,6 +87,17 @@ export function MafiaScreen({
   const deal = () => {
     if (!count) return;
     const now = Date.now();
+    if (changing) {
+      const night = loadNight(store, changing);
+      const match = night && playMoves(night.match, [{ type: 'start', players: names, mafiaCount: count.m }], now);
+      if (!night || !match) return;
+      saveNight(store, { id: changing, createdAt: night.saved.createdAt }, match, now);
+      saveScreen(prefs, changing, 'b1');
+      setRoom({ id: changing, welcome: false });
+      setChanging(null);
+      setStep('room');
+      return;
+    }
     const id = pending?.id ?? newNightId();
     const setup = pending?.setup ?? newSetup(id, testSeedsRaw(), release);
     const createdAt = pending?.createdAt ?? now;
@@ -103,7 +117,21 @@ export function MafiaScreen({
   let screen: ReactNode;
   switch (step) {
     case 'names':
-      screen = <WhosPlaying names={names} onChange={setNames} onBack={() => onBack(names)} onHowToPlay={() => how('names')} onNext={toRoles} />;
+      screen = (
+        <WhosPlaying
+          names={names}
+          onChange={setNames}
+          {...(changing ? { backLabel: T.s1.backToGame } : {})}
+          onBack={() => {
+            if (!changing) return onBack(names);
+            setRoom({ id: changing, welcome: false });   // MAF-061: back to Game over, nothing recorded
+            setChanging(null);
+            setStep('room');
+          }}
+          onHowToPlay={() => how('names')}
+          onNext={toRoles}
+        />
+      );
       break;
     case 'roles':
       screen = count && (
@@ -147,6 +175,11 @@ export function MafiaScreen({
           onHome={onExit}
           onHistory={onHistory}
           onSomethingElse={onSomethingElse}
+          onChangePlayers={(next) => {
+            setNames(next);
+            setChanging(room.id);
+            setStep('names');
+          }}
         />
       );
   }

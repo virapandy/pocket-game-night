@@ -2,6 +2,7 @@
 // game with undo for 5 seconds, clearing all history, and the tally a deleted game is taken out of.
 import { useEffect, useState } from 'react';
 import { inTally, type SavedGame } from '../engine';
+import { mafia } from '../games/mafia';
 import { games, secretWords } from './games';
 import { asTallyGame, Dialog } from './Sessions';
 import { gameStore, sessionStore } from './storage';
@@ -51,6 +52,13 @@ export function History({
       .sort((a, b) => b.createdAt - a.createdAt),
   );
   const [past, setPast] = useState<SavedGame[]>(load);
+  // MAF-093: Mafia lists each game that is over, from game nights finished or still going.
+  const [mafiaRows] = useState(() =>
+    gameStore
+      .list()
+      .flatMap((g) => mafia.historyRows(g))
+      .sort((a, b) => b.at - a.at),
+  );
   const [nearlyFull, setNearlyFull] = useState(false);
   const [clearing, setClearing] = useState(false);
   useEffect(() => {
@@ -118,10 +126,17 @@ export function History({
           </button>
         </div>
       )}
-      {past.length === 0 && inProgress.length === 0 ? (
+      {past.length === 0 && inProgress.length === 0 && mafiaRows.length === 0 ? (
         <p className="lead">No finished games yet.</p>
       ) : (
         <ul className="history-list">
+          {mafiaRows.map((r) => (
+            <li key={r.key}>
+              <div className="history-row">
+                <span className="history-title">{r.text}</span>
+              </div>
+            </li>
+          ))}
           {[...inProgress, ...past].map((g) => {
             const session = sessionName(g);
             if (secretWords.isNight(g)) {

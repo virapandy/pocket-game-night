@@ -9,6 +9,9 @@ import { mafiaRules, readMafiaNight, type MafiaMove, type MafiaPlayerView, type 
 import type { RoomCtx } from './ctx';
 import { MafDialog, Main, PausedCover, PlayersSheet, Question, TopBar, WelcomeBack, useUndoToast, type MenuItem, type PlayerRow } from './parts';
 import { HowToPlay, MAX_PLAYERS } from './Setup';
+import { NobodyDialog } from './Day';
+import { D } from './dayText';
+import { playSound } from './sound';
 import { RoleAgain, SCREENS } from './StandIns';
 import { T } from './text';
 import {
@@ -28,6 +31,7 @@ type Dialog =
   | { kind: 'tonight' }
   | { kind: 'dealAgain' }
   | { kind: 'nobody' }
+  | { kind: 'delete' }
   | { kind: 'whose' };
 
 export function MafiaRoom({
@@ -40,6 +44,7 @@ export function MafiaRoom({
   onHome,
   onHistory,
   onSomethingElse,
+  onChangePlayers,
 }: {
   id: string;
   store: SavedGameStore;
@@ -53,6 +58,8 @@ export function MafiaRoom({
   onHistory: () => void;
   /** "Play something else": the picker with tonight's names. */
   onSomethingElse: (names: string[]) => void;
+  /** G1's "Change players or roles" (MAF-061): Who's playing? with these names and "← Back to the game". */
+  onChangePlayers: (names: string[]) => void;
 }) {
   const [opened] = useState(() => loadNight(store, id));
   const base = useRef({ id, createdAt: opened?.saved.createdAt ?? Date.now() });
@@ -208,6 +215,11 @@ export function MafiaRoom({
     ...(screen === 'g1' ? [{ label: T.menu.settings, onSelect: () => setSettings(true) }, { label: T.menu.history, onSelect: onHistory }] : []),
   ];
 
+  const changePlayers = () => {
+    const v = roomView(cur.current ?? match);
+    onChangePlayers([...v.players.filter((p) => !v.left.includes(p)), ...v.next]);
+  };
+
   const finishTonight = (then: 'home' | 'else') => {
     const v = roomView(cur.current ?? match);
     if (v.step !== 'ended') record(v.step === 'gameOver' ? [{ type: 'endEvening' }] : [{ type: 'endGame' }, { type: 'endEvening' }]);
@@ -249,10 +261,17 @@ export function MafiaRoom({
     finishTonight,
     backFromSummary: () => go(g2From),
     playAgain: () => {
+      // MAF-061: fewer than 5 players left → Who's playing? (it says "Mafia needs at least 5 players.").
       const start = legal.find((m) => m.type === 'start');
-      if (start && record([start])) go('b1');
+      if (start) {
+        if (record([start])) go('b1');
+      } else changePlayers();
     },
-    changePlayers: () => {},
+    changePlayers,
+    paused,
+    resumed: welcome,
+    lastMove: match.records[match.records.length - 1]?.move ?? null,
+    sound: (name) => playSound(name, prefs),
   };
 
   if (how) return <HowToPlay onDone={() => setHow(false)} />;
@@ -359,19 +378,35 @@ export function MafiaRoom({
           />
         );
       case 'nobody':
-        // MAF-035 (stand-in wording from text.csv, lane M4).
         return (
-          <Question
-            ask="Nobody out today?"
-            body={`Nobody goes out today. Straight to night ${view.round + 1}.`}
-            yes="Nobody today"
-            no="Back to the vote"
+          <NobodyDialog
+            round={view.round}
             onNo={() => setDialog(null)}
             onYes={() => {
               setDialog(null);
               if (record([{ type: 'voteNobody', reason: 'chosen' }])) go('n0');
             }}
           />
+        );
+      case 'delete':
+        // MAF-064 item 29: D9 as Secret Words' (SWD-065).
+        return (
+          <MafDialog title={D.g2.deleteAsk} onDismiss={() => setDialog(null)}>
+            <div className="pgn-dialog-buttons">
+              <QuietButton
+                onClick={() => {
+                  setDialog(null);
+                  store.remove(id);
+                  onHome();
+                }}
+              >
+                {D.g2.deleteYes}
+              </QuietButton>
+              <Main inline onClick={() => setDialog(null)}>
+                {D.g2.deleteNo}
+              </Main>
+            </div>
+          </MafDialog>
         );
       case 'whose':
         // D5 (stand-in, lane M3): the names of players who are in.
@@ -405,6 +440,7 @@ export function MafiaRoom({
         <HideMainButton.Provider value={covered}>
           <Screen className={`maf-room maf-${screen}`} page={PAGE_SCREENS.includes(screen)}>
             {framed && <TopBar items={items} onPause={() => setPaused(true)} />}
+            {screen === 'g2' && <TopBar items={[{ label: D.g2.delete, onSelect: () => setDialog({ kind: 'delete' }) }]} />}
             {framed && welcome && <WelcomeBack where={where} />}
             <ScreenContent hidden={players}>
               <Body key={`${screen}:${view.turn?.player ?? ''}:${view.game}`} ctx={ctx} />
