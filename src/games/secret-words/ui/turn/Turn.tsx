@@ -7,6 +7,7 @@
 // step the game is on, worked out from the moves and `pgn.secretWords-ui.<id>` (SWD-048), so a reload, Home's resume
 // row or a return from Settings or History renders the same component again.
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
+import { flushSync } from 'react-dom';
 import { HOST, type Preferences, type SavedGameStore } from '../../../../engine';
 import {
   clueWarning, secretWordsRules, type ClueNumber, type SecretWordsMove, type SecretWordsState, type Team,
@@ -280,7 +281,9 @@ export function SecretWordsPlay(props: SecretWordsPlayProps) {
     if (reduced) finish();
     else {
       setAnim({ shown: before, cells });
-      later(300, finish);
+      // flushSync: the turned-over cell is on screen as soon as the 300 ms are up, never a moment later (SWD-043), so
+      // no room screen ever shows the finished turn with that cell still drawn face down and turning (SWD-025).
+      later(300, () => flushSync(finish));
     }
   };
 
