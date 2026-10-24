@@ -2,6 +2,7 @@
 // game with undo for 5 seconds, clearing all history, and the tally a deleted game is taken out of.
 import { useEffect, useState } from 'react';
 import { inTally, type SavedGame } from '../engine';
+import { mafia } from '../games/mafia';
 import { games, secretWords } from './games';
 import { asTallyGame, Dialog } from './Sessions';
 import { gameStore, sessionStore } from './storage';
@@ -28,6 +29,7 @@ export function History({
   onBack,
   backLabel = '← Home',
   onOpen,
+  onOpenMafia,
   deleted,
   onUndoDelete,
 }: {
@@ -35,6 +37,8 @@ export function History({
   /** "← Home", or "← Back" when opened from a game's menu (IMP-075). */
   backLabel?: string;
   onOpen: (id: string) => void;
+  /** MAF-093: a past Mafia game (its game night's id and its index there). */
+  onOpenMafia: (id: string, game: number) => void;
   deleted: Deleted | null;
   onUndoDelete: () => void;
 }) {
@@ -51,6 +55,17 @@ export function History({
       .sort((a, b) => b.createdAt - a.createdAt),
   );
   const [past, setPast] = useState<SavedGame[]>(load);
+  // MAF-093: Mafia lists each game that is over, from game nights finished or still going.
+  const loadMafia = () => gameStore.list().flatMap((g) => mafia.historyRows(g));
+  const [mafiaRows, setMafiaRows] = useState(loadMafia);
+  /** Past games newest first, Mafia's games (each at its own start time) among them. */
+  const entries: ({ kind: 'saved'; g: SavedGame; at: number } | { kind: 'mafia'; row: (typeof mafiaRows)[number]; at: number })[] = [
+    ...past.map((g) => ({ kind: 'saved' as const, g, at: g.createdAt })),
+    ...mafiaRows.map((row) => ({ kind: 'mafia' as const, row, at: row.at })),
+  ].sort((a, b) => b.at - a.at);
+  /** Mafia rows "Clear all history" deletes: those of game nights that have ended (one still going is kept). */
+  const mafiaClear = mafiaRows.filter((r) => r.ended);
+  const total = past.length + mafiaClear.length;
   const [nearlyFull, setNearlyFull] = useState(false);
   const [clearing, setClearing] = useState(false);
   useEffect(() => {
@@ -69,11 +84,13 @@ export function History({
   const unsettled = past.filter((g) => unsettledSessionName(g) !== null).length;
   const clearAll = () => {
     for (const g of past) gameStore.remove(g.id);
+    for (const id of new Set(mafiaClear.map((r) => r.id))) gameStore.remove(id);
     // Sessions left with no games at all go too.
     const left = new Set(gameStore.list().map((g) => g.sessionId));
     for (const s of sessionStore.list()) if (!left.has(s.id)) sessionStore.remove(s.id);
     setClearing(false);
     setPast(load());
+    setMafiaRows(loadMafia());
   };
   const sessionName = (g: SavedGame) => (g.sessionId ? sessionStore.get(g.sessionId)?.name : undefined);
 
@@ -118,11 +135,22 @@ export function History({
           </button>
         </div>
       )}
-      {past.length === 0 && inProgress.length === 0 ? (
+      {past.length === 0 && inProgress.length === 0 && mafiaRows.length === 0 ? (
         <p className="lead">No finished games yet.</p>
       ) : (
         <ul className="history-list">
-          {[...inProgress, ...past].map((g) => {
+          {[...inProgress.map((g) => ({ kind: 'saved' as const, g, at: g.createdAt })), ...entries].map((e) => {
+            if (e.kind === 'mafia') {
+              const r = e.row;
+              return (
+                <li key={r.key}>
+                  <button type="button" className="history-row" data-testid="history-game" onClick={() => onOpenMafia(r.id, r.game)}>
+                    <span className="history-title">{r.text}</span>
+                  </button>
+                </li>
+              );
+            }
+            const g = e.g;
             const session = sessionName(g);
             if (secretWords.isNight(g)) {
               // SWD-064: "Secret Words · 3 games".
@@ -165,7 +193,7 @@ export function History({
           })}
         </ul>
       )}
-      {past.length > 0 && (
+      {total > 0 && (
         <button type="button" className="button button-quiet" onClick={() => setClearing(true)}>
           Clear all history
         </button>
@@ -173,11 +201,11 @@ export function History({
       {clearing && (
         <Dialog>
           <p className="lead">
-            {past.length === 1 ? 'Delete the past game' : `Delete all ${past.length} past games`} from this phone? This can't be undone.
+            {total === 1 ? 'Delete the past game' : `Delete all ${total} past games`} from this phone? This can't be undone.
           </p>
           {unsettled > 0 && (
             <p className="note">
-              {past.length === 1
+              {total === 1
                 ? "It's in an unsettled tally, and will be taken out of it."
                 : unsettled === 1
                   ? '1 of them is in an unsettled tally, and will be taken out of it.'
@@ -188,7 +216,7 @@ export function History({
           {/* PLT-301: a destructive action is never the main button; "Keep" is. */}
           <div className="row">
             <button type="button" className="button button-quiet" onClick={clearAll}>
-              {past.length === 1 ? 'Delete' : 'Delete all'}
+              {total === 1 ? 'Delete' : 'Delete all'}
             </button>
             <button type="button" className="button" onClick={() => setClearing(false)}>
               Keep
