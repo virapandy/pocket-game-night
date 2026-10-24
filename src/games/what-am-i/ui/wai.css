@@ -12,6 +12,7 @@
 .wai-bar .wai-top { gap: 4px; flex: none; }
 .wai-bar-end { justify-content: flex-end; }
 .wai-h2 { font-size: 1.15rem; font-weight: 800; }
+.wai-how { padding-bottom: calc(var(--pgn-foot) + 24px); }
 .wai-lines { padding-left: 1.4em; display: flex; flex-direction: column; gap: 8px; line-height: 1.4; }
 
 /* ----- S1 and Players: names with drag handles ----- */
@@ -106,12 +107,17 @@
 .wai:has(.wai-toast-host > .pgn-toast) .pgn-screen.wai-game {
   padding-bottom: calc(var(--pgn-foot) - 4px + var(--wai-toast-h, 44px) + 8px);
 }
+/* Who's playing? and Players (C1, 25 October): the same, so the toast never covers the name box or "Add". */
+.wai:has(.wai-toast-host > .pgn-toast) .pgn-screen.wai-setup:not(.pgn-page) {
+  padding-bottom: calc(var(--pgn-foot) - 4px + var(--wai-toast-h, 44px) + 8px);
+}
 /* A page screen (T1) scrolls inside a box that ends above the toast while one shows, so no button passes under it. */
 .wai:has(.wai-toast-host > .pgn-toast) .pgn-screen.pgn-page.wai-game {
   height: calc(100dvh - (var(--pgn-foot) - 4px + var(--wai-toast-h, 44px) + 8px));
   min-height: 0;
   overflow-y: auto;
-  padding-bottom: 8px;
+  padding-bottom: 24px;
+  scroll-padding-bottom: 24px;
 }
 .wai-stack.wai-stack-pinned { margin-top: 0; flex: 0 0 auto; }
 

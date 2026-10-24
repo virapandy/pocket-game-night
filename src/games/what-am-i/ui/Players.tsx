@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import { QuietButton, Screen, ScrollArea, Toast } from '../../../blocks';
 import type { WaiState } from '../rules';
 import { AddRow } from './Setup';
-import { Main, NameList, WaiDialog, WaiSheet, moved, useWaiBack, useWaiToast } from './parts';
+import { Main, NameList, WaiDialog, WaiSheet, ToastHost, moved, useWaiBack, useWaiToast } from './parts';
 
 interface PlayerEdits {
   state: WaiState;
@@ -78,7 +78,12 @@ function usePlayerEdits({ state, onAdd, onReorder, onLeave, onUndoLeave, onEndGa
       <AddRow names={order} onAdd={onAdd} fieldRef={field} />
     </>
   );
-  return { asking: ask !== null, cover, list, toast: <Toast toast={toast} onDone={clearToast} /> };
+  return { asking: ask !== null, cover, list, toast: (
+      <ToastHost>
+        <Toast toast={toast} onDone={clearToast} />
+      </ToastHost>
+    ),
+  };
 }
 
 export function PlayersSheet(props: PlayerEdits & { onDone: () => void }) {

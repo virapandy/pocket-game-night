@@ -65,3 +65,6 @@
 .wai-chip-moved { border-style: dashed; }
 .wai-review { gap: 8px; }
 .wai-review .pgn-title { flex: none; }
+
+/* T1 (C1, 25 October): scrolled to the end, its last buttons clear the pinned main button with room to spare, also sideways. */
+.pgn-screen.pgn-page.wai-pass { padding-bottom: calc(var(--pgn-foot) + 16px); }

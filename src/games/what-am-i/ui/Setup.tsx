@@ -4,7 +4,7 @@
 import { useId, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { QuietButton, Screen, ScreenContent, ScrollArea, Toast } from '../../../blocks';
 import { PACKS, packCount, type Choices, type Hold, type PackChoice, type TurnTime } from '../rules';
-import { Main, NameList, Switch, moved, useWaiBack, useWaiToast } from './parts';
+import { Main, NameList, Switch, ToastHost, moved, useWaiBack, useWaiToast } from './parts';
 
 const MAX_PLAYERS = 20;
 const MAX_NAME = 16;
@@ -72,7 +72,9 @@ export function WhosPlaying({
         )}
         {names.length >= 2 && <p className="wai-small">{names.length} players</p>}
       </ScrollArea>
-      <Toast toast={toast} onDone={clearToast} />
+      <ToastHost>
+        <Toast toast={toast} onDone={clearToast} />
+      </ToastHost>
       <Main disabled={names.length < 2} onClick={onNext}>
         Next
       </Main>
