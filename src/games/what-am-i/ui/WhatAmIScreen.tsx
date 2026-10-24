@@ -7,7 +7,7 @@ import type { Preferences, SavedGameStore, SessionPicker } from '../../../engine
 import type { Choices } from '../rules';
 import { WhatAmIGame } from './Frame';
 import { takeTestSetup } from './hooks';
-import { createNight, lastChoices, openNight, PREF, record, sameChoices, startGame, tonightsNames, type Live } from './night';
+import { createNight, lastChoices, openNight, PREF, record, sameChoices, startGame, tonightsNames, writeUi, type Live } from './night';
 import { HowToPlay, ReadAloud, WhosPlaying, WordsAndTime } from './Setup';
 import './wai.css';
 
@@ -84,7 +84,11 @@ export function WhatAmIScreen({
     const sameNames = names.length === s.order.length && names.every((n, i) => n === s.order[i]);
     if (!sameNames) cur = cur && record(store, cur, { type: 'setPlayers', players: [...names] });
     if (cur && s.choices && !sameChoices(choices, s.choices)) cur = record(store, cur, { type: 'setChoices', choices });
-    if (cur) play(cur.saved.id);
+    if (!cur) return;
+    // From R1, "Carry on playing" starts the next round: T1, not R1 again (Version 1.1 item 33).
+    const n = cur.match.state;
+    if (n.step === 'pass' && n.played.length === 0 && n.round > 1) writeUi(ui, cur.saved.id, { roundStarted: `${n.game}:${n.round}` });
+    play(cur.saved.id);
   };
 
   let screen: ReactNode;
