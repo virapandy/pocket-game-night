@@ -30,7 +30,8 @@ export function PastGame({
   /** Who's playing? with the game's players (those who didn't leave), in seat order. */
   onPlayAgain: (names: string[]) => void;
 }) {
-  const g = readMafiaNight(saved)?.games[game - 1];
+  const g0 = readMafiaNight(saved)?.games[game - 1];
+  const g = g0?.over ? g0 : undefined;
   const title = !g ? D.history.ended : g.winner === 'village' ? D.g1.village : g.winner === 'mafia' ? D.g1.mafia : D.g1.none;
   return (
     <BlocksRoot className="maf">

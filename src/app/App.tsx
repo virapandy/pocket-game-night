@@ -4,7 +4,7 @@ import { BlocksRoot, useTapGuard } from '../blocks';
 import { makePlayerReport, makeReport, type Preferences, type Report, type ReportSubject, type SavedGame } from '../engine';
 import { games, hostGames, impostor, phoneGames, secretWords, tambola, type GameId, type HostGameId, type PhoneGameId } from './games';
 import { secretWordsShowingNight } from '../games/secret-words';
-import { mafia, type MafiaStart } from '../games/mafia';
+import { mafia, readMafiaNight, type MafiaStart } from '../games/mafia';
 import type { SecretWordsMapCodeError, SecretWordsMapToOpen, SecretWordsStart } from '../games/secret-words';
 import { History, isPast, unsettledSessionName, type Deleted } from './History';
 import { CrashNotice, ReportForm, ReportToast, WaitingReports } from './Report';
@@ -536,7 +536,8 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
     if (route.name === 'session') return <SessionScreen id={route.id} onBack={() => setRoute({ name: 'sessions' })} />;
     if (route.name === 'mafia-past') {
       const saved = gameStore.get(route.id);
-      if (saved) {
+      // MAF-P2: a game still in play shows no roles; fall through to Home.
+      if (saved && readMafiaNight(saved)?.games[route.game - 1]?.over) {
         return (
           <mafia.PastGame
             saved={saved}
