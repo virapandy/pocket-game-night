@@ -456,7 +456,7 @@ test.describe('SWD-112 v3.7: game over\'s pinned bottom bar ("End for tonight" b
         }
         // Pinned: the same place after scrolling; the list ends above the bar.
         await page.evaluate(() => window.scrollTo(0, document.scrollingElement!.scrollHeight));
-        await page.mouse.wheel(0, 2000);
+        await page.evaluate(() => window.scrollBy(0, 2000));
         const after = await bar(page);
         expect(after.end.y).toBeCloseTo(end.y, 0);
         expect(after.play.y).toBeCloseTo(play.y, 0);
