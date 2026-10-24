@@ -1,7 +1,7 @@
 // The saved game night (MAF-093, MAF-062, MAF-064, IMP-097) and the browser's test seeds (MAF-H2, H3, H5; item 33).
 import { readSavedGame, replay, type MoveRecord, type SavedGame, type SetupInput } from '../../../engine';
 import { mafiaRules } from './rules';
-import { ROLES, type Game, type MafiaConfig, type MafiaMove, type NightRecord, type Role, type VoteRecord, type LeftRecord } from './types';
+import { ROLES, type Game, type MafiaConfig, type MafiaState, type MafiaMove, type NightRecord, type Role, type VoteRecord, type LeftRecord } from './types';
 
 export interface MafiaNightGame {
   number: number;
@@ -89,7 +89,12 @@ export function readMafiaNight(saved: unknown): MafiaNight | null {
   const read = readSavedGame(saved);
   if (!read.ok || read.game.gameType !== 'mafia') return null;
   const game = read.game as SavedGame<MafiaConfig, MafiaMove>;
-  const r = replay(mafiaRules, game.setup as SetupInput<MafiaConfig>, game.records as readonly MoveRecord<MafiaMove>[]);
+  let r: ReturnType<typeof replay<MafiaConfig, MafiaState, MafiaMove>>;
+  try {
+    r = replay(mafiaRules, game.setup as SetupInput<MafiaConfig>, game.records as readonly MoveRecord<MafiaMove>[]);
+  } catch {
+    return null;   // no role seed, or an unknown story edition
+  }
   if (!r.ok) return null;
   const s = r.value.state;
   const tally = { village: 0, mafia: 0 };

@@ -2,7 +2,7 @@
 // Turns the approved Mafia morning stories into the app's content file (MAF-037, edition 1.2):
 //   docs/games/mafia/stories.csv → content/mafia/stories.json
 // One object per CSV row, in row order, { id, kind, text }; the notes column stays out.
-// Refuses to write anything if a check fails. Run again whenever the list changes: npm run build:stories
+// Refuses to write anything if a check fails, or if it would drop a story a frozen edition lists. Run again whenever the list changes: npm run build:stories
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -54,6 +54,20 @@ const stories = lines.map((cells, i) => {
   if (!s.text.trim()) problems.push(`line ${line}: no text`);
   return s;
 });
+
+// Frozen editions (src/games/mafia/rules/story-editions.json): saved game nights replay from these ids, so the CSV may add
+// stories but never drop one an edition lists, nor change its kind.
+const frozen = JSON.parse(readFileSync(path.join(root, 'src/games/mafia/rules/story-editions.json'), 'utf8')).editions;
+const byId = new Map(stories.map((s) => [s.id, s]));
+for (const [edition, lists] of Object.entries(frozen)) {
+  for (const kind of ['out', 'saved']) {
+    for (const id of lists[kind]) {
+      const s = byId.get(id);
+      if (!s) problems.push(`edition ${edition} lists ${id}, which the CSV dropped (old game nights need it)`);
+      else if (s.kind !== kind) problems.push(`edition ${edition} lists ${id} as ${kind}; the CSV says ${s.kind}`);
+    }
+  }
+}
 
 if (problems.length) {
   console.error(`Mafia stories not written (${problems.length} problems):\n  ${problems.join('\n  ')}`);

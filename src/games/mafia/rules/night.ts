@@ -1,11 +1,17 @@
 // The night (MAF-021 to MAF-027, items 4, 8, 9, 11): the order, each job's allowed names and tags, and the resolution.
 import { createRng } from '../../../engine';
 import storiesJson from '../../../../content/mafia/stories.json';
+import editionsJson from './story-editions.json';
 import type { Game, JobKind, MafiaState, NightJob, Role, Side } from './types';
 
 export interface Story { readonly id: string; readonly kind: 'out' | 'saved'; readonly text: string }
 export const STORIES: readonly Story[] = storiesJson as Story[];
 const STORY_TEXT = new Map(STORIES.map((s) => [s.id, s.text]));
+/** Frozen story editions (MAF-037, MAF-093): each edition's ids by kind. Never changed; a new edition is added. */
+export const STORY_EDITIONS: Readonly<Record<string, { readonly out: readonly string[]; readonly saved: readonly string[] }>> =
+  editionsJson.editions;
+/** The edition a new game night uses. */
+export const MAFIA_STORY_EDITION = '1.2';
 export const QUIET_NIGHT = 'A quiet night. Nobody is out!';
 
 /** Item 10: list[floor(rng() × list.length)] with the first value of createRng(seed), rng() = int(2³²) / 2³². */

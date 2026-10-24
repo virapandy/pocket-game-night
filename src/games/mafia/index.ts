@@ -7,7 +7,7 @@ import type { GameInfo } from '../../engine';
 
 export {
   mafiaRules, mafiaCounts, keptCount as mafiaKeptCount, readMafiaNight, readTestSeeds, STORIES as mafiaStories,
-  QUIET_NIGHT as mafiaQuietNight,
+  QUIET_NIGHT as mafiaQuietNight, STORY_EDITIONS as mafiaStoryEditions, MAFIA_STORY_EDITION,
   type MafiaConfig, type MafiaMove, type MafiaState, type MafiaView, type MafiaPlayerView, type NightJob as MafiaNightJob,
   type Role as MafiaRole, type MafiaNight, type MafiaNightGame, type MafiaTestSeeds,
 } from './rules';

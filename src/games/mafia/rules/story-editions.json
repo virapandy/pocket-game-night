@@ -1,0 +1,33 @@
+{
+  "$comment": "Frozen story editions (MAF-037, MAF-093): a saved game night picks its stories from its edition's ids, so old nights replay the same. Never change or remove an edition; add a new one. scripts/build-mafia-stories.mjs refuses to drop an id listed here.",
+  "editions": {
+    "1.2": {
+      "out": [
+        "MAFS-01",
+        "MAFS-02",
+        "MAFS-03",
+        "MAFS-04",
+        "MAFS-05",
+        "MAFS-07",
+        "MAFS-08",
+        "MAFS-09",
+        "MAFS-10",
+        "MAFS-11",
+        "MAFS-14",
+        "MAFS-15"
+      ],
+      "saved": [
+        "MAFS-16",
+        "MAFS-17",
+        "MAFS-18",
+        "MAFS-19",
+        "MAFS-20",
+        "MAFS-21",
+        "MAFS-23",
+        "MAFS-24",
+        "MAFS-25",
+        "MAFS-26"
+      ]
+    }
+  }
+}
