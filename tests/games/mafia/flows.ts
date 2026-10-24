@@ -63,6 +63,7 @@ const idx = (m: Move) => GAME_1.indexOf(m);
 export const FLOWS: Flow[] = [
   { name: 'deal-arjun', what: 'B1: the deal, Arjun to see his role (Player 2 of 9)', deals: { 1: EXAMPLE_DEAL },
     moves: [START_1, { type: 'seen', player: 'Riya' }] },
+  { name: 'deal-start', what: 'B1: a new game night, only the start recorded (Player 1 of 9)', deals: { 1: EXAMPLE_DEAL }, moves: [START_1] },
   { name: 'night1-start', what: 'N0: night 1, every role seen', deals: { 1: EXAMPLE_DEAL }, moves: [START_1, ...seenAll(NINE)] },
   { name: 'night1-meena', what: 'N1: night 1, Meena\'s turn (3 of 9)', deals: { 1: EXAMPLE_DEAL },
     moves: [START_1, ...seenAll(NINE), { type: 'startNight', night: 1 }, ...NIGHT_1.slice(0, 2)] },
@@ -81,6 +82,8 @@ export const FLOWS: Flow[] = [
     moves: [START_1, ...seenAll(NINE), { type: 'startNight', night: 1 }, ...picks([
       ['Riya', 'Arjun'], ['Arjun', 'Kabir'], ['Meena', 'Meena'], ['Kabir', 'Zoya'], ['Zoya', 'Om'], ['Dev', 'Zoya'], ['Om', 'Arjun'],
       ['Sunita', 'Riya'], ['Neha', 'Kabir']]), { type: 'endGame' }] },
+  { name: 'left-neha-ended', what: 'G1: day 1, Neha left by day, then End the game (no winner; Play again without Neha)', deals: { 1: EXAMPLE_DEAL },
+    moves: [...g1(idx(NIGHT_1[8]!) + 1), { type: 'leave', player: 'Neha' }, { type: 'endGame' }] },
   { name: 'game1-over', what: 'G1: the Village wins game 1', deals: { 1: EXAMPLE_DEAL }, moves: GAME_1 },
   { name: 'game2-over', what: 'G1: game 2 ended with no winner (Tonight: Village 1 · Mafia 0)', deals: { 1: EXAMPLE_DEAL, 2: DEAL_2 },
     moves: [...GAME_1, { type: 'start', players: NINE, mafiaCount: 2 }, ...seenAll(NINE), { type: 'startNight', night: 1 }, { type: 'endGame' }] },

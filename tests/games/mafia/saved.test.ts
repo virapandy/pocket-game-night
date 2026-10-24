@@ -158,6 +158,7 @@ describe('MAF-H6 every flow the browser tests open replays through the rules', (
       return rules.view(re.value.state, { kind: 'room' });
     };
     expect(stepOf('deal-arjun')).toMatchObject({ step: 'deal', turn: { player: 'Arjun', i: 2, of: 9 } });
+    expect(stepOf('deal-start')).toMatchObject({ step: 'deal', turn: { player: 'Riya', i: 1, of: 9 } });
     expect(stepOf('night1-start')).toMatchObject({ step: 'nightStart', round: 1 });
     expect(stepOf('night1-meena')).toMatchObject({ step: 'night', round: 1, turn: { player: 'Meena', i: 3, of: 9 } });
     expect(stepOf('morning1')).toMatchObject({ step: 'day', round: 1, morning: { out: 'Kabir' } });
@@ -168,6 +169,7 @@ describe('MAF-H6 every flow the browser tests open replays through the rules', (
     expect(stepOf('game1-over')).toMatchObject({ step: 'gameOver', winner: 'village', game: 1 });
     expect(stepOf('game2-over')).toMatchObject({ step: 'gameOver', winner: null, game: 2, tally: { village: 1, mafia: 0 } });
     expect(stepOf('day1-left-neha')).toMatchObject({ step: 'day', left: ['Neha'] });
+    expect(stepOf('left-neha-ended')).toMatchObject({ step: 'gameOver', winner: null, left: ['Neha'] });
     expect(stepOf('day3')).toMatchObject({ step: 'day', round: 3, morning: { out: 'Meena' }, caught: 1 });
     expect(stepOf('worked-example-ended')).toMatchObject({ step: 'gameOver', winner: null, morning: { out: 'Om' } });
   });
