@@ -18,8 +18,8 @@ Result: GREEN. Quick verify 40128921060 on lane-m at 6c072c7: verify and all 4 b
   "Still a tie" counts for the day before and happens at once. These were the orchestrator's calls while you were away:
   please confirm them (`docs/test-questions.md`, 25 October, "Mafia review fixes").
 ## Lane W2 (What Am I? setup and the game's frame), 25 October
-Commit tested: b9f6a75 (lane-w2)   Date: 2026-10-25
-Result: see "Quick verify" below; locally RED only for the expected lane W3/W4 screens.
+Commit tested: b9f6a75 locally; 20a6294 (lane-w2, the coder's header fix on top of the test commit 6488abc) by automation   Date: 2026-10-25
+Result: RED (expected: What Am I? screens of lanes W3/W4 not built; plus T1 details, see Failing)
 - **Rule tests:** 977 of 977 pass (53 files).
 - **Browser, local, both phones** (what-am-i-setup, -interruptions, -lifecycle, impostor-round6b, impostor-setup,
   secret-words-a-home; 3 workers): 367 pass; 34 fail (17 per phone), all needing screens of lanes W3/W4 (T2 the
@@ -35,12 +35,24 @@ Result: see "Quick verify" below; locally RED only for the expected lane W3/W4 s
 - **Test fixed, app right (WAI-041):** "Players: … adding Om" looked for the button "Move Om" by partial name, which also
   matched "Remove Om" (two buttons). Now matches the exact name, same check. Passes on both phones.
 ### Failing (real bugs only)
-- None outside the expected W3/W4 screens.
+Outside T2–T4, R1, G1 and G2 (if T1's details belong to lane W3, these are expected too; for the orchestrator):
+- WAI-012 the pass screen (what-am-i-turn.spec.ts lines 22, 54, 63): T1 shows "Riya, you're guessing" but not the hold
+  line "Hold the phone on your forehead or chest, screen facing the room." (nor the taps-only rule line, nor the
+  hands-free standing line "Stand the phone behind Riya, facing the room. Riya, don't turn round!").
+- WAI-011 tip lines on T1 (what-am-i-turn.spec.ts lines 90, 115, 129): no tip line (`tip-line`) on T1, e.g. expected
+  "Only 10 new Animals words left. After that, words come from Mix of all."
+- WAI-013 (what-am-i-turn.spec.ts line 152): tapping "I'm Riya: start" on the first hand-hold turn with motion permission
+  available does not show T0 "Answer by moving the phone?".
 ### Flaky or setup problems
 - WAI-002 "a 21st name shows Up to 20 players." timed out once on Android (30 s while typing 21 names with 3 workers on a
   busy Mac); passes on a rerun on both phones.
 ### Quick verify
-QUICK_VERIFY_PLACEHOLDER
+Quick verify run 40129838234 on 20a6294 (lane-w2), Android, every browser test in 4 shards: **failure**, 1,161 pass,
+114 fail, 1 skipped. All 114 failures are in What Am I? files (turn 34, results 18, c3 16, interruptions 16, scores 15,
+lifecycle 12, usability 6 failing-test entries across shards) and are lane W3/W4 screens (`the-word`, `countdown`,
+"Time's up!", game over, a whole night), except the T1 items under Failing. No Tambola, Impostor, Secret Words or
+What Am I? setup failure; the updated "← Home", Host line, 11 h 59 min and "Move Om" tests pass. (Run 40129362920 on
+6488abc was cancelled by the coder's later push.)
 ---
 **24 October, weekly run 40077271486 on main e24fde5 (reading job, no tests run): privacy and stuck findings first. Secret Words: 0 privacy slips, 0 stuck, 0 no-clear-way-on in 40 evenings (10 with Jev people). Impostor/Tambola: 0 secrets shown.**
 - **screen-sims (7)**: sim-script problem, not the app. Evenings 002, 005, 007 (Secret Words) each ended "could not do Menu: click timed out" then "no Home after the summary". Screenshot of 005 shows the Menu sheet open (with its How to play row) when the script tried to tap the covered Menu button: the script read the sheet as the how-to-play screen (tests/sims/secret-words-runner.ts line 193 matches any "How to play" text, line 369 then falls through to Menu). The unrecognised "Type the code / Open ticket" screens (002, 004, 006) are the Tambola ticket page the script does not know. Evening 006 also shows "2 main buttons: Play again / Done" on How to play from game over: SWD-011, fixed in b05ea1f which landed after e24fde5, so expect it gone on the next run. Confirm after fixing the script; if the click still fails after a plain menu, treat as an app bug.
