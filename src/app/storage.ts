@@ -240,3 +240,18 @@ export function testSeedsRaw(): string | null {
     return null;
   }
 }
+
+/**
+ * Mafia MAF-H6 (item 34): `localStorage['pgn.test.load']`, a saved game night opened on the next load as if resumed.
+ * Read once and removed, so later reloads open the game night as it then is. Never in the release build.
+ */
+export function takeTestLoad(): string | null {
+  if (IS_RELEASE) return null;
+  try {
+    const raw = storage()?.getItem('pgn.test.load') ?? null;
+    if (raw !== null) storage()?.removeItem('pgn.test.load');
+    return raw;
+  } catch {
+    return null;
+  }
+}
