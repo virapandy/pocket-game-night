@@ -190,8 +190,8 @@ in 04).
 9. **T3 sizes** (distracted host, guest): `time-left` 28 px bold; the pack name 18 px (22 px with Larger text).
 10. **The picker gets a way back** (four walks; Jev: A2's way out 0.06): "What shall we play?" gains a quiet "← Home". It is the
     shared picker, so this changes every game's picker (C1; product owner's call, listed for the owner).
-11. **Not changed, for the owner:** the greyed tap-guard look (all six walks found it looks disabled; a rule for every game, owner
-    question); "End the game" vs "End for tonight" (three walks; shared words, D5 and D6 say what each does).
+11. **Tap guards are invisible** (owner, 24 October, every game): main buttons look live at once; the guard times stay and a
+    tap inside them does nothing. Replaces the Guard term's "shows the greyed look meanwhile". Not changed: "End the game" vs "End for tonight" (three walks; shared words, D5 and D6 say what each does).
 12. **Prototype-only** (renderer, not design): the fixed example data (names, rounds, "2 players needed" with 6), the turn clock
     not running, T2's tap hint after choosing motion, "Drawing" boxes, Back with a dialog open, dialogs reopening on Back, and
     editing the address. Listed in the handover for the renderer lane.
@@ -264,7 +264,7 @@ t = …, sound on**, with one change: **undo toasts in What Am I? last 10 s** (5
 | **Pitch** | θ: the angle in degrees between the screen's outward normal and the horizontal plane; positive when the screen faces up, negative when it faces the floor. From `DeviceOrientationEvent` (test hook WAI-H3). |
 | **Mark** | One Got it or one Pass on T3. |
 | **Score** | A player's Got it count, summed over their saved turns in this game. **Turns played**: their saved turns in this game. |
-| **Guard** | A main button ignores taps for 800 ms after its screen mounts (1000 ms for "I'm Riya: start" and "Start Riya's turn") and shows the greyed look meanwhile; a tap during a guard does nothing and is never carried to the next screen. Same rule as SWD-114. |
+| **Guard** | A main button ignores taps for 800 ms after its screen mounts (1000 ms for "I'm Riya: start" and "Start Riya's turn") and keeps its normal live look meanwhile (owner, 24 October); a tap during a guard does nothing and is never carried to the next screen. Same rule as SWD-114. |
 
 Example players, typed in this order: **Riya, Arjun, Meena, Kabir, Zoya, Dev**. Added mid-round: **Om**. Example words (pack
 Animals): Tiger, Owl, Camel, Duck, Bat, Penguin, Zebra, Kangaroo.

@@ -46,8 +46,9 @@ Source: `screen-map.md` draft 2 and `map-walk-2026-10-11.md`. Every string below
 1. **Help (decision 1):** Choices gains quiet "How to play" (opens SWD-011; "Done" returns to Choices). The map phone gains
    quiet "Clue rules" (opens How to play scrolled to h2 "Clue rules", never any map; "Done" returns to the map phone, map
    state unchanged). SWD-009, 011, 034.
-2. **Visible tap guards (decision 2):** while a main button's guard runs (SWD-114) it shows the greyed look and becomes live
-   when the guard ends; the same look rule applies to every game. SWD-114.
+2. ~~**Visible tap guards (decision 2):** while a main button's guard runs (SWD-114) it shows the greyed look and becomes live
+   when the guard ends; the same look rule applies to every game.~~ Reversed by the owner on 24 October: guards are invisible
+   (SWD-114, Version 3.8).
 3. **Where-line (decision 3):** `where-line` (small line) under "Welcome back." (SWD-032), on the Pause cover (SWD-110) and in
    Home's unfinished row and the picker's resume card (SWD-115): "Turn 4 · clue for Chai Champions" (pass, map and clue steps:
    "Turn N · clue for <team>"; never a possessive, SWD-013; version 3.6), "Chai Champions guessing · 2 guesses
@@ -1022,8 +1023,12 @@ the map"); "New board" deals. "I'm Riya" ignores taps for 1 s after the pass scr
 Every main button ignores taps for 800 ms after its screen appears (Terms: Screen mounts; a reload mounts; closing a dialog,
 "Carry on" and "Welcome back." don't restart it), in addition to SWD-049. Exceptions, which win over the 800 ms: "I'm Riya" /
 "We're Nana and Aarav" ignores taps for 1 s; "Other team's turn" after a turn-ending reveal ignores taps for 1.5 s counted from
-t = 300 ms (the word shown turned over, SWD-043). Quiet buttons are not affected. **While a main button's guard runs it shows the greyed look (Terms) and becomes live when the
-guard ends** (v3.5 item 2); a tap during the guard does nothing and is not queued. Tests may check both looks.
+t = 300 ms (the word shown turned over, SWD-043). Quiet buttons are not affected. ~~While a main button's guard runs it shows the greyed look (Terms) and becomes live when the
+guard ends (v3.5 item 2).~~ A tap during the guard does nothing and is not queued.
+**Version 3.8 (owner, 24 October):** **The guard is invisible.** Every main button shows its normal live look (`hasMainLook`, not
+greyed, not `aria-disabled`) from the moment its screen appears; the guards' times and their "a tap does nothing and is not
+queued" rule are unchanged. Tests check that a tap inside the guard does nothing and that the button is never greyed by a guard
+(a button disabled for a real reason, such as "Next" with too few names, still shows the greyed look).
 **Version 3.6 (owner, 22 October):** **Which buttons wait:** 1 s: "I'm Riya" / "We're Nana and Aarav". 1.5 s: "Other team's turn" after any turn-ending reveal, counted from t = 300 ms of that reveal; after "Turn ends, and one of their words is turned over for them", counted from t = 300 ms of the free word's turn (SWD-046). 800 ms: every other main button of a screen, sheet, dialog or cover, including "Carry on" (from the Pause cover appearing), "Keep playing", "Let it go", "Done", "Start the game", "Play again", "No, keep the board", and "Other team's turn" on the end-turn line (from that line showing). **Mounts:** opening a dialog, sheet or cover starts its own main's wait; closing one does not restart the wait of the screen beneath (Terms). **Look and hook:** while waiting, the main shows the greyed look with its own label unchanged and has `aria-disabled="true"` and `data-guard="on"`; a main disabled for another reason ("Sunita: Reveal" with no pick, "Pick a number") keeps its disabled label and look and never has `data-guard`. Quiet buttons never wait.
 
 ### SWD-115 Home rows, Start new and next day (E18, K37)
