@@ -1,6 +1,6 @@
 // "Read this aloud" (SWD-010) and "How to play" (SWD-011, SWD-131): the exact words of the scenarios.
 // Nothing about the map is ever here.
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { QuietButton, Screen } from '../../../blocks';
 import type { SecretWordsChoices, SecretWordsTeamNames } from '../rules';
 import { GuardedMain } from './guard';
@@ -103,10 +103,23 @@ export function ReadAloud({
   );
 }
 
-export function HowToPlay({ names, choices, onDone }: { names: SecretWordsTeamNames; choices: RuleChoices; onDone: () => void }) {
+export function HowToPlay({
+  names,
+  choices,
+  onDone,
+  at,
+}: {
+  names: SecretWordsTeamNames;
+  choices: RuleChoices;
+  onDone: () => void;
+  /** Opened from the map phone's "Clue rules" (SWD-011 v3.6): its h2 "Clue rules" at the top of the screen. */
+  at?: 'clue-rules';
+}) {
+  const clueRules = useRef<HTMLHeadingElement | null>(null);
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+    if (at === 'clue-rules' && clueRules.current) clueRules.current.scrollIntoView({ block: 'start' });
+    else window.scrollTo(0, 0);
+  }, [at]);
   return (
     <Screen page className="sw-setup sw-how">
       <h1 className="pgn-title">How to play</h1>
@@ -122,7 +135,9 @@ export function HowToPlay({ names, choices, onDone }: { names: SecretWordsTeamNa
           <li key={l}>{l}</li>
         ))}
       </ol>
-      <h2 className="sw-h2">Clue rules</h2>
+      <h2 className="sw-h2" ref={clueRules}>
+        Clue rules
+      </h2>
       <ol className="sw-lines">
         {CLUE_RULES.map((l) => (
           <li key={l}>{l}</li>

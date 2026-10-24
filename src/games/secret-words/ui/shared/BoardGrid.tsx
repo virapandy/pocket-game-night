@@ -36,25 +36,30 @@ const MAX = 22;
 const FLOOR = 10;
 const PAD = 4;
 
-let probe: HTMLSpanElement | null = null;
+/**
+ * SWD-090's measuring, without putting any word in the page (SWD-025, 032, 121): words are measured on an off-screen
+ * canvas that is never attached, so no word, and no order of measuring, can be read from the page, and measuring never
+ * makes the page lay itself out again (the guards of SWD-114 count from a screen appearing).
+ */
+let ctx: CanvasRenderingContext2D | null | undefined;
 function measurer(family: string): (word: string, px: number) => number {
-  if (!probe) {
-    probe = document.createElement('span');
-    probe.setAttribute('aria-hidden', 'true');
-    probe.style.cssText = 'position:absolute;left:-9999px;top:0;white-space:nowrap;font-weight:600;text-transform:none;letter-spacing:normal;visibility:hidden';
-    document.body.appendChild(probe);
-  }
-  const p = probe;
-  p.style.fontFamily = family;
+  if (ctx === undefined) ctx = document.createElement('canvas').getContext('2d');
+  const c = ctx;
   return (word, px) => {
-    p.textContent = word;
-    p.style.fontSize = `${px}px`;
-    return p.getBoundingClientRect().width;
+    if (!c) return 0;
+    c.font = `600 ${px}px ${family}`;
+    return c.measureText(word).width;
   };
 }
 
+/** Fittings already worked out, so a board measures only when its words, its cell size or the font change. */
+const fitted = new Map<string, { size: number; alone: Map<number, number> }>();
+
 /** SWD-090: the board's one size, and the sizes of the words that shrink alone. */
 export function fitWords(words: readonly string[], room: number, family: string): { size: number; alone: Map<number, number> } {
+  const key = `${typeof document === 'undefined' ? '' : (document.fonts?.status ?? '')}\n${family}\n${room}\n${words.join('\n')}`;
+  const known = fitted.get(key);
+  if (known) return known;
   const width = measurer(family);
   let size = MIN;
   for (let s = MAX; s >= MIN; s--) {
@@ -72,7 +77,10 @@ export function fitWords(words: readonly string[], room: number, family: string)
       alone.set(i, s);
     });
   }
-  return { size, alone };
+  const fit = { size, alone };
+  if (fitted.size > 40) fitted.clear();
+  fitted.set(key, fit);
+  return fit;
 }
 
 /**
@@ -118,6 +126,7 @@ function useFit(ref: React.RefObject<HTMLDivElement | null>, words: readonly str
   useLayoutEffect(() => {
     const el = ref.current;
     if (!el || cellWidth <= 0) return;
+    // The same fitting object for the same words and size: no new render when nothing changed.
     setFit(fitWords(words, cellWidth - 2 * PAD, getComputedStyle(el).fontFamily));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key, cellWidth, fontsTick]);

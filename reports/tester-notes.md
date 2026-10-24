@@ -85,3 +85,8 @@ Merged origin/main (PGN_PORT per lane: lane-a 4174). Lane A area: 129 of 132 pas
 
 ## Lane B fixes, 23 Oct (tester)
 `pass screen` checks in the SWD-094/098 test wait out the 1 s guard; `toGuessing` waits for `clue-line`. Both questions answered in docs/test-questions.md.
+
+## 23 October: Secret Words screen lane C tests (lane-e)
+- `tests/browser/secret-words-c-map.spec.ts` + helpers `secret-words-c.ts`; coder note `specs/secret-words/screens-c.md`. M1 is opened by the `#map=` link on a fresh phone. Lanes A, B, C are on lane-e (7b4407f); only lane D's (game over) marks and the SWD-025 board-phone check (lane B grid fix pending) stay expected-to-fail. Remove each mark when Playwright says "expected to fail, but passed".
+- `freshPhone({ fixed: true })` freezes Date.now(): tap guards never end; call `page.clock.setSystemTime(now)` before tapping (see `unfixClock` in the lane C spec).
+- Use `PGN_PORT=<own port>` for local browser runs so two testers never share a preview server.

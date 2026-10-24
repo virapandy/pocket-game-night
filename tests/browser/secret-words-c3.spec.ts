@@ -4,6 +4,8 @@
 // map code again records nothing). Rules: tests/games/secret-words/. Helpers: secret-words.ts.
 // Tests that need screens from lanes A, C or D are marked `aheadOfSecretWordsScreens` (expected to fail until built);
 // lane B's own checks (SWD-090, 042, 033 QR, 129) are real checks since 23 October (lane-b tests first).
+// Lane C's map-phone checks (SWD-117's link, unknown t, my-team) and the typed code (lanes A and C) are real since 23 October
+// (lane-e); SWD-022 and SWD-025 wait for lane D's game over.
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { expect, test, type Page } from './fixtures';
@@ -236,7 +238,6 @@ test.describe('SWD-117: the map phone from the host\'s QR link', () => {
   const starter = b.starts === 'orange' ? pair.orange : pair.teal;
 
   test('#map=27P3QX8&t=SWDT-01 opens the map phone with team names; the hash is removed; the map is the code\'s', async ({ page }) => {
-    aheadOfSecretWordsScreens('map phone (SWD-034, 117)');
     await freshPhone(page);
     await page.goto('about:blank');
     await page.goto(`./#map=${code}&t=${pair.id}`);
@@ -258,7 +259,6 @@ test.describe('SWD-117: the map phone from the host\'s QR link', () => {
   });
 
   test('an unknown t is ignored: no map-teams, "Host\'s code 27P-3QX8 · Orange team goes first" (or Teal)', async ({ page }) => {
-    aheadOfSecretWordsScreens('map phone (SWD-117)');
     await freshPhone(page);
     await page.goto('about:blank');
     await page.goto(`./#map=${code}&t=SWDT-99`);
@@ -268,7 +268,6 @@ test.describe('SWD-117: the map phone from the host\'s QR link', () => {
   });
 
   test('&p=own (three phones): my-team "I give clues for:" with the two team names; saved with the map', async ({ page }) => {
-    aheadOfSecretWordsScreens('map phone my-team (SWD-034, 117, v3.6)');
     await freshPhone(page);
     await page.goto('about:blank');
     await page.goto(`./#map=${code}&t=${pair.id}&p=own`);
@@ -318,7 +317,7 @@ async function hostBoardAtGameOver(page: Page, code: string) {
 test.describe('SWD-022: the host board and a map phone given the same code agree', () => {
   for (const code of CODES) {
     test(`code ${shown(code)}: the same words in the same cells, the same kinds, the same starting team`, async ({ page, browser }, testInfo) => {
-      aheadOfSecretWordsScreens('host board and map phone (SWD-022 browser check)');
+      aheadOfSecretWordsScreens('lane D: game over (SWD-022 browser check; the map phone is lane C)');
       const b: OracleBoard = oracleBoard(code);
       const host = await hostBoardAtGameOver(page, code);
       expect(host.during.map((c) => c.word)).toEqual(b.words);
@@ -440,7 +439,6 @@ test.describe('SWD-025: room screens carry no kind of a face-down cell', () => {
 
 test.describe('SWD-117 / SWD-022: a typed code opens the same map, without team names', () => {
   test('the code entry with "27p-3qx8" opens the map phone: no map-teams, the code\'s words', async ({ page }) => {
-    aheadOfSecretWordsScreens('Join → code entry → map phone (SWD-002, 117)');
     await freshPhone(page);
     await waitGuards(page);
     await page.getByRole('button', { name: /^Join a game/ }).click();
