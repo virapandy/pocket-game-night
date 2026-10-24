@@ -1,0 +1,2013 @@
+{
+ "$comment": "Mafia game nights as saved by format 2 on 25 October 2026 (MAF-093, IMP-096). Never edit: every one must keep opening. Written from tests/games/mafia/flows.ts.",
+ "nights": [
+  {
+   "format": 2,
+   "gameType": "mafia",
+   "id": "mafia-v1-game1-over",
+   "createdAt": 1792942800000,
+   "updatedAt": 1792942842000,
+   "status": "in-progress",
+   "setup": {
+    "gameId": "mafia-v1-game1-over",
+    "seeds": {
+     "roles": "mafia-example"
+    },
+    "config": {
+     "deals": {
+      "1": {
+       "Riya": "villager",
+       "Arjun": "mafia",
+       "Meena": "doctor",
+       "Kabir": "villager",
+       "Zoya": "mafia",
+       "Dev": "police",
+       "Om": "villager",
+       "Sunita": "villager",
+       "Neha": "villager"
+      }
+     }
+    }
+   },
+   "records": [
+    {
+     "v": 1,
+     "seq": 1,
+     "at": 1792942800000,
+     "by": "host",
+     "move": {
+      "type": "start",
+      "players": [
+       "Riya",
+       "Arjun",
+       "Meena",
+       "Kabir",
+       "Zoya",
+       "Dev",
+       "Om",
+       "Sunita",
+       "Neha"
+      ],
+      "mafiaCount": 2
+     }
+    },
+    {
+     "v": 1,
+     "seq": 2,
+     "at": 1792942801000,
+     "by": "host",
+     "move": {
+      "type": "seen",
+      "player": "Riya"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 3,
+     "at": 1792942802000,
+     "by": "host",
+     "move": {
+      "type": "seen",
+      "player": "Arjun"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 4,
+     "at": 1792942803000,
+     "by": "host",
+     "move": {
+      "type": "seen",
+      "player": "Meena"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 5,
+     "at": 1792942804000,
+     "by": "host",
+     "move": {
+      "type": "seen",
+      "player": "Kabir"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 6,
+     "at": 1792942805000,
+     "by": "host",
+     "move": {
+      "type": "seen",
+      "player": "Zoya"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 7,
+     "at": 1792942806000,
+     "by": "host",
+     "move": {
+      "type": "seen",
+      "player": "Dev"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 8,
+     "at": 1792942807000,
+     "by": "host",
+     "move": {
+      "type": "seen",
+      "player": "Om"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 9,
+     "at": 1792942808000,
+     "by": "host",
+     "move": {
+      "type": "seen",
+      "player": "Sunita"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 10,
+     "at": 1792942809000,
+     "by": "host",
+     "move": {
+      "type": "seen",
+      "player": "Neha"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 11,
+     "at": 1792942810000,
+     "by": "host",
+     "move": {
+      "type": "startNight",
+      "night": 1
+     }
+    },
+    {
+     "v": 1,
+     "seq": 12,
+     "at": 1792942811000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Riya",
+      "target": "Arjun"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 13,
+     "at": 1792942812000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Arjun",
+      "target": "Kabir"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 14,
+     "at": 1792942813000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Meena",
+      "target": "Meena"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 15,
+     "at": 1792942814000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Kabir",
+      "target": "Zoya"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 16,
+     "at": 1792942815000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Zoya",
+      "target": "Kabir"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 17,
+     "at": 1792942816000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Dev",
+      "target": "Zoya"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 18,
+     "at": 1792942817000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Om",
+      "target": "Arjun"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 19,
+     "at": 1792942818000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Sunita",
+      "target": "Riya"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 20,
+     "at": 1792942819000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Neha",
+      "target": "Om"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 21,
+     "at": 1792942820000,
+     "by": "host",
+     "move": {
+      "type": "voteOut",
+      "player": "Om"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 22,
+     "at": 1792942821000,
+     "by": "host",
+     "move": {
+      "type": "startNight",
+      "night": 2
+     }
+    },
+    {
+     "v": 1,
+     "seq": 23,
+     "at": 1792942822000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Arjun",
+      "target": "Riya"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 24,
+     "at": 1792942823000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Meena",
+      "target": "Riya"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 25,
+     "at": 1792942824000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Kabir",
+      "target": "Zoya"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 26,
+     "at": 1792942825000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Zoya",
+      "target": "Riya"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 27,
+     "at": 1792942826000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Dev",
+      "target": "Arjun"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 28,
+     "at": 1792942827000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Om",
+      "target": "Arjun"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 29,
+     "at": 1792942828000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Sunita",
+      "target": "Neha"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 30,
+     "at": 1792942829000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Neha",
+      "target": "Sunita"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 31,
+     "at": 1792942830000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Riya",
+      "target": "Zoya"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 32,
+     "at": 1792942831000,
+     "by": "host",
+     "move": {
+      "type": "voteOut",
+      "player": "Zoya"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 33,
+     "at": 1792942832000,
+     "by": "host",
+     "move": {
+      "type": "startNight",
+      "night": 3
+     }
+    },
+    {
+     "v": 1,
+     "seq": 34,
+     "at": 1792942833000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Meena",
+      "target": "Sunita"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 35,
+     "at": 1792942834000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Kabir",
+      "target": "Arjun"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 36,
+     "at": 1792942835000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Zoya",
+      "target": "Riya"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 37,
+     "at": 1792942836000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Dev",
+      "target": "Sunita"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 38,
+     "at": 1792942837000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Om",
+      "target": "Arjun"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 39,
+     "at": 1792942838000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Sunita",
+      "target": "Arjun"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 40,
+     "at": 1792942839000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Neha",
+      "target": "Arjun"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 41,
+     "at": 1792942840000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Riya",
+      "target": "Arjun"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 42,
+     "at": 1792942841000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Arjun",
+      "target": "Meena"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 43,
+     "at": 1792942842000,
+     "by": "host",
+     "move": {
+      "type": "voteOut",
+      "player": "Arjun"
+     }
+    }
+   ]
+  },
+  {
+   "format": 2,
+   "gameType": "mafia",
+   "id": "mafia-v1-game2-over",
+   "createdAt": 1792942800000,
+   "updatedAt": 1792942854000,
+   "status": "in-progress",
+   "setup": {
+    "gameId": "mafia-v1-game2-over",
+    "seeds": {
+     "roles": "mafia-example"
+    },
+    "config": {
+     "deals": {
+      "1": {
+       "Riya": "villager",
+       "Arjun": "mafia",
+       "Meena": "doctor",
+       "Kabir": "villager",
+       "Zoya": "mafia",
+       "Dev": "police",
+       "Om": "villager",
+       "Sunita": "villager",
+       "Neha": "villager"
+      },
+      "2": {
+       "Riya": "mafia",
+       "Arjun": "villager",
+       "Meena": "villager",
+       "Kabir": "villager",
+       "Zoya": "villager",
+       "Dev": "villager",
+       "Om": "mafia",
+       "Sunita": "doctor",
+       "Neha": "police"
+      }
+     }
+    }
+   },
+   "records": [
+    {
+     "v": 1,
+     "seq": 1,
+     "at": 1792942800000,
+     "by": "host",
+     "move": {
+      "type": "start",
+      "players": [
+       "Riya",
+       "Arjun",
+       "Meena",
+       "Kabir",
+       "Zoya",
+       "Dev",
+       "Om",
+       "Sunita",
+       "Neha"
+      ],
+      "mafiaCount": 2
+     }
+    },
+    {
+     "v": 1,
+     "seq": 2,
+     "at": 1792942801000,
+     "by": "host",
+     "move": {
+      "type": "seen",
+      "player": "Riya"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 3,
+     "at": 1792942802000,
+     "by": "host",
+     "move": {
+      "type": "seen",
+      "player": "Arjun"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 4,
+     "at": 1792942803000,
+     "by": "host",
+     "move": {
+      "type": "seen",
+      "player": "Meena"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 5,
+     "at": 1792942804000,
+     "by": "host",
+     "move": {
+      "type": "seen",
+      "player": "Kabir"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 6,
+     "at": 1792942805000,
+     "by": "host",
+     "move": {
+      "type": "seen",
+      "player": "Zoya"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 7,
+     "at": 1792942806000,
+     "by": "host",
+     "move": {
+      "type": "seen",
+      "player": "Dev"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 8,
+     "at": 1792942807000,
+     "by": "host",
+     "move": {
+      "type": "seen",
+      "player": "Om"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 9,
+     "at": 1792942808000,
+     "by": "host",
+     "move": {
+      "type": "seen",
+      "player": "Sunita"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 10,
+     "at": 1792942809000,
+     "by": "host",
+     "move": {
+      "type": "seen",
+      "player": "Neha"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 11,
+     "at": 1792942810000,
+     "by": "host",
+     "move": {
+      "type": "startNight",
+      "night": 1
+     }
+    },
+    {
+     "v": 1,
+     "seq": 12,
+     "at": 1792942811000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Riya",
+      "target": "Arjun"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 13,
+     "at": 1792942812000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Arjun",
+      "target": "Kabir"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 14,
+     "at": 1792942813000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Meena",
+      "target": "Meena"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 15,
+     "at": 1792942814000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Kabir",
+      "target": "Zoya"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 16,
+     "at": 1792942815000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Zoya",
+      "target": "Kabir"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 17,
+     "at": 1792942816000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Dev",
+      "target": "Zoya"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 18,
+     "at": 1792942817000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Om",
+      "target": "Arjun"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 19,
+     "at": 1792942818000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Sunita",
+      "target": "Riya"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 20,
+     "at": 1792942819000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Neha",
+      "target": "Om"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 21,
+     "at": 1792942820000,
+     "by": "host",
+     "move": {
+      "type": "voteOut",
+      "player": "Om"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 22,
+     "at": 1792942821000,
+     "by": "host",
+     "move": {
+      "type": "startNight",
+      "night": 2
+     }
+    },
+    {
+     "v": 1,
+     "seq": 23,
+     "at": 1792942822000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Arjun",
+      "target": "Riya"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 24,
+     "at": 1792942823000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Meena",
+      "target": "Riya"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 25,
+     "at": 1792942824000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Kabir",
+      "target": "Zoya"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 26,
+     "at": 1792942825000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Zoya",
+      "target": "Riya"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 27,
+     "at": 1792942826000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Dev",
+      "target": "Arjun"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 28,
+     "at": 1792942827000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Om",
+      "target": "Arjun"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 29,
+     "at": 1792942828000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Sunita",
+      "target": "Neha"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 30,
+     "at": 1792942829000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Neha",
+      "target": "Sunita"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 31,
+     "at": 1792942830000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Riya",
+      "target": "Zoya"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 32,
+     "at": 1792942831000,
+     "by": "host",
+     "move": {
+      "type": "voteOut",
+      "player": "Zoya"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 33,
+     "at": 1792942832000,
+     "by": "host",
+     "move": {
+      "type": "startNight",
+      "night": 3
+     }
+    },
+    {
+     "v": 1,
+     "seq": 34,
+     "at": 1792942833000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Meena",
+      "target": "Sunita"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 35,
+     "at": 1792942834000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Kabir",
+      "target": "Arjun"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 36,
+     "at": 1792942835000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Zoya",
+      "target": "Riya"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 37,
+     "at": 1792942836000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Dev",
+      "target": "Sunita"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 38,
+     "at": 1792942837000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Om",
+      "target": "Arjun"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 39,
+     "at": 1792942838000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Sunita",
+      "target": "Arjun"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 40,
+     "at": 1792942839000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Neha",
+      "target": "Arjun"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 41,
+     "at": 1792942840000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Riya",
+      "target": "Arjun"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 42,
+     "at": 1792942841000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Arjun",
+      "target": "Meena"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 43,
+     "at": 1792942842000,
+     "by": "host",
+     "move": {
+      "type": "voteOut",
+      "player": "Arjun"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 44,
+     "at": 1792942843000,
+     "by": "host",
+     "move": {
+      "type": "start",
+      "players": [
+       "Riya",
+       "Arjun",
+       "Meena",
+       "Kabir",
+       "Zoya",
+       "Dev",
+       "Om",
+       "Sunita",
+       "Neha"
+      ],
+      "mafiaCount": 2
+     }
+    },
+    {
+     "v": 1,
+     "seq": 45,
+     "at": 1792942844000,
+     "by": "host",
+     "move": {
+      "type": "seen",
+      "player": "Riya"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 46,
+     "at": 1792942845000,
+     "by": "host",
+     "move": {
+      "type": "seen",
+      "player": "Arjun"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 47,
+     "at": 1792942846000,
+     "by": "host",
+     "move": {
+      "type": "seen",
+      "player": "Meena"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 48,
+     "at": 1792942847000,
+     "by": "host",
+     "move": {
+      "type": "seen",
+      "player": "Kabir"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 49,
+     "at": 1792942848000,
+     "by": "host",
+     "move": {
+      "type": "seen",
+      "player": "Zoya"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 50,
+     "at": 1792942849000,
+     "by": "host",
+     "move": {
+      "type": "seen",
+      "player": "Dev"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 51,
+     "at": 1792942850000,
+     "by": "host",
+     "move": {
+      "type": "seen",
+      "player": "Om"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 52,
+     "at": 1792942851000,
+     "by": "host",
+     "move": {
+      "type": "seen",
+      "player": "Sunita"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 53,
+     "at": 1792942852000,
+     "by": "host",
+     "move": {
+      "type": "seen",
+      "player": "Neha"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 54,
+     "at": 1792942853000,
+     "by": "host",
+     "move": {
+      "type": "startNight",
+      "night": 1
+     }
+    },
+    {
+     "v": 1,
+     "seq": 55,
+     "at": 1792942854000,
+     "by": "host",
+     "move": {
+      "type": "endGame"
+     }
+    }
+   ]
+  },
+  {
+   "format": 2,
+   "gameType": "mafia",
+   "id": "mafia-v1-night2-meena",
+   "createdAt": 1792942800000,
+   "updatedAt": 1792942822000,
+   "status": "in-progress",
+   "setup": {
+    "gameId": "mafia-v1-night2-meena",
+    "seeds": {
+     "roles": "mafia-example"
+    },
+    "config": {
+     "deals": {
+      "1": {
+       "Riya": "villager",
+       "Arjun": "mafia",
+       "Meena": "doctor",
+       "Kabir": "villager",
+       "Zoya": "mafia",
+       "Dev": "police",
+       "Om": "villager",
+       "Sunita": "villager",
+       "Neha": "villager"
+      }
+     }
+    }
+   },
+   "records": [
+    {
+     "v": 1,
+     "seq": 1,
+     "at": 1792942800000,
+     "by": "host",
+     "move": {
+      "type": "start",
+      "players": [
+       "Riya",
+       "Arjun",
+       "Meena",
+       "Kabir",
+       "Zoya",
+       "Dev",
+       "Om",
+       "Sunita",
+       "Neha"
+      ],
+      "mafiaCount": 2
+     }
+    },
+    {
+     "v": 1,
+     "seq": 2,
+     "at": 1792942801000,
+     "by": "host",
+     "move": {
+      "type": "seen",
+      "player": "Riya"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 3,
+     "at": 1792942802000,
+     "by": "host",
+     "move": {
+      "type": "seen",
+      "player": "Arjun"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 4,
+     "at": 1792942803000,
+     "by": "host",
+     "move": {
+      "type": "seen",
+      "player": "Meena"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 5,
+     "at": 1792942804000,
+     "by": "host",
+     "move": {
+      "type": "seen",
+      "player": "Kabir"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 6,
+     "at": 1792942805000,
+     "by": "host",
+     "move": {
+      "type": "seen",
+      "player": "Zoya"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 7,
+     "at": 1792942806000,
+     "by": "host",
+     "move": {
+      "type": "seen",
+      "player": "Dev"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 8,
+     "at": 1792942807000,
+     "by": "host",
+     "move": {
+      "type": "seen",
+      "player": "Om"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 9,
+     "at": 1792942808000,
+     "by": "host",
+     "move": {
+      "type": "seen",
+      "player": "Sunita"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 10,
+     "at": 1792942809000,
+     "by": "host",
+     "move": {
+      "type": "seen",
+      "player": "Neha"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 11,
+     "at": 1792942810000,
+     "by": "host",
+     "move": {
+      "type": "startNight",
+      "night": 1
+     }
+    },
+    {
+     "v": 1,
+     "seq": 12,
+     "at": 1792942811000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Riya",
+      "target": "Arjun"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 13,
+     "at": 1792942812000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Arjun",
+      "target": "Kabir"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 14,
+     "at": 1792942813000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Meena",
+      "target": "Meena"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 15,
+     "at": 1792942814000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Kabir",
+      "target": "Zoya"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 16,
+     "at": 1792942815000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Zoya",
+      "target": "Kabir"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 17,
+     "at": 1792942816000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Dev",
+      "target": "Zoya"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 18,
+     "at": 1792942817000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Om",
+      "target": "Arjun"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 19,
+     "at": 1792942818000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Sunita",
+      "target": "Riya"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 20,
+     "at": 1792942819000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Neha",
+      "target": "Om"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 21,
+     "at": 1792942820000,
+     "by": "host",
+     "move": {
+      "type": "voteOut",
+      "player": "Om"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 22,
+     "at": 1792942821000,
+     "by": "host",
+     "move": {
+      "type": "startNight",
+      "night": 2
+     }
+    },
+    {
+     "v": 1,
+     "seq": 23,
+     "at": 1792942822000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Arjun",
+      "target": "Riya"
+     }
+    }
+   ]
+  },
+  {
+   "format": 2,
+   "gameType": "mafia",
+   "id": "mafia-v1-day1-tie",
+   "createdAt": 1792942800000,
+   "updatedAt": 1792942820000,
+   "status": "in-progress",
+   "setup": {
+    "gameId": "mafia-v1-day1-tie",
+    "seeds": {
+     "roles": "mafia-example"
+    },
+    "config": {
+     "deals": {
+      "1": {
+       "Riya": "villager",
+       "Arjun": "mafia",
+       "Meena": "doctor",
+       "Kabir": "villager",
+       "Zoya": "mafia",
+       "Dev": "police",
+       "Om": "villager",
+       "Sunita": "villager",
+       "Neha": "villager"
+      }
+     }
+    }
+   },
+   "records": [
+    {
+     "v": 1,
+     "seq": 1,
+     "at": 1792942800000,
+     "by": "host",
+     "move": {
+      "type": "start",
+      "players": [
+       "Riya",
+       "Arjun",
+       "Meena",
+       "Kabir",
+       "Zoya",
+       "Dev",
+       "Om",
+       "Sunita",
+       "Neha"
+      ],
+      "mafiaCount": 2
+     }
+    },
+    {
+     "v": 1,
+     "seq": 2,
+     "at": 1792942801000,
+     "by": "host",
+     "move": {
+      "type": "seen",
+      "player": "Riya"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 3,
+     "at": 1792942802000,
+     "by": "host",
+     "move": {
+      "type": "seen",
+      "player": "Arjun"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 4,
+     "at": 1792942803000,
+     "by": "host",
+     "move": {
+      "type": "seen",
+      "player": "Meena"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 5,
+     "at": 1792942804000,
+     "by": "host",
+     "move": {
+      "type": "seen",
+      "player": "Kabir"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 6,
+     "at": 1792942805000,
+     "by": "host",
+     "move": {
+      "type": "seen",
+      "player": "Zoya"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 7,
+     "at": 1792942806000,
+     "by": "host",
+     "move": {
+      "type": "seen",
+      "player": "Dev"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 8,
+     "at": 1792942807000,
+     "by": "host",
+     "move": {
+      "type": "seen",
+      "player": "Om"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 9,
+     "at": 1792942808000,
+     "by": "host",
+     "move": {
+      "type": "seen",
+      "player": "Sunita"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 10,
+     "at": 1792942809000,
+     "by": "host",
+     "move": {
+      "type": "seen",
+      "player": "Neha"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 11,
+     "at": 1792942810000,
+     "by": "host",
+     "move": {
+      "type": "startNight",
+      "night": 1
+     }
+    },
+    {
+     "v": 1,
+     "seq": 12,
+     "at": 1792942811000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Riya",
+      "target": "Arjun"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 13,
+     "at": 1792942812000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Arjun",
+      "target": "Kabir"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 14,
+     "at": 1792942813000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Meena",
+      "target": "Meena"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 15,
+     "at": 1792942814000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Kabir",
+      "target": "Zoya"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 16,
+     "at": 1792942815000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Zoya",
+      "target": "Kabir"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 17,
+     "at": 1792942816000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Dev",
+      "target": "Zoya"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 18,
+     "at": 1792942817000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Om",
+      "target": "Arjun"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 19,
+     "at": 1792942818000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Sunita",
+      "target": "Riya"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 20,
+     "at": 1792942819000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Neha",
+      "target": "Om"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 21,
+     "at": 1792942820000,
+     "by": "host",
+     "move": {
+      "type": "tie",
+      "players": [
+       "Om",
+       "Neha"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "format": 2,
+   "gameType": "mafia",
+   "id": "mafia-v1-day1-left-neha",
+   "createdAt": 1792942800000,
+   "updatedAt": 1792942820000,
+   "status": "in-progress",
+   "setup": {
+    "gameId": "mafia-v1-day1-left-neha",
+    "seeds": {
+     "roles": "mafia-example"
+    },
+    "config": {
+     "deals": {
+      "1": {
+       "Riya": "villager",
+       "Arjun": "mafia",
+       "Meena": "doctor",
+       "Kabir": "villager",
+       "Zoya": "mafia",
+       "Dev": "police",
+       "Om": "villager",
+       "Sunita": "villager",
+       "Neha": "villager"
+      }
+     }
+    }
+   },
+   "records": [
+    {
+     "v": 1,
+     "seq": 1,
+     "at": 1792942800000,
+     "by": "host",
+     "move": {
+      "type": "start",
+      "players": [
+       "Riya",
+       "Arjun",
+       "Meena",
+       "Kabir",
+       "Zoya",
+       "Dev",
+       "Om",
+       "Sunita",
+       "Neha"
+      ],
+      "mafiaCount": 2
+     }
+    },
+    {
+     "v": 1,
+     "seq": 2,
+     "at": 1792942801000,
+     "by": "host",
+     "move": {
+      "type": "seen",
+      "player": "Riya"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 3,
+     "at": 1792942802000,
+     "by": "host",
+     "move": {
+      "type": "seen",
+      "player": "Arjun"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 4,
+     "at": 1792942803000,
+     "by": "host",
+     "move": {
+      "type": "seen",
+      "player": "Meena"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 5,
+     "at": 1792942804000,
+     "by": "host",
+     "move": {
+      "type": "seen",
+      "player": "Kabir"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 6,
+     "at": 1792942805000,
+     "by": "host",
+     "move": {
+      "type": "seen",
+      "player": "Zoya"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 7,
+     "at": 1792942806000,
+     "by": "host",
+     "move": {
+      "type": "seen",
+      "player": "Dev"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 8,
+     "at": 1792942807000,
+     "by": "host",
+     "move": {
+      "type": "seen",
+      "player": "Om"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 9,
+     "at": 1792942808000,
+     "by": "host",
+     "move": {
+      "type": "seen",
+      "player": "Sunita"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 10,
+     "at": 1792942809000,
+     "by": "host",
+     "move": {
+      "type": "seen",
+      "player": "Neha"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 11,
+     "at": 1792942810000,
+     "by": "host",
+     "move": {
+      "type": "startNight",
+      "night": 1
+     }
+    },
+    {
+     "v": 1,
+     "seq": 12,
+     "at": 1792942811000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Riya",
+      "target": "Arjun"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 13,
+     "at": 1792942812000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Arjun",
+      "target": "Kabir"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 14,
+     "at": 1792942813000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Meena",
+      "target": "Meena"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 15,
+     "at": 1792942814000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Kabir",
+      "target": "Zoya"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 16,
+     "at": 1792942815000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Zoya",
+      "target": "Kabir"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 17,
+     "at": 1792942816000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Dev",
+      "target": "Zoya"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 18,
+     "at": 1792942817000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Om",
+      "target": "Arjun"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 19,
+     "at": 1792942818000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Sunita",
+      "target": "Riya"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 20,
+     "at": 1792942819000,
+     "by": "host",
+     "move": {
+      "type": "nightPick",
+      "player": "Neha",
+      "target": "Om"
+     }
+    },
+    {
+     "v": 1,
+     "seq": 21,
+     "at": 1792942820000,
+     "by": "host",
+     "move": {
+      "type": "leave",
+      "player": "Neha"
+     }
+    }
+   ]
+  },
+  {
+   "format": 2,
+   "gameType": "mafia",
+   "id": "mafia-v1-deal-arjun",
+   "createdAt": 1792942800000,
+   "updatedAt": 1792942801000,
+   "status": "in-progress",
+   "setup": {
+    "gameId": "mafia-v1-deal-arjun",
+    "seeds": {
+     "roles": "mafia-example"
+    },
+    "config": {
+     "deals": {
+      "1": {
+       "Riya": "villager",
+       "Arjun": "mafia",
+       "Meena": "doctor",
+       "Kabir": "villager",
+       "Zoya": "mafia",
+       "Dev": "police",
+       "Om": "villager",
+       "Sunita": "villager",
+       "Neha": "villager"
+      }
+     }
+    }
+   },
+   "records": [
+    {
+     "v": 1,
+     "seq": 1,
+     "at": 1792942800000,
+     "by": "host",
+     "move": {
+      "type": "start",
+      "players": [
+       "Riya",
+       "Arjun",
+       "Meena",
+       "Kabir",
+       "Zoya",
+       "Dev",
+       "Om",
+       "Sunita",
+       "Neha"
+      ],
+      "mafiaCount": 2
+     }
+    },
+    {
+     "v": 1,
+     "seq": 2,
+     "at": 1792942801000,
+     "by": "host",
+     "move": {
+      "type": "seen",
+      "player": "Riya"
+     }
+    }
+   ]
+  }
+ ]
+}
