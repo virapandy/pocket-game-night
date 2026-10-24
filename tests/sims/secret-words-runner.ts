@@ -649,9 +649,12 @@ export async function playSwEvening(host: Page, browser: Browser, baseURL: strin
           for (let tries = 0; tries < 3; tries++) {
             await m.page.clock.runFor(1500);
             const d = await mapSnap(m);
-            const confirm = d.opts.find((o) => o.label === 'Next map' && d.dialog);
-            if (d.dialog && confirm) { await clickOpt(m.page, confirm).catch(() => {}); break; }
-            if (!d.dialog && d.text.toast) break;
+            // SWD-121: while "Still looking? Tap to keep the map" shows, the first tap only removes it; tap Next map again.
+            if (tries === 0 && !d.dialog && !d.text.toast) { await clickOpt(m.page, d.opts.find((o) => o.label === 'Next map') ?? next).catch(() => {}); await m.page.clock.runFor(1500); }
+            const d2 = tries === 0 ? await mapSnap(m) : d;
+            const confirm = d2.opts.find((o) => o.label === 'Next map' && d2.dialog);
+            if (d2.dialog && confirm) { await clickOpt(m.page, confirm).catch(() => {}); break; }
+            if (!d2.dialog && d2.text.toast) break;
             if (tries === 2) addFinding('map phone', step, 'map-phone', `${m.label}: "Next map" tapped, then neither a dialog nor a toast (${await m.page.evaluate(() => { const b = Array.from(document.querySelectorAll('button')).find((x) => /Not yet/.test(x.textContent ?? '')); const out: string[] = []; for (let a: Element | null = b ?? null; a && out.length < 6; a = a.parentElement) { const r = a.getBoundingClientRect(); out.push(`<${a.tagName.toLowerCase()} role=${a.getAttribute('role')} modal=${a.getAttribute('aria-modal')} class=${a.getAttribute('class')} ${Math.round(r.width)}x${Math.round(r.height)} open=${a.hasAttribute('open')}>`); } return out.join(' < '); })} ${d.body.slice(0, 100)}; buttons: ${d.opts.map((o) => o.label).join(' | ').slice(0, 120)})`, m.label);
           }
         }
@@ -762,7 +765,8 @@ export async function playSwEvening(host: Page, browser: Browser, baseURL: strin
     // Choose: Jev (as the persona) on a new screen, otherwise the scripted persona.
     let key = scriptedPick(screen ?? 'unknown', s, ctx);
     if (opts.jev && screen && jevDecisions < JEV_PER_EVENING && !['private-map', 'map-phone', 'guessing', 'board', 'menu', 'dialog'].includes(screen) && s.opts.filter((o) => o.kind !== 'cell').length >= 2 && r.chance(0.6)) {
-      const labels = s.opts.filter((o) => o.kind !== 'cell').slice(0, 12);
+      // How to play covers the page: only its own way out is a choice (the buttons behind it, such as Menu, cannot be tapped).
+      const labels = s.opts.filter((o) => o.kind !== 'cell' && (screen !== 'how-to-play' || /^(Done|← Back|Back)$/.test(o.label))).slice(0, 12);
       const asked = await askJevLabels(opts.jev, cfg, screen, s.headings, labels.map((o) => o.label), !rated.has(screen), labels.findIndex((o) => o.main));
       jevDecisions += asked.decisions;
       rated.add(screen);

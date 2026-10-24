@@ -1,0 +1,72 @@
+{
+ "seed": "local-002",
+ "config": {
+  "seed": "local-002",
+  "index": 1,
+  "width": 360,
+  "height": 640,
+  "players": [
+   "Riya",
+   "Arjun",
+   "Meena",
+   "Kabir",
+   "Zoya",
+   "Dev",
+   "Asha",
+   "Neel",
+   "Tara"
+  ],
+  "persona": null,
+  "phones": 1,
+  "board": "full",
+  "landmine": "lose",
+  "words": "family",
+  "timer": true,
+  "larger": false,
+  "games": 2,
+  "endEarly": [
+   false,
+   true
+  ],
+  "undoOnEnd": false,
+  "changeAfter": null,
+  "reloadAt": [
+   5,
+   23
+  ],
+  "mapOpen": "link",
+  "endMidGame": false,
+  "peekHistory": false,
+  "personaPlayed": "grandparent"
+ },
+ "finished": true,
+ "steps": 240,
+ "findings": [],
+ "flags": [],
+ "games": 2,
+ "jevDecisions": 0,
+ "screens": [
+  "home",
+  "what",
+  "who",
+  "teams",
+  "choices",
+  "read-aloud",
+  "pass",
+  "private-map",
+  "clue",
+  "guessing",
+  "turn-over",
+  "menu",
+  "settings",
+  "dialog",
+  "history",
+  "game-over",
+  "summary"
+ ],
+ "stuckAt": [],
+ "noWayOn": [],
+ "phones": 1,
+ "guardRescues": 0,
+ "game": "Secret Words"
+}
