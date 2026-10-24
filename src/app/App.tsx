@@ -412,7 +412,7 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
         />
       );
     }
-    if (route.name === 'sw-map') return <secretWords.MapPhone key={route.nonce} map={route.map} onHome={home} />;
+    if (route.name === 'sw-map') return <secretWords.MapPhone key={route.nonce} map={route.map} onHome={home} keys={appKeys} prefs={preferences} />;
     if (route.name === 'pick') {
       return (
         <PickGame

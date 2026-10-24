@@ -12,9 +12,15 @@ export const GUARD_MS = 800;
  * The time until which a screen's main waits: `ms` from the first render with this `key` (a screen appearing). A new
  * key starts a new wait; the same key never restarts it (closing a dialog, "Carry on", "Welcome back.").
  */
-export function useGuard(key: unknown, ms: number = GUARD_MS): number {
+export function useGuard(key: unknown, ms: number = GUARD_MS, from?: number | null): number {
   const ref = useRef<{ key: unknown; until: number } | null>(null);
-  if (ref.current === null || !Object.is(ref.current.key, key)) ref.current = { key, until: Date.now() + ms };
+  if (ref.current === null || !Object.is(ref.current.key, key)) {
+    // `from`: when the screen appeared, if known (a timer's own time). The screen is drawn a moment later, and on a busy
+    // phone that moment must not lengthen the wait. Ignored when it is in the future or a whole wait ago.
+    const now = Date.now();
+    const start = from != null && from <= now && now - from < ms ? from : now;
+    ref.current = { key, until: start + ms };
+  }
   const until = ref.current.until;
   useNow(until);
   return until;
