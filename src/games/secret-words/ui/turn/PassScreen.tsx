@@ -140,7 +140,7 @@ export function PassScreen({
         )}
         {showDnd && (
           <p className="sw-small" data-testid="dnd-tip">
-            Tip: turn on Do Not Disturb so messages don't pop up on the board.
+            Tip: turn on Do Not Disturb, so messages don't pop up over the board.
           </p>
         )}
         <button type="button" className="sw-quiet sw-full" onClick={onTimer}>

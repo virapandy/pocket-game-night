@@ -32,15 +32,15 @@ const TAP_MS = 500;
 
 const TEXT = {
   heading: 'Secret Words map',
-  small: "Tap a word when it's found to fade it (optional). The host's board is what counts.",
-  mismatch: "Doesn't match? Scan the host's code again.",
-  end: 'Game over: tap Done with this game. New board on the host: tap Next map.',
+  small: "Tap a word once it's been guessed, to fade it (optional). The board on the host's phone is what counts.",
+  mismatch: "First words different? Scan the host's code again.",
+  end: 'When the game ends, tap Done with this game. If the host starts a new board, tap Next map.',
   warning: 'Still looking? Tap to keep the map',
   sideways: 'Turn your phone sideways to see the board.',
   replaced: 'New map opened. The old one is gone.',
-  noMore: "No more maps from this code. Scan the host's new code.",
+  noMore: "This code has no more maps. Scan the host's new code.",
   remove: 'Remove this map from your phone?',
-  next: 'Next map? Only after the host starts the next game.',
+  next: 'Has the host started the next game? Then tap Next map.',
 } as const;
 
 const shown = (code: string) => `${code.slice(0, 3)}-${code.slice(3)}`;
@@ -240,10 +240,8 @@ export function MapPhone({
       return;
     }
     save({ ...saved, code: next, savedAt: Date.now(), found: [] });
-    setMapShown(true);
-    setView('grid');
-    restart();
-    showToast(`Next map. It should start with: ${nb.words.slice(0, 3).join(' · ')}.`);
+    hide();
+    showToast(`Next map. Tap Show map when you're ready. Its first words should be: ${nb.words.slice(0, 3).join(' · ')}.`);
   };
   const chooseTeam = (team: Team) => {
     save({ ...saved, team });
@@ -526,7 +524,7 @@ function MapList({ board, team, found }: { board: Board; team: Team; found: read
       {mine >= 0 && (
         <p className="swm-small swm-avoid" data-testid="avoid-line">
           <KindIcon kind="landmine" />
-          {`Never guess: ${board.words[mine]} (the Landmine)`}
+          {`Landmine, never guess: ${board.words[mine]}`}
         </p>
       )}
     </div>

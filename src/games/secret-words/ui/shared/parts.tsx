@@ -163,7 +163,14 @@ export function SwDialog({
 
 const words = (n: number) => `${n} ${n === 1 ? 'word' : 'words'}`;
 
-/** SWD-040: the counts, circle "9 left" · diamond "8 left", named in full. `twoLines` for the landscape panel. */
+const firstWord = (name: string) => name.trim().split(/\s+/)[0] || name;
+
+/**
+ * SWD-040 (v3.9): the counts, circle then diamond. Three forms, the first that fits on one line at the width on offer:
+ * "Chai Champions 9 left · Coffee Commandos 8 left", then each name's first word ("Chai 9 · Coffee 8"), then icons and
+ * numbers only ("9 left · 8 left"). `twoLines` (the landscape panel): one line per team, first word then number, with
+ * the numbers-only form as the fallback. The accessible name never changes.
+ */
 export function WordCounts({
   left,
   names,
@@ -173,21 +180,44 @@ export function WordCounts({
   names: { orange: string; teal: string };
   twoLines?: boolean;
 }) {
+  const ref = useRef<HTMLParagraphElement | null>(null);
+  const [form, setForm] = useState<0 | 1 | 2>(twoLines ? 1 : 0);
+  const [tick, setTick] = useState(0);
+  useLayoutEffect(() => {
+    const onResize = () => setTick((n) => n + 1);
+    window.addEventListener('resize', onResize);
+    document.fonts?.ready.then(onResize).catch(() => {});
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+  // After every render: if this form is wider than the room, try the next one.
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (el && form < 2 && el.scrollWidth > el.clientWidth + 0.5) setForm((form + 1) as 1 | 2);
+  });
+  // A new name, number, size or layout starts again from the fullest form (declared after the check, so it wins).
+  useLayoutEffect(() => {
+    setForm(twoLines ? 1 : 0);
+  }, [names.orange, names.teal, left.orange, left.teal, twoLines, tick]);
+  const one = (team: 'orange' | 'teal') => {
+    const n = left[team];
+    const text = form === 2 ? `${n} left` : form === 1 ? `${firstWord(names[team])} ${n}` : `${names[team]} ${n} left`;
+    return (
+      <span className={`sw-count sw-count-${team}`}>
+        <KindIcon kind={team} />
+        {text}
+      </span>
+    );
+  };
   return (
     <p
+      ref={ref}
       className={twoLines ? 'sw-counts sw-counts-two' : 'sw-counts'}
       data-testid="word-counts"
       aria-label={`${names.orange}: ${words(left.orange)} left. ${names.teal}: ${words(left.teal)} left.`}
     >
-      <span className="sw-count sw-count-orange">
-        <KindIcon kind="orange" />
-        {left.orange} left
-      </span>
+      {one('orange')}
       <span className="sw-count-sep"> · </span>
-      <span className="sw-count sw-count-teal">
-        <KindIcon kind="teal" />
-        {left.teal} left
-      </span>
+      {one('teal')}
     </p>
   );
 }

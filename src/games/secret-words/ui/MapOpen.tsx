@@ -152,7 +152,7 @@ export function BoardPhoneDialog({ onePhone, onOpenHere, onKeep }: { onePhone: b
           <p className="sw-body">
             {onePhone
               ? 'Clue givers use their own phone. With one phone, pass this phone to the clue giver when the game says so.'
-              : "Clue givers use their own phone. To show the map on this phone, use Show the map to a clue giver in the game's menu."}
+              : "Clue givers should use their own phones. To show the map here instead, use the menu: Show the map to a clue giver."}
           </p>
           <div className="pgn-dialog-buttons">
             <QuietButton onClick={onOpenHere}>Open the map here</QuietButton>

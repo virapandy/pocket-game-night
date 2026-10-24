@@ -246,6 +246,7 @@ export function PlayersSheet({
       {alone && (
         <AloneDialog
           teamName={names[alone.plan.team]}
+          otherTeam={names[alone.plan.team === 'orange' ? 'teal' : 'orange']}
           left={alone.plan.left}
           removed={alone.removed}
           movers={alone.plan.movers}
@@ -307,6 +308,7 @@ function GiverDialog({
 /** D7b: "Coffee Commandos would be left with only Arjun. Move someone over?" */
 function AloneDialog({
   teamName,
+  otherTeam,
   left,
   removed,
   movers,
@@ -316,6 +318,7 @@ function AloneDialog({
   onEndGame,
 }: {
   teamName: string;
+  otherTeam: string;
   left: string;
   removed: string;
   movers: readonly string[];
@@ -326,7 +329,7 @@ function AloneDialog({
 }) {
   const until = useGuard('alone');
   return (
-    <SwDialog title={`${teamName} would be left with only ${left}. Move someone over?`} onDismiss={onKeep}>
+    <SwDialog title={`${teamName} would have only ${left} left. Move someone from ${otherTeam}?`} onDismiss={onKeep}>
       <div className="sw-dialog-buttons">
         {movers.length === 0 && <p>No one can move over.</p>}
         {movers.map((p) => (

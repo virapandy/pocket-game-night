@@ -77,7 +77,7 @@ function screenFor(match: NightMatch, ui: SwUiState): Screen {
     const fresh = g.turnNo === 1 && g.clues.length === 0;
     if (ui.step === 'preview' && fresh && !g.mapSeen) return { name: 'preview' };
     if (s.choices.map !== 'pass') return fresh ? { name: 'scan' } : { name: 'clue', changing: false };
-    if (ui.step === 'map') return { name: 'pass', welcome: true };
+    if (ui.step === 'map') return ui.paused ? { name: 'map', again: false } : { name: 'pass', welcome: true };
     return g.mapSeen ? { name: 'clue', changing: false } : { name: 'pass', welcome: false };
   }
   return { name: 'board' };
@@ -390,6 +390,11 @@ export function SecretWordsPlay(props: SecretWordsPlayProps) {
     patchUi({ paused: true });
     setOverlay('pause');
   }
+  const goHome = () => {
+    patchUi({ paused: false, showing: false });
+    setOverlay(null);
+    onHome();
+  };
   const carryOn = () => {
     patchUi({ paused: false });
     setOverlay(null);
@@ -405,7 +410,7 @@ export function SecretWordsPlay(props: SecretWordsPlayProps) {
   // ---- Overlays ----
   const covered = overlay !== null;
   let overlayNode: ReactNode = null;
-  if (overlay === 'pause') overlayNode = <PauseCover where={whereText()} onCarryOn={carryOn} />;
+  if (overlay === 'pause') overlayNode = <PauseCover where={whereText()} onCarryOn={carryOn} onHome={goHome} />;
   else if (overlay === 'dispute')
     overlayNode = (
       <DisputeDialog
@@ -500,6 +505,7 @@ export function SecretWordsPlay(props: SecretWordsPlayProps) {
         onMain={onMain}
         onNotMe={onNotMe}
         onSaw={() => setOverlay('newBoard')}
+        onPause={openPause}
         onFlip={() => flip(team)}
         timer={timer}
       />
@@ -539,7 +545,7 @@ export function SecretWordsPlay(props: SecretWordsPlayProps) {
       const tg = giversPlus(giversOf(teams, 'teal'));
       const giverLine = three
         ? `${og} (${names.orange}, orange) and ${tg} (${names.teal}, teal): scan on your own phones.`
-        : `${og} and ${tg} give clues for different teams but share one map phone, as at a real table: sit side by side.`;
+        : `${og} and ${tg}: sit together and share one map phone (each gives clues for their own team).`;
       const base = `${location.origin}${import.meta.env.BASE_URL}`;
       body = g && (
         <ScanScreen
@@ -702,13 +708,13 @@ export function SecretWordsPlay(props: SecretWordsPlayProps) {
               <span className="sw-caps">{clue.word}</span> · {clue.n === 'inf' ? '∞' : clue.n}
             </>
           ) : (
-            `Clue: ${clue.n === 'inf' ? '∞' : clue.n}`
+            `Clue: ${clue.n === 'inf' ? 'any number' : clue.n}`
           )
         ) : undefined;
       const result = anim ? null : phase === 'end' ? `${teamName(team)} ended their turn.` : resultLineOf(shownMatch);
       const tip =
         !anim && phase === 'guess' && sg.guesses === 0 && firstDeal && sg.turnNo === 1
-          ? `Tap a word to suggest it. ${picker} taps Reveal (it takes turns).`
+          ? `Tap a word to suggest it. ${picker} taps Reveal this turn; it moves round each turn.`
           : null;
       const bottom = result ? { id: 'result-line' as const, text: result } : tip ? { id: 'tip' as const, text: tip } : null;
       const actions =
@@ -725,11 +731,9 @@ export function SecretWordsPlay(props: SecretWordsPlayProps) {
                     setEndLine(true);
                   },
                 };
-      const short = picker.length > 12 ? `${picker.slice(0, 12)}…` : picker;
       const main =
         phase === 'guess'
           ? {
-              line1: `${vp.landscape ? short : picker}:`,
               line2: word ? (
                 <>
                   Reveal <span className="sw-caps">{word}</span>
@@ -737,7 +741,6 @@ export function SecretWordsPlay(props: SecretWordsPlayProps) {
               ) : (
                 'Reveal'
               ),
-              ...(vp.landscape ? { label: `${picker}: Reveal${word ? ` ${word}` : ''}` } : {}),
               disabled: pick === null || !!anim,
               until: guardUntil,
               onClick: () => {
@@ -762,7 +765,7 @@ export function SecretWordsPlay(props: SecretWordsPlayProps) {
       body = (
         <BoardScreen
           team={team}
-          turnLine={pokerShown && phase === 'guess' ? `${giversPlus(giversOf(teams, team))}: no hints, no faces!` : `${teamName(team)} guessing`}
+          turnLine={pokerShown && phase === 'guess' ? `${giversPlus(giversOf(teams, team))}: no hints, no faces!` : phase === 'guess' && picker ? `${teamName(team)} guessing · ${picker} taps Reveal` : `${teamName(team)} guessing`}
           poker={pokerShown && phase === 'guess'}
           {...(clueLine !== undefined && phase !== 'over' ? { clueLine, guessLine: guessLine(clue!.n, sg.guesses) } : {})}
           {...(history && phase !== 'over' ? { history } : {})}

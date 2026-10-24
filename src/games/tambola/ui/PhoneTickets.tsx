@@ -920,7 +920,7 @@ function Popup({ label, children, onClose }: { label: string; children: ReactNod
 }
 
 /**
- * SWD-133: the Join screen's scanner, "Scan a ticket or secret map". It starts the camera at once (through the same
+ * SWD-133: the Join screen's scanner, "Scan a ticket or a secret map". It starts the camera at once (through the same
  * camera hook as the claim scanner) and reads ticket QRs and Secret Words map QRs; anything else is passed over.
  */
 function JoinScanner({ onRead }: { onRead: (text: string) => boolean }) {
@@ -953,9 +953,9 @@ function JoinScanner({ onRead }: { onRead: (text: string) => boolean }) {
     };
   }, [attempt]);
   return (
-    <div className="scanner-frame join-scanner" role="group" aria-label="Scan a ticket or secret map">
+    <div className="scanner-frame join-scanner" role="group" aria-label="Scan a ticket or a secret map">
       {failed === null && <video ref={videoRef} className="scanner-video join-scanner-video" muted playsInline />}
-      <p className="join-scanner-label">Scan a ticket or secret map</p>
+      <p className="join-scanner-label">Scan a ticket or a secret map</p>
       {failed !== null && (
         <p className="note">{failed === 'denied' ? "The camera isn't allowed. Type the code instead." : 'No camera here. Type the code instead.'}</p>
       )}

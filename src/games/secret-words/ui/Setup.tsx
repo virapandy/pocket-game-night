@@ -459,16 +459,16 @@ const BOARD: Group<'board'> = {
   key: 'board',
   label: 'Board',
   options: [
-    { value: 'full', text: 'Full: 25 words', line: '9 and 8 words to find, 7 blank, 1 Landmine.' },
-    { value: 'easy', text: 'Easy: 16 words', line: '6 and 5 words to find, 5 blank, no Landmine.' },
+    { value: 'full', text: 'Full: 25 words', line: 'Each team finds 9 or 8 words. 7 belong to nobody, and 1 is the Landmine.' },
+    { value: 'easy', text: 'Easy: 16 words', line: 'Each team finds 6 or 5 words. 5 belong to nobody. No Landmine.' },
   ],
 };
 const LANDMINE: Group<'landmine'> = {
   key: 'landmine',
   label: 'Landmine',
   options: [
-    { value: 'lose', text: 'Lose the game', line: 'Step on it and your team loses.' },
-    { value: 'turn', text: 'Lose your turn', line: 'Step on it and your turn ends; the other team gets one word free.' },
+    { value: 'lose', text: 'Lose the game', line: 'Guess the Landmine and your team loses.' },
+    { value: 'turn', text: 'Lose your turn', line: 'Guess the Landmine and your turn ends; the other team gets a free word.' },
   ],
 };
 const WORDS: Group<'words'> = {

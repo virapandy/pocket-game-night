@@ -106,22 +106,22 @@ export function boardCheck(match: NightMatch, again: boolean): string {
   const s = match.state;
   const three = s.choices.map === 'own';
   const words = firstWords(s);
-  const first = three ? `The map phones should start with: ${words}` : `The map phone should start with: ${words}`;
+  const first = three ? `The map phones' first words should be: ${words}` : `The map phone's first words should be: ${words}`;
   if (again) return first;
   const deals = dealsOf(match);
   const now = deals[deals.length - 1];
   const prev = deals[deals.length - 2];
   if (!now || !prev || prev.map !== now.map) return first;
-  if (nextMapCode(prev.code, WORDS) !== now.code) return `New code: scan again. ${first}`;
+  if (nextMapCode(prev.code, WORDS) !== now.code) return `New code: scan it again. ${first}`;
   if (prev.givers !== now.givers) {
     const nowNames = [giversPlus(now.giverList.orange), giversPlus(now.giverList.teal)];
-    if (!three) return `Hand the map phone to ${listAnd(nowNames)}, tap Next map, and check it starts with: ${words}`;
+    if (!three) return `Give the map phone to ${listAnd(nowNames)}. They tap Next map; its first words should be: ${words}`;
     const nowAll = new Set([...now.giverList.orange, ...now.giverList.teal]);
     const gone = [...prev.giverList.orange, ...prev.giverList.teal].filter((p) => !nowAll.has(p));
     const goneText = gone.length ? ` ${listAnd(gone)}: tap Done with this game.` : '';
     return `${listAnd(nowNames)}: scan this code on your phones and check they start with: ${words}.${goneText}`;
   }
   return three
-    ? `Tap Next map on both map phones and check they start with: ${words}`
-    : `Tap Next map on the map phone and check it starts with: ${words}`;
+    ? `On both map phones, tap Next map. Their first words should be: ${words}`
+    : `On the map phone, tap Next map. Its first words should be: ${words}`;
 }

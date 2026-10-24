@@ -91,7 +91,7 @@ export function BoardScreen({
   const sideways = vp.narrow && !easy;
   const land = vp.landscape;
   const big = !land && vp.width >= 390 && vp.height >= 700;
-  const { ref: turnRef, size: turnSize } = useShrinkToFit<HTMLParagraphElement>(17, poker ? 13 : 17, [turnLine, poker]);
+  const { ref: turnRef, size: turnSize } = useShrinkToFit<HTMLParagraphElement>(17, poker ? 13 : vp.landscape ? 17 : 14, [turnLine, poker, vp.landscape]);
 
   const turn = (
     <p ref={turnRef} className="sw-turn-line" data-testid="turn-line" style={{ fontSize: `${turnSize}px` }}>

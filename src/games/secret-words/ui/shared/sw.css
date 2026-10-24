@@ -189,7 +189,7 @@
 .sw-zoom-hit { position: absolute; left: 50%; top: 50%; width: 12px; height: 12px; margin: -6px 0 0 -6px; pointer-events: auto; }
 
 /* ----- Counts, flip, status lines ----- */
-.sw-counts { display: flex; align-items: center; gap: 4px; font-weight: 700; white-space: nowrap; }
+.sw-counts { display: flex; align-items: center; gap: 4px; font-weight: 700; white-space: nowrap; min-width: 0; overflow: hidden; }
 .sw-count { display: inline-flex; align-items: center; gap: 4px; }
 .sw-count-orange .sw-icon { color: var(--team-orange); }
 .sw-count-teal .sw-icon { color: var(--team-teal); }
@@ -215,6 +215,7 @@
 .sw-board-port > .sw-team-bar { padding: 0; }
 .sw-board-port > .sw-topbar { padding-left: 8px; padding-right: 8px; }
 .sw-board-h1 { height: 48px; display: flex; align-items: center; font-size: 22px; white-space: nowrap; overflow: hidden; }
+.sw-counts-row > .sw-counts { flex: 1 1 0; }
 .sw-counts-row { height: 44px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .sw-grid-area { flex: 1 1 0; min-height: calc(5 * 48px + 16px); max-height: calc(5 * 56px + 16px); }
 .sw-grid-area:has(> .sw-grid-easy) { min-height: calc(4 * 48px + 12px); max-height: calc(4 * 56px + 12px); }
@@ -312,8 +313,8 @@
 /* ----- Private map (SWD-031 v3.6/v3.7 fixed places, 360 × 640 budget) ----- */
 .sw-pm { padding: 0 16px 80px; gap: 4px; }
 .sw-pm-scroll { gap: 4px; }
-.sw-pm-head { height: 44px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.sw-pm-name { font-size: 24px; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.sw-pm-head { height: 44px; display: flex; align-items: center; justify-content: flex-start; gap: 8px; }
+.sw-pm-name { font-size: 24px; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; flex: 1 1 0; }
 .sw-saw { min-height: 44px; height: 44px; font-size: 15px; padding: 0 8px; white-space: nowrap; }
 .sw-pm .sw-small { line-height: 20px; min-height: 20px; }
 .sw-private-line { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

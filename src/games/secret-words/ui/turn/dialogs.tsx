@@ -65,7 +65,7 @@ export function PickerDialog({ guessers, current, onPick, onCancel }: { guessers
   );
 }
 
-export function PauseCover({ where, onCarryOn }: { where: string; onCarryOn: () => void }) {
+export function PauseCover({ where, onCarryOn, onHome }: { where: string; onCarryOn: () => void; onHome: () => void }) {
   const until = useGuard('pause');
   return (
     <SwDialog title="Paused" heading className="sw-pause-cover" testId="pause-cover">
@@ -74,6 +74,9 @@ export function PauseCover({ where, onCarryOn }: { where: string; onCarryOn: () 
       <SwMain className="sw-main-inline" until={until} onClick={onCarryOn}>
         Carry on
       </SwMain>
+      <button type="button" className="sw-quiet sw-full" onClick={onHome}>
+        ← Home (keep this game)
+      </button>
     </SwDialog>
   );
 }
@@ -83,7 +86,7 @@ export function NewBoardDialog({ onNewBoard, onKeep }: { onNewBoard: () => void;
   return (
     <SwDialog
       guardAll
-      title="New board? New words, same teams, fresh start. For when someone saw the map or the words are too hard. This board won't count."
+      title="New board? Fresh words, same teams. Use it if someone saw the map or the words are too hard. This board won't count."
       onDismiss={onKeep}
     >
       <div className="sw-dialog-buttons">

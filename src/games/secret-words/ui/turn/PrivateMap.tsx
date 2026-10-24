@@ -1,13 +1,14 @@
 // P2, the private map (one phone; also SWD-037's "Show the map to" with two or three phones): SWD-031 (v3.6 fixed places,
 // v3.7 map key), SWD-113 ("Not Riya? Go back", "Someone saw the map"), SWD-121 (hidden after 60 s, warning from 50 s).
-// The map is in the page only while shown. No menu, no team bar, no Pause, no sound, no vibration.
+// The map is in the page only while shown. No menu, no team bar, Pause at the top left (v3.9), no sound, no vibration.
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import type { Kind, Team } from '../../rules';
 import { BoardGrid, type GridCell } from '../shared/BoardGrid';
 import { useNow, useViewport } from '../shared/device';
 import { SwMain } from '../shared/guard';
 import { KindIcon } from '../shared/icons';
-import { MapKey, WordCounts } from '../shared/parts';
+import { MapKey, PauseButton, WordCounts } from '../shared/parts';
+import { useShrinkToFit } from '../shared/shrink';
 import { HurryTimer, type TimerState } from './chrome';
 
 const WARN_MS = 50_000;
@@ -30,6 +31,7 @@ export function PrivateMap({
   onMain,
   onNotMe,
   onSaw,
+  onPause,
   onFlip,
   timer,
 }: {
@@ -51,10 +53,13 @@ export function PrivateMap({
   onNotMe: () => void;
   /** "Someone saw the map": the map is removed first, then the New board dialog opens. */
   onSaw: () => void;
+  /** SWD-031 v3.9: the map is removed first, then the Pause cover opens. */
+  onPause: () => void;
   onFlip: () => void;
   timer: TimerState;
 }) {
   const vp = useViewport();
+  const { ref: nameRef, size: nameSize } = useShrinkToFit<HTMLHeadingElement>(24, 15, [givers.join('+'), vp.landscape, vp.width]);
   const easy = columns === 4;
   const narrowList = vp.narrow && !easy;
   const [shown, setShown] = useState(startShown);
@@ -113,7 +118,7 @@ export function PrivateMap({
       {landmineWord && !easy && (
         <p className="sw-small sw-avoid" data-testid="avoid-line">
           <KindIcon kind="landmine" />
-          {`Never guess: ${landmineWord} (the Landmine)`}
+          {`Landmine, never guess: ${landmineWord}`}
         </p>
       )}
     </div>
@@ -126,7 +131,13 @@ export function PrivateMap({
 
   const heading = (
     <div className="sw-pm-head">
-      <h1 className="sw-h1 sw-pm-name">{givers.join(' + ')}</h1>
+      <PauseButton
+        onPause={() => {
+          hide();
+          onPause();
+        }}
+      />
+      <h1 ref={nameRef} className="sw-h1 sw-pm-name" style={{ fontSize: `${nameSize}px` }}>{givers.join(' + ')}</h1>
       {!vp.landscape && visible && (
         <button
           type="button"

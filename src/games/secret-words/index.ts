@@ -73,5 +73,5 @@ export const secretWords = {
   historyTitle,
   PastNight,
   /** SWD-002: Secret Words' line on "Join a game". */
-  joinLine: "Secret Words clue givers: scan the host's code to get your secret map.",
+  joinLine: "Giving clues in Secret Words? Scan the host's code to see your secret map.",
 };

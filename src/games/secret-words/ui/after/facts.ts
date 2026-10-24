@@ -61,7 +61,9 @@ export function bestClue(clues: readonly ClueInForce[]): { word: string; number:
   if (!best || !best.word) return null;
   const n = best.n;
   const all = typeof n === 'number' && n >= 1 && n === best.found;
-  return { word: best.word, number: clueNumber(n), found: all ? `all ${best.found} found` : `${best.found} found` };
+  const numbered = typeof n === 'number' && n >= 1;
+  const number = n === 'inf' ? '(any number)' : numbered && !all ? `for ${n}` : clueNumber(n);
+  return { word: best.word, number, found: all ? `all ${best.found} found` : numbered ? `${best.found} words found` : `${best.found} found` };
 }
 
 /** Won games by team. */
@@ -69,6 +71,15 @@ export function tallyOf(s: SecretWordsState): Record<Team, number> {
   const t: Record<Team, number> = { orange: 0, teal: 0 };
   for (const g of s.games) if (g.winner) t[g.winner]++;
   return t;
+}
+
+/** SWD-128 (v3.9): "Chai Champions won the night, 3–2" (orange first on the score) / "A draw tonight, 2–2"; none when no game was won. */
+export function nightResult(s: SecretWordsState): string | null {
+  const t = tallyOf(s);
+  if (t.orange + t.teal === 0) return null;
+  const score = `${t.orange}–${t.teal}`;
+  if (t.orange === t.teal) return `A draw tonight, ${score}`;
+  return `${s.teams.names[t.orange > t.teal ? 'orange' : 'teal']} won the night, ${score}`;
 }
 
 /** SWD-052: "Tonight: Chai Champions 1 · Coffee Commandos 0". */

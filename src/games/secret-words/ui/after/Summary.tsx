@@ -3,7 +3,7 @@ import { useState } from 'react';
 import type { SecretWordsState } from '../../rules';
 import { SwMain, useGuard, useTapWait } from '../shared/guard';
 import { GameMenu, SwDialog } from '../shared/parts';
-import { clueCredit, summaryLine, tallyLine, type PlayedGame } from './facts';
+import { clueCredit, nightResult, summaryLine, tallyLine, type PlayedGame } from './facts';
 
 export function Summary({
   state,
@@ -30,6 +30,7 @@ export function Summary({
   const wait = useTapWait();
   const [deleting, setDeleting] = useState(false);
   const credit = clueCredit(state.games);
+  const night = nightResult(state);
   return (
     <div className="sw-page sw-summary" onClickCapture={wait}>
       <div className="sw-topbar sw-topbar-plain">
@@ -38,6 +39,7 @@ export function Summary({
         </div>
       </div>
       <h1 className="sw-h1">Tonight's Secret Words</h1>
+      {night && <p data-testid="night-result">{night}</p>}
       <p data-testid="summary-line">{summaryLine(played)}</p>
       <p className="sw-strong" data-testid="tally">
         {tallyLine(state)}

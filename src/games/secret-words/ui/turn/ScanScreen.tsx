@@ -77,7 +77,7 @@ export function ScanScreen({
       <TopActions onPause={onPause} menu={menu} />
     </div>
   );
-  const heading = <h1 className="sw-h1">Clue givers: scan to get the secret map</h1>;
+  const heading = <h1 className="sw-h1">Clue givers: scan this to see the secret map</h1>;
   const lines = (qrHere: ReactNode) => (
     <>
       <p>{giverLine}</p>
@@ -89,11 +89,11 @@ export function ScanScreen({
       <p className="sw-code-text" data-testid="map-code-text">{`Or type this code: ${shownCode(code)}`}</p>
       <p data-testid="board-check">{check}</p>
       <p className="sw-small" data-testid="mismatch-line">
-        Doesn't match? Scan this code again.
+        First words different? Scan this code again.
       </p>
       {dnd && (
         <p className="sw-small" data-testid="dnd-tip">
-          Tip: turn on Do Not Disturb so messages don't pop up on the board.
+          Tip: turn on Do Not Disturb, so messages don't pop up over the board.
         </p>
       )}
     </>
