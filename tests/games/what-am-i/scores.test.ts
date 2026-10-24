@@ -213,6 +213,33 @@ describe('WAI-041 / WAI-042: people mid-game (rule parts)', () => {
     expect(n.view.toPlay).not.toContain('Riya');
   });
 
+  wit('WAI-041: reorder moves only players still to play this round; moving anyone who has played is refused', () => {
+    const n = new Night({ seed: 'reorder' }).start();
+    n.savedTurn(1); n.savedTurn(1); // Riya and Arjun have played round 1
+    expect(n.view.toPlay).toEqual(['Meena', 'Kabir', 'Zoya', 'Dev']);
+    // Riya moved after Arjun, Riya moved to the end, Arjun swapped with Meena: each moves someone who has played
+    expect(n.accepts({ type: 'reorder', order: ['Arjun', 'Riya', 'Meena', 'Kabir', 'Zoya', 'Dev'] })).toBe(false);
+    expect(n.accepts({ type: 'reorder', order: ['Arjun', 'Meena', 'Kabir', 'Zoya', 'Dev', 'Riya'] })).toBe(false);
+    expect(n.accepts({ type: 'reorder', order: ['Riya', 'Meena', 'Arjun', 'Kabir', 'Zoya', 'Dev'] })).toBe(false);
+    // Dev to the front of those still to play: Riya and Arjun stay in place
+    n.play({ type: 'reorder', order: ['Riya', 'Arjun', 'Dev', 'Meena', 'Kabir', 'Zoya'] });
+    expect(n.view.order).toEqual(['Riya', 'Arjun', 'Dev', 'Meena', 'Kabir', 'Zoya']);
+    expect(n.view.toPlay).toEqual(['Dev', 'Meena', 'Kabir', 'Zoya']);
+    expect(n.view.player).toBe('Dev');
+  });
+
+  wit('WAI-041: before anyone has played this round any order is accepted; a player who has played stays in place in round 2', () => {
+    const n = new Night({ seed: 'reorder-2' }).start(['Riya', 'Arjun', 'Meena']);
+    n.play({ type: 'reorder', order: ['Meena', 'Riya', 'Arjun'] });
+    expect(n.view.player).toBe('Meena');
+    n.savedTurn(1); n.savedTurn(1); n.savedTurn(1); // round 1 done: nobody has played round 2
+    expect(n.view.round).toBe(2);
+    n.play({ type: 'reorder', order: ['Arjun', 'Meena', 'Riya'] });
+    n.savedTurn(1); // Arjun has played round 2
+    expect(n.accepts({ type: 'reorder', order: ['Meena', 'Arjun', 'Riya'] })).toBe(false);
+    expect(n.accepts({ type: 'reorder', order: ['Arjun', 'Riya', 'Meena'] })).toBe(true);
+  });
+
   wit('a current player\'s name, an empty name, a 21st player and leaving below 2 players are refused', () => {
     const n = new Night({ seed: 'refuse' }).start(['Riya', 'Arjun']);
     expect(n.accepts({ type: 'addPlayer', name: 'Riya' })).toBe(false);

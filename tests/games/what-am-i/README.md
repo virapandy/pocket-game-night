@@ -8,10 +8,11 @@ work around it.
 | File | Scenarios |
 |---|---|
 | `words.test.ts` | WAI-003 counts, R3, the list format (`content/what-am-i/words.json` row for row with `docs/games/what-am-i/words.csv`), WAI-092 ids |
-| `queue.test.ts` | WAI-010 (Version 1.1 items 1–6: seed, input order, queue, fallback, hidden word, the worked example), WAI-043's hidden word, WAI-044's new queue |
+| `queue.test.ts` | WAI-010 (Version 1.1 items 1–6: seed (setup without `seeds.words` refused), input order, queue, fallback, hidden word, the worked example), WAI-043's hidden word, WAI-044's new queue |
 | `turn.test.ts` | WAI-021 (Version 1.1 item 14 property), WAI-023, WAI-040, WAI-043, WAI-014, WAI-015 |
-| `scores.test.ts` | WAI-030 to WAI-033 (K2 scoreboards), WAI-041 / WAI-042 rule parts |
-| `results.test.ts` | WAI-060 to WAI-064, WAI-092 (replay, ids, no seed in a view) |
+| `scores.test.ts` | WAI-030 to WAI-033 (K2 scoreboards), WAI-041 / WAI-042 rule parts (reorder only among players still to play) |
+| `results.test.ts` | WAI-060 to WAI-064 (ties in tonight's wins and best guesser by the current turn order, leavers after), WAI-092 (replay, ids, no seed in a view) |
+| `editions.test.ts` | WAI-092: word-list editions (a night saved under edition 1 replays word for word under a later list; `config.edition`, `whatAmIEdition`) |
 | `../../contract/what-am-i.test.ts` | the shared contract suite (joins once `whatAmIRules` exists) |
 
 `oracle.ts` holds the scenarios' own word-order algorithm (WAI-010 with Version 1.1 items 2–4) written with the engine's

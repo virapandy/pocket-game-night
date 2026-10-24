@@ -35,13 +35,24 @@ The `notes` column stays out. The tests compare the file with the CSV row for ro
 | Export | What |
 |---|---|
 | `whatAmIRules` | the game's `GameRules<Config, State, WaiMove, WaiView>`, `id: 'what-am-i'` |
+| `whatAmIEdition` | WAI-092: the shipped word list's current edition, the highest `edition` or `retired_in` in `content/what-am-i/words.json` (1 today) |
 | `queueFor(state)` | WAI-H1: the remaining queue as word ids, next word first: the unshown part (with any Mix of all fallback already appended), then the shown part. Empty before the first `start` and when no game is open. |
 
 ## Setup
 `startMatch(whatAmIRules, setup, at)` with
 ```ts
-{ gameId: 'what-am-i', seeds: { words: string }, config: { testWords?: WaiWord[] } }
+{ gameId: 'what-am-i', seeds: { words: string }, config: { edition?: number; testWords?: WaiWord[] } }
 ```
+**WAI-010 (orchestrator's call, 25 October 2026):** `seeds.words` is required: a setup without it (or with an empty or
+non-text value) is refused, that is `startMatch` (the rules' `setup`) throws.
+
+**Word-list editions (WAI-092, orchestrator's call, 25 October 2026, `docs/test-questions.md`):** the app starts every new
+game night with `config.edition = whatAmIEdition`, so the saved night records the edition it was played with. The rules use
+only words with `edition <= config.edition` that were not retired by then (`retired_in` null or greater than
+`config.edition`); a saved night with no `edition` is treated as edition 1. So a night saved under edition 1 replays word for
+word after the list gains edition-2 words and retires a word in edition 2, and a night started under edition 2 uses the new
+words and leaves the retired one out. (Tests: `tests/games/what-am-i/editions.test.ts`, which load the game with a later
+`words.json` in place of the shipped one.)
 `testWords` is WAI-H7: when present it replaces the whole word list (every pack and Mix of all) for this game night.
 The game night starts with no game; its first move is `start`.
 
@@ -55,7 +66,8 @@ type Choices = { pack: Pack | 'mix'; time: 30 | 60 | 90; hold: 'hand' | 'free'; 
 { type: 'resume' } | { type: 'skip' } | { type: 'scoreTurn' } | { type: 'undoScore' }
 { type: 'fix'; word: string }                                 // a word of the open turn's lists, moved to the other list
 { type: 'addPlayer'; name: string } | { type: 'leave'; player: string }
-{ type: 'reorder'; order: string[] }                          // the whole new turn order of the current players
+{ type: 'reorder'; order: string[] }                          // the whole new turn order of the current players;
+                                                              // refused if any player who has played this round moves (WAI-041)
 { type: 'setHold'; player: string; hold: 'hand' | 'free' }
 { type: 'setChoices'; choices: Choices } | { type: 'setPlayers'; players: string[] }
 { type: 'endGame' } | { type: 'endEvening' }
@@ -107,6 +119,8 @@ interface Tonight {
   got: number;                  // Got it over every saved turn of tonight's ended games
   wins: { player: string; wins: number }[];   // most first, ties in turn order; only players with a win
   best: { players: string[]; got: number } | null;   // most Got it tonight (ties: every one, in turn order)
+  //  "turn order" (WAI-061, WAI-064; orchestrator's call, 25 October 2026): the current (last game's) turn order, then
+  //  everyone not in it (leavers, players not in the last game) in the order of their first saved turn tonight
 }
 ```
 No seed is ever in a view.

@@ -200,6 +200,34 @@ describe('WAI-063 / WAI-064: End for tonight and the summary', () => {
   });
 });
 
+describe('WAI-061 / WAI-064: ties in tonight\'s wins and best guesser break by the current turn order, leavers after', () => {
+  wit('the order of tonight\'s first turns does not decide a tie: the current turn order does', () => {
+    const n = new Night({ seed: 'tie-order' }).start(['Riya', 'Arjun']);
+    n.savedTurn(3); n.savedTurn(1); n.endGame(); // Riya wins game 1
+    n.start(['Arjun', 'Riya']);
+    n.savedTurn(3); n.savedTurn(1); n.endGame(); // Arjun wins game 2; turn order now Arjun, Riya
+    expect(n.view.tonight.wins).toEqual([{ player: 'Arjun', wins: 1 }, { player: 'Riya', wins: 1 }]);
+    expect(n.view.tonight.best).toEqual({ players: ['Arjun', 'Riya'], got: 4 });
+    n.endEvening();
+    expect(n.view.tonight.wins).toEqual([{ player: 'Arjun', wins: 1 }, { player: 'Riya', wins: 1 }]);
+    expect(n.view.tonight.best).toEqual({ players: ['Arjun', 'Riya'], got: 4 });
+  });
+
+  wit('a tie between a leaver and a player still in: the player still in comes first', () => {
+    const n = new Night({ seed: 'tie-leaver' }).start(['Riya', 'Arjun', 'Meena']);
+    n.savedTurn(5); n.savedTurn(2); n.savedTurn(1); n.endGame(); // Riya wins game 1
+    n.start(['Riya', 'Arjun', 'Meena']);
+    n.savedTurn(2); n.savedTurn(5); n.savedTurn(1); // round 1 of game 2
+    n.play({ type: 'leave', player: 'Riya' });
+    n.endGame(); // Arjun wins game 2; Riya 7 and Arjun 7 tonight
+    expect(n.view.tonight.wins).toEqual([{ player: 'Arjun', wins: 1 }, { player: 'Riya', wins: 1 }]);
+    expect(n.view.tonight.best).toEqual({ players: ['Arjun', 'Riya'], got: 7 });
+    n.endEvening();
+    expect(n.view.tonight.wins).toEqual([{ player: 'Arjun', wins: 1 }, { player: 'Riya', wins: 1 }]);
+    expect(n.view.tonight.best).toEqual({ players: ['Arjun', 'Riya'], got: 7 });
+  });
+});
+
 describe('WAI-092: saved data (B9)', () => {
   wit('every got, pass and timeUp with a word carries a real word id; replaying the records gives the same game', () => {
     const n = new Night({ seed: 'saved' }).start();

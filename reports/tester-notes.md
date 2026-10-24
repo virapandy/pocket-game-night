@@ -122,3 +122,8 @@ Merged origin/main (PGN_PORT per lane: lane-a 4174). Lane A area: 129 of 132 pas
 
 ## Secret Words screen simulations (24 October 2026)
 `tests/sims/secret-words-evenings.sim.ts` + `secret-words-runner.ts` (README in `tests/sims/`). Count follows `SIM_EVENINGS` (one in five: 40 of 200). Local: `JEV=off SIM_EVENINGS=0 SIM_SW_EVENINGS=2 npx playwright test --config tests/playwright.sims.config.ts --workers=2` (about 25 s for 2; delete `reports/sim/screen` first, passing evenings leave no replay). Candidate app findings the sims raised (not yet confirmed by a rule test): "Other team's turn" stays guarded for good after a Nobody's word (seed t4-008, grandparent, 2 phones); How to play opened from game over shows two main buttons (Play again behind Done); map phone "Next map" sometimes opens no dialog (t4-006). The Jev path is untested locally (no key).
+
+## 25 October: What Am I? reviewer gaps (lane-w1b, C3)
+- New failing rule tests: `editions.test.ts` (WAI-092 editions; loads the game with a mocked `content/what-am-i/words.json` via `vi.doMock` + `vi.resetModules`, so a later list can be tried without touching content), WAI-010 seed refusal (`queue.test.ts`), WAI-041 reorder (`scores.test.ts`), WAI-061/064 tie order (`results.test.ts`). API made exact in `specs/what-am-i/api.md`; owner confirmation row in `docs/test-questions.md`.
+- On 35420ab 8 fail, all for the gap itself (missing `whatAmIEdition`, replay refused "That word is not on screen", setup accepted without a seed, reorder accepted, Riya before Arjun in ties). "A night started under edition 2" passes now (guard against over-filtering).
+- The browser side of editions (the app writing `config.edition` when a night starts) has no test yet; add one with the screens lane.

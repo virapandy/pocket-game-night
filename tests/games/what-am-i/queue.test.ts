@@ -4,9 +4,9 @@
 // for WAIW-191 too.
 import { describe, expect } from 'vitest';
 import fc from 'fast-check';
-import { createRng, shuffle } from '../../../src/engine';
+import { createRng, shuffle, startMatch } from '../../../src/engine';
 import {
-  EXAMPLE_SEED, EXAMPLE_WORDS, Night, PACKS, WORDS, eligible, fallbackWords, idOf, startQueue, wit, type PackChoice, type WaiWord,
+  EXAMPLE_SEED, EXAMPLE_WORDS, Night, PACKS, WORDS, eligible, fallbackWords, idOf, rules, startQueue, wit, type PackChoice, type WaiWord,
 } from './helpers';
 
 const ids = (words: readonly WaiWord[]) => words.map((w) => w.id);
@@ -222,3 +222,14 @@ describe('WAI-044: a changed pack builds a new queue with the same gameIndex', (
 });
 
 const NAMES2 = ['Riya', 'Arjun'];
+
+describe('WAI-010: a game night needs its word seed (Version 1.1 item 1; orchestrator\'s call, 25 October 2026)', () => {
+  wit('setup without seeds.words is refused (startMatch throws); so is an empty or non-text seed; a seed is accepted', () => {
+    const at = 1_000_000;
+    expect(() => startMatch(rules(), { gameId: 'what-am-i', seeds: {}, config: {} } as any, at)).toThrow();
+    expect(() => startMatch(rules(), { gameId: 'what-am-i', seeds: { other: 'x' }, config: {} } as any, at)).toThrow();
+    expect(() => startMatch(rules(), { gameId: 'what-am-i', seeds: { words: '' }, config: {} } as any, at)).toThrow();
+    expect(() => startMatch(rules(), { gameId: 'what-am-i', seeds: { words: 42 }, config: {} } as any, at)).toThrow();
+    expect(() => startMatch(rules(), { gameId: 'what-am-i', seeds: { words: 'w-1' }, config: {} } as any, at)).not.toThrow();
+  });
+});
