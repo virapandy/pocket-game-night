@@ -1,6 +1,7 @@
 # Handover: start here
 
 ## Now: status and what's next (product owner, updated 22 October 2026)
+**Owner, 24 October, every game (C1):** tap guards become invisible: main buttons look live at once; the guard times and "a tap inside does nothing" stay. Secret Words: SWD-114 Version 3.8 (lane B built the shared tap-guard look: remove the greyed state, keep the timing; the tester updates the tests that check the greyed look). Mafia and What Am I? maps updated; Impostor unchanged (its guard was already invisible). The prototype renderer drops the greyed look too.
 **DO NOW, before anything else (owner, 23 October):** the `jev-design` helper, guard change, tool and 15,000-a-week counter in the "DO NOW" section below.
 **State on 22 October.** Live on the families' link: Tambola 1.2.0 and Impostor 1.3.1 (v1.3.1, 8 October). The faster-cycles
 setup is done on both sides (rules acb35a2; lane CI, shipped font, four shards, shared blocks in `src/blocks`; clock,

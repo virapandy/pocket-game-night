@@ -15,8 +15,8 @@ what it records. *Intentions* says which of the common next wishes are visible w
 320 × 568, 360 × 640, 390 × 844, 812 × 375 and 568 × 320 unless its *Sizes* line says otherwise. Example names are in K1.
 
 **Rules that apply to every screen:**
-- *Visible tap guards:* every main button appears greyed for 800 ms after its screen appears (1 s on "I'm Riya") and then
-  comes alive; quiet buttons are not guarded (same rule as Secret Words).
+- *Tap guards (invisible, owner 24 October, every game):* every main button looks live at once but ignores taps for 800 ms after its
+  screen appears (1 s on "I'm Riya"); quiet buttons are not guarded; a tap inside a guard does nothing.
 - *Room screens and private screens.* **Private** screens (the role card and the night job, B2 and N2) show one player's
   secret and are reached only through a pass screen and a hold or tap; they have no menu and no Pause. Every other screen
   is a **room** screen: it never shows a living player's role, a night pick, or how many players are still to pick.
