@@ -1,6 +1,6 @@
-# Mafia: scenarios (version 1.1, draft, 25 October 2026)
+# Mafia: scenarios (version 1.1, approved 25 October 2026)
 
-Status: **version 1.1 draft, not yet approved** (two-reader check resolved in "Version 1.1", which wins over the text it names). Written to `docs/spec-rules.md` from `screen-map.md` draft 4, `guide.md`, `lifecycle.md`,
+Status: **version 1.1 approved by the owner, 25 October 2026** ("Approved: Mafia scenarios version 1.1, including your calls on the same names for every role at night and on leaving during the night or the deal. Hand them to the orchestrator."). Read each scenario together with "Version 1.1", which wins over the text it names. Every "Status: draft" line below reads "approved". Written to `docs/spec-rules.md` from `screen-map.md` draft 4, `guide.md`, `lifecycle.md`,
 `stories.csv` edition 1.2 and decisions MF1–MF15 (`docs/decisions.md`). Before approval: the two-reader check (rule 12), then
 the owner. After approval the tester copies each section into `specs/mafia/` (file names in the headings) and writes tests.
 Mafia may be tested and built alongside What Am I?, and is **released after it** (owner, 24 October; roadmap).

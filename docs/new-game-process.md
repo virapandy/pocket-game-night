@@ -174,6 +174,7 @@ Jev never writes text, counts or decides a rule; it sorts, scores and says yes o
 | Dumb Charades | CHA | `charades` |
 | Scoreboard / Rummy scorekeeper | SCO | `scoreboard` |
 | Secret Words (Codenames-style) | SWD | `secret-words` |
+| Mafia | MAF | `mafia` |
 
 ## Definition of done (design)
 - [ ] Fit check passed

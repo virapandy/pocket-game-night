@@ -100,6 +100,24 @@ including a non-Hindi speaker from Tirunelveli) would not know, could not act or
 religious-sensitive. Within the weekly Jev cap. Tell the product owner when the report is pushed; it merges the findings
 into the map. The six persona walks are already done by the product owner.
 
+### Mafia: scenarios version 1.1 approved (owner, 25 October): tests, then build, alongside What Am I?
+**Release order stays What Am I? first** (owner, 24 October); tests and build may run now, within capacity (3 coder lanes, 2
+testers at once; a Mafia tester may wait for a free slot). Binding: `docs/games/mafia/scenarios.md` version 1.1; read each
+scenario with its "Version 1.1" items, which win over the text they name. Decisions MF1–MF15 and MF18 (`docs/decisions.md`).
+1. **Tester (largest model for the C3 parts):** copy each section into `specs/mafia/` (file names in the headings; IDs MAF-, prefix
+   now in `docs/new-game-process.md`), status approved. Write the **C3 tests first**: sections 02 (deal, streaks, MAF-P1), 03
+   (night rules and resolution, MAF-P3, P7), 05 (winning, MAF-P6), 10 (saved data, replay), MAF-037 stories (MAF-P5) and MAF-P2
+   (nothing secret on room screens); then the screen tests (01, 04, 06, 07, 09). Hooks MAF-H1 to H6 (Version 1.1 items 33–34).
+2. **Coder lanes, by `docs/change-sop.md`:** (a) **rules engine first**, one lane, C3: `src/games/mafia/` rules against the pushed
+   C3 tests, plus `content/mafia/stories.json` built from `docs/games/mafia/stories.csv` (edition 1.2, 22 stories); then (b) screen
+   lanes, the orchestrator's split; a suggestion: setup and deal (S1–S3, B1–B2) · night (N0–N3) · day and results (M1, Y1, V1–V4,
+   G1, G2, dialogs). N2 (the night job) and MAF-P7 are C3 in look: the reviewer checks every role's N2 is the same frame.
+3. **Before the design freeze:** when the prototype renderer can draw `docs/games/mafia/screen-map.md` (draft 4), tell the
+   product owner, who runs the six persona walks on it; findings go to version 1.2, never into a build round in progress.
+4. The jev-design runs are done (`docs/games/mafia/jev-results-2026-10-23.md`); the Jev simulated player can reuse
+   `tests/tools/jev-design/sim-mafia.ts` against the real engine once it exists.
+Report to the owner after each step. Mid-size models for routine work.
+
 ### Mafia (23 October, evening): one line in the jev-design helper's brief: **done** (fd47822)
 The tool now caps the product side at 30,000 a week (owner, 23 October: "we can increase jev budget"), but
 `.claude/workspace/agents/jev-design.md` still tells the helper 15,000, so it reports a 30,000-limit run as "over". Change
