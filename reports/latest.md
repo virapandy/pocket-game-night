@@ -1,4 +1,38 @@
 # Test report
+## Lane-t, What Am I? the turn + results screens (lane T + lane R), rebased onto main (ddc25fb)
+Commit tested: 8c64649 (app f6b1a62, the coder's 301016c rebased onto main; tests 8c64649)   Date: 2026-10-25
+Result: GREEN. Quick verify 40137193201 on lane-t at 8c64649: verify (type-check, build, every rule test, smoke and the changed area's browser tests on Android) green; the 4 full-browser shards are skipped on lane branches.
+- Rule tests (`npm test`): 1163 of 1163 pass, including 4 new WAI-010 tests "a word never comes back within the same turn"
+  (orchestrator's call; they failed on 13ae70b and pass since the coder's dec46c5).
+- Browser, Android, local (3 workers, `caffeinate -i taskpolicy -b`): every What Am I? file plus `home-and-buttons`,
+  `impostor-setup` and `secret-words-a-home`: 286 tests, 285 pass on the rebased lane; the one failure was a test fault
+  (fixed, below) and now passes.
+- No Mafia file is touched by the lane (`git diff origin/main...lane-t --stat`).
+## Failing (real bugs only)
+- None.
+## Test faults fixed this round (no check removed or loosened)
+- WAI-012, WAI-011 tips 2/2b/1/sound/screen-on, WAI-014, WAI-015: eight turn tests ran 60 s turns but waited 30 s; now 30 s turns.
+- WAI-011 tip 2: the time-up word counts as shown (WAI-023): eight marks + the time-up word = nine of ten.
+- WAI-011 tips 1 and screen-on, WAI-014 hold: Round over (WAI-033) comes before the next round's T1; the tests now go through it.
+- WAI-080 sizes, WAI-082 words: `stopAt: 'S1'` skipped S2's 30 s choice; the tests now choose it.
+- WAI-092 History: History is in Home's menu (PLT-300); opened through it.
+- WAI-021 flash: the game now scopes its colours, so `--good` is read where the flash is (and must be set).
+- Motion tests (WAI-021, WAI-024, no-event test) and two long tests (WAI-092 History, item 33 from R1): fitting time limits,
+  because each scheduled orientation event takes ~170 ms of real time under `taskpolicy -b`.
+## New tests
+- WAI-010 (orchestrator's call): a word never comes back within the same turn; when every eligible word is shown, only
+  `timeUp` with no word ends the turn; on screen time up comes at once (WAI-011 tip 3 test). Rule in `specs/what-am-i/api.md`.
+- WAI-033 Version 1.1 item 33 from R1 (`what-am-i-scores.spec.ts`): leave, addPlayer and reorder recorded at once;
+  "← Back to the game" and an unchanged "Carry on playing" record nothing more.
+## Flaky or setup problems (not for the Build workspace)
+- None seen. The reviewer's optional check (reload the game's own address near the 12-hour mark) was not added this round.
+## Requests for the Build workspace
+- None.
+## Notes for the owner (plain English)
+- Two calls made while you were away, for the product owner to confirm (docs/test-questions.md): in What Am I?, a word never
+  comes back in the same turn (only possible with tiny test lists: the turn just ends); and changing players from Game over
+  stays as built, because "Play again" starts a new game with the new list.
+
 ## Lane-m, Mafia review fixes pinned (MAF-037, MAF-093, MAF-052, MAF-H2)
 Commit tested: ed28360 (app; tests 6c072c7)   Date: 2026-10-25
 Result: GREEN. Quick verify 40128921060 on lane-m at 6c072c7: verify and all 4 browser shards green.

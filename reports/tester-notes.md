@@ -154,3 +154,13 @@ Merged origin/main (PGN_PORT per lane: lane-a 4174). Lane A area: 129 of 132 pas
 - Mafia area added to `areas.json` (its own block before the "changed spec runs itself" entry).
 - Questions raised: 9 rows of 25 October in `docs/test-questions.md` (0.62 is really 0.95; leave between vote and N0; story
   reuse; target null for other roles; last turn leaves; N3 or M1 on resume; caught at game over; "past the deal"; mostMafia ties).
+
+## 25 October: What Am I? lane T (lane-t, rebased onto main ddc25fb)
+- Turn tests that call `playTurn`/`saveTurns` need `turnTime: 30` (default is 60 s); with `stopAt: 'S1'` call `chooseOnS2(page, { turnTime: 30 })` yourself.
+- A round's last saved turn opens Round over (R1); tap the main "Round 2" to reach the next T1.
+- History is in Home's menu: use `fromHome(page, 'History')` from helpers.ts.
+- Colours are scoped to the game: read CSS variables on the element, not `document.documentElement`.
+- Motion tests schedule hundreds of orientation timers (~170 ms real time each under `taskpolicy -b`): give them `test.setTimeout`.
+- WAI-010 "no word twice in a turn" is the orchestrator's call (api.md); WAI-033 item 33 from G1 too. Both await the product owner.
+- After keeping both sides in a docs/test-questions.md conflict, check for duplicate rows (an earlier cleanup commit gets lost).
+
