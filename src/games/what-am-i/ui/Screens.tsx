@@ -3,7 +3,7 @@
 // and "··· Menu" (`top`), "Welcome back." (`welcome`), `act` to record a move, `pauseTurn` for T2 and T3, and the dialogs.
 import { QuietButton, Screen, ScrollArea } from '../../../blocks';
 import type { StepProps } from './Frame';
-import { Main, PauseButton, Scoreboard, START_GUARD_MS } from './parts';
+import { HomeButton, Main, PauseButton, Scoreboard, START_GUARD_MS } from './parts';
 
 /** T1 (stand-in until lane W3): whose turn, "← Home (game saved)", Pause, the menu and the start button. */
 export function PassScreen(p: StepProps) {
@@ -12,7 +12,7 @@ export function PassScreen(p: StepProps) {
   return (
     <Screen className="wai-game wai-pass">
       <header className="wai-bar">
-        <QuietButton onClick={p.onHome}>← Home (game saved)</QuietButton>
+        <HomeButton onClick={p.onHome} />
         {p.top}
       </header>
       {p.welcome}
@@ -42,7 +42,7 @@ export function TurnEndScreen(p: StepProps) {
   return (
     <Screen className="wai-game wai-review">
       <header className="wai-bar">
-        <QuietButton onClick={p.onHome}>← Home (game saved)</QuietButton>
+        <HomeButton onClick={p.onHome} />
         {p.top}
       </header>
       {p.welcome}
@@ -60,7 +60,7 @@ export function RoundOverScreen(p: StepProps) {
   return (
     <Screen className="wai-game wai-round">
       <header className="wai-bar">
-        <QuietButton onClick={p.onHome}>← Home (game saved)</QuietButton>
+        <HomeButton onClick={p.onHome} />
         {p.top}
       </header>
       {p.welcome}
