@@ -2,7 +2,7 @@
 // game with undo for 5 seconds, clearing all history, and the tally a deleted game is taken out of.
 import { useEffect, useState } from 'react';
 import { inTally, type SavedGame } from '../engine';
-import { games, secretWords } from './games';
+import { games, secretWords, whatAmI } from './games';
 import { asTallyGame, Dialog } from './Sessions';
 import { gameStore, sessionStore } from './storage';
 
@@ -41,7 +41,13 @@ export function History({
   const load = () =>
     gameStore
       .list()
-      .filter((g) => isPast(g) && (gameOf(g.gameType) || (secretWords.isNight(g) && secretWords.historyTitle(g) !== null)))
+      .filter(
+        (g) =>
+          isPast(g) &&
+          (gameOf(g.gameType) ||
+            (secretWords.isNight(g) && secretWords.historyTitle(g) !== null) ||
+            (whatAmI.isNight(g) && whatAmI.historyTitle(g) !== null)),
+      )
       .sort((a, b) => b.createdAt - a.createdAt);
   // IMP-094: games that list an evening in progress as one row ("In progress"); never deleted from here.
   const [inProgress] = useState<SavedGame[]>(() =>
@@ -124,12 +130,12 @@ export function History({
         <ul className="history-list">
           {[...inProgress, ...past].map((g) => {
             const session = sessionName(g);
-            if (secretWords.isNight(g)) {
-              // SWD-064: "Secret Words · 3 games".
+            if (secretWords.isNight(g) || whatAmI.isNight(g)) {
+              // SWD-064: "Secret Words · 3 games"; WAI-092: "What Am I? · 2 games".
               return (
                 <li key={g.id}>
                   <button type="button" className="history-row" data-testid="history-game" onClick={() => onOpen(g.id)}>
-                    <span className="history-title">{secretWords.historyTitle(g)}</span>
+                    <span className="history-title">{secretWords.isNight(g) ? secretWords.historyTitle(g) : whatAmI.historyTitle(g)}</span>
                     <span>
                       {dateTime(g.createdAt)}
                       {session ? ` · ${session}` : ''}

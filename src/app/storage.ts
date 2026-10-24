@@ -121,6 +121,22 @@ export const preferences: Preferences = {
   },
 };
 
+/** Forgets every preference whose key starts with `prefix` (What Am I?'s WAI-H11 test hook). */
+export function clearPreferences(prefix: string): void {
+  const s = storage();
+  if (!s) return;
+  try {
+    const keys: string[] = [];
+    for (let i = 0; i < s.length; i++) {
+      const k = s.key(i);
+      if (k?.startsWith(PREF_PREFIX + prefix)) keys.push(k);
+    }
+    for (const k of keys) s.removeItem(k);
+  } catch {
+    // Storage blocked: nothing to forget.
+  }
+}
+
 export const sessionStore: SessionStore = {
   list() {
     const s = storage();
@@ -208,6 +224,8 @@ export const secretWordsUi: Preferences = keyed(`${KEY_ROOT}secretWords-ui.`);
 
 /** Impostor's screen state that is not a move (the paused timer, when the summary was shown): `pgn.impostor-ui.<id>`. */
 export const impostorUi: Preferences = keyed(`${KEY_ROOT}impostor-ui.`);
+/** What Am I?'s screen state that is not a move (the paused turn's time left, R1), per game night. */
+export const whatAmIUi: Preferences = keyed(`${KEY_ROOT}whatAmI-ui.`);
 
 /**
  * IMP-064, Test hooks item 3: `localStorage['pgn.test.seeds']`, read only at a new Impostor evening's first "Start
