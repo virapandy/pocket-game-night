@@ -17,10 +17,10 @@ sw.home-second-card.1,Join a game,"Home, second card",SWD-002,
 sw.home-second-card.3,Tambola ticket or Secret Words map from the host,"Home, second card",SWD-002,
 sw.home-second-card.4,Join with my ticket,"Home, second card",SWD-002,
 sw.home-second-card.5,Got a QR or code from the host?,"Home, second card",SWD-002,
-sw.join-screen.2,Scan a ticket or secret map,Join screen,"SWD-002, 133",
+sw.join-screen.2,Scan a ticket or a secret map,Join screen,"SWD-002, 133",
 sw.join-screen.3,Type a ticket code,Join screen,"SWD-002, 133",
 sw.join-screen.4,Type the code,Join screen,"SWD-002, 133",
-sw.join-screen.5,Secret Words clue givers: scan the host's code to get your secret map.,Join screen,"SWD-002, 133",
+sw.join-screen.5,Giving clues in Secret Words? Scan the host's code to see your secret map.,Join screen,"SWD-002, 133",
 sw.join-screen.6,Type the host's code,Join screen,"SWD-002, 133",
 sw.code-entry.2,Host's code,Code entry,SWD-002,
 sw.code-entry.3,Dashes and small letters are fine.,Code entry,SWD-002,
@@ -82,10 +82,10 @@ sw.options.3,Lose the game,Options,SWD-009,
 sw.options.4,Lose your turn,Options,SWD-009,
 sw.options.5,Whole family,Options,SWD-009,
 sw.options.6,+ Harder words,Options,SWD-009,
-sw.option-lines.1,"9 and 8 words to find, 7 blank, 1 Landmine.",Option lines,SWD-009,yes
-sw.option-lines.2,"6 and 5 words to find, 5 blank, no Landmine.",Option lines,SWD-009,yes
-sw.option-lines.3,Step on it and your team loses.,Option lines,SWD-009,
-sw.option-lines.4,Step on it and your turn ends; the other team gets one word free.,Option lines,SWD-009,
+sw.option-lines.1,"Each team finds 9 or 8 words. 7 belong to nobody, and 1 is the Landmine.",Option lines,SWD-009,yes
+sw.option-lines.2,Each team finds 6 or 5 words. 5 belong to nobody. No Landmine.,Option lines,SWD-009,yes
+sw.option-lines.3,Guess the Landmine and your team loses.,Option lines,SWD-009,
+sw.option-lines.4,Guess the Landmine and your turn ends; the other team gets a free word.,Option lines,SWD-009,
 sw.option-lines.5,Words kids and grandparents know.,Option lines,SWD-009,
 sw.option-lines.6,Adds words kids or elders may not know.,Option lines,SWD-009,
 sw.read-this-aloud.1,Read this aloud,Read this aloud,SWD-010,
@@ -96,8 +96,8 @@ sw.how-to-play.4,Clue rules,How to play,"SWD-011, 131",
 sw.preview-board.1,"The board, before you start",Preview board,SWD-012,
 sw.preview-board.2,Chai Champions start,Preview board,SWD-012,yes
 sw.preview-board.3,Start,Preview board,SWD-012,
-sw.scan-screen.1,Clue givers: scan to get the secret map,Scan screen,SWD-033,
-sw.scan-screen.2,"On the other phone: open the app, tap Join a game, scan this.",Scan screen,SWD-033,
+sw.scan-screen.1,Clue givers: scan this to see the secret map,Scan screen,SWD-033,
+sw.scan-screen.2,"On the second phone: open this app, tap Join a game, and scan this.",Scan screen,SWD-033,
 sw.scan-screen.3,Riya and Arjun: sit side by side and share one map phone.,Scan screen,SWD-033,yes
 sw.scan-screen.4,"Riya (Chai Champions, orange) and Arjun (Coffee Commandos, teal): scan on your own phones.",Scan screen,SWD-033,yes
 sw.scan-screen.5,Nana + Aarav,Scan screen,SWD-033,yes
@@ -107,12 +107,12 @@ sw.scan-screen.8,The map phone has the map,Scan screen,SWD-033,
 sw.scan-screen.9,Both have the map,Scan screen,SWD-033,
 sw.board-check-scan-screen.1,The map phone should start with: Cricket · Bat · Monsoon,Board check (scan screen),SWD-116,yes
 sw.board-check-scan-screen.2,The map phones should start with: Cricket · Bat · Monsoon,Board check (scan screen),SWD-116,yes
-sw.board-check-scan-screen.3,"Hand the map phone to Meena and Kabir, tap Next map, and check it starts with: Kite · Tiffin · Rain",Board check (scan screen),SWD-116,yes
+sw.board-check-scan-screen.3,Give the map phone to Meena and Kabir. They tap Next map; its first words should be: Kite · Tiffin · Rain,Board check (scan screen),SWD-116,yes
 sw.board-check-scan-screen.4,Meena and Kabir: scan this code on your phones and check they start with: Kite · Tiffin · Rain. Riya and Arjun: tap Done with this game.,Board check (scan screen),SWD-116,yes
-sw.board-check-scan-screen.5,Tap Next map on the map phone and check it starts with: Kite · Tiffin · Rain,Board check (scan screen),SWD-116,yes
-sw.board-check-scan-screen.6,Tap Next map on both map phones and check they start with: Kite · Tiffin · Rain,Board check (scan screen),SWD-116,yes
-sw.board-check-scan-screen.7,New code: scan again. The map phone should start with: Kite · Tiffin · Rain,Board check (scan screen),SWD-116,yes
-sw.board-check-scan-screen.8,New code: scan again. The map phones should start with: Kite · Tiffin · Rain,Board check (scan screen),SWD-116,yes
+sw.board-check-scan-screen.5,"On the map phone, tap Next map. Its first words should be: Kite · Tiffin · Rain",Board check (scan screen),SWD-116,yes
+sw.board-check-scan-screen.6,"On both map phones, tap Next map. Their first words should be: Kite · Tiffin · Rain",Board check (scan screen),SWD-116,yes
+sw.board-check-scan-screen.7,New code: scan it again. The map phone's first words should be: Kite · Tiffin · Rain,Board check (scan screen),SWD-116,yes
+sw.board-check-scan-screen.8,New code: scan it again. The map phones' first words should be: Kite · Tiffin · Rain,Board check (scan screen),SWD-116,yes
 sw.map-code-again.1,Back to the game,Map code again,SWD-129,
 sw.pass-screen.1,"Chai Champions, your turn",Pass screen,"SWD-030, 123",yes
 sw.pass-screen.2,Pass the phone to,Pass screen,"SWD-030, 123",
@@ -146,7 +146,7 @@ sw.private-map.12,Not Nana and Aarav? Go back,Private map,"SWD-031, 113",yes
 sw.private-map.13,Someone saw the map,Private map,"SWD-031, 113",
 sw.private-map.14,Your words (6 left),Private map,"SWD-031, 113",yes
 sw.private-map.15,(1 left),Private map,"SWD-031, 113",yes
-sw.private-map.16,Never guess: Shadow (the Landmine),Private map,"SWD-031, 113",yes
+sw.private-map.16,"Landmine, never guess: Shadow",Private map,"SWD-031, 113",yes
 sw.private-map.17,I have my clue,Private map,"SWD-031, 113",
 sw.private-map.18,"Done, hide the map",Private map,"SWD-031, 113",
 sw.private-map.19,See the map again,Private map,"SWD-031, 113",
@@ -157,7 +157,7 @@ sw.map-phone.2,Chai Champions (orange) · Coffee Commandos (teal),Map phone,"SWD
 sw.map-phone.3,Host's code 27P-3QX8 · Chai Champions go first,Map phone,"SWD-034, 116, 117, 120",yes
 sw.map-phone.4,Host's code 27P-3QX8 · Orange team goes first,Map phone,"SWD-034, 116, 117, 120",yes
 sw.map-phone.5,First words: Cricket · Bat · Monsoon,Map phone,"SWD-034, 116, 117, 120",yes
-sw.map-phone.6,Tap a word when it's found to fade it (optional). The host's board is what counts.,Map phone,"SWD-034, 116, 117, 120",
+sw.map-phone.6,"Tap a word once it's been guessed, to fade it (optional). The board on the host's phone is what counts.",Map phone,"SWD-034, 116, 117, 120",
 sw.map-phone.7,Orange team's words,Map phone,"SWD-034, 116, 117, 120",
 sw.map-phone.8,Teal team's words,Map phone,"SWD-034, 116, 117, 120",
 sw.map-phone.10,Hide map,Map phone,"SWD-034, 116, 117, 120",
@@ -165,16 +165,16 @@ sw.map-phone.11,Show map,Map phone,"SWD-034, 116, 117, 120",
 sw.map-phone.12,Next map,Map phone,"SWD-034, 116, 117, 120",
 sw.map-phone.14,Done with this game,Map phone,"SWD-034, 116, 117, 120",
 sw.map-phone.15,I give clues for:,Map phone,"SWD-034, 116, 117, 120",
-sw.map-phone.18,Game over: tap Done with this game. New board on the host: tap Next map.,Map phone,"SWD-034, 116, 117, 120",
+sw.map-phone.18,"When the game ends, tap Done with this game. If the host starts a new board, tap Next map.",Map phone,"SWD-034, 116, 117, 120",
 sw.map-phone-lists.1,Orange words (6),Map phone lists,SWD-120,yes
 sw.map-phone-lists.2,Teal words (5),Map phone lists,SWD-120,yes
 sw.map-phone-toasts.1,New map opened. The old one is gone.,Map phone toasts,"SWD-036, 039, 116",
 sw.map-phone-toasts.2,Next map. It should start with: Kite · Tiffin · Rain.,Map phone toasts,"SWD-036, 039, 116",yes
-sw.map-phone-toasts.3,No more maps from this code. Scan the host's new code.,Map phone toasts,"SWD-036, 039, 116",
+sw.map-phone-toasts.3,This code has no more maps. Scan the host's new code.,Map phone toasts,"SWD-036, 039, 116",
 sw.map-phone-dialogs.1,Remove this map from your phone?,Map phone dialogs,"SWD-036, 039",
 sw.map-phone-dialogs.2,Remove,Map phone dialogs,"SWD-036, 039",
 sw.map-phone-dialogs.3,Keep it,Map phone dialogs,"SWD-036, 039",
-sw.map-phone-dialogs.4,Next map? Only after the host starts the next game.,Map phone dialogs,"SWD-036, 039",
+sw.map-phone-dialogs.4,Has the host started the next game? Then tap Next map.,Map phone dialogs,"SWD-036, 039",
 sw.map-phone-dialogs.6,Not yet,Map phone dialogs,"SWD-036, 039",
 sw.saved-map-row-home.1,Secret Words map 27P-3QX8 · Tap to open,Saved map row (Home),SWD-036,yes
 sw.saved-map-row-home.2,Secret Words map 27P-3QX8,Saved map row (Home),SWD-036,yes
@@ -206,7 +206,7 @@ sw.board-status.5,Cricket · 2,Board status,"SWD-041, 102, 118, 125",yes
 sw.board-status.6,CRICKET · ∞,Board status,"SWD-041, 102, 118, 125",
 sw.board-status.7,Clue: 2,Board status,"SWD-041, 102, 118, 125",yes
 sw.board-status.8,Clue: 0,Board status,"SWD-041, 102, 118, 125",yes
-sw.board-status.9,Clue: ∞,Board status,"SWD-041, 102, 118, 125",
+sw.board-status.9,Clue: any number,Board status,"SWD-041, 102, 118, 125",
 sw.board-status.10,3 guesses left (2 + 1 extra),Board status,"SWD-041, 102, 118, 125",yes
 sw.board-status.11,2 guesses left (1 + 1 extra),Board status,"SWD-041, 102, 118, 125",yes
 sw.board-status.12,2 guesses left,Board status,"SWD-041, 102, 118, 125",yes
@@ -234,7 +234,7 @@ sw.timer.3,Time's up!,Timer,SWD-047,
 sw.timer.4,Paused,Timer,SWD-047,
 sw.timer.6,Stop timer,Timer,SWD-047,
 sw.recap.1,Last turn: Coffee Commandos found 2 words; Train was nobody's.,Recap,SWD-103,yes
-sw.do-not-disturb-tip.1,Tip: turn on Do Not Disturb so messages don't pop up on the board.,Do Not Disturb tip,SWD-104,
+sw.do-not-disturb-tip.1,"Tip: turn on Do Not Disturb, so messages don't pop up over the board.",Do Not Disturb tip,SWD-104,
 sw.earlier-clues-sheet.1,Earlier clues,Earlier clues sheet,SWD-041,
 sw.earlier-clues-sheet.2,Chai Champions: CRICKET 2,Earlier clues sheet,SWD-041,yes
 sw.earlier-clues-sheet.3,Coffee Commandos: 1,Earlier clues sheet,SWD-041,yes
@@ -251,9 +251,9 @@ sw.game-over.3,Boom! Coffee Commandos hit the Landmine.,Game over,"SWD-051, 112,
 sw.game-over.4,Game ended. No winner.,Game over,"SWD-051, 112, 128",
 sw.game-over.5,Coffee Commandos were 1 word away!,Game over,"SWD-051, 112, 128",yes
 sw.game-over.6,Coffee Commandos were 2 words away!,Game over,"SWD-051, 112, 128",yes
-sw.game-over.7,Best clue: MONSOON 2 · all 2 found,Game over,"SWD-051, 112, 128",yes
-sw.game-over.8,Best clue: MONSOON 2 · 3 found,Game over,"SWD-051, 112, 128",yes
-sw.game-over.9,Best clue: RAIN ∞ · 4 found,Game over,"SWD-051, 112, 128",yes
+sw.game-over.7,Best clue: MONSOON for 2 · both found,Game over,"SWD-051, 112, 128",yes
+sw.game-over.8,Best clue: MONSOON for 2 · 3 words found,Game over,"SWD-051, 112, 128",yes
+sw.game-over.9,Best clue: RAIN (any number) · 4 found,Game over,"SWD-051, 112, 128",yes
 sw.game-over.10,Next clue givers: Meena and Kabir,Game over,"SWD-051, 112, 128",yes
 sw.game-over.11,Next clue givers: Nana + Aarav and Kabir,Game over,"SWD-051, 112, 128",yes
 sw.game-over.12,Swap clue givers,Game over,"SWD-051, 112, 128",
@@ -262,7 +262,7 @@ sw.game-over.14,End for tonight,Game over,"SWD-051, 112, 128",
 sw.game-over.15,← Home,Game over,"SWD-051, 112, 128",
 sw.game-over.16,Play again,Game over,"SWD-051, 112, 128",
 sw.game-ended-toast.1,Game ended · Undo,Game ended toast,SWD-054,
-sw.deal-new.1,"New board? New words, same teams, fresh start. For when someone saw the map or the words are too hard. This board won't count.",Deal new,SWD-055,
+sw.deal-new.1,"New board? Fresh words, same teams. Use it if someone saw the map or the words are too hard. This board won't count.",Deal new,SWD-055,
 sw.deal-new.2,New board,Deal new,SWD-055,
 sw.deal-new.3,Keep playing,Deal new,SWD-055,
 sw.end-game.1,End this game with no winner?,End game,SWD-054,
@@ -294,7 +294,7 @@ sw.players-sheet.17,Neha joined Chai Champions,Players sheet,SWD-127,yes
 sw.players-sheet.18,Zoya moved to Coffee Commandos · Undo,Players sheet,SWD-127,yes
 sw.players-sheet.19,Kabir left · Undo,Players sheet,SWD-127,yes
 sw.new-clue-giver.1,Who gives clues for Coffee Commandos now?,New clue giver,SWD-127,yes
-sw.team-of-one.1,Coffee Commandos would be left with only Om. Move someone over?,Team of one,SWD-127,yes
+sw.team-of-one.1,Coffee Commandos would have only Om left. Move someone from Chai Champions?,Team of one,SWD-127,yes
 sw.team-of-one.2,Move Zoya over,Team of one,SWD-127,yes
 sw.team-of-one.3,Don't remove Kabir,Team of one,SWD-127,yes
 sw.team-of-one.4,No one can move over.,Team of one,SWD-127,
@@ -309,12 +309,12 @@ sw.history.3,Game 2 · Chai Champions won (Landmine) · Riya and Arjun gave clue
 sw.history.4,Game 3 · Ended early · Meena and Kabir gave clues,History,SWD-064,yes
 sw.history.5,Game 4 · Coffee Commandos won · Nana + Aarav and Kabir gave clues,History,SWD-064,yes
 sw.version-3-6-strings.1,This phone is the board. Open the map here?,Version 3.6 strings,"SWD-002, 011, 033, 034, 041, 092, 110, 116",
-sw.version-3-6-strings.2,"Clue givers use their own phone. To show the map on this phone, use Show the map to a clue giver in the game's menu.",Version 3.6 strings,"SWD-002, 011, 033, 034, 041, 092, 110, 116",
+sw.version-3-6-strings.2,"Clue givers should use their own phones. To show the map here instead, use the menu: Show the map to a clue giver.",Version 3.6 strings,"SWD-002, 011, 033, 034, 041, 092, 110, 116",
 sw.version-3-6-strings.3,Open the map here,Version 3.6 strings,"SWD-002, 011, 033, 034, 041, 092, 110, 116",
 sw.version-3-6-strings.4,"No, keep the board",Version 3.6 strings,"SWD-002, 011, 033, 034, 041, 092, 110, 116",
 sw.version-3-6-strings.5,Keep the host phone on the table: it shows the board.,Version 3.6 strings,"SWD-002, 011, 033, 034, 041, 092, 110, 116",
-sw.version-3-6-strings.6,Doesn't match? Scan this code again.,Version 3.6 strings,"SWD-002, 011, 033, 034, 041, 092, 110, 116",
-sw.version-3-6-strings.7,Doesn't match? Scan the host's code again.,Version 3.6 strings,"SWD-002, 011, 033, 034, 041, 092, 110, 116",
+sw.version-3-6-strings.6,First words different? Scan this code again.,Version 3.6 strings,"SWD-002, 011, 033, 034, 041, 092, 110, 116",
+sw.version-3-6-strings.7,First words different? Scan the host's code again.,Version 3.6 strings,"SWD-002, 011, 033, 034, 041, 092, 110, 116",
 sw.version-3-6-strings.10,I give clues for: Chai Champions,Version 3.6 strings,"SWD-002, 011, 033, 034, 041, 092, 110, 116",yes
 sw.version-3-6-strings.11,Change,Version 3.6 strings,"SWD-002, 011, 033, 034, 041, 092, 110, 116",
 sw.version-3-6-strings.13,Or choose the Easy board for the next game.,Version 3.6 strings,"SWD-002, 011, 033, 034, 041, 092, 110, 116",
@@ -324,4 +324,9 @@ sw.v37.map-key.3,nobody's word,map key,"SWD-031, 034",
 sw.v37.map-key.4,Landmine: never guess,map key,"SWD-031, 034",
 sw.v37.larger-text-hint.1,Small text? Turn on Larger text in Settings.,Read this aloud,SWD-010,
 sw.v37.flip.1,↻ Flip,board,SWD-102,
-sw.v37.two-phone-line.1,"Riya and Arjun give clues for different teams but share one map phone, as at a real table: sit side by side.",scan screen,SWD-033,yes
+sw.v37.two-phone-line.1,Riya and Arjun: sit together and share one map phone (each gives clues for their own team).,scan screen,SWD-033,yes
+sw.v39.night-result.1,"Chai Champions won the night, 3–2",summary,SWD-128,yes
+sw.v39.night-result.2,"A draw tonight, 2–2",summary,SWD-128,yes
+sw.v39.pause-home.1,← Home (keep this game),Pause cover,SWD-110,
+sw.v39.turn-line-picker.1,Chai Champions guessing · Sunita taps Reveal,board,SWD-122,yes
+sw.v39.next-map-toast.1,Next map. Tap Show map when you're ready. It should start with: Kite · Tiffin · Rain.,map phone,SWD-039,yes
