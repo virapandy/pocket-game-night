@@ -127,3 +127,21 @@ Merged origin/main (PGN_PORT per lane: lane-a 4174). Lane A area: 129 of 132 pas
 - New failing rule tests: `editions.test.ts` (WAI-092 editions; loads the game with a mocked `content/what-am-i/words.json` via `vi.doMock` + `vi.resetModules`, so a later list can be tried without touching content), WAI-010 seed refusal (`queue.test.ts`), WAI-041 reorder (`scores.test.ts`), WAI-061/064 tie order (`results.test.ts`). API made exact in `specs/what-am-i/api.md`; owner confirmation row in `docs/test-questions.md`.
 - On 35420ab 8 fail, all for the gap itself (missing `whatAmIEdition`, replay refused "That word is not on screen", setup accepted without a seed, reorder accepted, Riya before Arjun in ties). "A night started under edition 2" passes now (guard against over-filtering).
 - The browser side of editions (the app writing `config.edition` when a night starts) has no test yet; add one with the screens lane.
+
+## 25 October: Mafia scenarios 1.1, tests first (lane-m)
+- Specs: `specs/mafia/` split from `docs/games/mafia/scenarios.md` v1.1; each scenario carries its "Version 1.1" items word
+  for word (items 1, 33, 34 in the README). Rule API: `specs/mafia/api.md`, with the product owner's 25 October
+  clarifications folded in (PO 9 tags, 15 night leaver who was the Mafia's pick, 16 deal-leave Undo and count).
+- Rule tests `tests/games/mafia/` (140) + `tests/contract/mafia.test.ts`: all fail only with "src/games/mafia is not built yet"
+  (3 oracle/CSV checks pass); every other game's rule test stays green (893). `stories.json` test waits for the content file.
+- Checked for self-consistency against a throwaway reference implementation (scratchpad only, not committed): all 146 pass
+  except `stories.json`. Two test bugs it found are fixed (P5 rolls back on Undo; the random driver re-reads the deal after
+  a deal-leave Undo). A real build may still disagree where `api.md` had to choose; those are in `docs/test-questions.md`.
+- `flows.ts` = game nights as move lists (MAF-040 worked example etc.), opened in the browser through `pgn.test.load`
+  (MAF-H6) and replayed by `saved.test.ts`. Add new flows there. Fixture `mafia-saved-nights-v1.json`: never edit.
+- Browser: `mafia-c3.spec.ts` (C3) and six screen files (01, 02/03, 04, 06, 07, 09), 67 tests, all `aheadOfMafiaScreens`;
+  run as real checks with `PGN_IGNORE_AHEAD=1`. Never met a real screen: expect to adjust selectors (not checks) on the first
+  lane run. Names are matched case-insensitively (capitals are CSS only). Local port used: PGN_PORT=4185.
+- Mafia area added to `areas.json` (its own block before the "changed spec runs itself" entry).
+- Questions raised: 9 rows of 25 October in `docs/test-questions.md` (0.62 is really 0.95; leave between vote and N0; story
+  reuse; target null for other roles; last turn leaves; N3 or M1 on resume; caught at game over; "past the deal"; mostMafia ties).
