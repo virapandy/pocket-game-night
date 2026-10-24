@@ -1,6 +1,6 @@
 # What Am I?: screen map (draft 4, product owner, 23 October 2026)
 
-**Status: draft 4.3** (24 October: scenarios Version 1.3 from six prototype walks: T3 line for everyone else, R1 "Round 2 next", T4 running totals, S2 order, Scores in the menu, the picker's "← Home"). Before that, draft 4.2 (23 October: scenarios Version 1.2 applied: "End Riya's turn now", "player 1 of 6", the Join line, two-player dialog, sound and Do Not Disturb tips, new paths). Before that, draft 4.1 (23 October: T1 loses "Players (6) ›", which stays on R1 and in the menu, after the second Jev read and three prototype walks agreed T1 is crowded; section K4 gives the prototype renderer exact states). Every change from the critic pass, the six persona walks, the word guidelines check, the first Jev
+**Status: draft 4.4** (24 October: the four 4.3 changes now written onto the screens, T4 totals line, S2 order, the picker's "← Home", menu "Scores" with D8; K2 gives every turn its own words). Before that, draft 4.3 (24 October: scenarios Version 1.3 from six prototype walks: T3 line for everyone else, R1 "Round 2 next", T4 running totals, S2 order, Scores in the menu, the picker's "← Home"). Before that, draft 4.2 (23 October: scenarios Version 1.2 applied: "End Riya's turn now", "player 1 of 6", the Join line, two-player dialog, sound and Do Not Disturb tips, new paths). Before that, draft 4.1 (23 October: T1 loses "Players (6) ›", which stays on R1 and in the menu, after the second Jev read and three prototype walks agreed T1 is crowded; section K4 gives the prototype renderer exact states). Every change from the critic pass, the six persona walks, the word guidelines check, the first Jev
 check and the owner's hold choices (drafts 2–3, sections J–O) is now written into the screens themselves; section H lists
 where each came from. Stage 1 of `docs/proposals/design-before-code.md` (step 1b of `docs/new-game-process.md`). Drawn from
 `guide.md`, `fit-and-stories.md`, `words.md` and the What Am I? decisions in `docs/decisions.md` (WA1–WA10 and the 23 October
@@ -28,7 +28,7 @@ what it records. *Intentions* says which of the common next wishes are visible w
 - *One word per idea:* a **turn** is one player's 30–90 s; a **round** is everyone once; a **game** runs from Start to "End
   the game"; **tonight** is the game night. A word on screen is a **word**, never a "card" or "clue". "Tilt" never appears on
   screen: the screens say "move the phone down / up" (owner, 23 October). Plurals counted: "1 word", "2 turns".
-- *Menu*, in this order where an item applies: How to play · Players · Words and time · Pause · Home (game saved) · End the
+- *Menu*, in this order where an item applies: How to play · Players · Scores · Words and time · Pause · Home (game saved) · End the
   game · End for tonight · Settings · History. Settings holds "Answer by moving the phone" (on/off).
 
 ## A. Home and the picker (shared with other games)
@@ -41,11 +41,12 @@ what it records. *Intentions* says which of the common next wishes are visible w
 | "What Am I? · Round 2 · Arjun's turn" (the unfinished row) | the game's last screen exactly as left (T1, T4, R1 or G1), with "Welcome back." and the where-line; a turn in progress resumes on D1 Paused | — | WAI-10 |
 
 ### A2. What shall we play? (new card)
-*Words:* card "What Am I?" · "Phone on your forehead, the room gives clues · One phone, passed round · 2–20 players".
+*Words:* quiet "← Home" at the top (owner's picker change for every game, 24 October); card "What Am I?" · "Phone on your forehead, the room gives clues · One phone, passed round · 2–20 players".
 | Tap | Leads to | Records | IDs |
 |---|---|---|---|
 | What Am I? card, nothing unfinished | S1 Who's playing? | — | WAI-01 |
 | What Am I? card, a game night unfinished | A3 Start new dialog (shared) | — | WAI-10 |
+| ← Home | A1 | — | WAI-01 |
 
 ## B. Setup (host phone)
 
@@ -65,14 +66,14 @@ needs at least 2 players." (main disabled); over 20: "Up to 20 players." (Add di
 
 ### S2. Words and time
 *Words:* heading "Words and time".
+"Time for each turn": 30 s · **60 s** · 90 s with "30 s for small kids, 90 s for grandparents".
+"How to hold the phone": **In the guesser's hand** with "Forehead or chest; the guesser moves it to answer." ·
+**Hands-free** with "The phone stands behind the guesser; one clue giver taps to answer. Good for grandparents and small
+children." (the last choice is kept on this phone); small line "You can change this for one player on their turn."
 "Which words?" (one choice, tick on the chosen one): **Mix of all · 714 words** with "Words from every pack." (ticked at
 first) · Animals · 92 words · Food · 88 words · Around the house · 100 words · Jobs · 94 words · Sports and cricket · 87 words ·
 Festivals and places · 91 words · Act it out · 100 words · Famous Indians · 64 words (counts leave out non-veg words while
 that switch is off; Food 98 and Mix 724 with it on).
-"Time for each turn": 30 s · **60 s** · 90 s with "30 s for small kids, 90 s for grandparents".
-"How to hold the phone": **In the guesser's hand** with "Forehead or chest; the guesser moves it to answer." ·
-**Hands-free** with "The phone stands behind the guesser; one clue giver taps to answer. Good for grandparents and small
-children." (the last choice is kept on this phone).
 Switch "Include non-veg food (chicken, fish, egg)" **off** (WA9). Switch "Sounds" **on** with "So the guesser knows a word
 counted."; when off: "The guesser won't know a word counted." (WA10).
 Line above the main button: "Ready as it is, or change anything above."; quiet "How to play"; quiet "← Back"; main
@@ -166,7 +167,8 @@ rotation lock on, the word is drawn turned to fit a sideways phone.
 
 ### T4. Time's up (end of turn)
 *Words:* "Time's up! Riya got 5"; two lists: **Got it** (green) "Tiger · Owl · Camel · Duck · Bat" and **Passed** (grey)
-"Penguin · Zebra"; a word moved shows ↺ ("Owl ↺"); line "Marked wrong? Tap a word to move it."; line "Next: Arjun"; Pause;
+"Penguin · Zebra"; under the h1 the totals line "Riya: 5 in all · Top so far" (later turns, e.g. Arjun round 1: "Arjun: 7 in all ·
+Top so far"; Riya round 2: "Riya: 9 in all · Top: Arjun 14"; rule in scenarios 1.3 item 3); a word moved shows ↺ ("Owl ↺"); line "Marked wrong? Tap a word to move it."; line "Next: Arjun"; Pause;
 quiet "← Home (game saved)"; "··· Menu"; main **"Save score"**. Upright layout.
 | Tap | Leads to | Records | IDs |
 |---|---|---|---|
@@ -199,6 +201,7 @@ most."; quiet "Players (6) ›"; quiet "Change players or words"; quiet "End the
 | D4 | Words and time (menu, between turns only) | S2's choices; mid-turn the item is greyed with "After this turn" | Done → back (applies from the next turn) | setup | WAI-03 |
 | D5 | End the game? | "Shows this game's winner. You can play again with the same people." | End the game → G1, toast "Game ended · Undo" (10 s) · **Keep playing** → back | `endGame` | WAI-07 |
 | D6 | End for tonight? | "Shows tonight's summary. Every score is kept in History." | End for tonight → G2 · **Keep playing** → back | — | WAI-07 |
+| D8 | Scores (menu) | R1's scoreboard for the game so far, with turns played | Done → back | — | WAI-05 |
 | D7 | End Riya's turn now? | "Riya's turn ends now. Words marked so far still count." | End Riya's turn now → T4 "Turn ended early. Riya got 2" with what was marked · **Carry on playing** → D1 | `skip` | WAI-06 |
 
 ## F. After a game, after the night
@@ -252,19 +255,22 @@ Same rendering rules as Secret Words K3 (one state per screen, real labels, K4-s
 **K1. The example game night.** Players in turn order: Riya, Arjun, Meena, Kabir, Zoya, Dev. Words: Animals, 60 s, in the
 guesser's hand, sounds on, non-veg off; Kabir chooses hands-free on his turn. Game 1 of the night.
 
-**K2. Round 1:** Riya gets Tiger, Owl, Camel, Duck, Bat, passes Penguin, Zebra (5); Arjun 7; Meena 5; Kabir 3 (hands-free);
-Zoya 4; Dev 6. Round 2 adds Arjun 7, Meena 8, Riya 4, Dev 5, Zoya 3, Kabir 4. End: Arjun 14 wins. Words nobody got: Penguin,
-Zebra, Kangaroo. Best turn: Meena, 8 words. G1's tally line reads "Tonight: Arjun 1 win" (game 1).
+**K2. Every turn's words** (Animals, in order shown; no word twice in the game):
+Round 1: Riya got Tiger, Owl, Camel, Duck, Bat; passed Penguin, Zebra (5) · Arjun got Elephant, Lion, Monkey, Buffalo, Goat, Dog, Cat (7) · Meena got Horse, Donkey, Peacock, Parrot, Crow (5) · Kabir got Eagle, Hen, Snake (hands-free) (3) · Zoya got Frog, Crocodile, Tortoise, Rabbit (4) · Dev got Squirrel, Giraffe, Bear, Deer, Fish, Shark (6).
+Round 2: Riya got Dolphin, Butterfly, Mosquito, Ant (4) · Arjun got Spider, Lizard, Fox, Wolf, Rhino, Hippo, Gorilla (7) · Meena got Panda, Cheetah, Leopard, Sheep, Rat, Rooster, Pigeon, Sparrow (8) · Kabir got Vulture, Ostrich, Swan, Flamingo; passed Kangaroo (hands-free) (4) · Zoya got Woodpecker, Cuckoo, Myna (3) · Dev got Crab, Octopus, Jellyfish, Starfish, Whale (5).
+Totals after round 1: Arjun 7, Dev 6, Riya 5, Meena 5, Zoya 4, Kabir 3; after round 2: Arjun 14, Meena 13, Dev 11, Riya 9, Kabir 7,
+Zoya 7. End: Arjun 14 wins. Words nobody got: Penguin, Zebra, Kangaroo. Best turn: Meena, 8 words (round 2). G1's tally line
+reads "Tonight: Arjun 1 win" (game 1). Each T4 shows that turn's own words, count and totals line.
 
 **K4. Exact states for the renderer** (K3 of Secret Words applies: one state per screen; button labels are the quoted words
 only, never a row's description; the word "quiet" and the quote marks are never drawn).
 - **A1:** a main button "Host a game" (→ A2) above the unfinished row, a button of two lines "What Am I? · Round 2 · Arjun's
   turn" / "Riya, Arjun +4 · 8:05 pm · Tap to resume" (→ D1 over Arjun's turn).
-- **A2:** the card button "What Am I?" with its line "Phone on your forehead, the room gives clues · One phone, passed round ·
+- **A2:** quiet "← Home" (→ A1); the card button "What Am I?" with its line "Phone on your forehead, the room gives clues · One phone, passed round ·
   2–20 players".
 - **S1:** the six names of K1 as a list, each with a drag handle and "✕"; the input "Player name" and "Add"; the small line; "6
   players"; quiet "How to play" (→ S4), "← Back" (→ A2); main "Next" (→ S2).
-- **S2:** three radio groups drawn as rows with a ✓ on the chosen one (Mix of all, 60 s, In the guesser's hand), every option
+- **S2:** in the order time, hold, words: three radio groups drawn as rows with a ✓ on the chosen one (60 s, In the guesser's hand, Mix of all), every option
   with its line; two switches (non-veg off, Sounds on); the "Ready as it is…" line; main "Start with these words" (→ S3). The
   page scrolls; the main button never covers other text.
 - **S4:** the seven lines of the scenarios' How to play (version 1.1 item 42) and the three drawings as labelled boxes; "Done".
