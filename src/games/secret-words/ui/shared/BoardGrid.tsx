@@ -37,6 +37,7 @@ const MIN = 12;
 const MAX = 22;
 const FLOOR = 10;
 const PAD = 4;
+const ICON_ROOM = 16;
 
 /**
  * SWD-090's measuring, without putting any word in the page (SWD-025, 032, 121): words are measured on an off-screen
@@ -114,7 +115,7 @@ function useCellSize(ref: React.RefObject<HTMLDivElement | null>, columns: numbe
 }
 
 /** SWD-090: the font sizes for these words at this cell width, re-measured once the app's font has loaded. */
-function useFit(ref: React.RefObject<HTMLDivElement | null>, words: readonly string[], cellWidth: number) {
+function useFit(ref: React.RefObject<HTMLDivElement | null>, words: readonly string[], cellWidth: number, reserve: number) {
   const [fit, setFit] = useState<{ size: number; alone: Map<number, number> }>({ size: MIN, alone: new Map() });
   const [fontsTick, setFontsTick] = useState(0);
   const key = words.join('|');
@@ -129,9 +130,9 @@ function useFit(ref: React.RefObject<HTMLDivElement | null>, words: readonly str
     const el = ref.current;
     if (!el || cellWidth <= 0) return;
     // The same fitting object for the same words and size: no new render when nothing changed.
-    setFit(fitWords(words, cellWidth - 2 * PAD, getComputedStyle(el).fontFamily));
+    setFit(fitWords(words, cellWidth - 2 * PAD - reserve, getComputedStyle(el).fontFamily));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [key, cellWidth, fontsTick]);
+  }, [key, cellWidth, fontsTick, reserve]);
   return fit;
 }
 
@@ -167,7 +168,10 @@ export function BoardGrid({
   const cellSize = useCellSize(ref, columns, Math.ceil(cells.length / columns));
   const cellWidth = cellSize.w;
   const words = cells.map((c) => c.word);
-  const fit = useFit(ref, words, cellWidth);
+  // Cells too short to hold the 16 px kind marker above the word (568 x 320 game over) keep the marker's width free
+  // beside the word instead (the word is measured in the room left, and the cell pads its left side by the same).
+  const short = cellSize.h > 0 && cellSize.h < 40 && cells.some((c) => c.kind);
+  const fit = useFit(ref, words, cellWidth, short ? ICON_ROOM : 0);
   const gridId = useId().replace(/[^a-zA-Z0-9_-]/g, '');
   const isMap = variant === 'map';
 
@@ -206,6 +210,7 @@ export function BoardGrid({
       data-testid={isMap ? 'map-grid' : 'word-board'}
       data-angle={String(angle)}
       data-sw-grid={gridId}
+      data-icon-room={short ? 'side' : undefined}
       style={style}
     >
       {rules && <style>{rules}</style>}

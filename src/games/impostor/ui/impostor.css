@@ -586,6 +586,12 @@
     overflow-y: auto;
     overscroll-behavior: contain;
   }
+  .imp-clues-rest > .imp-clue-order:has(+ *) { overflow-y: visible; flex-shrink: 0; }
+  /* Second round with a long name: the lines may wrap, so the right half tightens its gaps and line heights (as Larger
+     text does) so the clue order and "Second round: ..." both show in full above the buttons. */
+  .imp-clues-second { row-gap: 4px; }
+  .imp-clues-second .imp-clues-top, .imp-clues-second .imp-clues-rest { gap: 4px; }
+  .imp-clues-second .imp-body { line-height: 1.2; }
   .imp-clues-again { grid-area: again; margin-top: 0; }
   .imp-clues .imp-clues-top { margin-top: 0; }
   /* IMP-020: "Go round again" and "See my word again" share one row (two equal halves); no "Not enough clues?". */

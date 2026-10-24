@@ -47,7 +47,7 @@ export function Clues({
   // taps for 500 ms after it shows.
   return (
     <TapGuard screen="clues">
-      <section className="imp-stage imp-clues">
+      <section className={secondClues ? 'imp-stage imp-clues imp-clues-second' : 'imp-stage imp-clues'}>
         <div className="imp-clues-who">
           <p ref={nameRef} className="imp-starter imp-caps" data-testid="starter-name">
             {starter}

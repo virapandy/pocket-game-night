@@ -157,6 +157,7 @@
   -webkit-user-select: none; -webkit-touch-callout: none;
 }
 .sw-word { font-size: var(--sw-word); font-weight: 600; text-transform: none; white-space: nowrap; }
+.sw-grid[data-icon-room='side'] .sw-kind-orange, .sw-grid[data-icon-room='side'] .sw-kind-teal, .sw-grid[data-icon-room='side'] .sw-kind-nobody, .sw-grid[data-icon-room='side'] .sw-kind-landmine { padding-left: 20px; }
 .sw-cell-icon { position: absolute; left: 2px; top: 2px; width: 16px; height: 16px; line-height: 0; }
 .sw-kind-orange { background: var(--team-orange); color: var(--sw-on-team); border-color: var(--team-orange); }
 .sw-kind-teal { background: var(--team-teal); color: var(--sw-on-team); border-color: var(--team-teal); }
