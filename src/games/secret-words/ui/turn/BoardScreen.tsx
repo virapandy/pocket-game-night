@@ -137,9 +137,9 @@ export function BoardScreen({
       {...(onPick ? { onPick } : {})}
     />
   );
-  // RC fix: in the landscape panel a new result line (or tip) is scrolled into view, so it is never cut off unseen.
+  // RC fix: in the landscape panel a new result line is scrolled into view, so it is never cut off unseen.
   const bottomRef = useRef<HTMLDivElement | null>(null);
-  const bottomText = bottom?.text ?? '';
+  const bottomText = bottom?.id === 'result-line' ? bottom.text : '';
   useLayoutEffect(() => {
     if (!land || !bottomText) return;
     const el = bottomRef.current;

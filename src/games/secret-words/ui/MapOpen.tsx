@@ -5,7 +5,7 @@
 // a valid code and, on a board phone, only after "Open the map here".
 import { useId, useState } from 'react';
 import type { Preferences, SavedGameStore } from '../../../engine';
-import { BlocksRoot, QuietButton, Screen } from '../../../blocks';
+import { BlocksRoot, QuietButton, Screen, ScrollArea } from '../../../blocks';
 import { parseMapCode, WORDS } from '../rules';
 import {
   endNight, homeRowLine, isNight, lastNight, loadNight, resumeCardLine, startNewText, unfinishedNight, whereLine, type Night,
@@ -92,6 +92,8 @@ export function CodeEntry({
         <header className="sw-bar">
           <QuietButton onClick={onBack}>← Back</QuietButton>
         </header>
+        {/* RC fix: the content scrolls inside above "Open the map", so the typed code is never under the button. */}
+        <ScrollArea>
         <h1 className="pgn-title">Type the host's code</h1>
         <form
           className="sw-code-form"
@@ -118,6 +120,7 @@ export function CodeEntry({
               setText(e.target.value);
               setError(null);
             }}
+            onFocus={(e) => e.target.scrollIntoView({ block: 'nearest' })}
           />
           <p className="sw-small">Dashes and small letters are fine.</p>
           {error && (
@@ -126,6 +129,7 @@ export function CodeEntry({
             </p>
           )}
         </form>
+        </ScrollArea>
         <GuardedMain disabled={!enough} onClick={open}>
           Open the map
         </GuardedMain>

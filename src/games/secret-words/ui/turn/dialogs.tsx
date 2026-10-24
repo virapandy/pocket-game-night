@@ -8,7 +8,7 @@ import { SwDialog, WhereLine } from '../shared/parts';
 export function DisputeDialog({ onTry, onBroke, onRules, onLetGo }: { onTry: () => void; onBroke: () => void; onRules: () => void; onLetGo: () => void }) {
   const until = useGuard('dispute');
   return (
-    <SwDialog guardAll title="Clue not allowed? Both clue givers decide together." onDismiss={onLetGo} className="sw-dialog-stack">
+    <SwDialog title="Clue not allowed? Both clue givers decide together." onDismiss={onLetGo} className="sw-dialog-stack">
       <div className="sw-dialog-buttons">
         <button type="button" className="sw-quiet sw-full" onClick={onTry}>
           Try another clue
