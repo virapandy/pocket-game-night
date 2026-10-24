@@ -3,7 +3,7 @@
 import { HOST, type GameRules, type MoveContext, type SetupInput, type Verdict, type Viewer } from '../../../engine';
 import { dealRoles, keptCount, mafiaCounts, validOverride } from './deal';
 import {
-  STORIES, allowedNames, checkWinner, checksOf, inTonight, isIn, isOut, nightJob, nightTurn, remaining, resolveNight,
+  MAFIA_STORY_EDITION, STORY_EDITIONS, allowedNames, checkWinner, checksOf, inTonight, isIn, isOut, nightJob, nightTurn, remaining, resolveNight,
 } from './night';
 import type {
   Game, MafiaConfig, MafiaMove, MafiaPlayerView, MafiaState, MafiaView, Role, Step,
@@ -80,8 +80,13 @@ function startGame(s: MafiaState, move: Extract<MafiaMove, { type: 'start' }>): 
   return yes(next);
 }
 
-function leave(s: MafiaState, g0: Game, player: string): Verdict<MafiaState> {
+function leave(s: MafiaState, g0: Game, player: string, when: 'night' | 'day' | undefined): Verdict<MafiaState> {
   if (!isIn(g0, player) || g0.leaving.includes(player)) return no(`${player} can't leave now.`);
+  // MAF-052: which screen the leave was on. Only after the day's vote (nightStart of night 2+) can it be either.
+  const kind: 'deal' | 'night' | 'day' | null = g0.step === 'deal' ? 'deal'
+    : g0.step === 'night' || (g0.step === 'nightStart' && (g0.round === 1 || when === 'night')) ? 'night'
+      : g0.step === 'day' || g0.step === 'revote' || g0.step === 'nightStart' ? 'day' : null;
+  if (kind === null || (when !== undefined && when !== kind)) return no(`${player} can't leave now.`);
   const next = draft(s);
   const g = current(next) as Game;
   switch (g.step) {
@@ -94,8 +99,9 @@ function leave(s: MafiaState, g0: Game, player: string): Verdict<MafiaState> {
       return yes(next);
     }
     case 'nightStart':
-      if (g.round > 1) return dayLeave(s, next, g, player, g.round - 1);
-      g.leaving.push(player);
+      if (kind === 'day') return dayLeave(s, next, g, player, g.round - 1);   // V3s, V4: the day before
+      g.leaving.push(player);                                                   // N0: waits for the night
+
       next.undo = { kind: 'leave', player, prev: snapshot(s) };
       return yes(next);
     case 'night':
@@ -214,7 +220,8 @@ function apply(s: MafiaState, move: MafiaMove, ctx: MoveContext): Verdict<MafiaS
     }
     case 'leave':
       if (typeof move.player !== 'string') return no('No player.');
-      return leave(s, g0, move.player);
+      if (move.when !== undefined && move.when !== 'night' && move.when !== 'day') return no('Not a leave.');
+      return leave(s, g0, move.player, move.when);
     case 'unleave': {
       const u = s.undo;
       if (u?.kind === 'leave' && u.player === move.player) return yes(snapshot(u.prev));
@@ -280,6 +287,8 @@ function legalMoves(s: MafiaState, actor: string): MafiaMove[] {
       out.push({ type: 'startNight', night: g.round });
       if (g.round === 1 && g.leaving.length === 0) out.push({ type: 'redeal' });
       leaves();
+      // After the day's vote: a leave on N0 is a night leave (V3s and V4 send the plain day leave above).
+      if (g.round > 1) for (const p of g.players) if (inTonight(g, p)) out.push({ type: 'leave', player: p, when: 'night' });
       out.push({ type: 'endGame' });
       break;
     case 'night': {
@@ -384,13 +393,19 @@ export const mafiaRules: GameRules<MafiaConfig, MafiaState, MafiaMove, MafiaView
   detailMoves: ['start', 'tie', 'addNext'],
   setup(input: SetupInput<MafiaConfig>): MafiaState {
     const config: MafiaConfig = input.config ?? {};
+    const seed = input.seeds.roles;
+    if (typeof seed !== 'string' || seed === '') throw new Error('Mafia needs seeds.roles.');
+    const edition = config.edition ?? MAFIA_STORY_EDITION;
+    const lists = STORY_EDITIONS[edition];
+    if (!lists) throw new Error(`Unknown Mafia story edition ${edition}.`);
     const known = (ids: readonly string[] | undefined, kind: 'out' | 'saved') => {
-      const all = STORIES.filter((x) => x.kind === kind).map((x) => x.id);
+      const all = lists[kind];
       const chosen = (ids ?? []).filter((id) => all.includes(id));
-      return chosen.length > 0 ? [...chosen] : all;
+      return chosen.length > 0 ? [...chosen] : [...all];
     };
     return {
-      seed: input.seeds.roles ?? '',
+      seed,
+      edition,
       deals: structuredClone((config.deals ?? {}) as Record<string, Record<string, Role>>),
       stories: { out: known(config.stories?.out, 'out'), saved: known(config.stories?.saved, 'saved') },
       games: [], next: [], ended: false, undo: null,

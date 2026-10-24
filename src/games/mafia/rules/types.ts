@@ -6,6 +6,11 @@ export const ROLES: readonly Role[] = ['mafia', 'doctor', 'police', 'villager'];
 export type JobKind = Role | 'ghost';
 
 export interface MafiaConfig {
+  /**
+   * The frozen story edition this game night picks from (story-editions.json); 1.2 when none is named. The app saves
+   * MAFIA_STORY_EDITION here when a new game night starts, so a later stories.json never changes an old night's stories.
+   */
+  readonly edition?: string;
   /** MAF-H3: by game index k ("1", "2", …): player → role, for that game's first deal. */
   readonly deals?: Readonly<Record<string, Readonly<Record<string, Role>>>>;
   /** MAF-H5: story ids from stories.json to use instead of the whole list. */
@@ -21,7 +26,12 @@ export type MafiaMove =
   | { readonly type: 'voteOut'; readonly player: string }
   | { readonly type: 'tie'; readonly players: readonly string[] }
   | { readonly type: 'voteNobody'; readonly reason: 'chosen' | 'secondTie' }
-  | { readonly type: 'leave'; readonly player: string }
+  /**
+   * `when` tells the screens apart after the day's vote (MAF-052): on N0 (Night begins) of night 2 or later the screen sends
+   * `when: 'night'` (a night leave, applied when the night resolves); without it a leave there is a day leave of the day
+   * before (V3s, V4: applied at once). Elsewhere `when` may be left out, or must match the step.
+   */
+  | { readonly type: 'leave'; readonly player: string; readonly when?: 'night' | 'day' }
   | { readonly type: 'unleave'; readonly player: string }
   | { readonly type: 'addNext'; readonly name: string }
   | { readonly type: 'endGame' }
@@ -98,6 +108,7 @@ export type Undo =
 
 export interface MafiaState {
   seed: string;
+  edition: string;
   deals: Record<string, Record<string, Role>>;
   stories: { out: string[]; saved: string[] };
   games: Game[];
