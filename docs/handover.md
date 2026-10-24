@@ -65,6 +65,14 @@ The first run worked (2,563 decisions, no faults; `docs/games/what-am-i/jev-chec
    clue2, 755 rows) and ask Jev to
    pick the word from it plus 5 others from the same pack.
 
+### What Am I? prototype: second pass (product owner, 24 October; the same renderer lane, C1, when free)
+The K4 pass works (six walks, `docs/games/what-am-i/prototype-walk-2-2026-10-24.md`). Left, for every game's prototype: Back on an
+open menu or dialog only closes it; a closed dialog is not a history step (Back from T4 must not reopen D7); editing the address
+hash (#S2) shows that screen; follow K3's "clock jumps to T4 after the seventh word"; on T2 show the hint for the state reached
+(motion chosen → "Phone down: Got it · Phone up: Pass"); keep Riya's names, round and "player k of n" consistent with K2 as
+turns pass, and D3's two-player variant only with 2 players. Map draft 4.3 also changed T3's line, R1's h1, T4's totals line,
+S2's order and the picker's "← Home".
+
 ### DO NOW (owner, 23 October): What Am I? prototype: teach the renderer this map (C1, one coder lane beside the Secret Words lanes)
 Correction: nobody built the first What Am I? prototype by hand. The renderer draws every pushed `docs/games/<game>/screen-map.md`
 by itself on each preview build, so What Am I? appeared automatically, drawn without its section K (the script reader knows

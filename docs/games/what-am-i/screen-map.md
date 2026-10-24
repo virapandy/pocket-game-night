@@ -1,6 +1,6 @@
 # What Am I?: screen map (draft 4, product owner, 23 October 2026)
 
-**Status: draft 4.2** (23 October: scenarios Version 1.2 applied: "End Riya's turn now", "player 1 of 6", the Join line, two-player dialog, sound and Do Not Disturb tips, new paths). Before that, draft 4.1 (23 October: T1 loses "Players (6) ›", which stays on R1 and in the menu, after the second Jev read and three prototype walks agreed T1 is crowded; section K4 gives the prototype renderer exact states). Every change from the critic pass, the six persona walks, the word guidelines check, the first Jev
+**Status: draft 4.3** (24 October: scenarios Version 1.3 from six prototype walks: T3 line for everyone else, R1 "Round 2 next", T4 running totals, S2 order, Scores in the menu, the picker's "← Home"). Before that, draft 4.2 (23 October: scenarios Version 1.2 applied: "End Riya's turn now", "player 1 of 6", the Join line, two-player dialog, sound and Do Not Disturb tips, new paths). Before that, draft 4.1 (23 October: T1 loses "Players (6) ›", which stays on R1 and in the menu, after the second Jev read and three prototype walks agreed T1 is crowded; section K4 gives the prototype renderer exact states). Every change from the critic pass, the six persona walks, the word guidelines check, the first Jev
 check and the owner's hold choices (drafts 2–3, sections J–O) is now written into the screens themselves; section H lists
 where each came from. Stage 1 of `docs/proposals/design-before-code.md` (step 1b of `docs/new-game-process.md`). Drawn from
 `guide.md`, `fit-and-stories.md`, `words.md` and the What Am I? decisions in `docs/decisions.md` (WA1–WA10 and the 23 October
@@ -149,7 +149,7 @@ round!"); Pause. The clock has not started. Sizes: designed for 812 × 375 and 5
 | Pause | D1 | — | WAI-06 |
 
 ### T3. The word (room-facing)
-*Words:* small top line for the room "Give clues. Don't say the word!" (hands-free: "Clue givers: tap bottom for Got it, top
+*Words:* small top line for the room "Everyone else: give clues. Don't say the word!" (hands-free: "Clue givers: tap bottom for Got it, top
 for Pass."); the word as large as fits on one or two lines (readable from 3 metres); small pack name ("Animals"); time
 left "0:34"; Pause button in the top corner. Sizes: designed for 812 × 375 and 568 × 320 (sideways); upright works; with
 rotation lock on, the word is drawn turned to fit a sideways phone.
@@ -178,7 +178,7 @@ quiet "← Home (game saved)"; "··· Menu"; main **"Save score"**. Upright lay
 ## D. Between rounds
 
 ### R1. Round over
-*Words:* "Round 1 done"; scoreboard, highest first, with turns played: "Arjun 7 (1 turn) · Dev 6 · Riya 5 · Meena 5 · …";
+*Words:* "Round 1 done. Round 2 next."; scoreboard, highest first, with turns played: "Arjun 7 (1 turn) · Dev 6 · Riya 5 · Meena 5 · …";
 line "Words nobody got: Penguin, Zebra"; small line "Play as many rounds as you like; tap End the game to see who got the
 most."; quiet "Players (6) ›"; quiet "Change players or words"; quiet "End the game"; quiet "← Home (game saved)"; main
 "Round 2". *Intentions:* stop, home, change (visible); help (menu).
