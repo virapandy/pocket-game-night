@@ -127,7 +127,7 @@ scenario with its "Version 1.1" items, which win over the text they name. Decisi
 2. **Coder lanes, by `docs/change-sop.md`:** (a) **rules engine first**, one lane, C3: `src/games/mafia/` rules against the pushed
    C3 tests, plus `content/mafia/stories.json` built from `docs/games/mafia/stories.csv` (edition 1.2, 22 stories); then (b) screen
    lanes, the orchestrator's split; a suggestion: setup and deal (S1–S3, B1–B2) · night (N0–N3) · day and results (M1, Y1, V1–V4,
-   G1, G2, dialogs). N2 (the night job) and MAF-P7 are C3 in look: the reviewer checks every role's N2 is the same frame.
+   G1, G2, dialogs); every on-screen string comes from `docs/games/mafia/text.csv` (250 strings, keys `mf.*`). N2 (the night job) and MAF-P7 are C3 in look: the reviewer checks every role's N2 is the same frame.
 3. **Before the design freeze:** when the prototype renderer can draw `docs/games/mafia/screen-map.md` (draft 4), tell the
    product owner, who runs the six persona walks on it; findings go to version 1.2, never into a build round in progress.
 4. The jev-design runs are done (`docs/games/mafia/jev-results-2026-10-23.md`); the Jev simulated player can reuse
