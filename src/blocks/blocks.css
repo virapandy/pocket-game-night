@@ -184,7 +184,7 @@
 /* ----- Landscape (812 × 375): the main button bottom right, 358 px wide ----- */
 @media (orientation: landscape) and (max-height: 600px) {
   .pgn-screen { max-width: none; padding-top: 8px; gap: 6px; }
-  .pgn-main { left: auto; width: min(358px, calc(50% - var(--pgn-gutter))); }
+  .pgn-main { left: auto; width: 358px; }
   .pgn-main-inline { width: 100%; }
 }
 

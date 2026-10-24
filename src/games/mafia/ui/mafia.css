@@ -219,3 +219,8 @@
   .maf-vote-foot > .pgn-quiet { flex: 1; font-size: var(--pgn-small); padding: 0 6px; }
   .maf-countdown { font-size: 3.5rem; }
 }
+
+/* MAF-080: on a short landscape screen the main button stays in the right half (568 × 320 and 812 × 375). */
+@media (orientation: landscape) and (max-height: 600px) {
+  .maf .pgn-main:not(.pgn-main-inline) { width: min(358px, calc(50% - var(--pgn-gutter))); }
+}
