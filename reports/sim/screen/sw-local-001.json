@@ -1,0 +1,71 @@
+{
+ "seed": "local-001",
+ "config": {
+  "seed": "local-001",
+  "index": 0,
+  "width": 812,
+  "height": 375,
+  "players": [
+   "Alexandrapetrova",
+   "Bhagyashreemani",
+   "Chandrashekharan",
+   "Dhananjayapillai",
+   "Ekaterinavolkova",
+   "Fatimazahrakhan"
+  ],
+  "persona": null,
+  "phones": 1,
+  "board": "easy",
+  "landmine": "lose",
+  "words": "family",
+  "timer": true,
+  "larger": false,
+  "games": 3,
+  "endEarly": [
+   false,
+   true,
+   true
+  ],
+  "undoOnEnd": true,
+  "changeAfter": 1,
+  "reloadAt": [
+   12,
+   21
+  ],
+  "mapOpen": "link",
+  "endMidGame": false,
+  "peekHistory": true,
+  "personaPlayed": "first-time-host"
+ },
+ "finished": true,
+ "steps": 224,
+ "findings": [],
+ "flags": [],
+ "games": 4,
+ "jevDecisions": 0,
+ "screens": [
+  "home",
+  "what",
+  "who",
+  "teams",
+  "choices",
+  "read-aloud",
+  "pass",
+  "private-map",
+  "clue",
+  "guessing",
+  "menu",
+  "turn-over",
+  "dialog",
+  "game-over",
+  "summary",
+  "how-to-play",
+  "scan",
+  "history"
+ ],
+ "stuckAt": [],
+ "noWayOn": [],
+ "phones": 1,
+ "guardRescues": 0,
+ "game": "Secret Words"
+}
