@@ -86,6 +86,14 @@ function mostOver(games: readonly Game[], count: (g: Game, p: string) => number,
 
 /** MAF-093: the game night as History, G1 and G2 read it, by replaying its moves. Null when it is not Mafia or does not replay. */
 export function readMafiaNight(saved: unknown): MafiaNight | null {
+  try {
+    return readNight(saved);
+  } catch {
+    return null;   // any damaged setup or record
+  }
+}
+
+function readNight(saved: unknown): MafiaNight | null {
   const read = readSavedGame(saved);
   if (!read.ok || read.game.gameType !== 'mafia') return null;
   const game = read.game as SavedGame<MafiaConfig, MafiaMove>;

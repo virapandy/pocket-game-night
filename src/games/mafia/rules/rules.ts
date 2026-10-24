@@ -3,11 +3,14 @@
 import { HOST, type GameRules, type MoveContext, type SetupInput, type Verdict, type Viewer } from '../../../engine';
 import { dealRoles, keptCount, mafiaCounts, validOverride } from './deal';
 import {
-  MAFIA_STORY_EDITION, STORY_EDITIONS, allowedNames, checkWinner, checksOf, inTonight, isIn, isOut, nightJob, nightTurn, remaining, resolveNight,
+  STORY_EDITIONS, allowedNames, checkWinner, checksOf, inTonight, isIn, isOut, nightJob, nightTurn, remaining, resolveNight,
 } from './night';
 import type {
   Game, MafiaConfig, MafiaMove, MafiaPlayerView, MafiaState, MafiaView, Role, Step,
 } from './types';
+
+/** The edition of game nights saved without one (before editions were saved). Fixed: never change it. */
+const LEGACY_EDITION = '1.2';
 
 const no = (reason: string): Verdict<MafiaState> => ({ ok: false, reason });
 const yes = (value: MafiaState): Verdict<MafiaState> => ({ ok: true, value });
@@ -395,7 +398,7 @@ export const mafiaRules: GameRules<MafiaConfig, MafiaState, MafiaMove, MafiaView
     const config: MafiaConfig = input.config ?? {};
     const seed = input.seeds.roles;
     if (typeof seed !== 'string' || seed === '') throw new Error('Mafia needs seeds.roles.');
-    const edition = config.edition ?? MAFIA_STORY_EDITION;
+    const edition = config.edition ?? LEGACY_EDITION;
     const lists = STORY_EDITIONS[edition];
     if (!lists) throw new Error(`Unknown Mafia story edition ${edition}.`);
     const known = (ids: readonly string[] | undefined, kind: 'out' | 'saved') => {
