@@ -4,7 +4,7 @@
 // Written before the build: see the note in what-am-i.ts (expected to fail until the screens and hooks exist).
 import { expect, test } from './fixtures';
 import {
-  SIZES, TZ, box, button, dialog, heading, mainButton, marks, noSidewaysScroll, pauseButton, playTurn, saveScore, screenText,
+  SIZES, TZ, box, button, chooseOnS2, dialog, heading, mainButton, marks, noSidewaysScroll, pauseButton, playTurn, saveScore, screenText,
   startNight, tap, theWord, toWord, flash, WORDS,
 } from './what-am-i';
 import type { Page } from '@playwright/test';
@@ -32,6 +32,7 @@ test.describe('WAI-080: every size, Larger text off and on', () => {
         await noSidewaysScroll(page, `${where}, S1`); await mainFixed(page, `${where}, S1`);
         await tap(page, mainButton(page));
         await noSidewaysScroll(page, `${where}, S2`); await mainFixed(page, `${where}, S2`);
+        await chooseOnS2(page, { turnTime: 30 }); // stopAt S1 leaves S2's choices to the test: the 30 s turns playTurn waits for
         await tap(page, mainButton(page));
         await noSidewaysScroll(page, `${where}, Read this aloud`);
         await tap(page, mainButton(page));
@@ -121,6 +122,7 @@ test.describe('WAI-082: words never used on screen (Version 1.1 item 48)', () =>
     await tap(page, mainButton(page)); await look('S2');
     await tap(page, button(page, 'How to play')); await look('How to play');
     await tap(page, mainButton(page));
+    await chooseOnS2(page, { turnTime: 30 }); // stopAt S1 leaves S2's choices to the test: the 30 s turns playTurn waits for
     await tap(page, mainButton(page)); await look('Read this aloud');
     await tap(page, mainButton(page)); await look('T1');
     await tap(page, mainButton(page)); await look('T2');

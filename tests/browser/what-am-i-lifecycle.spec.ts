@@ -3,7 +3,7 @@
 // menu (Version 1.1 item 39; Version 1.2 item 16).
 // Written before the build: see the note in what-am-i.ts (expected to fail until the screens and hooks exist).
 import { expect, test } from './fixtures';
-import { hostAGame } from './helpers';
+import { fromHome, hostAGame } from './helpers';
 import {
   TZ, UPRIGHT, button, chipNames, dialog, fromMenu, guards, heading, listChips, mainButton, menuItems, moves, onlyNight,
   pauseButton, playTurn, radio, saveScore, startNight, switchNamed, tap, text, theWord, timeLeft, toWord, whereLine,
@@ -134,6 +134,7 @@ test.describe('WAI-090 / WAI-091: where-line, Home row and resume', () => {
 
 test.describe('WAI-092: History, the menu, Settings', () => {
   test('History lists "What Am I? · 2 games" with its players; its "Play again" opens S1 with them and S2 with the last choices', async ({ page }) => {
+    test.setTimeout(90_000); // two whole games (four turns) and History: about 35 s on a low-priority Mac
     await startNight(page, { seed: 'history', players: TWO, turnTime: 30, pack: 'Jobs' });
     await playTurn(page, 'G'); await saveScore(page);
     await playTurn(page, 'G'); await saveScore(page);
@@ -145,7 +146,8 @@ test.describe('WAI-092: History, the menu, Settings', () => {
     await tap(page, button(page, 'End for tonight'));
     await tap(page, dialog(page, 'End for tonight?').getByRole('button', { name: 'End for tonight', exact: true }));
     await tap(page, button(page, '← Home'));
-    await tap(page, page.getByRole('button', { name: /^History/ }));
+    await guards(page);
+    await fromHome(page, 'History'); // History is on Home or in its menu (PLT-300)
     const entry = page.getByText('What Am I? · 2 games', { exact: true });
     await expect(entry).toBeVisible();
     await tap(page, entry);
