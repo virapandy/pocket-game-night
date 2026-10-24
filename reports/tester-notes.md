@@ -103,3 +103,6 @@ Merged origin/main (PGN_PORT per lane: lane-a 4174). Lane A area: 129 of 132 pas
 - New area entry in `areas.json` (its own block near the end, so lane A's and B's edits of the Secret Words block merge).
 - Questions of 23 October in docs/test-questions.md (bar gap 8 vs 16 px; SWD-051 Landmine wording; credit order etc.).
 - Round 2 (23 October): lane D marks all removed (they pass); SWD-025's 3 marks removed; lane-f has origin/main merged (coder 26c3fcd, tester 24 October) and lane D's area entry is back in `areas.json`.
+
+## Secret Words screen simulations (24 October 2026)
+`tests/sims/secret-words-evenings.sim.ts` + `secret-words-runner.ts` (README in `tests/sims/`). Count follows `SIM_EVENINGS` (one in five: 40 of 200). Local: `JEV=off SIM_EVENINGS=0 SIM_SW_EVENINGS=2 npx playwright test --config tests/playwright.sims.config.ts --workers=2` (about 25 s for 2; delete `reports/sim/screen` first, passing evenings leave no replay). Candidate app findings the sims raised (not yet confirmed by a rule test): "Other team's turn" stays guarded for good after a Nobody's word (seed t4-008, grandparent, 2 phones); How to play opened from game over shows two main buttons (Play again behind Done); map phone "Next map" sometimes opens no dialog (t4-006). The Jev path is untested locally (no key).
