@@ -7,7 +7,7 @@ import {
   type Match, type Preferences, type SavedGame, type SavedGameStore, type Session, type SessionPicker,
 } from '../../../engine';
 import {
-  clockText, homeLine1, homeLine2, playersShort, validChoices, whatAmIRules, whereLine,
+  clockText, homeLine1, homeLine2, playersShort, validChoices, whatAmIEdition, whatAmIRules, whereLine,
   type Choices, type WaiConfig, type WaiMove, type WaiState, type WaiWord,
 } from '../rules';
 
@@ -41,7 +41,12 @@ export interface NightUi {
   readonly wordShowing?: boolean;
   /** The round whose "Round 2" was tapped on R1 (R1 shows until then; lane W4). */
   readonly roundStarted?: number;
+  /** T2 or T3 is running for this turn (`turnKey`), before the turn's first move is recorded (lane W3). */
+  readonly turnOn?: string;
 }
+
+/** The turn a T1 starts: the game, the saved turns so far and whose it is (a later turn never matches). */
+export const turnKey = (s: WaiState): string => `${s.game}:${s.saved.length}:${s.round}:${s.order.filter((p) => !s.played.includes(p))[0] ?? ''}`;
 
 export const readUi = (ui: Preferences, id: string): NightUi => {
   const v = ui.get<unknown>(id, {});
@@ -148,7 +153,8 @@ export function createNight(opts: {
 }): Live | null {
   const now = Date.now();
   const sessionId = sessionFor(opts.sessions, now).id;
-  const config: WaiConfig = opts.test.words ? { testWords: [...opts.test.words] } : {};
+  // WAI-092: the night records the word list's edition it started with.
+  const config: WaiConfig = { edition: whatAmIEdition, ...(opts.test.words ? { testWords: [...opts.test.words] } : {}) };
   const setup = { gameId: GAME_TYPE, seeds: { words: opts.test.seed ?? freshSeed() }, config };
   const match = startMatch(whatAmIRules, setup, now) as NightMatch;
   const saved: Night = {

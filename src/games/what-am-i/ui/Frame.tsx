@@ -9,13 +9,15 @@ import { HideMainButton, QuietButton, Toast, type ToastState } from '../../../bl
 import type { Preferences, SavedGameStore } from '../../../engine';
 import { headOf, joinNames, toPlayOf, whatAmIRules, type Choices, type WaiMove, type WaiState, type WaiView } from '../rules';
 import {
-  dropLast, openNight, readUi, record, sameChoices, whereFor, writeUi, type Live, type NightUi,
+  dropLast, openNight, readUi, record, sameChoices, turnKey, whereFor, writeUi, type Live, type NightUi,
 } from './night';
 import { PlayersSheet } from './Players';
 import { ChoicesForm, HowToPlay } from './Setup';
 import { WaiSettings } from './Settings';
 import { GameMenu, Main, PauseButton, Scoreboard, WaiDialog, WaiSheet, WhereLine, useWaiBack, useWaiToast, type MenuEntry } from './parts';
 import { GameOverScreen, PassScreen, RoundOverScreen, SummaryScreen, TurnScreen, TurnEndScreen } from './Screens';
+import { SavedToast } from './Turn';
+import { clearSavedToast } from './turnPhone';
 
 /** Which game screen a state shows. R1 stays until its "Round 2" is tapped (lane W4 sets `roundStarted`). */
 export type WaiScreen = 'T1' | 'R1' | 'turn' | 'T4' | 'G1' | 'G2';
@@ -31,6 +33,8 @@ export function screenOf(s: WaiState, ui: NightUi): WaiScreen {
     case 'new':
       return 'G2';
     default:
+      // Lane W3: T2 or T3 running before the turn's first move is recorded.
+      if (ui.turnOn !== undefined && ui.turnOn === turnKey(s)) return 'turn';
       return s.played.length === 0 && s.round > 1 && ui.roundStarted !== s.round ? 'R1' : 'T1';
   }
 }
@@ -106,6 +110,8 @@ export function WhatAmIGame({
   const [toast, showToast, clearToast] = useWaiToast();
   const liveRef = useRef(live);
   liveRef.current = live;
+  // WAI-031: "Riya: 5 saved · Undo" goes when the game is left (Home, History).
+  useEffect(() => () => clearSavedToast(), []);
 
   const act = (move: WaiMove): boolean => {
     const cur = liveRef.current;
@@ -297,6 +303,7 @@ export function WhatAmIGame({
     <>
       <HideMainButton.Provider value={sheet}>{body}</HideMainButton.Provider>
       <FrameToast toast={toast} onDone={clearToast} />
+      <SavedToast p={props} screen={screen} hidden={overlay !== null || toast !== null} />
       {overlay === 'players' && (
         <PlayersSheet
           state={state}

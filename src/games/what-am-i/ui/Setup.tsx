@@ -361,7 +361,7 @@ const HOW_TO_PLAY = [
 ];
 
 /** A simple drawing of a person (head and shoulders) with the phone where it is held (Version 1.1 item 43). */
-function Drawing({ kind, alt }: { kind: 'forehead' | 'chest' | 'behind'; alt: string }) {
+export function Drawing({ kind, alt }: { kind: 'forehead' | 'chest' | 'behind'; alt: string }) {
   const phone =
     kind === 'forehead' ? { x: 41, y: 8, w: 18, h: 26 } : kind === 'chest' ? { x: 41, y: 50, w: 18, h: 26 } : { x: 70, y: 30, w: 18, h: 30 };
   return (
