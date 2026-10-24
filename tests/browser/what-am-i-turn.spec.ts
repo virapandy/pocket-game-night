@@ -127,7 +127,9 @@ test.describe('WAI-011: tip lines on T1 (at most one, the first that applies)', 
     await saveTurns(page, 2); // Riya, Arjun
     await expect(heading(page, "Om, you're guessing")).toBeVisible();
     await expect(tipLine(page)).toHaveText('Joining this round: Om');
-    await saveTurns(page, 1);
+    await saveTurns(page, 1); // Om's turn was round 1's last: Round over (WAI-033), then Round 2 → Riya's T1
+    await tap(page, mainButton(page));
+    await expect(heading(page, "Riya, you're guessing")).toBeVisible();
     await expect(tipLine(page)).not.toHaveText('Joining this round: Om');
   });
 
@@ -148,7 +150,9 @@ test.describe('WAI-011: tip lines on T1 (at most one, the first that applies)', 
     await startNight(page, { seed: 'tip-screen', pack: 'mix', players: TWO, wakeLock: 'refused', turnTime: 30 });
     await saveTurns(page, 1);
     await expect(tipLine(page)).toHaveText('Keep your screen on during the turn.');
-    await saveTurns(page, 1);
+    await saveTurns(page, 1); // Arjun's turn was round 1's last: Round over (WAI-033), then Round 2 → Riya's T1
+    await tap(page, mainButton(page));
+    await expect(heading(page, "Riya, you're guessing")).toBeVisible();
     await expect(tipLine(page)).toHaveCount(0);
   });
 });
@@ -233,7 +237,9 @@ test.describe('WAI-014 / WAI-015: hold for one player, someone else goes first',
     await expect(mainButton(page)).toHaveText("Start Riya's turn");
     await expect(text(page, "Hands-free (Riya's choice)")).toBeVisible();
     expect((await moves(page)).at(-1)).toEqual({ type: 'setHold', player: 'Riya', hold: 'free' });
-    await saveTurns(page, 2);
+    await saveTurns(page, 2); // round 1 over (WAI-033): Round 2 → Riya's T1
+    await tap(page, mainButton(page));
+    await expect(heading(page, "Riya, you're guessing")).toBeVisible();
     await expect(mainButton(page)).toHaveText("Start Riya's turn");
     await tap(page, button(page, 'Riya will hold it'));
     await expect(mainButton(page)).toHaveText("I'm Riya: start");
