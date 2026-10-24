@@ -19,6 +19,22 @@ Read this and the top of `reports/latest.md` before starting. Keep it short: rep
   reason; tag `@quarantine` + annotation in the test; never skip or retry.
 
 ## Open items for the next tester
+- **What Am I? tests first (lane-w, 25 October; scenarios v1.3, approved 24 October):** specs copied to `specs/what-am-i/`
+  (01, 02, 03, 04, 06, 07, 09, 10 + README; each scenario carries its Version 1.1–1.3 items word for word; a script did the
+  copy, so wording is exact). Rule API and browser hooks made exact in `specs/what-am-i/api.md`; the product owner's 42
+  clarifications of 25 October are applied (shown-by-text, Swimming = WAIW-170, tip order, How to play order, sound name
+  `countdown`, tied top = "Top so far", 12-hour end = endGame + endEvening). Rule tests `tests/games/what-am-i/` (78 +
+  contract registration; the contract suite joins once built): `wit` makes each one pass only if it fails with "not built
+  yet", so `npm test` stays green; checked against a throwaway reference build outside the repo (84/84 pass with the
+  contract suite; 4 planted faults all caught). Browser: 8 files `tests/browser/what-am-i-*.spec.ts`, 156 tests, helper
+  `tests/browser/what-am-i.ts`: `openApp` marks a test expected-to-fail and stops at once while `window.__waiTest` is
+  missing (about 1 s each; 141 s Android / 107 s iPhone for all 156 at 3 workers locally). Nothing to remove when built:
+  both switch to normal by themselves (rules: `src/games/what-am-i/index.ts` loads; browser: `__waiTest` exists).
+  `PGN_IGNORE_AHEAD=1` runs them unmarked. Area "What Am I?" added to `tests/browser/areas.json` (own paths only; no shared
+  helper changed, so no other game's run picks them up). Their selectors have never met a real screen: expect to adjust
+  selectors, not checks. Two questions in `docs/test-questions.md` (25 October rows: move fields; the queue's second lap).
+- Local note: under `taskpolicy -b` the full `npm test` timed SWD-025's 10,000-game property out at 120 s (passes in 26 s at
+  normal priority); a Mac-load artefact, not a test or app fault.
 - **Secret Words C3 (lane-e, 22 October):** specs copied to `specs/secret-words/` (v3.6; each scenario's "Version 3.6"
   paragraph wins); rule API for the coder `specs/secret-words/api.md`; rule tests `tests/games/secret-words/` (140 with
   the contract suite) fail only for "not built yet" until the coder's lane lands. `oracle.ts` = the scenarios' own
