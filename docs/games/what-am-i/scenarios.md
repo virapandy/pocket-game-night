@@ -1,6 +1,6 @@
-# What Am I?: scenarios (version 1.3 draft, 24 October 2026)
+# What Am I?: scenarios (version 1.3, approved 24 October 2026)
 
-Status: **draft 1.2, not yet approved** (the two-reader check is resolved in "Version 1.1"; three more persona walks and the critic pass in "Version 1.2", `map-walk-2-2026-10-23.md`; six walks of the prototype in "Version 1.3", `prototype-walk-2-2026-10-24.md`). Drawn from `screen-map.md` draft 4 (binding where this file is silent), `guide.md`,
+Status: **version 1.3 approved by the owner, 24 October 2026** ("Approved: What Am I? scenarios version 1.3. Hand them to the tester."). Read each scenario together with the "Version 1.1", "1.2" and "1.3" sections, which win over the text they name.
 `words.md` and the What Am I? decisions in `docs/decisions.md` (WA1–WA10 and the rows of 23 October). Written to
 `docs/spec-rules.md`. Before approval: the two-reader check (rule 12), then the owner. After approval the tester copies each
 section into `specs/what-am-i/` (file names in the headings) and writes tests. Build only after Secret Words is released
@@ -303,7 +303,7 @@ Plurals: "1 word" / "2 words"; "1 turn" / "2 turns"; "1 game" / "2 games"; "6 pl
 ## 01 Setup → `specs/what-am-i/01-setup.md`
 
 ### WAI-001 Picking What Am I?
-Status: draft · Phase: What Am I? 1
+Status: approved · Phase: What Am I? 1
 Home's "Host a game" line lists What Am I? among the games (titles joined with ", " and " or " before the last). The picker
 "What shall we play?" shows the What Am I? card (Canonical strings) after Secret Words' card, all cards equal in width and
 height (±1 px). Tapping it opens "Who's playing?"; with an unfinished What Am I? game night, the shared Start new dialog (as
@@ -311,7 +311,7 @@ SWD-115) opens instead: "Start new (ends that one)" records `endEvening` for it 
 one" resumes it (WAI-091).
 
 ### WAI-002 Who's playing?
-Status: draft · Phase: What Am I? 1
+Status: approved · Phase: What Am I? 1
 Impostor's names screen (IMP-003) with: no "Sit in a circle…" line; ▲ ▼ replaced by a drag handle per name (accessible name
 "Move Riya", with "Move up" / "Move down" actions for keyboards and screen readers); the small line "Players take turns in this
 order. Drag a name to move it." under the h1. Tonight's names filled in in their last order. "Next" is disabled with fewer than
@@ -320,7 +320,7 @@ players." and adds nothing. ✕ removes a name with the undo toast "Kabir remove
 the field focused (as SWD-132). "← Back" → the picker. "Next" → Words and time.
 
 ### WAI-003 Words and time
-Status: draft · Phase: What Am I? 1
+Status: approved · Phase: What Am I? 1
 The page scrolls at every size; the main button stays fixed.
 1. **"Which words?"**: a radio group of 9 options in this order: Mix of all, Animals, Food, Around the house, Jobs, Sports and
    cricket, Festivals and places, Act it out, Famous Indians. Each label "<Pack> · <n> words" with n = eligible words of that
@@ -339,13 +339,13 @@ Every choice starts from the last-used values on this phone (pack, time, hold, b
 "← Back" → Who's playing? (names kept). "How to play" → WAI-006.
 
 ### WAI-004 Starting a game
-Status: draft · Phase: What Am I? 1
+Status: approved · Phase: What Am I? 1
 When this is the first What Am I? game of tonight, "Start with these words" opens Read this aloud (WAI-005) and records
 nothing; its "First turn" records `start`. Otherwise "Start with these words" records `start` and opens T1 for the first player.
 `start` holds the choices and the turn order; scores are 0 for everyone.
 
 ### WAI-005 Read this aloud
-Status: draft · Phase: What Am I? 1
+Status: approved · Phase: What Am I? 1
 The card reads, in hand hold: "One of us holds the phone on their forehead or chest, screen to the room. Everyone else gives
 clues: talk, act, make the noise, but never say the word. Got it? Move the phone down. Stuck? Move it up to pass. Passing is
 free. Marked wrong? Fix it when time's up. You have 60 seconds. Play as many rounds as you like; tap End the game to see who
@@ -355,7 +355,7 @@ it, the top to pass." Fits without scrolling at every size with Larger text off.
 "← Back" → Words and time with every choice kept (nothing was recorded).
 
 ### WAI-006 How to play
-Status: draft · Phase: What Am I? 1
+Status: approved · Phase: What Am I? 1
 Opened from S1, S2, S3 and the menu. h1 "How to play"; the steps of `guide.md` "How to play" in short lines, with three drawings
 (phone on a forehead, on a chest, standing behind a player), each with alt text ("Phone held on the forehead, screen facing
 the room" etc.); main "Done" → the screen it was opened from, unchanged.
@@ -363,7 +363,7 @@ the room" etc.); main "Done" → the screen it was opened from, unchanged.
 ## 02 Words → `specs/what-am-i/02-words.md` (C3)
 
 ### WAI-010 The word order
-Status: draft · Phase: What Am I? 1
+Status: approved · Phase: What Am I? 1
 At `start`, the game's queue is the eligible words shuffled with `shuffle(words, createRng(\`${wordSeed}:${gameIndex}\`))`
 (gameIndex = 1 for tonight's first game), then filtered: words **shown** earlier tonight are moved to the end of the queue in
 the order they were first shown (oldest first). Each T3 word is the next one in the queue. Property: within one game no word is
@@ -373,7 +373,7 @@ been shown. A test may fix `wordSeed` (WAI-H1).
 rule, gameIndex unchanged), without stopping the turn. When Mix of all has none left either, shown words return, oldest first.
 
 ### WAI-011 Tip lines on T1
-Status: draft · Phase: What Am I? 1
+Status: approved · Phase: What Am I? 1
 At most one tip line shows on T1, the first that applies in this order:
 1. "Joining this round: Om" while a player added this round has not had their turn (names joined with ", " and " and ").
 2. "Only 8 new Animals words left. After that, words come from Mix of all." when the chosen pack (not Mix of all) has 1–14
@@ -387,7 +387,7 @@ At most one tip line shows on T1, the first that applies in this order:
 ## 03 A turn → `specs/what-am-i/03-turn.md` (marking rules C3; screens C2)
 
 ### WAI-012 The pass screen
-Status: draft · Phase: What Am I? 1
+Status: approved · Phase: What Am I? 1
 T1 for the player whose turn it is. h1 "Riya, you're guessing". **Hand hold:** small line "Hold the phone on your forehead or
 chest, screen facing the room."; the forehead-and-chest drawing; rule line "Phone down: Got it · Phone up: Pass" (motion off or
 unavailable: "Tap bottom: Got it · Tap top: Pass"); quiet "Hands-free for Riya"; main "I'm Riya: start". **Hands-free:** small
@@ -398,7 +398,7 @@ current length); the tip line (WAI-011); quiet "Someone else goes first", "← H
 (game saved)"; Pause; "··· Menu". Main guard 1000 ms.
 
 ### WAI-013 Motion permission and the motion question
-Status: draft · Phase: What Am I? 1
+Status: approved · Phase: What Am I? 1
 Motion needs hand hold and Settings "Answer by moving the phone" on (default on).
 - Where the browser needs permission for motion (`DeviceOrientationEvent.requestPermission` exists) and this phone has never
   answered: "I'm Riya: start" opens T0 (Canonical strings) instead of T2. "Yes, move the phone" calls the permission request:
@@ -410,25 +410,25 @@ Motion needs hand hold and Settings "Answer by moving the phone" on (default on)
   and not yet granted.
 
 ### WAI-014 Hands-free for one player
-Status: draft · Phase: What Am I? 1
+Status: approved · Phase: What Am I? 1
 "Hands-free for Riya" on T1 switches T1 to the hands-free layout for Riya now and on her later turns in this game, recording
 `setHold { player: 'Riya', hold: 'free' }`; "Riya will hold it" does the reverse. A player's override ends with the game (Play
 again starts from S2's hold). Nothing else changes.
 
 ### WAI-015 Someone else goes first
-Status: draft · Phase: What Am I? 1
+Status: approved · Phase: What Am I? 1
 "Someone else goes first" opens Players (WAI-041) with the line "Who goes now?" above the names and each name a button. Tapping
 "Meena" records `reorder` so Meena takes this turn and Riya the next; T1 opens for Meena. Done without a choice → T1 for Riya,
 nothing recorded. Only players who have not had their turn this round are offered.
 
 ### WAI-016 Countdown
-Status: draft · Phase: What Am I? 1
+Status: approved · Phase: What Am I? 1
 T2: "3", "2", "1", each 1000 ms, with a 100 ms beep at each (Sounds on); small line "Put it on your forehead or chest!"
 (hands-free "Riya, don't turn round!"); Pause. The screen wake lock is requested at T2's start (WAI-025). θ₀ is the mean pitch
 over the last 500 ms of the countdown. At t = 3000 ms T3 opens and the turn clock starts at the turn time.
 
 ### WAI-020 The word screen
-Status: draft · Phase: What Am I? 1
+Status: approved · Phase: What Am I? 1
 T3 shows, for the room: the top small line (Canonical strings), the word (`the-word`, CAPITALS by CSS, bold, sized to fit in 2
 lines: the largest size from 96 px down to 40 px that fits; at 568 × 320 the longest word, 22 characters, fits at 40 px), the
 pack name (15 px; for a Mix of all fallback word, its own pack), `time-left` "0:34" (m:ss, whole seconds rounded up), and a
@@ -438,7 +438,7 @@ of the screen as the room reads the word, minus: the Pause button with 8 px arou
 side at each short edge (where hands grip).
 
 ### WAI-021 Marking
-Status: draft · Phase: What Am I? 1
+Status: approved · Phase: What Am I? 1
 - **Got it:** a tap in the bottom marking area, or (motion on) θ − θ₀ ≤ −40° held for 150 ms. **Pass:** a tap in the top
   marking area, or θ − θ₀ ≥ +40° held for 150 ms.
 - Each mark records `got` or `pass` for the word on screen, shows the flash "Got it!" (green, `--good`) or "Pass" (orange,
@@ -452,32 +452,32 @@ Status: draft · Phase: What Am I? 1
   (which is recorded by `timeUp` as passed).
 
 ### WAI-022 Sounds and vibration
-Status: draft · Phase: What Am I? 1
+Status: approved · Phase: What Am I? 1
 With Sounds on: Got it = a 200 ms rising ding; Pass = a 200 ms low tone; each of the last 10 seconds = a 50 ms tick, with three
 quick ticks (50 ms, 100 ms apart) at 10 s left; time up = a 600 ms falling tone. Vibration (where `navigator.vibrate` exists,
 whatever the Sounds switch): Got it 40 ms; Pass 40, 60, 40 ms; time up 400 ms. Volume follows the phone. With Sounds off, no
 sound is played; vibration stays.
 
 ### WAI-023 Time up
-Status: draft · Phase: What Am I? 1
+Status: approved · Phase: What Am I? 1
 At 0 s left, `timeUp` is recorded with the word on screen as passed (none if a flash was running), the time-up sound and
 vibration play, the wake lock is released after T4 shows, and T4 opens.
 
 ### WAI-024 Rotation lock
-Status: draft · Phase: What Am I? 1
+Status: approved · Phase: What Am I? 1
 On T2 and T3, when orientation events say the phone is held sideways (|gamma| ≥ 60° for 500 ms) but `screen.orientation.type`
 is a portrait type, the page draws T3 rotated 90° to read correctly to the room and records a rotation-lock event on this phone
 (WAI-011). Test hook WAI-H3 sets both values.
 
 ### WAI-025 Screen stays awake
-Status: draft · Phase: What Am I? 1
+Status: approved · Phase: What Am I? 1
 `navigator.wakeLock.request('screen')` at T2's start; released on T4, Pause and app hidden; requested again on resume. If the
 request is refused or the API is missing, the turn goes on, and this phone records it for WAI-011's tip.
 
 ## 04 End of a turn and scores → `specs/what-am-i/04-scores.md` (C3)
 
 ### WAI-030 Time's up screen
-Status: draft · Phase: What Am I? 1
+Status: approved · Phase: What Am I? 1
 T4, portrait layout. h1 "Time's up! Riya got 5" (the Got it count). h2 "Got it" then its words as buttons in the order shown;
 h2 "Passed" then its words (time-up word last). Empty list: "None". Small line "Marked wrong? Tap a word to move it."; small line
 "Next: Arjun" (the next player in the order; after the round's last player "Next: round over"); quiet "← Home (game saved)";
@@ -486,20 +486,20 @@ Tapping a word records `fix` and moves it to the other list's end with "↺" aft
 h1's count updates.
 
 ### WAI-031 Save score, and Undo
-Status: draft · Phase: What Am I? 1
+Status: approved · Phase: What Am I? 1
 "Save score" records `scoreTurn`: the player's score grows by the Got it count, turns played by 1, and T1 opens for the next
 player (or R1 after the round's last player). The undo toast "Riya: 5 saved · Undo" stays until the next "I'm Riya: start" /
 "Start Riya's turn" or "Round 2" tap, or until another toast replaces it. Undo records `undoScore`, takes the turn's points and
 turn count back, and reopens T4 exactly as before Save (lists and ↺ marks kept). After the toast has gone, the turn is locked.
 
 ### WAI-032 Scores
-Status: draft · Phase: What Am I? 1
+Status: approved · Phase: What Am I? 1
 Scoreboards list players highest score first; ties in the order of the turn order. Each row "Arjun 7 (1 turn)"; players who left
 "Kabir 3 (1 turn) (left)" at the end. Example K2 of `screen-map.md`: after round 1, Arjun 7, Dev 6, Riya 5, Meena 5, Zoya 4,
 Kabir 3; after round 2, Arjun 14, Meena 13, Dev 11, Riya 9, Kabir 7, Zoya 7.
 
 ### WAI-033 Round over
-Status: draft · Phase: What Am I? 1
+Status: approved · Phase: What Am I? 1
 After the last player's "Save score": R1 (Canonical strings). "Words nobody got: Penguin, Zebra" lists this round's passed words
 (after fixes) in order shown, at most 5, then "and 3 more"; none: the line is left out. "Round 2" (the next round's number) →
 T1 for the first player in the turn order. "Change players or words" → Who's playing? with "← Back to the game", then Words and
@@ -508,7 +508,7 @@ time with main "Carry on playing" (records `setChoices` / `setPlayers`; scores k
 ## 06 Interruptions and people → `specs/what-am-i/06-interruptions.md` (C2)
 
 ### WAI-040 Pause
-Status: draft · Phase: What Am I? 1
+Status: approved · Phase: What Am I? 1
 The Pause button, the menu item, the phone's Back gesture during T1–T4, and the app being hidden (`visibilitychange` to
 hidden) all open the Paused cover (Canonical strings) and record `pause`. On T2/T3 the clock stops at once and the word is hidden
 (the cover covers the whole screen; the word is not in the DOM). "Carry on playing" records `resume`: from T1 or T4, back to
@@ -516,7 +516,7 @@ that screen; from T2/T3, the countdown runs again (WAI-016, new θ₀) and T3 sh
 left kept; the hidden word goes to the end of the queue unshown (R2). "← Home (game saved)" → Home; the game stays unfinished.
 
 ### WAI-041 Players during a game
-Status: draft · Phase: What Am I? 1
+Status: approved · Phase: What Am I? 1
 Players (from "Players (6) ›" on R1, or the menu) lists the players in turn order with ✕ and drag handles, an add row,
 and the top line "Add a name to join. New players go after the last player in this round." Adding Om mid-round records
 `addPlayer` and puts Om at the end of the turn order; he takes a turn this round and T1 shows "Joining this round: Om" until
@@ -524,19 +524,19 @@ then. Dragging records `reorder` (only among players still to play this round; p
 the name of a player who left this game brings back their points and turns.
 
 ### WAI-042 Someone leaves
-Status: draft · Phase: What Am I? 1
+Status: approved · Phase: What Am I? 1
 ✕ opens "Kabir has to leave?". "Kabir leaves" records `leave`: Kabir leaves the turn order, keeps his points (R4), the undo toast
 "Kabir left · Undo" shows; if it was Kabir's T1, T1 opens for the next player. With 2 players, ✕ instead opens the dialog with
 "2 players needed. Add someone, or end the game.", buttons "Add a player" (focuses the add row) and "End the game" (→ WAI-060).
 Leaving is not offered during T2–T3 (the menu's Players item is greyed with the small line "After this turn").
 
 ### WAI-043 Skip a turn
-Status: draft · Phase: What Am I? 1
+Status: approved · Phase: What Am I? 1
 "End Riya's turn now" on the Paused cover (during T2/T3 only) opens "End Riya's turn now?". "End Riya's turn now" records `skip` (the
 hidden word goes back unshown, R2) and opens T4 with what was marked; "Carry on playing" → back to the cover.
 
 ### WAI-044 Words and time mid-game
-Status: draft · Phase: What Am I? 1
+Status: approved · Phase: What Am I? 1
 The menu's "Words and time" between turns (T1, T4 before saving, R1) opens S2's choices in a sheet with main "Done"; changes record
 `setChoices` and apply from the next turn (a changed pack builds a new queue by WAI-010 with the same gameIndex). During T2–T3 the
 item is greyed with "After this turn".
@@ -544,30 +544,30 @@ item is greyed with "After this turn".
 ## 07 Game over and tonight → `specs/what-am-i/07-results.md` (saved data C3)
 
 ### WAI-060 End the game
-Status: draft · Phase: What Am I? 1
+Status: approved · Phase: What Am I? 1
 "End the game" (R1, the menu, the leave dialog) opens "End the game?". "End the game" records `endGame` and opens G1 with the toast
 "Game ended · Undo"; Undo removes `endGame` and returns to the screen it came from. A turn in progress (T2–T4 unsaved) is dropped:
 its marks don't count.
 
 ### WAI-061 Game over
-Status: draft · Phase: What Am I? 1
+Status: approved · Phase: What Am I? 1
 G1 (Canonical strings). The winner is the highest score among players who haven't left (R4); ties share the win. "Best turn"
 names the single turn with most Got it (ties: the earliest). "Words nobody got" lists this game's passed words, at most 5 then
 "and 3 more". "Tonight: Arjun 1 win" counts won games tonight per player ("Arjun 1 win · Meena 1 win"; a shared win counts for
 each). A game with no saved turn shows h1 "Game ended. No turns played." and no winner.
 
 ### WAI-062 Play again
-Status: draft · Phase: What Am I? 1
+Status: approved · Phase: What Am I? 1
 "Play again" records `start` (gameIndex + 1) with the same players (leavers removed), order, pack, time and hold (per-player
 overrides cleared), scores 0, and opens T1 for the first player. "Change players or words" → S1 → S2 → "Start with these words"
 (no read-aloud).
 
 ### WAI-063 End for tonight
-Status: draft · Phase: What Am I? 1
+Status: approved · Phase: What Am I? 1
 "End for tonight" (G1 or menu) opens its dialog; confirming records `endGame` if a game is open, then `endEvening`, and opens G2.
 
 ### WAI-064 Tonight's summary
-Status: draft · Phase: What Am I? 1
+Status: approved · Phase: What Am I? 1
 G2 (Canonical strings): players who took part tonight, games ended with at least one saved turn, total Got it tonight; wins per
 player (most first); "Best guesser tonight" = most Got it over tonight (ties: "Meena and Dev (31 words)"). "Oops, keep playing"
 removes `endEvening` (and the `endGame` it added) and returns where the host came from. "← Home" / "Play something else" → Home /
@@ -576,37 +576,37 @@ the picker, tonight's names kept (IMP-102). Menu: only "Delete tonight's games" 
 ## 09 Usability → `specs/what-am-i/09-usability.md` (C1/C2)
 
 ### WAI-080 Sizes and text
-Status: draft · Phase: What Am I? 1
+Status: approved · Phase: What Am I? 1
 Every screen works at every size with Larger text off and on: nothing cut off, no horizontal scrolling, the main button fixed
 (Impostor's landscape main button rule except on T3, which has no main button). The longest real values: 16-character player
 names, 22-character words, 20 players.
 
 ### WAI-081 Accessibility
-Status: draft · Phase: What Am I? 1
+Status: approved · Phase: What Am I? 1
 Each mark is announced in an `aria-live="assertive"` region ("Got it", "Pass"); time left announced at 10 s ("10 seconds left");
 T3's word is in an `h1`. Every icon button has a word or accessible name. Contrast 4.5:1 for all text; the flashes 3:1 against
 the word.
 
 ### WAI-082 Words on screen never used
-Status: draft · Phase: What Am I? 1
+Status: approved · Phase: What Am I? 1
 No What Am I? screen shows "tilt", "nod", "session", "evening", "card" or "clue" as a noun for the word (the hands-free line's
 "clue giver" is allowed). Checked by text search on every screen state.
 
 ## 10 Lifecycle → `specs/what-am-i/10-lifecycle.md` (saved data C3)
 
 ### WAI-090 Where-line
-Status: draft · Phase: What Am I? 1
+Status: approved · Phase: What Am I? 1
 The where-line (Canonical strings) shows under "Welcome back." after a reload or a return from hidden, on the Paused cover, and
 on Home's unfinished row (line 1 there uses "What Am I? · Round 2 · Arjun's turn").
 
 ### WAI-091 Resume
-Status: draft · Phase: What Am I? 1
+Status: approved · Phase: What Am I? 1
 Every move is saved as it happens. Reopening the app (or tapping the Home row) returns to the same screen: T1, T4 (lists and ↺
 kept), R1 or G1; a turn in T2/T3 returns on the Paused cover with its time left. A game night left unfinished ends by itself 12
 hours after its last move, as IMP-104 (unsaved turn dropped).
 
 ### WAI-092 History
-Status: draft · Phase: What Am I? 1
+Status: approved · Phase: What Am I? 1
 The game night is listed in History as "What Am I? · 2 games" with its players; "Play again" there opens S1 with its players and
 S2 with its last choices. Saved data carries a format version and each shown word's id (B9), so a later edition never changes
 what an old game shows.
