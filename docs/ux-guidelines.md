@@ -203,3 +203,10 @@ use specific confirmations instead. Several academic sources were behind paywall
 50. **Words.** What screens say and what games play with follow `docs/word-guidelines.md` (23 October 2026): one word per
     idea, family words not designer words, verbs on buttons, a key for every colour, known-everywhere content, and the checks
     in its Part C before every hand-over.
+
+51. **Secret roles on a passed phone look the same for every role** (Mafia, 25 October 2026). When each player takes the phone
+    in turn to do something secret, every role's private screen has the same frame (the same elements, in the same order, at the
+    same sizes), the same number of buttons (choices a role may not pick are shown greyed, never removed), the same number of
+    taps and the same minimum time before "Done", and no role makes a sound or a vibration. A watcher across the table must not
+    be able to tell a role from how long, how often or where a player taps (Mafia MF1, MAF-022, MAF-P7). Basis: ours (no other
+    product found does a shared night on one phone); Impostor's deal (IMP-012) is the precedent.
