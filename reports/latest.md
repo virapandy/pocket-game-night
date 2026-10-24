@@ -1,12 +1,23 @@
 # Test report
-Commit tested: 1914f02 (lane-k: c283b49 app code + tester 1914f02)   Date: 2026-10-25
-Result: RED (one real bug, MAF-080). Quick verify 40133386430: rule tests pass; browser 396 passed, 1 failed.
+Commit tested: e55f749 (lane-k: app f63370e + landscape fix 45e1588 + tester e55f749)   Date: 2026-10-25
+Result: GREEN. Quick verify run 40136323734 (lane-k, e55f749): verify success (rule tests and the changed areas' browser tests).
 
-## Failing (real bugs only)
-- `tests/browser/mafia-usability.spec.ts` "MAF-080: at 812 × 375 and 568 × 320 the main button sits bottom right" (MAF-080,
-  Impostor's landscape rule): at 568 × 320 on N0 ("Night 1", opened from flow `night1-start`) the main button's left edge is
-  at x = 194; expected in the right half (x ≥ 283). Its right and bottom edges are right; it is too wide, reaching into the
-  left half. 812 × 375 passes. Same result locally on Android and in automation.
+## This round
+- New `tests/browser/mafia-results.spec.ts` "MAF-P2 / MAF-093: opening #mafia-past/<id>/2 while game 2 is still being played ...":
+  fails on 45e1588 (a reload on that address showed game 2's "Who was who" with every role), passes on f63370e (Home).
+  Android and iPhone local: passes.
+- MAF-080 (landscape main button at 568 x 320) now passes (run 40134441146 green).
+
+## Shared landscape button (blocks.css, about 268 px at 568 x 320): Impostor, Secret Words, What Am I? at 568 x 320 / 812 x 375, Android, local
+- 150 landscape/no-scroll tests: 146 passed, 4 failed. No label wrapped or clipped in any of them.
+- 1 real change of expectation (OWNER): `secret-words-a-setup.spec.ts` "568 x 320 ... in landscape put it 358 x 60 at the bottom right"
+  (both Larger text off and on): main is now 268 wide, test and specs/secret-words/README.md ("Landscape main button ... 358 x 60")
+  expect 358. Not changed by the tester. The spec/test must be updated to the owner's new width, or the button kept at 358.
+  (667 x 375 is not a size these files use; 812 x 375 passed.)
+- 2 failures under load only (SWD-031 private map at 360 x 640; SWD-040 clue keys at 320 x 568): both pass on rerun (20/20).
+- What Am I? tests are expected-to-fail marked until built, so their pass is not evidence.
+- Local iPhone only: "MAF-061 item 28" fails (stays on the first deal screen after tapping "Change players or roles");
+  passes in automation. Check with the next full run.
 
 ## Mafia browser files, Android, local, 3 workers (c283b49 + 1914f02)
 - With the marks: 72 passed (10 of them the expected-to-fail held-back tests), 1 failed (MAF-080 above).
