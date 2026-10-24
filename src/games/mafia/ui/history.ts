@@ -13,6 +13,11 @@ function clock(t: number): string {
 
 export interface MafiaHistoryRow {
   readonly key: string;
+  /** The saved game night's id, and the game's index in it. */
+  readonly id: string;
+  readonly game: number;
+  /** The game night has ended (Clear all history deletes it; one still going is kept). */
+  readonly ended: boolean;
   /** The game's `start` time (History sorts by it, newest first). */
   readonly at: number;
   readonly text: string;
@@ -42,6 +47,9 @@ export function historyRows(saved: SavedGame): MafiaHistoryRow[] {
           : D.history.ended;
     rows.push({
       key: `${saved.id}:${g.number}`,
+      id: saved.id,
+      game: g.number,
+      ended: saved.status !== 'in-progress' && saved.status !== 'paused',
       at,
       text: D.history.row(clock(at), g.players.length, result, g.nights.length),
     });

@@ -77,6 +77,8 @@ export function resumeScreen(m: MafiaMatch, prefs: Preferences, id: string): Scr
   const v = roomView(m);
   const kept = savedScreen(prefs, id);
   const last = m.records[m.records.length - 1]?.move;
+  // Item 27: Tonight's summary opens again as itself (its endings are recorded by then, so without "Oops, keep playing").
+  if (kept === 'g2') return 'g2';
   switch (v.step) {
     case 'deal':
       return 'b1';
@@ -191,6 +193,20 @@ export function unfinishedNight(store: SavedGameStore): string | null {
     .filter((g) => g.gameType === 'mafia' && (g.status === 'in-progress' || g.status === 'paused'))
     .sort((a, b) => b.updatedAt - a.updatedAt);
   return list[0]?.id ?? null;
+}
+
+/**
+ * A reload's Mafia game night: the unfinished one, else (item 27) the one ended on Tonight's summary and still showing it,
+ * most recently changed first; null when none.
+ */
+export function reloadNight(store: SavedGameStore, prefs: Preferences): string | null {
+  const open = unfinishedNight(store);
+  if (open) return open;
+  const shown = store
+    .list()
+    .filter((g) => g.gameType === 'mafia' && g.status === 'ended' && savedScreen(prefs, g.id) === 'g2')
+    .sort((a, b) => b.updatedAt - a.updatedAt);
+  return shown[0]?.id ?? null;
 }
 
 /** "9:10 pm" (as Home's other rows). */

@@ -11,7 +11,8 @@ import type { GameInfo } from '../../engine';
 import { mafiaRules as rules } from './rules';
 import { MafiaScreen } from './ui/MafiaScreen';
 import { historyRows } from './ui/history';
-import { homeRow, openTestLoad, unfinishedNight } from './ui/tonight';
+import { PastGame } from './ui/Past';
+import { homeRow, openTestLoad, reloadNight, unfinishedNight } from './ui/tonight';
 
 export type { MafiaStart } from './ui/MafiaScreen';
 
@@ -41,4 +42,8 @@ export const mafia = {
   homeRow,
   /** MAF-093: History's rows for a saved game night, one per game that is over. */
   historyRows,
+  /** MAF-093: one past game from History, with "Play again". */
+  PastGame,
+  /** A reload's game night: the unfinished one, or one ended on Tonight's summary (item 27). */
+  reloadNight,
 };

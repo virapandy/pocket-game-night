@@ -33,6 +33,8 @@ type Route =
   /** `backTo`: History opened from an Impostor evening's menu, with "← Back" to that evening (IMP-075). */
   | { name: 'history'; backTo?: string }
   | { name: 'past'; id: string }
+  /** MAF-093: one past Mafia game from History (its game night and the game's index). */
+  | { name: 'mafia-past'; id: string; game: number }
   | { name: 'sessions' }
   | { name: 'session'; id: string }
   | {
@@ -112,6 +114,8 @@ function routeFromAddress(): Route {
   if (h === 'sessions') return { name: 'sessions' };
   if (h.startsWith('session/')) return { name: 'session', id: h.slice(8) };
   if (h.startsWith('past/')) return { name: 'past', id: h.slice(5) };
+  const mafiaPast = /^mafia-past\/(.+)\/(\d+)$/.exec(h);
+  if (mafiaPast) return { name: 'mafia-past', id: mafiaPast[1]!, game: Number(mafiaPast[2]) };
   // SWD-048: a reload during a Secret Words game night opens its turn screens again, at the same step.
   if (h === 'sw') {
     const id = secretWordsShowingNight(gameStore, secretWordsUi);
@@ -119,7 +123,7 @@ function routeFromAddress(): Route {
   }
   // MAF-091: a reload during a Mafia game night opens it again, with "Welcome back.".
   if (h === 'mafia') {
-    const id = mafia.unfinishedNight(gameStore);
+    const id = mafia.reloadNight(gameStore, preferences);
     if (id) return { name: 'mafia', start: { kind: 'resume', id } };
   }
   return { name: 'home' };
@@ -134,6 +138,8 @@ function addressOf(route: Route): string {
       return `session/${route.id}`;
     case 'past':
       return `past/${route.id}`;
+    case 'mafia-past':
+      return `mafia-past/${route.id}/${route.game}`;
     case 'sw':
       return 'sw';
     case 'mafia':
@@ -517,6 +523,7 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
             if (g?.gameType === impostor.info.id && g.status === 'in-progress') setRoute({ name: 'game', gameId: 'impostor', open: { id, action: 'resume' } });
             else setRoute({ name: 'past', id });
           }}
+          onOpenMafia={(id, game) => setRoute({ name: 'mafia-past', id, game })}
           deleted={deleted}
           onUndoDelete={() => {
             for (const g of deleted?.games ?? []) gameStore.put(g);
@@ -527,6 +534,19 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
     }
     if (route.name === 'sessions') return <SessionList onBack={home} onOpen={(id) => setRoute({ name: 'session', id })} />;
     if (route.name === 'session') return <SessionScreen id={route.id} onBack={() => setRoute({ name: 'sessions' })} />;
+    if (route.name === 'mafia-past') {
+      const saved = gameStore.get(route.id);
+      if (saved) {
+        return (
+          <mafia.PastGame
+            saved={saved}
+            game={route.game}
+            onBack={() => setRoute({ name: 'history' })}
+            onPlayAgain={(names) => setRoute({ name: 'mafia', start: { kind: 'new', names } })}
+          />
+        );
+      }
+    }
     if (route.name === 'past') {
       const saved = gameStore.get(route.id);
       // SWD-064: a Secret Words game night: its games (E1) and one game (E1a).

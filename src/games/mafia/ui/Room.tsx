@@ -116,6 +116,19 @@ export function MafiaRoom({
     [store, clearToast],
   );
 
+  /** Item 27: leaving Tonight's summary records `endGame` (mid-game) and `endEvening`, once. */
+  const endTonight = useCallback(() => {
+    const m = cur.current;
+    if (!m) return;
+    const step = roomView(m).step;
+    if (step !== 'ended') record(step === 'gameOver' ? [{ type: 'endEvening' }] : [{ type: 'endGame' }, { type: 'endEvening' }]);
+  }, [record]);
+  // Item 27: a game night reopened on Tonight's summary was left there (a reload): its endings are recorded now.
+  const endOnOpen = useRef(endTonight);
+  useEffect(() => {
+    if (screenRef.current === 'g2') endOnOpen.current();
+  }, []);
+
   // MAF-091: hiding the app on a private screen hides it: back to that player's pass screen, "Welcome back." on return.
   useEffect(() => {
     const onVisibility = () => {
@@ -123,6 +136,7 @@ export function MafiaRoom({
         const s = screenRef.current;
         if (s === 'b2') go('b1');
         else if (s === 'n2') go('n1');
+        else if (s === 'g2') endTonight(); // item 27: G2 stays, now without "Oops, keep playing"
         setAgain(null);
       } else if (cur.current && ROOM_FRAME.includes(screenRef.current)) {
         setWelcome(true);
@@ -130,7 +144,7 @@ export function MafiaRoom({
     };
     document.addEventListener('visibilitychange', onVisibility);
     return () => document.removeEventListener('visibilitychange', onVisibility);
-  }, [go]);
+  }, [go, endTonight]);
 
   if (!match) return null;
   const view: MafiaView = roomView(match);
@@ -222,7 +236,8 @@ export function MafiaRoom({
 
   const finishTonight = (then: 'home' | 'else') => {
     const v = roomView(cur.current ?? match);
-    if (v.step !== 'ended') record(v.step === 'gameOver' ? [{ type: 'endEvening' }] : [{ type: 'endGame' }, { type: 'endEvening' }]);
+    endTonight();
+    saveScreen(prefs, id, 'g1'); // a later reload no longer reopens this summary
     const names = v.players.filter((p) => !v.left.includes(p));
     if (then === 'home') onHome();
     else onSomethingElse([...names, ...v.next]);
