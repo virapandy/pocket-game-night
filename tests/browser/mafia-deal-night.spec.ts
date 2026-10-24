@@ -1,9 +1,9 @@
 // Mafia sections 02 and 03 on screen (C2; the rules are C3 in tests/games/mafia/): the deal pass and role cards
 // (MAF-010 to MAF-015, items 20 and 26), the night screens and every role's night job lines (MAF-020 to MAF-028, items
-// 4, 8, 9). Written before the screens exist: every test is `aheadOfMafiaScreens`. Helpers: mafia.ts.
+// 4, 8, 9). The screens are built (lane-k): no mark; the deal opens through MAF-H6 (`openDeal`). Helpers: mafia.ts.
 import { expect, test, type Page } from './fixtures';
 import {
-  EXAMPLE_DEAL, NINE, aheadOfMafiaScreens, box, button, byId, exactly, heading, mainButton, nameButton, openFlow, pad, tap, toDeal,
+  EXAMPLE_DEAL, NINE, box, button, byId, exactly, heading, mainButton, nameButton, openFlow, pad, tap, openDeal,
   toMorning, TZ,
 } from './mafia';
 
@@ -16,8 +16,7 @@ async function openCard(page: Page, name: string) {
 }
 
 test('MAF-010: the deal pass screen: "Player 1 of 9", "Pass the phone to", RIYA, "Everyone else, look away!", main "I\'m Riya"', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-010 B1');
-  await toDeal(page, NINE, { seeds: { deals: { 1: EXAMPLE_DEAL } } });
+  await openDeal(page, NINE, { deals: { 1: EXAMPLE_DEAL } });
   await expect(byId(page, 'deal-progress')).toHaveText(exactly('Player 1 of 9'));
   await expect(page.getByText(exactly('Pass the phone to'))).toBeVisible();
   await expect(byId(page, 'pass-name')).toHaveText(exactly('Riya'));
@@ -26,8 +25,7 @@ test('MAF-010: the deal pass screen: "Player 1 of 9", "Pass the phone to", RIYA,
 });
 
 test('MAF-011 item 20: each role card\'s words; every card the same height', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-011 role cards');
-  await toDeal(page, NINE, { seeds: { deals: { 1: EXAMPLE_DEAL } } });
+  await openDeal(page, NINE, { deals: { 1: EXAMPLE_DEAL } });
   const cards: Record<string, string[]> = {
     Riya: ['VILLAGER', 'You have no night power.', 'By day, talk, watch and find the Mafia.'],
     Arjun: ['MAFIA', 'You and Zoya are the Mafia.', 'At night, you pick who goes out. By day, act like a Villager.'],
@@ -57,8 +55,7 @@ test('MAF-011 item 20: each role card\'s words; every card the same height', asy
 });
 
 test('MAF-012: "First time? What this role means" shows three private lines for the role, "Hide this" hides them', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-012 first time');
-  await toDeal(page, NINE, { seeds: { deals: { 1: EXAMPLE_DEAL } } });
+  await openDeal(page, NINE, { deals: { 1: EXAMPLE_DEAL } });
   await openCard(page, 'Riya');
   await tap(page, button(page, 'First time? What this role means'));
   const block = byId(page, 'private-block');
@@ -70,8 +67,7 @@ test('MAF-012: "First time? What this role means" shows three private lines for 
 });
 
 test('MAF-013: "Not Riya? ← Back" before the first look returns to Riya\'s pass screen; nothing recorded', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-013 wrong person');
-  await toDeal(page, NINE, { seeds: { deals: { 1: EXAMPLE_DEAL } } });
+  await openDeal(page, NINE, { deals: { 1: EXAMPLE_DEAL } });
   await tap(page, button(page, "I'm Riya"));
   await tap(page, button(page, 'Not Riya? ← Back'));
   await expect(byId(page, 'deal-progress')).toHaveText(exactly('Player 1 of 9'));
@@ -79,8 +75,7 @@ test('MAF-013: "Not Riya? ← Back" before the first look returns to Riya\'s pas
 });
 
 test('MAF-014: "Someone saw my role" → "Deal again?" → "Deal again" starts at "Player 1 of 9"; "Keep these roles" changes nothing', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-014 deal again');
-  await toDeal(page, NINE, { seeds: { deals: { 1: EXAMPLE_DEAL } } });
+  await openDeal(page, NINE, { deals: { 1: EXAMPLE_DEAL } });
   await openCard(page, 'Riya');
   await tap(page, pad(page));
   await tap(page, button(page, 'Someone saw my role'));
@@ -94,7 +89,6 @@ test('MAF-014: "Someone saw my role" → "Deal again?" → "Deal again" starts a
 });
 
 test('MAF-015 item 20: "See my role again" on the morning: "Whose role?" lists players who are in; a Mafia with no partner out reads as dealt; "Done, back to the day"', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-015 see my role again');
   await openFlow(page, 'morning1');
   await toMorning(page);
   await tap(page, button(page, 'See my role again'));
@@ -113,7 +107,6 @@ test('MAF-015 item 20: "See my role again" on the morning: "Whose role?" lists p
 });
 
 test('MAF-015 item 20: after day 2 (Zoya voted out), Arjun\'s card reads "Zoya is out. You\'re the only Mafia left."', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-015 partner out');
   await openFlow(page, 'day3');
   await toMorning(page);
   await tap(page, button(page, 'See my role again'));
@@ -123,7 +116,6 @@ test('MAF-015 item 20: after day 2 (Zoya voted out), Arjun\'s card reads "Zoya i
 });
 
 test('MAF-020: Night 1 begins: the two lines and "Start the night"; MAF-021 the pass screen "Night 1 · 1 of 9"', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-020 N0 and N1');
   await openFlow(page, 'night1-start');
   await expect(heading(page, 'Night 1')).toBeVisible();
   await expect(page.getByText(exactly('Pass the phone round once more. Everyone does the same: tap to see your night job, pick one name, tap Done, pass it on.'))).toBeVisible();
@@ -152,7 +144,6 @@ async function jobTurn(page: Page, who: string, job: string, taps: [string, stri
 }
 
 test('MAF-022 to MAF-026: every role\'s job line and result line on night 1 of the example', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-022 night jobs');
   await openFlow(page, 'night1-start');
   await tap(page, mainButton(page));
   await jobTurn(page, 'Riya', "VILLAGER · Who do you think is Mafia? Think, then pick. Only you see this.",
@@ -173,7 +164,6 @@ test('MAF-022 to MAF-026: every role\'s job line and result line on night 1 of t
 });
 
 test('MAF-022 item 4: greyed names end ", can\'t pick" and the tag is not in the name; Arjun sees Zoya greyed as "Mafia"', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-022 greyed names');
   await openFlow(page, 'night1-start');
   await tap(page, mainButton(page));
   await jobTurn(page, 'Riya', "VILLAGER · Who do you think is Mafia? Think, then pick. Only you see this.", [['Om', "You think it's Om. At the end we'll see if you were right."]], 'Done, pass to Arjun');
@@ -187,7 +177,6 @@ test('MAF-022 item 4: greyed names end ", can\'t pick" and the tag is not in the
 });
 
 test('MAF-026 / MAF-021: a player who is out: the pass screen line and the ghost guess', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-026 ghost');
   await openFlow(page, 'night2-meena');
   await tap(page, button(page, "I'm Meena"));
   await tap(page, button(page, 'Tap to see your night job'));
@@ -204,7 +193,6 @@ test('MAF-026 / MAF-021: a player who is out: the pass screen line and the ghost
 });
 
 test('MAF-022 product owner 10: "Tap to hide" empties the job, names and result; the pick is kept; Done stays hidden while hidden', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-022 hide');
   await openFlow(page, 'night1-start');
   await tap(page, mainButton(page));
   await tap(page, button(page, "I'm Riya"));
@@ -223,7 +211,6 @@ test('MAF-022 product owner 10: "Tap to hide" empties the job, names and result;
 });
 
 test('MAF-028: Night over: "Host, take the phone and read the morning aloud."; "Read the morning" opens the morning', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-028 N3');
   await openFlow(page, 'morning1');
   if (await heading(page, 'Night over.').isVisible().catch(() => false)) {
     await expect(page.getByText(exactly('Host, take the phone and read the morning aloud.'))).toBeVisible();

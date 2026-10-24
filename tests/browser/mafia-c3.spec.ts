@@ -1,11 +1,11 @@
 // Mafia on screen: the C3 browser checks (scenarios version 1.1, 25 October 2026), written before the screens exist.
 // MAF-P2 / MAF-016 (no room screen differs with the roles), MAF-P7 (every role's night job is the same frame), MAF-010
 // (the deal on screen is the scenario's deal), MAF-037 (the story read out), MAF-091 / MAF-H6 (resume, never on a
-// private screen). Rules: tests/games/mafia/. Helpers: mafia.ts. Every test is `aheadOfMafiaScreens` until the screens exist.
+// private screen). Rules: tests/games/mafia/. Helpers: mafia.ts. The screens are built (lane-k): no mark; the deal is opened through MAF-H6 (`openDeal`).
 import { expect, test, type Page } from './fixtures';
 import {
-  EXAMPLE_DEAL, NINE, aheadOfMafiaScreens, box, button, byId, dealAll, dealTurn, exactly, heading, mainButton, nameButton,
-  nightNames, openFlow, pad, playNight, roomDump, tap, toDeal, toMorning, TZ,
+  EXAMPLE_DEAL, NINE, box, button, byId, dealAll, dealTurn, exactly, heading, mainButton, nameButton,
+  nightNames, openFlow, pad, playNight, roomDump, tap, openDeal, toMorning, TZ,
 } from './mafia';
 import { oracleDeal, oracleStory, storyText, STORIES, type Role } from '../games/mafia/oracle';
 
@@ -28,7 +28,7 @@ function picksFor(deal: Record<string, Role>): Record<string, string> {
 /** Walks deal, night 1, morning and day 1 by screen, keeping what every room screen shows. */
 async function walk(page: Page, deal: Record<string, Role>): Promise<string[]> {
   const dumps: string[] = [];
-  await toDeal(page, NINE, { seeds: { deals: { 1: deal } } });
+  await openDeal(page, NINE, { deals: { 1: deal } });
   for (const n of NINE) { dumps.push(await roomDump(page)); await dealTurn(page, n); }
   await expect(heading(page, 'Night 1')).toBeVisible();
   dumps.push(await roomDump(page));
@@ -54,7 +54,9 @@ async function walk(page: Page, deal: Record<string, Role>): Promise<string[]> {
 }
 
 test('MAF-016 MAF-P2: every room screen of the deal, night 1, morning and day 1 is identical under two different deals', async ({ page, browser }) => {
-  aheadOfMafiaScreens('MAF-P2 room screens');
+  // Two whole walks (2 × 9 deal turns, 2 × 9 night turns with their 4000 ms guards): about 26 s alone, so the default
+  // 30 s left no margin with 3 workers (lane M3's question, 25 October). Triple limit (90 s); nothing it checks changes.
+  test.slow();
   const a = await walk(page, EXAMPLE_DEAL);
   const other = await browser.newPage({ timezoneId: TZ, viewport: page.viewportSize() ?? undefined });
   try {
@@ -67,7 +69,6 @@ test('MAF-016 MAF-P2: every room screen of the deal, night 1, morning and day 1 
 });
 
 test('MAF-016: a day leaver\'s role is on no room screen before game over ("Neha · left", no role)', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-016 leaver');
   await openFlow(page, 'day1-left-neha');
   await toMorning(page);
   await tap(page, mainButton(page));
@@ -78,10 +79,11 @@ test('MAF-016: a day leaver\'s role is on no room screen before game over ("Neha
 });
 
 test('MAF-P7: every role\'s night job (N2) has the same elements in the same order and the same sizes (320 × 568 and 390 × 844)', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-P7 night job frame');
+  // Two sizes, each a whole deal and six night jobs: about 27 s alone; triple limit (90 s) for a safe margin (lane M3).
+  test.slow();
   for (const viewport of [{ width: 320, height: 568 }, { width: 390, height: 844 }]) {
     await page.setViewportSize(viewport);
-    await toDeal(page, NINE, { seeds: { deals: { 1: EXAMPLE_DEAL } }, viewport });
+    await openDeal(page, NINE, { deals: { 1: EXAMPLE_DEAL }, viewport });
     await dealAll(page);
     await tap(page, mainButton(page));
     const frames: { who: string; order: string[]; sizes: Record<string, number>; names: number; buttonHeights: number[]; lineHeight: number }[] = [];
@@ -118,12 +120,13 @@ test('MAF-P7: every role\'s night job (N2) has the same elements in the same ord
 });
 
 test('MAF-P7: the main button of the night job stays hidden until both 4000 ms and a pick, for every role', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-P7 night job guard');
   await openFlow(page, 'night1-start');
   await tap(page, mainButton(page));
   for (const [who, target] of [['Riya', 'Arjun'], ['Arjun', 'Kabir'], ['Meena', 'Meena']] as const) {
     await tap(page, button(page, `I'm ${who}`));
-    await page.clock.pauseAt((await page.evaluate(() => Date.now())) + 10);
+    // Pause the app's clock a whole second ahead, so the pause can't land in the past on a busy machine ("Cannot
+    // fast-forward to the past", lane M3); the 4000 ms are counted from the tap below, after the pause.
+    await page.clock.pauseAt((await page.evaluate(() => Date.now())) + 1000);
     await button(page, 'Tap to see your night job').click({ force: true });
     await page.clock.runFor(3900);
     await expect(mainButton(page), `${who}: no pick yet, 3.9 s`).toBeHidden();
@@ -137,15 +140,13 @@ test('MAF-P7: the main button of the night job stays hidden until both 4000 ms a
 });
 
 test('MAF-010: with seeds.roles fixed, each role card shows the scenario\'s deal (shuffle with `${roles}:1`)', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-010 deal on screen');
-  await toDeal(page, NINE, { seeds: { roles: 'browser-deal-1' } });
+  await openDeal(page, NINE, { roles: 'browser-deal-1' });
   const shown = await dealAll(page);
   const expected = oracleDeal('browser-deal-1', 1, NINE, 2, []);
   for (const p of NINE) expect(shown[p]!.toUpperCase(), p).toBe(expected[p]!.toUpperCase());
 });
 
 test('MAF-037: the morning reads the scenario\'s story with the name in it (night 1 of the example: Kabir)', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-037 story');
   await openFlow(page, 'morning1');
   await toMorning(page);
   const id = oracleStory('mafia-example', 1, 1, STORIES.filter((s) => s.kind === 'out').map((s) => s.id), []);
@@ -155,7 +156,6 @@ test('MAF-037: the morning reads the scenario\'s story with the name in it (nigh
 });
 
 test('MAF-091 / MAF-H6: a reload during the night resumes on the pass screen of the player whose turn it is, never the night job', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-091 resume at night');
   await openFlow(page, 'night1-meena');
   await expect(page.getByText(exactly('Welcome back.'))).toBeVisible();
   await expect(byId(page, 'where-line')).toHaveText(exactly("Night 1 · Meena's turn with the phone"));
@@ -174,7 +174,6 @@ test('MAF-091 / MAF-H6: a reload during the night resumes on the pass screen of 
 });
 
 test('MAF-091 / MAF-013: a reload during the deal resumes on that player\'s pass screen, never the role card', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-091 resume in the deal');
   await openFlow(page, 'deal-arjun');
   await expect(byId(page, 'where-line')).toHaveText(exactly("Dealing roles · Arjun's turn with the phone"));
   await expect(byId(page, 'deal-progress')).toHaveText(exactly('Player 2 of 9'));
@@ -190,7 +189,6 @@ test('MAF-091 / MAF-013: a reload during the deal resumes on that player\'s pass
 });
 
 test('MAF-091 item 22: after a recorded tie the game resumes at the re-vote (the tied players only)', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-091 resume at V3');
   await openFlow(page, 'day1-tie');
   await expect(heading(page, 'Who got the most fingers?')).toBeVisible();
   await expect(byId(page, 'where-line')).toHaveText(exactly('Day 1 · vote'));
@@ -201,7 +199,6 @@ test('MAF-091 item 22: after a recorded tie the game resumes at the re-vote (the
 });
 
 test('MAF-091: a finished game resumes on Game over with "Welcome back." and "Game over, game 1"', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-091 resume at G1');
   await openFlow(page, 'game1-over');
   await expect(heading(page, 'The Village wins!')).toBeVisible();
   await expect(byId(page, 'where-line')).toHaveText(exactly('Game over, game 1'));

@@ -150,3 +150,15 @@ Merged origin/main (PGN_PORT per lane: lane-a 4174). Lane A area: 129 of 132 pas
 - Mafia area added to `areas.json` (its own block before the "changed spec runs itself" entry).
 - Questions raised: 9 rows of 25 October in `docs/test-questions.md` (0.62 is really 0.95; leave between vote and N0; story
   reuse; target null for other roles; last turn leaves; N3 or M1 on resume; caught at game over; "past the deal"; mostMafia ties).
+
+## 25 October: Mafia screens built (lane-k), marks off
+- `aheadOfMafiaScreens` is gone. Only tests that need the picker's Mafia card, Home's "Host a game" line or Home's row carry
+  `needsMafiaCardOrHomeRow` (all of `mafia-setup.spec.ts`, and `mafia-room` MAF-055); remove each when Playwright says
+  "expected to fail, but passed" (after What Am I? releases and the card ships).
+- Deal tests open the first deal pass screen through MAF-H6: `openDeal(page, names, { deals } | { roles })` (flow
+  `deal-start`, only `start` recorded). It shows "Welcome back." like any resume.
+- New in `mafia-results.spec.ts`: MAF-093 History order (Impostor v3 fixture copied and moved in time), past game screen,
+  Play again without a leaver (flow `left-neha-ended`), PLT-011 Clear all with Mafia nights, MAF-063 G2 left by hiding
+  the app. Several game nights on one phone: `loadNight` sets `pgn.test.load` and reloads (clock kept).
+- Local runs with 3 workers under `taskpolicy -b` on a busy Mac: a forced click sometimes hangs 10 s (MAF-011, MAF-P7
+  sizes; both pass alone) and three long rule properties time out at 120 s; check against the automation run.

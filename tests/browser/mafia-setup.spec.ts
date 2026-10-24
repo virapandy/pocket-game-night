@@ -1,16 +1,16 @@
-// Mafia section 01, setup (C1/C2; scenarios version 1.1): MAF-001 to MAF-006. Written before the screens exist: every
-// test is `aheadOfMafiaScreens`. Helpers: mafia.ts.
+// Mafia section 01, setup (C1/C2; scenarios version 1.1): MAF-001 to MAF-006. Every test reaches S1 through Home's "Host a game"
+// and the picker's Mafia card, held back until What Am I? releases: `needsMafiaCardOrHomeRow`. Helpers: mafia.ts.
 import { expect, test } from './fixtures';
 import { hostAGame } from './helpers';
 import {
-  NINE, aheadOfMafiaScreens, boot, fromMenu, openFlow, box, button, byId, exactly, heading, mafiaCard, mainButton, playerField, tap, toNames,
+  NINE, needsMafiaCardOrHomeRow, boot, fromMenu, openFlow, box, button, byId, exactly, heading, mafiaCard, mainButton, playerField, tap, toNames,
   toPicker, toRoles, typeNames, TZ, SIZES, noPageScroll,
 } from './mafia';
 
 test.use({ timezoneId: TZ });
 
 test('MAF-001: Home\'s Host a game line ends "What Am I? or Mafia on this phone"; the Mafia card is last, after What Am I?, same size as the others', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-001 picker');
+  needsMafiaCardOrHomeRow('MAF-001 picker');
   await boot(page);
   await expect(hostAGame(page)).toHaveAccessibleName(/What Am I\? or Mafia on this phone$/);
   await toPicker(page);
@@ -28,7 +28,7 @@ test('MAF-001: Home\'s Host a game line ends "What Am I? or Mafia on this phone"
 });
 
 test('MAF-001: with an unfinished Mafia game night, the Mafia card opens Start new; "Carry on that one" resumes it', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-001 Start new');
+  needsMafiaCardOrHomeRow('MAF-001 Start new');
   // An unfinished game night saved on this phone (opened once through MAF-H6, then Home).
   await openFlow(page, 'morning1');
   await fromMenu(page, 'Home (game is saved)');
@@ -40,7 +40,7 @@ test('MAF-001: with an unfinished Mafia game night, the Mafia card opens Start n
 });
 
 test('MAF-002: Who\'s playing? counts players, needs 5, takes at most 16, refuses a name twice, and ✕ removes with Undo', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-002 names');
+  needsMafiaCardOrHomeRow('MAF-002 names');
   await toNames(page);
   await expect(page.getByText(/First time/)).toHaveCount(0);   // MF14: no "First time" tick
   await typeNames(page, NINE.slice(0, 4));
@@ -70,7 +70,7 @@ test('MAF-002: Who\'s playing? counts players, needs 5, takes at most 16, refuse
 });
 
 test('MAF-002: one player reads "1 player"; "← Back" returns to the picker; "How to play" opens How to play', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-002 plurals and links');
+  needsMafiaCardOrHomeRow('MAF-002 plurals and links');
   await toNames(page);
   await typeNames(page, ['Riya']);
   await expect(page.getByText(exactly('1 player'))).toBeVisible();
@@ -83,7 +83,7 @@ test('MAF-002: one player reads "1 player"; "← Back" returns to the picker; "H
 });
 
 test('MAF-003: Roles for 9 players: Mafia 2 (suggested), Doctor 1, Police 1, Villagers 5; − and + limits 1 to 3; rules box', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-003 roles 9');
+  needsMafiaCardOrHomeRow('MAF-003 roles 9');
   await toRoles(page, NINE);
   await expect(page.getByText(exactly('Mafia: 2'))).toBeVisible();
   await expect(page.getByText(exactly('We suggest 2 for 9 players.'))).toBeVisible();
@@ -107,7 +107,7 @@ test('MAF-003: Roles for 9 players: Mafia 2 (suggested), Doctor 1, Police 1, Vil
 });
 
 test('MAF-003: with 5 players there is no Doctor or Police line, and − and + are both disabled (item 27)', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-003 roles 5');
+  needsMafiaCardOrHomeRow('MAF-003 roles 5');
   await toRoles(page, NINE.slice(0, 5));
   await expect(page.getByText(exactly('With 5 players: 1 Mafia and 4 Villagers. Doctor and Police join at 6.'))).toBeVisible();
   await expect(page.getByText(exactly('Doctor: 1'))).toHaveCount(0);
@@ -117,7 +117,7 @@ test('MAF-003: with 5 players there is no Doctor or Police line, and − and + a
 });
 
 test('MAF-003 / item 27: Back keeps the names and the count; a changed number of players resets the count to the suggestion', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-003 keep or reset');
+  needsMafiaCardOrHomeRow('MAF-003 keep or reset');
   await toRoles(page, NINE);
   await tap(page, page.getByRole('button', { name: 'More Mafia', exact: true }));
   await tap(page, button(page, '← Back'));
@@ -132,7 +132,7 @@ test('MAF-003 / item 27: Back keeps the names and the count; a changed number of
 });
 
 test('MAF-005: Read this aloud, M = 2 and M = 1; Back undoes the deal; fits without scrolling at every size (Larger text off)', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-005 read aloud');
+  needsMafiaCardOrHomeRow('MAF-005 read aloud');
   const card2 = '2 of us are secretly the Mafia. Everyone else is the Village. At night we pass the phone round and everyone does the same thing, so nobody can tell who is who. Each morning the phone tells us what happened, then we talk and vote someone out. The Village wins by finding every Mafia. The Mafia win when they are as many as everyone else.';
   for (const viewport of SIZES) {
     await toRoles(page, NINE, { viewport });
@@ -151,7 +151,7 @@ test('MAF-005: Read this aloud, M = 2 and M = 1; Back undoes the deal; fits with
 });
 
 test('MAF-006: How to play has the seven steps, the rules box and the peek line, names nobody, and Done returns unchanged', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-006 how to play');
+  needsMafiaCardOrHomeRow('MAF-006 how to play');
   await toRoles(page, NINE);
   await tap(page, button(page, 'How to play'));
   await expect(heading(page, 'How to play')).toBeVisible();

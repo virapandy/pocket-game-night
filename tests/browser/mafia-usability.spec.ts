@@ -1,8 +1,8 @@
 // Mafia section 09, usability (C1/C2; scenarios version 1.1): MAF-080 to MAF-083 on screen, with item 6. Written before
-// the screens exist: every test is `aheadOfMafiaScreens`. Helpers: mafia.ts.
+// the screens exist; built on lane-k, no mark. Helpers: mafia.ts.
 import { expect, test, type Page } from './fixtures';
 import {
-  BANNED, SIZES, aheadOfMafiaScreens, box, button, byId, exactly, mainButton, nameButton, nightNames, noPageScroll, openFlow, tap,
+  BANNED, SIZES, box, button, byId, exactly, mainButton, nameButton, nightNames, noPageScroll, openFlow, tap,
   toMorning, TZ,
 } from './mafia';
 
@@ -18,7 +18,6 @@ const NO_SCROLL: [string, string, (page: Page) => Promise<void>][] = [
 ];
 
 test('MAF-080: no page scrolling on B1, N0, N1, M1 and the re-vote at every size (Larger text off); one main button each', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-080 no page scroll');
   for (const viewport of SIZES) {
     for (const [name, screen, go] of NO_SCROLL) {
       await openFlow(page, name, { viewport });
@@ -30,7 +29,6 @@ test('MAF-080: no page scrolling on B1, N0, N1, M1 and the re-vote at every size
 });
 
 test('MAF-080: at 812 × 375 and 568 × 320 the main button sits bottom right', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-080 landscape main');
   for (const viewport of [{ width: 812, height: 375 }, { width: 568, height: 320 }]) {
     await openFlow(page, 'night1-start', { viewport });
     const b = await box(mainButton(page));
@@ -41,7 +39,6 @@ test('MAF-080: at 812 × 375 and 568 × 320 the main button sits bottom right', 
 });
 
 test('MAF-080 item 6: N2 at 320 × 568 shows 3 rows of names (6) without scrolling; the rest scroll inside the names box; nothing scrolls the page', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-080 N2 at 320');
   await openFlow(page, 'night1-start', { viewport: { width: 320, height: 568 } });
   await tap(page, mainButton(page));
   await tap(page, button(page, "I'm Riya"));
@@ -58,7 +55,6 @@ test('MAF-080 item 6: N2 at 320 × 568 shows 3 rows of names (6) without scrolli
 });
 
 test('MAF-081: on N2 the job line and names are body text (17 px), the role word looks the same for every role', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-081 N2 text');
   await openFlow(page, 'night1-start');
   await tap(page, mainButton(page));
   const looks: string[] = [];
@@ -78,7 +74,6 @@ test('MAF-081: on N2 the job line and names are body text (17 px), the role word
 });
 
 test('MAF-082: no sound or vibration on the role card or the night job', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-082 silent private screens');
   await openFlow(page, 'night1-start');
   await page.evaluate(() => { (window as any).__vibrations = 0; navigator.vibrate = () => { (window as any).__vibrations++; return true; }; });
   await tap(page, mainButton(page));
@@ -93,7 +88,6 @@ test('MAF-082: no sound or vibration on the role card or the night job', async (
 });
 
 test('MAF-082 / MAF-083: no Mafia screen says a banned word (killed, dead, die, murder, lynch, eliminate, werewolf, moderator, session, evening)', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-083 words');
   const screens: [string, (p: Page) => Promise<void>][] = [
     ['deal-arjun', async () => {}], ['night1-start', async () => {}], ['night2-meena', async () => {}],
     ['morning1', async (p) => { await toMorning(p); }], ['day1-tie', async () => {}], ['game1-over', async (p) => { await tap(p, button(p, 'What happened each night')); }],

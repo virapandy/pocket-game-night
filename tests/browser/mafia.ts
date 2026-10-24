@@ -13,13 +13,15 @@ export { mainButton, NINE, EXAMPLE_DEAL, DEAL_2, FLOW_T0 };
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 /**
- * Marks the running test as written before the Mafia screens exist (the C3 rules lane comes first; the screens are
- * C1/C2 lanes after it). Expected to fail until then; when it passes, Playwright reports "expected to fail, but passed"
- * and the tester removes the call. PGN_IGNORE_AHEAD=1 runs these tests unmarked, to check them against a lane's branch.
+ * Marks the running test as needing what this lane may not show: the Mafia card on "What shall we play?", Home's "Host a
+ * game" line, or Home's unfinished-games row (the What Am I? lane owns Home and the picker; Mafia's card and row are held
+ * back until What Am I? releases). Expected to fail until then; when it passes, Playwright reports "expected to fail, but
+ * passed" and the tester removes the call. PGN_IGNORE_AHEAD=1 runs these tests unmarked (for a run with the card added).
+ * Every other Mafia screen is built (lane-k, 25 October 2026): no other test carries a mark.
  */
-export function aheadOfMafiaScreens(what: string) {
+export function needsMafiaCardOrHomeRow(what: string) {
   if (process.env.PGN_IGNORE_AHEAD) return;
-  pwTest.fail(true, `Mafia screens not built yet: ${what}`);
+  pwTest.fail(true, `Needs the Mafia card or Home row (held back until What Am I? releases): ${what}`);
   pwTest.setTimeout(120_000);
 }
 
@@ -111,6 +113,20 @@ export async function toDeal(page: Page, names: readonly string[] = NINE, o: Boo
   await tap(page, mainButton(page));
   await expect(heading(page, 'Read this aloud')).toBeVisible();
   await tap(page, mainButton(page));
+  await expect(byId(page, 'deal-progress')).toHaveText(exactly(`Player 1 of ${names.length}`));
+}
+
+/**
+ * The first deal pass screen (B1, "Player 1 of N") of a new game night, opened through MAF-H6 with only the `start`
+ * recorded, so tests of the deal and what follows need neither Home's "Host a game" nor the picker's Mafia card. Forced
+ * deals (`deals`) or a role seed (`roles`, the deal then comes from the shuffle, MAF-010) as in `pgn.test.seeds`.
+ * The game night is the flow "deal-start" with these players and deals (tests/games/mafia/flows.ts).
+ */
+export async function openDeal(page: Page, names: readonly string[] = NINE, o: Boot & { deals?: Record<string, Record<string, Role>>; roles?: string } = {}) {
+  const f: Flow = { ...flow('deal-start'), deals: o.deals ?? (o.roles ? {} : flow('deal-start').deals), moves: [{ type: 'start', players: [...names], mafiaCount: 2 }] };
+  const saved = savedFlow(f);
+  if (o.roles) saved.setup.seeds.roles = o.roles;
+  await boot(page, { ...o, time: o.time ?? flowEnd(f), storage: { ...o.storage, 'pgn.test.load': saved } });
   await expect(byId(page, 'deal-progress')).toHaveText(exactly(`Player 1 of ${names.length}`));
 }
 

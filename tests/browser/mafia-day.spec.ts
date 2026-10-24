@@ -1,9 +1,9 @@
 // Mafia section 04, morning and day (C2; scenarios version 1.1): MAF-030 to MAF-036 on screen, with items 14, 23, 24,
-// 25. Written before the screens exist: every test is `aheadOfMafiaScreens`. Saved game nights from
+// 25. The screens are built (lane-k): no mark. Saved game nights from
 // tests/games/mafia/flows.ts through MAF-H6. Helpers: mafia.ts.
 import { expect, test, type Page } from './fixtures';
 import {
-  aheadOfMafiaScreens, button, byId, exactly, heading, mainButton, openFlow, tap, toMorning, TZ,
+  button, byId, exactly, heading, mainButton, openFlow, tap, toMorning, TZ,
 } from './mafia';
 
 test.use({ timezoneId: TZ });
@@ -22,7 +22,6 @@ async function toPicker1(page: Page) {
 }
 
 test('MAF-030: Morning, day 1: story, role line, count line, quiet buttons, main "Start talking"', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-030 morning');
   await openFlow(page, 'morning1');
   await toMorning(page);
   await expect(heading(page, 'Morning, day 1')).toBeVisible();
@@ -35,7 +34,6 @@ test('MAF-030: Morning, day 1: story, role line, count line, quiet buttons, main
 });
 
 test('MAF-030: a night with nobody out has no role line; the count line is unchanged', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-030 saved morning');
   await openFlow(page, 'morning2');
   await toMorning(page);
   await expect(heading(page, 'Morning, day 2')).toBeVisible();
@@ -44,7 +42,6 @@ test('MAF-030: a night with nobody out has no role line; the count line is uncha
 });
 
 test('MAF-031: Day 1: who is still in (seat order), out players greyed with role, the out-players line, links and main', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-031 day');
   await toDay1(page);
   await expect(heading(page, "Who's still in")).toBeVisible();
   await expect(page.getByText(exactly('Kabir · Villager · out night 1'))).toBeVisible();
@@ -54,7 +51,6 @@ test('MAF-031: Day 1: who is still in (seat order), out players greyed with role
 });
 
 test('MAF-031 item 23: the timer shows 2:00, 1:59 after 1 s, never 0:00; "Time\'s up!" at 120 s and the link reads "Start a 2-minute timer" again', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-031 timer');
   await toDay1(page);
   await tap(page, button(page, 'Start a 2-minute timer'));
   await expect(byId(page, 'day-timer')).toHaveText(exactly('2:00'));
@@ -71,7 +67,6 @@ test('MAF-031 item 23: the timer shows 2:00, 1:59 after 1 s, never 0:00; "Time\'
 });
 
 test('MAF-032: the countdown heading, "3", "2", "1", "Point!", no menu and no Pause; then the picker opens by itself', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-032 countdown');
   await toDay1(page);
   await tap(page, mainButton(page));
   await expect(byId(page, 'countdown-heading')).toHaveText(exactly('Everyone in, point at who you think is Mafia.'));
@@ -84,7 +79,6 @@ test('MAF-032: the countdown heading, "3", "2", "1", "Point!", no menu and no Pa
 });
 
 test('MAF-033: the picker: names of players in, "It\'s a tie", "Count again", "Nobody today"; "Vote out" disabled until a pick', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-033 picker');
   await toPicker1(page);
   for (const p of ['Riya', 'Arjun', 'Meena', 'Zoya', 'Dev', 'Om', 'Sunita', 'Neha']) await expect(button(page, p)).toBeVisible();
   await expect(button(page, 'Kabir')).toHaveCount(0);
@@ -96,7 +90,6 @@ test('MAF-033: the picker: names of players in, "It\'s a tie", "Count again", "N
 });
 
 test('MAF-036: vote result: "Om is out." at once; at 1.5 s the role line, the count line and main "Start night 2"', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-036 vote result');
   await toPicker1(page);
   await tap(page, button(page, 'Om'));
   await tap(page, mainButton(page));
@@ -114,7 +107,6 @@ test('MAF-036: vote result: "Om is out." at once; at 1.5 s the role line, the co
 });
 
 test('MAF-034 items 14 and 24: a tie: "Tap everyone who is tied", "Point again: Om or Neha", a re-vote with only them, "Still a tie"', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-034 tie');
   await toPicker1(page);
   await tap(page, button(page, "It's a tie"));
   await expect(heading(page, 'Tap everyone who is tied')).toBeVisible();
@@ -137,7 +129,6 @@ test('MAF-034 items 14 and 24: a tie: "Tap everyone who is tied", "Point again: 
 });
 
 test('MAF-035: "Nobody today" asks first; "Back to the vote" records nothing; "Nobody today" goes straight to night 2', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-035 nobody today');
   await toPicker1(page);
   await tap(page, button(page, 'Nobody today'));
   const d = page.getByRole('dialog');
@@ -151,7 +142,6 @@ test('MAF-035: "Nobody today" asks first; "Back to the vote" records nothing; "N
 });
 
 test('MAF-036 item 25: when the vote ends the game, main "See who won" and only "← Home" among the quiet buttons', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-036 game-ending vote');
   await openFlow(page, 'day3');
   await toMorning(page);
   await expect(byId(page, 'role-line')).toHaveText(exactly('Meena was the Doctor.'));

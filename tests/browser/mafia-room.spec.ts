@@ -1,9 +1,9 @@
 // Mafia section 06, the room and the host (C2; scenarios version 1.1): MAF-050 to MAF-055 and MAF-090 (where-lines) on
-// screen, with items 2, 3, 11 to 13. Written before the screens exist: every test is `aheadOfMafiaScreens`.
+// screen, with items 2, 3, 11 to 13. The screens are built (lane-k); MAF-055 needs Home's row (`needsMafiaCardOrHomeRow`).
 // Helpers: mafia.ts.
 import { expect, test, type Page } from './fixtures';
 import {
-  aheadOfMafiaScreens, button, byId, exactly, fromMenu, heading, mainButton, menuButton, menuItem, openFlow, tap, toMorning, TZ,
+  needsMafiaCardOrHomeRow, button, byId, exactly, fromMenu, heading, mainButton, menuButton, menuItem, openFlow, tap, toMorning, TZ,
 } from './mafia';
 
 test.use({ timezoneId: TZ });
@@ -16,7 +16,6 @@ async function menuItems(page: Page): Promise<string[]> {
 }
 
 test('MAF-050 items 2 and 3: Pause on each room screen shows the where-line; Carry on returns to the same screen', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-050 pause and where-lines');
   const cases: [string, string, () => Promise<void>][] = [
     ['deal-arjun', "Dealing roles · Arjun's turn with the phone", async () => {}],
     ['night1-start', 'Night 1 · starting', async () => {}],
@@ -27,7 +26,12 @@ test('MAF-050 items 2 and 3: Pause on each room screen shows the where-line; Car
   for (const [name, where, go] of cases) {
     await openFlow(page, name);
     await go();
-    const h = await page.getByRole('heading').first().innerText().catch(() => '');
+    // B1 and N1 have no heading (their name is `pass-name`): read whichever the screen has, without waiting for one
+    // that isn't there (lane M2's question: each missing heading cost the 10 s action timeout).
+    await expect(mainButton(page)).toBeVisible();
+    const headings = page.getByRole('heading');
+    const h = (await headings.count()) ? (await headings.first().innerText()).trim() : '';
+    const who = h ? '' : (await byId(page, 'pass-name').innerText()).trim();
     await tap(page, page.getByRole('button', { name: 'Pause', exact: true }));
     const cover = page.getByRole('dialog');
     await expect(cover.getByText(exactly('Paused'))).toBeVisible();
@@ -36,11 +40,11 @@ test('MAF-050 items 2 and 3: Pause on each room screen shows the where-line; Car
     await tap(page, cover.getByRole('button', { name: 'Carry on', exact: true }));
     await expect(cover).toHaveCount(0);
     if (h) await expect(page.getByRole('heading').first()).toHaveText(h);
+    else await expect(byId(page, 'pass-name'), `${name}: same pass screen after Carry on`).toHaveText(exactly(who));
   }
 });
 
 test('MAF-090 item 3: the Day and vote where-lines ("Day 2 · talking", "Day 2 · vote", "Day 2 · after the vote")', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-090 day where-lines');
   await openFlow(page, 'morning2');
   await toMorning(page);
   await tap(page, mainButton(page));
@@ -60,7 +64,6 @@ test('MAF-090 item 3: the Day and vote where-lines ("Day 2 · talking", "Day 2 �
 });
 
 test('MAF-053: the menu at each moment (only the items that apply, in order); no menu on the role card or the night job', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-053 menu');
   await openFlow(page, 'deal-arjun');
   expect(await menuItems(page)).toEqual(['How to play', 'Players', 'Deal again', 'Pause', 'Home (game is saved)', 'End the game', 'End for tonight']);
   await tap(page, button(page, "I'm Arjun"));
@@ -80,7 +83,6 @@ test('MAF-053: the menu at each moment (only the items that apply, in order); no
 });
 
 test('MAF-052 item 13: a day leave: the dialog\'s day body, the toast "Neha left · Undo", the Day list "Neha · left"; Undo puts her back', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-052 day leave');
   await openFlow(page, 'morning1');
   await toMorning(page);
   await tap(page, mainButton(page));
@@ -99,7 +101,6 @@ test('MAF-052 item 13: a day leave: the dialog\'s day body, the toast "Neha left
 });
 
 test('MAF-052 item 11: a night leave: the night body; the leaver is skipped and T drops by one', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-052 night leave');
   await openFlow(page, 'night1-meena');
   await fromMenu(page, 'Players');
   await tap(page, button(page, 'Remove Neha'));
@@ -111,7 +112,6 @@ test('MAF-052 item 11: a night leave: the night body; the leaver is skipped and 
 });
 
 test('MAF-052 item 12: a leave during the deal deals again without them ("Player 1 of 8")', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-052 deal leave');
   await openFlow(page, 'deal-arjun');
   await fromMenu(page, 'Players');
   await tap(page, button(page, 'Remove Kabir'));
@@ -124,7 +124,6 @@ test('MAF-052 item 12: a leave during the deal deals again without them ("Player
 });
 
 test('MAF-051: Players mid-game adds a name for the next game ("Imran · joins next game")', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-051 someone arrives');
   await openFlow(page, 'morning1');
   await toMorning(page);
   await fromMenu(page, 'Players');
@@ -134,7 +133,6 @@ test('MAF-051: Players mid-game adds a name for the next game ("Imran · joins n
 });
 
 test('MAF-054: End the game: dialog, "Game ended. No winner.", toast "Game ended · Undo" whose Undo returns to the morning', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-054 end the game');
   await openFlow(page, 'morning1');
   await toMorning(page);
   await tap(page, button(page, 'End the game'));
@@ -151,7 +149,7 @@ test('MAF-054: End the game: dialog, "Game ended. No winner.", toast "Game ended
 });
 
 test('MAF-055 / MAF-091: "← Home" leaves the game unfinished; Home\'s row reads the where-line and resumes', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-055 home row');
+  needsMafiaCardOrHomeRow('MAF-055 home row');
   await openFlow(page, 'night2-meena');
   await fromMenu(page, 'Home (game is saved)');
   const row = page.getByTestId('unfinished-games').filter({ hasText: /Mafia/ });
@@ -162,7 +160,6 @@ test('MAF-055 / MAF-091: "← Home" leaves the game unfinished; Home\'s row read
 });
 
 test('MAF-092 item 21: back after more than 6 hours, the morning shows "Back after a break? Everyone can see their role again."', async ({ page }) => {
-  aheadOfMafiaScreens('MAF-092 back after a break');
   await openFlow(page, 'morning2', { after: 7 * 3_600_000 });
   await toMorning(page);
   await expect(page.getByText(exactly('Back after a break? Everyone can see their role again.'))).toBeVisible();
