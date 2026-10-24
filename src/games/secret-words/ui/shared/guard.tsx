@@ -3,7 +3,7 @@
 // invisible (version 3.8): the main looks live at once, with no greyed look, `aria-disabled` or `data-guard`. A tap during
 // the wait does nothing and is not queued. A main disabled for another reason uses `disabled` and keeps its look.
 // Quiet buttons never wait. Uses `Date.now()` and `setTimeout`, so a fake clock drives it.
-import { useRef, type ReactNode } from 'react';
+import { useCallback, useRef, type MouseEvent as ReactMouseEvent, type ReactNode } from 'react';
 import { useNow } from './device';
 
 export const GUARD_MS = 800;
@@ -58,5 +58,27 @@ export function SwMain({
     >
       {children}
     </button>
+  );
+}
+
+/**
+ * RC fix (pretend player, 24 October; SWD-114 applied to a dialog's quiet buttons): for `ms` after the element holding
+ * this handler appears, a tap on any of its buttons (or its backdrop) does nothing, so the second tap of a double tap
+ * that opened it can never land on a button sitting in the same spot. Invisible, as SWD-114 v3.8. A keyboard click
+ * (Enter, Space) is not a tap and always works. Put the result on the element's `onClickCapture`.
+ */
+export function useTapWait(ms: number = GUARD_MS): (e: ReactMouseEvent) => void {
+  const shownAt = useRef<number | null>(null);
+  if (shownAt.current === null) shownAt.current = Date.now();
+  return useCallback(
+    (e: ReactMouseEvent) => {
+      if (Date.now() - (shownAt.current ?? 0) >= ms) return;
+      if (e.detail === 0) return;
+      const target = e.target as Element;
+      if (!target.closest('button') && target !== e.currentTarget) return;
+      e.stopPropagation();
+      e.preventDefault();
+    },
+    [ms],
   );
 }

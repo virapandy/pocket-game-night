@@ -4,6 +4,7 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import type { Team } from '../../rules';
 import { KindIcon, PauseGlyph } from './icons';
+import { useTapWait } from './guard';
 
 /** Terms "Team bar": an 8 px strip in the team colour across the top edge. */
 export function TeamBar({ team }: { team: Team }) {
@@ -130,8 +131,10 @@ export function SwDialog({
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
   }, []);
+  // Every button of a dialog (quiet ones too) ignores taps for its first 800 ms (RC fix, SWD-114).
+  const wait = useTapWait();
   return (
-    <div className="sw-backdrop" onClick={(e) => e.target === e.currentTarget && onDismiss?.()}>
+    <div className="sw-backdrop" onClickCapture={wait} onClick={(e) => e.target === e.currentTarget && onDismiss?.()}>
       <div
         className={className ? `sw-dialog ${className}` : 'sw-dialog'}
         role="dialog"

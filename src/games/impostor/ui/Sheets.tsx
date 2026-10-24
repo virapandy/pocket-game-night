@@ -90,16 +90,17 @@ const readIds = (prefs: Preferences): string[] =>
 
 /**
  * IMP-109: the host switches "Larger text" and "Tap to show instead of hold" (with IMP-014's note), and IMP-107's
- * "Skipped words (N)" with "Bring back". Kept on this phone. Also shown in the app's Settings.
+ * "Skipped words (N)" with "Bring back". Kept on this phone. Also shown in the app's Settings. `label` names the section
+ * (Secret Words' Settings uses a neutral one, so its page never reads "Impostor").
  */
-export function ImpostorSettings({ prefs }: { prefs: Preferences }) {
+export function ImpostorSettings({ prefs, label = 'Impostor' }: { prefs: Preferences; label?: string }) {
   const [larger, setLarger] = useState(() => prefs.get<boolean>(PREF.largerText, false) === true);
   const [tap, setTap] = useState(() => prefs.get<boolean>(PREF.tapToShow, false) === true);
   const [skipped, setSkipped] = useState<string[]>(() => readIds(prefs));
   // Newest first: the list is kept oldest first.
   const shown = [...skipped].reverse().filter((id) => wordById(id));
   return (
-    <section className="imp-settings" aria-label="Impostor">
+    <section className="imp-settings" aria-label={label}>
       <Switch
         label="Larger text"
         checked={larger}

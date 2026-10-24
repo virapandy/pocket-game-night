@@ -14,6 +14,10 @@
   font-size: var(--pgn-body);
 }
 .pgn.pgn-larger { --pgn-body: 21px; --pgn-small: 19px; }
+/* RC fix (24 October): a double tap on a game screen never selects its text (the blue highlight) or opens the callout;
+   text fields keep selection so a name can still be edited. */
+.pgn { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+.pgn input, .pgn textarea, .pgn [contenteditable='true'] { -webkit-user-select: text; user-select: text; -webkit-touch-callout: default; }
 .pgn [hidden] { display: none !important; }
 /* The tap guard (guideline 20) is laid out as if it were not there. */
 .pgn-guard { display: contents; }

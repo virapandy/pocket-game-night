@@ -390,7 +390,8 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
           release={IS_RELEASE}
           settingsPanel={
             <BlocksRoot className="imp">
-              <impostor.Settings prefs={preferences} />
+              {/* RC fix: Secret Words' Settings names its section neutrally, never "Impostor". */}
+              <impostor.Settings prefs={preferences} label="Game settings" />
             </BlocksRoot>
           }
           onExit={home}

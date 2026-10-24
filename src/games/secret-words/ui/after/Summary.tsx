@@ -1,7 +1,7 @@
 // G2 the summary (SWD-060, 128) and D9 "Delete tonight's games" (SWD-065).
 import { useState } from 'react';
 import type { SecretWordsState } from '../../rules';
-import { SwMain, useGuard } from '../shared/guard';
+import { SwMain, useGuard, useTapWait } from '../shared/guard';
 import { GameMenu, SwDialog } from '../shared/parts';
 import { clueCredit, summaryLine, tallyLine, type PlayedGame } from './facts';
 
@@ -25,10 +25,13 @@ export function Summary({
   onDelete: () => void;
 }) {
   const until = useGuard('summary');
+  // RC fix: the summary opens from the "End for tonight" dialog, whose button sits where "Oops, keep playing" now is; a
+  // double tap's second tap must not take the evening back, so its buttons ignore taps for the first 800 ms too.
+  const wait = useTapWait();
   const [deleting, setDeleting] = useState(false);
   const credit = clueCredit(state.games);
   return (
-    <div className="sw-page sw-summary">
+    <div className="sw-page sw-summary" onClickCapture={wait}>
       <div className="sw-topbar sw-topbar-plain">
         <div className="sw-top-actions">
           <GameMenu groups={[[{ label: "Delete tonight's games", onSelect: () => setDeleting(true) }]]} />
