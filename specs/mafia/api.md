@@ -7,7 +7,7 @@ scenario; where this page and a scenario differ, the scenario wins and the teste
 in `docs/test-questions.md` (25 October rows); no test depends on an (open) point. The product owner's clarifications of
 25 October (`mafia-build-answers.md`, to become scenarios Version 1.2; "PO n" below) are folded in.
 
-Tests: `tests/games/mafia/*.test.ts`, `tests/contract/mafia.test.ts` (the shared contract suite),
+Tests: `tests/games/mafia/*.test.ts` (review fixes: `editions.test.ts`, `leaves.test.ts`), `tests/contract/mafia.test.ts` (the shared contract suite),
 `tests/browser/mafia-c3.spec.ts`. Fixture: `tests/fixtures/mafia-saved-nights-v1.json` (never edit it). The scenarios'
 own algorithms (the deal, the night order, the Mafia's random choice, the story pick, the Mafia count limits) are written
 out in `tests/games/mafia/oracle.ts` with the engine's `createRng` and `shuffle`; the tests compare the build with them.
@@ -23,6 +23,8 @@ change is expected.
 | `mafiaRules` | — | the game's `GameRules<MafiaConfig, State, MafiaMove, MafiaView>`, `id: 'mafia'`, `detailMoves: ['start', 'tie', 'addNext']` |
 | `mafiaCounts(n)` | players 5–16 | `{ suggested: number, allowed: number[] }` (MAF-003; `allowed` ascending) |
 | `readMafiaNight(saved)` | a `SavedGame` of this game | see "The game night" below, or `null` when it is not a Mafia game night or does not replay |
+| `mafiaStoryEditions` | — | the frozen story editions (MAF-037, MAF-093): `{ [edition]: { out: string[], saved: string[] } }`; `'1.2'` holds `stories.json`'s ids by kind, in row order |
+| `MAFIA_STORY_EDITION` | — | `'1.2'`: the edition a new game night names in `config.edition` |
 | `readTestSeeds(raw, release)` | `localStorage['pgn.test.seeds']`, whether this is the release build | the object under its `"mafia"` key, `{ seeds?: { roles }, deals?, stories? }` with only the keys present, or `null` (release build, missing, not JSON, not an object, no `"mafia"` object, or a part of the wrong type) |
 
 ## Stories: `content/mafia/stories.json`
@@ -30,16 +32,27 @@ Built from `docs/games/mafia/stories.csv` (edition 1.2, 22 rows), one object per
 `{ id: string, kind: 'out' | 'saved', text: string }` (the `notes` column stays out). The tests compare the file with the
 CSV row for row.
 
+**Frozen editions (MAF-037, MAF-093; review fix, 25 October).** A game night picks its stories only from the ids of its
+edition, `config.edition`, `mafiaStoryEditions[edition]`; texts come from `stories.json`. A game night saved without an edition is
+always read as the fixed `'1.2'`, never as whatever `MAFIA_STORY_EDITION` is later (that constant is only what the screens
+write into a new game night). An edition
+is never changed; new stories make a new edition. So a night saved under 1.2 replays with the same `storyId`s when
+`stories.json` gains new ids. An unknown edition is refused: setup throws, and `readMafiaNight` returns `null`. `readMafiaNight` returns `null` on any damaged setup or record
+(it never throws).
+
 ## Setup
 `startMatch(mafiaRules, setup, at)` with
 ```ts
 { gameId: 'mafia', seeds: { roles: string },          // MAF-H2: deal, the Mafia's random choice, stories
   config: {
+    edition?: string,                                 // the frozen story edition (Stories above); missing means '1.2'
     deals?: Record<string, Record<string, Role>>,     // MAF-H3: by game index k ("1", "2", …): player → role
     stories?: { out: string[]; saved: string[] },     // MAF-H5: story ids from stories.json to use instead of the whole list
   } }
 ```
 `Role` = `'mafia' | 'doctor' | 'police' | 'villager'`. A game night starts with no game; its first move is `start`.
+- **MAF-H2:** `seeds.roles` must be non-empty text; without it setup throws (refused), and `readMafiaNight` of such a saved
+  game night returns `null`.
 - **Deal override (MAF-H3):** `deals[k]` is used for game k's **first** deal (not for `redeal`) when its keys are exactly
   that game's players and its roles are a valid deal for them (exactly `mafiaCount` `mafia`; with 6 or more players exactly
   one `doctor` and one `police`; with 5 none; the rest `villager`). Otherwise it is ignored and the seed deals (as M26). The
@@ -58,7 +71,7 @@ type MafiaMove =
   | { type: 'voteOut'; player: string }                        // "Vote Kabir out"
   | { type: 'tie'; players: string[] }                         // "Point again: Kabir or Om"
   | { type: 'voteNobody'; reason: 'chosen' | 'secondTie' }     // "Nobody today" / "Still a tie"
-  | { type: 'leave'; player: string }                          // "Kabir leaves"
+  | { type: 'leave'; player: string; when?: 'night' | 'day' } // "Kabir leaves" (`when`: see "Leaves" below)
   | { type: 'unleave'; player: string }                        // the toast's Undo
   | { type: 'addNext'; name: string }                          // Players dialog, mid-game
   | { type: 'endGame' } | { type: 'unEndGame' }                // "End the game" and its Undo
@@ -86,7 +99,7 @@ The room view's `step` (below) is one of:
 |---|---|
 | `idle` | nothing (`start` is a detail move) |
 | `deal` | `seen { player }` for the player whose turn it is (seat order from seat 0); `redeal`; `leave { p }` for each dealt player when at least 5 would remain; `endGame`. Right after a deal leave: `redeal` only |
-| `nightStart` | `startNight { night: r }` (r = the night to start); `redeal` (night 1 only); `leave { p }` for each player who is in; `endGame` |
+| `nightStart` | `startNight { night: r }` (r = the night to start); `redeal` (night 1 only, and not while someone is leaving tonight); `leave { p }` for each player who is in, and from night 2 also `leave { p, when: 'night' }` for each; `endGame` |
 | `night` | one `nightPick { player, target }` for the player whose turn it is per allowed target (seat order), or exactly `{ player, target: null }` when they have no allowed name (MAF-025); `leave { p }`; `endGame` |
 | `day` | `voteOut { p }` per player who is in; `voteNobody { reason: 'chosen' }`; `leave { p }`; `endGame` |
 | `revote` | `voteOut { p }` per tied player still in; `voteNobody { reason: 'secondTie' }`; `leave { p }`; `endGame` |
@@ -95,13 +108,15 @@ The room view's `step` (below) is one of:
 
 Also, at any step: `unleave { p }` is listed and legal **only** while the last recorded move is that `leave { p }` (for a deal leave: while
 the last two are that leave and its `redeal`, PO 16; any later move closes the undo, item 13); `unEndGame` only while the last recorded move is
-`endGame`. `leave { p }` is for players who are **in** (not out, not left, not leaving tonight).
+`endGame`. A night leave that ends the night (the night resolves at once, MAF-027) has no Undo: `unleave` is not listed
+and is refused. `leave { p }` is for players who are **in** (not out, not left, not leaving tonight).
 - `start`: legal at `idle` and `gameOver`. (S3's "← Back" removes the `start` record, PO 4: the app keeps the game night
   without it; starting again deals the same roles, same seed and k.) Players: 5 to 16 names, each 1–16 characters after trimming, no name twice
   (exact match after trimming); `mafiaCount` in `mafiaCounts(n).allowed`. Anything else is refused. Game index k = 1 for
   tonight's first `start`, then k + 1.
 - `seen { player }`: only the player whose turn it is in the deal.
-- `redeal`: from `start` until `startNight { night: 1 }`. Deals again (MAF-014), and the deal starts again at seat 0.
+- `redeal`: from `start` until `startNight { night: 1 }`, except on Night 1's N0 while someone is leaving tonight (not listed,
+  refused; after that leave's Undo it is back). Deals again (MAF-014), and the deal starts again at seat 0.
 - `startNight { night }`: `night` must be exactly the night to start.
 - `nightPick { player, target }`: only the player whose turn it is; `target` an allowed name (MAF-023 to MAF-026 with item 4
   and item 11), or `null` only when they have none.
@@ -161,9 +176,14 @@ the last two are that leave and its `redeal`, PO 16; any later move closes the u
   day leave (in `day` or `revote`).
 - **Leaves:** in `day` and `revote` a leave applies at once (a tied player who leaves is dropped from `tied`, item 14); in
   `night` it is a night leave: out of every names box at once, their turn skipped if not taken, a pick already made counts,
-  applies at step (4). In `nightStart` of night 1 (all `seen`) it is a night leave of night 1. **(open)** a leave in
-  `nightStart` of night r > 1 (V3s and V4 are day screens, N0 a night screen, and no move tells them apart): the tests make
-  no leave there.
+  applies at step (4). In `nightStart` of night 1 (all `seen`) it is always a night leave of night 1.
+  **The leave's `when` (MAF-052; review fix, 25 October):** in `nightStart` of night r ≥ 2, `when: 'night'` (sent by N0) is
+  a night leave of night r: it waits (`leaving`), applies when night r resolves, its Undo works right after it, and it is
+  logged `{ when: 'night', round: r }`; a leave without `when` (V3s, V4), or with `when: 'day'`, is a day leave of day r − 1:
+  it applies at once, runs the winner check, and is logged `{ when: 'day', round: r − 1 }`. In `nightStart` of night 1 a
+  leave without `when` or with `when: 'night'` is a night leave; `when: 'day'` is refused. Elsewhere `when` may be left
+  out or must match the phase (`'day'` in `day` and `revote`, `'night'` in `night`); in `deal` any `when` is refused. Any
+  other value of `when` is refused.
 - **Mafia caught** = `mafia` whose role is shown (voted out); a leave never changes it before game over (MAF-P4).
 
 ## Views
@@ -179,7 +199,7 @@ interface MafiaView {
   in: string[];                 // players who are in, seat order
   out: { player: string; role: Role; how: 'night' | 'vote'; round: number }[];   // shown roles, in the order they went out
   left: string[];               // players whose leave has applied, in that order (never a role before game over)
-  leaving: string[];            // night leaves recorded tonight and not yet applied, in order
+  leaving: string[];            // night leaves recorded tonight and not yet applied, in order (they still count in `in`)
   caught: number;               // Mafia whose role is shown ("Mafia caught: caught of mafiaCount")
   morning: { story: string; storyId: string | null; out: string | null } | null;   // night r's result, from its resolution until the next startNight
   tied: string[] | null;        // in revote: the tied players still in, seat order; else null

@@ -14,6 +14,8 @@ something there is wrong or impossible, write it in `docs/test-questions.md`; do
 | `privacy.test.ts` | MAF-016 / MAF-P2: the room view never differs with the roles or picks; each player's own view |
 | `stories.test.ts` | MAF-037, MAF-P5, MAF-H5; `content/mafia/stories.json` against `docs/games/mafia/stories.csv` |
 | `saved.test.ts` | MAF-093, IMP-096/097, the fixture `tests/fixtures/mafia-saved-nights-v1.json` (never edit), every flow of `flows.ts` (MAF-H6), MAF-062/064 facts, `readTestSeeds` |
+| `editions.test.ts` | MAF-037 / MAF-093 frozen story editions (`config.edition`, `mafiaStoryEditions`, a 1.2 night replays the same when `stories.json` gains ids), MAF-H2 (no role seed is refused) |
+| `leaves.test.ts` | MAF-052 the leave's `when` (N0 night leave vs V3s/V4 day leave, night 1, phase match), no Undo for a leave that ends the night, no Deal again while someone leaves tonight, `leaving` |
 | `../../contract/mafia.test.ts` | the shared contract suite (PLT-100 onwards) |
 
 `oracle.ts` holds the scenarios' own algorithms (the deal with streaks, night order, the Mafia's random choice with

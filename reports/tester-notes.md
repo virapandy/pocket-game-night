@@ -35,6 +35,11 @@ Read this and the top of `reports/latest.md` before starting. Keep it short: rep
   selectors, not checks. Two questions in `docs/test-questions.md` (25 October rows: move fields; the queue's second lap).
 - Local note: under `taskpolicy -b` the full `npm test` timed SWD-025's 10,000-game property out at 120 s (passes in 26 s at
   normal priority); a Mac-load artefact, not a test or app fault.
+- **Mafia lane-m review fixes (25 October, app ed28360):** `tests/games/mafia/editions.test.ts` (frozen story editions;
+  missing edition = fixed 1.2, pinned by mocking `src/games/mafia/rules/night.ts`'s `MAFIA_STORY_EDITION`; stories.json
+  gaining ids mocked with `vi.doMock`; MAF-H2) and `leaves.test.ts` (MAF-052 `when`). Run Mafia files plus
+  `tests/contract/mafia.test.ts` only: running all of `tests/contract` at the same time under `taskpolicy -b` timed out
+  4 long property tests (load, not bugs). Orchestrator calls await the product owner (`docs/test-questions.md`, 25 October).
 - **Secret Words C3 (lane-e, 22 October):** specs copied to `specs/secret-words/` (v3.6; each scenario's "Version 3.6"
   paragraph wins); rule API for the coder `specs/secret-words/api.md`; rule tests `tests/games/secret-words/` (140 with
   the contract suite) fail only for "not built yet" until the coder's lane lands. `oracle.ts` = the scenarios' own
