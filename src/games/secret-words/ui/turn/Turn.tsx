@@ -136,6 +136,8 @@ export function SecretWordsPlay(props: SecretWordsPlayProps) {
   const [draft, setDraft] = useState<{ n: ClueNumber | null; word: string }>({ n: null, word: '' });
   const [pokerUntil, setPokerUntil] = useState(0);
   const [anim, setAnim] = useState<{ shown: NightMatch; cells: number[] } | null>(null);
+  /** When the last reveal's 300 ms turn ended (SWD-114: the turn-over guard counts from there). */
+  const turnedAt = useRef<number | null>(null);
   const [announce, setAnnounce] = useState('');
   const [hiddenCover, setHiddenCover] = useState(false);
   const [toast, setToast] = useState<{ text: string; at: number } | null>(null);
@@ -225,7 +227,8 @@ export function SecretWordsPlay(props: SecretWordsPlayProps) {
       : screen.name === 'board' && boardPhase === 'over'
         ? 1500
         : 800;
-  const guardUntil = useGuard(guardKey, guardMs);
+  // "Other team's turn" after a reveal waits 1.5 s from the end of the 300 ms turn, not from when React drew it (SWD-114).
+  const guardUntil = useGuard(guardKey, guardMs, boardPhase === 'over' ? turnedAt.current : null);
 
   if (!night || !match || !state) return null;
   const teams = state.teams;
@@ -258,6 +261,7 @@ export function SecretWordsPlay(props: SecretWordsPlayProps) {
     const g = after.state.game!;
     const kind = last.type === 'reveal' ? g.kinds[last.cell] : null;
     const finish = () => {
+      turnedAt.current = Date.now();
       setAnim(null);
       if (kind === 'landmine') {
         playSound('boom', prefs);
