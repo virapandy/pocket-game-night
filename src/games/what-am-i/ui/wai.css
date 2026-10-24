@@ -145,3 +145,11 @@
 }
 .wai-bar .wai-home { display: inline-flex; flex-direction: column; align-items: flex-start; justify-content: center; line-height: 1.15; text-align: left; }
 .wai-home-note { display: block; font-size: 0.8125rem; font-weight: 600; }
+
+/* R1, G1, G2 (lane W4): the quiet buttons under the lines, full width, one per row (side by side in landscape) */
+.wai-strong { font-weight: 800; }
+.wai-stack { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+@media (orientation: landscape) and (max-height: 600px) {
+  .wai-stack { flex-direction: row; flex-wrap: wrap; }
+  .wai-stack > .pgn-quiet { flex: 1 1 200px; }
+}

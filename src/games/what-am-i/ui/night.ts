@@ -39,8 +39,8 @@ export interface NightUi {
   readonly msLeft?: number;
   /** T3 had a word on screen when the page went away (a reload resumes on the Paused cover, WAI-091). */
   readonly wordShowing?: boolean;
-  /** The round whose "Round 2" was tapped on R1 (R1 shows until then; lane W4). */
-  readonly roundStarted?: number;
+  /** "game:round" whose "Round 2" was tapped on R1 (R1 shows until then). */
+  readonly roundStarted?: string;
   /** T2 or T3 is running for this turn (`turnKey`), before the turn's first move is recorded (lane W3). */
   readonly turnOn?: string;
 }
