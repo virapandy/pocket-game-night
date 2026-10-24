@@ -106,13 +106,14 @@ export function boardCheck(match: NightMatch, again: boolean): string {
   const s = match.state;
   const three = s.choices.map === 'own';
   const words = firstWords(s);
-  const first = three ? `The map phones' first words should be: ${words}` : `The map phone's first words should be: ${words}`;
+  const first = three ? `The map phones should start with: ${words}` : `The map phone should start with: ${words}`;
+  const firstAgain = three ? `The map phones' first words should be: ${words}` : `The map phone's first words should be: ${words}`;
   if (again) return first;
   const deals = dealsOf(match);
   const now = deals[deals.length - 1];
   const prev = deals[deals.length - 2];
   if (!now || !prev || prev.map !== now.map) return first;
-  if (nextMapCode(prev.code, WORDS) !== now.code) return `New code: scan it again. ${first}`;
+  if (nextMapCode(prev.code, WORDS) !== now.code) return `New code: scan it again. ${firstAgain}`;
   if (prev.givers !== now.givers) {
     const nowNames = [giversPlus(now.giverList.orange), giversPlus(now.giverList.teal)];
     if (!three) return `Give the map phone to ${listAnd(nowNames)}. They tap Next map; its first words should be: ${words}`;
