@@ -1,6 +1,6 @@
-# What Am I?: scenarios (version 1.2 draft, 23 October 2026)
+# What Am I?: scenarios (version 1.3 draft, 24 October 2026)
 
-Status: **draft 1.2, not yet approved** (the two-reader check is resolved in "Version 1.1"; three more persona walks and the critic pass in "Version 1.2", `map-walk-2-2026-10-23.md`). Drawn from `screen-map.md` draft 4 (binding where this file is silent), `guide.md`,
+Status: **draft 1.2, not yet approved** (the two-reader check is resolved in "Version 1.1"; three more persona walks and the critic pass in "Version 1.2", `map-walk-2-2026-10-23.md`; six walks of the prototype in "Version 1.3", `prototype-walk-2-2026-10-24.md`). Drawn from `screen-map.md` draft 4 (binding where this file is silent), `guide.md`,
 `words.md` and the What Am I? decisions in `docs/decisions.md` (WA1–WA10 and the rows of 23 October). Written to
 `docs/spec-rules.md`. Before approval: the two-reader check (rule 12), then the owner. After approval the tester copies each
 section into `specs/what-am-i/` (file names in the headings) and writes tests. Build only after Secret Words is released
@@ -167,6 +167,34 @@ in 04).
     Back gesture (`popstate`); **WAI-H10** wall clock and time zone; **WAI-H11** clear this phone's stored state.
 50. **T1 without Players** (second Jev read and three prototype walks, 23 October): T1 has no "Players (6) ›"; Players is
     on R1 and in the menu. WAI-012's and the Canonical strings' mentions of it on the pass screen are withdrawn.
+
+## Version 1.3: six persona walks of the prototype (24 October)
+**Every item below wins over the earlier text and over Versions 1.1 and 1.2.** Source: `prototype-walk-2-2026-10-24.md`.
+1. **Who T3's line is for** (guest): the top line reads "Everyone else: give clues. Don't say the word!" (hands-free line
+   unchanged).
+2. **A round is not the game** (guest): R1's h1 reads "Round 1 done. Round 2 next." (k and k + 1).
+3. **Who's ahead, during play** (10-year-old, uncle): T4 gains the small line under the h1 "Riya: 9 in all · Top: Arjun 14"
+   (after this turn's count, before saving; when Riya is top: "Riya: 14 in all · Top so far"; a shared top: "Top: Arjun and Meena
+   12"). The menu gains "Scores" (after "Players"), opening a sheet with R1's scoreboard and "Done".
+4. **S2 order** (grandparent, distracted host: the hold choice was buried under nine packs): "Time for each turn", then "How to
+   hold the phone", then "Which words?", then the two switches.
+5. **Nothing under the main button** (four walks): every scrolling screen ends with bottom padding equal to the main button's
+   height plus 16 px (plus any toast's height while one shows), so the last line, "← Back", "How to play" and "← Home (game saved)"
+   can always be scrolled clear of it. Toasts sit above the main button and never cover a quiet button that is the only way to a
+   screen: while a toast shows, that button is scrolled into view above it.
+6. **D2's add row at 320 px** (10-year-old: "Add" cut off): the input shrinks; "Add" keeps at least 72 × 48 px.
+7. **How to play, scoring and judging** (uncle): after line 5: "One point for each word you got. Passing costs nothing." and
+   "The room decides if a clue broke the rules."
+8. **Paused says the clock stopped** (distracted host): the cover's body reads "The clock is stopped and the word is hidden.
+   Tap Carry on playing when you're ready."
+9. **T3 sizes** (distracted host, guest): `time-left` 28 px bold; the pack name 18 px (22 px with Larger text).
+10. **The picker gets a way back** (four walks; Jev: A2's way out 0.06): "What shall we play?" gains a quiet "← Home". It is the
+    shared picker, so this changes every game's picker (C1; product owner's call, listed for the owner).
+11. **Not changed, for the owner:** the greyed tap-guard look (all six walks found it looks disabled; a rule for every game, owner
+    question); "End the game" vs "End for tonight" (three walks; shared words, D5 and D6 say what each does).
+12. **Prototype-only** (renderer, not design): the fixed example data (names, rounds, "2 players needed" with 6), the turn clock
+    not running, T2's tap hint after choosing motion, "Drawing" boxes, Back with a dialog open, dialogs reopening on Back, and
+    editing the address. Listed in the handover for the renderer lane.
 
 ## Version 1.2: three more persona walks and the critic pass (23 October)
 **Every item below wins over the earlier text and over Version 1.1.** Source: `map-walk-2-2026-10-23.md`.
