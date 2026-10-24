@@ -1,6 +1,6 @@
-# Mafia: scenarios (version 1.0, draft, 25 October 2026)
+# Mafia: scenarios (version 1.1, draft, 25 October 2026)
 
-Status: **draft, not yet approved.** Written to `docs/spec-rules.md` from `screen-map.md` draft 4, `guide.md`, `lifecycle.md`,
+Status: **version 1.1 draft, not yet approved** (two-reader check resolved in "Version 1.1", which wins over the text it names). Written to `docs/spec-rules.md` from `screen-map.md` draft 4, `guide.md`, `lifecycle.md`,
 `stories.csv` edition 1.2 and decisions MF1–MF15 (`docs/decisions.md`). Before approval: the two-reader check (rule 12), then
 the owner. After approval the tester copies each section into `specs/mafia/` (file names in the headings) and writes tests.
 Mafia may be tested and built alongside What Am I?, and is **released after it** (owner, 24 October; roadmap).
@@ -11,6 +11,116 @@ Change classes (`docs/change-sop.md`): the deal and its seed, the night rules an
 and the stories file = **C3** (tests first: sections 02, 03, 05, 10); screens = C1/C2.
 
 ---
+
+## Version 1.1: the two-reader check (coder-reader and tester-reader, 25 October)
+**Every item below wins over the earlier text of the scenario it names.** C3 items are rules; the rest are screens. Items marked
+**(owner)** are the product owner's calls the owner should see when approving.
+
+**Screens and IDs**
+1. **Screen IDs** (used across this file): S1 Who's playing? · S2 Roles · S3 Read this aloud · S4 How to play · B1 deal pass
+   screen · B2 role card · N0 Night begins · N1 night pass screen · N2 night job · N3 Night over · M1 Morning · Y1 Day · V1
+   countdown · V2 picker (one name) · V2t picker in tie mode · V3 re-vote picker (tied players only) · V3s "Still a tie" screen ·
+   V4 vote result · G1 Game over · G2 Tonight's summary · D5 the "Whose role?" dialog.
+2. **Countdown (V1)** has no menu and no Pause; a leave can't start there. MAF-052's "by day" list is **M1, Y1, V2, V2t, V3, V3s,
+   V4**. MAF-050's Pause list is B1, N0, N1, N3, M1, Y1, V2, V2t, V3, V3s, V4 and G1.
+3. **Where-lines (MAF-090), complete:** B1 "Dealing roles · Riya's turn with the phone"; N0 "Night 2 · starting"; N1 "Night 2 ·
+   Meena's turn with the phone"; N3 "Night 2 · over"; M1 "Morning, day 2"; Y1 "Day 2 · talking"; V2, V2t, V3 "Day 2 · vote"; V3s and
+   V4 "Day 2 · after the vote"; G1 "Game over, game 2". Home row line 2's time is the game night's first `start`.
+
+**The night job (MAF-022 to MAF-026, MAF-P7) (C3 for P7)**
+4. **Same names for every role (owner):** N2's names box lists **every player dealt this game who hasn't left and isn't leaving
+   tonight**, in seat order, for every role; names the player may not pick are greyed (native `disabled`) with a small tag under
+   the name: "you", "Mafia" (a Mafia's partners), "out", "protected last night", "used" (Doctor's self after use; "used" wins over
+   "protected last night"), "Mafia" / "Not Mafia" (Police's earlier checks). So the number of buttons never depends on the role.
+   Tags are not part of the button's accessible name; a greyed button's name ends ", can't pick".
+5. **MAF-P7 means the frame:** for every role, N2 has the same elements in the same order (night-progress, name, pad, job-line,
+   names box, result-line, main) with the same sizes (±1 px): job-line and result-line boxes are always **2 lines tall**
+   (`min-height` = 2 × line height; a 1-line text is top-aligned), name buttons 56 px, the same count (item 4), and the same
+   guard.
+6. **N2 arithmetic (rule 4), 320 × 568, Larger text off, no top bar on N2:** 16 + night-progress 18 + 4 + name 34 + 8 + pad 48
+   (once shown, the pad shrinks from 120 px to a 48 px "Tap to hide" button) + 8 + job-line 41 + 8 + names box + 8 + result-line 41
+   + 8 + main 60 + 16 = 318 + names box, so the names box is 250 px: **3 rows (6 names) without scrolling**; more scroll inside the
+   box. Larger text on: 3 rows still (the box is 228 px). Landscape (812 × 375, 568 × 320): names box in the right half at full
+   height minus 32 px (at least 4 rows, 8 names); everything else in the left half, main bottom left of that half.
+7. **The pick on N2** is kept while the job is hidden on the same N2. Back ("Not Meena? ← Back"), a reload or the app hidden loses
+   the pick (nothing was recorded) and the next N2 for that player starts the 4000 ms again. Tapping the selected name again changes
+   nothing. **Clocks:** the 4000 ms start at the first "Tap to see"; the 60 s hide counts from the last `pointerdown` anywhere on
+   N2. When both guard conditions are met, the main button appears and its 800 ms guard starts then (likewise V4's main: appears at
+   1500 ms, live at 2300 ms).
+8. **Police:** "already checked" means this game only; after a hide on the same N2 the check stays locked (answer shown, other
+   names greyed). The checked list shows players still dealt-and-not-left (out ones tagged "out", their answer kept as a second tag).
+9. **Mafia (MAF-023):** "first Mafia" = the first Mafia **in** who takes a turn tonight; a Mafia who is out takes a ghost guess
+   (MAF-026), never the Mafia job. "Zoya will see your pick" names only Mafia in who are still to take their turn tonight; with 2 or
+   3 of them "Zoya and Dev will see your pick" / "Zoya, Dev and Om will see your pick", and the result line "Kabir. Zoya and Dev can
+   agree or change it." Each later Mafia sees **the latest Mafia pick so far tonight** (with three Mafia, the third sees the
+   second's pick, named: "Zoya's pick: OM. …").
+10. **`pick`** in MAF-023 and MAF-037 is `list[floor(rng() × list.length)]` using the rng's first value. MAF-023's worked example
+    uses MAF-H3's deal with `seeds.roles = "mafia-example"`; the tester confirms the 0.62 (or the example changes to whatever that
+    seed's first value gives, keeping the rule).
+
+**Leaving (MAF-041, MAF-052) (owner for 11 and 12)**
+11. **A night leave takes the player out of tonight at once (owner):** from the moment "Kabir leaves" is tapped at night, Kabir is
+    not in any names box tonight (not a target, not protected, not checked), his turn if not yet taken is skipped, a pick he made
+    still counts, and the leave applies at MAF-027 step 4. So a leaver's role is never shown before game over (MF10) and a leave
+    can't be used to dodge a target already resolved. A leave on N3 applies when "Read the morning" is tapped.
+12. **A leave during the deal (owner):** on B1 (before night 1's "Start the night") the dialog body reads "Kabir leaves. Everyone
+    gets a new role without Kabir." and "Kabir leaves" records `leave` then `redeal` (MAF-014; N must stay ≥ 5, else the leave is
+    refused with "Mafia needs at least 5 players." and "OK"). On N0 of night 1, as a night leave.
+13. **A day leave that ends the game** closes the dialog and opens G1 at once; the toast "Kabir left · Undo" shows on G1 and Undo
+    returns to the screen before with the leave removed. Any later recorded move closes an undo toast; a night leave's Undo works
+    only until MAF-027 runs.
+14. A tied player who leaves before the re-vote is dropped from V3; if one tied player is left, V3 shows that name alone.
+
+**Counting, fun lines and the log**
+15. **Games** (MAF-064): every game started tonight, including ended-early and cut short by End for tonight; the Village–Mafia
+    tally counts only games with a winner. MAF-063's "This game won't count." means "won't count for the Village or the Mafia":
+    the line becomes "Tonight's score stays in History. This game won't count for either side."
+16. **Streaks (MAF-010):** "games k − 1 and k − 2" are the two games started before this one tonight, whatever their end; a game the
+    player wasn't dealt in breaks their streak. Seeds combine as `:d1`, then `:d1:r1`, `:d1:r2`, ….
+17. **Spotter (MAF-062):** only players dealt `villager`; "out of N" = nights they picked while in; ghost guesses excluded; no full
+    stop. **Best ghost guess:** only out players dealt `villager` or `doctor` (an out Mafia knows; the Police may have checked).
+18. **"What happened each night"** (MAF-060), clauses in this order, each left out when its role made no pick (no such role, out,
+    left, 5 players, nothing left to check): "the Mafia picked Kabir" (differ: "the Mafia picked Kabir and Om; the phone chose Om"; no
+    pick: "the Mafia made no pick") · "the Doctor protected Kabir" (self: "the Doctor protected themselves") · "the Police checked
+    Zoya (Mafia)" / "(Not Mafia)" · last: "Kabir was out" / "nobody was out". A night leaver adds "· Kabir left".
+19. **History (MAF-093):** "The Village won" / "The Mafia won" / "Game ended"; "3 nights" counts resolved nights.
+
+**Small screens and rules**
+20. **MAF-011:** every role card has **2 lines under the role word plus 1 empty line**, so all cards are the same height. MAF-015's
+    partner text replaces line 1 only. Its variants: one partner out "Zoya is out. You're the only Mafia left."; partner left "Zoya has
+    left. You're the only Mafia left."; with M = 3 or 4: the partners still in first, "You and Dev are the Mafia. Zoya is out." /
+    "You, Dev and Om are the Mafia. Zoya is out." / "You and Om are the Mafia. Zoya and Dev are out."; all others out or left: "Zoya
+    and Dev are out. You're the only Mafia left." (names in seat order; "left" for leavers, "out" for out players, "Zoya is out and
+    Dev has left." when mixed). "Not Riya? ← Back" in D5 returns to the screen it came from.
+21. **MAF-092:** the line shows only when the game resumes on M1 or Y1 (from a reopen or Home's row) and the last move was more than
+    6 hours ago and the last `seen` is recorded; resuming elsewhere, it shows once on the next M1 or Y1.
+22. **MAF-091:** after a recorded `tie`, the game resumes at **V3** (the tied players); V3s and V4 resume as themselves, V4 with the
+    role line shown at once.
+23. **MAF-031 timer:** shows m:ss, "2:00" at t = 0, "1:59" at t = 1 s, never "0:00" ("Time's up!" at t = 120 s, and the link then
+    reads "Start a 2-minute timer" again); keeps counting during the countdown (its ding may sound then); not saved (a reload
+    removes it). "Out players: watch quietly, no hints!" shows only when someone is out.
+24. **MAF-033/034:** "Nobody today" is on V2 only, not V2t or V3. V2t's main reads "Point again" (disabled) until 2 are ticked.
+25. **MAF-036 and MAF-030:** when the vote or night ends the game, only "← Home" stays among the quiet buttons; quiet buttons are
+    there from t = 0.
+26. **MAF-020/MAF-010:** "Start the night" records `startNight { night }`; each "Done, pass to …" and "Done, everyone's seen" records
+    `seen { player }`; MAF-021's "i of T" = turns taken tonight + 1, T = players in tonight's order (after skips).
+27. **MAF-003:** M resets to S when S2 opens with N different from the N it had when M was last set tonight; at N = 5, "−" and "+"
+    are shown disabled and "We suggest 1 for 5 players." shows.
+28. **MAF-002:** after a refused 17th name the field keeps the text; "Up to 16 players." and "Mafia needs at least 5 players." are
+    `role="alert"`. **MAF-061:** S1 opened from G1 shows "← Back to the game" in place of "← Back".
+29. **MAF-064:** G2's menu item "Delete tonight's games" opens D9 as in Secret Words (same words, "games" for Mafia).
+30. **MAF-001:** the test asserts the Host a game line ends "What Am I? or Mafia on this phone" while Mafia is the last game.
+31. **MAF-P2 vs MAF-021:** "i of T" on N1 is allowed: it never depends on roles. MAF-016's "how many players are still to pick"
+    means **how many Mafia** (or any role) are still to pick.
+32. **MAF-037:** every `{NAME}` is replaced; a night leaver gets no line on M1 (they're shown as "left" on Y1).
+
+**Test hooks (MAF-H2, H3, H5, new H6)**
+33. Browser hooks use Impostor's `localStorage['pgn.test.seeds']` (development and preview builds only, IMP-064) with this shape:
+    `{ "mafia": { "seeds": { "roles": "mafia-example" }, "deals": { "1": { "Riya": "villager", "Arjun": "mafia", … } },
+    "stories": { "out": ["…"], "saved": ["…"] } } }`; any part may be left out. Deals are by game index k; a deal that doesn't match
+    the players or the Mafia count is ignored (as M26).
+34. **MAF-H6 (new):** a saved-state loader for tests: `localStorage['pgn.test.load']` = a `SavedGame` JSON for Mafia, opened on next
+    load as if resumed (development and preview builds only), so night 3 or game 3 need not be played through the screens.
 
 ## Terms
 Terms defined in `docs/games/impostor/scenarios.md` mean exactly the same here: **main button, quiet button, small text link,
