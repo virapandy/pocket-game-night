@@ -15,9 +15,9 @@ records. *Intentions* says which of the common next wishes are visible on that s
 *Sizes* line says otherwise. Example names: Riya and Arjun give clues; teams Chai Champions (orange) and Coffee Commandos (teal).
 
 **Rules that apply to every screen (draft 2):**
-- *Visible tap guards (decision 2):* every main button appears in the greyed look for its guard (800 ms; 1 s "I'm Riya";
+- *Tap guards (decision 2, made invisible by the owner on 24 October, SWD-114 Version 3.8):* ~~every main button appears in the greyed look for its guard (800 ms; 1 s "I'm Riya";
   1.5 s "Other team's turn" after a turn-ending reveal) and comes alive when the guard ends. Timings as K35; quiet buttons
-  unaffected. One look rule for every game.
+  unaffected. One look rule for every game.~~ Main buttons look live at once; taps inside the guard do nothing.
 - *Pause (decision 6):* a Pause icon button (accessible name "Pause") beside "··· Menu" on the pass, clue, guessing, end-turn
   and turn-over screens opens D4. The menu is grouped, in this order: play (Earlier clues · Start 90-second timer · Someone
   else taps Reveal · Players · Show the map to a clue giver · Show the map code again) · fix (New board) · leave (Pause · Home
@@ -411,7 +411,7 @@ every step that has it; SWD-114 the three tap guards.
 | Narrow portrait (320) | Easy board shows in portrait; Full keeps the sideways line + "Or choose the Easy board for the next game." | SWD-092 (D6) |
 | M1 Map phone | Quiet "Clue rules" → S5; `my-team` (three phones) until chosen, then "I give clues for: …" + quiet "Change"; `mismatch-line`; "Hide map" pinned top right; list buttons stacked in portrait; end line "Game over: tap Done with this game. New board on the host: tap Next map." | SWD-034, 117, 120 (D3) |
 | G1, M1 | Faded cells by a light fill, not opacity | SWD-051 |
-| Every guarded main | Greyed look while waiting, label unchanged | SWD-114 |
+| Every guarded main | Normal live look while waiting (invisible guard, owner 24 October), label unchanged | SWD-114 |
 
 **Paths added (R10):** QR link from the phone's camera → M1 (or D11 first) · bad link → J2 with the error · S7b "Show the map to" from P4, P5, P6 · D7b "End the game" → D6 → G1 · app opened after 12 hours → A1 with the night ended (SWD-063) · S3→S5→S3 · M1→S5→M1 · D11→M1|back. **Removed:** P2 → D5 → S7 (the private map is one phone only).
 

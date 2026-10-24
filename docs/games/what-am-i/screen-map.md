@@ -14,9 +14,9 @@ what it records. *Intentions* says which of the common next wishes are visible w
 320 × 568, 360 × 640, 390 × 844, 812 × 375 and 568 × 320 unless its *Sizes* line says otherwise. Example names are in K1.
 
 **Rules that apply to every screen:**
-- *Visible tap guards:* every main button appears greyed for 800 ms after its screen appears (1 s on "I'm Riya: start" and
-  "Start Riya's turn") and then comes alive; a tap during a guard is dropped, never carried to the next screen. Quiet buttons
-  are not guarded (same look as Secret Words and Mafia).
+- *Tap guards (invisible, owner 24 October):* every main button looks live at once but ignores taps for 800 ms after its screen appears (1 s on "I'm Riya: start" and
+  "Start Riya's turn"); a tap during a guard is dropped, never carried to the next screen. Quiet buttons are not guarded
+  (same rule as Secret Words and Mafia).
 - *The guesser can't see the word screen.* Every mark during a turn is confirmed by **sound and a buzz** (WA10), never by
   text alone. Android buzzes; iPhone browsers can't, so sound carries it there.
 - *Pause:* a "Pause" button (icon and word) on every screen during a game opens D1. On the word screen it is at least 48 px,
