@@ -2,14 +2,20 @@ import { Fragment, useCallback, useEffect, useRef, useState, type ReactNode, typ
 import { useRegisterSW } from 'virtual:pwa-register/react';
 import { BlocksRoot, useTapGuard } from '../blocks';
 import { makePlayerReport, makeReport, type Preferences, type Report, type ReportSubject, type SavedGame } from '../engine';
-import { games, hostGames, impostor, phoneGames, secretWords, tambola, type GameId, type HostGameId, type PhoneGameId } from './games';
+import { games, hostGames, impostor, phoneGames, secretWords, tambola, whatAmI, type GameId, type HostGameId, type PhoneGameId } from './games';
 import { secretWordsShowingNight } from '../games/secret-words';
 import type { SecretWordsMapCodeError, SecretWordsMapToOpen, SecretWordsStart } from '../games/secret-words';
+import type { WhatAmIStart } from '../games/what-am-i';
 import { History, isPast, unsettledSessionName, type Deleted } from './History';
 import { CrashNotice, ReportForm, ReportToast, WaitingReports } from './Report';
 import { APP_VERSION, onReportsChange, onShareToast, phoneType, readyReports, shareFromForm, shareReport, startReportWatch } from './reports';
 import { Dialog, SessionList, SessionScreen } from './Sessions';
-import { appKeys, gameStore, impostorUi, secretWordsUi, IS_RELEASE, preferences, sessionPicker, testSeedsRaw } from './storage';
+import {
+  appKeys, clearPreferences, gameStore, impostorUi, secretWordsUi, IS_RELEASE, preferences, sessionPicker, testSeedsRaw, whatAmIUi,
+} from './storage';
+
+// What Am I?'s browser test hooks (window.__waiTest, WAI-H1b to H11): in every build except the release build.
+whatAmI.installTestHooks({ release: IS_RELEASE, clearPhone: () => clearPreferences(whatAmI.prefPrefix) });
 
 const TWELVE_HOURS = 12 * 3600_000;
 const TIP_KEY = 'install-tip.seen';
@@ -20,15 +26,17 @@ type OpenAction = 'resume' | 'end' | 'discard' | 'reuse';
 type Route =
   | { name: 'home' }
   /** "What shall we play?" (IMP-001), after Home's "Host a game". */
-  | { name: 'pick'; impostorPlayers?: string[]; names?: string[]; swNames?: string[] }
+  | { name: 'pick'; impostorPlayers?: string[]; names?: string[]; swNames?: string[]; waiNames?: string[] }
   /** Secret Words on the host phone: setup, or a game night (SWD-001, SWD-115). */
   | { name: 'sw'; start: SecretWordsStart }
+  /** What Am I? on the host phone: setup, or a game night (WAI-001, WAI-091). */
+  | { name: 'wai'; start: WhatAmIStart; nonce: number }
   /** SWD-002: "Type the host's code", maybe filled in from a map link that can't be opened. */
   | { name: 'sw-code'; text: string; error: SecretWordsMapCodeError | null; nonce: number }
   /** SWD-034: the map phone (lane C). */
   | { name: 'sw-map'; map: SecretWordsMapToOpen; nonce: number }
   /** `backTo`: History opened from an Impostor evening's menu, with "← Back" to that evening (IMP-075). */
-  | { name: 'history'; backTo?: string }
+  | { name: 'history'; backTo?: string; backToWai?: string }
   | { name: 'past'; id: string }
   | { name: 'sessions' }
   | { name: 'session'; id: string }
@@ -87,6 +95,8 @@ function firstRoute(): Route {
   if (link) return link;
   // SWD-063: game nights left more than 12 hours end as the app opens, before anything is shown.
   secretWords.sweep(gameStore, secretWordsUi, Date.now());
+  // WAI-091 (Version 1.1 item 44): What Am I? game nights left 12 hours end as the app opens.
+  whatAmI.sweep(gameStore, Date.now());
   const route = routeFromAddress();
   if (route.name !== 'home') return route;
   // SWD-048: a game night at game over, or with a "Game ended" or summary not yet left, opens again at that step.
@@ -111,6 +121,11 @@ function routeFromAddress(): Route {
     const id = secretWordsShowingNight(gameStore, secretWordsUi);
     if (id) return { name: 'sw', start: { kind: 'resume', id } };
   }
+  // WAI-091: a reload during a What Am I? game night opens it again, with "Welcome back.".
+  if (h === 'wai') {
+    const id = whatAmI.unfinishedId(gameStore);
+    if (id) return { name: 'wai', start: { kind: 'resume', id, welcome: true }, nonce: Date.now() };
+  }
   return { name: 'home' };
 }
 
@@ -125,6 +140,8 @@ function addressOf(route: Route): string {
       return `past/${route.id}`;
     case 'sw':
       return 'sw';
+    case 'wai':
+      return 'wai';
     default:
       return '';
   }
@@ -323,7 +340,8 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
   }, [route]);
   // SWD-111: phone Back does nothing while a game night is played; setup keeps its own "← Back".
   const [swPlaying, setSwPlaying] = useState(false);
-  useBackGuard(route.name === 'game' || (route.name === 'sw' && swPlaying));
+  // Version 1.2 item 17: What Am I?'s screens handle the phone's Back themselves (setup's "← Back", pause, dialogs).
+  useBackGuard(route.name === 'game' || (route.name === 'sw' && swPlaying) || route.name === 'wai');
   const home = () => setRoute({ name: 'home' });
   const expire = useCallback(() => setDeleted(null), []);
 
@@ -369,6 +387,10 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
               <BlocksRoot className="imp">
                 <impostor.Settings prefs={preferences} />
               </BlocksRoot>
+              {/* WAI-013: What Am I?'s "Answer by moving the phone". */}
+              <BlocksRoot className="wai">
+                <whatAmI.Settings prefs={preferences} />
+              </BlocksRoot>
               <WaitingReports />
             </>
           }
@@ -402,6 +424,26 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
         />
       );
     }
+    if (route.name === 'wai') {
+      return (
+        <whatAmI.Screen
+          key={`${JSON.stringify(route.start)}:${route.nonce}`}
+          start={route.start}
+          store={gameStore}
+          prefs={preferences}
+          ui={whatAmIUi}
+          sessions={sessionPicker}
+          settingsPanel={
+            <BlocksRoot className="imp">
+              <impostor.Settings prefs={preferences} label="Game settings" />
+            </BlocksRoot>
+          }
+          onExit={home}
+          onBack={(names) => setRoute({ name: 'pick', waiNames: names })}
+          onHistory={(id) => setRoute({ name: 'history', backToWai: id })}
+        />
+      );
+    }
     if (route.name === 'sw-code') {
       return (
         <secretWords.CodeEntry
@@ -424,12 +466,18 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
               const names = route.swNames ?? route.names;
               return setRoute({ name: 'sw', start: names ? { kind: 'new', names } : { kind: 'new' } });
             }
+            // WAI-002: the names come back in the same visit, or tonight's names from "Play something else".
+            if (id === whatAmI.info.id) {
+              const names = route.waiNames ?? route.names;
+              return setRoute({ name: 'wai', start: names ? { kind: 'new', names } : { kind: 'new' }, nonce: Date.now() });
+            }
             // IMP-003: Impostor's list comes back in the same visit; IMP-102: tonight's names go to Tambola's setup.
             const players = id === impostor.info.id ? route.impostorPlayers : route.names;
             setRoute(players ? { name: 'game', gameId: id as GameId, players } : { name: 'game', gameId: id as GameId });
           }}
           onResume={(id) => setRoute({ name: 'game', gameId: 'impostor', open: { id, action: 'resume' } })}
           onResumeNight={(id) => setRoute({ name: 'sw', start: { kind: 'resume', id } })}
+          onResumeWai={(id) => setRoute({ name: 'wai', start: { kind: 'resume', id }, nonce: Date.now() })}
         />
       );
     }
@@ -448,6 +496,10 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
             joinMore={
               <>
                 <p className="note">{secretWords.joinLine}</p>
+                {/* Version 1.2 item 1: after the other games' lines. */}
+                <p className="note" data-testid="join-line-what-am-i">
+                  {whatAmI.joinLine}
+                </p>
                 <button
                   type="button"
                   className="button button-quiet button-big"
@@ -471,10 +523,17 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
     }
     if (route.name === 'history') {
       const backTo = route.backTo;
+      const backToWai = route.backToWai;
       return (
         <History
-          onBack={backTo ? () => setRoute({ name: 'game', gameId: 'impostor', open: { id: backTo, action: 'resume' } }) : home}
-          backLabel={backTo ? '← Back' : '← Home'}
+          onBack={
+            backTo
+              ? () => setRoute({ name: 'game', gameId: 'impostor', open: { id: backTo, action: 'resume' } })
+              : backToWai
+                ? () => setRoute({ name: 'wai', start: { kind: 'resume', id: backToWai }, nonce: Date.now() })
+                : home
+          }
+          backLabel={backTo || backToWai ? '← Back' : '← Home'}
           onOpen={(id) => {
             // IMP-094: an Impostor evening in progress is resumed, never looked back at.
             const g = gameStore.get(id);
@@ -495,6 +554,16 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
       const saved = gameStore.get(route.id);
       // SWD-064: a Secret Words game night: its games (E1) and one game (E1a).
       if (saved && secretWords.isNight(saved)) return <secretWords.PastNight saved={saved} onBack={() => setRoute({ name: 'history' })} />;
+      // WAI-092: a What Am I? game night; "Play again" opens Who's playing? with its players.
+      if (saved && whatAmI.isNight(saved)) {
+        return (
+          <whatAmI.PastNight
+            saved={saved}
+            onBack={() => setRoute({ name: 'history' })}
+            onPlayAgain={() => setRoute({ name: 'wai', start: { kind: 'again', id: saved.id }, nonce: Date.now() })}
+          />
+        );
+      }
       const game = saved && gameOf(saved.gameType);
       if (saved && game) {
         const PastGame = game.PastGame as (p: { saved: SavedGame; onBack: () => void; actions?: ReactNode; prefs?: Preferences }) => ReactNode;
@@ -533,6 +602,7 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
         onSettings={() => setRoute({ name: 'game', gameId: games[0].info.id as GameId, startAt: 'settings' })}
         onReport={() => onReport(null)}
         onNight={(start) => setRoute({ name: 'sw', start })}
+        onWai={(start) => setRoute({ name: 'wai', start, nonce: Date.now() })}
         onSavedMap={openMap}
       />
     );
@@ -648,9 +718,12 @@ function Home({
   onSettings,
   onReport,
   onNight,
+  onWai,
   onSavedMap,
 }: {
   needRefresh: boolean;
+  /** What Am I?: resume a game night (WAI-091). */
+  onWai: (start: WhatAmIStart) => void;
   /** Secret Words: resume a game night, or "Play again with these teams" (SWD-115). */
   onNight: (start: SecretWordsStart) => void;
   /** SWD-036: Home's saved map. */
@@ -683,9 +756,12 @@ function Home({
     // IMP-104: an Impostor evening left more than 12 hours ends by itself before the list is made; SWD-063 likewise.
     impostor.sweep(gameStore, impostorUi);
     secretWords.sweep(gameStore, secretWordsUi, Date.now());
+    whatAmI.sweep(gameStore, Date.now());
     return gameStore
       .list()
-      .filter((g) => (g.status === 'in-progress' || g.status === 'paused') && (gameOf(g.gameType) || secretWords.isNight(g)))
+      .filter(
+        (g) => (g.status === 'in-progress' || g.status === 'paused') && (gameOf(g.gameType) || secretWords.isNight(g) || whatAmI.isNight(g)),
+      )
       .sort((a, b) => b.updatedAt - a.updatedAt);
   });
   const [now] = useState(() => Date.now());
@@ -782,6 +858,15 @@ function Home({
                 return row ? (
                   <li key={g.id} className="unfinished-row">
                     <secretWords.NightRowButton row={row} className="sw-night-row" onClick={() => onNight({ kind: 'resume', id: g.id })} />
+                  </li>
+                ) : null;
+              }
+              if (whatAmI.isNight(g)) {
+                // WAI-090, WAI-091: two lines, one button; a paused turn opens the Paused cover.
+                const row = whatAmI.homeRow(g, whatAmIUi);
+                return row ? (
+                  <li key={g.id} className="unfinished-row">
+                    <whatAmI.NightRowButton row={row} onClick={() => onWai({ kind: 'resume', id: g.id, welcome: true })} />
                   </li>
                 ) : null;
               }
@@ -894,29 +979,36 @@ function PickGame({
   onPick,
   onResume,
   onResumeNight,
+  onResumeWai,
 }: {
   onBack: () => void;
   onPick: (id: HostGameId) => void;
   onResume: (id: string) => void;
+  /** WAI-001: "Carry on that one". */
+  onResumeWai: (id: string) => void;
   /** SWD-115: the unfinished Secret Words game night. */
   onResumeNight: (id: string) => void;
 }) {
   const [unfinished] = useState(() => {
     impostor.sweep(gameStore, impostorUi);
     secretWords.sweep(gameStore, secretWordsUi, Date.now());
+    whatAmI.sweep(gameStore, Date.now());
     return impostor.unfinished(gameStore);
   });
   const [night] = useState(() => secretWords.resumeCard(gameStore));
   const [asking, setAsking] = useState(false);
   // SWD-115: the Secret Words card asks once per tap; its quiet buttons never wait (SWD-114), so not part of the guard.
   const [askingNight, setAskingNight] = useState<{ id: string; text: string } | null>(null);
+  // WAI-001 (Version 1.1 item 41): the What Am I? card asks once when a game night is unfinished.
+  const [askingWai, setAskingWai] = useState<{ id: string; text: string } | null>(null);
   // I29: the 500 ms tap guard from when this screen shows, and again when "Start a new game?" opens or closes.
   const guard = useTapGuard(asking);
   return (
     <main className="screen pick-game" onClickCapture={guard}>
       <header className="top-bar">
+        {/* Version 1.3 item 10 (What Am I?): the shared picker's quiet way back is "← Home", for every game. */}
         <button type="button" className="button button-quiet" onClick={onBack}>
-          ← Back
+          ← Home
         </button>
       </header>
       <h1 className="step-title">What shall we play?</h1>
@@ -937,6 +1029,10 @@ function PickGame({
             className="choice-card"
             onClick={() => {
               if (g.info.id === impostor.info.id && unfinished) return setAsking(true);
+              if (g.info.id === whatAmI.info.id) {
+                const wai = whatAmI.startNewAsk(gameStore);
+                return wai ? setAskingWai(wai) : onPick(g.info.id);
+              }
               const open = g.info.id === secretWords.info.id ? secretWords.startNewAsk(gameStore) : null;
               if (open) setAskingNight(open);
               else onPick(g.info.id);
@@ -956,6 +1052,16 @@ function PickGame({
           onStartNew={() => {
             impostor.endNow(gameStore, impostorUi, unfinished.id);
             onPick(impostor.info.id);
+          }}
+        />
+      )}
+      {askingWai && (
+        <whatAmI.StartNewNightDialog
+          text={askingWai.text}
+          onCarryOn={() => onResumeWai(askingWai.id)}
+          onStartNew={() => {
+            whatAmI.endUnfinished(gameStore, askingWai.id);
+            onPick(whatAmI.info.id);
           }}
         />
       )}

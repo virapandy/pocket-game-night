@@ -2,6 +2,7 @@
 import { impostor } from '../games/impostor';
 import { secretWords } from '../games/secret-words';
 import { tambola } from '../games/tambola';
+import { whatAmI } from '../games/what-am-i';
 
 /** Games with saved games, History rows and reports (IMP-096: Impostor's evenings are saved games too). */
 export const games = [tambola, impostor] as const;
@@ -12,7 +13,7 @@ export const phoneGames = [tambola] as const;
 export type PhoneGameId = (typeof phoneGames)[number]['info']['id'];
 
 /** "What shall we play?" (IMP-001): the games a host can start, in this order. */
-export const hostGames = [tambola, impostor, secretWords] as const;
+export const hostGames = [tambola, impostor, secretWords, whatAmI] as const;
 export type HostGameId = (typeof hostGames)[number]['info']['id'];
 
-export { impostor, secretWords, tambola };
+export { impostor, secretWords, tambola, whatAmI };
