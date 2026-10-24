@@ -100,6 +100,21 @@ including a non-Hindi speaker from Tirunelveli) would not know, could not act or
 religious-sensitive. Within the weekly Jev cap. Tell the product owner when the report is pushed; it merges the findings
 into the map. The six persona walks are already done by the product owner.
 
+### Mafia: notes for the product-owner helper in VS Code (desktop product owner, 25 October; owner away)
+Owner, 25 October: while the owner is away, the orchestrator runs a product-owner helper in VS Code for each game, and every
+helper (UX designer, player, critic, jev-design, simulations) is started from VS Code only. The desktop Mafia chat starts none.
+**State:** decisions MF1–MF15, MF18 (MF16–17 dropped); scenarios **1.1 approved**; screen map draft 4; stories edition 1.2 (22);
+four balance runs (convention table fair, `jev-results-2026-10-23.md`); evidence audit `evidence-2026-10-23.md`.
+**Open for the product-owner helper:** (1) persona walks (six, the player helper) on the prototype once it draws
+`screen-map.md` draft 4, findings into a "Version 1.2" section of `scenarios.md`; (2) answer the tester's and coder's questions
+on the scenarios: wording, screen detail and ambiguity are the helper's call (record each in "Version 1.2"); (3) when the engine
+exists, the Jev simulated player against it (`tests/tools/jev-design/sim-mafia.ts`, `--no-nobody`, product budget 30,000 a week).
+**Hold for the owner (never decide):** anything that changes how the game is played (a rule, a role, counts, who wins), releasing
+to families, loosening or deleting a test, project-rule edits, paid services, and Mafia's release before What Am I?. List them
+at the top of this section.
+**How:** every rule recommendation cites its basis and strength (strong / some / ours); conventions win by default; never
+depart from a convention on a simulation alone (`evidence-2026-10-23.md`).
+
 ### Mafia: scenarios version 1.1 approved (owner, 25 October): tests, then build, alongside What Am I?
 **Release order stays What Am I? first** (owner, 24 October); tests and build may run now, within capacity (3 coder lanes, 2
 testers at once; a Mafia tester may wait for a free slot). Binding: `docs/games/mafia/scenarios.md` version 1.1; read each
