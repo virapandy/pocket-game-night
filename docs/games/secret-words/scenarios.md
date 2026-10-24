@@ -21,7 +21,9 @@ hidden), SWD-040/041 (team names on the counts), SWD-110 (Home on the Pause cove
 night's result on the summary). Unfamiliar words: a wording list after Jev's read of `text.csv` (`jev-text-1.4.1.md`).
 
 ### Version 3.9 wording (product owner, 24 October; Jev's read of `text.csv`, `jev-text-1.4.1.md`; `docs/word-guidelines.md`)
-Every string below replaces its old form everywhere above this list. The ∞ key keeps its sign with "many" under it; wherever a clue
+Every string below replaces its old form everywhere above this list. Jev's recheck (`jev-text-1.4.1-recheck.md`): median
+understood-at-once 0.37 → 0.45, 20 of 29 better; the two that scored worse were reverted (the "Best clue … all 2 found" line and
+the second-phone line) and are not in this list. The ∞ key keeps its sign with "many" under it; wherever a clue
 is written out, ∞ reads "any number". "Landmine" stays, always beside "never guess" or the map key. Old → new:
   "9 and 8 words to find, 7 blank, 1 Landmine." → "Each team finds 9 or 8 words. 7 belong to nobody, and 1 is the Landmine.";
   "6 and 5 words to find, 5 blank, no Landmine." → "Each team finds 6 or 5 words. 5 belong to nobody. No Landmine.";
@@ -44,14 +46,12 @@ is written out, ∞ reads "any number". "Landmine" stays, always beside "never g
   "Next map? Only after the host starts the next game." → "Has the host started the next game? Then tap Next map.";
   "Tap a word when it's found to fade it (optional). The host's board is what counts." → "Tap a word once it's been guessed, to fade it (optional). The board on the host's phone is what counts.";
   "Clue givers: scan to get the secret map" → "Clue givers: scan this to see the secret map";
-  "On the other phone: open the app, tap Join a game, scan this." → "On the second phone: open this app, tap Join a game, and scan this.";
   "Coffee Commandos would be left with only Om. Move someone over?" → "Coffee Commandos would have only Om left. Move someone from Chai Champions?";
   "New board? New words, same teams, fresh start. For when someone saw the map or the words are too hard. This board won't count." → "New board? Fresh words, same teams. Use it if someone saw the map or the words are too hard. This board won't count.";
   "Scan a ticket or secret map" → "Scan a ticket or a secret map";
   "Clue: ∞" → "Clue: any number";
   "Best clue: RAIN ∞ · 4 found" → "Best clue: RAIN (any number) · 4 found";
   "Best clue: MONSOON 2 · 3 found" → "Best clue: MONSOON for 2 · 3 words found";
-  "Best clue: MONSOON 2 · all 2 found" → "Best clue: MONSOON for 2 · both found";
 
 ### What version 3.7 changes (rule 11; owner, 23 October: P1–P10 and the wording of Jev's prototype read)
 Each change is a paragraph headed "Version 3.7" at the end of the scenario it touches; it wins over earlier text in that
