@@ -510,18 +510,20 @@ test.describe('SWD-002 (v3.6) D11: opening a map on the board phone', () => {
     for (const id of ['map-grid', 'map-cell', 'map-list', 'our-words', 'avoid-line']) await expect(page.getByTestId(id)).toHaveCount(0);
   });
 
-  test('"No, keep the board" has the 800 ms guard (`data-guard="on"`): a tap inside it does nothing; after it, the dialog closes', async ({ page }) => {
+  test('"No, keep the board" has the 800 ms guard but looks live at once (not aria-disabled, full opacity): a tap inside it does nothing; after it, the dialog closes (v3.8)', async ({ page }) => {
     await phoneWithNights(page, [inProgress()], { now: NOW });
     await freezeClock(page);
     await page.goto(`./#map=${CODE}&t=${PAIR.id}`);
     const no = boardDialog(page).getByRole('button', { name: 'No, keep the board', exact: true });
     await expect(no).toBeVisible();
-    await expect(no).toHaveAttribute('data-guard', 'on');
+    await expect(no).not.toHaveAttribute('aria-disabled', 'true');
+    await expect(no).toHaveCSS('opacity', '1');
     await page.clock.runFor(400);
-    await no.click({ force: true }); // aria-disabled while the guard runs; force so the tap really lands inside it
+    await no.click({ force: true }); // inside the guard
     await expect(boardDialog(page)).toBeVisible();
     await page.clock.runFor(500);
-    await expect(no).not.toHaveAttribute('data-guard', 'on');
+    await expect(no).not.toHaveAttribute('aria-disabled', 'true');
+    await expect(no).toHaveCSS('opacity', '1');
     await no.click();
     await expect(boardDialog(page)).toHaveCount(0);
   });

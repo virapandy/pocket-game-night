@@ -389,10 +389,17 @@ test.describe('SWD-110 (v3.6): where-line for the step the game is on', () => {
 // The tap-guard look (SWD-114 v3.5 item 2, v3.6)
 // ---------------------------------------------------------------------------------------------------------------------
 
+/** SWD-114 v3.8: a guarded main is never greyed or aria-disabled. */
+function expectLooksLive(s: Awaited<ReturnType<typeof guardState>>, when: string) {
+  expect(s.ariaDisabled, `not aria-disabled ${when}`).not.toBe('true');
+  expect(s.disabled, `not disabled ${when}`).toBe(false);
+  expect(s.opacity, `normal look ${when}`).toBe(1);
+}
+
 test.describe('SWD-114: taps right after a screen appears', () => {
   test.use({ viewport: { width: 390, height: 844 } });
 
-  test('"I\'m Riya" waits 1 s: greyed, aria-disabled, data-guard="on", label unchanged; a tap at 950 ms does nothing and is not queued; live at 1 000 ms', async ({ page }) => {
+  test('"I\'m Riya" waits 1 s but looks live at once (not greyed, not aria-disabled, label unchanged); a tap at 950 ms does nothing and is not queued; a tap at 1 000 ms works (v3.8)', async ({ page }) => {
     await host(page, { phones: 'One phone', boards: [CODE], seed: 'guard-im', preview: true });
     await waitGuards(page);
     await freezeClock(page);
@@ -402,16 +409,14 @@ test.describe('SWD-114: taps right after a screen appears', () => {
     const im = mainButton(page);
     await expect(im).toHaveText(`I'm ${cg}`);
     let s = await guardState(im);
-    expect(s).toMatchObject({ guard: 'on', ariaDisabled: 'true', text: `I'm ${cg}` });
-    expect(s.opacity, 'greyed').toBeCloseTo(0.5, 2);
+    expect(s.text).toBe(`I'm ${cg}`);
+    expectLooksLive(s, 'at once, inside the guard');
     await page.clock.runFor(950);
     await im.click({ force: true });
     await expect(turnHeading(page), 'still the pass screen').toBeVisible();
     await page.clock.runFor(100);
     s = await guardState(im);
-    expect(s.guard, 'live at 1 s').not.toBe('on');
-    expect(s.ariaDisabled).not.toBe('true');
-    expect(s.opacity).toBe(1);
+    expectLooksLive(s, 'at 1 s');
     await expect(holdPad(page), 'the ignored tap was not queued').toHaveCount(0);
     await im.click();
     await expect(holdPad(page)).toBeVisible();
@@ -424,15 +429,17 @@ test.describe('SWD-114: taps right after a screen appears', () => {
     await expect(mainButton(page)).toHaveText('Pick a number');
     await expect(mainButton(page)).toBeDisabled();
     expect((await guardState(mainButton(page))).guard).toBeNull();
+    expect((await guardState(mainButton(page))).opacity, 'a real reason still looks greyed').toBeLessThan(1);
     await page.getByTestId('clue-key').filter({ hasText: /^2$/ }).click();
     await tapMain(page, /^Clue for 2: start guessing$/);
     await waitGuards(page);
     await expect(mainButton(page)).toHaveText(/: Reveal$/);
     await expect(mainButton(page)).toBeDisabled();
     expect((await guardState(mainButton(page))).guard).toBeNull();
+    expect((await guardState(mainButton(page))).opacity, 'a real reason still looks greyed').toBeLessThan(1);
   });
 
-  test('"Other team\'s turn" after a turn-ending reveal waits 1.5 s counted from t = 300 ms; on the end-turn line it waits 800 ms', async ({ page }) => {
+  test('"Other team\'s turn" after a turn-ending reveal waits 1.5 s counted from t = 300 ms; on the end-turn line it waits 800 ms; both look live at once (v3.8)', async ({ page }) => {
     await toGuessing(page, { phones: 'One phone', code: CODE, seed: 'guard-turn', n: 2 });
     await waitGuards(page);
     await freezeClock(page);
@@ -440,11 +447,12 @@ test.describe('SWD-114: taps right after a screen appears', () => {
     await mainButton(page).filter({ hasText: /: Reveal / }).click(); // t = 0
     await page.clock.runFor(300 + 1450);
     const next = mainButton(page).filter({ hasText: /^Other team's turn$/ });
-    expect((await guardState(next)).guard, 'still waiting at t = 1 750 ms').toBe('on');
+    expectLooksLive(await guardState(next), 'at t = 1 750 ms');
     await next.click({ force: true });
-    await expect(next, 'the tap did nothing').toBeVisible();
+    await expect(next, 'the tap at t = 1 750 ms did nothing').toBeVisible();
+    await expect(turnHeading(page)).toHaveCount(0);
     await page.clock.runFor(100);
-    expect((await guardState(next)).guard, 'live at t = 1 850 ms').not.toBe('on');
+    expectLooksLive(await guardState(next), 'at t = 1 850 ms');
     await next.click();
     await expect(turnHeading(page)).toBeVisible();
 
@@ -459,11 +467,17 @@ test.describe('SWD-114: taps right after a screen appears', () => {
     await freezeClock(page);
     await quiet(page, 'End our turn').click();
     const line = mainButton(page).filter({ hasText: /^Other team's turn$/ });
-    expect((await guardState(line)).guard).toBe('on');
+    expectLooksLive(await guardState(line), 'when the line shows');
+    await line.click({ force: true });
+    await expect(line, 'a tap at once does nothing').toBeVisible();
     await page.clock.runFor(750);
-    expect((await guardState(line)).guard).toBe('on');
+    await line.click({ force: true });
+    await expect(line, 'a tap at 750 ms does nothing').toBeVisible();
+    await expect(turnHeading(page)).toHaveCount(0);
     await page.clock.runFor(100);
-    expect((await guardState(line)).guard).not.toBe('on');
+    expectLooksLive(await guardState(line), 'at 850 ms');
+    await line.click();
+    await expect(turnHeading(page), 'a tap at 850 ms works').toBeVisible();
   });
 
   test('"Carry on" waits 800 ms from the cover appearing; closing the cover doesn\'t restart the guard of the screen beneath; quiet buttons never wait', async ({ page }) => {
@@ -472,11 +486,18 @@ test.describe('SWD-114: taps right after a screen appears', () => {
     await freezeClock(page);
     await pauseButton(page).click();
     const carry = mainButton(page).filter({ hasText: /^Carry on$/ });
-    expect((await guardState(carry)).guard).toBe('on');
-    await page.clock.runFor(850);
-    expect((await guardState(carry)).guard).not.toBe('on');
+    expectLooksLive(await guardState(carry), 'when the cover shows');
+    await page.clock.runFor(400);
+    await carry.click({ force: true });
+    await expect(carry, 'a tap at 400 ms does nothing').toBeVisible();
+    await page.clock.runFor(450);
+    expectLooksLive(await guardState(carry), 'at 850 ms');
     await carry.click();
-    expect((await guardState(mainButton(page).filter({ hasText: /^I'm / }))).guard, 'the pass screen\'s main stays live').not.toBe('on');
+    await expect(carry).toHaveCount(0);
+    const im = mainButton(page).filter({ hasText: /^I'm / });
+    expectLooksLive(await guardState(im), 'the pass screen\'s main stays live');
+    await im.click();
+    await expect(holdPad(page), 'closing the cover did not restart the pass screen\'s guard').toBeVisible();
     // A quiet button is live at once.
     expect((await guardState(quiet(page, 'Start 90-second timer'))).guard).toBeNull();
   });

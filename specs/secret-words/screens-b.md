@@ -32,7 +32,7 @@ Tests: `tests/browser/secret-words-shared.spec.ts` (shared pieces), `secret-word
 | Pause | `pause-button`: accessible name "Pause", 44 × 44, an `svg` inside, directly left of "··· Menu" on its row | preview, scan, pass, clue, guessing, end-turn, turn over; not on the private map |
 | Pause cover | `pause-cover`, `role="dialog"` named "Paused" (heading), `where-line` inside it, "Tap Carry on when you're ready.", main "Carry on" | SWD-110 |
 | Where-line | `where-line`, 15 px, at most 2 lines | the step texts of SWD-110 v3.6 (e.g. "Before game 1", "Scan the map, game 1", "Turn 1 · clue for Chai Champions", "Chai Champions guessing · 3 guesses left", "Turn 1 · Chai Champions ended their turn", "Turn 1 over · Coffee Commandos next") |
-| Tap guard | the main (`main-button`) while waiting: `data-guard="on"`, `aria-disabled="true"`, computed opacity 0.5, label unchanged; a main disabled for another reason uses the `disabled` attribute and never has `data-guard` | SWD-114 |
+| Tap guard | v3.8: invisible. The main looks live at once (no `aria-disabled="true"`, computed opacity 1, label unchanged); a tap inside the guard does nothing. A main disabled for a real reason uses the `disabled` attribute and still looks greyed | SWD-114 |
 | Menu | "··· Menu" button (name matches /Menu/); items `role="menuitem"` inside `role="menu"`, rules `role="separator"` inside it; a "Done" button closes the sheet | SWD-110 v3.7 order |
 
 ## Screens

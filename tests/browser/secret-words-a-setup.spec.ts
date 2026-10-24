@@ -555,9 +555,15 @@ test.describe('S3 How do you want to play? (SWD-009, SWD-066, SWD-119)', () => {
     expect(await pressed(phoneCard(page, 'Three phones'))).toBe(true);
     expect(await pressed(group(page, 'Board').getByRole('button', { name: 'Easy: 16 words', exact: true }))).toBe(true);
     expect(await pressed(group(page, 'Words').getByRole('button', { name: '+ Harder words', exact: true }))).toBe(true);
-    await expect(mainText(page, 'Start the game')).toHaveAttribute('data-guard', 'on');
-    await page.clock.runFor(900);
-    await expect(mainText(page, 'Start the game')).not.toHaveAttribute('data-guard', 'on');
+    const start = mainText(page, 'Start the game');
+    await expect(start, 'looks live at once (v3.8)').not.toHaveAttribute('aria-disabled', 'true');
+    await expect(start).toHaveCSS('opacity', '1');
+    await page.clock.runFor(400);
+    await start.click({ force: true });
+    await expect(heading(page, 'How do you want to play?'), 'a tap inside the guard does nothing').toBeVisible();
+    await page.clock.runFor(500);
+    await expect(start).not.toHaveAttribute('aria-disabled', 'true');
+    await expect(start).toHaveCSS('opacity', '1');
   });
 
   test('SWD-009: "← Back" returns to Make teams with the teams kept', async ({ page }) => {

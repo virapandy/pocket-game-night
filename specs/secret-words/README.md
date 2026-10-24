@@ -60,8 +60,8 @@ Source: `screen-map.md` draft 2 and `map-walk-2026-10-11.md`. Every string below
 1. **Help (decision 1):** Choices gains quiet "How to play" (opens SWD-011; "Done" returns to Choices). The map phone gains
    quiet "Clue rules" (opens How to play scrolled to h2 "Clue rules", never any map; "Done" returns to the map phone, map
    state unchanged). SWD-009, 011, 034.
-2. **Visible tap guards (decision 2):** while a main button's guard runs (SWD-114) it shows the greyed look and becomes live
-   when the guard ends; the same look rule applies to every game. SWD-114.
+2. **Tap guards (decision 2), changed by v3.8 (owner, 24 October):** the guard is invisible; the main looks live at once and a tap
+   inside the guard does nothing (SWD-114). Only a button disabled for a real reason looks greyed.
 3. **Where-line (decision 3):** `where-line` (small line) under "Welcome back." (SWD-032), on the Pause cover (SWD-110) and in
    Home's unfinished row and the picker's resume card (SWD-115): "Turn 4 · clue for Chai Champions" (pass, map and clue steps:
    "Turn N · clue for <team>"; never a possessive, SWD-013; version 3.6), "Chai Champions guessing · 2 guesses
