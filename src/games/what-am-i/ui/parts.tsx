@@ -6,7 +6,7 @@ import {
   useCallback, useContext, useEffect, useId, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type PointerEvent as ReactPointerEvent,
   type ReactNode,
 } from 'react';
-import { HideMainButton, MainButton, type ToastState } from '../../../blocks';
+import { HideMainButton, MainButton, QuietButton, type ToastState } from '../../../blocks';
 
 // ---------------------------------------------------------------- Main button and its guard
 
@@ -392,5 +392,15 @@ export function Scoreboard({ rows }: { rows: readonly { player: string; score: n
         </li>
       ))}
     </ul>
+  );
+}
+
+/** The header's "← Home (game saved)": two short lines inside one 44 px button, so the header stays on one line at 320 px. */
+export function HomeButton({ onClick }: { onClick: () => void }) {
+  return (
+    <QuietButton onClick={onClick} className="wai-home">
+      {'← Home '}
+      <span className="wai-home-note">(game saved)</span>
+    </QuietButton>
   );
 }

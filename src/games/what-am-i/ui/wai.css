@@ -4,7 +4,12 @@
 .wai-body { font-size: var(--pgn-body); line-height: 1.4; }
 .wai-alert { font-size: var(--pgn-small); font-weight: 700; color: var(--accent); }
 .wai-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-.wai-bar { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.wai-bar { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 6px; flex-wrap: nowrap; }
+/* One line down to 320 px wide: tighter padding and 15 px labels in the header only; every target stays 44 px or more. */
+.wai-bar .pgn-quiet, .wai-bar .wai-pause, .wai-bar .wai-menu-button { min-height: 44px; padding: 0 8px; font-size: 0.9375rem; white-space: nowrap; }
+.wai-bar .wai-pause, .wai-bar .wai-menu-button { padding: 0 6px; }
+.wai-bar .wai-pause { min-width: 44px; gap: 4px; }
+.wai-bar .wai-top { gap: 4px; flex: none; }
 .wai-bar-end { justify-content: flex-end; }
 .wai-h2 { font-size: 1.15rem; font-weight: 800; }
 .wai-lines { padding-left: 1.4em; display: flex; flex-direction: column; gap: 8px; line-height: 1.4; }
@@ -138,3 +143,5 @@
   .wai-choices .wai-ready { left: max(var(--pgn-gutter), env(safe-area-inset-left)); right: auto; width: calc(100vw - 2 * var(--pgn-gutter)); }
   .wai-aloud .pgn-title { font-size: 1.4rem; }
 }
+.wai-bar .wai-home { display: inline-flex; flex-direction: column; align-items: flex-start; justify-content: center; line-height: 1.15; text-align: left; }
+.wai-home-note { display: block; font-size: 0.8125rem; font-weight: 600; }
