@@ -143,6 +143,15 @@ product side runs them through the jev-design helper with `--budget product`.
 Tell the product owner when both are pushed; it runs them and merges the findings. The persona walks still wait for the
 prototype renderer to draw `docs/games/mafia/screen-map.md` (draft 4), also after What Am I?.
 
+### Secret Words 1.4.1 (product owner, 24 October): scenarios version 3.9 is ready
+From the release notes' "Known, next list". Six screen changes, each a "Version 3.9" paragraph: Pause on the private map (map
+hidden while paused, SWD-031); "← Home (keep this game)" on the Pause cover (SWD-110); team names on the counts when they fit
+(SWD-040/041); the picker's name moves from the Reveal button to the turn line (SWD-122; K38's rotation unchanged); the summary's
+`night-result` (SWD-128); Next map opens hidden (SWD-039). Plus 27 reworded strings ("Version 3.9 wording" list, measured old
+against new by Jev; `text.csv` updated). Version 3.8's invisible tap guards stay as in `specs/`. Undo after a reveal stays out
+(K35). Classes: all C1/C2; no rule or saved-data change. Also on the next list: long words cut off on the game-over board at
+568 × 320, and Impostor's long name over "See my word again" sideways.
+
 ### PLT-208 wording, confirmed (product owner, 23 October)
 1. Share tapped mid-game: toast "Kept. You can share it when this game ends." ("You can share it" rather than "It can be shared").
 2. A report started from Home leaves the game out of its first line: "Problem report · app <version> · <date and time>".

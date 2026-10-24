@@ -97,7 +97,7 @@ sw.preview-board.1,"The board, before you start",Preview board,SWD-012,
 sw.preview-board.2,Chai Champions start,Preview board,SWD-012,yes
 sw.preview-board.3,Start,Preview board,SWD-012,
 sw.scan-screen.1,Clue givers: scan this to see the secret map,Scan screen,SWD-033,
-sw.scan-screen.2,"On the second phone: open this app, tap Join a game, and scan this.",Scan screen,SWD-033,
+sw.scan-screen.2,"On the other phone: open the app, tap Join a game, scan this.",Scan screen,SWD-033,
 sw.scan-screen.3,Riya and Arjun: sit side by side and share one map phone.,Scan screen,SWD-033,yes
 sw.scan-screen.4,"Riya (Chai Champions, orange) and Arjun (Coffee Commandos, teal): scan on your own phones.",Scan screen,SWD-033,yes
 sw.scan-screen.5,Nana + Aarav,Scan screen,SWD-033,yes
@@ -251,7 +251,7 @@ sw.game-over.3,Boom! Coffee Commandos hit the Landmine.,Game over,"SWD-051, 112,
 sw.game-over.4,Game ended. No winner.,Game over,"SWD-051, 112, 128",
 sw.game-over.5,Coffee Commandos were 1 word away!,Game over,"SWD-051, 112, 128",yes
 sw.game-over.6,Coffee Commandos were 2 words away!,Game over,"SWD-051, 112, 128",yes
-sw.game-over.7,Best clue: MONSOON for 2 · both found,Game over,"SWD-051, 112, 128",yes
+sw.game-over.7,Best clue: MONSOON 2 · all 2 found,Game over,"SWD-051, 112, 128",yes
 sw.game-over.8,Best clue: MONSOON for 2 · 3 words found,Game over,"SWD-051, 112, 128",yes
 sw.game-over.9,Best clue: RAIN (any number) · 4 found,Game over,"SWD-051, 112, 128",yes
 sw.game-over.10,Next clue givers: Meena and Kabir,Game over,"SWD-051, 112, 128",yes
@@ -329,4 +329,4 @@ sw.v39.night-result.1,"Chai Champions won the night, 3–2",summary,SWD-128,yes
 sw.v39.night-result.2,"A draw tonight, 2–2",summary,SWD-128,yes
 sw.v39.pause-home.1,← Home (keep this game),Pause cover,SWD-110,
 sw.v39.turn-line-picker.1,Chai Champions guessing · Sunita taps Reveal,board,SWD-122,yes
-sw.v39.next-map-toast.1,Next map. Tap Show map when you're ready. It should start with: Kite · Tiffin · Rain.,map phone,SWD-039,yes
+sw.v39.next-map-toast.1,Next map. Tap Show map when you're ready. Its first words should be: Kite · Tiffin · Rain.,map phone,SWD-039,yes

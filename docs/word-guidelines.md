@@ -95,8 +95,11 @@ with (SWD-023).
 2. **Persona walks read words first.** The six personas report "words I didn't understand" on the screen map, then on the
    prototype; anything two personas flag is reworded.
 3. **Jev reads every label and every word.** "Would most Indian families, including a non-Hindi speaker from Tirunelveli,
-   understand this at once?"; below 0.5 is reworded or replaced unless it's a name or a deliberate term with a key (Landmine).
-   Content words: known at once and family-friendly, every edition.
+   understand this at once?" **Use the score to compare wordings, not as a pass mark** (learned 24 October): a line that
+   teaches a game's own idea (map phone, Next map, scan, the Landmine) scores low out of context however it is worded. So: score
+   the old and the new wording in the same run; keep the new one only if it scores higher; revert any that score lower; and
+   treat a single answer's difference under 0.1 as noise. Plain labels with no game idea (buttons like "Delete", "Play again")
+   should reach 0.8. Content words: known at once and family-friendly, every edition (there 0.5 stays the bar).
 4. **Simulated table games** for games with word boards or clues: words confused on dealt boards, clue rules that trip people.
 5. **Reader checks** confirm every string is exact and appears once in its final form.
 6. **Jev design jobs** (owner, 23 October; `docs/proposals/jev-for-design.md`): J1 known at once (Tirunelveli family,
