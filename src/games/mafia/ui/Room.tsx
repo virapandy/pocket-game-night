@@ -424,7 +424,7 @@ export function MafiaRoom({
           </MafDialog>
         );
       case 'whose':
-        // D5 (stand-in, lane M3): the names of players who are in.
+        // D5: the names of players who are in.
         return (
           <MafDialog title="Whose role?" onDismiss={() => setDialog(null)}>
             <div className="maf-names-box">

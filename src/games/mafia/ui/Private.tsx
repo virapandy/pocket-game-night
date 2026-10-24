@@ -134,6 +134,7 @@ function cardSlots(players: readonly string[], m: number): Slot[] {
   const partner = ['You are the only Mafia.'];
   if (names.length > 0) {
     partner.push(partnerLine(names, [], []), partnerLine(names, names, []), partnerLine(names, names.slice(1), names.slice(0, 1)));
+    if (names.length > 2) partner.push(partnerLine(names, names.slice(0, 1), names.slice(1, 2)));
     if (names.length > 1) partner.push(partnerLine(names, names.slice(0, 1), []));
   }
   const roles: Role[] = ['mafia', 'doctor', 'police', 'villager'];
@@ -447,13 +448,17 @@ function N2({ ctx }: { ctx: RoomCtx }) {
     const away = () => setShown(false);
     const vv = window.visualViewport;
     document.addEventListener('pointerdown', touched, true);
+    window.addEventListener('scroll', away);
     window.addEventListener('pagehide', away);
     vv?.addEventListener('resize', away);
+    vv?.addEventListener('scroll', away);
     return () => {
       clearTimeout(timer);
       document.removeEventListener('pointerdown', touched, true);
+      window.removeEventListener('scroll', away);
       window.removeEventListener('pagehide', away);
       vv?.removeEventListener('resize', away);
+      vv?.removeEventListener('scroll', away);
     };
   }, [shown]);
 
