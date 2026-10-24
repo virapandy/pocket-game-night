@@ -14,13 +14,18 @@ export interface WhatAmINight {
 /** The game night as Home, History and the summary read it. Null when it no longer replays. */
 export function readWhatAmINight(saved: SavedGame): WhatAmINight | null {
   const records = saved.records as SavedGame<WaiConfig, WaiMove>['records'];
-  const r = replay(whatAmIRules, saved.setup as SavedGame<WaiConfig>['setup'], records);
-  if (!r.ok) return null;
-  const first = records.find((x) => x.move.type === 'start');
-  return {
-    state: r.value.state,
-    view: whatAmIRules.view(r.value.state, { kind: 'host' }),
-    status: saved.status,
-    firstStart: first ? first.at : null,
-  };
+  try {
+    const r = replay(whatAmIRules, saved.setup as SavedGame<WaiConfig>['setup'], records);
+    if (!r.ok) return null;
+    const first = records.find((x) => x.move.type === 'start');
+    return {
+      state: r.value.state,
+      view: whatAmIRules.view(r.value.state, { kind: 'host' }),
+      status: saved.status,
+      firstStart: first ? first.at : null,
+    };
+  } catch {
+    // WAI-092: one damaged save must not break Home or History.
+    return null;
+  }
 }

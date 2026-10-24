@@ -138,3 +138,11 @@
   .wai-choices .wai-ready { left: max(var(--pgn-gutter), env(safe-area-inset-left)); right: auto; width: calc(100vw - 2 * var(--pgn-gutter)); }
   .wai-aloud .pgn-title { font-size: 1.4rem; }
 }
+
+/* R1, G1, G2 (lane W4): the quiet buttons under the lines, full width, one per row (side by side in landscape) */
+.wai-strong { font-weight: 800; }
+.wai-stack { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+@media (orientation: landscape) and (max-height: 600px) {
+  .wai-stack { flex-direction: row; flex-wrap: wrap; }
+  .wai-stack > .pgn-quiet { flex: 1 1 200px; }
+}

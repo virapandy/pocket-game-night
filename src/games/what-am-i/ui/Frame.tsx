@@ -31,7 +31,7 @@ export function screenOf(s: WaiState, ui: NightUi): WaiScreen {
     case 'new':
       return 'G2';
     default:
-      return s.played.length === 0 && s.round > 1 && ui.roundStarted !== s.round ? 'R1' : 'T1';
+      return s.played.length === 0 && s.round > 1 && ui.roundStarted !== `${s.game}:${s.round}` ? 'R1' : 'T1';
   }
 }
 
@@ -65,6 +65,10 @@ export interface StepProps {
   readonly onChangeSetup: () => void;
   /** G2's "Play something else": the picker with tonight's names. */
   readonly onSomethingElse: (names: string[]) => void;
+  /** G2's "Oops, keep playing": takes back `endEvening` (and the `endGame` it added). */
+  readonly keepPlaying: () => void;
+  /** G2's "Delete tonight's games": removes this night and goes Home. */
+  readonly deleteNight: () => void;
 }
 
 type Overlay = 'how' | 'players' | 'scores' | 'words' | 'settings' | 'end' | 'tonight' | null;
@@ -105,6 +109,8 @@ export function WhatAmIGame({
   const [welcome, setWelcome] = useState(openedWelcome);
   const [toast, showToast, clearToast] = useWaiToast();
   const liveRef = useRef(live);
+  /** How many records "End for tonight" added (1: `endEvening`; 2: `endGame` too), for "Oops, keep playing". */
+  const addedAtEnd = useRef(1);
   liveRef.current = live;
 
   const act = (move: WaiMove): boolean => {
@@ -236,6 +242,7 @@ export function WhatAmIGame({
     const s = liveRef.current?.match.state;
     const open = s && (s.step === 'pass' || s.step === 'turn' || s.step === 'review');
     if (open && !act({ type: 'endGame' })) return;
+    addedAtEnd.current = open ? 2 : 1;
     act({ type: 'endEvening' });
   };
 
@@ -243,6 +250,12 @@ export function WhatAmIGame({
     live, state, view, ui, prefs, top, welcome: welcomeNode, act, dropLast: drop, setUi, pause, pauseTurn,
     toast: showToast, onHome, openPlayers: () => setOverlay('players'), openEndGame: () => setOverlay('end'),
     openEndTonight: () => setOverlay('tonight'), openHowToPlay: () => setOverlay('how'), onChangeSetup, onSomethingElse,
+    keepPlaying: () => void drop(addedAtEnd.current),
+    deleteNight: () => {
+      store.remove(id);
+      uiStore.set(id, null);
+      onHome();
+    },
   };
 
   // ---- The Paused cover (D1) and D7 ----
