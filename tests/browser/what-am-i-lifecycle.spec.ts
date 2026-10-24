@@ -124,8 +124,10 @@ test.describe('WAI-090 / WAI-091: where-line, Home row and resume', () => {
     await startNight(page, { seed: 'not-twelve', players: TWO });
     const last = (await onlyNight(page)).records.at(-1).at as number;
     await page.clock.setSystemTime(last + 12 * 3_600_000 - 60_000);
-    await page.reload();
+    // Open the app's own address (Home), not the game's: a reload of the game's address reopens the game (WAI-091).
+    await page.goto(page.url().split('#')[0]!);
     await guards(page);
+    await expect(hostAGame(page)).toBeVisible();
     await expect(page.getByTestId('unfinished-games').filter({ hasText: 'What Am I?' })).toHaveCount(1);
   });
 });

@@ -831,7 +831,7 @@ the approved pictures once the product owner or UX designer has checked them at 
 | `player-which-prize` | "Which prize?" with "Cancel" as a link | 17 |
 | `player-claim-qr` | claim QR for Top Line, ticket 1, only that pattern outlined, "Done" | 13, 19 |
 | `player-done-with-this-game` | "Clear your tickets from this phone?" | 20 |
-| `player-home-saved-tickets` | Home 6 h 10 min later: "Your tickets from 7:00 pm · Open · Clear" | 21 |
+| `player-home-saved-tickets` | Home 6 h 10 min later: "Your tickets from 7:00 pm · Open · Clear". Lane W2 (25 October, b9f6a75): new pictures with the Host line "Tambola, Impostor, Secret Words or What Am I? on this phone" (Linux from Screenshots run 40129184456, Mac taken locally), **not yet approved** | 21 |
 
 ## Impostor (C3 browser tests written before the screens, 3 October 2026)
 Specs: `impostor-privacy.spec.ts` (IMP-010 to IMP-017, IMP-020, IMP-031, IMP-033, IMP-053, IMP-060, IMP-062, IMP-064),

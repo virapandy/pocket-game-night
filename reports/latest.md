@@ -17,6 +17,30 @@ Result: GREEN. Quick verify 40128921060 on lane-m at 6c072c7: verify and all 4 b
 - Someone leaving on "Night begins" (after the day's vote) now waits for that night; leaving from the vote result or
   "Still a tie" counts for the day before and happens at once. These were the orchestrator's calls while you were away:
   please confirm them (`docs/test-questions.md`, 25 October, "Mafia review fixes").
+## Lane W2 (What Am I? setup and the game's frame), 25 October
+Commit tested: b9f6a75 (lane-w2)   Date: 2026-10-25
+Result: see "Quick verify" below; locally RED only for the expected lane W3/W4 screens.
+- **Rule tests:** 977 of 977 pass (53 files).
+- **Browser, local, both phones** (what-am-i-setup, -interruptions, -lifecycle, impostor-round6b, impostor-setup,
+  secret-words-a-home; 3 workers): 367 pass; 34 fail (17 per phone), all needing screens of lanes W3/W4 (T2 the
+  countdown, T3 the word, T4, G1): `the-word` not found, or "no menu on T2" seeing T1's menu. 2 more failures were not the app
+  (below) and pass on a rerun.
+- Old tests updated to the approved shared changes (WAI-001, version 1.3 item 10): the picker's way back is "← Home"
+  (impostor-round6b, secret-words-a-home); Home's Host line "Tambola, Impostor, Secret Words or What Am I? on this phone"
+  (SWD-001 / WAI-001). Home pictures `player-home-saved-tickets` (3 sizes) refreshed: Linux from Screenshots run
+  40129184456 on b9f6a75 (only these 3 Linux pictures changed), Mac taken locally; **not yet approved** (product owner).
+  No picture shows the picker.
+- **Test fixed, app right (WAI-091):** "11 hours 59 minutes later the night is still on Home" reloaded the game's address,
+  which by WAI-091 reopens the game; it now opens the app's own address (Home) and checks the What Am I? row. Passes.
+- **Test fixed, app right (WAI-041):** "Players: … adding Om" looked for the button "Move Om" by partial name, which also
+  matched "Remove Om" (two buttons). Now matches the exact name, same check. Passes on both phones.
+### Failing (real bugs only)
+- None outside the expected W3/W4 screens.
+### Flaky or setup problems
+- WAI-002 "a 21st name shows Up to 20 players." timed out once on Android (30 s while typing 21 names with 3 workers on a
+  busy Mac); passes on a rerun on both phones.
+### Quick verify
+QUICK_VERIFY_PLACEHOLDER
 ---
 **24 October, weekly run 40077271486 on main e24fde5 (reading job, no tests run): privacy and stuck findings first. Secret Words: 0 privacy slips, 0 stuck, 0 no-clear-way-on in 40 evenings (10 with Jev people). Impostor/Tambola: 0 secrets shown.**
 - **screen-sims (7)**: sim-script problem, not the app. Evenings 002, 005, 007 (Secret Words) each ended "could not do Menu: click timed out" then "no Home after the summary". Screenshot of 005 shows the Menu sheet open (with its How to play row) when the script tried to tap the covered Menu button: the script read the sheet as the how-to-play screen (tests/sims/secret-words-runner.ts line 193 matches any "How to play" text, line 369 then falls through to Menu). The unrecognised "Type the code / Open ticket" screens (002, 004, 006) are the Tambola ticket page the script does not know. Evening 006 also shows "2 main buttons: Play again / Done" on How to play from game over: SWD-011, fixed in b05ea1f which landed after e24fde5, so expect it gone on the next run. Confirm after fixing the script; if the click still fails after a plain menu, treat as an app bug.

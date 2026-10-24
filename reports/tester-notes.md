@@ -19,6 +19,10 @@ Read this and the top of `reports/latest.md` before starting. Keep it short: rep
   reason; tag `@quarantine` + annotation in the test; never skip or retry.
 
 ## Open items for the next tester
+- **Lane W2 tested (25 October, b9f6a75):** setup and frame pass; 17 tests per phone in what-am-i-interruptions and
+  -lifecycle still fail until lanes W3/W4 (T2–T4, G1). The picker's back is "← Home" everywhere now; the Home
+  pictures were refreshed (Screenshots run 40129184456), not yet approved. Use `exact: true` for "Move <name>" (it also
+  matches "Remove <name>").
 - **What Am I? tests first (lane-w, 25 October; scenarios v1.3, approved 24 October):** specs copied to `specs/what-am-i/`
   (01, 02, 03, 04, 06, 07, 09, 10 + README; each scenario carries its Version 1.1–1.3 items word for word; a script did the
   copy, so wording is exact). Rule API and browser hooks made exact in `specs/what-am-i/api.md`; the product owner's 42
