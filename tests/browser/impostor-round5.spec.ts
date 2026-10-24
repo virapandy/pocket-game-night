@@ -223,6 +223,26 @@ test.describe('Lane O: IMP-020 the clues screen at 812 × 375 and 320 × 568 (v3
     expect(co.y, 'the clue order starts above the row').toBeLessThan(Math.min(g.y, s.y));
   });
 
+  // IMP-022 (the line under the clue order) and IMP-020 (the buttons row); no scenario names their spacing, so this also
+  // rests on the layout guideline "nothing drawn over anything else" (IMP-081). Found by screen-sim evening 068.
+  test('812 × 375, long name, second round: the line "Second round: <name> starts again" is not drawn over "See my word again" or "Go round again" (IMP-022, IMP-020)', async ({ page }) => {
+    const LONG = 'Alexandrapetro';
+    const players = [LONG, 'Arjun', 'Meena', 'Kabir', 'Zoya'];
+    await page.setViewportSize({ width: 812, height: 375 });
+    await startEvening(page, { players, seeds: { deals: [{ wordId: SAMOSA, impostor: 'Arjun', starter: LONG }] } });
+    await dealAll(page, players);
+    await quiet(page, 'Go round again').click();
+    const line = page.getByText(exact(`Second round: ${LONG} starts again`));
+    await expect(line).toBeVisible();
+    const l = (await line.boundingBox())!, s = (await quiet(page, 'See my word again').boundingBox())!;
+    const apart = l.x + l.width <= s.x + 1 || s.x + s.width <= l.x + 1 || l.y + l.height <= s.y + 1 || s.y + s.height <= l.y + 1;
+    expect(apart, `line ${JSON.stringify(l)} overlaps "See my word again" ${JSON.stringify(s)}`).toBe(true);
+    // The same crowding hides the end of the clue order ("... → Zoya") behind the line: all of it must show, not scroll or be covered.
+    const co = await page.getByTestId('clue-order').evaluate((el) => ({ scroll: el.scrollHeight, client: el.clientHeight, bottom: el.getBoundingClientRect().bottom }));
+    expect(co.scroll, 'the clue order is cut off inside its box').toBeLessThanOrEqual(co.client + 1);
+    expect(l.y, 'the line starts below the clue order').toBeGreaterThanOrEqual(co.bottom - 1);
+  });
+
   test('812 × 375 with Larger text: the row is clear of the main button and the two buttons are equal in height, tops aligned', async ({ page }) => {
     await page.setViewportSize({ width: 812, height: 375 });
     await startEvening(page, { players: P5, seeds: DEAL5, storage: { 'pgn.pref.largerText': true } });

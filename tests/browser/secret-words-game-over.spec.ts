@@ -7,6 +7,7 @@
 // or lane B's screens are marked `needsLanes` (expected to fail until those lanes are merged).
 import { expect, test, type Page } from './fixtures';
 import { mainButton } from './impostor';
+import { oracleCode } from '../games/secret-words/oracle';
 import { oracleBoard, waitGuards } from './secret-words';
 import {
   bestClue, bestClueFlows, box, boardCells, button, cellNames, cellsOfKind, clueCredit, CODES, dialog, EASY_CODES, endForTonight,
@@ -800,5 +801,46 @@ test.describe('SWD-011, SWD-050/112: How to play opened from game over', () => {
     await expect(mainButton(page)).toHaveCount(1);
     await expect(mainButton(page)).toHaveText('Done');
     await expect(page.getByRole('button', { name: 'Play again', exact: true })).toHaveCount(0);
+  });
+});
+
+test.describe('G1 game over at 568 × 320: every board word shows in full (SWD-090, SWD-050, SWD-112)', () => {
+  test.use({ viewport: { width: 568, height: 320 } });
+
+  // SWD-090: a word shrinks alone, down to 10 px, so it never gets cut off. The board holds "Chennai", a long word.
+  test('SWD-090/112: no word on the game-over board is clipped ("Chennai" included)', async ({ page }) => {
+    let code = '';
+    for (let d = 1; d < 3000 && !code; d++) {
+      const c = oracleCode({ edition: 1, board: 'full', words: 'family' }, d, 0);
+      const b = oracleBoard(c);
+      if (b.starts === 'orange' && b.words.includes('Chennai')) code = c;
+    }
+    expect(code, 'a board with Chennai exists').not.toBe('');
+    await openGameOver(page, orangeWinsAtOnce({ codes: [code] }));
+    await expect(boardCells(page).filter({ hasText: 'Chennai' })).toHaveCount(1);
+    // A word is cut off when it overflows its cell or when the cell's shape marker is drawn over its letters.
+    const clipped = await boardCells(page).evaluateAll((cells) => cells.flatMap((cell) => {
+      const box = cell.getBoundingClientRect();
+      const bad: string[] = [];
+      const name = (cell.getAttribute('aria-label') ?? '').split(',')[0];
+      for (const el of [cell, ...Array.from(cell.querySelectorAll('*'))]) {
+        if (el.scrollWidth > el.clientWidth + 1) bad.push(`${name}: scrollWidth ${el.scrollWidth} > clientWidth ${el.clientWidth}`);
+      }
+      const walker = document.createTreeWalker(cell, NodeFilter.SHOW_TEXT);
+      const text = document.createRange();
+      for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+        if (!(n.textContent ?? '').trim()) continue;
+        text.selectNodeContents(n);
+        for (const r of Array.from(text.getClientRects())) {
+          if (r.left < box.left - 1 || r.right > box.right + 1) bad.push(`${name}: text outside its cell`);
+          for (const icon of Array.from(cell.querySelectorAll('svg'))) {
+            const i = icon.getBoundingClientRect();
+            if (i.left < r.right - 0.5 && i.right > r.left + 0.5 && i.top < r.bottom - 0.5 && i.bottom > r.top + 0.5) bad.push(`${name}: marker drawn over the word`);
+          }
+        }
+      }
+      return bad;
+    }));
+    expect(clipped, 'words cut off in their cells').toEqual([]);
   });
 });
