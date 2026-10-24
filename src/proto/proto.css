@@ -181,3 +181,68 @@ button.proto-cell { cursor: pointer; touch-action: manipulation; }
 .proto .proto-member { padding-bottom: 6px; border-bottom: 1px solid var(--border); }
 .proto .proto-member > .proto-x { flex: none; width: 48px; order: 1; }
 .proto .proto-member > .proto-control { flex: 1 1 100%; order: 2; }
+
+/* ----- Screens with an exact state (src/proto/State.tsx; e.g. What Am I?'s K4) ----- */
+.proto .proto-state { display: flex; flex-direction: column; gap: 12px; }
+.proto .proto-state > .pgn-main-inline { margin: 4px 0; }
+.proto .proto-top-right { display: flex; gap: 8px; }
+.proto .proto-pause { display: inline-flex; align-items: center; gap: 6px; padding: 0 12px; min-width: 48px; min-height: 48px; }
+.proto .proto-namelist { padding: 0; margin: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; }
+.proto .proto-namelist li { display: flex; align-items: center; gap: 6px; padding: 2px 0 6px; border-bottom: 1px solid var(--border); }
+.proto .proto-namelist li > :first-child { flex: 1 1 auto; }
+.proto .proto-name { padding: 0 4px; font-weight: 600; }
+.proto .proto-handle, .proto .proto-namelist .proto-x { flex: none; width: 48px; min-height: 48px; padding: 0; }
+.proto .proto-addrow { display: flex; gap: 8px; align-items: stretch; }
+.proto .proto-addrow .proto-input { flex: 1 1 auto; }
+.proto .proto-addrow .pgn-quiet { flex: none; min-width: 72px; }
+.proto .proto-radios { border: 0; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
+.proto .proto-radios legend { font-weight: 700; margin-bottom: 6px; padding: 0; }
+.proto .proto-radios .pgn-option {
+  flex: none; width: 100%; display: flex; align-items: flex-start; gap: 6px; text-align: left; padding: 8px 12px;
+}
+.proto .proto-radios .proto-small { margin: -4px 0 2px; }
+.proto .proto-radio-text { display: flex; flex-direction: column; }
+.proto .proto-switchrow { display: flex; flex-direction: column; gap: 2px; }
+.proto .proto-switchrow .proto-switch { font-size: inherit; font-weight: 600; min-height: 48px; }
+.proto .proto-switchrow input { width: 22px; height: 22px; }
+.proto .proto-boxes { display: flex; flex-wrap: wrap; gap: 8px; }
+.proto .proto-box {
+  flex: 1 1 90px; min-height: 72px; display: grid; place-items: center; padding: 8px; text-align: center;
+  font-size: var(--pgn-small); color: var(--muted); border: 2px dashed var(--border); border-radius: 8px;
+}
+.proto .proto-scores { margin: 0; padding-left: 1.6em; display: flex; flex-direction: column; gap: 4px; font-weight: 600; }
+.proto .proto-chiplists { display: flex; flex-direction: column; gap: 12px; }
+.proto .proto-chiplist h2 { font-size: 1.05rem; margin: 0 0 6px; }
+.proto .proto-chips { display: flex; flex-wrap: wrap; gap: 8px; min-height: 48px; }
+.proto .proto-chip {
+  min-height: 48px; padding: 0 14px; font: inherit; font-weight: 600; border-radius: 999px; cursor: pointer;
+  border: 2px solid var(--border); background: var(--surface); color: var(--text); touch-action: manipulation;
+}
+.proto .proto-chips-green .proto-chip { border-color: #2e7d32; background: color-mix(in srgb, #2e7d32 14%, var(--surface)); }
+.proto .proto-chips-grey .proto-chip { color: var(--muted); }
+.proto .proto-countdown { font-size: 6rem; font-weight: 800; text-align: center; margin: 12px 0; line-height: 1; }
+
+/* The word with its tap halves: top half one tap area, bottom half the other; the words sit on top and let taps through. */
+.proto-halves { position: fixed; inset: 0; overflow: hidden; background: var(--bg, #fffaf2); }
+.proto-halves.proto-turned { inset: auto; top: 0; left: 100vw; width: 100vh; height: 100vw; transform-origin: 0 0; transform: rotate(90deg); }
+.proto .proto-half {
+  position: absolute; left: 0; right: 0; height: 50%; border: 0; padding: 8px 16px; font: inherit; cursor: pointer;
+  background: transparent; display: flex; justify-content: center; touch-action: manipulation;
+}
+.proto .proto-half-top { top: 0; align-items: flex-start; border-bottom: 2px dashed var(--border); }
+.proto .proto-half-bottom { bottom: 0; align-items: flex-end; }
+.proto .proto-half-label { font-size: var(--pgn-small); color: var(--muted); }
+.proto .proto-halves-words {
+  position: absolute; inset: 0; pointer-events: none; display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 6px; padding: 32px 120px; text-align: center;
+}
+.proto .proto-halves-words p { margin: 0; }
+.proto .proto-bigword { font-size: clamp(2.5rem, 15vmin, 7rem); font-weight: 800; letter-spacing: 0.03em; line-height: 1.05; overflow-wrap: anywhere; }
+.proto-turned .proto-bigword { font-size: clamp(2.5rem, 15vmin, 5rem); }
+.proto .proto-halves-top { position: absolute; top: 8px; right: 8px; }
+.proto .proto-flash {
+  position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none;
+  font-size: 3rem; font-weight: 800; color: #fff;
+}
+.proto .proto-flash-green { background: rgb(46 125 50 / 0.85); }
+.proto .proto-flash-orange { background: rgb(199 80 0 / 0.85); }
