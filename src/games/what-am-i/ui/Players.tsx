@@ -2,20 +2,12 @@
 // the two-player dialog (Version 1.1 item 29, Version 1.2 item 7). Every change is recorded at once: `addPlayer`, `reorder`
 // (only among players still to play this round) and `leave`, with the toast "Kabir left · Undo" (10 s).
 import { useEffect, useRef, useState } from 'react';
-import { QuietButton, Toast } from '../../../blocks';
+import { QuietButton, Screen, ScrollArea, Toast } from '../../../blocks';
 import type { WaiState } from '../rules';
 import { AddRow } from './Setup';
 import { Main, NameList, WaiDialog, WaiSheet, moved, useWaiBack, useWaiToast } from './parts';
 
-export function PlayersSheet({
-  state,
-  onAdd,
-  onReorder,
-  onLeave,
-  onUndoLeave,
-  onEndGame,
-  onDone,
-}: {
+interface PlayerEdits {
   state: WaiState;
   onAdd: (name: string) => void;
   onReorder: (order: string[]) => void;
@@ -25,8 +17,13 @@ export function PlayersSheet({
   onUndoLeave: (name: string, order: readonly string[]) => void;
   /** "End the game" in the two-player dialog (→ WAI-060). */
   onEndGame: () => void;
-  onDone: () => void;
-}) {
+}
+
+/**
+ * WAI-041, WAI-042: the names (✕ asks "Kabir has to leave?", or "2 players needed." with 2 players), the add row and the
+ * "Kabir left · Undo" toast, each change recorded at once. Returns the list, the toast and the dialog (`cover`) to place.
+ */
+function usePlayerEdits({ state, onAdd, onReorder, onLeave, onUndoLeave, onEndGame }: PlayerEdits) {
   const [ask, setAsk] = useState<{ name: string; two: boolean } | null>(null);
   const [toast, showToast, clearToast] = useWaiToast();
   const field = useRef<HTMLInputElement>(null);
@@ -35,7 +32,6 @@ export function PlayersSheet({
   useEffect(() => {
     if (focusAdd > 0) field.current?.focus();
   }, [focusAdd]);
-  useWaiBack(ask === null, 1, onDone);
   const order = state.order;
   // Players who have saved a turn this round stay in place (WAI-041).
   const canMove = (i: number) => !state.played.includes(order[i]!);
@@ -71,9 +67,8 @@ export function PlayersSheet({
         </div>
       </WaiDialog>
     );
-  return (
-    <WaiSheet title="Players" onDone={onDone} cover={cover}>
-      <p className="wai-small">Add a name to join. New players go after the last player in this round.</p>
+  const list = (
+    <>
       <NameList
         names={order}
         canMove={canMove}
@@ -81,7 +76,48 @@ export function PlayersSheet({
         onMove={(from, to) => onReorder(moved(order, from, to))}
       />
       <AddRow names={order} onAdd={onAdd} fieldRef={field} />
-      <Toast toast={toast} onDone={clearToast} />
+    </>
+  );
+  return { asking: ask !== null, cover, list, toast: <Toast toast={toast} onDone={clearToast} /> };
+}
+
+export function PlayersSheet(props: PlayerEdits & { onDone: () => void }) {
+  const e = usePlayerEdits(props);
+  useWaiBack(!e.asking, 1, props.onDone);
+  return (
+    <WaiSheet title="Players" onDone={props.onDone} cover={e.cover}>
+      <p className="wai-small">Add a name to join. New players go after the last player in this round.</p>
+      {e.list}
+      {e.toast}
     </WaiSheet>
+  );
+}
+
+/**
+ * Version 1.1 item 33: S1 "Who's playing?" from R1's "Change players or words". It edits the game's players like the Players
+ * sheet (each change recorded at once); "← Back to the game" records nothing itself; "Next" opens S2.
+ */
+export function ChangePlayers(props: PlayerEdits & { onBack: () => void; onHowToPlay: () => void; onNext: () => void }) {
+  const e = usePlayerEdits(props);
+  useWaiBack(!e.asking, 0, props.onBack);
+  const n = props.state.order.length;
+  return (
+    <Screen className="wai-setup">
+      <div style={{ display: 'contents' }} inert={e.asking}>
+        <header className="wai-bar">
+          <QuietButton onClick={props.onBack}>← Back to the game</QuietButton>
+          <QuietButton onClick={props.onHowToPlay}>How to play</QuietButton>
+        </header>
+        <ScrollArea>
+          <h1 className="pgn-title">Who's playing?</h1>
+          <p className="wai-small">Players take turns in this order. Drag a name to move it.</p>
+          {e.list}
+          <p className="wai-small">{n} players</p>
+        </ScrollArea>
+        {e.toast}
+        <Main onClick={props.onNext}>Next</Main>
+      </div>
+      {e.cover}
+    </Screen>
   );
 }

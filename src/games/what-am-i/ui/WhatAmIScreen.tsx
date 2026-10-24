@@ -1,13 +1,14 @@
 // What Am I? on the host phone (lane W2): setup (S1 Who's playing?, S2 Words and time, S3 Read this aloud, S4 How to play)
 // up to the night's first `start`, then the game in its frame (Frame.tsx). Opened from the picker (a new night), History's
 // "Play again" (WAI-092: S1 with its players, S2 with its last choices) or a resume (Home's row, a reload, back from History).
-import { useState, type ReactNode } from 'react';
+import { useRef, useState, type ReactNode } from 'react';
 import { BlocksRoot } from '../../../blocks';
 import type { Preferences, SavedGameStore, SessionPicker } from '../../../engine';
-import type { Choices } from '../rules';
+import type { Choices, WaiMove } from '../rules';
 import { WhatAmIGame } from './Frame';
 import { takeTestSetup } from './hooks';
-import { createNight, lastChoices, openNight, PREF, record, sameChoices, startGame, tonightsNames, writeUi, type Live } from './night';
+import { createNight, dropLast, lastChoices, openNight, PREF, record, sameChoices, startGame, tonightsNames, writeUi, type Live } from './night';
+import { ChangePlayers } from './Players';
 import { HowToPlay, ReadAloud, WhosPlaying, WordsAndTime } from './Setup';
 import './wai.css';
 
@@ -55,14 +56,22 @@ export function WhatAmIScreen({
   const [welcome, setWelcome] = useState(start.kind === 'resume' && start.welcome === true);
   const [larger, setLarger] = useState(() => prefs.get<boolean>(PREF.largerText, false) === true);
   const [gameKey, setGameKey] = useState(0);
+  /** The night being changed mid-game (R1), with every players change recorded at once (Version 1.1 item 33). */
+  const [changeLive, setChangeLive] = useState<Live | null>(null);
+  const changeRef = useRef<Live | null>(null);
+  changeRef.current = changeLive;
+  /** The two-player dialog's "End the game": the game opens with "End the game?". */
+  const [openEnd, setOpenEnd] = useState(false);
 
   const how = (from: Step) => {
     setHowFrom(from);
     setStep('how');
   };
-  const play = (id: string) => {
+  const play = (id: string, end = false) => {
     setNightId(id);
     setChanging(null);
+    setChangeLive(null);
+    setOpenEnd(end);
     setWelcome(false);
     setGameKey((k) => k + 1);
     setStep('playing');
@@ -80,10 +89,9 @@ export function WhatAmIScreen({
       if (startGame(store, prefs, live, names, choices)) play(live.saved.id);
       return;
     }
+    // Players changes were recorded as they were made; "Carry on playing" records only `setChoices`.
     let cur: Live | null = live;
-    const sameNames = names.length === s.order.length && names.every((n, i) => n === s.order[i]);
-    if (!sameNames) cur = cur && record(store, cur, { type: 'setPlayers', players: [...names] });
-    if (cur && s.choices && !sameChoices(choices, s.choices)) cur = record(store, cur, { type: 'setChoices', choices });
+    if (s.choices && !sameChoices(choices, s.choices)) cur = record(store, live, { type: 'setChoices', choices });
     if (!cur) return;
     // From R1, "Carry on playing" starts the next round: T1, not R1 again (Version 1.1 item 33).
     const n = cur.match.state;
@@ -91,10 +99,42 @@ export function WhatAmIScreen({
     play(cur.saved.id);
   };
 
+  /** Records a players change on the night being changed (R1). */
+  const changeAct = (move: WaiMove): boolean => {
+    const cur = changeRef.current;
+    const next = cur ? record(store, cur, move) : null;
+    if (!next) return false;
+    changeRef.current = next;
+    setChangeLive(next);
+    return true;
+  };
+
   let screen: ReactNode;
   switch (step) {
     case 'names':
-      screen = (
+      screen = changing && changeLive && changeLive.match.state.step !== 'gameOver' ? (
+        <ChangePlayers
+          state={changeLive.match.state}
+          onAdd={(name) => void changeAct({ type: 'addPlayer', name })}
+          onReorder={(order) => void changeAct({ type: 'reorder', order })}
+          onLeave={(name) => changeAct({ type: 'leave', player: name })}
+          onUndoLeave={(name, order) => {
+            const cur = changeRef.current;
+            const last = cur?.match.records[cur.match.records.length - 1]?.move;
+            if (cur && last?.type === 'leave' && last.player === name) {
+              const next = dropLast(store, cur, 1);
+              if (next) {
+                changeRef.current = next;
+                setChangeLive(next);
+              }
+            } else if (changeAct({ type: 'addPlayer', name })) changeAct({ type: 'reorder', order: [...order] });
+          }}
+          onEndGame={() => play(changing, true)}
+          onBack={() => play(changing)}
+          onHowToPlay={() => how('names')}
+          onNext={() => setStep('choices')}
+        />
+      ) : (
         <WhosPlaying
           names={names}
           onChange={setNames}
@@ -130,6 +170,7 @@ export function WhatAmIScreen({
       screen = nightId ? (
         <WhatAmIGame
           key={`${nightId}:${gameKey}`}
+          openEnd={openEnd}
           id={nightId}
           store={store}
           prefs={prefs}
@@ -145,6 +186,7 @@ export function WhatAmIScreen({
             const s = live.match.state;
             setNames([...s.order]);
             if (s.choices) setChoices(s.choices);
+            setChangeLive(live);
             setChanging(nightId);
             setStep('names');
           }}

@@ -1,7 +1,7 @@
 /* What Am I?'s turn (lane W3): T1, T0, T2, T3 and T4. Inside a `.pgn.wai` root (BlocksRoot). */
 
 /* The flash colours (WAI-021): Got it green, Pass orange; white text at least 4.5:1 on both (WAI-081). */
-:root { --good: #1b5e20; --warn: #a84300; }
+.wai { --good: #1b5e20; --warn: #a84300; }
 
 /* ----- T1 and T0 ----- */
 .wai-rule { font-size: var(--pgn-body); font-weight: 800; line-height: 1.35; }

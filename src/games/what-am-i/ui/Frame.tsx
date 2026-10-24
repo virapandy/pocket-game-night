@@ -89,6 +89,7 @@ export function WhatAmIGame({
   onSettingsDone,
   onChangeSetup,
   onSomethingElse,
+  openEnd = false,
 }: {
   id: string;
   store: SavedGameStore;
@@ -105,10 +106,12 @@ export function WhatAmIGame({
   onSettingsDone: () => void;
   onChangeSetup: () => void;
   onSomethingElse: (names: string[]) => void;
+  /** Opens with "End the game?" (WAI-060), from the two-player dialog of "Change players or words". */
+  openEnd?: boolean;
 }) {
   const [live, setLive] = useState<Live | null>(() => openNight(store, id));
   const [ui, setUiState] = useState<NightUi>(() => readUi(uiStore, id));
-  const [overlay, setOverlay] = useState<Overlay>(null);
+  const [overlay, setOverlay] = useState<Overlay>(openEnd ? 'end' : null);
   const [skipAsk, setSkipAsk] = useState(false);
   const [welcome, setWelcome] = useState(openedWelcome);
   const [toast, showToast, clearToast] = useWaiToast();

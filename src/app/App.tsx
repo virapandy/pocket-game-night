@@ -37,7 +37,8 @@ type Route =
   | { name: 'sw-map'; map: SecretWordsMapToOpen; nonce: number }
   /** `backTo`: History opened from an Impostor evening's menu, with "← Back" to that evening (IMP-075). */
   | { name: 'history'; backTo?: string; backToWai?: string }
-  | { name: 'past'; id: string }
+  /** `backTo`/`backToWai`: History's way back to a game, kept for "← Back" from this past game. */
+  | { name: 'past'; id: string; backTo?: string; backToWai?: string }
   | { name: 'sessions' }
   | { name: 'session'; id: string }
   | {
@@ -538,7 +539,7 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
             // IMP-094: an Impostor evening in progress is resumed, never looked back at.
             const g = gameStore.get(id);
             if (g?.gameType === impostor.info.id && g.status === 'in-progress') setRoute({ name: 'game', gameId: 'impostor', open: { id, action: 'resume' } });
-            else setRoute({ name: 'past', id });
+            else setRoute({ name: 'past', id, ...(backTo ? { backTo } : {}), ...(backToWai ? { backToWai } : {}) });
           }}
           deleted={deleted}
           onUndoDelete={() => {
@@ -552,14 +553,17 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
     if (route.name === 'session') return <SessionScreen id={route.id} onBack={() => setRoute({ name: 'sessions' })} />;
     if (route.name === 'past') {
       const saved = gameStore.get(route.id);
+      // "← Back" returns to History with its own way back to the game it was opened from.
+      const { backTo, backToWai } = route;
+      const toHistory = () => setRoute({ name: 'history', ...(backTo ? { backTo } : {}), ...(backToWai ? { backToWai } : {}) });
       // SWD-064: a Secret Words game night: its games (E1) and one game (E1a).
-      if (saved && secretWords.isNight(saved)) return <secretWords.PastNight saved={saved} onBack={() => setRoute({ name: 'history' })} />;
+      if (saved && secretWords.isNight(saved)) return <secretWords.PastNight saved={saved} onBack={toHistory} />;
       // WAI-092: a What Am I? game night; "Play again" opens Who's playing? with its players.
       if (saved && whatAmI.isNight(saved)) {
         return (
           <whatAmI.PastNight
             saved={saved}
-            onBack={() => setRoute({ name: 'history' })}
+            onBack={toHistory}
             onPlayAgain={() => setRoute({ name: 'wai', start: { kind: 'again', id: saved.id }, nonce: Date.now() })}
           />
         );
@@ -571,7 +575,7 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
           <PastGame
             saved={saved}
             prefs={preferences}
-            onBack={() => setRoute({ name: 'history' })}
+            onBack={toHistory}
             actions={
               <PastGameActions
                 saved={saved}
@@ -581,7 +585,7 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
                 onDelete={() => {
                   gameStore.remove(saved.id);
                   setDeleted({ games: [saved], at: Date.now() });
-                  setRoute({ name: 'history' });
+                  toHistory();
                 }}
               />
             }
