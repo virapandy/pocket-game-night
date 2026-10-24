@@ -15,7 +15,7 @@ import {
 import type { StepProps, WaiScreen } from './Frame';
 import { platformOf } from './hooks';
 import { turnKey } from './night';
-import { HomeButton, Main, START_GUARD_MS, ToastHost, WaiDialog, useWaiBack } from './parts';
+import { CuedScroll, HomeButton, Main, START_GUARD_MS, ToastHost, WaiDialog, useWaiBack } from './parts';
 import { Drawing } from './Setup';
 import {
   askAgainSilently, askMotion, asksFirst, clearSavedToast, gameKey, holdScreenOn, letScreenSleep, motionReady, motionWanted,
@@ -161,7 +161,11 @@ export function TurnFlow(p: StepProps) {
     const on = () => ref.current.state.choices?.sounds !== false;
     for (const t of tickTimes(r.T)) if (t > r.elapsed0) after(t - r.elapsed0, () => playSound('tick', on()));
     const ten = r.T - 10000;
-    if (ten > r.elapsed0) after(ten - r.elapsed0, () => setLive('10 seconds left'));
+    // WAI-081: announced once at T − 10 s, then cleared after 3 s so it never lingers while the clock reads 0:05.
+    if (ten > r.elapsed0) {
+      after(ten - r.elapsed0, () => setLive('10 seconds left'));
+      after(ten + 3000 - r.elapsed0, () => setLive((cur) => (cur === '10 seconds left' ? '' : cur)));
+    }
     after(r.T - r.elapsed0, timeUp);
     const second = () => {
       const e = elapsed();
@@ -710,12 +714,15 @@ export function TurnEnd(p: StepProps) {
       {p.welcome}
       <h1 className="pgn-title">{`${t.endedEarly ? 'Turn ended early.' : "Time's up!"} ${player} got ${got}`}</h1>
       <p className="wai-small">{totalsLine(s, player, got)}</p>
-      <div className="pgn-scroll wai-turn-lists" data-testid="turn-lists">
+      <CuedScroll className="wai-turn-lists" testId="turn-lists">
         {list('Got it', t.got, 'got')}
         {list('Passed', t.passed, 'passed')}
+      </CuedScroll>
+      {/* Sideways, these two lines sit beside the main button, so the lists keep the height (walk, 25 October). */}
+      <div className="wai-review-foot">
+        <p className="wai-small">Marked wrong? Tap a word to move it.</p>
+        <p className="wai-small">{next ? `Next: ${next}` : 'Next: round over'}</p>
       </div>
-      <p className="wai-small">Marked wrong? Tap a word to move it.</p>
-      <p className="wai-small">{next ? `Next: ${next}` : 'Next: round over'}</p>
       <Main
         guardKey={`${night}:${s.game}:${s.saved.length}:review`}
         onClick={() => {

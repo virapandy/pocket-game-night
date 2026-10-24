@@ -4,7 +4,7 @@
 import { useId, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { QuietButton, Screen, ScreenContent, ScrollArea, Toast } from '../../../blocks';
 import { PACKS, packCount, type Choices, type Hold, type PackChoice, type TurnTime } from '../rules';
-import { Main, NameList, Switch, ToastHost, moved, useWaiBack, useWaiToast } from './parts';
+import { Main, NameList, PageMoreBelow, Switch, ToastHost, moved, useWaiBack, useWaiToast } from './parts';
 
 const MAX_PLAYERS = 20;
 const MAX_NAME = 16;
@@ -297,6 +297,7 @@ export function WordsAndTime({
         <h1 className="pgn-title">Words and time</h1>
         <ChoicesForm choices={choices} onChange={onChange} />
       </ScreenContent>
+      <PageMoreBelow className="wai-more-ready" />
       <p className="wai-small wai-ready">Ready as it is, or change anything above.</p>
       <Main onClick={onStart}>{startLabel}</Main>
     </Screen>

@@ -68,3 +68,20 @@
 
 /* T1 (C1, 25 October): scrolled to the end, its last buttons clear the pinned main button with room to spare, also sideways. */
 .pgn-screen.pgn-page.wai-pass { padding-bottom: calc(var(--pgn-foot) + 16px); }
+
+/* T4 sideways (first-time host walk, 25 October): Got it and Passed side by side; the two small lines sit beside the main
+   button, so the lists keep the height to read and tap their chips. */
+.wai-review-foot { display: flex; flex-direction: column; gap: 6px; flex: none; }
+@media (orientation: landscape) and (max-height: 600px) {
+  .wai-review .wai-turn-lists { display: grid; grid-template-columns: 1fr 1fr; align-content: start; align-items: start; gap: 8px 16px; }
+  .wai-review .wai-list { min-width: 0; }
+  .wai-review .pgn-title { font-size: 1.4rem; }
+  .wai-review .wai-review-foot {
+    position: fixed; z-index: 4; left: max(var(--pgn-gutter), env(safe-area-inset-left));
+    bottom: max(var(--pgn-gutter), env(safe-area-inset-bottom)); height: var(--pgn-main-h);
+    width: calc(100vw - var(--wai-main-w, 358px) - 3 * var(--pgn-gutter)); justify-content: center; gap: 2px;
+  }
+}
+@media (orientation: landscape) and (max-height: 340px) {
+  .wai { --wai-main-w: 240px; }
+}

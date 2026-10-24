@@ -172,3 +172,48 @@
   .wai-stack { flex-direction: row; flex-wrap: wrap; }
   .wai-stack > .pgn-quiet { flex: 1 1 200px; }
 }
+
+/* "More below ↓" (first-time host walk, 25 October): a faded cue at the foot of anything that can scroll further. It never
+   takes taps, so whatever lies under it can still be tapped once scrolled up. */
+.wai-cue-wrap { position: relative; flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
+.wai-more {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 1; padding: 20px 0 2px; text-align: center;
+  font-size: var(--pgn-small); font-weight: 700; line-height: 1.2; color: var(--accent);
+  background: linear-gradient(to bottom, transparent, var(--bg) 55%); pointer-events: none;
+}
+/* S2: fixed just above "Ready as it is…" */
+.wai-more-page { position: fixed; z-index: 6; bottom: calc(max(var(--pgn-gutter), env(safe-area-inset-bottom)) + var(--pgn-main-h) + var(--wai-ready-h, 0px)); }
+.wai-more-ready { left: max(var(--pgn-gutter), env(safe-area-inset-left)); right: max(var(--pgn-gutter), env(safe-area-inset-right)); }
+
+/* R1 upright on short phones: the three quiet buttons take two rows, so the scoreboard keeps more of the height. */
+@media (orientation: portrait) and (max-height: 760px) {
+  .wai-stack.wai-stack-r1 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .wai-stack.wai-stack-r1 > :last-child { grid-column: 1 / -1; }
+  .wai-stack.wai-stack-r1 > .pgn-quiet { min-height: 48px; padding: 4px 8px; line-height: 1.2; }
+  .wai-round .pgn-title { font-size: 1.5rem; }
+}
+/* S2: the strip under and beside the main button is solid too, so no choice shows through below it (walk, 25 October). */
+.wai-ready::after {
+  content: ''; position: absolute; z-index: -1; top: calc(100% - 2px); left: calc(-1 * var(--pgn-gutter)); right: calc(-1 * var(--pgn-gutter));
+  height: calc(var(--pgn-main-h) + max(var(--pgn-gutter), env(safe-area-inset-bottom))); background: var(--bg);
+}
+/* R1 sideways: the scoreboard on the left with the full height, the three quiet buttons on the right above "Round 2". */
+.wai-r1-body { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; gap: 8px; }
+@media (orientation: landscape) and (max-height: 600px) {
+  .wai-r1-body { flex-direction: row; gap: 16px; }
+  .wai-r1-body > .wai-stack.wai-stack-pinned {
+    flex: none; width: var(--wai-main-w, 358px); margin-top: 0; flex-direction: column; flex-wrap: nowrap; gap: 6px;
+    justify-content: flex-end; min-height: 0; overflow-y: auto;
+  }
+  .wai-r1-body > .wai-stack.wai-stack-pinned > .pgn-quiet { flex: none; min-height: 44px; padding-top: 0; padding-bottom: 0; }
+  .wai-round .pgn-title { font-size: 1.4rem; }
+}
+/* R1 sideways: the Undo toast sits beside "Round 2" in the free corner, so the scoreboard keeps that height too. */
+@media (orientation: landscape) and (max-height: 600px) {
+  .wai:has(.wai-round) .wai-toast-host > .pgn-toast {
+    left: max(var(--pgn-gutter), env(safe-area-inset-left)); transform: none;
+    bottom: calc(max(var(--pgn-gutter), env(safe-area-inset-bottom)) + (var(--pgn-main-h) - 44px) / 2);
+    max-width: calc(100vw - var(--wai-main-w, 358px) - 3 * var(--pgn-gutter));
+  }
+  .wai:has(.wai-toast-host > .pgn-toast) .pgn-screen.wai-game.wai-round { padding-bottom: var(--pgn-foot); }
+}

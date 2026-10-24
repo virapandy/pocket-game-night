@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { QuietButton, Screen, ScrollArea } from '../../../blocks';
 import { joinNames, wordById } from '../rules';
 import type { StepProps } from './Frame';
-import { GameMenu, HomeButton, Main, Scoreboard, WaiDialog } from './parts';
+import { CuedScroll, GameMenu, HomeButton, Main, Scoreboard, WaiDialog } from './parts';
 
 const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
 const words = (n: number) => plural(n, 'word', 'words');
@@ -31,17 +31,20 @@ export function RoundOverScreen(p: StepProps) {
         {p.top}
       </header>
       {p.welcome}
-      <ScrollArea>
-        <h1 className="pgn-title">{`Round ${done} done. Round ${done + 1} next.`}</h1>
-        <Scoreboard rows={p.view.scoreboard} />
-        {nobody && <p className="wai-body">{nobody}</p>}
-        <p className="wai-small">Play as many rounds as you like; tap End the game to see who got the most.</p>
-      </ScrollArea>
-      {/* Kept out of the scroll, so "Change players or words" and "End the game" stay on screen (above the toast too). */}
-      <div className="wai-stack wai-stack-pinned">
-        <QuietButton onClick={p.openPlayers}>{`Players (${p.view.order.length}) ›`}</QuietButton>
-        <QuietButton onClick={p.onChangeSetup}>Change players or words</QuietButton>
-        <QuietButton onClick={p.openEndGame}>End the game</QuietButton>
+      {/* The whole scoreboard reads in the free height; if it must scroll, "More below ↓" shows it (walk, 25 October). */}
+      <div className="wai-r1-body">
+        <CuedScroll>
+          <h1 className="pgn-title">{`Round ${done} done. Round ${done + 1} next.`}</h1>
+          <Scoreboard rows={p.view.scoreboard} />
+          {nobody && <p className="wai-body">{nobody}</p>}
+          <p className="wai-small">Play as many rounds as you like; tap End the game to see who got the most.</p>
+        </CuedScroll>
+        {/* Kept out of the scroll, so "Change players or words" and "End the game" stay on screen (above the toast too). */}
+        <div className="wai-stack wai-stack-pinned wai-stack-r1">
+          <QuietButton onClick={p.openPlayers}>{`Players (${p.view.order.length}) ›`}</QuietButton>
+          <QuietButton onClick={p.onChangeSetup}>Change players or words</QuietButton>
+          <QuietButton onClick={p.openEndGame}>End the game</QuietButton>
+        </div>
       </div>
       <Main guardKey={`${p.state.game}:${p.state.round}:R1`} onClick={() => p.setUi({ roundStarted: `${p.state.game}:${p.state.round}` })}>
         {`Round ${done + 1}`}
@@ -84,7 +87,7 @@ export function GameOverScreen(p: StepProps) {
         {p.top}
       </header>
       {p.welcome}
-      <ScrollArea>
+      <CuedScroll>
         <h1 className="pgn-title">{title}</h1>
         {turns > 0 && <Scoreboard rows={p.view.scoreboard} />}
         {best && <p className="wai-body">{best}</p>}
@@ -95,7 +98,7 @@ export function GameOverScreen(p: StepProps) {
           <QuietButton onClick={p.onChangeSetup}>Change players or words</QuietButton>
           <QuietButton onClick={p.openEndTonight}>End for tonight</QuietButton>
         </div>
-      </ScrollArea>
+      </CuedScroll>
       <Main guardKey={`${p.state.game}:G1`} onClick={again}>
         Play again
       </Main>

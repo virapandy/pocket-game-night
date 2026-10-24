@@ -376,6 +376,73 @@ export function moved<T>(list: readonly T[], from: number, to: number): T[] {
   return out;
 }
 
+// ---------------------------------------------------------------- "More below ↓": a visible cue on anything that scrolls
+
+const MORE = 'More below ↓';
+const moreIn = (top: number, view: number, all: number) => all - view - top > 4;
+
+/** A scroll box (the blocks' `pgn-scroll`) that shows a faded "More below ↓" at its foot while it can scroll further. */
+export function CuedScroll({ className, testId, children }: { className?: string; testId?: string; children: ReactNode }) {
+  const box = useRef<HTMLDivElement>(null);
+  const [more, setMore] = useState(false);
+  const check = useCallback(() => {
+    const el = box.current;
+    if (el) setMore(moreIn(el.scrollTop, el.clientHeight, el.scrollHeight));
+  }, []);
+  useLayoutEffect(check);
+  useEffect(() => {
+    const el = box.current;
+    if (!el) return;
+    const ro = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(check);
+    ro?.observe(el);
+    for (const c of Array.from(el.children)) ro?.observe(c);
+    window.addEventListener('resize', check);
+    return () => {
+      ro?.disconnect();
+      window.removeEventListener('resize', check);
+    };
+  }, [check]);
+  return (
+    <div className="wai-cue-wrap">
+      <div ref={box} className={className ? `pgn-scroll ${className}` : 'pgn-scroll'} data-testid={testId} onScroll={check}>
+        {children}
+      </div>
+      {more && (
+        <div className="wai-more" aria-hidden="true">
+          {MORE}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/** The same cue for a page that scrolls as a whole (S2): fixed just above what is pinned at the foot. */
+export function PageMoreBelow({ className }: { className?: string }) {
+  const [more, setMore] = useState(false);
+  useEffect(() => {
+    const check = () => {
+      const d = document.scrollingElement ?? document.documentElement;
+      setMore(moreIn(window.scrollY, window.innerHeight, d.scrollHeight));
+    };
+    check();
+    const ro = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(check);
+    ro?.observe(document.body);
+    window.addEventListener('scroll', check, { passive: true });
+    window.addEventListener('resize', check);
+    return () => {
+      ro?.disconnect();
+      window.removeEventListener('scroll', check);
+      window.removeEventListener('resize', check);
+    };
+  }, []);
+  if (!more) return null;
+  return (
+    <div className={className ? `wai-more wai-more-page ${className}` : 'wai-more wai-more-page'} aria-hidden="true">
+      {MORE}
+    </div>
+  );
+}
+
 // ---------------------------------------------------------------- Scoreboard (WAI-032)
 
 const turnsText = (n: number) => `${n} ${n === 1 ? 'turn' : 'turns'}`;

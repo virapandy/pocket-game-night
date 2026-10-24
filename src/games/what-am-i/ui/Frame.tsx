@@ -158,6 +158,13 @@ export function WhatAmIGame({
   const state = live?.match.state ?? null;
   const screen = state ? screenOf(state, ui) : 'G2';
   const between = screen === 'T1' || screen === 'R1' || screen === 'T4';
+  // WAI-062: a toast from the last game ("Game ended · Undo") closes when "Play again" starts the next one.
+  const gameNo = state?.game;
+  const shownGame = useRef(gameNo);
+  useEffect(() => {
+    if (shownGame.current !== gameNo) clearToast();
+    shownGame.current = gameNo;
+  }, [gameNo, clearToast]);
 
   const pause = () => {
     setOverlay(null);
