@@ -334,6 +334,12 @@
       "specs": ["secret-words-game-over.spec.ts", "secret-words-players-history.spec.ts"]
     },
     {
+      "name": "What Am I?: rules, screens, saved game nights, word list (every What Am I? browser file; written before the build, expected to fail until window.__waiTest exists)",
+      "lane": "shared",
+      "paths": ["src/games/what-am-i/**", "content/what-am-i/**", "docs/games/what-am-i/words.csv", "tests/browser/what-am-i.ts", "tests/browser/what-am-i-*.spec.ts", "tests/games/what-am-i/oracle.ts"],
+      "specs": ["what-am-i-c3.spec.ts", "what-am-i-setup.spec.ts", "what-am-i-turn.spec.ts", "what-am-i-scores.spec.ts", "what-am-i-interruptions.spec.ts", "what-am-i-results.spec.ts", "what-am-i-usability.spec.ts", "what-am-i-lifecycle.spec.ts"]
+    },
+    {
       "name": "A changed browser spec runs itself (matched by the automation by file name)",
       "lane": "shared",
       "paths": ["tests/browser/*.spec.ts"],
