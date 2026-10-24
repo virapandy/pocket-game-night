@@ -165,6 +165,9 @@ test.describe('WAI-021: what is ignored', () => {
 });
 
 test.describe('WAI-021 / Version 1.1 items 8 to 12: marking by moving the phone (WAI-H3)', () => {
+  // Each test schedules 300 to 380 orientation events as page timers; Playwright's clock takes about 170 ms of real time
+  // per timer on a low-priority Mac (`taskpolicy -b`), so up to about 65 s: a fitting limit, not a weaker check.
+  test.describe.configure({ timeout: 150_000 });
   test('the worked example: θ₀ = 2; θ −45 from t = 1000 → Got it at the event at 1168; −50 at 1800 ignored; 5 at 2000 re-arms; +45 from 2100 → Pass at the first event after the guard (2576)', async ({ page }) => {
     await startNight(page, { seed: 'motion', pack: 'Food', players: ['Riya', 'Arjun'] });
     const t2 = await startTurn(page);

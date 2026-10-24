@@ -72,6 +72,18 @@ type Choices = { pack: Pack | 'mix'; time: 30 | 60 | 90; hold: 'hand' | 'free'; 
 { type: 'setChoices'; choices: Choices } | { type: 'setPlayers'; players: string[] }
 { type: 'endGame' } | { type: 'endEvening' }
 ```
+**WAI-010, no word twice in a turn (orchestrator's call, 25 October 2026, owner away; for the product owner to confirm in
+`docs/test-questions.md`):** a word never comes back within the same turn. "Shown in this turn" means marked Got it or Pass
+in it (a word hidden by a pause is not shown, so it can still come back, as Duck does in Version 1.1 item 6). When every
+eligible word has been shown in the open turn (only possible with a tiny list, such as the WAI-H7 lists), there is no next
+word: `legalMoves` offers no `got` or `pass`, and `got`, `pass`, `timeUp { word }` and `pause { turn: true, word }` with any
+word are refused; `timeUp` with no word and `pause { turn: true }` with no word are accepted. On screen, time up happens at
+once: when the last mark's 600 ms flash ends (the moment the next word would show), the app records `timeUp` with no word,
+plays the time-up sound and vibration and opens T4 ("Time's up! …"), whatever time is left. `queueFor(state)` keeps its
+meaning (its first word is then a word of this turn, not on screen). From the next turn the words come back as usual,
+oldest first-shown first. (Tests: `queue.test.ts` "a word never comes back within the same turn"; WAI-011 tip 3 in
+`what-am-i-turn.spec.ts`.)
+
 Made exact here (the scenarios name these moves but not all their fields):
 - `got` and `pass` carry the word id, as `timeUp` does, so the saved data holds each shown word's id (WAI-092, B9).
 - `pause` says whether a turn was under way (`turn: true` from T2 or T3; false from T1 or T4) and, from T3 outside a flash,

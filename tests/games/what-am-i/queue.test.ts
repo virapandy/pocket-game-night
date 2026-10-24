@@ -233,3 +233,94 @@ describe('WAI-010: a game night needs its word seed (Version 1.1 item 1; orchest
     expect(() => startMatch(rules(), { gameId: 'what-am-i', seeds: { words: 'w-1' }, config: {} } as any, at)).not.toThrow();
   });
 });
+
+describe('WAI-010: a word never comes back within the same turn (orchestrator\'s call, 25 October 2026, for the product owner to confirm)', () => {
+  const id = (t: string) => idOf(t, 'Animals');
+  const FIVE = ['Owl', 'Tiger', 'Duck', 'Bat', 'Camel'];
+  const markMoves = (n: Night) => (rules().legalMoves(n.state, 'host') as any[]).filter((m) => m.type === 'got' || m.type === 'pass');
+
+  wit('the worked example\'s five words all shown in one turn (GPGGG): no word is offered again; only timeUp with no word ends it', () => {
+    const n = new Night({ seed: EXAMPLE_SEED, testWords: EXAMPLE_WORDS }).start(['Riya', 'Arjun'], { pack: 'Animals' });
+    expect([n.got(), n.pass(), n.got(), n.got(), n.got()]).toEqual(FIVE.map(id));
+    for (const w of FIVE.map(id)) {
+      expect(n.accepts({ type: 'got', word: w }), `got ${w}`).toBe(false);
+      expect(n.accepts({ type: 'pass', word: w }), `pass ${w}`).toBe(false);
+      expect(n.accepts({ type: 'timeUp', word: w }), `timeUp with ${w}`).toBe(false);
+      expect(n.accepts({ type: 'pause', turn: true, word: w }), `pause hiding ${w}`).toBe(false);
+    }
+    expect(markMoves(n)).toEqual([]);
+    expect(rules().legalMoves(n.state, 'host')).toContainEqual({ type: 'timeUp' });
+    expect(n.view.step).toBe('turn');
+    n.timeUp(false);
+    const v = n.view;
+    expect(v.step).toBe('review');
+    expect(v.turn.got).toEqual(['Owl', 'Duck', 'Bat', 'Camel'].map(id));
+    expect(v.turn.passed).toEqual([id('Tiger')]);
+  });
+
+  wit('with no word left for the turn, a pause hides nothing; after Carry on the turn still ends only by timeUp with no word', () => {
+    const n = new Night({ seed: EXAMPLE_SEED, testWords: EXAMPLE_WORDS }).start(['Riya', 'Arjun'], { pack: 'Animals' });
+    for (let i = 0; i < 5; i++) n.got();
+    n.pause(true).resume();
+    expect(markMoves(n)).toEqual([]);
+    expect(n.accepts({ type: 'timeUp', word: id('Owl') })).toBe(false);
+    n.timeUp(false);
+    expect(n.view.turn.got).toEqual(FIVE.map(id));
+    expect(n.view.turn.passed).toEqual([]);
+  });
+
+  wit('the next turn shows the words again, oldest first (Owl first): the rule holds within a turn only', () => {
+    const n = new Night({ seed: EXAMPLE_SEED, testWords: EXAMPLE_WORDS }).start(['Riya', 'Arjun'], { pack: 'Animals' });
+    n.turn('GPGGG');
+    n.save();
+    expect(n.view.player).toBe('Arjun');
+    expect(n.queue[0]).toBe(id('Owl'));
+    expect(n.got()).toBe(id('Owl'));
+    expect(n.pass()).toBe(id('Tiger'));
+  });
+
+  wit('a hidden word is not shown, so it still comes back in the same turn (Version 1.1 item 6: Duck)', () => {
+    const n = new Night({ seed: EXAMPLE_SEED, testWords: EXAMPLE_WORDS }).start(['Riya', 'Arjun'], { pack: 'Animals' });
+    n.got(); n.pass();
+    expect(n.pauseHiding()).toBe(id('Duck'));
+    n.resume();
+    expect([n.got(), n.got(), n.got()]).toEqual(['Bat', 'Camel', 'Duck'].map(id));
+    expect(markMoves(n)).toEqual([]);
+  });
+
+  wit('property: in one turn of a small list (pack and Mix fallback), each word is shown at most once; once every eligible word is shown, only timeUp with no word', () => {
+    const pool: WaiWord[] = [
+      ...WORDS.filter((w) => w.pack === 'Animals' && w.word !== 'Bat').slice(0, 5), ...WORDS.filter((w) => w.pack === 'Food' && !w.nonveg).slice(0, 3),
+    ];
+    fc.assert(fc.property(
+      fc.string({ minLength: 1, maxLength: 8 }), fc.subarray(pool, { minLength: 1 }), fc.constantFrom<PackChoice>('mix', 'Animals', 'Food'),
+      fc.array(fc.constantFrom('G', 'P'), { maxLength: 12 }),
+      (seed, list, pack, steps) => {
+        const n = new Night({ seed, testWords: list }).start(['Riya', 'Arjun'], { pack });
+        const shown: string[] = [];
+        for (const s of steps) {
+          if (shown.length === list.length) {
+            expect(markMoves(n)).toEqual([]);
+            for (const w of ids(list)) {
+              expect(n.accepts({ type: 'got', word: w })).toBe(false);
+              expect(n.accepts({ type: 'pass', word: w })).toBe(false);
+            }
+            break;
+          }
+          shown.push(s === 'G' ? n.got() : n.pass());
+        }
+        const t = n.timeUp(shown.length < list.length);
+        if (t) shown.push(t);
+        expect(new Set(shown).size).toBe(shown.length);
+        expect(shown.every((w) => ids(list).includes(w))).toBe(true);
+        expect(n.view.step).toBe('review');
+        n.save();
+        // the next turn may show them all again
+        const again: string[] = [];
+        for (let i = 0; i < list.length; i++) again.push(n.got());
+        expect(new Set(again).size).toBe(list.length);
+        expect(markMoves(n)).toEqual([]);
+      },
+    ), { numRuns: 80 });
+  });
+});

@@ -70,7 +70,7 @@ test.describe('WAI-012: the pass screen', () => {
   });
 
   test('Version 1.1 item 31 / Version 1.2 item 3: "player k of n" counts saved turns this round plus current players still to play', async ({ page }) => {
-    await startNight(page, { seed: 'k-of-n', players: ['Riya', 'Arjun', 'Meena', 'Kabir'] });
+    await startNight(page, { seed: 'k-of-n', players: ['Riya', 'Arjun', 'Meena', 'Kabir'], turnTime: 30 });
     await saveTurns(page, 1);
     await expect(text(page, 'Round 1 · player 2 of 4')).toBeVisible();
     await fromMenu(page, 'Players');
@@ -88,16 +88,16 @@ test.describe('WAI-012: the pass screen', () => {
 
 test.describe('WAI-011: tip lines on T1 (at most one, the first that applies)', () => {
   test('2: "Only 10 new Animals words left. After that, words come from Mix of all." (1–14 unshown); one word: "Only 1 new Animals word left. …"', async ({ page }) => {
-    await startNight(page, { seed: 'tip-2', words: [...animals(10), ...food(5)], pack: 'Animals', players: TWO });
+    await startNight(page, { seed: 'tip-2', words: [...animals(10), ...food(5)], pack: 'Animals', players: TWO, turnTime: 30 });
     await expect(tipLine(page)).toHaveText('Only 10 new Animals words left. After that, words come from Mix of all.');
     await expect(tipLine(page)).toHaveCount(1);
-    await playTurn(page, 'GGGGGGGGG'); // nine of ten shown
+    await playTurn(page, 'GGGGGGGG'); // eight marked plus the word on screen at time up (WAI-023: shown): nine of ten shown
     await saveScore(page);
     await expect(tipLine(page)).toHaveText('Only 1 new Animals word left. After that, words come from Mix of all.');
   });
 
   test('2b (Version 1.1 item 7): "Animals words used up. Words now come from Mix of all." while the fallback supplies words', async ({ page }) => {
-    await startNight(page, { seed: 'tip-2b', words: [...animals(3), ...food(10)], pack: 'Animals', players: TWO });
+    await startNight(page, { seed: 'tip-2b', words: [...animals(3), ...food(10)], pack: 'Animals', players: TWO, turnTime: 30 });
     await playTurn(page, 'GGGG'); // three Animals, then a Mix word
     await saveScore(page);
     await expect(tipLine(page)).toHaveText('Animals words used up. Words now come from Mix of all.');
@@ -107,13 +107,18 @@ test.describe('WAI-011: tip lines on T1 (at most one, the first that applies)', 
     await startNight(page, { seed: EXAMPLE_SEED, words: EXAMPLE_WORDS, pack: 'Animals', players: TWO, turnTime: 30 });
     const t3 = await toWord(page);
     await marks(page, 'GPGGG');
-    await runToTimeUp(page, t3, 30);
+    // WAI-010 (orchestrator's call, 25 October 2026): a word never comes back within the same turn. All five words are
+    // shown, so time up comes at once when the fifth mark's flash ends, with no word on screen, long before 30 s.
+    expect((await now(page)) - t3).toBeLessThan(30000);
+    await expect(heading(page, /^Time's up!/)).toBeVisible();
+    expect((await moves(page)).at(-1)).toEqual({ type: 'timeUp' });
+    expect((await soundLog(page)).filter((e) => e.kind === 'sound' && e.name === 'timeUp')).toHaveLength(1);
     await saveScore(page);
     await expect(tipLine(page)).toHaveText('All words used tonight. Words from earlier games come back, oldest first.');
   });
 
   test('1 first: "Joining this round: Om" wins over the words tip; gone once Om has played', async ({ page }) => {
-    await startNight(page, { seed: 'tip-1', words: [...animals(12), ...food(12)], pack: 'Animals', players: TWO });
+    await startNight(page, { seed: 'tip-1', words: [...animals(12), ...food(12)], pack: 'Animals', players: TWO, turnTime: 30 });
     await fromMenu(page, 'Players');
     await page.getByLabel('Player name', { exact: true }).fill('Om');
     await button(page, 'Add').click();
@@ -127,7 +132,7 @@ test.describe('WAI-011: tip lines on T1 (at most one, the first that applies)', 
   });
 
   test('Version 1.2 item 9: the sound tip on the first turn of every game while Sounds is on; never on later turns; "ringer" never shows', async ({ page }) => {
-    await startNight(page, { seed: 'tip-sound', pack: 'mix', players: TWO });
+    await startNight(page, { seed: 'tip-sound', pack: 'mix', players: TWO, turnTime: 30 });
     await expect(tipLine(page)).toHaveText('Turn the sound up so the guesser hears each word count.');
     await saveTurns(page, 1);
     await expect(tipLine(page)).toHaveCount(0);
@@ -140,7 +145,7 @@ test.describe('WAI-011: tip lines on T1 (at most one, the first that applies)', 
   });
 
   test('Version 1.2 item 10: a refused wake lock → "Keep your screen on during the turn." on the next T1, once per game', async ({ page }) => {
-    await startNight(page, { seed: 'tip-screen', pack: 'mix', players: TWO, wakeLock: 'refused' });
+    await startNight(page, { seed: 'tip-screen', pack: 'mix', players: TWO, wakeLock: 'refused', turnTime: 30 });
     await saveTurns(page, 1);
     await expect(tipLine(page)).toHaveText('Keep your screen on during the turn.');
     await saveTurns(page, 1);
@@ -209,6 +214,7 @@ test.describe('WAI-013: motion permission and the motion question (Version 1.1 i
   });
 
   test('no orientation event within 1 s of T2: the turn runs with taps only (later movement marks nothing), no message', async ({ page }) => {
+    test.setTimeout(150_000); // about 245 scheduled orientation events, ~170 ms of real time each under `taskpolicy -b`
     await startNight(page, { seed: 'no-events', players: TWO });
     const t2 = await startTurn(page);
     await scheduleOrientation(page, every16(t2 + 1100, t2 + 5000, (t) => (t - t2 < 3000 ? 0 : -60)));
@@ -222,7 +228,7 @@ test.describe('WAI-013: motion permission and the motion question (Version 1.1 i
 
 test.describe('WAI-014 / WAI-015: hold for one player, someone else goes first', () => {
   test('"Hands-free for Riya" records setHold, shows the hands-free T1 with "Hands-free (Riya\'s choice)"; kept on her next turn; "Riya will hold it" reverses', async ({ page }) => {
-    await startNight(page, { seed: 'hold', players: TWO });
+    await startNight(page, { seed: 'hold', players: TWO, turnTime: 30 });
     await tap(page, button(page, 'Hands-free for Riya'));
     await expect(mainButton(page)).toHaveText("Start Riya's turn");
     await expect(text(page, "Hands-free (Riya's choice)")).toBeVisible();
@@ -250,7 +256,7 @@ test.describe('WAI-014 / WAI-015: hold for one player, someone else goes first',
   });
 
   test('"Keep Riya first" records nothing; only players still to play this round are offered', async ({ page }) => {
-    await startNight(page, { seed: 'first-2', players: ['Riya', 'Arjun', 'Meena'] });
+    await startNight(page, { seed: 'first-2', players: ['Riya', 'Arjun', 'Meena'], turnTime: 30 });
     await saveTurns(page, 1);
     await tap(page, button(page, 'Someone else goes first'));
     const d = page.getByRole('dialog');
@@ -403,6 +409,7 @@ test.describe('WAI-022: sounds and vibration (WAI-H8, Version 1.1 item 18)', () 
 
 test.describe('WAI-024: rotation lock (Version 1.1 item 21; Version 1.2 item 11)', () => {
   test('held sideways (|γ| ≥ 60 for 500 ms) while the screen says portrait: T3 is drawn turned 90°; it turns back after 500 ms with |γ| < 45', async ({ page }) => {
+    test.setTimeout(150_000); // about 375 scheduled orientation events, ~170 ms of real time each under `taskpolicy -b`
     await startNight(page, { seed: 'rotate', words: [WORDS.find((w) => w.word === 'Owl')!, WORDS.find((w) => w.word === 'Tiger')!], pack: 'mix', players: TWO, orientationType: 'portrait-primary' });
     const t2 = await startTurn(page);
     const t3 = t2 + 3000;
@@ -423,6 +430,7 @@ test.describe('WAI-024: rotation lock (Version 1.1 item 21; Version 1.2 item 11)
   });
 
   test('a rotation-lock event shows "Screen not turning? Turn on Auto-rotate." (Android) on the first turn of a later game; iPhone: "…Turn off rotation lock."', async ({ page }) => {
+    test.setTimeout(240_000); // two nights of about 310 scheduled orientation events each, ~170 ms of real time per event under `taskpolicy -b`
     for (const platform of ['android', 'iphone'] as const) {
       await startNight(page, { seed: `rot-${platform}`, players: TWO, orientationType: 'portrait-primary', platform, sounds: false, turnTime: 30 });
       const t2 = await startTurn(page);
