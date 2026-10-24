@@ -1,4 +1,23 @@
 # Test report
+## Lane-m, Mafia review fixes pinned (MAF-037, MAF-093, MAF-052, MAF-H2)
+Commit tested: ed28360 (app; tests 6c072c7)   Date: 2026-10-25
+Result: GREEN. Quick verify 40128921060 on lane-m at 6c072c7: verify and all 4 browser shards green.
+- Rule tests, local (low priority): Mafia files + `tests/contract/mafia.test.ts` 172 of 172 (26 new in
+  `tests/games/mafia/editions.test.ts` and `leaves.test.ts`). Browser: none touched this round.
+## Failing (real bugs only)
+- None.
+## Flaky or setup problems (not for the Build workspace)
+- Running all of `tests/contract` together with the Mafia files under `taskpolicy -b` timed 4 long property tests out at
+  120 s (Mafia P5, P6, a replay property and one contract file). Run on their own they all pass: machine load, not the app.
+## Requests for the Build workspace
+- None.
+## Notes for the owner (plain English)
+- Mafia stories are now frozen per saved game night: adding new stories later never changes the stories an old evening
+  told. A night saved without a story edition always reads as edition 1.2.
+- Someone leaving on "Night begins" (after the day's vote) now waits for that night; leaving from the vote result or
+  "Still a tie" counts for the day before and happens at once. These were the orchestrator's calls while you were away:
+  please confirm them (`docs/test-questions.md`, 25 October, "Mafia review fixes").
+---
 **24 October, weekly run 40077271486 on main e24fde5 (reading job, no tests run): privacy and stuck findings first. Secret Words: 0 privacy slips, 0 stuck, 0 no-clear-way-on in 40 evenings (10 with Jev people). Impostor/Tambola: 0 secrets shown.**
 - **screen-sims (7)**: sim-script problem, not the app. Evenings 002, 005, 007 (Secret Words) each ended "could not do Menu: click timed out" then "no Home after the summary". Screenshot of 005 shows the Menu sheet open (with its How to play row) when the script tried to tap the covered Menu button: the script read the sheet as the how-to-play screen (tests/sims/secret-words-runner.ts line 193 matches any "How to play" text, line 369 then falls through to Menu). The unrecognised "Type the code / Open ticket" screens (002, 004, 006) are the Tambola ticket page the script does not know. Evening 006 also shows "2 main buttons: Play again / Done" on How to play from game over: SWD-011, fixed in b05ea1f which landed after e24fde5, so expect it gone on the next run. Confirm after fixing the script; if the click still fails after a plain menu, treat as an app bug.
 - **screen-sims (8)**: one evening, 026 (Secret Words, 2 phones, 9 players, 360x640, reload steps): two map-phone findings at step 34: "Next map" tapped, then neither dialog nor toast; and the map phone's first words (Seal, Gold, Fire) differ from the host's board check (Stage, Shirt, Park). Unresolved: either the app (Next map ignored on a map phone after a reload; SWD-117 map phone family) or the sim script reading the wrong phone. Needs one reproduction by seed w40077271486-026 before it goes to the coder. Not a privacy slip.
