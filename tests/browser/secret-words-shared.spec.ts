@@ -496,9 +496,9 @@ test.describe('SWD-114: taps right after a screen appears', () => {
     await expect(carry).toHaveCount(0);
     const im = mainButton(page).filter({ hasText: /^I'm / });
     expectLooksLive(await guardState(im), 'the pass screen\'s main stays live');
-    await im.click();
-    await expect(holdPad(page), 'closing the cover did not restart the pass screen\'s guard').toBeVisible();
     // A quiet button is live at once.
     expect((await guardState(quiet(page, 'Start 90-second timer'))).guard).toBeNull();
+    await im.click();
+    await expect(holdPad(page), 'closing the cover did not restart the pass screen\'s guard').toBeVisible();
   });
 });
