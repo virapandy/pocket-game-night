@@ -90,3 +90,16 @@ Merged origin/main (PGN_PORT per lane: lane-a 4174). Lane A area: 129 of 132 pas
 - `tests/browser/secret-words-c-map.spec.ts` + helpers `secret-words-c.ts`; coder note `specs/secret-words/screens-c.md`. M1 is opened by the `#map=` link on a fresh phone. Lanes A, B, C are on lane-e (7b4407f); only lane D's (game over) marks and the SWD-025 board-phone check (lane B grid fix pending) stay expected-to-fail. Remove each mark when Playwright says "expected to fail, but passed".
 - `freshPhone({ fixed: true })` freezes Date.now(): tap guards never end; call `page.clock.setSystemTime(now)` before tapping (see `unfixClock` in the lane C spec).
 - Use `PGN_PORT=<own port>` for local browser runs so two testers never share a preview server.
+
+## 23 October: Secret Words lane D tests first (lane-f)
+- Files: `secret-words-game-over.spec.ts` (G1, D6, New board, Play again, v3.7 bottom bar, D8, G2, D9, SWD-063, 067),
+  `secret-words-players-history.spec.ts` (D7/D7a/D7b, E1, E1a), helpers `secret-words-d.ts`, coder note
+  `specs/secret-words/screens-d.md`; SWD-025's game-over step in `secret-words-c3.spec.ts` is now written out (heading,
+  result line, whole map by kind); its expected-to-fail marks (SWD-025 ×3, SWD-022 ×5) are removed (they pass, 24 October).
+- Most lane D tests open the app on a saved game night written move by move (`secret-words-d-evenings.ts`: the rules
+  module can't load in Playwright, its words.json import needs a JSON import attribute; every flow is replayed through the
+  rules by `tests/games/secret-words/lane-d-evenings.test.ts`, so add new flows to `ALL_FLOWS`) and reload (SWD-048): real checks now, failing until lane D builds. Tests through lane A or B screens use
+  `needsLanes(...)` (expected to fail); remove the call when Playwright says "expected to fail, but passed".
+- New area entry in `areas.json` (its own block near the end, so lane A's and B's edits of the Secret Words block merge).
+- Questions of 23 October in docs/test-questions.md (bar gap 8 vs 16 px; SWD-051 Landmine wording; credit order etc.).
+- Round 2 (23 October): lane D marks all removed (they pass); SWD-025's 3 marks removed; lane-f has origin/main merged (coder 26c3fcd, tester 24 October) and lane D's area entry is back in `areas.json`.

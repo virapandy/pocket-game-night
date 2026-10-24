@@ -328,6 +328,12 @@
       "specs": ["*"]
     },
     {
+      "name": "Secret Words, screen lane D (after the game): game over, summary, Players sheet, History",
+      "lane": "shared",
+      "paths": ["src/games/secret-words/**", "content/secret-words/**", "tests/browser/secret-words.ts", "tests/browser/secret-words-d.ts", "tests/browser/secret-words-d-evenings.ts", "tests/games/secret-words/oracle.ts", "tests/fixtures/secret-words-saved-evenings-v1.json", "src/app/History.tsx", "tests/browser/impostor.ts"],
+      "specs": ["secret-words-game-over.spec.ts", "secret-words-players-history.spec.ts"]
+    },
+    {
       "name": "A changed browser spec runs itself (matched by the automation by file name)",
       "lane": "shared",
       "paths": ["tests/browser/*.spec.ts"],
