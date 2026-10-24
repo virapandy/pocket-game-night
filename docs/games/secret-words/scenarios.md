@@ -1,4 +1,4 @@
-# Secret Words: scenarios (version 3.7, 23 October 2026)
+# Secret Words: scenarios (version 3.9, 24 October 2026; released as 1.4.0 at 3.8)
 
 Status: **version 3.7 approved by the owner, 23 October 2026** (the prototype walks and Jev's prototype read, `prototype-walk-2026-10-22.md`); version 3.6 was approved on 22 October ("go ahead": the critic pass and UX review, `design-review-2026-10-22.md`); version 3.5 was approved on 11 October ("yes to all": the screen map's persona walks and Jev read, `map-walk-2026-10-11.md` §3 and §8); version 3.4 was approved on 4 October (SWD-001 to SWD-133; two-reader check of 3.3 and a final verification pass resolved) (version 3.2, SWD-001 to SWD-104, was approved on 4 October; 3.3
 added the owner's decisions K32–K41 as section 07; 3.4 folds section 07 into every earlier scenario it changes, with the
@@ -12,6 +12,13 @@ copies these into `specs/secret-words/` (file names in each section heading) and
 Phases: **Secret Words 1** = first release. **Secret Words later** = designed now, built later (SWD-200+).
 Change classes (`docs/change-sop.md`): the deal, the map code, the board algorithm, saved evenings and the word list
 format = **C3** (tests first: sections 02, 04 rules, 05, 06, SWD-099); screens = C1/C2.
+
+### What version 3.9 changes (rule 11; product owner, 24 October, from the release candidate's AI playthrough; for 1.4.1)
+Version 3.8 (owner, 24 October) made the tap guards invisible: main buttons look live at once, and taps inside a guard still
+do nothing; it lives in `specs/secret-words/` and SWD-114's greyed look is replaced by it. Version 3.9 adds, each as a
+"Version 3.9" paragraph that wins over earlier text in its scenario: SWD-031 (Pause on the private map), SWD-039 (Next map opens
+hidden), SWD-040/041 (team names on the counts), SWD-110 (Home on the Pause cover), SWD-122 (who taps Reveal), SWD-128 (the
+night's result on the summary). Unfamiliar words: a wording list after Jev's read of `text.csv` (`jev-text-1.4.1.md`).
 
 ### What version 3.7 changes (rule 11; owner, 23 October: P1–P10 and the wording of Jev's prototype read)
 Each change is a paragraph headed "Version 3.7" at the end of the scenario it touches; it wins over earlier text in that
@@ -652,6 +659,7 @@ map shows (SWD-113); main once shown; no menu, no team bar.
   main scrolls inside if needed, main pinned.
 **Version 3.6 (owner, 22 October):** Under the heading, small line `private-line` "Only Riya should see this screen." (pair: "Only Nana and Aarav should see this screen."; 1 line, shrinking in 1 px steps to 13 px, then each name shows its first 8 characters then "…"). **Fixed places, every state (R6):** every slot below is reserved from the screen's first paint, so nothing moves when the map shows or hides: the heading row (44 px: the heading at the left, shrinking in 1 px steps to 20 px to fit; at the right, quiet "Someone saw the map", 44 px tall, shown only while the map shows); `private-line`; the small line; the counts; the map area; the "Our words | ↻ Flip" row (48 px, empty and not focusable while hidden); the pad (quiet outlined look, never the main look, **64 px tall in both states**); the "Not Riya? Go back" slot (48 px; the button before the first show, empty after); the main slot (60 px; empty before the first show). Portrait fit at 360 × 640, Larger text off, map shown or hidden: heading row 44 + `private-line` 20 + small line 20 + counts 32 + map area 256 + row 48 + pad 64 + slot 48 + main 60 + bottom 16 = 608, plus 8 gaps of 4 = 640. Larger text on, or smaller screens: the content above the main scrolls inside (as before). This replaces both 96 px figures above (portrait "full width, 96 px tall" and landscape "column width × 96"). Landscape: the column's pad is column width × 64; the rest as SWD-031's landscape text. Found cells: see SWD-051.
 **Version 3.7 (owner, 23 October):** **Map key (P8):** `map-key`, a small line block of exactly 2 lines under the map area: line 1 circle icon "Chai Champions", diamond icon "Coffee Commandos"; line 2 dash icon "nobody's word", landmine icon "Landmine: never guess" (Easy: line 2 is the dash entry only). Icons 16 px; each line shrinks in 1 px steps to 13 px to stay on one line, then team names show their first 12 characters and "…". Its 40 px slot is reserved from first paint and empty while the map is hidden (SWD-031's fixed places). **Fit at 360 × 640, Larger text off, shown or hidden:** heading row 44 + `private-line` 20 + small line 20 + counts 32 + map area 216 (cells 40 px tall, private map only; not tappable) + `map-key` 40 + row 48 + pad 60 + slot 48 + main 60 + bottom 16 = 604, plus 9 gaps of 4 = 640. The pad is 60 px in both states (replacing 3.6's 64). At 320 × 568 and with Larger text the content above the main scrolls inside, as before. Landscape: `map-key` sits in the right column under the counts, wrapping freely (the column scrolls).
+**Version 3.9 (product owner, 24 October; for 1.4.1):** **Pause on the private map:** `pause-button` sits at the top left of the heading row (the heading shrinks to fit the rest). A tap removes the map from the DOM at once and opens the Pause cover; "Carry on" returns to the private map with the map hidden ("Tap to see the map"). Still no menu: the private map exits only to the pass screen or the cover.
 
 ### SWD-032 Leaving a map screen
 On `visibilitychange` to hidden on the private map or the map phone: a full-screen `privacy-cover` appears and the map is
@@ -717,6 +725,7 @@ exactly the code `nextMapCode` gives from the previous deal's code, and every de
 does not.
 
 ---
+**Version 3.9 (product owner, 24 October; for 1.4.1):** **Next map opens hidden:** after "Next map" the new map opens hidden, with "Show map" and the toast "Next map. Tap Show map when you're ready. It should start with: Kite · Tiffin · Rain." (replacing "shows the map even if it was hidden"), so a clue giver tapping Next map at the table doesn't flash the new map at the people around them.
 
 ## 04 Clues and guesses → `specs/secret-words/04-play.md` (rules C3, screens C2)
 
@@ -744,6 +753,7 @@ case kept, and left out when empty (SWD-101).
   `clue-help`, above the main. 568 × 320: one column scrolling inside, keys in one row of 11 at 44 × 44 with 4 px gaps, main at
   the bottom right. No-scroll checks are made with the keyboard closed; when the input has focus it is scrolled into view.
 **Version 3.6 (owner, 22 October):** `anyone-line` "Anyone can tap the number." (small line) sits under the keys and above `clue-help`, at every size, on the clue screen of the evening's first turn only (also when that screen is shown again by a reload, "Change clue" or "Try another clue" in that turn). It never hides; when the clue screen's content doesn't fit, the content above the main scrolls inside (SWD-040's layout).
+**Version 3.9 (product owner, 24 October; for 1.4.1):** **Team names on the counts:** `word-counts` shows each team's name with its icon and number when both fit on one line at the screen's width ("● Chai Champions 9 left · ◆ Coffee Commandos 8 left"); otherwise each name shortens to its first word ("● Chai 9 · ◆ Coffee 8"), and if that still doesn't fit, icons and numbers only, as before. The accessible name is unchanged.
 
 ### SWD-041 Guessing and the allowance (P3, P5)
 After the clue (portrait, top to bottom): team bar; top bar with `hurry-timer` (if running) and "··· Menu"; `turn-line`
@@ -777,6 +787,7 @@ name "Flip the board") at its right end; the board; the tip or result line (at m
 in the same turn, and no turn ends by "End our turn" before one guess.
 **Version 3.6 (owner, 22 October):** **Top bar and panel rows.** Portrait top bar, right to left: "··· Menu", `pause-button` (44 × 44), `hurry-timer` when it runs. Landscape button row (pause stays here; the timer keeps its own row): 812 × 375 (200 px): "↻" 44, `pause-button` 44, "··· Menu" 104, 4 px gaps; 568 × 320 (160 px): `pause-button` 44, "··· Menu" 112, and "↻" becomes the menu item "Flip the board". **568 × 320 before the first reveal:** `guess-line` sits in the action slot (48 px) and is not in the middle part, which then holds `turn-line`, `clue-line`, counts and the tip or result line; "Change clue" and "Clue not allowed?" stay menu items. From the first reveal the slot holds "End our turn" and `guess-line` returns to the middle part directly under `clue-line`. **360 × 560** (browser bars): the shrink order applies (cells 56 → 48, then `clue-line` 22 → 17); if it still doesn't fit, the page scrolls as one with the main fixed.
 **Version 3.7 (owner, 23 October):** The counts row's right-end button is "↻ Flip", 72 × 44 px, in portrait (SWD-102, version 3.7); the counts keep the rest of the row. Landscape panel rows unchanged (icon-only "↻" at 812 × 375).
+**Version 3.9 (product owner, 24 October; for 1.4.1):** Counts follow SWD-040's version 3.9 paragraph; in the landscape panel each team is one line, name first word then number.
 
 ### SWD-042 Pick, then confirm
 Face-down cells are buttons (`board-cell`, `data-index`, accessible name "Kite, face down", `aria-pressed`). A tap picks
@@ -990,6 +1001,7 @@ is released (re-acquired on "Carry on" where the step holds it); a running timer
 (SWD-048).
 **Version 3.6 (owner, 22 October):** `pause-button` (icon button, accessible name "Pause", 44 × 44, our own SVG) on the preview, the scan screen, the pass screen, the clue screen, guessing, the end-turn line and turn over; placement SWD-041 (board screens) and directly left of "··· Menu" elsewhere; a tap does what the menu's "Pause" does. Not on the private map. **Menu groups:** play (Earlier clues · Start 90-second timer / Stop timer · Clue not allowed? · Change clue (568 × 320) · Flip the board (every board screen at 568 × 320) · Someone else taps Reveal · Players · Show the map to a clue giver · Show the map code again) · fix (New board) · leave (Pause · Home (keep this game) · End the game · End for tonight) · more (How to play · Settings · History); a 1 px `--border` rule (`role="separator"`) between groups that have items. **`where-line`** (small line, at most 2 lines, names never shortened) is shown under "Welcome back.", on the Pause cover under "Paused", and in Home's row and the resume card (SWD-115), for the step the game is on: preview "Before game 2"; scan screen "Scan the map, game 2"; pass screen, private map and clue screen "Turn 4 · clue for Chai Champions"; guessing "Chai Champions guessing · 3 guesses left" (the full allowance before the first reveal, then what is left; "1 guess left"; clue 0 or ∞ "Chai Champions guessing · as many as you like"); end-turn line "Turn 4 · Chai Champions ended their turn"; turn over "Turn 4 over · Coffee Commandos next"; game over "Game over, game 2"; summary "Game night over". Setup steps are never resumed (the evening starts at its first deal), so they have none.
 **Version 3.7 (owner, 23 October):** **Menu order (P2):** "Pause" is always the first item of every game menu that has it (before the play group). "New board" is its own group, always directly above the leave group, so it is always in the same place counted from the bottom. The menu sheet scrolls inside with its "Done" pinned at the bottom; while more items are below the fold, a 24 px fade shows at the list's bottom edge. Group order otherwise as 3.6.
+**Version 3.9 (product owner, 24 October; for 1.4.1):** **Home from Pause:** the Pause cover gains quiet "← Home (keep this game)" under "Carry on"; it does what the menu item does (SWD-111). Stop and home are now one tap from any game step that has Pause.
 
 ### SWD-111 Home during a game (E1, W2)
 At game over, quiet "← Home" (SWD-112) opens Home. At every other game step from the preview to turn over, the menu item "Home
@@ -1119,6 +1131,8 @@ Reveal." Anyone may still tap; the name is a social cue, never enforced.
 
 A renamed picker's new name shows at once; a removed picker stays this turn's picker (the name still shows) until the turn
 ends; "Someone else taps Reveal" lists only current players.
+**Version 3.9 (product owner, 24 October; for 1.4.1):** **Who taps Reveal:** the main button reads "Reveal" (disabled) / "Reveal KITE", without the picker's name; the picker is named in `turn-line` instead: "Chai Champions guessing · Sunita taps Reveal" (the poker line still shows first for 3 s). The first-guess tip becomes "Tap a word to suggest it. Sunita taps Reveal this turn; it moves round each turn." The picker rule (K38) is unchanged; only where the name shows moves, because players read a name on the button as "only Sunita may tap".
+
 ### SWD-123 Pairs of clue givers (B2, K39, C3)
 `Teams` gains `partners: { orange: string | null; teal: string | null }`, carried by `setClueGivers`. In the Clue givers sheet
 each team has quiet "Add a partner": it shows a group "Chai Champions partner" with one button per eligible player of that team
@@ -1210,6 +1224,8 @@ Landmine count, no ranking of clue givers.
 
 A game in progress when "End for tonight" was tapped counts as ended early in `summary-line` (players, games, words found)
 and `clue-credit`, although it is recorded only when the summary is left.
+**Version 3.9 (product owner, 24 October; for 1.4.1):** **The night's result:** the summary's first line under the heading is `night-result` "Chai Champions won the night, 3–2" (more won games; orange first on the score), "A draw tonight, 2–2" on equal wins, and absent when no game was won. `summary-line` and the tally follow as before.
+
 ### SWD-129 Map code again (E9)
 With two or three phones, menu "Show the map code again" at the clue screen, guessing, end-turn line and turn over: the scan
 screen for the current board (no new deal; QR and `map-code-text` as SWD-033, `board-check` as SWD-116, no `dnd-tip`), with
