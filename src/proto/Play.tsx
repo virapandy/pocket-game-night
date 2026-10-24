@@ -925,7 +925,7 @@ function View({
   }
   if (mainRow?.other && flipped.has(mainRow.label)) mainLabel = mainRow.other;
 
-  // The visible tap guard: the main button is greyed until its guard ends, and a double tap counts once.
+  // The visible tap guard: the main button looks live but ignores taps until its guard ends, and a double tap counts once.
   const guardMs = mainRow ? guardFor(script.guards, mainLabel) : 0;
 
   // ——— Taps ———

@@ -1,6 +1,6 @@
 // Setup's main buttons that wait after their screen appears (SWD-114 version 3.6), on the shared tap guard (lane B,
-// ui/shared/guard.tsx): for 800 ms the main shows the greyed look with its own label, has `aria-disabled="true"` and
-// `data-guard="on"`, and a tap does nothing (not queued). A main disabled for another reason never has `data-guard`.
+// ui/shared/guard.tsx): for 800 ms the main looks live (version 3.8, no
+// greyed look) but a tap does nothing (not queued). A main disabled for another reason uses `disabled`.
 // Kept as `GuardedMain` so the setup screens keep the blocks' main-button place (pinned, or `inline` in a dialog).
 import { useContext, useId, type ReactNode } from 'react';
 import { HideMainButton } from '../../../blocks';
@@ -26,15 +26,12 @@ export function GuardedMain({
   const until = useGuard(useId(), wait);
   const hide = useContext(HideMainButton);
   if (hide && !inline) return null;
-  const guarded = !disabled && Date.now() < until;
   return (
     <button
       type="button"
       data-testid="main-button"
-      className={['pgn-main', inline && 'pgn-main-inline', guarded && 'sw-waiting'].filter(Boolean).join(' ')}
+      className={['pgn-main', inline && 'pgn-main-inline'].filter(Boolean).join(' ')}
       disabled={disabled}
-      aria-disabled={guarded ? true : undefined}
-      data-guard={guarded ? 'on' : undefined}
       onClick={() => {
         if (disabled || Date.now() < until) return;
         onClick?.();

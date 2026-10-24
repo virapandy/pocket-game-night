@@ -1,7 +1,7 @@
 // The tap guard of Secret Words' main buttons (SWD-114, v3.5 item 2, v3.6): a main button ignores taps for 800 ms after
-// its screen appears (1 s for "I'm Riya", 1.5 s for "Other team's turn" after a turn-ending reveal), and while it waits
-// it shows the greyed look with its label unchanged, `aria-disabled="true"` and `data-guard="on"`. A tap during the
-// wait does nothing and is not queued. A main disabled for another reason uses `disabled` and never has `data-guard`.
+// its screen appears (1 s for "I'm Riya", 1.5 s for "Other team's turn" after a turn-ending reveal), and the wait is
+// invisible (version 3.8): the main looks live at once, with no greyed look, `aria-disabled` or `data-guard`. A tap during
+// the wait does nothing and is not queued. A main disabled for another reason uses `disabled` and keeps its look.
 // Quiet buttons never wait. Uses `Date.now()` and `setTimeout`, so a fake clock drives it.
 import { useRef, type ReactNode } from 'react';
 import { useNow } from './device';
@@ -44,14 +44,12 @@ export function SwMain({
   label?: string;
   className?: string;
 }) {
-  const waiting = !disabled && Date.now() < until;
   return (
     <button
       type="button"
       data-testid="main-button"
-      className={['sw-main', waiting && 'sw-waiting', className].filter(Boolean).join(' ')}
+      className={['sw-main', className].filter(Boolean).join(' ')}
       disabled={disabled}
-      {...(waiting ? { 'aria-disabled': 'true' as const, 'data-guard': 'on' } : {})}
       {...(label ? { 'aria-label': label } : {})}
       onClick={() => {
         if (disabled || Date.now() < until) return;

@@ -43,7 +43,7 @@ export interface Nav {
 }
 
 /**
- * The main button with the map's visible tap guard: greyed for `ms` after it appears, then alive; a second tap within
+ * The main button with the map's visible tap guard: looks live at once but ignores taps for `ms` after it appears; a second tap within
  * the guard (a double tap) counts once. Its own component, so the guard ending redraws only the button.
  */
 export function GuardedMain({
@@ -69,7 +69,7 @@ export function GuardedMain({
   return (
     <MainButton
       {...(inline ? { inline } : {})}
-      disabled={!!disabled || !live}
+      disabled={!!disabled}
       onClick={() => {
         if (!live || Date.now() - last.current < Math.max(ms, 500)) return;
         last.current = Date.now();
