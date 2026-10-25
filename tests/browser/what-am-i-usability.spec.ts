@@ -4,7 +4,7 @@
 // Written before the build: see the note in what-am-i.ts (expected to fail until the screens and hooks exist).
 import { expect, test } from './fixtures';
 import {
-  SIZES, TZ, box, button, chooseOnS2, dialog, heading, mainButton, marks, noSidewaysScroll, pauseButton, playTurn, saveScore, screenText,
+  SIZES, TZ, box, button, chooseOnS2, dialog, heading, mainButton, marks, noSidewaysScroll, pauseButton, playTurn, saveScore, screenText, scrollBy,
   startNight, tap, theWord, toWord, flash, WORDS,
 } from './what-am-i';
 import type { Page } from '@playwright/test';
@@ -16,7 +16,7 @@ async function mainFixed(page: Page, where: string) {
   const m = await box(mainButton(page));
   expect(m.y + m.height, `${where}: main button on screen`).toBeLessThanOrEqual(v.height + 0.5);
   expect(m.x + m.width, `${where}: main button on screen`).toBeLessThanOrEqual(v.width + 0.5);
-  await page.mouse.wheel(0, 400);
+  await scrollBy(page, 400);
   await page.clock.runFor(200);
   const after = await box(mainButton(page));
   expect(Math.abs(after.y - m.y), `${where}: main button stays fixed`).toBeLessThanOrEqual(1);
@@ -66,7 +66,7 @@ test.describe('WAI-080: every size, Larger text off and on', () => {
     await startNight(page, { seed: 'pad', players: ['Riya', 'Arjun'], viewport: { width: 320, height: 568 }, larger: true, stopAt: 'S2' });
     const back = button(page, '← Back');
     await page.evaluate(() => window.scrollTo(0, document.scrollingElement!.scrollHeight));
-    await page.mouse.wheel(0, 5000);
+    await scrollBy(page, 5000);
     await page.clock.runFor(300);
     const m = await box(mainButton(page));
     const b = await box(back);

@@ -111,6 +111,20 @@ export async function soundLog(page: Page): Promise<{ t: number; kind: string; n
 }
 export async function wakeLog(page: Page): Promise<{ t: number; kind: string }[]> { return page.evaluate(() => (window as any).__wake.slice()); }
 export async function permissionCalls(page: Page): Promise<number[]> { return page.evaluate(() => (window as any).__perm.slice()); }
+/**
+ * Scrolls the page and every scrollable box on it by `dy` px. Playwright's mobile WebKit has no `mouse.wheel`, so
+ * the scroll is set directly there; Chromium also gets the wheel, as before.
+ */
+export async function scrollBy(page: Page, dy: number) {
+  await page.evaluate((dy) => {
+    window.scrollBy(0, dy);
+    for (const el of Array.from(document.querySelectorAll<HTMLElement>('*'))) {
+      const oy = getComputedStyle(el).overflowY;
+      if ((oy === 'auto' || oy === 'scroll') && el.scrollHeight > el.clientHeight) el.scrollTop += dy;
+    }
+  }, dy);
+  if (page.context().browser()?.browserType().name() !== 'webkit') await page.mouse.wheel(0, dy);
+}
 /** WAI-H9: the app hidden or shown again. */
 export async function setHidden(page: Page, hidden: boolean) {
   await page.evaluate((h) => { (window as any).__hidden = h; document.dispatchEvent(new Event('visibilitychange')); }, hidden);
@@ -301,8 +315,19 @@ export async function scheduleOrientation(page: Page, events: Orient[]) {
   const base = await now(page);
   const list = events.map((e) => ({ d: e.t - base, beta: e.beta ?? betaFor(e.theta ?? 0, e.gamma ?? 0), gamma: e.gamma ?? 0 }));
   await page.evaluate((list) => {
+    // Playwright's WebKit throws "Illegal constructor" for `new DeviceOrientationEvent` under its clock: there the
+    // event is a plain Event with the same type, prototype and alpha, beta, gamma and absolute fields.
+    const orientationEvent = (beta: number, gamma: number): Event => {
+      const init = { alpha: 0, beta, gamma, absolute: false };
+      try { return new DeviceOrientationEvent('deviceorientation', init); } catch { /* WebKit */ }
+      const ev = new Event('deviceorientation');
+      const D = (window as any).DeviceOrientationEvent;
+      if (D?.prototype) Object.setPrototypeOf(ev, D.prototype);
+      for (const [k, v] of Object.entries(init)) Object.defineProperty(ev, k, { value: v, enumerable: true });
+      return ev;
+    };
     for (const e of list) {
-      setTimeout(() => window.dispatchEvent(new DeviceOrientationEvent('deviceorientation', { alpha: 0, beta: e.beta, gamma: e.gamma })), Math.max(0, e.d));
+      setTimeout(() => window.dispatchEvent(orientationEvent(e.beta, e.gamma)), Math.max(0, e.d));
     }
   }, list);
 }

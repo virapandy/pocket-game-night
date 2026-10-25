@@ -19,6 +19,12 @@ Read this and the top of `reports/latest.md` before starting. Keep it short: rep
   reason; tag `@quarantine` + annotation in the test; never skip or retry.
 
 ## Open items for the next tester
+- **iPhone (WebKit) gotchas, What Am I? (lane-u, 25 October):** `new DeviceOrientationEvent` throws "Illegal constructor" in
+  Playwright WebKit; `scheduleOrientation` (what-am-i.ts) now falls back to a plain `deviceorientation` Event with the
+  same prototype and alpha/beta/gamma/absolute fields. `page.mouse.wheel` is not supported in mobile WebKit; use
+  `scrollBy(page, dy)` (what-am-i.ts: scrolls the page and every scrollable box; Chromium also gets the wheel).
+  Local: a Playwright-started preview server died mid-run once (ERR_CONNECTION_REFUSED); starting `npm run preview --
+  --port <p> --strictPort` yourself and setting PGN_PORT=<p> avoided it.
 - **Lane W2 tested (25 October, b9f6a75):** setup and frame pass; 17 tests per phone in what-am-i-interruptions and
   -lifecycle still fail until lanes W3/W4 (T2–T4, G1). The picker's back is "← Home" everywhere now; the Home
   pictures were refreshed (Screenshots run 40129184456), not yet approved. Use `exact: true` for "Move <name>" (it also
