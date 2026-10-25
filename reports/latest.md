@@ -1,4 +1,44 @@
 # Test report
+Commit tested: d5dd03e (main; What Am I? 1.5.0, Mafia built and hidden), simulations on lane-o   Date: 2026-10-25
+Result: report-only Jev simulations (they never fail the build). Quick verify on lane-o: run 40186586623 (head 47b9a43).
+Full reports: reports/sim-what-am-i.md, reports/sim-mafia.md.
+
+## Layers
+- What Am I? screen-played evenings: 40 of 40 reached Home after End for tonight (6 personas, Jev choosing, 3 to 10 players,
+  motion and taps, hands-free, Pause, reloads, hiding, leaving and joining, End the game, Play again, End for tonight; a second
+  phone for the guest). Scores, word lists, saved moves and 264 scoreboards against the engine's replay: no problem.
+- Mafia against the real rules engine: 200 games (6, 8, 10, 12, 16 players × both Police settings, no "nobody"); Village 115,
+  Mafia 85; invariants, winner re-count and replay: no problem; 1 refused move (a Police re-check, the engine is right).
+- Mafia screen-played evenings: 20 of 20 reached Home; privacy checked on 2,281 room screens: no slip.
+- Rule tests touched by this job (tests/sim): 29 passed (new: PLT-113 two runs sharing the budget file).
+
+## Failing (real bugs only)
+- WAI-022 (Version 1.1 item 14) and WAI-030, What Am I? stuck screen: when a mark's 600 ms flash ends on the same millisecond
+  as time up, the page goes blank (`wai-turn-blank`, nothing to tap) instead of "Time's up!". Expected Time's up with the mark
+  kept. Steps: 3 players, 30 s, Hands-free, seed `r1`; tap Pass (or Got it) on the first word exactly 29,400 ms after it shows.
+  Repro: tests/sims/what-am-i-blank-at-time-up.sim.ts (2 of 4 fail: 29,400 for Pass and Got it; 29,399 and 29,401 pass).
+  Rare on a real phone, but the room is stuck until a reload or Home (Home's row then says "0 s left" and resuming opens
+  Time's up after a countdown).
+
+## Flaky or setup problems (not for the Build workspace)
+- The Jev usage file was overwritten by runs side by side (and once lost its earlier weeks); restored by hand to 34,775 for
+  2026-W43 (an upper estimate) and fixed in tests/sim/jev.ts.
+- Runner faults found and fixed during the job (not app bugs): see the two reports.
+
+## Requests for the Build workspace
+- None.
+
+## Notes for the owner (plain English)
+- What Am I? played 40 whole evenings with no wrong score, no lost word and no stuck screen, except one rare case: if a word is
+  marked at exactly the wrong instant before the time runs out, the screen goes blank until the phone is reloaded. Worth a fix
+  in a point release (it is a "stuck" case).
+- Mafia kept every secret on the shared screens in 20 evenings, and the rules engine agreed with the code's own counts in 200
+  games. With Jev players the Village won 58% of games.
+- Jev decisions this job: about 11,900 (What Am I? 1,602; Mafia 9,874; trials and stopped runs the rest). Shared count for this
+  week: 34,775 of 50,000; next week starts on Monday at 0 (product side up to 30,000 of it).
+
+---
+## Previous report (lane-n)
 Commit tested: ccadfa9 (lane-n = coder e214282 + night.test.ts fix)   Date: 2026-10-25
 Result: GREEN
 Run: https://github.com/virapandy/pocket-game-night/actions/runs/40179636277 (Quick verify on lane-n, green to the end)

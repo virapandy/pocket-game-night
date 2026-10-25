@@ -206,3 +206,18 @@ Merged origin/main (PGN_PORT per lane: lane-a 4174). Lane A area: 129 of 132 pas
 - New flows: `night1-dev`, `night3-meena`, `night3-dev`, `police-nobody-left` (6 players, night 6, Dev first).
 - Local runs on a busy Mac: 3 workers took 25 min for 40 browser tests; several 30 s timeouts ("setting up page",
   `page.reload`) and the rule properties' 120 s timeouts are load, not bugs; check against the automation run.
+## 25 October: Jev simulations of What Am I? and Mafia (lane-o)
+- Tools: `tests/sims/what-am-i-runner.ts` + `what-am-i-evenings.sim.ts` (SIM_WAI_EVENINGS, SIM_WAI_JEV_EVENINGS),
+  `tests/sims/mafia-runner.ts` + `mafia-evenings.sim.ts` (SIM_MAF_EVENINGS, SIM_MAF_JEV_EVENINGS), both default 0 so the weekly
+  sims are unchanged; `tests/sim/mafia-engine.run.ts` (MAFIA_SIZES, MAFIA_SHARES, MAFIA_GAMES, MAFIA_FIRST, MAFIA_PART, JEV=off for a
+  stub) and `tests/sim/what-am-i-replay.run.ts` (after the WAI evenings), both via `npx vitest run --config tests/vitest.extended.config.ts`.
+- Playwright cannot import `src/games/*/rules` (they import JSON without an import attribute): replay through the engine runs
+  afterwards in vitest from the saved nights in each result JSON.
+- Under `taskpolicy -b` every fake-clock timer costs real time: a screenshot or one setTimeout per orientation event made an
+  evening take 25 minutes. Screenshots only at a finding, orientation events every 50 ms from one interval: about 3 minutes.
+- Anything the runner remembers per pass or turn must be reset in the main loop, not in the scripted chooser: Jev chooses on
+  some screens, and the scripted code never runs there (two runner bugs today).
+- A lane has no `.env.local` or `reports/runs`: link both to the main Test clone's so the key and the shared count are used.
+  `tests/sim/jev.ts` now adds each run's decisions to the file (safe side by side); before it, two runs overwrote each other.
+- Open: the What Am I? blank screen at time up (`tests/sims/what-am-i-blank-at-time-up.sim.ts`, WAI-022 item 14); move it into
+  a browser test once the orchestrator schedules the fix.

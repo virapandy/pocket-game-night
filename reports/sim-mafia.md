@@ -47,3 +47,36 @@ same `readMafiaNight`).
 - Parts: `reports/sim/mafia-engine-jev-part1.md` (6 players, never, and 11 games of when-found; stopped when the Mac slept and Jev
   could not be reached twice in a row), `-part2.md` (the other 9 games of 6 when-found, same seeds), `-part3.md` (8 to 16).
 - Jev decisions: 446 + 124 + 8,601 = **9,171**.
+
+## 2. Screen-played evenings with the privacy check (20 evenings)
+
+Tool: `tests/sims/mafia-runner.ts` with `mafia-evenings.sim.ts`, preview build, 3 workers under `caffeinate -i taskpolicy -b`.
+Mafia is not on the picker yet, so each night opens on the first deal screen through MAF-H6 (`pgn.test.load`, only `start`
+recorded), with the evening's own deals (MAF-H3). Seeds `w43-001` to `w43-020`, every one with Jev choosing as the persona
+(first-time host 4, grandparent 4, 10-year-old 3, distracted host 3, competitive uncle 3, guest 3) on room screens, at night
+(given its own role only) and in the vote, from button names only; the scripted persona carried on after 35 decisions.
+Results per evening: `reports/sim/screen/mafia/maf-w43-*.json`.
+
+- **All 20 evenings reached Home after "Tonight's Mafia"**: 30 games, 6,118 steps, 101 nights, 77 votes, 5 to 12 players
+  (5: 2, 6: 5, 7: 2, 8: 2, 9: 1, 10: 3, 11: 2, 12: 3), widths 320 to 812. Covered: the deal (tap mode), Deal again (6 evenings),
+  every night screen, morning, day, countdown, the picker, ties (5) and "Still a tie" (1), "Nobody today" (2), vote results,
+  game over, Play again (10), End for tonight (20), End the game (1), Pause (10), the Players dialog (12) with someone joining
+  the next game and 7 players leaving (by day and at night), How to play (6), 3 reloads.
+- **Privacy (MAF-P2 / MAF-016), checked on 2,281 room screens**: the page text, accessible names, title and live regions never
+  put a role or "Not Mafia" next to the name of a player who was in or had left; no room screen held a private part
+  (`private-word`, `job-line`, `night-names`, `result-line`); N0, N1 and N3 named nobody but the player the phone was passed to.
+  The truth used was what B2 showed each player, so Deal again was followed. **No privacy slip.**
+  Three hits in trial and run versions were the checker's own mistakes, now fixed in the runner: How to play's "The Police
+  learns only Mafia or Not Mafia." (names nobody), and the leave toast "Dev left · Undo" / "Tara left · Undo" on N1 (MAF-052
+  names the leaver by design; seeds `w43-011` step 62, `w43-019` step 84; the leaver's role was not shown).
+- **Stuck: none.** Every screen but the countdown had a way on; no screen held a persona for 30 steps. (A runner fault in an
+  earlier version, not the app, kept a player on B2 after Deal again; fixed.)
+- At most one main button, nothing sideways, no console error, no reload lost a saved move.
+- For the product owner (Jev as persona, a weak signal): Jev's "which button next?" rating on the "Deal again?" dialog picked
+  "Deal again" over the main "Keep these roles" (0.66 to 0.84) in 6 of 20 evenings, and personas opened Menu → Deal again
+  from the deal pass screen repeatedly (for example `w43-002` steps 26 to 31, then confirmed it).
+- Jev decisions: **703** (and about 160 more in a first run stopped to fix the runner).
+
+## Decisions used (Mafia)
+
+Rules engine 9,171 + screens 703 + stopped first screen run about 160 = **about 10,030**.

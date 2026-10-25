@@ -59,12 +59,13 @@ replays every saved night through the real rules engine. Results per evening: `r
      17 and 19 evenings).
    - The guest on the host's phone went Home → Join a game → "Type the host's code" and back three times in 6 of 6 guest
      evenings before taking the host path, although the Join screen has the What Am I? line.
-   - Motion marks: 420 of the 817 marks by moving the phone did not change the word within a second. Not counted as a finding:
-     the sim's orientation events are sparse (every 50 ms, to keep the run fast under `taskpolicy -b`), and in a denser trial run
-     the miss rate was 17 to 21%. Worth a closer look with the browser tests' own motion helpers if families report it.
+   - Motion marks: 420 of the 817 marks by moving the phone did not change the word within the runner's one second. Not a
+     finding: it is the throttled run's timing. The same runner without `taskpolicy -b` missed 0 of 212 and 15 of 91 (seeds
+     `dbg2-009`, `dbg2-011`), and motion is covered exactly by the browser tests.
    - Sim faults (not app findings): in `w43-040` the runner tried to add a name in the "Someone else goes first" list (fixed
      in the runner); earlier runner versions looped on the deal or a turn's word list when Jev chose on the screen before.
 
 ## Budget
 
-Shared weekly count (2026-W43, `reports/runs/jev-usage.json`): 22,842 before this job. This report: 1,602 decisions.
+Shared weekly count (2026-W43, `reports/runs/jev-usage.json`): 22,842 before this job. This report: 1,602 decisions (and about
+280 more in runs stopped to fix the runner).
