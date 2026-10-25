@@ -205,11 +205,11 @@ function topOf(xs: string[]): string[] {
 }
 
 export interface Cell { size: number; shares: Shares; logs: GameLog[] }
-export async function runEngineSim(o: { sizes: number[]; shares: Shares[]; games: number; run: string; chooser: Chooser; stop: () => boolean }) {
+export async function runEngineSim(o: { sizes: number[]; shares: Shares[]; games: number; run: string; chooser: Chooser; stop: () => boolean; first?: number }) {
   const cells: Cell[] = []; let stopped: string | null = null;
   outer: for (const size of o.sizes) for (const shares of o.shares) {
     const cell: Cell = { size, shares, logs: [] }; cells.push(cell);
-    for (let g = 1; g <= o.games; g++) {
+    for (let g = cells.length === 1 ? (o.first ?? 1) : 1; g <= o.games; g++) {
       if (o.stop()) { stopped = 'decision limit'; break outer; }
       const res = await playEngineGame({ size, shares, seed: `${o.run}-${size}-${shares}-${g}`, chooser: o.chooser });
       if (res === 'stopped') { stopped = 'Jev or the budget stopped answering'; break outer; }
