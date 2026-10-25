@@ -180,3 +180,8 @@ Merged origin/main (PGN_PORT per lane: lane-a 4174). Lane A area: 129 of 132 pas
 ## 25 October: lane-k rebuilt on main 18d247e
 - Mafia test commits cherry-picked from lane-k-backup onto 18d247e; quick verify 40140895888 green at 83cc320.
 - `npx vitest run <file>` without `--config tests/vitest.config.ts` uses a 5 s timeout and fails the long properties; use `npm test -- <file>`.
+
+## 25 October: What Am I? marks in flight (lane-j, fc418f9)
+- `what-am-i-marks-in-flight.spec.ts`: a flashed Got it always counts, after pause, Home row, app hidden or reload. Not reproduced.
+- Reaching round 2 needs three whole turns: use 30 s turns (a 60 s `runFor` under taskpolicy -b passes the 30 s test timeout);
+  the file sets 90 s per test. The Pause button takes taps during the 600 ms flash.

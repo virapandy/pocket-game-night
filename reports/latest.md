@@ -1,4 +1,35 @@
 # Test report
+Commit tested: 58a23e6 (lane-j = main); tests pushed at fc418f9   Date: 2026-10-25
+Result: GREEN. Quick verify run 40145320428 (lane-j, fc418f9): verify success. Rule tests 1165/1165; browser smoke 17 passed;
+What Am I? area 171 passed, 0 failed; 1 quarantined test passed.
+
+## This round: possible scoring bug from a player walk (WAI-020, WAI-021, WAI-030; also WAI-040, WAI-043, WAI-010)
+- Report: round 2, Dev's turn, after a pause and a Home trip, Carry on from the Paused cover; SKATING showed; two quick taps
+  on the bottom half flashed "Got it!"; Pause, "End Dev's turn now"; T4 had only "Rohit Sharma" and "Dev got 1".
+- **Not reproduced.** New `tests/browser/what-am-i-marks-in-flight.spec.ts` (14 tests, in the What Am I? area) checks, in
+  round 2 for Dev with a fixed seed: (a) a Got it tap plus a second tap 0, 100, 150 or 300 ms later inside the 600 ms flash,
+  by mouse and by touch, Pause during the flash (really during: the Pause button takes taps over the flash) and after it,
+  then End Dev's turn now; (b) the same after a pause and a trip away (Home row, the app hidden, a reload) and Carry on from
+  the Paused cover, a sweep of double taps across the 800 ms guard after resume, and one run in real time; (c) taps during
+  the countdown just after resume (no flash, nothing recorded) and inside the guard, then the first tap after it. In every
+  case the flashed word was on T4's Got it list, in "Turn ended early. Dev got n", recorded once as `got`, and in Dev's score
+  on Round over. Android local, 3 workers, PGN_PORT=4191: 14/14 passed; also passed in run 40145320428.
+- **Reload mid-turn (WAI-010 Version 1.1 items 5, 6; WAI-091):** with Duck on screen, a reload records
+  `{ type: 'pause', turn: true, word: <Duck's id> }`; after Carry on, Bat and Camel show and then Duck comes back. Passes.
+- These stay as regression tests.
+
+## Real bugs
+- None.
+
+## Flaky or setup
+- Local `npm test` under taskpolicy -b: SWD-025 10,000-game privacy property timed out at 120 s (load; passes in the run).
+
+## Notes for the owner (plain English)
+- We could not make a word that flashed "Got it!" go missing, by any of the ways the walk described. If a player sees it
+  again, a screen recording or the "Report a problem" share would help pin it down.
+
+---
+Earlier report (83cc320, run 40140895888) follows.
 Commit tested: 83cc320 (lane-k: main 18d247e with What Am I? + Mafia bundle app code, plus the Mafia test commits 1914f02, af5f50a, e55f749, 5ad327d cherry-picked from lane-k-backup)   Date: 2026-10-25
 Result: GREEN. Quick verify run 40140895888 (lane-k, 83cc320): verify success. Rule tests 1165/1165; changed areas' browser tests 17 + 398 passed, 0 failed; 1 quarantined test passed.
 
