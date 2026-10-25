@@ -1,4 +1,26 @@
 # Test report
+Commit tested: 303ee77 (lane-u = main 6648586 + WebKit-safe What Am I? tests)   Date: 2026-10-25
+Result: RED (one failure already on main, not in this lane's scope); all 17 What Am I? iPhone failures fixed
+Run: https://github.com/virapandy/pocket-game-night/actions/runs/40147321743 (complete run, workflow_dispatch on lane-u)
+
+## Layers
+- check: green. Android 1/2, 2/2: green. iPhone 2/2: green. iPhone 1/2: 665 passed, 1 failed, 30 skipped.
+- Local (what-am-i-c3, -turn, -usability; both phones, 3 workers): 132 passed, 0 failed.
+
+## What changed (tests only, no check loosened)
+- WAI-013, WAI-021, WAI-024: orientation events fall back to a plain `deviceorientation` Event with the same fields where
+  WebKit refuses `new DeviceOrientationEvent` (tests/browser/what-am-i.ts `scheduleOrientation`).
+- WAI-080: scrolling uses `scrollBy` (page and scrollable boxes set directly; Chromium also gets the wheel), since mobile
+  WebKit has no `mouse.wheel`. Same assertions.
+
+## Failing (real bugs only)
+- None confirmed.
+
+## Needs the owner or product owner
+- MAF-061 item 28, tests/browser/mafia-results.spec.ts:69, iPhone only: still fails as on main (9cede1f); unchanged by this lane.
+
+---
+## Previous report (main 9cede1f, run 40142743156)
 Commit tested: 9cede1f (main)   Date: 2026-10-25
 Result: RED (complete run, both phones)
 Run: https://github.com/virapandy/pocket-game-night/actions/runs/40142743156 (workflow_dispatch; failed jobs rerun once)
