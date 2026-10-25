@@ -12,7 +12,8 @@
 //   - nothing stuck: a way on on every screen but the countdown, no screen for more than 30 steps, no unknown screen;
 //   - at most one main button, nothing sideways, no console error; a reload keeps every saved move.
 // Jev (when a key is present) chooses as the persona on room screens and picks names at night and in the vote, from button
-// names only; never the page text. A failing evening writes reports/sim/screen/mafia/<seed>/.
+// names only; never the page text. A failing evening writes reports/sim/screen/mafia/<seed>/ (its steps and a screenshot of
+// each step that found something).
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import type { Page } from '@playwright/test';
@@ -143,9 +144,9 @@ export async function playMafEvening(page: Page, cfg: MafConfig, opts: { jev?: J
   const plan = { gamesDone: 0, joinDone: !cfg.join, leaveDone: !cfg.leave, picked: new Set<string>(), paused: false, ended: false, tie: 0 };
   let jevLeft = opts.jev ? MAF_JEV_PER_EVENING : 0;
   let lastKey = '', same = 0, blank = 0;
-  const shots: { step: number; png: Buffer }[] = [];
   const log: string[] = [];
   const rated = new Set<string>();
+  const jevRepeats = new Map<string, number>();
   const maxSteps = Number(process.env.MAF_MAX_STEPS ?? 1500);
 
   for (let step = 1; step <= maxSteps; step++) {
@@ -155,8 +156,7 @@ export async function playMafEvening(page: Page, cfg: MafConfig, opts: { jev?: J
     try { s = await snapshot(page); } catch (e) { add('crash', step, '?', String(e).slice(0, 160)); break; }
     const sc = screenOf(s); const screen = sc ?? 'unknown';
     if (!res.screens.includes(screen)) res.screens.push(screen);
-    if (shots.length >= 30) shots.shift();
-    shots.push({ step, png: await page.screenshot().catch(() => Buffer.alloc(0)) });
+    const nBefore = findings.length;
 
     // ---- checks ----
     if (!sc) add('not recognised', step, 'unknown', s.body.slice(0, 160));
@@ -197,6 +197,8 @@ export async function playMafEvening(page: Page, cfg: MafConfig, opts: { jev?: J
       void ROLE_WORD;
     }
 
+    // A screenshot only when this step found something (a screenshot every step made a local run ten times slower).
+    if (findings.length > nBefore) { mkdirSync(`${MAF_RESULT_DIR}/${cfg.seed}`, { recursive: true }); await page.screenshot({ path: `${MAF_RESULT_DIR}/${cfg.seed}/finding-${step}.png` }).catch(() => {}); }
     // ---- choose ----
     let action: string | null = null; let viaJev = false;
     const choosable = !['V1'].includes(screen) && s.opts.length > 1;
@@ -210,7 +212,9 @@ export async function playMafEvening(page: Page, cfg: MafConfig, opts: { jev?: J
       if (out.choice !== null) {
         const o = s.opts[out.choice]!;
         const ending = /^(End for tonight|End the game)$/.test(o.label) && plan.gamesDone === 0 && !gameOver;
-        if (!ending && same < 6) { action = o.key; viaJev = true; }
+        const k = `${screen}|${o.label}|${s.h1[0] ?? ''}`;
+        const n = (jevRepeats.get(k) ?? 0) + 1; jevRepeats.set(k, n);
+        if (!ending && same < 6 && (n < 4 || o.main)) { action = o.key; viaJev = true; }
       }
     }
     if (!action) action = scripted(screen, s, cfg, plan, r, step, roles, gameOver);
@@ -233,7 +237,6 @@ export async function playMafEvening(page: Page, cfg: MafConfig, opts: { jev?: J
     const dir = `${MAF_RESULT_DIR}/${cfg.seed}`;
     mkdirSync(dir, { recursive: true });
     writeFileSync(`${dir}/steps.txt`, log.join('\n'));
-    for (const sh of shots) if (sh.png.length) writeFileSync(`${dir}/step-${String(sh.step).padStart(4, '0')}.png`, sh.png);
   }
   return res;
 }

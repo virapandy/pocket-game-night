@@ -16,7 +16,7 @@
 //     the run, what-am-i-replay.run.ts replays each evening's saved night through the engine and compares every in-game
 //     scoreboard that was on screen with the engine's view at that point;
 //   - also: at most one main button, nothing scrolls sideways, no console error.
-// A failing evening writes reports/sim/screen/what-am-i/<seed>/ (steps and the last 30 screenshots).
+// A failing evening writes reports/sim/screen/what-am-i/<seed>/ (its steps, and a screenshot of each step that found something).
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import type { Browser, Page } from '@playwright/test';
@@ -141,6 +141,7 @@ export function screenOf(s: Snap): string | null {
   if (h(/^What shall we play\?$/)) return 'picker';
   if (h(/^How to play$/)) return 'how-to-play';
   if (h(/^Join a game$/)) return 'join';
+  if (h(/^Type the host's code$/)) return 'code-entry';
   if (h(/^(History|Sessions)/) || s.ids.includes('history-game')) return 'history';
   if (s.opts.some((o) => o.kind === 'switch' && /^Larger text$/.test(o.label))) return 'settings';
   if (s.opts.some((o) => /^Host a game/.test(o.label))) return 'home';
@@ -210,7 +211,6 @@ export async function playWaiEvening(page: Page, browser: Browser, baseURL: stri
   const add = (kind: Finding['kind'], step: number, screen: string, detail: string) => {
     if (!findings.some((f) => f.kind === kind && f.screen === screen && f.detail === detail)) findings.push({ kind, step, screen, detail });
   };
-  const shots: { step: number; png: Buffer }[] = [];
   const log: string[] = [];
 
   // The guest's own phone first: Home → Join a game, where the What Am I? line must say it is played on the host's phone.
@@ -235,6 +235,7 @@ export async function playWaiEvening(page: Page, browser: Browser, baseURL: stri
   let jevLeft = opts.jev ? WAI_JEV_PER_EVENING : 0;
   let lastKey = '', sameCount = 0, prevRecords = 0; let lastNight: any = null;
   const rated = new Set<string>();
+  const jevRepeats = new Map<string, number>();
   const maxSteps = Number(process.env.WAI_MAX_STEPS ?? 2500);
 
   for (let step = 1; step <= maxSteps; step++) {
@@ -245,8 +246,7 @@ export async function playWaiEvening(page: Page, browser: Browser, baseURL: stri
     const sc = screenOf(s);
     if (!res.screens.includes(sc ?? 'unknown')) res.screens.push(sc ?? 'unknown');
     const screen = sc ?? 'unknown';
-    if (shots.length >= 30) shots.shift();
-    shots.push({ step, png: await page.screenshot().catch(() => Buffer.alloc(0)) });
+    const nBefore = findings.length;
 
     // ---- the checks ----
     if (!sc) {
@@ -298,6 +298,8 @@ export async function playWaiEvening(page: Page, browser: Browser, baseURL: stri
       }
     }
 
+    // A screenshot only when this step found something (a screenshot every step made a local run ten times slower).
+    if (findings.length > nBefore) { mkdirSync(`${WAI_RESULT_DIR}/${cfg.seed}`, { recursive: true }); await page.screenshot({ path: `${WAI_RESULT_DIR}/${cfg.seed}/finding-${step}.png` }).catch(() => {}); }
     // ---- choose ----
     let action: string | null = null;
     let viaJev = false;
@@ -314,7 +316,12 @@ export async function playWaiEvening(page: Page, browser: Browser, baseURL: stri
         // Jev's choice is played unless it ends the night before the plan's first game is played through (the persona would
         // ask "are you sure?"; the scripted host keeps the night going), or it would loop on the same screen.
         const ending = /^(End for tonight|Start new|Delete)/.test(o.label) && plan.gamesDone === 0 && !plan.endedOnce;
-        if (!ending && sameCount < 6) { action = o.key; viaJev = true; }
+        const k = `${screen}|${o.label}`;
+        const n = (jevRepeats.get(k) ?? 0) + 1; jevRepeats.set(k, n);
+        // A persona that keeps making the same choice on the same screen (a loop between two screens) is noted once and
+        // the scripted persona takes that screen from then on.
+        if (n === 3) res.jevNotes.push(`step ${step}: Jev chose "${o.label}" on ${screen} for the third time (a loop); scripted from here on that screen`);
+        if (!ending && sameCount < 6 && n < 3) { action = o.key; viaJev = true; }
       }
     }
     if (!action) action = scripted(screen, s, cfg, plan, r, step);
@@ -336,7 +343,6 @@ export async function playWaiEvening(page: Page, browser: Browser, baseURL: stri
     const dir = `${WAI_RESULT_DIR}/${cfg.seed}`;
     mkdirSync(dir, { recursive: true });
     writeFileSync(`${dir}/steps.txt`, log.join('\n'));
-    for (const sh of shots) if (sh.png.length) writeFileSync(`${dir}/step-${String(sh.step).padStart(4, '0')}.png`, sh.png);
   }
   return res;
 }
@@ -405,7 +411,7 @@ function scripted(screen: string, s: Snap, cfg: WaiConfig, plan: Plan, r: Rng, s
     case 'G2': plan.ended = true; return by(/^← Home$/) ?? main ?? 'action:escape';
     case 'history': return by(/^← Back$/) ?? by(/Home/) ?? 'action:back';
     case 'settings': return by(/^Done$/) ?? 'action:escape';
-    case 'join': return by(/Back|Home/) ?? 'action:back';
+    case 'join': case 'code-entry': return by(/Back|Home/) ?? 'action:back';
     case 'menu': {
       if (!plan.scoresSeen && by(/^Scores$/) && p === 'competitive-uncle') { plan.scoresSeen = true; return by(/^Scores$/)!; }
       if ((!plan.leaveDone || !plan.joinDone) && by(/^Players$/)) return by(/^Players$/)!;
