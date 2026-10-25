@@ -1,4 +1,30 @@
 # Test report
+Commit tested: 9cede1f (main)   Date: 2026-10-25
+Result: RED (complete run, both phones)
+Run: https://github.com/virapandy/pocket-game-night/actions/runs/40142743156 (workflow_dispatch; failed jobs rerun once)
+
+## Layers
+- check: green. Android 1/2 and 2/2: green. iPhone 1/2: 665 passed, 1 failed. iPhone 2/2: 660 passed, 18 failed (first attempt 19; one passed on rerun).
+
+## Failing (real bugs only)
+- None confirmed.
+
+## Needs the owner or product owner
+- MAF-061 item 28, tests/browser/mafia-results.spec.ts:69, iPhone only: "Change players or roles" did not show the "Who's playing?" heading. Failed on both attempts, passes on Android. Probably the known Mafia setup leftover until the Mafia card ships, but it is not in the named list (setup tests and MAF-055); the coder should confirm.
+
+## Flaky or setup problems (not for the Build workspace)
+- iPhone only, failed both attempts, caused by iPhone browser limits in the test, not the app (Android passes the same tests):
+  - WAI-021 (what-am-i-c3.spec.ts lines 173, 188, 202, 215): page.clock.runFor throws "TypeError: Illegal constructor" in WebKit.
+  - WAI-013 (what-am-i-turn.spec.ts:220): same error.
+  - WAI-024 (what-am-i-turn.spec.ts:417, 438): same error family.
+  - WAI-080 (what-am-i-usability.spec.ts:29 x10 sizes, :65): page.mouse.wheel is not supported in mobile WebKit.
+  Total 17 on iPhone. Needs a test rewrite (tester job, with owner approval where a check changes) or an iPhone exclusion decision. Not skipped by me.
+- SWD-002 (v3.6) D11, secret-words-a-home.spec.ts:480, iPhone: failed first attempt (board-phone-dialog not found), passed on rerun. Flaky.
+- Quarantined: TAM-191/TAM-122 phone-tickets passed.
+
+---
+## Earlier report still on main (lane-j, different commit, kept for reference)
+# Test report
 Commit tested: 58a23e6 (lane-j = main); tests pushed at fc418f9   Date: 2026-10-25
 Result: GREEN. Quick verify run 40145320428 (lane-j, fc418f9): verify success. Rule tests 1165/1165; browser smoke 17 passed;
 What Am I? area 171 passed, 0 failed; 1 quarantined test passed.
