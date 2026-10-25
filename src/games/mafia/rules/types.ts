@@ -22,6 +22,8 @@ export type MafiaMove =
   | { readonly type: 'seen'; readonly player: string }
   | { readonly type: 'redeal' }
   | { readonly type: 'startNight'; readonly night: number }
+  /** The Police's first name tap on N2, recorded at once (Version 1.2 C). */
+  | { readonly type: 'check'; readonly player: string; readonly target: string }
   | { readonly type: 'nightPick'; readonly player: string; readonly target: string | null }
   | { readonly type: 'voteOut'; readonly player: string }
   | { readonly type: 'tie'; readonly players: readonly string[] }
@@ -85,7 +87,7 @@ export interface Game {
   /** Night leaves recorded and not yet applied. */
   leaving: string[];
   /** The night being played. */
-  night: { turns: string[]; picks: Pick[] } | null;
+  night: { turns: string[]; picks: Pick[]; check?: { player: string; target: string } | null } | null;
   nights: NightRecord[];
   votes: VoteRecord[];
   /** Today's tie as recorded, and the tied players still in. */
@@ -142,6 +144,8 @@ export interface MafiaView {
 export interface NightJob {
   kind: JobKind;
   names: { player: string; allowed: boolean; tags: string[] }[];
+  /** Police: this turn's check once made (Version 1.2 C); else null. */
+  check: { player: string; mafia: boolean } | null;
   latest: { by: string; target: string } | null;
   see: string[];
 }

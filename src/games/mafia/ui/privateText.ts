@@ -35,9 +35,6 @@ export const P = {
   // N2 (mf.n2.*)
   seeJob: 'Tap to see your night job',
   nightOver: 'Done, night over',
-  cantPick: (name: string) => `${name}, can't pick`,
-  doctorSelf: '(you) · once a game',
-  theirPick: (name: string) => `${name}'s pick`,
   // N3 (mf.n3.*)
   overTitle: 'Night over.',
   overLine: 'Host, take the phone and read the morning aloud.',
@@ -101,6 +98,8 @@ export const RESULT = {
   doctor: (pick: string) => `${pick} is protected tonight.`,
   doctorSelf: 'You are protected tonight.',
   police: (pick: string, mafia: boolean) => (mafia ? `${pick}: MAFIA.` : `${pick}: Not Mafia.`),
+  /** Version 1.2 A: a Police with nobody left to check taps any name. */
+  policeNone: 'Nobody left to check.',
   villager: (pick: string) => `You think it's ${pick}. At the end we'll see if you were right.`,
   ghost: (pick: string) => `Your guess: ${pick}.`,
 } as const;

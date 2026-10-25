@@ -411,6 +411,7 @@ function nightSlots(players: readonly string[], m: number): Slot[] {
         RESULT.doctorSelf,
         RESULT.police(a, true),
         RESULT.police(a, false),
+        RESULT.policeNone,
         RESULT.villager(a),
         RESULT.ghost(a),
       ],
@@ -468,9 +469,11 @@ function N2({ ctx }: { ctx: RoomCtx }) {
   const job = own.job;
   if (!job) return null;
   const none = !job.names.some((n) => n.allowed);
-  const police = job.kind === 'police';
-  const move = { type: 'nightPick' as const, player, target: none ? null : pick };
-  const ready = firstAt !== null && Date.now() - firstAt >= NIGHT_GUARD_MS && (pick !== null || none);
+  // Version 1.2 C: the Police's check is recorded at the first tap; after a reload or a hide it is selected again.
+  const chosen = job.check ? job.check.player : pick;
+  const move = { type: 'nightPick' as const, player, target: none ? null : chosen };
+  // Version 1.2 A: every role needs a name tap, including a Police with nobody left to check.
+  const ready = firstAt !== null && Date.now() - firstAt >= NIGHT_GUARD_MS && chosen !== null;
   const after = ready ? ctx.peek(move) : null;
 
   let jobLine: ReactNode;
@@ -503,7 +506,9 @@ function N2({ ctx }: { ctx: RoomCtx }) {
   }
 
   let result = '';
-  if (pick !== null) {
+  if (chosen !== null && job.kind === 'police') {
+    result = job.check ? RESULT.police(job.check.player, job.check.mafia) : none ? RESULT.policeNone : '';
+  } else if (pick !== null) {
     switch (job.kind) {
       case 'mafia':
         result = job.latest ? (pick === job.latest.target ? RESULT.mafiaAgree(pick) : RESULT.mafiaDiffer(pick)) : RESULT.mafiaFirst(pick, job.see);
@@ -511,11 +516,6 @@ function N2({ ctx }: { ctx: RoomCtx }) {
       case 'doctor':
         result = pick === player ? RESULT.doctorSelf : RESULT.doctor(pick);
         break;
-      case 'police': {
-        const check = ctx.peekOwn({ type: 'nightPick', player, target: pick }, player)?.checks.find((c) => c.player === pick);
-        result = RESULT.police(pick, check?.mafia === true);
-        break;
-      }
       case 'villager':
         result = RESULT.villager(pick);
         break;
@@ -523,6 +523,17 @@ function N2({ ctx }: { ctx: RoomCtx }) {
         result = RESULT.ghost(pick);
     }
   }
+
+  /** Version 1.2 A: a tap on a name the role may not pick does nothing; the Police's first allowed tap is the check. */
+  const tapName = (name: string, allowed: boolean) => {
+    if (job.kind === 'police') {
+      if (none) return setPick(name);
+      if (job.check || !allowed) return;
+      ctx.play({ type: 'check', player, target: name });
+      return;
+    }
+    if (allowed) setPick(name);
+  };
 
   const done = () => {
     if (!ctx.play(move)) return;
@@ -561,34 +572,23 @@ function N2({ ctx }: { ctx: RoomCtx }) {
               {jobLine}
             </p>
             <div className="maf-n2-names" data-testid="night-names">
-              {job.names.map((n) => {
-                // MAF-025: the Police's first name tapped is the check; every other name greys out.
-                const can = n.allowed && !(police && pick !== null && n.player !== pick);
-                const tag = !n.allowed
-                  ? n.tags.join(' · ')
-                  : job.kind === 'doctor' && n.player === player
-                    ? P.doctorSelf
-                    : job.latest && n.player === job.latest.target
-                      ? P.theirPick(job.latest.by)
-                      : '';
-                return (
-                  <button
-                    key={n.player}
-                    type="button"
-                    className={pick === n.player ? 'maf-nb maf-nb-on' : 'maf-nb'}
-                    aria-pressed={pick === n.player}
-                    aria-label={can ? n.player : P.cantPick(n.player)}
-                    disabled={!can}
-                    onClick={() => setPick(n.player)}
-                  >
-                    <span className="maf-nb-name">
-                      {pick === n.player && <span aria-hidden="true">✓ </span>}
-                      {n.player}
-                    </span>
-                    {tag && <span className="maf-nb-tag">{tag}</span>}
-                  </button>
-                );
-              })}
+              {job.names.map((n) => (
+                // Version 1.2 A: every name looks and reads the same for every role; tags are "you" and "out" only.
+                <button
+                  key={n.player}
+                  type="button"
+                  className={chosen === n.player ? 'maf-nb maf-nb-on' : 'maf-nb'}
+                  aria-pressed={chosen === n.player}
+                  aria-label={n.player}
+                  onClick={() => tapName(n.player, n.allowed)}
+                >
+                  <span className="maf-nb-name">
+                    {chosen === n.player && <span aria-hidden="true">✓ </span>}
+                    {n.player}
+                  </span>
+                  {n.tags.length > 0 && <span className="maf-nb-tag">{n.tags.join(' · ')}</span>}
+                </button>
+              ))}
             </div>
             <p className="maf-n2-line maf-n2-result" data-testid="result-line" style={fixed(h[1])}>
               {result}

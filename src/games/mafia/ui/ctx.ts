@@ -37,6 +37,8 @@ export interface RoomCtx {
   readonly paused: boolean;
   /** This screen was opened by a resume or a reload ("Welcome back." showing): V4 shows its role line at once (item 22). */
   readonly resumed: boolean;
+  /** Version 1.2 B: the toast "Game ended · Undo" is showing (G1 shows no role until it has gone). */
+  readonly endUndo: boolean;
   /** The last move recorded tonight (G1's leaver line, MAF-041). */
   readonly lastMove: MafiaMove | null;
   /** The countdown's and the day timer's sounds (MAF-082), with sound on. */

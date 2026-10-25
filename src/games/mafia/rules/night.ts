@@ -59,11 +59,21 @@ function allPicks(g: Game) {
   return [...g.nights.flatMap((n) => n.picks), ...(g.night?.picks ?? [])];
 }
 
-/** This Police's checks this game, in order. */
+/** Version 1.2 C: this player's `check` tonight, while their turn's Done is still to come. */
+export function pendingCheck(g: Game, player: string): string | null {
+  const c = g.night?.check;
+  if (!c || c.player !== player || g.night?.turns.includes(player)) return null;
+  return c.target;
+}
+
+/** This Police's checks this game, in order (tonight's pending check last). */
 export function checksOf(g: Game, player: string): { player: string; mafia: boolean }[] {
-  return allPicks(g)
+  const targets = allPicks(g)
     .filter((p) => p.kind === 'police' && p.player === player && p.target !== null)
-    .map((p) => ({ player: p.target as string, mafia: g.roles[p.target as string] === 'mafia' }));
+    .map((p) => p.target as string);
+  const pending = pendingCheck(g, player);
+  if (pending !== null) targets.push(pending);
+  return targets.map((t) => ({ player: t, mafia: g.roles[t] === 'mafia' }));
 }
 
 export function jobKind(g: Game, player: string): JobKind {
@@ -89,6 +99,9 @@ export function allowedNames(g: Game, player: string): string[] {
       return inNow.filter((p) => p !== last && !(p === player && used));
     }
     case 'police': {
+      // After this turn's check, only the checked player (it stands even if they leave before Done).
+      const pending = pendingCheck(g, player);
+      if (pending !== null) return [pending];
       const checked = new Set(checksOf(g, player).map((c) => c.player));
       return inNow.filter((p) => p !== player && !checked.has(p));
     }
@@ -96,25 +109,20 @@ export function allowedNames(g: Game, player: string): string[] {
   }
 }
 
-/** N2's job (item 4): every player dealt, not left, not leaving tonight; greyed ones tagged by PO 9. */
+/**
+ * N2's job (item 4): every player dealt, not left, not leaving tonight. Version 1.2 A: the tags are the same for every role
+ * ("you" on the own name, "out" on players who are out); only `allowed` follows the role.
+ */
 export function nightJob(g: Game, player: string): NightJob {
   const kind = jobKind(g, player);
   const allowed = new Set(allowedNames(g, player));
-  const checks = kind === 'police' ? new Map(checksOf(g, player).map((c) => [c.player, c.mafia ? 'Mafia' : 'Not Mafia'])) : new Map<string, string>();
-  const last = kind === 'doctor' ? protectedLastNight(g) : null;
-  const names = g.players.filter((p) => !hasLeft(g, p) && !g.leaving.includes(p)).map((p) => {
-    let tags: string[] = [];
-    if (!allowed.has(p)) {
-      const answer = checks.get(p);
-      if (p === player) tags = kind === 'doctor' && selfUsed(g, player) ? ['used'] : ['you'];
-      else if (isOut(g, p)) tags = answer ? ['out', answer] : ['out'];
-      else if (kind === 'mafia' && g.roles[p] === 'mafia') tags = ['Mafia'];
-      else if (kind === 'doctor' && p === last) tags = ['protected last night'];
-      else if (answer) tags = [answer];
-      else tags = ['you'];
-    }
-    return { player: p, allowed: allowed.has(p), tags };
-  });
+  const names = g.players.filter((p) => !hasLeft(g, p) && !g.leaving.includes(p)).map((p) => ({
+    player: p,
+    allowed: allowed.has(p),
+    tags: p === player ? ['you'] : isOut(g, p) ? ['out'] : [],
+  }));
+  const pending = kind === 'police' ? pendingCheck(g, player) : null;
+  const check = pending === null ? null : { player: pending, mafia: g.roles[pending] === 'mafia' };
   let latest: NightJob['latest'] = null;
   let see: string[] = [];
   if (kind === 'mafia') {
@@ -123,7 +131,7 @@ export function nightJob(g: Game, player: string): NightJob {
     if (l) latest = { by: l.player, target: l.target as string };
     see = remaining(g).filter((p) => p !== player && g.roles[p] === 'mafia' && !isOut(g, p));
   }
-  return { kind, names, latest, see };
+  return { kind, names, check, latest, see };
 }
 
 /** MAF-040: m = Mafia in, v = others in. */

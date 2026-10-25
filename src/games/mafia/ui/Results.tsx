@@ -93,31 +93,36 @@ export function G1({ ctx }: { ctx: RoomCtx }) {
         {leavers.length > 0 && (
           <p className="maf-body">{D.g1.hadToLeave(leavers)}</p>
         )}
-        <h2 className="maf-subtitle">{D.g1.whoWasWho}</h2>
-        <ul className="maf-who-list">
-          {v.players.map((p) => {
-            const r = roles[p];
-            return <li key={p}>{r ? D.g1.row(p, r, statusOf(v, p)) : p}</li>;
-          })}
-        </ul>
-        {g && g.nights.length > 0 && (
+        {/* Version 1.2 B: no role, night lines or fun lines while "Game ended · Undo" is showing. */}
+        {!ctx.endUndo && (
           <>
-            <Quiet onClick={() => setEach(!each)}>{D.g1.each}</Quiet>
-            {each && (
-              <ul className="maf-night-lines">
-                {g.nights.map((n) => (
-                  <li key={n.night}>{nightLine(g, n)}</li>
-                ))}
-              </ul>
+            <h2 className="maf-subtitle">{D.g1.whoWasWho}</h2>
+            <ul className="maf-who-list">
+              {v.players.map((p) => {
+                const r = roles[p];
+                return <li key={p}>{r ? D.g1.row(p, r, statusOf(v, p)) : p}</li>;
+              })}
+            </ul>
+            {g && g.nights.length > 0 && (
+              <>
+                <Quiet onClick={() => setEach(!each)}>{D.g1.each}</Quiet>
+                {each && (
+                  <ul className="maf-night-lines">
+                    {g.nights.map((n) => (
+                      <li key={n.night}>{nightLine(g, n)}</li>
+                    ))}
+                  </ul>
+                )}
+              </>
             )}
+            {g?.spotter && (
+              <p className="maf-fun">
+                {D.g1.spotter(g.spotter.player, g.spotter.nights, g.spotter.of)}
+              </p>
+            )}
+            {g?.ghost && <p className="maf-fun">{D.g1.ghost(g.ghost)}</p>}
           </>
         )}
-        {g?.spotter && (
-          <p className="maf-fun">
-            {D.g1.spotter(g.spotter.player, g.spotter.nights, g.spotter.of)}
-          </p>
-        )}
-        {g?.ghost && <p className="maf-fun">{D.g1.ghost(g.ghost)}</p>}
         {tally.village + tally.mafia > 0 && (
           <p className="maf-small">{D.g1.tally(tally.village, tally.mafia)}</p>
         )}

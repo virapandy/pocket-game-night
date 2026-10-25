@@ -285,6 +285,7 @@ export function MafiaRoom({
     changePlayers,
     paused,
     resumed: welcome,
+    endUndo: !!toast?.undo && match.state.undo?.kind === 'endGame',
     lastMove: match.records[match.records.length - 1]?.move ?? null,
     sound: (name) => playSound(name, prefs),
   };

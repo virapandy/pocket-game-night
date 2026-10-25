@@ -3,7 +3,8 @@
 import { HOST, type GameRules, type MoveContext, type SetupInput, type Verdict, type Viewer } from '../../../engine';
 import { dealRoles, keptCount, mafiaCounts, validOverride } from './deal';
 import {
-  STORY_EDITIONS, allowedNames, checkWinner, checksOf, inTonight, isIn, isOut, nightJob, nightTurn, remaining, resolveNight,
+  STORY_EDITIONS, allowedNames, checkWinner, checksOf, inTonight, isIn, isOut, jobKind, nightJob, nightTurn, pendingCheck, remaining,
+  resolveNight,
 } from './night';
 import type {
   Game, MafiaConfig, MafiaMove, MafiaPlayerView, MafiaState, MafiaView, Role, Step,
@@ -168,6 +169,17 @@ function apply(s: MafiaState, move: MafiaMove, ctx: MoveContext): Verdict<MafiaS
       if (remaining(g).length === 0) resolveNight(next, g);
       return yes(next);
     }
+    case 'check': {
+      // Version 1.2 C: the Police's first name tap, recorded at once; nothing in the room view changes.
+      const turn = nightTurn(g0);
+      if (step !== 'night' || !turn || turn.player !== move.player || jobKind(g0, move.player) !== 'police') return no('Not their turn.');
+      if (pendingCheck(g0, move.player) !== null) return no('Already checked tonight.');
+      if (typeof move.target !== 'string' || !allowedNames(g0, move.player).includes(move.target)) return no('That name is not allowed.');
+      const next = draft(s);
+      const g = current(next) as Game;
+      (g.night as NonNullable<Game['night']>).check = { player: move.player, target: move.target };
+      return yes(next);
+    }
     case 'nightPick': {
       const turn = nightTurn(g0);
       if (step !== 'night' || !turn || turn.player !== move.player) return no('Not their turn.');
@@ -300,6 +312,9 @@ function legalMoves(s: MafiaState, actor: string): MafiaMove[] {
         const allowed = allowedNames(g, turn.player);
         if (allowed.length === 0) out.push({ type: 'nightPick', player: turn.player, target: null });
         for (const t of allowed) out.push({ type: 'nightPick', player: turn.player, target: t });
+        if (jobKind(g, turn.player) === 'police' && pendingCheck(g, turn.player) === null) {
+          for (const t of allowed) out.push({ type: 'check', player: turn.player, target: t });
+        }
       }
       leaves();
       out.push({ type: 'endGame' });
