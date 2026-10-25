@@ -1,4 +1,28 @@
 # Test report
+Commit tested: 7830cb0 (lane-o = main c320bd3 + this lane's tests and reports)   Date: 2026-10-25
+Result: RED, as intended: the new test for the stuck screen fails until the 1.5.1 fix
+Run: https://github.com/virapandy/pocket-game-night/actions/runs/40188031742 (Quick verify on lane-o: rule tests and build green;
+changed-area browser tests 2 failed, both the new test; everything else passed)
+
+## What changed (tests only, no check loosened)
+- New browser test, `tests/browser/what-am-i-c3.spec.ts` "a Pass / a Got it whose flash ends on the same millisecond as time
+  up" (WAI-023 with Version 1.1 item 14, WAI-030), no expected-to-fail mark. Test clock: the second mark is tapped at exactly
+  29,400 ms of a 30 s turn, so its 600 ms flash ends at 30,000 ms. Expected: "Time's up! Riya got 1" (Pass) or "got 2"
+  (Got it), Save score, Got it and Passed chips as marked, saved moves got, pass/got, timeUp. Taps and the clock as the earlier
+  WebKit-safe tests (mouse taps, Playwright clock); passes locally at 29,399 and 29,401 ms on both phones.
+- Whether the next word gets a zero-length moment on screen at that millisecond (and is then passed by time up) is not pinned
+  by the scenarios; the test accepts either, as long as the lists, count and `timeUp` agree.
+- `tests/sims/mafia-runner.ts` follows Mafia Version 1.2: it never expected greyed names (it skipped disabled buttons, of which
+  there are now none) and now also checks change A on every N2 (no name greyed or disabled, the same look apart from the
+  selection, accessible name = the name, tags only "you" and "out") and change B (no role on G1 while "Game ended · Undo"
+  shows). 8 scripted evenings on c320bd3: no finding.
+
+## Failing (real bugs only)
+- WAI-023 / Version 1.1 item 14 / WAI-030, what-am-i-c3.spec.ts:261 (both cases, Android in quick verify; iPhone too locally):
+  expected the heading "Time's up! Riya got 1" (or "got 2"), got a blank page (`wai-turn-blank`, no heading, nothing to tap).
+
+---
+## Previous report (lane-o Jev simulations)
 Commit tested: d5dd03e (main; What Am I? 1.5.0, Mafia built and hidden), simulations on lane-o   Date: 2026-10-25
 Result: report-only Jev simulations (they never fail the build). Quick verify on lane-o: run 40186586623 (head 47b9a43).
 Full reports: reports/sim-what-am-i.md, reports/sim-mafia.md.
