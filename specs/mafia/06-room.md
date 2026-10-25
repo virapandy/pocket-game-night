@@ -1,6 +1,6 @@
 # 06-room.md: The room and the host (C2)
 
-Copied from `docs/games/mafia/scenarios.md` (version 1.1, approved by the owner 25 October 2026, decision MF18), the binding contract. Each scenario's paragraph headed "Version 1.1" is that file's two-reader item, copied word for word; it wins over the text above it. Terms, canonical strings, screen IDs, properties and test hooks: [README.md](README.md). Rule API for the tests: [api.md](api.md).
+Copied from `docs/games/mafia/scenarios.md` (version 1.1, approved by the owner 25 October 2026, decision MF18), the binding contract. Each scenario's paragraph headed "Version 1.1" is that file's two-reader item, copied word for word; it wins over the text above it. Terms, canonical strings, screen IDs, properties and test hooks: [README.md](README.md). Rule API for the tests: [api.md](api.md). Paragraphs headed "Version 1.2 (owner, 25 October)" are the owner's privacy changes of 25 October ("do all as recommended"); they win over Version 1.1 and the text above them.
 
 ## MAF-050: Pause
 Status: approved, owner, 2026-10-25 (version 1.1, MF18)
@@ -50,6 +50,8 @@ Phase: Mafia 1
 "End the game" (menu, M1, V4) → dialog (Canonical strings) → "End the game" records `endGame` → G1 "Game ended. No winner." with
 the toast "Game ended · Undo" (10 s; Undo removes `endGame` and returns to the screen it came from). "Keep playing" (main) →
 back.
+
+**Version 1.2 (owner, 25 October)** (privacy change B, C3): **no role while the Undo toast is up.** While the toast "Game ended · Undo" is showing, G1 shows h1 "Game ended. No winner." but **no h2 "Who was who", no player's role anywhere** (text, accessible names, live regions), no "What happened each night" and no fun lines (MAF-062). Roles show only once the toast has gone: another move, its 10 s timeout, or a screen change (including a reload or the app hidden), i.e. once the Undo chance has ended. Undo returns to the screen it came from with no role ever shown.
 
 ## MAF-055: Home and the phone resting
 Status: approved, owner, 2026-10-25 (version 1.1, MF18)

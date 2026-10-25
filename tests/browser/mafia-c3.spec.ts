@@ -7,6 +7,7 @@ import {
   EXAMPLE_DEAL, NINE, box, button, byId, dealAll, dealTurn, exactly, heading, mainButton, nameButton,
   nightNames, openFlow, pad, playNight, roomDump, tap, openDeal, toMorning, TZ,
 } from './mafia';
+import { hideApp, showApp } from './secret-words-b';
 import { oracleDeal, oracleStory, storyText, STORIES, type Role } from '../games/mafia/oracle';
 
 test.use({ timezoneId: TZ });
@@ -202,4 +203,180 @@ test('MAF-091: a finished game resumes on Game over with "Welcome back." and "Ga
   await openFlow(page, 'game1-over');
   await expect(heading(page, 'The Village wins!')).toBeVisible();
   await expect(byId(page, 'where-line')).toHaveText(exactly('Game over, game 1'));
+});
+
+// ---- Version 1.2 (owner, 25 October 2026): privacy changes A and C (C3, MAF-P2/P7, guideline 51) ----
+
+/** How every name button on N2 looks and reads: the things a glance or a screen reader could tell apart. */
+async function namesLook(page: Page) {
+  return byId(page, 'night-names').getByRole('button').evaluateAll((els) => els.map((e) => {
+    const cs = getComputedStyle(e);
+    return {
+      text: (e as HTMLElement).innerText.replace(/\s+/g, ' ').trim(),
+      disabled: (e as HTMLButtonElement).disabled, ariaDisabled: e.getAttribute('aria-disabled'), pressed: e.getAttribute('aria-pressed'),
+      look: [cs.opacity, cs.color, cs.backgroundColor, cs.borderColor, cs.filter, cs.textDecorationLine].join(' | '),
+    };
+  }));
+}
+/** What a tap could change on N2: the names box, the result line and whether the main button shows. */
+async function n2State(page: Page) {
+  return {
+    names: await byId(page, 'night-names').evaluate((e) => e.outerHTML),
+    result: await byId(page, 'result-line').evaluate((e) => e.outerHTML).catch(() => ''),
+    main: await mainButton(page).isVisible(),
+  };
+}
+/** "I'm X" and "Tap to see your night job". */
+async function openJob(page: Page, who: string) {
+  await expect(byId(page, 'pass-name')).toHaveText(exactly(who));
+  await tap(page, button(page, `I'm ${who}`));
+  await tap(page, button(page, 'Tap to see your night job'));
+  await expect(byId(page, 'night-names')).toBeVisible();
+}
+/** A tap on a name the role may not pick: nothing visible changes (Version 1.2 A), the main button does not appear. */
+async function tapDoesNothing(page: Page, who: string, name: string) {
+  const before = await n2State(page);
+  await nameButton(page, name).click({ force: true });
+  await page.clock.runFor(300);
+  expect(await n2State(page), `${who} taps ${name}`).toEqual(before);
+}
+
+test('MAF-022 to MAF-026 Version 1.2 A / MAF-P7: every role sees the same names box: none greyed, same look, same tags, names read as the name only', async ({ page }) => {
+  test.slow();
+  await openFlow(page, 'night1-start');
+  await tap(page, mainButton(page));
+  const picks: Record<string, string> = { Riya: 'Arjun', Arjun: 'Kabir', Meena: 'Meena', Kabir: 'Zoya', Zoya: 'Kabir', Dev: 'Zoya' };
+  const seen: { who: string; looks: string[]; tags: string[] }[] = [];
+  for (const who of Object.keys(picks)) {
+    await openJob(page, who);
+    const look = await namesLook(page);
+    expect(look.length, `${who}: 9 names`).toBe(9);
+    for (const [i, n] of NINE.entries()) {
+      const b = nightNames(page).nth(i);
+      // Screen readers: the name only, the same for every role (no ", can't pick", no tag, no partner name).
+      await expect(b, `${who}: name ${n}`).toHaveAccessibleName(new RegExp(`^\\s*${n}\\s*$`, 'i'));
+      expect(look[i]!.disabled, `${who}: ${n} disabled`).toBe(false);
+      expect(look[i]!.ariaDisabled, `${who}: ${n} aria-disabled`).not.toBe('true');
+    }
+    const looks = look.map((l) => l.look);
+    for (const [i, l] of looks.entries()) expect(l, `${who}: ${NINE[i]} looks like ${NINE[0]}`).toBe(looks[0]);
+    // Tags: the text under each name with the name taken off; only "you" on the own name (nobody is out on night 1).
+    const tags = look.map((l, i) => l.text.replace(new RegExp(`^${NINE[i]}`, 'i'), '').replace(/^[\s·]+/, '').trim().toLowerCase());
+    for (const [i, t] of tags.entries()) expect(t, `${who}: tag under ${NINE[i]}`).toBe(NINE[i] === who ? 'you' : '');
+    seen.push({ who, looks, tags });
+    await tap(page, nameButton(page, picks[who]!));
+    // The Police: after the first tap, the answer is in the result line only and no other name greys out.
+    if (who === 'Dev') {
+      await expect(byId(page, 'result-line')).toHaveText(exactly('Zoya: MAFIA.'));
+      const after = await namesLook(page);
+      for (const [i, l] of after.entries()) {
+        expect(l.disabled || l.ariaDisabled === 'true', `Dev after the check: ${NINE[i]} greyed`).toBe(false);
+        if (NINE[i] !== 'Zoya') expect(l.look, `Dev after the check: ${NINE[i]} look`).toBe(seen[0]!.looks[0]);
+      }
+      await expect(byId(page, 'night-names')).not.toContainText(/mafia/i);
+    }
+    await page.clock.runFor(4100);
+    await tap(page, mainButton(page));
+  }
+  for (const s of seen) expect(s.looks, `${s.who}: the same look as ${seen[0]!.who}`).toEqual(seen[0]!.looks);
+});
+
+test('MAF-023 to MAF-026 Version 1.2 A: a tap on a name the role may not pick does nothing (partners, "you", used, last night\'s, out, earlier checks)', async ({ page }) => {
+  test.slow();
+  // Night 1: Riya (Villager) taps herself; Arjun (Mafia) taps himself and his partner Zoya, before and after a real pick.
+  await openFlow(page, 'night1-start');
+  await tap(page, mainButton(page));
+  await openJob(page, 'Riya');
+  await tapDoesNothing(page, 'Riya', 'Riya');
+  await tap(page, nameButton(page, 'Om'));
+  await page.clock.runFor(4100);
+  await tap(page, mainButton(page));
+  await openJob(page, 'Arjun');
+  await tapDoesNothing(page, 'Arjun', 'Zoya');
+  await tapDoesNothing(page, 'Arjun', 'Arjun');
+  await page.clock.runFor(4100);
+  await expect(mainButton(page), 'no pick: Done stays hidden').toBeHidden();
+  await tap(page, nameButton(page, 'Kabir'));
+  await expect(byId(page, 'result-line')).toHaveText(exactly('Kabir. Zoya can agree or change it.'));
+  await tapDoesNothing(page, 'Arjun', 'Zoya');
+  await expect(nameButton(page, 'Kabir')).toHaveAttribute('aria-pressed', 'true');
+  // Night 2: Meena (Doctor, used her self-protect on night 1) taps herself and Kabir (out): nothing; Riya works.
+  await openFlow(page, 'night2-meena');
+  await openJob(page, 'Meena');
+  await tapDoesNothing(page, 'Meena', 'Meena');
+  await tapDoesNothing(page, 'Meena', 'Kabir');
+  await tap(page, nameButton(page, 'Riya'));
+  await expect(byId(page, 'result-line')).toHaveText(exactly('Riya is protected tonight.'));
+  // Night 3: Meena protected Riya on night 2: Riya does nothing. Dev checked Zoya and Arjun: they do nothing.
+  await openFlow(page, 'night3-meena');
+  await openJob(page, 'Meena');
+  await tapDoesNothing(page, 'Meena', 'Riya');
+  await tapDoesNothing(page, 'Meena', 'Meena');
+  await openFlow(page, 'night3-dev');
+  await openJob(page, 'Dev');
+  await tapDoesNothing(page, 'Dev', 'Zoya');
+  await tapDoesNothing(page, 'Dev', 'Arjun');
+  await tapDoesNothing(page, 'Dev', 'Dev');
+  await expect(byId(page, 'night-names')).not.toContainText(/mafia/i);
+  await tap(page, nameButton(page, 'Sunita'));
+  await expect(byId(page, 'result-line')).toHaveText(exactly('Sunita: Not Mafia.'));
+  // After the check, another name does nothing either (Version 1.2 A and C).
+  await tapDoesNothing(page, 'Dev', 'Riya');
+  await expect(byId(page, 'result-line')).toHaveText(exactly('Sunita: Not Mafia.'));
+});
+
+test('MAF-025 Version 1.2 A: a Police with nobody left to check still taps a name: no name greyed, Done only after a tap, "Nobody left to check."', async ({ page }) => {
+  await openFlow(page, 'police-nobody-left');
+  await openJob(page, 'Dev');
+  const look = await namesLook(page);
+  expect(look.length).toBe(6);
+  for (const l of look) expect(l.disabled || l.ariaDisabled === 'true', `${l.text} greyed`).toBe(false);
+  for (const l of look) expect(l.look, `${l.text} look`).toBe(look[0]!.look);
+  await expect(byId(page, 'night-names')).not.toContainText(/mafia/i);
+  await page.clock.runFor(4100);
+  await expect(mainButton(page), 'no tap yet: Done hidden as for every role').toBeHidden();
+  await nameButton(page, 'Kabir').click({ force: true });
+  await expect(byId(page, 'result-line')).toHaveText(exactly('Nobody left to check.'));
+  await page.clock.runFor(1000);
+  await expect(mainButton(page)).toHaveText(exactly('Done, pass to Riya'));
+  await tap(page, mainButton(page));
+  await expect(byId(page, 'pass-name')).toHaveText(exactly('Riya'));
+});
+
+/** Dev's N2 on night 1 after the reload or hide: the same answer, Zoya selected, before any tap; no other check. */
+async function sameCheckAgain(page: Page, how: string) {
+  await expect(page.getByText(exactly('Welcome back.')), how).toBeVisible();
+  await openJob(page, 'Dev');
+  await expect(byId(page, 'result-line'), `${how}: the same answer before any tap`).toHaveText(exactly('Zoya: MAFIA.'));
+  await expect(nameButton(page, 'Zoya')).toHaveAttribute('aria-pressed', 'true');
+  await nameButton(page, 'Riya').click({ force: true });
+  await page.clock.runFor(300);
+  await expect(byId(page, 'result-line'), `${how}: no second check`).toHaveText(exactly('Zoya: MAFIA.'));
+  await expect(nameButton(page, 'Riya')).not.toHaveAttribute('aria-pressed', 'true');
+}
+
+test('MAF-025 Version 1.2 C: the Police\'s first tap is saved at once: after a reload, Dev sees the same answer and cannot check another name', async ({ page }) => {
+  await openFlow(page, 'night1-dev');
+  await openJob(page, 'Dev');
+  await tap(page, nameButton(page, 'Zoya'));
+  await expect(byId(page, 'result-line')).toHaveText(exactly('Zoya: MAFIA.'));
+  await page.reload();
+  await expect(byId(page, 'pass-name')).toHaveText(exactly('Dev'));
+  await sameCheckAgain(page, 'reload');
+  await page.clock.runFor(4100);
+  await tap(page, mainButton(page));
+  await expect(byId(page, 'pass-name')).toHaveText(exactly('Om'));
+});
+
+test('MAF-025 Version 1.2 C: the Police\'s first tap is saved at once: after the app is hidden, Dev sees the same answer and cannot check another name', async ({ page }) => {
+  await openFlow(page, 'night1-dev');
+  await openJob(page, 'Dev');
+  await tap(page, nameButton(page, 'Zoya'));
+  await expect(byId(page, 'result-line')).toHaveText(exactly('Zoya: MAFIA.'));
+  await hideApp(page);
+  await page.clock.runFor(1000);
+  await showApp(page);
+  await expect(byId(page, 'pass-name')).toHaveText(exactly('Dev'));
+  await expect(byId(page, 'job-line')).toHaveCount(0);
+  await sameCheckAgain(page, 'app hidden');
 });

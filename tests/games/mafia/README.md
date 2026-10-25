@@ -8,7 +8,7 @@ something there is wrong or impossible, write it in `docs/test-questions.md`; do
 | File | Scenarios |
 |---|---|
 | `deal.test.ts` | MAF-003 (counts), MAF-004 (`start`), MAF-010 and MAF-P1 (deal, streaks, item 16, 26), MAF-H3, MAF-011/015 (own view), MAF-014 (redeal), MAF-052 item 12 (deal leave and its Undo) |
-| `night.test.ts` | MAF-020 to MAF-027 (night order, every role's job and tags, item 4, 8, 9, 10, 11), MAF-P3 (500 random game nights) |
+| `night.test.ts` | MAF-020 to MAF-027 (night order, every role's job and tags, item 4, 8, 9, 10, 11), MAF-P3 (500 random game nights); Version 1.2 A (tags the same for every role) and C (the Police's `check`) |
 | `votes.test.ts` | MAF-033 to MAF-036 (votes, ties, item 14), MAF-051, MAF-052 (day leaves, Undo), MAF-054, MAF-061 (Play again) |
 | `winning.test.ts` | MAF-040 (both worked examples), MAF-041, MAF-042, MAF-043 / MAF-P6 (1,000 random game nights), MAF-P4 |
 | `privacy.test.ts` | MAF-016 / MAF-P2: the room view never differs with the roles or picks; each player's own view |

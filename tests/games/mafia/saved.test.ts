@@ -161,6 +161,10 @@ describe('MAF-H6 every flow the browser tests open replays through the rules', (
     expect(stepOf('deal-start')).toMatchObject({ step: 'deal', turn: { player: 'Riya', i: 1, of: 9 } });
     expect(stepOf('night1-start')).toMatchObject({ step: 'nightStart', round: 1 });
     expect(stepOf('night1-meena')).toMatchObject({ step: 'night', round: 1, turn: { player: 'Meena', i: 3, of: 9 } });
+    expect(stepOf('night3-meena')).toMatchObject({ step: 'night', round: 3, turn: { player: 'Meena', i: 1 } });
+    expect(stepOf('night3-dev')).toMatchObject({ step: 'night', round: 3, turn: { player: 'Dev', i: 4 } });
+    expect(stepOf('night1-dev')).toMatchObject({ step: 'night', round: 1, turn: { player: 'Dev', i: 6, of: 9 } });
+    expect(stepOf('police-nobody-left')).toMatchObject({ step: 'night', round: 6, out: [], turn: { player: 'Dev', i: 1, of: 6 } });
     expect(stepOf('morning1')).toMatchObject({ step: 'day', round: 1, morning: { out: 'Kabir' } });
     expect(stepOf('day1-tie')).toMatchObject({ step: 'revote', tied: ['Om', 'Neha'] });
     expect(stepOf('night2-meena')).toMatchObject({ step: 'night', round: 2, turn: { player: 'Meena', i: 2, of: 9 } });

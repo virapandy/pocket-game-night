@@ -60,6 +60,30 @@ export interface Flow {
 const g1 = (n: number) => GAME_1.slice(0, n);
 const idx = (m: Move) => GAME_1.indexOf(m);
 
+/**
+ * Version 1.2 C and A (owner, 25 October): six players, one Mafia (Arjun), Doctor Meena, Police Dev. Every night the
+ * Doctor protects the Mafia's pick (Riya, then Kabir, …) so nobody is out, every day "Nobody today"; Dev checks Riya,
+ * Arjun, Meena, Kabir and Zoya on nights 1 to 5. Night 6 starts at seat 5: Dev, with nobody left to check.
+ */
+export const SIX = NINE.slice(0, 6);
+export const SIX_DEAL: Record<string, Role> = { Riya: 'villager', Arjun: 'mafia', Meena: 'doctor', Kabir: 'villager', Zoya: 'villager', Dev: 'police' };
+function policeNobodyLeft(): Move[] {
+  const moves: Move[] = [{ type: 'start', players: SIX, mafiaCount: 1 }, ...seenAll(SIX)];
+  const checks = ['Riya', 'Arjun', 'Meena', 'Kabir', 'Zoya'];
+  for (let r = 1; r <= 5; r++) {
+    const victim = r % 2 === 1 ? 'Riya' : 'Kabir';
+    moves.push({ type: 'startNight', night: r });
+    for (let i = 0; i < 6; i++) {
+      const p = SIX[((r - 1) + i) % 6]!;
+      const target = p === 'Arjun' || p === 'Meena' ? victim : p === 'Dev' ? checks[r - 1]! : 'Arjun';
+      moves.push({ type: 'nightPick', player: p, target });
+    }
+    moves.push({ type: 'voteNobody', reason: 'chosen' });
+  }
+  moves.push({ type: 'startNight', night: 6 });
+  return moves;
+}
+
 export const FLOWS: Flow[] = [
   { name: 'deal-arjun', what: 'B1: the deal, Arjun to see his role (Player 2 of 9)', deals: { 1: EXAMPLE_DEAL },
     moves: [START_1, { type: 'seen', player: 'Riya' }] },
@@ -87,6 +111,14 @@ export const FLOWS: Flow[] = [
   { name: 'game1-over', what: 'G1: the Village wins game 1', deals: { 1: EXAMPLE_DEAL }, moves: GAME_1 },
   { name: 'game2-over', what: 'G1: game 2 ended with no winner (Tonight: Village 1 · Mafia 0)', deals: { 1: EXAMPLE_DEAL, 2: DEAL_2 },
     moves: [...GAME_1, { type: 'start', players: NINE, mafiaCount: 2 }, ...seenAll(NINE), { type: 'startNight', night: 1 }, { type: 'endGame' }] },
+  { name: 'night3-meena', what: 'N1: night 3, Meena first (the Doctor protected Riya on night 2; Version 1.2 A)', deals: { 1: EXAMPLE_DEAL },
+    moves: g1(idx(NIGHT_3[0]!)) },
+  { name: 'night3-dev', what: 'N1: night 3, Dev\'s turn (the Police checked Zoya and Arjun; Version 1.2 A)', deals: { 1: EXAMPLE_DEAL },
+    moves: g1(idx(NIGHT_3[3]!)) },
+  { name: 'night1-dev', what: 'N1: night 1, Dev\'s turn (the Police, 6 of 9; Version 1.2 C)', deals: { 1: EXAMPLE_DEAL },
+    moves: [START_1, ...seenAll(NINE), { type: 'startNight', night: 1 }, ...NIGHT_1.slice(0, 5)] },
+  { name: 'police-nobody-left', what: 'N1: six players, night 6, Dev (the Police) first, nobody left to check (Version 1.2 A)',
+    deals: { 1: SIX_DEAL }, moves: policeNobodyLeft() },
   { name: 'day1-left-neha', what: 'Y1: day 1, Neha has left by day (Neha · left)', deals: { 1: EXAMPLE_DEAL },
     moves: [...g1(idx(NIGHT_1[8]!) + 1), { type: 'leave', player: 'Neha' }] },
 ];

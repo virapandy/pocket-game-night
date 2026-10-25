@@ -1,6 +1,6 @@
 # 07-results.md: Game over and tonight (saved data C3)
 
-Copied from `docs/games/mafia/scenarios.md` (version 1.1, approved by the owner 25 October 2026, decision MF18), the binding contract. Each scenario's paragraph headed "Version 1.1" is that file's two-reader item, copied word for word; it wins over the text above it. Terms, canonical strings, screen IDs, properties and test hooks: [README.md](README.md). Rule API for the tests: [api.md](api.md).
+Copied from `docs/games/mafia/scenarios.md` (version 1.1, approved by the owner 25 October 2026, decision MF18), the binding contract. Each scenario's paragraph headed "Version 1.1" is that file's two-reader item, copied word for word; it wins over the text above it. Terms, canonical strings, screen IDs, properties and test hooks: [README.md](README.md). Rule API for the tests: [api.md](api.md). Paragraphs headed "Version 1.2 (owner, 25 October)" are the owner's privacy changes of 25 October ("do all as recommended"); they win over Version 1.1 and the text above them.
 
 ## MAF-060: Game over
 Status: approved, owner, 2026-10-25 (version 1.1, MF18)
@@ -14,6 +14,8 @@ the fun lines (MAF-062); the tally line "Tonight: Village 2 · Mafia 1" (left ou
 players or roles", "End for tonight", "← Home"; main "Play again". The page may scroll; the main button stays fixed.
 
 **Version 1.1** (item 18): **"What happened each night"** (MAF-060), clauses in this order, each left out when its role made no pick (no such role, out, left, 5 players, nothing left to check): "the Mafia picked Kabir" (differ: "the Mafia picked Kabir and Om; the phone chose Om"; no pick: "the Mafia made no pick") · "the Doctor protected Kabir" (self: "the Doctor protected themselves") · "the Police checked Zoya (Mafia)" / "(Not Mafia)" · last: "Kabir was out" / "nobody was out". A night leaver adds "· Kabir left".
+
+**Version 1.2 (owner, 25 October)** (privacy change B, see MAF-054): after "End the game", G1 shows no h2 "Who was who", no role, no "What happened each night" and no fun lines while the toast "Game ended · Undo" is showing; they appear once the toast has gone.
 
 ## MAF-061: Play again and changes
 Status: approved, owner, 2026-10-25 (version 1.1, MF18)

@@ -3,11 +3,12 @@
 // Example deal (MAF-H3): Mafia Arjun and Zoya; Doctor Meena; Police Dev; Villagers Riya, Kabir, Om, Sunita, Neha.
 // Written before the build, 25 October 2026.
 import { describe, expect, it } from 'vitest';
-import { createRng } from '../../../src/engine';
+import { HOST, createRng, play, replay } from '../../../src/engine';
 import {
-  EXAMPLE_SEED, GameNight, NINE, QUIET_NIGHT, exampleNight, oracleNightOrder, oracleTarget, randomNight, type Role,
+  EXAMPLE_SEED, GameNight, NINE, QUIET_NIGHT, exampleNight, oracleNightOrder, oracleTarget, randomNight, readMafiaNight,
+  savedOf, type Role,
 } from './helpers';
-import { NIGHT_1, NIGHT_2, NIGHT_3 } from './flows';
+import { FLOWS, NIGHT_1, NIGHT_2, NIGHT_3, savedFlow } from './flows';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const others = (except: string[]) => NINE.filter((p) => !except.includes(p));
@@ -15,6 +16,9 @@ const job = (g: GameNight) => g.pv(g.room.turn.player).job;
 const allowed = (g: GameNight) => (job(g).names as any[]).filter((n) => n.allowed).map((n) => n.player);
 const listedTargets = (g: GameNight) => g.legal().filter((m) => m.type === 'nightPick').map((m) => m.target);
 const tagsOf = (g: GameNight, name: string) => (job(g).names as any[]).find((n) => n.player === name)?.tags;
+/** Version 1.2 A (owner, 25 October): the tags every role sees: "you" on their own name, "out" on players who are out. */
+const publicTags = (g: GameNight, name: string) =>
+  name === g.room.turn.player ? ['you'] : (g.room.out as any[]).some((o) => o.player === name) ? ['out'] : [];
 
 /** Plays a flow's picks, checking each turn is that player's. */
 function playPicks(g: GameNight, list: any[], stopBefore = list.length) {
@@ -123,7 +127,8 @@ describe('MAF-022 item 4: one names box for every role', () => {
     g.startNight();
     while (g.room.step === 'night') {
       expect(listedTargets(g)).toEqual(allowed(g));
-      for (const n of job(g).names as any[]) expect(n.tags.length === 0, `${n.player} tags vs allowed`).toBe(n.allowed);
+      // Version 1.2 A (owner, 25 October): tags no longer follow `allowed`; they are the same for every role.
+      for (const n of job(g).names as any[]) expect(n.tags, `${n.player} tags (Version 1.2 A)`).toEqual(publicTags(g, n.player));
       g.pickNow();
     }
   });
@@ -140,7 +145,7 @@ describe('MAF-022 item 4: one names box for every role', () => {
 });
 
 describe('MAF-023 Mafia at night (items 4, 9, 10)', () => {
-  it('the first Mafia: allowed everyone in who is not Mafia; tags "you" and "Mafia"; no earlier pick; Zoya will see the pick', () => {
+  it('the first Mafia: allowed everyone in who is not Mafia; tag "you" only, no "Mafia" tag (Version 1.2 A); no earlier pick; Zoya will see the pick', () => {
     const g = exampleNight().dealAll();
     g.startNight();
     playPicks(g, NIGHT_1, 1);
@@ -148,7 +153,7 @@ describe('MAF-023 Mafia at night (items 4, 9, 10)', () => {
     expect(j.kind).toBe('mafia');
     expect(allowed(g)).toEqual(['Riya', 'Meena', 'Kabir', 'Dev', 'Om', 'Sunita', 'Neha']);
     expect(tagsOf(g, 'Arjun')).toEqual(['you']);
-    expect(tagsOf(g, 'Zoya')).toEqual(['Mafia']);
+    expect(tagsOf(g, 'Zoya')).toEqual([]);
     expect(j.latest).toBeNull();
     expect(j.see).toEqual(['Zoya']);
   });
@@ -219,20 +224,20 @@ describe('MAF-024 Doctor at night', () => {
     expect(job(g).kind).toBe('doctor');
     expect(allowed(g)).toEqual(NINE);
   });
-  it('after protecting themselves: greyed "used" (it replaces "protected last night"); out players "out"', () => {
+  it('after protecting themselves: Meena not allowed, no "used" tag (Version 1.2 A); out players "out"', () => {
     const g = toNight2();
     playPicks(g, NIGHT_2, 1);
     expect(job(g).kind).toBe('doctor');
-    expect(tagsOf(g, 'Meena')).toEqual(['used']);
+    expect(tagsOf(g, 'Meena')).toEqual(['you']);
     expect(tagsOf(g, 'Kabir')).toEqual(['out']);
     expect(tagsOf(g, 'Om')).toEqual(['out']);
     expect(allowed(g)).toEqual(['Riya', 'Arjun', 'Zoya', 'Dev', 'Sunita', 'Neha']);
   });
-  it('night 3: Riya (protected on night 2) is greyed "protected last night"; Meena stays "used"', () => {
+  it('night 3: Riya (protected on night 2) and Meena (used) are not allowed; no "protected last night" or "used" tag (Version 1.2 A)', () => {
     const g = toNight3();
     expect(g.room.turn.player).toBe('Meena');
-    expect(tagsOf(g, 'Riya')).toEqual(['protected last night']);
-    expect(tagsOf(g, 'Meena')).toEqual(['used']);
+    expect(tagsOf(g, 'Riya')).toEqual([]);
+    expect(tagsOf(g, 'Meena')).toEqual(['you']);
     expect(allowed(g)).toEqual(['Arjun', 'Dev', 'Sunita', 'Neha']);
     expect(g.try({ type: 'nightPick', player: 'Meena', target: 'Riya' })).toBe(false);
   });
@@ -247,7 +252,8 @@ describe('MAF-024 Doctor at night', () => {
     g.nobody().startNight();
     while (g.room.turn.player !== 'Meena') g.pickNow();
     expect(allowed(g)).toContain('Riya');
-    expect(tagsOf(g, 'Kabir')).toEqual(['protected last night']);
+    expect(allowed(g)).not.toContain('Kabir');
+    expect(tagsOf(g, 'Kabir')).toEqual([]);   // Version 1.2 A: no "protected last night" tag
   });
 });
 
@@ -264,17 +270,17 @@ describe('MAF-025 Police at night (item 8)', () => {
     expect(g.pv('Dev').checks).toEqual([{ player: 'Zoya', mafia: true }]);
     for (const p of others(['Dev'])) expect(g.pv(p).checks, p).toEqual([]);
   });
-  it('checked players are greyed with their answer; an out one is tagged "out" then the answer (item 8)', () => {
+  it('checked players are not allowed; no answer tag (Version 1.2 A): an out one is tagged "out" only; answers in checks only', () => {
     const g = toNight3();
     while (g.room.turn.player !== 'Dev') g.pickNow();
     expect(g.pv('Dev').checks).toEqual([{ player: 'Zoya', mafia: true }, { player: 'Arjun', mafia: true }]);
-    expect(tagsOf(g, 'Zoya')).toEqual(['out', 'Mafia']);
-    expect(tagsOf(g, 'Arjun')).toEqual(['Mafia']);
+    expect(tagsOf(g, 'Zoya')).toEqual(['out']);
+    expect(tagsOf(g, 'Arjun')).toEqual([]);
     expect(allowed(g)).toEqual(['Riya', 'Meena', 'Sunita', 'Neha']);
     g.must({ type: 'nightPick', player: 'Dev', target: 'Sunita' });
     expect(g.pv('Dev').checks[2]).toEqual({ player: 'Sunita', mafia: false });
   });
-  it('a Police with nobody left to check: every name greyed, the only pick is null, a name is refused', () => {
+  it('a Police with nobody left to check: no name allowed, the only pick is null, a name or a check is refused', () => {
     // 6 players, 1 Mafia (Arjun): every night the Doctor protects the Mafia's pick, every day "Nobody today".
     const six = NINE.slice(0, 6);
     const deal: Record<string, Role> = { Riya: 'villager', Arjun: 'mafia', Meena: 'doctor', Kabir: 'villager', Zoya: 'villager', Dev: 'police' };
@@ -291,6 +297,9 @@ describe('MAF-025 Police at night (item 8)', () => {
     expect(allowed(g)).toEqual([]);
     expect(listedTargets(g)).toEqual([null]);
     expect(g.try({ type: 'nightPick', player: 'Dev', target: 'Riya' })).toBe(false);
+    expect(g.try({ type: 'check', player: 'Dev', target: 'Riya' }), 'Version 1.2 C: no check when nobody is left').toBe(false);
+    // Version 1.2 A: the names box still shows every name the same way as for every role.
+    for (const n of job(g).names as any[]) expect(n.tags, n.player).toEqual(publicTags(g, n.player));
     g.must({ type: 'nightPick', player: 'Dev', target: null });
   });
 });
@@ -477,5 +486,121 @@ describe('MAF-027 MAF-P3 night rules over random game nights', () => {
       }
       for (const [k, n] of doctorSelf) expect(n, `p3-${i} game ${k}: Doctor protected themselves`).toBeLessThanOrEqual(1);
     }
+  });
+});
+
+// ---- Version 1.2 (owner, 25 October 2026): privacy changes A and C (C3, MAF-P2/P7, guideline 51) ----
+
+describe('MAF-022 to MAF-026 Version 1.2 A: the names box is the same for every role', () => {
+  it('every turn of the worked example (three nights): tags are "you" on the own name, "out" on out players, nothing else', () => {
+    const g = exampleNight().dealAll();
+    for (const list of [NIGHT_1, NIGHT_2, NIGHT_3] as any[][]) {
+      g.startNight();
+      for (const m of list) {
+        const j = job(g);
+        for (const n of j.names as any[]) expect(n.tags, `night ${g.room.round}, ${m.player} (${j.kind}) sees ${n.player}`).toEqual(publicTags(g, n.player));
+        g.must(m);
+      }
+      if (g.room.step === 'day') g.voteOut(list === NIGHT_1 ? 'Om' : 'Zoya');
+    }
+  });
+  it('MAF-P7: for 150 random game nights, at every night turn the names and tags depend on nothing but who is out and whose turn it is', () => {
+    for (let i = 0; i < 150; i++) {
+      const { g } = randomNight(`v12a-${i}`, { games: 2 });
+      let match: any = { setup: g.match.setup, records: [], state: g.rules.setup(g.match.setup) };
+      for (const r of g.records as any[]) {
+        const room = g.rules.view(match.state, { kind: 'room' }) as any;
+        if (room.step === 'night' && room.turn) {
+          const j = (g.rules.view(match.state, { kind: 'player', playerId: room.turn.player }) as any).job;
+          const outs = new Set((room.out as any[]).map((o) => o.player));
+          for (const n of j.names as any[]) {
+            const want = n.player === room.turn.player ? ['you'] : outs.has(n.player) ? ['out'] : [];
+            expect(n.tags, `v12a-${i} game ${room.game} night ${room.round}: ${room.turn.player} (${j.kind}) sees ${n.player}`).toEqual(want);
+          }
+        }
+        const next = play(g.rules, match, r.move, { by: HOST, at: r.at });
+        if (!next.ok) throw new Error(`v12a-${i}: replay refused ${JSON.stringify(r.move)}`);
+        match = next.value;
+      }
+    }
+  });
+});
+
+describe('MAF-025 Version 1.2 C: the Police\'s first tap is recorded at once (`check`)', () => {
+  /** The example's night 1 at Dev's turn (6 of 9). */
+  const atDev = () => { const g = exampleNight().dealAll(); g.startNight(); playPicks(g, NIGHT_1, 5); return g; };
+
+  it('on the Police\'s turn legalMoves lists one check per allowed name (seat order), alongside the nightPicks', () => {
+    const g = atDev();
+    const checks = g.legal().filter((m) => m.type === 'check');
+    expect(checks).toEqual(others(['Dev']).map((target) => ({ type: 'check', player: 'Dev', target })));
+    expect(listedTargets(g)).toEqual(others(['Dev']));
+  });
+  it('a check is accepted at once: the Police\'s own view holds the answer (checks and job.check); the room view does not change', () => {
+    const g = atDev();
+    const room = g.room;
+    expect(job(g).check, 'no check yet').toBeNull();
+    g.must({ type: 'check', player: 'Dev', target: 'Zoya' });
+    expect(g.room, 'MAF-P2: the room view is the same after the check').toEqual(room);
+    expect(g.pv('Dev').checks).toEqual([{ player: 'Zoya', mafia: true }]);
+    expect(job(g)).toMatchObject({ kind: 'police', check: { player: 'Zoya', mafia: true } });
+    for (const p of others(['Dev'])) expect(g.pv(p).checks, p).toEqual([]);
+  });
+  it('after the check: only the checked name is allowed and listed; a second check or a pick of anyone else is refused', () => {
+    const g = atDev();
+    g.must({ type: 'check', player: 'Dev', target: 'Riya' });
+    expect(allowed(g)).toEqual(['Riya']);
+    expect(g.legal().filter((m) => m.type === 'check' || m.type === 'nightPick')).toEqual([{ type: 'nightPick', player: 'Dev', target: 'Riya' }]);
+    expect(g.try({ type: 'check', player: 'Dev', target: 'Zoya' })).toBe(false);
+    expect(g.try({ type: 'check', player: 'Dev', target: 'Riya' })).toBe(false);
+    expect(g.try({ type: 'nightPick', player: 'Dev', target: 'Zoya' })).toBe(false);
+    expect(g.pv('Dev').checks).toEqual([{ player: 'Riya', mafia: false }]);
+    // Names and tags stay as for every role (Version 1.2 A).
+    for (const n of job(g).names as any[]) expect(n.tags, n.player).toEqual(publicTags(g, n.player));
+    g.must({ type: 'nightPick', player: 'Dev', target: 'Riya' });
+    expect(g.pv('Dev').checks, 'the check is counted once').toEqual([{ player: 'Riya', mafia: false }]);
+    expect(g.room.turn.player).toBe('Om');
+  });
+  it('the check survives a reload: the saved game night replays to the same answer and the same single allowed name', () => {
+    const g = atDev();
+    g.must({ type: 'check', player: 'Dev', target: 'Zoya' });
+    const saved = savedOf(g);
+    const re = replay(g.rules, saved.setup, saved.records);
+    if (!re.ok) throw new Error(re.reason);
+    const v = g.rules.view(re.value.state, { kind: 'player', playerId: 'Dev' }) as any;
+    expect(v.job.check).toEqual({ player: 'Zoya', mafia: true });
+    expect(v.checks).toEqual([{ player: 'Zoya', mafia: true }]);
+    expect((v.job.names as any[]).filter((n) => n.allowed).map((n) => n.player)).toEqual(['Zoya']);
+  });
+  it('the night resolves as before; readMafiaNight reads the check as the night\'s `checked`', () => {
+    const g = atDev();
+    g.must({ type: 'check', player: 'Dev', target: 'Zoya' });
+    playPicks(g, NIGHT_1.slice(5));
+    expect(g.room.out).toEqual([{ player: 'Kabir', role: 'villager', how: 'night', round: 1 }]);
+    const night = readMafiaNight(savedOf(g)).games[0].nights[0];
+    expect(night.checked).toEqual({ player: 'Zoya', mafia: true });
+    expect(night.picks.filter((p: any) => p.player === 'Dev')).toEqual([{ player: 'Dev', target: 'Zoya' }]);
+  });
+  it('a check is refused: not the Police\'s turn, by another player, of themselves, of a name not dealt', () => {
+    const g = exampleNight().dealAll();
+    g.startNight();
+    expect(g.try({ type: 'check', player: 'Riya', target: 'Arjun' }), 'a Villager\'s turn').toBe(false);
+    expect(g.try({ type: 'check', player: 'Dev', target: 'Zoya' }), 'not Dev\'s turn').toBe(false);
+    playPicks(g, NIGHT_1, 5);
+    expect(g.try({ type: 'check', player: 'Riya', target: 'Zoya' }), 'another player on Dev\'s turn').toBe(false);
+    expect(g.try({ type: 'check', player: 'Dev', target: 'Dev' }), 'themselves').toBe(false);
+    expect(g.try({ type: 'check', player: 'Dev', target: 'Imran' }), 'not dealt').toBe(false);
+    expect(g.pv('Dev').checks).toEqual([]);
+  });
+  it('MAF-P2: the room view after the check is the same whichever name is checked', () => {
+    const rooms = ['Zoya', 'Riya', 'Arjun'].map((t) => { const g = atDev(); g.must({ type: 'check', player: 'Dev', target: t }); return g.room; });
+    expect(rooms[1]).toEqual(rooms[0]);
+    expect(rooms[2]).toEqual(rooms[0]);
+  });
+  it('a game night saved before 1.2 (a Police nightPick with no check) still replays (flows)', () => {
+    const f = FLOWS.find((x) => x.name === 'morning1')!;
+    const saved = savedFlow(f);
+    expect((saved.records as any[]).some((r) => r.move.type === 'check')).toBe(false);
+    expect(replay(new GameNight().rules, saved.setup, saved.records).ok).toBe(true);
   });
 });

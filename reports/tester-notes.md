@@ -191,3 +191,18 @@ Merged origin/main (PGN_PORT per lane: lane-a 4174). Lane A area: 129 of 132 pas
 - `what-am-i-marks-in-flight.spec.ts`: a flashed Got it always counts, after pause, Home row, app hidden or reload. Not reproduced.
 - Reaching round 2 needs three whole turns: use 30 s turns (a 60 s `runFor` under taskpolicy -b passes the 30 s test timeout);
   the file sets 90 s per test. The Pause button takes taps during the 600 ms flash.
+
+## 25 October: Mafia Version 1.2 privacy changes, tests first (lane-n, from main d5dd03e)
+- Owner's three privacy changes are "Version 1.2 (owner, 25 October)" paragraphs in `specs/mafia/03-night.md` (MAF-022 to 026,
+  change A; MAF-025, change C), `06-room.md` (MAF-054, change B), `07-results.md` (MAF-060) and a README section.
+- Interpretations made here (flag to the orchestrator if the owner meant otherwise): tags for every role are only "you"
+  (own name) and "out"; the Doctor's "(you) · once a game" and "Arjun's pick" tags go too; a nobody-left Police keeps the job
+  line "POLICE · Nobody left to check." and gets "Nobody left to check." in the result line after any tap; during the End
+  toast "What happened each night" and the fun lines also wait.
+- Rule API (`api.md`): new move `check { player, target }` (Police's first tap), `job.check`, `allowed` only the checked
+  name after it; a Police `nightPick` with no `check` stays legal (saved nights before 1.2). `tags` are public only.
+- Superseded 1.1 assertions were updated, not removed: night.test.ts tag checks (Zoya "Mafia", "used", "protected last
+  night", Police answers) and two browser tests in `mafia-deal-night.spec.ts` (greyed ", can't pick" names).
+- New flows: `night1-dev`, `night3-meena`, `night3-dev`, `police-nobody-left` (6 players, night 6, Dev first).
+- Local runs on a busy Mac: 3 workers took 25 min for 40 browser tests; several 30 s timeouts ("setting up page",
+  `page.reload`) and the rule properties' 120 s timeouts are load, not bugs; check against the automation run.

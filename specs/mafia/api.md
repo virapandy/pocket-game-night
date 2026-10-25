@@ -67,6 +67,7 @@ type MafiaMove =
   | { type: 'seen'; player: string }                           // "Done, pass to …" / "Done, everyone's seen"
   | { type: 'redeal' }                                         // "Deal again"
   | { type: 'startNight'; night: number }                      // "Start the night"
+  | { type: 'check'; player: string; target: string }           // the Police's first name tap on N2 (Version 1.2 C)
   | { type: 'nightPick'; player: string; target: string | null } // N2's main button
   | { type: 'voteOut'; player: string }                        // "Vote Kabir out"
   | { type: 'tie'; players: string[] }                         // "Point again: Kabir or Om"
@@ -100,7 +101,7 @@ The room view's `step` (below) is one of:
 | `idle` | nothing (`start` is a detail move) |
 | `deal` | `seen { player }` for the player whose turn it is (seat order from seat 0); `redeal`; `leave { p }` for each dealt player when at least 5 would remain; `endGame`. Right after a deal leave: `redeal` only |
 | `nightStart` | `startNight { night: r }` (r = the night to start); `redeal` (night 1 only, and not while someone is leaving tonight); `leave { p }` for each player who is in, and from night 2 also `leave { p, when: 'night' }` for each; `endGame` |
-| `night` | one `nightPick { player, target }` for the player whose turn it is per allowed target (seat order), or exactly `{ player, target: null }` when they have no allowed name (MAF-025); `leave { p }`; `endGame` |
+| `night` | one `nightPick { player, target }` for the player whose turn it is per allowed target (seat order), or exactly `{ player, target: null }` when they have no allowed name (MAF-025); on a Police's turn (a Police who is in) with no check yet this turn, also one `check { player, target }` per allowed target (seat order); after that check, exactly one `nightPick { player, target }` naming the checked player and no `check`; `leave { p }`; `endGame` |
 | `day` | `voteOut { p }` per player who is in; `voteNobody { reason: 'chosen' }`; `leave { p }`; `endGame` |
 | `revote` | `voteOut { p }` per tied player still in; `voteNobody { reason: 'secondTie' }`; `leave { p }`; `endGame` |
 | `gameOver` | "Play again" (MAF-061): `start` with this game's players minus every player who left, then the `addNext` names in the order added, and this game's Mafia count if `mafiaCounts(n).allowed` has it, else the suggested count; only when that is at least 5 players. And `endEvening` |
@@ -119,7 +120,14 @@ and is refused. `leave { p }` is for players who are **in** (not out, not left, 
   refused; after that leave's Undo it is back). Deals again (MAF-014), and the deal starts again at seat 0.
 - `startNight { night }`: `night` must be exactly the night to start.
 - `nightPick { player, target }`: only the player whose turn it is; `target` an allowed name (MAF-023 to MAF-026 with item 4
-  and item 11), or `null` only when they have none.
+  and item 11), or `null` only when they have none. After a `check` this turn, only the checked player.
+- `check { player, target }` (Version 1.2 C, owner 25 October): the Police's first name tap, recorded at once. Only on the
+  turn of a Police who is in, only once per turn, `target` one of their allowed names (so never when nobody is left to
+  check). It changes nothing in the room view (MAF-P2). From it on, the Police's own view holds the answer (`checks`, and
+  `job.check`), `job.names` allows only the checked player, and a second `check` or a `nightPick` of anyone else is
+  refused. A `nightPick` by the Police with no `check` before it stays legal (it is the check and the pick at once, as
+  game nights saved before 1.2 have it). **(open)** If the checked player leaves before the Police's Done: the check
+  stands and the `nightPick` may still name them; no test depends on it.
 - `tie { players }` (detail move): in `day` only, 2 or more distinct players who are in. Never in `revote` (MF6).
 - `voteNobody { reason: 'chosen' }` in `day` only; `{ reason: 'secondTie' }` in `revote` only.
 - `addNext { name }` (detail move): from the first `start` until `endEvening`, 1–16 characters after trimming, not the
@@ -222,16 +230,17 @@ nothing that differs with the roles (MAF-P2: the tests compare room views across
 interface NightJob {
   kind: 'mafia' | 'doctor' | 'police' | 'villager' | 'ghost';   // ghost: the player is out
   names: { player: string; allowed: boolean; tags: string[] }[];  // item 4: every player dealt, not left, not leaving tonight, seat order
+  check: { player: string; mafia: boolean } | null;   // police: this turn's check once made (Version 1.2 C); else null
   latest: { by: string; target: string } | null;   // mafia: the latest Mafia pick so far tonight (item 9); else null
   see: string[];                 // mafia: the Mafia who are in and still to take their turn tonight, night order; else []
 }
 ```
-`allowed` is exactly the allowed names above. `tags` is `[]` for an allowed name; for a greyed one, one tag by PO 9 (the
-first that applies): `"you"` (themselves; but the Doctor after protecting themselves gets `"used"`), `"out"` (for the
-Police followed by the checked answer, item 8: `["out", "Mafia"]`), then the role's own reason: `"Mafia"` (a Mafia's
-partner who is in), `"used"` (it replaces `"protected last night"`), `"protected last night"`, the Police's answer
-`"Mafia"` / `"Not Mafia"`. A Police job never holds the answer of a player not yet checked. (The Doctor's own allowed
-button's "(you) · once a game" is the screen's, not a tag.)
+`allowed` is exactly the allowed names above (after a Police's `check` this turn: only the checked player). It is the
+screen's only use of the role: a tap on a name not allowed does nothing (Version 1.2 A).
+**`tags` are the same for every role (Version 1.2 A, owner 25 October; replaces PO 9 and item 8):** `["you"]` for the
+player whose turn it is, `["out"]` for a player who is out, `[]` for everyone else, whatever the role (so `tags` never
+says who is allowed). No "Mafia", "used", "protected last night" or Police answer tag; the Police's answers are in
+`checks` and `job.check` only. A Police job never holds the answer of a player not yet checked.
 
 ## The game night (`readMafiaNight`)
 ```ts
@@ -246,7 +255,7 @@ button's "(you) · once a game" is the screen's, not a tag.)
       picks: { player: string; target: string | null }[];      // every nightPick, in order (Villagers and ghosts too)
       mafia: string[]; target: string | null; chosen: boolean; // chosen: the picks differed and the phone chose
       protected: string | null;                                // the Doctor's pick (Doctor in), else null
-      checked: { player: string; mafia: boolean } | null;
+      checked: { player: string; mafia: boolean } | null;    // from the Police's check (or their nightPick, before 1.2)
       out: string | null; left: string[]; storyId: string | null;
     }[];
     votes: { day: number; tie: string[] | null; out: string | null; nobody: 'chosen' | 'secondTie' | null }[];  // one per day with a result

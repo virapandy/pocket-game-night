@@ -19,6 +19,16 @@ Rule API for the tests (MAF-H1 made exact): [api.md](api.md). Mafia is released 
 Change classes (`docs/change-sop.md`): the deal and its seed, the night rules and their resolution, winning, saved game nights
 and the stories file = **C3** (tests first: sections 02, 03, 05, 10); screens = C1/C2.
 
+## Version 1.2 (owner, 25 October 2026): privacy changes
+The owner approved three privacy changes on 25 October ("do all as recommended"; C3, MAF-P2/P7, guideline 51). Each is a
+"Version 1.2 (owner, 25 October)" paragraph on the scenarios it changes, and wins over Version 1.1:
+- **A. N2's names look the same for every role** (MAF-022 to MAF-026): no greyed or disabled name for any role, the same
+  tags for every role ("you", "out" only), a tap on a name the role may not pick does nothing, accessible names are the
+  name only, and a Police with nobody left to check still taps a name ("Nobody left to check." in the result line).
+- **B. End the game, then Undo** (MAF-054, MAF-060): while "Game ended · Undo" shows, G1 shows no "Who was who" and no role.
+- **C. The Police's first tap is saved at once** (MAF-025): the move `check` (api.md); after a reload, hiding the app or
+  Back the Police sees the same answer and cannot check another name that night.
+
 ## Version 1.1 items that apply to every section
 
 The other items (4 to 32) are copied into the scenarios they name. Item numbers as in `docs/games/mafia/scenarios.md`.

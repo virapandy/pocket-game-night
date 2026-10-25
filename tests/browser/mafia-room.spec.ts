@@ -3,7 +3,7 @@
 // Helpers: mafia.ts.
 import { expect, test, type Page } from './fixtures';
 import {
-  needsMafiaCardOrHomeRow, button, byId, exactly, fromMenu, heading, mainButton, menuButton, menuItem, openFlow, tap, toMorning, TZ,
+  needsMafiaCardOrHomeRow, button, byId, exactly, fromMenu, heading, mainButton, menuButton, menuItem, openFlow, roomDump, tap, toMorning, TZ,
 } from './mafia';
 
 test.use({ timezoneId: TZ });
@@ -146,6 +146,49 @@ test('MAF-054: End the game: dialog, "Game ended. No winner.", toast "Game ended
   await expect(page.getByText(exactly('Game ended · Undo'))).toBeVisible();
   await tap(page, button(page, 'Undo'));
   await expect(heading(page, 'Morning, day 1')).toBeVisible();
+});
+
+/** "End the game" from the morning of day 1 (nobody's role shown yet but Kabir's, out on night 1). */
+async function endFromMorning(page: Page) {
+  await openFlow(page, 'morning1');
+  await toMorning(page);
+  await tap(page, button(page, 'End the game'));
+  await tap(page, page.getByRole('dialog').getByRole('button', { name: 'End the game', exact: true }));
+  await expect(heading(page, 'Game ended. No winner.')).toBeVisible();
+  await expect(page.getByText(exactly('Game ended · Undo'))).toBeVisible();
+}
+/** No role of a player who is still in, anywhere a room could read it (text, labels, live regions); Kabir's was shown. */
+async function noRoleShown(page: Page, when: string) {
+  await expect(page.getByRole('heading', { name: /Who was who/i }), when).toHaveCount(0);
+  await expect(page.getByRole('button', { name: /What happened each night/i }), when).toHaveCount(0);
+  // Every line a role could be in: "Arjun · Mafia · …" rows, "was MAFIA" / "was a Villager" lines (the page title aside).
+  const dump = (await roomDump(page)).split('\n').filter((l) => !l.startsWith('title:')).join('\n');
+  expect(dump, `${when}: a "Name · Role" row`).not.toMatch(/·\s*(Villager|Mafia|Doctor|Police)\b/i);
+  expect(dump, `${when}: a "was the Role" line`).not.toMatch(/\bwas (a |the )?(Villager|Mafia|Doctor|Police)\b/i);
+  for (const p of ['Riya', 'Arjun', 'Meena', 'Zoya', 'Dev', 'Om', 'Sunita', 'Neha']) {
+    expect(dump, `${when}: ${p}'s role`).not.toMatch(new RegExp(`${p}[^\\n]{0,20}\\b(Villager|Mafia|Doctor|Police)\\b`, 'i'));
+  }
+}
+
+test('MAF-054 Version 1.2 B: while "Game ended · Undo" shows, G1 shows no "Who was who" and no role; Undo returns with no role ever shown', async ({ page }) => {
+  await endFromMorning(page);
+  await noRoleShown(page, 'toast up');
+  await page.clock.runFor(6000);   // + the 2 s before the Undo tap: still inside the 10 s
+  await expect(page.getByText(exactly('Game ended · Undo'))).toBeVisible();
+  await noRoleShown(page, 'toast up, 6 s');
+  await tap(page, button(page, 'Undo'));
+  await expect(heading(page, 'Morning, day 1')).toBeVisible();
+  await expect(page.getByRole('heading', { name: /Who was who/i })).toHaveCount(0);
+});
+
+test('MAF-054 Version 1.2 B: once the toast has gone (its 10 s), G1 shows "Who was who" with every role', async ({ page }) => {
+  await endFromMorning(page);
+  await noRoleShown(page, 'toast up');
+  await page.clock.runFor(11_000);
+  await expect(page.getByText(exactly('Game ended · Undo'))).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: /Who was who/i })).toBeVisible();
+  await expect(page.getByText(/Arjun · Mafia/i)).toBeVisible();
+  await expect(page.getByText(/Dev · Police/i)).toBeVisible();
 });
 
 test('MAF-055 / MAF-091: "← Home" leaves the game unfinished; Home\'s row reads the where-line and resumes', async ({ page }) => {

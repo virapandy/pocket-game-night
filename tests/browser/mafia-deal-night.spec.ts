@@ -154,26 +154,30 @@ test('MAF-022 to MAF-026: every role\'s job line and result line on night 1 of t
     [['Zoya', "You think it's Zoya. At the end we'll see if you were right."]], 'Done, pass to Zoya');
   await jobTurn(page, 'Zoya', "MAFIA · Arjun's pick: KABIR. Tap Kabir to agree, or pick someone else.",
     [['Om', "Om. If the Mafia's picks differ, the phone picks one of them at random."], ['Kabir', 'Kabir. You agree.']], 'Done, pass to Dev');
-  // Police: the first name tapped is the check; every other name greys out (MAF-025).
+  // Police: the first name tapped is the check; its answer shows in the result line only (MAF-025). Version 1.2 A (owner,
+  // 25 October): the other names do not grey out and keep their plain names.
   await tap(page, button(page, "I'm Dev"));
   await tap(page, button(page, 'Tap to see your night job'));
   await expect(byId(page, 'job-line')).toHaveText(exactly('POLICE · Pick someone to check.'));
   await tap(page, nameButton(page, 'Zoya'));
   await expect(byId(page, 'result-line')).toHaveText(exactly('Zoya: MAFIA.'));
-  await expect(page.getByRole('button', { name: "Riya, can't pick", exact: true })).toBeDisabled();
+  await expect(byId(page, 'night-names').getByRole('button', { name: 'Riya', exact: true })).toBeEnabled();
 });
 
-test('MAF-022 item 4: greyed names end ", can\'t pick" and the tag is not in the name; Arjun sees Zoya greyed as "Mafia"', async ({ page }) => {
+test('MAF-022 Version 1.2 A: no name is greyed for any role; names read as the name only; tags "you" only (Arjun sees Zoya as any name)', async ({ page }) => {
   await openFlow(page, 'night1-start');
   await tap(page, mainButton(page));
   await jobTurn(page, 'Riya', "VILLAGER · Who do you think is Mafia? Think, then pick. Only you see this.", [['Om', "You think it's Om. At the end we'll see if you were right."]], 'Done, pass to Arjun');
   await tap(page, button(page, "I'm Arjun"));
   await tap(page, button(page, 'Tap to see your night job'));
-  const zoya = page.getByRole('button', { name: "Zoya, can't pick", exact: true });
-  await expect(zoya).toBeDisabled();
-  await expect(zoya).toContainText('Mafia');
-  await expect(page.getByRole('button', { name: "Arjun, can't pick", exact: true })).toContainText('you');
-  await expect(byId(page, 'night-names').getByRole('button')).toHaveCount(9);
+  const names = byId(page, 'night-names').getByRole('button');
+  await expect(names).toHaveCount(9);
+  const zoya = byId(page, 'night-names').getByRole('button', { name: 'Zoya', exact: true });
+  await expect(zoya).toBeEnabled();
+  await expect(zoya).not.toHaveAttribute('aria-disabled', 'true');
+  await expect(zoya).not.toContainText('Mafia');
+  await expect(byId(page, 'night-names').getByRole('button', { name: 'Arjun', exact: true })).toContainText('you');
+  await expect(page.getByRole('button', { name: /can't pick/ })).toHaveCount(0);
 });
 
 test('MAF-026 / MAF-021: a player who is out: the pass screen line and the ghost guess', async ({ page }) => {
