@@ -5,8 +5,7 @@
 //
 // Checked by code after every step (MAF-P2 / MAF-016: nothing secret on room screens):
 //   - on every room screen (every screen but B2, N2 and G1/G2 after game over) the page's text, accessible names, title and
-//     live regions never put a role next to the name of a player who is in or has left; never say "Not Mafia" or "is
-//     Mafia"; hold none of the private parts (`private-word`, `job-line`, `night-names`, `result-line`); and on N0, N1 and
+//     live regions never put a role (or "Not Mafia") next to the name of a player who is in or has left; hold none of the private parts (`private-word`, `job-line`, `night-names`, `result-line`); and on N0, N1 and
 //     N3 name nobody but the player the phone is passed to (no night pick);
 //   - the truth the check uses is what the deal screens showed each player (B2's role word), so a "Deal again" is followed;
 //   - nothing stuck: a way on on every screen but the countdown, no screen for more than 30 steps, no unknown screen;
@@ -166,6 +165,7 @@ export async function playMafEvening(page: Page, cfg: MafConfig, opts: { jev?: J
     if (screen !== 'V1' && !s.opts.length) { if (++blank === 8) add('no way on', step, screen, `nothing to tap for 8 steps: ${s.body.slice(0, 100)}`); } else blank = 0;
     const key = `${screen}|${s.h1.join('/')}|${s.dialog ?? ''}|${s.passName ?? ''}`;
     if (key === lastKey) { if (++same === 30) add('stuck', step, screen, `30 steps on "${s.h1[0] ?? s.dialog ?? screen}"`); } else { lastKey = key; same = 0; }
+    if (screen === 'B1' || screen === 'N1') plan.picked.clear(); // a new pass, whoever chose on the screen before
     if (screen === 'B2' && s.privateWord && s.passName) {
       const name = cfg.players.concat(['Imran2']).find((p) => p.toLowerCase() === s.passName!.toLowerCase());
       if (name) roles[name] = s.privateWord.replace(/^(the|a)\s+/i, '');
@@ -184,7 +184,8 @@ export async function playMafEvening(page: Page, cfg: MafConfig, opts: { jev?: J
       res.rolesKnown = Math.max(res.rolesKnown, Object.keys(roles).length);
       const dump = await roomDump(page).catch(() => '');
       if (s.privateParts.length) add('privacy', step, screen, `private parts in a room screen's page: ${s.privateParts.join(', ')}`);
-      if (/\bnot mafia\b/i.test(dump)) add('privacy', step, screen, `a Police answer: ${(/.{0,40}\bnot mafia\b.{0,20}/i.exec(dump) ?? [''])[0]}`);
+      // A Police answer shows as a name next to "Mafia" or "Not Mafia": the name-and-role check below catches it (How to play's
+      // "The Police learns only Mafia or Not Mafia." names nobody).
       for (const p of Object.keys(roles)) {
         if (shownOut.has(p)) continue;
         const near = new RegExp(`\\b${esc(p)}\\b[^\\n|]{0,40}\\b(mafia|doctor|police|villager)\\b|\\b(mafia|doctor|police|villager)\\b[^\\n|]{0,12}\\b${esc(p)}\\b`, 'i').exec(dump);

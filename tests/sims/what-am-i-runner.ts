@@ -425,6 +425,9 @@ function scripted(screen: string, s: Snap, cfg: WaiConfig, plan: Plan, r: Rng, s
     if (d === 'Paused') { if (cfg.endMidRound && r.chance(0.2)) return by(/^End .* turn now$/) ?? main!; return by(/^Carry on playing$/) ?? main ?? 'action:escape'; }
     if (/turn now\?$/.test(d)) return by(/^End .* turn now$/) ?? main!;
     if (d === 'Players') {
+      // "Someone else goes first" opens Players with name buttons only and "Keep Riya first" (Version 1.1 item 28).
+      const keep = by(/^Keep .* first$/);
+      if (keep) { const names = s.opts.filter((o) => cfg.players.includes(o.label)); return names.length && r.chance(0.6) ? r.pick(names).key : keep; }
       if (!plan.joinDone) return 'macro:join';
       if (!plan.leaveDone) return 'macro:leave';
       return by(/^Done$/) ?? 'action:escape';
