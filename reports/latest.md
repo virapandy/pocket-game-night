@@ -1,4 +1,12 @@
 # Test report
+Commit tested: dafd5b2 (lane-g = main 04dc177 + Mafia card tests + the coder's card), rebased 2026-10-25
+Result: GREEN
+Run: https://github.com/virapandy/pocket-game-night/actions/runs/40215754323 (Quick verify on lane-g: success)
+Local: npm test 64 files / 1180 tests passed; build ok; browser (all Mafia files, home-and-buttons, impostor, secret-words-a home and setup, setup-layout, setup, what-am-i-setup; Android and iPhone, 3 workers) 648 passed.
+Only conflict: reports/tester-notes.md (kept both sides). No app-code conflict. No real bugs.
+
+---
+## Previous report
 Commit tested: 7830cb0 (lane-o = main c320bd3 + this lane's tests and reports)   Date: 2026-10-25
 Result: RED, as intended: the new test for the stuck screen fails until the 1.5.1 fix
 Run: https://github.com/virapandy/pocket-game-night/actions/runs/40188031742 (Quick verify on lane-o: rule tests and build green;
