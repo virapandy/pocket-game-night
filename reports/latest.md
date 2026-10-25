@@ -1,4 +1,20 @@
 # Test report
+Commit tested: ccadfa9 (lane-n = coder e214282 + night.test.ts fix)   Date: 2026-10-25
+Result: GREEN
+Run: https://github.com/virapandy/pocket-game-night/actions/runs/40179636277 (Quick verify on lane-n, green to the end)
+
+## Layers
+- Rule tests (tests/games/mafia): 9 files, 181 passed, 0 failed.
+- Build: ok. Android local (mafia-c3, mafia-deal-night, mafia-room, 3 workers): 40 passed, 0 failed.
+
+## What changed (tests only, no check kept out)
+- "Version 1.2 A ... every turn of the worked example (three nights)": day 3 now votes Arjun out (as GAME_1); Om day 1, Zoya day 2. All checks kept. test-questions row answered.
+
+## Failing (real bugs only)
+- None.
+
+---
+## Previous report
 Commit tested: 303ee77 (lane-u = main 6648586 + WebKit-safe What Am I? tests)   Date: 2026-10-25
 Result: RED (one failure already on main, not in this lane's scope); all 17 What Am I? iPhone failures fixed
 Run: https://github.com/virapandy/pocket-game-night/actions/runs/40147321743 (complete run, workflow_dispatch on lane-u)
