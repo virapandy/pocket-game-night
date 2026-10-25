@@ -2,7 +2,7 @@
 // Tonight's summary (MAF-063, MAF-064). The facts come from the saved game night as History reads it (readMafiaNight).
 // Strings: ./dayText.ts.
 import { useState, type ReactNode } from "react";
-import { QuietButton } from "../../../blocks";
+import { QuietButton, ScrollArea } from "../../../blocks";
 import type { MafiaNightGame, MafiaView } from "../rules";
 import type { RoomCtx } from "./ctx";
 import { D } from "./dayText";
@@ -64,7 +64,7 @@ function statusOf(v: MafiaView, p: string): string {
   return v.left.includes(p) ? D.g1.left : D.g1.inToEnd;
 }
 
-/** MAF-060: Game over. The page may scroll; the main button stays fixed. */
+/** MAF-060: Game over. The list scrolls; the quiet buttons and the main button stay put below it (never under it). */
 export function G1({ ctx }: { ctx: RoomCtx }) {
   const v = ctx.view;
   const [each, setEach] = useState(false);
@@ -86,40 +86,42 @@ export function G1({ ctx }: { ctx: RoomCtx }) {
   const roles = v.roles ?? g?.roles ?? {};
   const tally = night?.tally ?? v.tally;
   return (
-    <div className="maf-column maf-results">
-      <h1 className="pgn-title">{title}</h1>
-      {line && <p className="maf-body">{line}</p>}
-      {leavers.length > 0 && (
-        <p className="maf-body">{D.g1.hadToLeave(leavers)}</p>
-      )}
-      <h2 className="maf-subtitle">{D.g1.whoWasWho}</h2>
-      <ul className="maf-who-list">
-        {v.players.map((p) => {
-          const r = roles[p];
-          return <li key={p}>{r ? D.g1.row(p, r, statusOf(v, p)) : p}</li>;
-        })}
-      </ul>
-      {g && g.nights.length > 0 && (
-        <>
-          <Quiet onClick={() => setEach(!each)}>{D.g1.each}</Quiet>
-          {each && (
-            <ul className="maf-night-lines">
-              {g.nights.map((n) => (
-                <li key={n.night}>{nightLine(g, n)}</li>
-              ))}
-            </ul>
-          )}
-        </>
-      )}
-      {g?.spotter && (
-        <p className="maf-fun">
-          {D.g1.spotter(g.spotter.player, g.spotter.nights, g.spotter.of)}
-        </p>
-      )}
-      {g?.ghost && <p className="maf-fun">{D.g1.ghost(g.ghost)}</p>}
-      {tally.village + tally.mafia > 0 && (
-        <p className="maf-small">{D.g1.tally(tally.village, tally.mafia)}</p>
-      )}
+    <div className="maf-column maf-results maf-g1">
+      <ScrollArea>
+        <h1 className="pgn-title">{title}</h1>
+        {line && <p className="maf-body">{line}</p>}
+        {leavers.length > 0 && (
+          <p className="maf-body">{D.g1.hadToLeave(leavers)}</p>
+        )}
+        <h2 className="maf-subtitle">{D.g1.whoWasWho}</h2>
+        <ul className="maf-who-list">
+          {v.players.map((p) => {
+            const r = roles[p];
+            return <li key={p}>{r ? D.g1.row(p, r, statusOf(v, p)) : p}</li>;
+          })}
+        </ul>
+        {g && g.nights.length > 0 && (
+          <>
+            <Quiet onClick={() => setEach(!each)}>{D.g1.each}</Quiet>
+            {each && (
+              <ul className="maf-night-lines">
+                {g.nights.map((n) => (
+                  <li key={n.night}>{nightLine(g, n)}</li>
+                ))}
+              </ul>
+            )}
+          </>
+        )}
+        {g?.spotter && (
+          <p className="maf-fun">
+            {D.g1.spotter(g.spotter.player, g.spotter.nights, g.spotter.of)}
+          </p>
+        )}
+        {g?.ghost && <p className="maf-fun">{D.g1.ghost(g.ghost)}</p>}
+        {tally.village + tally.mafia > 0 && (
+          <p className="maf-small">{D.g1.tally(tally.village, tally.mafia)}</p>
+        )}
+      </ScrollArea>
       <div className="maf-quiet-row">
         <Quiet onClick={ctx.changePlayers}>{D.g1.change}</Quiet>
         <Quiet onClick={ctx.askEndTonight}>{D.g1.endTonight}</Quiet>

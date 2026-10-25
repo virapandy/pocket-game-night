@@ -21,7 +21,7 @@ import {
 
 const SIX_HOURS = 6 * 3_600_000;
 /** Screens that scroll as one page (MAF-080: G1, G2 and Day may scroll). */
-const PAGE_SCREENS: readonly ScreenId[] = ['y1', 'g1', 'g2'];
+const PAGE_SCREENS: readonly ScreenId[] = ['y1', 'g2'];
 const same = (a: string, b: string) => a.toLowerCase() === b.toLowerCase();
 
 type Dialog =
