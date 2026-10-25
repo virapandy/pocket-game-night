@@ -238,6 +238,7 @@ export function startNewAsk(store: SavedGameStore): { id: string; text: string }
   const night = id ? loadNight(store, id) : null;
   if (!id || !night) return null;
   const v = roomView(night.match);
+  if (v.step === 'idle') return null;
   const staying = v.players.filter((p) => !v.left.includes(p));
   const names = staying.slice(0, 2).join(', ') + (staying.length > 2 ? ` +${staying.length - 2}` : '');
   const first = night.match.records.find((r) => r.move.type === 'start')?.at ?? night.saved.createdAt;
