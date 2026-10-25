@@ -5,14 +5,14 @@
 //   The rule API: mafiaRules, mafiaCounts, readMafiaNight, readTestSeeds.
 //   The morning stories content/mafia/stories.json (npm run build:stories, MAF-037).
 //   MAF-H6: `mafia.openTestLoad` opens `localStorage['pgn.test.load']` (development and preview builds only).
-// Not on Home or the picker yet: What Am I? is released first (owner, 24 October). The app reaches the screens through
-// the test hooks, a reload during a game night, or (later) Home's row via `mafia.homeRow`.
+// On Home and the picker after What Am I? (the release itself waits for the owner's yes).
 import type { GameInfo } from '../../engine';
 import { mafiaRules as rules } from './rules';
 import { MafiaScreen } from './ui/MafiaScreen';
 import { historyRows } from './ui/history';
 import { PastGame } from './ui/Past';
-import { homeRow, openTestLoad, reloadNight, unfinishedNight } from './ui/tonight';
+import { NightRowButton, StartNewNightDialog } from './ui/Open';
+import { endUnfinished, homeRow, openTestLoad, reloadNight, startNewAsk, unfinishedNight } from './ui/tonight';
 
 export type { MafiaStart } from './ui/MafiaScreen';
 
@@ -40,6 +40,11 @@ export const mafia = {
   unfinishedNight,
   /** MAF-091 / PO 30: Home's two lines for an unfinished game night. */
   homeRow,
+  NightRowButton,
+  /** MAF-001: the unfinished night and the Start new dialog's body; "Start new (ends that one)". */
+  startNewAsk,
+  StartNewNightDialog,
+  endUnfinished,
   /** MAF-093: History's rows for a saved game night, one per game that is over. */
   historyRows,
   /** MAF-093: one past game from History, with "Play again". */

@@ -231,3 +231,26 @@ export function homeRow(store: SavedGameStore, prefs: Preferences, id: string): 
   const first = night.match.records.find((r) => r.move.type === 'start')?.at ?? night.saved.createdAt;
   return { line1: `Mafia · ${whereLine(screen, v)}`, line2: `${names} · ${clock(first)} · Tap to resume` };
 }
+
+/** MAF-001: the unfinished game night and the Start new dialog's body, or null. */
+export function startNewAsk(store: SavedGameStore): { id: string; text: string } | null {
+  const id = unfinishedNight(store);
+  const night = id ? loadNight(store, id) : null;
+  if (!id || !night) return null;
+  const v = roomView(night.match);
+  const staying = v.players.filter((p) => !v.left.includes(p));
+  const names = staying.slice(0, 2).join(', ') + (staying.length > 2 ? ` +${staying.length - 2}` : '');
+  const first = night.match.records.find((r) => r.move.type === 'start')?.at ?? night.saved.createdAt;
+  return { id, text: `The game night from ${clock(first)} (${names}) will end.` };
+}
+
+/** MAF-001: "Start new (ends that one)" records `endEvening` for it (and `endGame` first when a game is still on). */
+export function endUnfinished(store: SavedGameStore, id: string, now: number = Date.now()): void {
+  const night = loadNight(store, id);
+  if (!night) return;
+  const step = roomView(night.match).step;
+  if (step === 'ended') return;
+  const moves: MafiaMove[] = step === 'gameOver' || step === 'idle' ? [{ type: 'endEvening' }] : [{ type: 'endGame' }, { type: 'endEvening' }];
+  const next = playMoves(night.match, moves, now);
+  if (next) saveNight(store, { id, createdAt: night.saved.createdAt }, next, now);
+}

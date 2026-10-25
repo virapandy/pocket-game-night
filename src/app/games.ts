@@ -1,5 +1,6 @@
 // Every registered game. Adding a game is one import and one line here.
 import { impostor } from '../games/impostor';
+import { mafia } from '../games/mafia';
 import { secretWords } from '../games/secret-words';
 import { tambola } from '../games/tambola';
 import { whatAmI } from '../games/what-am-i';
@@ -13,7 +14,7 @@ export const phoneGames = [tambola] as const;
 export type PhoneGameId = (typeof phoneGames)[number]['info']['id'];
 
 /** "What shall we play?" (IMP-001): the games a host can start, in this order. */
-export const hostGames = [tambola, impostor, secretWords, whatAmI] as const;
+export const hostGames = [tambola, impostor, secretWords, whatAmI, mafia] as const;
 export type HostGameId = (typeof hostGames)[number]['info']['id'];
 
-export { impostor, secretWords, tambola, whatAmI };
+export { impostor, mafia, secretWords, tambola, whatAmI };

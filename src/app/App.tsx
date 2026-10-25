@@ -27,14 +27,14 @@ type OpenAction = 'resume' | 'end' | 'discard' | 'reuse';
 type Route =
   | { name: 'home' }
   /** "What shall we play?" (IMP-001), after Home's "Host a game". */
-  | { name: 'pick'; impostorPlayers?: string[]; names?: string[]; swNames?: string[]; waiNames?: string[] }
+  | { name: 'pick'; impostorPlayers?: string[]; names?: string[]; swNames?: string[]; waiNames?: string[]; mafiaNames?: string[] }
   /** Secret Words on the host phone: setup, or a game night (SWD-001, SWD-115). */
   | { name: 'sw'; start: SecretWordsStart }
   /** What Am I? on the host phone: setup, or a game night (WAI-001, WAI-091). */
   | { name: 'wai'; start: WhatAmIStart; nonce: number }
   /** SWD-002: "Type the host's code", maybe filled in from a map link that can't be opened. */
   | { name: 'sw-code'; text: string; error: SecretWordsMapCodeError | null; nonce: number }
-  /** Mafia (MAF-091): a game night resumed (a reload, MAF-H6), or set up. Not on Home or the picker yet. */
+  /** Mafia (MAF-091): a game night resumed (a reload, MAF-H6), or set up. Opened from Home's row and the picker. */
   | { name: 'mafia'; start: MafiaStart }
   /** SWD-034: the map phone (lane C). */
   | { name: 'sw-map'; map: SecretWordsMapToOpen; nonce: number }
@@ -480,7 +480,7 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
             </BlocksRoot>
           }
           onExit={home}
-          onBack={(names) => setRoute({ name: 'pick', names })}
+          onBack={(names) => setRoute({ name: 'pick', mafiaNames: names })}
           onHistory={() => setRoute({ name: 'history' })}
           onSomethingElse={(names) => setRoute({ name: 'pick', names })}
           onPlaying={setMafiaPlaying}
@@ -514,6 +514,11 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
               const names = route.waiNames ?? route.names;
               return setRoute({ name: 'wai', start: names ? { kind: 'new', names } : { kind: 'new' }, nonce: Date.now() });
             }
+            // MAF-002: Mafia's list comes back in the same visit, or tonight's names from "Play something else".
+            if (id === mafia.info.id) {
+              const names = route.mafiaNames ?? route.names;
+              return setRoute({ name: 'mafia', start: names ? { kind: 'new', names } : { kind: 'new' } });
+            }
             // IMP-003: Impostor's list comes back in the same visit; IMP-102: tonight's names go to Tambola's setup.
             const players = id === impostor.info.id ? route.impostorPlayers : route.names;
             setRoute(players ? { name: 'game', gameId: id as GameId, players } : { name: 'game', gameId: id as GameId });
@@ -521,6 +526,7 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
           onResume={(id) => setRoute({ name: 'game', gameId: 'impostor', open: { id, action: 'resume' } })}
           onResumeNight={(id) => setRoute({ name: 'sw', start: { kind: 'resume', id } })}
           onResumeWai={(id) => setRoute({ name: 'wai', start: { kind: 'resume', id }, nonce: Date.now() })}
+          onResumeMafia={(id) => setRoute({ name: 'mafia', start: { kind: 'resume', id } })}
         />
       );
     }
@@ -664,6 +670,7 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
         onReport={() => onReport(null)}
         onNight={(start) => setRoute({ name: 'sw', start })}
         onWai={(start) => setRoute({ name: 'wai', start, nonce: Date.now() })}
+        onMafia={(id) => setRoute({ name: 'mafia', start: { kind: 'resume', id } })}
         onSavedMap={openMap}
       />
     );
@@ -780,11 +787,14 @@ function Home({
   onReport,
   onNight,
   onWai,
+  onMafia,
   onSavedMap,
 }: {
   needRefresh: boolean;
   /** What Am I?: resume a game night (WAI-091). */
   onWai: (start: WhatAmIStart) => void;
+  /** Mafia: resume a game night (MAF-091). */
+  onMafia: (id: string) => void;
   /** Secret Words: resume a game night, or "Play again with these teams" (SWD-115). */
   onNight: (start: SecretWordsStart) => void;
   /** SWD-036: Home's saved map. */
@@ -821,7 +831,7 @@ function Home({
     return gameStore
       .list()
       .filter(
-        (g) => (g.status === 'in-progress' || g.status === 'paused') && (gameOf(g.gameType) || secretWords.isNight(g) || whatAmI.isNight(g)),
+        (g) => (g.status === 'in-progress' || g.status === 'paused') && (gameOf(g.gameType) || secretWords.isNight(g) || whatAmI.isNight(g) || g.gameType === mafia.info.id),
       )
       .sort((a, b) => b.updatedAt - a.updatedAt);
   });
@@ -928,6 +938,15 @@ function Home({
                 return row ? (
                   <li key={g.id} className="unfinished-row">
                     <whatAmI.NightRowButton row={row} onClick={() => onWai({ kind: 'resume', id: g.id, welcome: true })} />
+                  </li>
+                ) : null;
+              }
+              if (g.gameType === mafia.info.id) {
+                // MAF-091: two lines, one button.
+                const row = mafia.homeRow(gameStore, preferences, g.id);
+                return row ? (
+                  <li key={g.id} className="unfinished-row">
+                    <mafia.NightRowButton row={row} onClick={() => onMafia(g.id)} />
                   </li>
                 ) : null;
               }
@@ -1041,12 +1060,15 @@ function PickGame({
   onResume,
   onResumeNight,
   onResumeWai,
+  onResumeMafia,
 }: {
   onBack: () => void;
   onPick: (id: HostGameId) => void;
   onResume: (id: string) => void;
   /** WAI-001: "Carry on that one". */
   onResumeWai: (id: string) => void;
+  /** MAF-001: "Carry on that one". */
+  onResumeMafia: (id: string) => void;
   /** SWD-115: the unfinished Secret Words game night. */
   onResumeNight: (id: string) => void;
 }) {
@@ -1062,6 +1084,8 @@ function PickGame({
   const [askingNight, setAskingNight] = useState<{ id: string; text: string } | null>(null);
   // WAI-001 (Version 1.1 item 41): the What Am I? card asks once when a game night is unfinished.
   const [askingWai, setAskingWai] = useState<{ id: string; text: string } | null>(null);
+  // MAF-001: the Mafia card asks once when a game night is unfinished (as SWD-115).
+  const [askingMafia, setAskingMafia] = useState<{ id: string; text: string } | null>(null);
   // I29: the 500 ms tap guard from when this screen shows, and again when "Start a new game?" opens or closes.
   const guard = useTapGuard(asking);
   return (
@@ -1094,6 +1118,10 @@ function PickGame({
                 const wai = whatAmI.startNewAsk(gameStore);
                 return wai ? setAskingWai(wai) : onPick(g.info.id);
               }
+              if (g.info.id === mafia.info.id) {
+                const ask = mafia.startNewAsk(gameStore);
+                return ask ? setAskingMafia(ask) : onPick(g.info.id);
+              }
               const open = g.info.id === secretWords.info.id ? secretWords.startNewAsk(gameStore) : null;
               if (open) setAskingNight(open);
               else onPick(g.info.id);
@@ -1123,6 +1151,16 @@ function PickGame({
           onStartNew={() => {
             whatAmI.endUnfinished(gameStore, askingWai.id);
             onPick(whatAmI.info.id);
+          }}
+        />
+      )}
+      {askingMafia && (
+        <mafia.StartNewNightDialog
+          text={askingMafia.text}
+          onCarryOn={() => onResumeMafia(askingMafia.id)}
+          onStartNew={() => {
+            mafia.endUnfinished(gameStore, askingMafia.id);
+            onPick(mafia.info.id);
           }}
         />
       )}

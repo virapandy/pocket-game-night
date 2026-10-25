@@ -226,3 +226,21 @@
 @media (orientation: landscape) and (max-height: 600px) {
   .maf .pgn-main:not(.pgn-main-inline) { width: min(358px, calc(50% - var(--pgn-gutter))); }
 }
+
+/* Home's row and the Start new dialog (MAF-001, MAF-091) */
+.maf-night-row {
+  width: 100%; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 12px 4px; font: inherit; text-align: left;
+  color: var(--text); background: transparent; border: 0; cursor: pointer;
+}
+.maf-row-line { font-weight: 800; font-size: 1.1rem; }
+.maf-backdrop {
+  position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; padding: 16px;
+  box-sizing: border-box; background: rgba(28, 27, 26, 0.55);
+}
+.maf-dialog {
+  width: min(100%, 460px); max-height: calc(100dvh - 32px); overflow-y: auto; box-sizing: border-box; display: flex; flex-direction: column;
+  gap: 14px; padding: 20px; color: var(--text); background: var(--surface); border-radius: 16px;
+}
+.maf-dialog-title { font-size: 1.35rem; font-weight: 800; line-height: 1.25; }
+.maf-equal { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.maf-equal > .pgn-quiet { padding: 6px 10px; line-height: 1.25; }
