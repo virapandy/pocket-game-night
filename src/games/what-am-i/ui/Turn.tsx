@@ -69,6 +69,10 @@ interface Run {
   /** The word on screen appeared (end of the last flash, or T3 opening). */
   wordAt: number;
   flashUntil: number;
+  /** A mark's flash is on screen: set by the mark, cleared only when its flash ends (the next word shows). Time up
+   *  or a pause on the flash's last millisecond, before the flash-end timer has run, still counts as during the flash
+   *  (Version 1.1 item 14). */
+  flashing: boolean;
   timers: number[];
 }
 
@@ -118,7 +122,7 @@ export function TurnFlow(p: StepProps) {
     run.current = {
       t2: now, T, msLeft, motion: motionReady(cur.prefs, holdFor(st)), sawEarly: false, samples: [], steady: [],
       marking: startMotion(null), rotation: run.current?.rotation ?? startRotation, segStart: 0, elapsed0: 0, wordAt: 0,
-      flashUntil: 0, timers: [],
+      flashUntil: 0, flashing: false, timers: [],
     };
     if (st.step === 'pass') cur.setUi({ turnOn: turnKey(st), msLeft, wordShowing: false });
     else cur.setUi({ msLeft, wordShowing: false });
@@ -148,6 +152,7 @@ export function TurnFlow(p: StepProps) {
     r.elapsed0 = r.T - r.msLeft;
     r.wordAt = now;
     r.flashUntil = 0;
+    r.flashing = false;
     const theta0 = r.motion && r.sawEarly ? countdownReference(r.samples) : null;
     r.marking = startMotion(theta0);
     r.steady = [];
@@ -189,9 +194,10 @@ export function TurnFlow(p: StepProps) {
     const word = shownRef.current;
     if (!r || phaseRef.current !== 'word' || word === null) return;
     const now = Date.now();
-    if (now < r.flashUntil || now < r.wordAt + GUARD_MS) return;
+    if (r.flashing || now < r.flashUntil || now < r.wordAt + GUARD_MS) return;
     if (!ref.current.act({ type: kind, word })) return;
     r.flashUntil = now + FLASH_MS;
+    r.flashing = true;
     setFlash(kind);
     setLive(kind === 'got' ? 'Got it' : 'Pass');
     playSound(kind, ref.current.state.choices?.sounds !== false);
@@ -199,6 +205,7 @@ export function TurnFlow(p: StepProps) {
     after(FLASH_MS, () => {
       const rr = run.current;
       if (!rr || phaseRef.current !== 'word') return;
+      rr.flashing = false;
       rr.wordAt = Date.now();
       const head = headOf(ref.current.state);
       shownRef.current = head;
@@ -212,14 +219,17 @@ export function TurnFlow(p: StepProps) {
   const timeUp = () => {
     const r = run.current;
     if (!r || phaseRef.current !== 'word') return;
-    const inFlash = Date.now() < r.flashUntil;
+    // During a flash (up to and including its last millisecond) the marked word is still in shownRef but already
+    // counted: the mark stands and time up passes no word (Version 1.1 item 14).
+    const inFlash = r.flashing || Date.now() < r.flashUntil;
     const word = inFlash ? null : shownRef.current;
     clearTimers();
     setPhase('idle');
     playSound('timeUp', ref.current.state.choices?.sounds !== false);
     vibrate([400]);
     ref.current.setUi({ wordShowing: false, msLeft: 0 });
-    ref.current.act(word ? { type: 'timeUp', word } : { type: 'timeUp' });
+    // Never leave the blank screen behind: if the rules refuse the word, time up still ends the turn.
+    if (!ref.current.act(word ? { type: 'timeUp', word } : { type: 'timeUp' }) && word) ref.current.act({ type: 'timeUp' });
   };
 
   /** Pause, the phone's Back or the app hidden during T2 or T3 (WAI-040). */
@@ -229,7 +239,7 @@ export function TurnFlow(p: StepProps) {
     if (!r || (ph !== 'count' && ph !== 'word')) return;
     const now = Date.now();
     const msLeft = ph === 'count' ? r.msLeft : Math.max(0, r.T - elapsed());
-    const word = ph === 'word' && now >= r.flashUntil ? shownRef.current ?? undefined : undefined;
+    const word = ph === 'word' && !r.flashing && now >= r.flashUntil ? shownRef.current ?? undefined : undefined;
     clearTimers();
     setPhase('idle');
     letScreenSleep();
