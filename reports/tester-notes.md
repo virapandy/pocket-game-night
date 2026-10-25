@@ -222,3 +222,8 @@ Merged origin/main (PGN_PORT per lane: lane-a 4174). Lane A area: 129 of 132 pas
   `tests/sim/jev.ts` now adds each run's decisions to the file (safe side by side); before it, two runs overwrote each other.
 - Open: the What Am I? blank screen at time up (`tests/sims/what-am-i-blank-at-time-up.sim.ts`, WAI-022 item 14); move it into
   a browser test once the orchestrator schedules the fix.
+
+## Lane g (25 October): Mafia card and Home line tests
+- Removed every `needsMafiaCardOrHomeRow` call (9 mafia-setup, MAF-055); the helper in tests/browser/mafia.ts is now unused.
+- Host line now "Tambola, Impostor, Secret Words, What Am I? or Mafia on this phone" in secret-words-a-home (SWD-001/WAI-001) and what-am-i-setup (WAI-001). No other test counts picker cards (the SWD-001 picker test checks three named cards only; still valid).
+- Android on main-less build: 12 fail only for the missing card/line; 154 pass (mafia-setup, mafia-room, secret-words-a-home, what-am-i-setup, impostor-setup).
