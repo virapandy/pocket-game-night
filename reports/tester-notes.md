@@ -206,6 +206,7 @@ Merged origin/main (PGN_PORT per lane: lane-a 4174). Lane A area: 129 of 132 pas
 - New flows: `night1-dev`, `night3-meena`, `night3-dev`, `police-nobody-left` (6 players, night 6, Dev first).
 - Local runs on a busy Mac: 3 workers took 25 min for 40 browser tests; several 30 s timeouts ("setting up page",
   `page.reload`) and the rule properties' 120 s timeouts are load, not bugs; check against the automation run.
+
 ## 25 October: Jev simulations of What Am I? and Mafia (lane-o)
 - Tools: `tests/sims/what-am-i-runner.ts` + `what-am-i-evenings.sim.ts` (SIM_WAI_EVENINGS, SIM_WAI_JEV_EVENINGS),
   `tests/sims/mafia-runner.ts` + `mafia-evenings.sim.ts` (SIM_MAF_EVENINGS, SIM_MAF_JEV_EVENINGS), both default 0 so the weekly
