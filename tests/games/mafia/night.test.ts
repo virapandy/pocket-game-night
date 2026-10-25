@@ -501,7 +501,7 @@ describe('MAF-022 to MAF-026 Version 1.2 A: the names box is the same for every 
         for (const n of j.names as any[]) expect(n.tags, `night ${g.room.round}, ${m.player} (${j.kind}) sees ${n.player}`).toEqual(publicTags(g, n.player));
         g.must(m);
       }
-      if (g.room.step === 'day') g.voteOut(list === NIGHT_1 ? 'Om' : 'Zoya');
+      if (g.room.step === 'day') g.voteOut(list === NIGHT_1 ? 'Om' : list === NIGHT_2 ? 'Zoya' : 'Arjun');
     }
   });
   it('MAF-P7: for 150 random game nights, at every night turn the names and tags depend on nothing but who is out and whose turn it is', () => {
