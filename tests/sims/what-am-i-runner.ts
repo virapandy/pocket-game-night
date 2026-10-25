@@ -275,6 +275,7 @@ export async function playWaiEvening(page: Page, browser: Browser, baseURL: stri
       // Playwright's loader cannot import); each scoreboard on screen and the evening's last saved night are kept for it.
       if (night.records.length !== prevRecords) { prevRecords = night.records.length; lastNight = night; }
     }
+    if (screen === 'T1') plan.seenThisTurn.clear(); // whoever chooses on T1 (Jev or the script), a new turn's words start here
     if (screen === 'T3' && s.word) { plan.seenThisTurn.add(s.word); plan.lastWord = s.word; }
     if (screen === 'T4' && count?.open) {
       const strip = (x: string) => x.replace(/\s*↺$/, '');
@@ -468,7 +469,7 @@ async function act(page: Page, action: string, s: Snap, cfg: WaiConfig, res: Wai
       await page.clock.runFor(800);
       const theta = action === 'motion:got' ? -55 : 55;
       const before = s.word;
-      await orient(page, [...Array(25)].map((_, i) => ({ d: i * 16, theta })), [...Array(30)].map((_, i) => ({ d: 400 + i * 16, theta: 0 })));
+      await orient(page, [...Array(8)].map((_, i) => ({ d: i * 50, theta })), [...Array(6)].map((_, i) => ({ d: 450 + i * 50, theta: 0 })));
       await page.clock.runFor(1000);
       res.marks.motion++;
       const after = await page.getByTestId('the-word').textContent({ timeout: 500 }).catch(() => null);
@@ -514,22 +515,27 @@ async function act(page: Page, action: string, s: Snap, cfg: WaiConfig, res: Wai
       // A phone held steady from the start tap through the countdown (orientation events within 1 s of T2, and steady in
       // [2500, 3000), WAI-016 and Version 1.1 item 9, 1.2 item 8), so motion can mark; harmless in hands-free.
       const o = s.opts.find((x) => x.key === action);
-      if (o && /^(I'm .*: start|Start .*'s turn|Carry on playing)$/.test(o.label)) await steady(page, 5600);
+      if (o && cfg.hold === 'hand' && /^(I'm .*: start|Start .*'s turn|Carry on playing)$/.test(o.label)) await steady(page, 4000);
       await click(action);
     }
   }
 }
 
-async function steady(page: Page, ms: number) { await orient(page, [...Array(Math.ceil(ms / 16))].map((_, i) => ({ d: i * 16, theta: 0 }))); }
+// Events every 50 ms (not 16): under `taskpolicy -b` each fake-clock timer costs real time, and 50 ms still gives the 150 ms
+// held span and the steady windows several events each.
+async function steady(page: Page, ms: number) { await orient(page, [...Array(Math.ceil(ms / 50))].map((_, i) => ({ d: 10 + i * 50, theta: 0 }))); }
 async function orient(page: Page, ...lists: { d: number; theta: number }[][]) {
   const list = lists.flat().map((e) => ({ d: e.d, beta: (Math.acos(Math.max(-1, Math.min(1, Math.sin((e.theta * Math.PI) / 180)))) * 180) / Math.PI }));
   await page.evaluate((list) => {
-    for (const e of list) setTimeout(() => {
+    // One interval walks the list (one timer, not one per event).
+    const t0 = Date.now(); let i = 0;
+    const fire = (beta: number) => {
       let ev: Event;
-      try { ev = new DeviceOrientationEvent('deviceorientation', { alpha: 0, beta: e.beta, gamma: 0, absolute: false }); }
-      catch { ev = new Event('deviceorientation'); for (const [k, v] of Object.entries({ alpha: 0, beta: e.beta, gamma: 0, absolute: false })) Object.defineProperty(ev, k, { value: v }); }
+      try { ev = new DeviceOrientationEvent('deviceorientation', { alpha: 0, beta, gamma: 0, absolute: false }); }
+      catch { ev = new Event('deviceorientation'); for (const [k, v] of Object.entries({ alpha: 0, beta, gamma: 0, absolute: false })) Object.defineProperty(ev, k, { value: v }); }
       window.dispatchEvent(ev);
-    }, e.d);
+    };
+    const id = setInterval(() => { const now = Date.now() - t0; while (i < list.length && list[i]!.d <= now) fire(list[i++]!.beta); if (i >= list.length) clearInterval(id); }, 50);
   }, list);
 }
 
