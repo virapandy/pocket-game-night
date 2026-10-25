@@ -1,0 +1,69 @@
+{
+ "seed": "w43-016",
+ "config": {
+  "seed": "w43-016",
+  "index": 15,
+  "persona": "distracted-host",
+  "width": 320,
+  "height": 568,
+  "players": [
+   "Riya",
+   "Arjun",
+   "Meena",
+   "Kabir",
+   "Zoya",
+   "Dev",
+   "Om",
+   "Sunita",
+   "Neha",
+   "Imran"
+  ],
+  "games": 2,
+  "reloadAt": [
+   53,
+   127
+  ],
+  "hideAt": [
+   62
+  ],
+  "leave": false,
+  "join": false,
+  "endEarly": true,
+  "pause": true,
+  "larger": false
+ },
+ "byJev": true,
+ "findings": [],
+ "steps": 475,
+ "jevDecisions": 35,
+ "finished": true,
+ "screens": [
+  "B1",
+  "dialog:Paused",
+  "B2",
+  "N0",
+  "N1",
+  "N2",
+  "N3",
+  "M1",
+  "Y1",
+  "V1",
+  "V2",
+  "V4",
+  "menu",
+  "dialog:End this game with no winner?",
+  "G1",
+  "V2t",
+  "V3s",
+  "dialog:End for tonight?",
+  "G2",
+  "home"
+ ],
+ "games": 1,
+ "nights": 7,
+ "votes": 5,
+ "reloads": 0,
+ "roomChecks": 174,
+ "rolesKnown": 10,
+ "flags": []
+}

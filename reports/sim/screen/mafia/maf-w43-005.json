@@ -1,0 +1,69 @@
+{
+ "seed": "w43-005",
+ "config": {
+  "seed": "w43-005",
+  "index": 4,
+  "persona": "competitive-uncle",
+  "width": 320,
+  "height": 568,
+  "players": [
+   "Riya",
+   "Arjun",
+   "Meena",
+   "Kabir",
+   "Zoya",
+   "Dev",
+   "Om",
+   "Sunita",
+   "Neha",
+   "Imran",
+   "Tara",
+   "Isha"
+  ],
+  "games": 2,
+  "reloadAt": [
+   53,
+   131
+  ],
+  "hideAt": [
+   43
+  ],
+  "leave": false,
+  "join": false,
+  "endEarly": false,
+  "pause": true,
+  "larger": false
+ },
+ "byJev": true,
+ "findings": [],
+ "steps": 490,
+ "jevDecisions": 35,
+ "finished": true,
+ "screens": [
+  "B1",
+  "menu",
+  "dialog:Players",
+  "B2",
+  "N0",
+  "N1",
+  "N2",
+  "dialog:Paused",
+  "N3",
+  "M1",
+  "Y1",
+  "V1",
+  "V2",
+  "V4",
+  "G1",
+  "dialog:End for tonight?",
+  "G2",
+  "home"
+ ],
+ "games": 1,
+ "nights": 6,
+ "votes": 6,
+ "reloads": 0,
+ "roomChecks": 167,
+ "rolesKnown": 12,
+ "flags": []
+}

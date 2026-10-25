@@ -1,0 +1,59 @@
+{
+ "seed": "w43-012",
+ "config": {
+  "seed": "w43-012",
+  "index": 11,
+  "persona": "guest",
+  "width": 320,
+  "height": 568,
+  "players": [
+   "Riya",
+   "Arjun",
+   "Meena",
+   "Kabir",
+   "Zoya"
+  ],
+  "games": 1,
+  "reloadAt": [
+   15,
+   106
+  ],
+  "hideAt": [
+   41
+  ],
+  "leave": false,
+  "join": false,
+  "endEarly": false,
+  "pause": false,
+  "larger": false
+ },
+ "byJev": true,
+ "findings": [],
+ "steps": 88,
+ "jevDecisions": 36,
+ "finished": true,
+ "screens": [
+  "B1",
+  "B2",
+  "N0",
+  "N1",
+  "N2",
+  "N3",
+  "M1",
+  "Y1",
+  "V1",
+  "V2",
+  "V4",
+  "G1",
+  "dialog:End for tonight?",
+  "G2",
+  "home"
+ ],
+ "games": 1,
+ "nights": 2,
+ "votes": 1,
+ "reloads": 0,
+ "roomChecks": 28,
+ "rolesKnown": 5,
+ "flags": []
+}

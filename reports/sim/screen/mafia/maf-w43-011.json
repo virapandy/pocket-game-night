@@ -1,0 +1,71 @@
+{
+ "seed": "w43-011",
+ "config": {
+  "seed": "w43-011",
+  "index": 10,
+  "persona": "competitive-uncle",
+  "width": 390,
+  "height": 844,
+  "players": [
+   "Riya",
+   "Arjun",
+   "Meena",
+   "Kabir",
+   "Zoya",
+   "Dev"
+  ],
+  "games": 1,
+  "reloadAt": [
+   42,
+   131
+  ],
+  "hideAt": [
+   69
+  ],
+  "leave": true,
+  "join": false,
+  "endEarly": false,
+  "pause": false,
+  "larger": false
+ },
+ "byJev": true,
+ "findings": [
+  {
+   "kind": "privacy",
+   "step": 62,
+   "screen": "N1",
+   "detail": "a night screen names Dev (not the player it is passed to)"
+  }
+ ],
+ "steps": 96,
+ "jevDecisions": 35,
+ "finished": true,
+ "screens": [
+  "B1",
+  "menu",
+  "dialog:Players",
+  "B2",
+  "N0",
+  "N1",
+  "N2",
+  "dialog:Dev has to leave?",
+  "N3",
+  "M1",
+  "Y1",
+  "V1",
+  "V2",
+  "V2t",
+  "V4",
+  "G1",
+  "dialog:End for tonight?",
+  "G2",
+  "home"
+ ],
+ "games": 1,
+ "nights": 1,
+ "votes": 1,
+ "reloads": 0,
+ "roomChecks": 47,
+ "rolesKnown": 6,
+ "flags": []
+}

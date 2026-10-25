@@ -1,0 +1,544 @@
+1 B1  [Riya] -> button:Menu (Jev)
+2 menu  [Riya] -> menuitem:How to play (Jev)
+3 S4 How to play -> button:Done
+4 B1  [Riya] -> button:Menu (Jev)
+5 menu  [Riya] -> menuitem:How to play (Jev)
+6 S4 How to play -> button:Done
+7 B1  [Riya] -> button:Menu (Jev)
+8 menu  [Riya] -> menuitem:How to play (Jev)
+9 S4 How to play -> button:Done
+10 B1  [Riya] -> button:I'm Riya
+11 B2  [Riya] -> button:Tap instead
+12 B2  [Riya] -> button:Tap to see
+13 B2  [Riya] -> button:Tap to hide
+14 B2  [Riya] -> button:Done, pass to Arjun
+15 B1  [Arjun] -> button:I'm Arjun
+16 B2  [Arjun] -> button:Tap instead
+17 B2  [Arjun] -> button:Tap to see
+18 B2  [Arjun] -> button:Tap to hide
+19 B2  [Arjun] -> button:Done, pass to Meena
+20 B1  [Meena] -> button:I'm Meena
+21 B2  [Meena] -> button:Tap instead
+22 B2  [Meena] -> button:Tap to see
+23 B2  [Meena] -> button:Tap to hide
+24 B2  [Meena] -> button:Done, pass to Kabir
+25 B1  [Kabir] -> button:I'm Kabir
+26 B2  [Kabir] -> button:Tap instead
+27 B2  [Kabir] -> button:Tap to see
+28 B2  [Kabir] -> button:Tap to hide
+29 B2  [Kabir] -> button:Done, pass to Zoya
+30 B1  [Zoya] -> button:I'm Zoya
+31 B2  [Zoya] -> button:Tap instead
+32 B2  [Zoya] -> button:Tap to see
+33 B2  [Zoya] -> button:Tap to hide
+34 B2  [Zoya] -> button:Done, pass to Dev
+35 B1  [Dev] -> action:hide
+36 B1  [Dev] -> button:I'm Dev
+37 B2  [Dev] -> button:Tap instead
+38 B2  [Dev] -> button:Tap to see
+39 B2  [Dev] -> button:Tap to hide
+40 B2  [Dev] -> button:Done, pass to Om
+41 B1  [Om] -> button:I'm Om
+42 B2  [Om] -> button:Tap instead
+43 B2  [Om] -> button:Tap to see
+44 B2  [Om] -> button:Tap to hide
+45 B2  [Om] -> button:Done, pass to Sunita
+46 B1  [Sunita] -> button:I'm Sunita
+47 B2  [Sunita] -> button:Tap instead
+48 B2  [Sunita] -> button:Tap to see
+49 B2  [Sunita] -> button:Tap to hide
+50 B2  [Sunita] -> button:Done, pass to Neha
+51 B1  [Neha] -> button:I'm Neha
+52 B2  [Neha] -> button:Tap instead
+53 B2  [Neha] -> button:Tap to see
+54 B2  [Neha] -> button:Tap to hide
+55 B2  [Neha] -> button:Done, pass to Imran
+56 B1  [Imran] -> button:I'm Imran
+57 B2  [Imran] -> button:Tap instead
+58 B2  [Imran] -> button:Tap to see
+59 B2  [Imran] -> button:Tap to hide
+60 B2  [Imran] -> button:Done, pass to Tara
+61 B1  [Tara] -> button:I'm Tara
+62 B2  [Tara] -> button:Tap instead
+63 B2  [Tara] -> button:Tap to see
+64 B2  [Tara] -> button:Tap to hide
+65 B2  [Tara] -> button:Done, everyone's seen
+66 N0 Night 1 -> button:Menu (Jev)
+67 menu Night 1 -> menuitem:How to play (Jev)
+68 S4 How to play -> button:Done
+69 N0 Night 1 -> button:Menu (Jev)
+70 menu Night 1 -> menuitem:How to play (Jev)
+71 S4 How to play -> button:Done
+72 N0 Night 1 -> button:Menu (Jev)
+73 menu Night 1 -> menuitem:How to play (Jev)
+74 S4 How to play -> button:Done
+75 N0 Night 1 -> button:Start the night
+76 N1  [Riya] -> button:Menu (Jev)
+77 menu  [Riya] -> menuitem:Players
+78 dialog:Players Players -> button:Done (Jev)
+79 N1  [Riya] -> button:Menu (Jev)
+80 menu  [Riya] -> menuitem:Players
+81 dialog:Players Players -> macro:leave
+82 dialog:Tara has to leave? Players -> button:Tara leaves
+83 dialog:Players Players -> button:Done
+84 N1  [Riya] -> button:I'm Riya
+85 N2  [Riya] -> button:Tap to see your night job
+86 N2  [Riya] -> button:Riya
+87 N2  [Riya] -> button:Done, pass to Arjun
+88 N1  [Arjun] -> button:I'm Arjun
+89 N2  [Arjun] -> button:Tap to see your night job
+90 N2  [Arjun] -> button:Kabir
+91 N2  [Arjun] -> button:Done, pass to Meena
+92 N1  [Meena] -> button:I'm Meena
+93 N2  [Meena] -> button:Tap to see your night job
+94 N2  [Meena] -> button:Arjun
+95 N2  [Meena] -> button:Done, pass to Kabir
+96 N1  [Kabir] -> button:I'm Kabir
+97 N2  [Kabir] -> button:Tap to see your night job
+98 N2  [Kabir] -> button:Meena
+99 N2  [Kabir] -> button:Done, pass to Zoya
+100 N1  [Zoya] -> button:I'm Zoya
+101 N2  [Zoya] -> button:Tap to see your night job
+102 N2  [Zoya] -> button:Arjun
+103 N2  [Zoya] -> button:Done, pass to Dev
+104 N1  [Dev] -> button:I'm Dev
+105 N2  [Dev] -> button:Tap to see your night job
+106 N2  [Dev] -> button:Zoya
+107 N2  [Dev] -> button:Done, pass to Om
+108 N1  [Om] -> button:Pause
+109 dialog:Paused Paused [Om] -> button:Carry on
+110 N1  [Om] -> button:I'm Om
+111 N2  [Om] -> button:Tap to see your night job
+112 N2  [Om] -> button:Imran
+113 N2  [Om] -> button:Done, pass to Sunita
+114 N1  [Sunita] -> button:I'm Sunita
+115 N2  [Sunita] -> button:Tap to see your night job
+116 N2  [Sunita] -> button:Neha
+117 N2  [Sunita] -> button:Done, pass to Neha
+118 N1  [Neha] -> button:I'm Neha
+119 N2  [Neha] -> button:Tap to see your night job
+120 N2  [Neha] -> button:Om
+121 N2  [Neha] -> button:Done, pass to Imran
+122 N1  [Imran] -> button:I'm Imran
+123 N2  [Imran] -> button:Tap to see your night job
+124 N2  [Imran] -> button:Meena
+125 N2  [Imran] -> button:Done, night over
+126 N3 Night over. -> button:Read the morning
+127 M1 Morning, day 1 -> button:Start talking
+128 Y1 Day 1 · Talk it over -> button:Time to vote
+129 V1  -> action:wait2000
+130 V1  -> action:wait2000
+131 V2 Who got the most fingers? -> button:Arjun
+132 V2 Who got the most fingers? -> button:Vote Arjun out
+133 V4 Arjun is out. -> button:Start night 2
+134 V4 Arjun is out. -> button:Start night 2
+135 N0 Night 2 -> button:Start the night
+136 N1  [Arjun] -> button:I'm Arjun
+137 N2  [Arjun] -> button:Tap to see your night job
+138 N2  [Arjun] -> button:Meena
+139 N2  [Arjun] -> button:Done, pass to Meena
+140 N1  [Meena] -> button:I'm Meena
+141 N2  [Meena] -> button:Tap to see your night job
+142 N2  [Meena] -> button:Riya
+143 N2  [Meena] -> button:Done, pass to Kabir
+144 N1  [Kabir] -> button:I'm Kabir
+145 N2  [Kabir] -> button:Tap to see your night job
+146 N2  [Kabir] -> button:Neha
+147 N2  [Kabir] -> button:Done, pass to Zoya
+148 N1  [Zoya] -> button:I'm Zoya
+149 N2  [Zoya] -> button:Tap to see your night job
+150 N2  [Zoya] -> button:Riya
+151 N2  [Zoya] -> button:Done, pass to Dev
+152 N1  [Dev] -> button:I'm Dev
+153 N2  [Dev] -> button:Tap to see your night job
+154 N2  [Dev] -> button:Riya
+155 N2  [Dev] -> button:Done, pass to Om
+156 N1  [Om] -> button:I'm Om
+157 N2  [Om] -> button:Tap to see your night job
+158 N2  [Om] -> button:Meena
+159 N2  [Om] -> button:Done, pass to Sunita
+160 N1  [Sunita] -> button:I'm Sunita
+161 N2  [Sunita] -> button:Tap to see your night job
+162 N2  [Sunita] -> button:Kabir
+163 N2  [Sunita] -> button:Done, pass to Neha
+164 N1  [Neha] -> button:I'm Neha
+165 N2  [Neha] -> button:Tap to see your night job
+166 N2  [Neha] -> button:Om
+167 N2  [Neha] -> button:Done, pass to Imran
+168 N1  [Imran] -> button:I'm Imran
+169 N2  [Imran] -> button:Tap to see your night job
+170 N2  [Imran] -> button:Om
+171 N2  [Imran] -> button:Done, pass to Riya
+172 N1  [Riya] -> button:I'm Riya
+173 N2  [Riya] -> button:Tap to see your night job
+174 N2  [Riya] -> button:Imran
+175 N2  [Riya] -> button:Done, night over
+176 N3 Night over. -> button:Read the morning
+177 M1 Morning, day 2 -> button:Start talking
+178 Y1 Day 2 · Talk it over -> button:Time to vote
+179 V1  -> action:wait2000
+180 V1  -> action:wait2000
+181 V2 Who got the most fingers? -> button:Dev
+182 V2 Who got the most fingers? -> button:Vote Dev out
+183 V4 Dev is out. -> button:Start night 3
+184 V4 Dev is out. -> button:Start night 3
+185 N0 Night 3 -> button:Start the night
+186 N1  [Meena] -> button:I'm Meena
+187 N2  [Meena] -> button:Tap to see your night job
+188 N2  [Meena] -> button:Neha
+189 N2  [Meena] -> button:Done, pass to Kabir
+190 N1  [Kabir] -> button:I'm Kabir
+191 N2  [Kabir] -> button:Tap to see your night job
+192 N2  [Kabir] -> button:Meena
+193 N2  [Kabir] -> button:Done, pass to Zoya
+194 N1  [Zoya] -> button:I'm Zoya
+195 N2  [Zoya] -> button:Tap to see your night job
+196 N2  [Zoya] -> button:Imran
+197 N2  [Zoya] -> button:Done, pass to Dev
+198 N1  [Dev] -> button:I'm Dev
+199 N2  [Dev] -> button:Tap to see your night job
+200 N2  [Dev] -> button:Om
+201 N2  [Dev] -> button:Done, pass to Om
+202 N1  [Om] -> button:I'm Om
+203 N2  [Om] -> button:Tap to see your night job
+204 N2  [Om] -> button:Imran
+205 N2  [Om] -> button:Done, pass to Sunita
+206 N1  [Sunita] -> button:I'm Sunita
+207 N2  [Sunita] -> button:Tap to see your night job
+208 N2  [Sunita] -> button:Neha
+209 N2  [Sunita] -> button:Done, pass to Neha
+210 N1  [Neha] -> button:I'm Neha
+211 N2  [Neha] -> button:Tap to see your night job
+212 N2  [Neha] -> button:Imran
+213 N2  [Neha] -> button:Done, pass to Imran
+214 N1  [Imran] -> button:I'm Imran
+215 N2  [Imran] -> button:Tap to see your night job
+216 N2  [Imran] -> button:Meena
+217 N2  [Imran] -> button:Done, pass to Riya
+218 N1  [Riya] -> button:I'm Riya
+219 N2  [Riya] -> button:Tap to see your night job
+220 N2  [Riya] -> button:Sunita
+221 N2  [Riya] -> button:Done, pass to Arjun
+222 N1  [Arjun] -> button:I'm Arjun
+223 N2  [Arjun] -> button:Tap to see your night job
+224 N2  [Arjun] -> button:Sunita
+225 N2  [Arjun] -> button:Done, night over
+226 N3 Night over. -> button:Read the morning
+227 M1 Morning, day 3 -> button:Start talking
+228 Y1 Day 3 · Talk it over -> button:Time to vote
+229 V1  -> action:wait2000
+230 V1  -> action:wait2000
+231 V2 Who got the most fingers? -> button:It's a tie
+232 V2t Tap everyone who is tied -> button:Meena
+233 V2t Tap everyone who is tied -> button:Kabir
+234 V2t Tap everyone who is tied -> button:Point again: Meena or Kabir
+235 V1  -> action:wait2000
+236 V2 Who got the most fingers? -> button:Meena
+237 V2 Who got the most fingers? -> button:Vote Meena out
+238 V4 Meena is out. -> button:Start night 4
+239 V4 Meena is out. -> button:Start night 4
+240 N0 Night 4 -> button:Start the night
+241 N1  [Kabir] -> button:I'm Kabir
+242 N2  [Kabir] -> button:Tap to see your night job
+243 N2  [Kabir] -> button:Sunita
+244 N2  [Kabir] -> button:Done, pass to Zoya
+245 N1  [Zoya] -> button:I'm Zoya
+246 N2  [Zoya] -> button:Tap to see your night job
+247 N2  [Zoya] -> button:Imran
+248 N2  [Zoya] -> button:Done, pass to Dev
+249 N1  [Dev] -> button:I'm Dev
+250 N2  [Dev] -> button:Tap to see your night job
+251 N2  [Dev] -> button:Kabir
+252 N2  [Dev] -> button:Done, pass to Om
+253 N1  [Om] -> button:I'm Om
+254 N2  [Om] -> button:Tap to see your night job
+255 N2  [Om] -> button:Kabir
+256 N2  [Om] -> button:Done, pass to Sunita
+257 N1  [Sunita] -> button:I'm Sunita
+258 N2  [Sunita] -> button:Tap to see your night job
+259 N2  [Sunita] -> button:Om
+260 N2  [Sunita] -> button:Done, pass to Neha
+261 N1  [Neha] -> button:I'm Neha
+262 N2  [Neha] -> button:Tap to see your night job
+263 N2  [Neha] -> button:Om
+264 N2  [Neha] -> button:Done, pass to Imran
+265 N1  [Imran] -> button:I'm Imran
+266 N2  [Imran] -> button:Tap to see your night job
+267 N2  [Imran] -> button:Om
+268 N2  [Imran] -> button:Done, pass to Riya
+269 N1  [Riya] -> button:I'm Riya
+270 N2  [Riya] -> button:Tap to see your night job
+271 N2  [Riya] -> button:Kabir
+272 N2  [Riya] -> button:Done, pass to Arjun
+273 N1  [Arjun] -> button:I'm Arjun
+274 N2  [Arjun] -> button:Tap to see your night job
+275 N2  [Arjun] -> button:Om
+276 N2  [Arjun] -> button:Done, pass to Meena
+277 N1  [Meena] -> button:I'm Meena
+278 N2  [Meena] -> button:Tap to see your night job
+279 N2  [Meena] -> button:Kabir
+280 N2  [Meena] -> button:Done, night over
+281 N3 Night over. -> button:Read the morning
+282 M1 Morning, day 4 -> button:Start talking
+283 Y1 Day 4 · Talk it over -> button:Time to vote
+284 V1  -> action:wait2000
+285 V1  -> action:wait2000
+286 V2 Who got the most fingers? -> button:Imran
+287 V2 Who got the most fingers? -> button:Vote Imran out
+288 V4 Imran is out. -> button:See who won
+289 V4 Imran is out. -> button:See who won
+290 G1 The Mafia win! -> button:Play again
+291 B1  [Riya] -> button:I'm Riya
+292 B2  [Riya] -> button:Tap instead
+293 B2  [Riya] -> button:Tap to see
+294 B2  [Riya] -> button:Tap to hide
+295 B2  [Riya] -> button:Done, pass to Arjun
+296 B1  [Arjun] -> button:I'm Arjun
+297 B2  [Arjun] -> button:Tap instead
+298 B2  [Arjun] -> button:Tap to see
+299 B2  [Arjun] -> button:Tap to hide
+300 B2  [Arjun] -> button:Done, pass to Meena
+301 B1  [Meena] -> button:I'm Meena
+302 B2  [Meena] -> button:Tap instead
+303 B2  [Meena] -> button:Tap to see
+304 B2  [Meena] -> button:Tap to hide
+305 B2  [Meena] -> button:Done, pass to Kabir
+306 B1  [Kabir] -> button:I'm Kabir
+307 B2  [Kabir] -> button:Tap instead
+308 B2  [Kabir] -> button:Tap to see
+309 B2  [Kabir] -> button:Tap to hide
+310 B2  [Kabir] -> button:Done, pass to Zoya
+311 B1  [Zoya] -> button:I'm Zoya
+312 B2  [Zoya] -> button:Tap instead
+313 B2  [Zoya] -> button:Tap to see
+314 B2  [Zoya] -> button:Tap to hide
+315 B2  [Zoya] -> button:Done, pass to Dev
+316 B1  [Dev] -> button:I'm Dev
+317 B2  [Dev] -> button:Tap instead
+318 B2  [Dev] -> button:Tap to see
+319 B2  [Dev] -> button:Tap to hide
+320 B2  [Dev] -> button:Done, pass to Om
+321 B1  [Om] -> button:I'm Om
+322 B2  [Om] -> button:Tap instead
+323 B2  [Om] -> button:Tap to see
+324 B2  [Om] -> button:Tap to hide
+325 B2  [Om] -> button:Done, pass to Sunita
+326 B1  [Sunita] -> button:I'm Sunita
+327 B2  [Sunita] -> button:Tap instead
+328 B2  [Sunita] -> button:Tap to see
+329 B2  [Sunita] -> button:Tap to hide
+330 B2  [Sunita] -> button:Done, pass to Neha
+331 B1  [Neha] -> button:I'm Neha
+332 B2  [Neha] -> button:Tap instead
+333 B2  [Neha] -> button:Tap to see
+334 B2  [Neha] -> button:Tap to hide
+335 B2  [Neha] -> button:Done, pass to Imran
+336 B1  [Imran] -> button:I'm Imran
+337 B2  [Imran] -> button:Tap instead
+338 B2  [Imran] -> button:Tap to see
+339 B2  [Imran] -> button:Tap to hide
+340 B2  [Imran] -> button:Done, everyone's seen
+341 N0 Night 1 -> button:Start the night
+342 N1  [Arjun] -> button:I'm Arjun
+343 N2  [Arjun] -> button:Tap to see your night job
+344 N2  [Arjun] -> button:Dev
+345 N2  [Arjun] -> button:Done, pass to Meena
+346 N1  [Meena] -> button:I'm Meena
+347 N2  [Meena] -> button:Tap to see your night job
+348 N2  [Meena] -> button:Sunita
+349 N2  [Meena] -> button:Done, pass to Kabir
+350 N1  [Kabir] -> button:I'm Kabir
+351 N2  [Kabir] -> button:Tap to see your night job
+352 N2  [Kabir] -> button:Zoya
+353 N2  [Kabir] -> button:Done, pass to Zoya
+354 N1  [Zoya] -> button:I'm Zoya
+355 N2  [Zoya] -> button:Tap to see your night job
+356 N2  [Zoya] -> button:Imran
+357 N2  [Zoya] -> button:Done, pass to Dev
+358 N1  [Dev] -> button:I'm Dev
+359 N2  [Dev] -> button:Tap to see your night job
+360 N2  [Dev] -> button:Kabir
+361 N2  [Dev] -> button:Done, pass to Om
+362 N1  [Om] -> button:I'm Om
+363 N2  [Om] -> button:Tap to see your night job
+364 N2  [Om] -> button:Zoya
+365 N2  [Om] -> button:Done, pass to Sunita
+366 N1  [Sunita] -> button:I'm Sunita
+367 N2  [Sunita] -> button:Tap to see your night job
+368 N2  [Sunita] -> button:Imran
+369 N2  [Sunita] -> button:Done, pass to Neha
+370 N1  [Neha] -> button:I'm Neha
+371 N2  [Neha] -> button:Tap to see your night job
+372 N2  [Neha] -> button:Sunita
+373 N2  [Neha] -> button:Done, pass to Imran
+374 N1  [Imran] -> button:I'm Imran
+375 N2  [Imran] -> button:Tap to see your night job
+376 N2  [Imran] -> button:Kabir
+377 N2  [Imran] -> button:Done, pass to Riya
+378 N1  [Riya] -> button:I'm Riya
+379 N2  [Riya] -> button:Tap to see your night job
+380 N2  [Riya] -> button:Om
+381 N2  [Riya] -> button:Done, night over
+382 N3 Night over. -> button:Read the morning
+383 M1 Morning, day 1 -> button:Start talking
+384 Y1 Day 1 · Talk it over -> button:Time to vote
+385 V1  -> action:wait2000
+386 V1  -> action:wait2000
+387 V2 Who got the most fingers? -> button:Sunita
+388 V2 Who got the most fingers? -> button:Vote Sunita out
+389 V4 Sunita is out. -> button:Start night 2
+390 V4 Sunita is out. -> button:Start night 2
+391 N0 Night 2 -> button:Start the night
+392 N1  [Meena] -> button:I'm Meena
+393 N2  [Meena] -> button:Tap to see your night job
+394 N2  [Meena] -> button:Kabir
+395 N2  [Meena] -> button:Done, pass to Kabir
+396 N1  [Kabir] -> button:I'm Kabir
+397 N2  [Kabir] -> button:Tap to see your night job
+398 N2  [Kabir] -> button:Om
+399 N2  [Kabir] -> button:Done, pass to Zoya
+400 N1  [Zoya] -> button:I'm Zoya
+401 N2  [Zoya] -> button:Tap to see your night job
+402 N2  [Zoya] -> button:Kabir
+403 N2  [Zoya] -> button:Done, pass to Dev
+404 N1  [Dev] -> button:I'm Dev
+405 N2  [Dev] -> button:Tap to see your night job
+406 N2  [Dev] -> button:Riya
+407 N2  [Dev] -> button:Done, pass to Om
+408 N1  [Om] -> button:I'm Om
+409 N2  [Om] -> button:Tap to see your night job
+410 N2  [Om] -> button:Neha
+411 N2  [Om] -> button:Done, pass to Sunita
+412 N1  [Sunita] -> button:I'm Sunita
+413 N2  [Sunita] -> button:Tap to see your night job
+414 N2  [Sunita] -> button:Arjun
+415 N2  [Sunita] -> button:Done, pass to Neha
+416 N1  [Neha] -> button:I'm Neha
+417 N2  [Neha] -> button:Tap to see your night job
+418 N2  [Neha] -> button:Om
+419 N2  [Neha] -> button:Done, pass to Imran
+420 N1  [Imran] -> button:I'm Imran
+421 N2  [Imran] -> button:Tap to see your night job
+422 N2  [Imran] -> button:Kabir
+423 N2  [Imran] -> button:Done, pass to Riya
+424 N1  [Riya] -> button:I'm Riya
+425 N2  [Riya] -> button:Tap to see your night job
+426 N2  [Riya] -> button:Arjun
+427 N2  [Riya] -> button:Done, pass to Arjun
+428 N1  [Arjun] -> button:I'm Arjun
+429 N2  [Arjun] -> button:Tap to see your night job
+430 N2  [Arjun] -> button:Kabir
+431 N2  [Arjun] -> button:Done, night over
+432 N3 Night over. -> button:Read the morning
+433 M1 Morning, day 2 -> button:Start talking
+434 Y1 Day 2 · Talk it over -> button:Time to vote
+435 V1  -> action:wait2000
+436 V1  -> action:wait2000
+437 V2 Who got the most fingers? -> button:Neha
+438 V2 Who got the most fingers? -> button:Vote Neha out
+439 V4 Neha is out. -> button:Start night 3
+440 V4 Neha is out. -> button:Start night 3
+441 N0 Night 3 -> button:Start the night
+442 N1  [Kabir] -> button:I'm Kabir
+443 N2  [Kabir] -> button:Tap to see your night job
+444 N2  [Kabir] -> button:Meena
+445 N2  [Kabir] -> button:Done, pass to Zoya
+446 N1  [Zoya] -> button:I'm Zoya
+447 N2  [Zoya] -> button:Tap to see your night job
+448 N2  [Zoya] -> button:Om
+449 N2  [Zoya] -> button:Done, pass to Dev
+450 N1  [Dev] -> button:I'm Dev
+451 N2  [Dev] -> button:Tap to see your night job
+452 N2  [Dev] -> button:Meena
+453 N2  [Dev] -> button:Done, pass to Om
+454 N1  [Om] -> button:I'm Om
+455 N2  [Om] -> button:Tap to see your night job
+456 N2  [Om] -> button:Arjun
+457 N2  [Om] -> button:Done, pass to Sunita
+458 N1  [Sunita] -> button:I'm Sunita
+459 N2  [Sunita] -> button:Tap to see your night job
+460 N2  [Sunita] -> button:Dev
+461 N2  [Sunita] -> button:Done, pass to Neha
+462 N1  [Neha] -> button:I'm Neha
+463 N2  [Neha] -> button:Tap to see your night job
+464 N2  [Neha] -> button:Riya
+465 N2  [Neha] -> button:Done, pass to Imran
+466 N1  [Imran] -> button:I'm Imran
+467 N2  [Imran] -> button:Tap to see your night job
+468 N2  [Imran] -> button:Meena
+469 N2  [Imran] -> button:Done, pass to Riya
+470 N1  [Riya] -> button:I'm Riya
+471 N2  [Riya] -> button:Tap to see your night job
+472 N2  [Riya] -> button:Om
+473 N2  [Riya] -> button:Done, pass to Arjun
+474 N1  [Arjun] -> button:I'm Arjun
+475 N2  [Arjun] -> button:Tap to see your night job
+476 N2  [Arjun] -> button:Riya
+477 N2  [Arjun] -> button:Done, pass to Meena
+478 N1  [Meena] -> button:I'm Meena
+479 N2  [Meena] -> button:Tap to see your night job
+480 N2  [Meena] -> button:Riya
+481 N2  [Meena] -> button:Done, night over
+482 N3 Night over. -> button:Read the morning
+483 M1 Morning, day 3 -> button:Start talking
+484 Y1 Day 3 · Talk it over -> button:Time to vote
+485 V1  -> action:wait2000
+486 V1  -> action:wait2000
+487 V2 Who got the most fingers? -> button:Dev
+488 V2 Who got the most fingers? -> button:Vote Dev out
+489 V4 Dev is out. -> button:Start night 4
+490 V4 Dev is out. -> button:Start night 4
+491 N0 Night 4 -> button:Start the night
+492 N1  [Zoya] -> button:I'm Zoya
+493 N2  [Zoya] -> button:Tap to see your night job
+494 N2  [Zoya] -> button:Arjun
+495 N2  [Zoya] -> button:Done, pass to Dev
+496 N1  [Dev] -> button:I'm Dev
+497 N2  [Dev] -> button:Tap to see your night job
+498 N2  [Dev] -> button:Arjun
+499 N2  [Dev] -> button:Done, pass to Om
+500 N1  [Om] -> button:I'm Om
+501 N2  [Om] -> button:Tap to see your night job
+502 N2  [Om] -> button:Meena
+503 N2  [Om] -> button:Done, pass to Sunita
+504 N1  [Sunita] -> button:I'm Sunita
+505 N2  [Sunita] -> button:Tap to see your night job
+506 N2  [Sunita] -> button:Riya
+507 N2  [Sunita] -> button:Done, pass to Neha
+508 N1  [Neha] -> button:I'm Neha
+509 N2  [Neha] -> button:Tap to see your night job
+510 N2  [Neha] -> button:Meena
+511 N2  [Neha] -> button:Done, pass to Imran
+512 N1  [Imran] -> button:I'm Imran
+513 N2  [Imran] -> button:Tap to see your night job
+514 N2  [Imran] -> button:Zoya
+515 N2  [Imran] -> button:Done, pass to Riya
+516 N1  [Riya] -> button:I'm Riya
+517 N2  [Riya] -> button:Tap to see your night job
+518 N2  [Riya] -> button:Meena
+519 N2  [Riya] -> button:Done, pass to Arjun
+520 N1  [Arjun] -> button:I'm Arjun
+521 N2  [Arjun] -> button:Tap to see your night job
+522 N2  [Arjun] -> button:Zoya
+523 N2  [Arjun] -> button:Done, pass to Meena
+524 N1  [Meena] -> button:I'm Meena
+525 N2  [Meena] -> button:Tap to see your night job
+526 N2  [Meena] -> button:Riya
+527 N2  [Meena] -> button:Done, pass to Kabir
+528 N1  [Kabir] -> button:I'm Kabir
+529 N2  [Kabir] -> button:Tap to see your night job
+530 N2  [Kabir] -> button:Zoya
+531 N2  [Kabir] -> button:Done, night over
+532 N3 Night over. -> button:Read the morning
+533 M1 Morning, day 4 -> button:Start talking
+534 Y1 Day 4 · Talk it over -> button:Time to vote
+535 V1  -> action:wait2000
+536 V1  -> action:wait2000
+537 V2 Who got the most fingers? -> button:Riya
+538 V2 Who got the most fingers? -> button:Vote Riya out
+539 V4 Riya is out. -> button:See who won
+540 V4 Riya is out. -> button:See who won
+541 G1 The Mafia win! -> button:End for tonight
+542 dialog:End for tonight? The Mafia win! -> button:End for tonight
+543 G2 Tonight's Mafia -> button:← Home
+544 home Pocket Game Night -> done

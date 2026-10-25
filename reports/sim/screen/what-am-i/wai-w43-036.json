@@ -1,0 +1,1051 @@
+{
+ "seed": "w43-036",
+ "config": {
+  "seed": "w43-036",
+  "index": 35,
+  "persona": "guest",
+  "width": 390,
+  "height": 844,
+  "players": [
+   "Riya",
+   "Arjun",
+   "Meena"
+  ],
+  "turnTime": 30,
+  "hold": "hand",
+  "pack": "Sports and cricket",
+  "nonveg": true,
+  "sounds": true,
+  "permission": "refused",
+  "motion": false,
+  "larger": false,
+  "games": 1,
+  "rounds": [
+   2
+  ],
+  "reloadAt": [
+   15,
+   141
+  ],
+  "hideAt": [
+   42
+  ],
+  "pauses": 1,
+  "leave": false,
+  "join": true,
+  "endMidRound": false,
+  "fixes": false,
+  "secondPhone": true,
+  "platform": "iphone"
+ },
+ "byJev": true,
+ "findings": [],
+ "steps": 143,
+ "jevDecisions": 40,
+ "finished": true,
+ "games": 0,
+ "turns": 0,
+ "marks": {
+  "got": 39,
+  "pass": 22,
+  "motion": 0,
+  "motionMissed": 0
+ },
+ "screens": [
+  "home",
+  "join",
+  "code-entry",
+  "picker",
+  "S1",
+  "how-to-play",
+  "S2",
+  "S3",
+  "T1",
+  "T0",
+  "T2",
+  "T3",
+  "T4",
+  "dialog:Paused",
+  "R1",
+  "menu",
+  "dialog:Players",
+  "dialog:End the game?",
+  "G1",
+  "dialog:End for tonight?",
+  "G2"
+ ],
+ "reloads": 0,
+ "hides": 0,
+ "pauses": 0,
+ "flags": [],
+ "jevNotes": [
+  "step 6: Jev chose \"Type the host's code\" on join for the third time (a loop); scripted from here on that screen",
+  "step 9: Jev chose \"Join a gameTambola ticket or Secret Words map from the host\" on home for the third time (a loop); scripted from here on that screen",
+  "step 16: Jev chose \"How to play\" on S1 for the third time (a loop); scripted from here on that screen",
+  "step 21: Jev chose \"How to play\" on S2 for the third time (a loop); scripted from here on that screen",
+  "step 27: Jev chose \"How to play\" on S3 for the third time (a loop); scripted from here on that screen",
+  "step 46: Jev chose \"← Home (game saved)\" on T4 for the third time (a loop); scripted from here on that screen"
+ ],
+ "replays": [
+  {
+   "step": 79,
+   "screen": "R1",
+   "records": 40,
+   "rows": [
+    {
+     "player": "Meena",
+     "score": 9,
+     "turns": 1
+    },
+    {
+     "player": "Riya",
+     "score": 5,
+     "turns": 1
+    },
+    {
+     "player": "Arjun",
+     "score": 5,
+     "turns": 1
+    }
+   ],
+   "left": 0
+  },
+  {
+   "step": 138,
+   "screen": "R1",
+   "records": 79,
+   "rows": [
+    {
+     "player": "Riya",
+     "score": 12,
+     "turns": 2
+    },
+    {
+     "player": "Meena",
+     "score": 12,
+     "turns": 2
+    },
+    {
+     "player": "Arjun",
+     "score": 11,
+     "turns": 2
+    },
+    {
+     "player": "Om",
+     "score": 3,
+     "turns": 1
+    }
+   ],
+   "left": 0
+  },
+  {
+   "step": 139,
+   "screen": "dialog:End the game?",
+   "records": 79,
+   "rows": [
+    {
+     "player": "Riya",
+     "score": 12,
+     "turns": 2
+    },
+    {
+     "player": "Meena",
+     "score": 12,
+     "turns": 2
+    },
+    {
+     "player": "Arjun",
+     "score": 11,
+     "turns": 2
+    },
+    {
+     "player": "Om",
+     "score": 3,
+     "turns": 1
+    }
+   ],
+   "left": 0
+  },
+  {
+   "step": 140,
+   "screen": "G1",
+   "records": 80,
+   "rows": [
+    {
+     "player": "Riya",
+     "score": 12,
+     "turns": 2
+    },
+    {
+     "player": "Meena",
+     "score": 12,
+     "turns": 2
+    },
+    {
+     "player": "Arjun",
+     "score": 11,
+     "turns": 2
+    },
+    {
+     "player": "Om",
+     "score": 3,
+     "turns": 1
+    }
+   ],
+   "left": 0
+  },
+  {
+   "step": 141,
+   "screen": "dialog:End for tonight?",
+   "records": 80,
+   "rows": [
+    {
+     "player": "Riya",
+     "score": 12,
+     "turns": 2
+    },
+    {
+     "player": "Meena",
+     "score": 12,
+     "turns": 2
+    },
+    {
+     "player": "Arjun",
+     "score": 11,
+     "turns": 2
+    },
+    {
+     "player": "Om",
+     "score": 3,
+     "turns": 1
+    }
+   ],
+   "left": 0
+  }
+ ],
+ "night": {
+  "setup": {
+   "gameId": "what-am-i",
+   "seeds": {
+    "words": "wai-w43-036"
+   },
+   "config": {
+    "edition": 1
+   }
+  },
+  "records": [
+   {
+    "v": 1,
+    "seq": 1,
+    "at": 1792852531403,
+    "by": "host",
+    "move": {
+     "type": "start",
+     "players": [
+      "Riya",
+      "Arjun",
+      "Meena"
+     ],
+     "choices": {
+      "pack": "Sports and cricket",
+      "time": 30,
+      "hold": "hand",
+      "nonveg": true,
+      "sounds": true
+     }
+    }
+   },
+   {
+    "v": 1,
+    "seq": 2,
+    "at": 1792852543854,
+    "by": "host",
+    "move": {
+     "type": "got",
+     "word": "WAIW-178"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 3,
+    "at": 1792852546374,
+    "by": "host",
+    "move": {
+     "type": "pass",
+     "word": "WAIW-579"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 4,
+    "at": 1792852548914,
+    "by": "host",
+    "move": {
+     "type": "got",
+     "word": "WAIW-576"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 5,
+    "at": 1792852551423,
+    "by": "host",
+    "move": {
+     "type": "pass",
+     "word": "WAIW-177"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 6,
+    "at": 1792852553953,
+    "by": "host",
+    "move": {
+     "type": "got",
+     "word": "WAIW-165"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 7,
+    "at": 1792852556456,
+    "by": "host",
+    "move": {
+     "type": "got",
+     "word": "WAIW-607"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 8,
+    "at": 1792852559048,
+    "by": "host",
+    "move": {
+     "type": "got",
+     "word": "WAIW-198"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 9,
+    "at": 1792852561610,
+    "by": "host",
+    "move": {
+     "type": "pass",
+     "word": "WAIW-187"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 10,
+    "at": 1792852564163,
+    "by": "host",
+    "move": {
+     "type": "got",
+     "word": "WAIW-589"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 11,
+    "at": 1792852566648,
+    "by": "host",
+    "move": {
+     "type": "timeUp",
+     "word": "WAIW-173"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 12,
+    "at": 1792852566719,
+    "by": "host",
+    "move": {
+     "type": "fix",
+     "word": "WAIW-198"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 13,
+    "at": 1792852573046,
+    "by": "host",
+    "move": {
+     "type": "scoreTurn"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 14,
+    "at": 1792852580242,
+    "by": "host",
+    "move": {
+     "type": "pass",
+     "word": "WAIW-603"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 15,
+    "at": 1792852582821,
+    "by": "host",
+    "move": {
+     "type": "pass",
+     "word": "WAIW-176"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 16,
+    "at": 1792852585390,
+    "by": "host",
+    "move": {
+     "type": "got",
+     "word": "WAIW-193"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 17,
+    "at": 1792852587928,
+    "by": "host",
+    "move": {
+     "type": "pass",
+     "word": "WAIW-568"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 18,
+    "at": 1792852589716,
+    "by": "host",
+    "move": {
+     "type": "pause",
+     "turn": true,
+     "word": "WAIW-565"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 19,
+    "at": 1792852590855,
+    "by": "host",
+    "move": {
+     "type": "resume"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 20,
+    "at": 1792852597026,
+    "by": "host",
+    "move": {
+     "type": "got",
+     "word": "WAIW-582"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 21,
+    "at": 1792852599542,
+    "by": "host",
+    "move": {
+     "type": "pass",
+     "word": "WAIW-599"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 22,
+    "at": 1792852602067,
+    "by": "host",
+    "move": {
+     "type": "got",
+     "word": "WAIW-563"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 23,
+    "at": 1792852604616,
+    "by": "host",
+    "move": {
+     "type": "got",
+     "word": "WAIW-170"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 24,
+    "at": 1792852607193,
+    "by": "host",
+    "move": {
+     "type": "pass",
+     "word": "WAIW-578"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 25,
+    "at": 1792852609693,
+    "by": "host",
+    "move": {
+     "type": "got",
+     "word": "WAIW-581"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 26,
+    "at": 1792852611316,
+    "by": "host",
+    "move": {
+     "type": "timeUp",
+     "word": "WAIW-192"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 27,
+    "at": 1792852612600,
+    "by": "host",
+    "move": {
+     "type": "scoreTurn"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 28,
+    "at": 1792852619779,
+    "by": "host",
+    "move": {
+     "type": "got",
+     "word": "WAIW-194"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 29,
+    "at": 1792852622310,
+    "by": "host",
+    "move": {
+     "type": "got",
+     "word": "WAIW-163"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 30,
+    "at": 1792852624883,
+    "by": "host",
+    "move": {
+     "type": "got",
+     "word": "WAIW-602"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 31,
+    "at": 1792852627409,
+    "by": "host",
+    "move": {
+     "type": "got",
+     "word": "WAIW-185"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 32,
+    "at": 1792852629960,
+    "by": "host",
+    "move": {
+     "type": "got",
+     "word": "WAIW-161"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 33,
+    "at": 1792852632521,
+    "by": "host",
+    "move": {
+     "type": "pass",
+     "word": "WAIW-559"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 34,
+    "at": 1792852635085,
+    "by": "host",
+    "move": {
+     "type": "got",
+     "word": "WAIW-558"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 35,
+    "at": 1792852637600,
+    "by": "host",
+    "move": {
+     "type": "got",
+     "word": "WAIW-186"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 36,
+    "at": 1792852640118,
+    "by": "host",
+    "move": {
+     "type": "got",
+     "word": "WAIW-189"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 37,
+    "at": 1792852642634,
+    "by": "host",
+    "move": {
+     "type": "pass",
+     "word": "WAIW-592"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 38,
+    "at": 1792852645211,
+    "by": "host",
+    "move": {
+     "type": "got",
+     "word": "WAIW-561"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 39,
+    "at": 1792852646729,
+    "by": "host",
+    "move": {
+     "type": "timeUp",
+     "word": "WAIW-613"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 40,
+    "at": 1792852648126,
+    "by": "host",
+    "move": {
+     "type": "scoreTurn"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 41,
+    "at": 1792852652778,
+    "by": "host",
+    "move": {
+     "type": "addPlayer",
+     "name": "Om"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 42,
+    "at": 1792852661106,
+    "by": "host",
+    "move": {
+     "type": "pass",
+     "word": "WAIW-570"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 43,
+    "at": 1792852663692,
+    "by": "host",
+    "move": {
+     "type": "pass",
+     "word": "WAIW-580"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 44,
+    "at": 1792852666222,
+    "by": "host",
+    "move": {
+     "type": "got",
+     "word": "WAIW-610"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 45,
+    "at": 1792852668729,
+    "by": "host",
+    "move": {
+     "type": "got",
+     "word": "WAIW-172"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 46,
+    "at": 1792852671318,
+    "by": "host",
+    "move": {
+     "type": "got",
+     "word": "WAIW-584"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 47,
+    "at": 1792852673875,
+    "by": "host",
+    "move": {
+     "type": "got",
+     "word": "WAIW-197"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 48,
+    "at": 1792852676441,
+    "by": "host",
+    "move": {
+     "type": "pass",
+     "word": "WAIW-179"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 49,
+    "at": 1792852678951,
+    "by": "host",
+    "move": {
+     "type": "pass",
+     "word": "WAIW-200"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 50,
+    "at": 1792852681466,
+    "by": "host",
+    "move": {
+     "type": "got",
+     "word": "WAIW-184"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 51,
+    "at": 1792852684047,
+    "by": "host",
+    "move": {
+     "type": "got",
+     "word": "WAIW-593"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 52,
+    "at": 1792852686550,
+    "by": "host",
+    "move": {
+     "type": "got",
+     "word": "WAIW-598"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 53,
+    "at": 1792852688054,
+    "by": "host",
+    "move": {
+     "type": "timeUp",
+     "word": "WAIW-195"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 54,
+    "at": 1792852689404,
+    "by": "host",
+    "move": {
+     "type": "scoreTurn"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 55,
+    "at": 1792852696610,
+    "by": "host",
+    "move": {
+     "type": "pass",
+     "word": "WAIW-577"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 56,
+    "at": 1792852699121,
+    "by": "host",
+    "move": {
+     "type": "got",
+     "word": "WAIW-567"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 57,
+    "at": 1792852705782,
+    "by": "host",
+    "move": {
+     "type": "got",
+     "word": "WAIW-167"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 58,
+    "at": 1792852708305,
+    "by": "host",
+    "move": {
+     "type": "got",
+     "word": "WAIW-164"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 59,
+    "at": 1792852710828,
+    "by": "host",
+    "move": {
+     "type": "pass",
+     "word": "WAIW-597"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 60,
+    "at": 1792852713342,
+    "by": "host",
+    "move": {
+     "type": "got",
+     "word": "WAIW-591"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 61,
+    "at": 1792852720038,
+    "by": "host",
+    "move": {
+     "type": "got",
+     "word": "WAIW-174"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 62,
+    "at": 1792852722584,
+    "by": "host",
+    "move": {
+     "type": "got",
+     "word": "WAIW-614"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 63,
+    "at": 1792852723568,
+    "by": "host",
+    "move": {
+     "type": "timeUp",
+     "word": "WAIW-604"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 64,
+    "at": 1792852725536,
+    "by": "host",
+    "move": {
+     "type": "scoreTurn"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 65,
+    "at": 1792852745121,
+    "by": "host",
+    "move": {
+     "type": "pass",
+     "word": "WAIW-182"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 66,
+    "at": 1792852747648,
+    "by": "host",
+    "move": {
+     "type": "got",
+     "word": "WAIW-166"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 67,
+    "at": 1792852750218,
+    "by": "host",
+    "move": {
+     "type": "pass",
+     "word": "WAIW-594"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 68,
+    "at": 1792852756934,
+    "by": "host",
+    "move": {
+     "type": "got",
+     "word": "WAIW-590"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 69,
+    "at": 1792852759500,
+    "by": "host",
+    "move": {
+     "type": "got",
+     "word": "WAIW-171"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 70,
+    "at": 1792852759682,
+    "by": "host",
+    "move": {
+     "type": "timeUp"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 71,
+    "at": 1792852761256,
+    "by": "host",
+    "move": {
+     "type": "scoreTurn"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 72,
+    "at": 1792852772602,
+    "by": "host",
+    "move": {
+     "type": "got",
+     "word": "WAIW-190"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 73,
+    "at": 1792852775146,
+    "by": "host",
+    "move": {
+     "type": "pass",
+     "word": "WAIW-169"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 74,
+    "at": 1792852777708,
+    "by": "host",
+    "move": {
+     "type": "pass",
+     "word": "WAIW-585"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 75,
+    "at": 1792852780290,
+    "by": "host",
+    "move": {
+     "type": "pass",
+     "word": "WAIW-168"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 76,
+    "at": 1792852786906,
+    "by": "host",
+    "move": {
+     "type": "got",
+     "word": "WAIW-196"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 77,
+    "at": 1792852793625,
+    "by": "host",
+    "move": {
+     "type": "got",
+     "word": "WAIW-600"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 78,
+    "at": 1792852795369,
+    "by": "host",
+    "move": {
+     "type": "timeUp",
+     "word": "WAIW-191"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 79,
+    "at": 1792852796532,
+    "by": "host",
+    "move": {
+     "type": "scoreTurn"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 80,
+    "at": 1792852798903,
+    "by": "host",
+    "move": {
+     "type": "endGame"
+    }
+   },
+   {
+    "v": 1,
+    "seq": 81,
+    "at": 1792852801203,
+    "by": "host",
+    "move": {
+     "type": "endEvening"
+    }
+   }
+  ],
+  "id": "c213d9b47c58c69a"
+ }
+}

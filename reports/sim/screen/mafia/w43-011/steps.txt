@@ -1,0 +1,96 @@
+1 B1  [Riya] -> button:Menu (Jev)
+2 menu  [Riya] -> menuitem:Players (Jev)
+3 dialog:Players Players -> button:Done (Jev)
+4 B1  [Riya] -> button:Menu (Jev)
+5 menu  [Riya] -> menuitem:Players (Jev)
+6 dialog:Players Players -> button:Done (Jev)
+7 B1  [Riya] -> button:Menu (Jev)
+8 menu  [Riya] -> menuitem:Players (Jev)
+9 dialog:Players Players -> button:Done (Jev)
+10 B1  [Riya] -> button:I'm Riya
+11 B2  [Riya] -> button:Tap instead
+12 B2  [Riya] -> button:Tap to see
+13 B2  [Riya] -> button:Tap to hide
+14 B2  [Riya] -> button:Done, pass to Arjun
+15 B1  [Arjun] -> button:I'm Arjun
+16 B2  [Arjun] -> button:Tap instead
+17 B2  [Arjun] -> button:Tap to see
+18 B2  [Arjun] -> button:Tap to hide
+19 B2  [Arjun] -> button:Done, pass to Meena
+20 B1  [Meena] -> button:I'm Meena
+21 B2  [Meena] -> button:Tap instead
+22 B2  [Meena] -> button:Tap to see
+23 B2  [Meena] -> button:Tap to hide
+24 B2  [Meena] -> button:Done, pass to Kabir
+25 B1  [Kabir] -> button:I'm Kabir
+26 B2  [Kabir] -> button:Tap instead
+27 B2  [Kabir] -> button:Tap to see
+28 B2  [Kabir] -> button:Tap to hide
+29 B2  [Kabir] -> button:Done, pass to Zoya
+30 B1  [Zoya] -> button:I'm Zoya
+31 B2  [Zoya] -> button:Tap instead
+32 B2  [Zoya] -> button:Tap to see
+33 B2  [Zoya] -> button:Tap to hide
+34 B2  [Zoya] -> button:Done, pass to Dev
+35 B1  [Dev] -> button:I'm Dev (Jev)
+36 B2  [Dev] -> button:Tap instead
+37 B2  [Dev] -> button:Tap to see
+38 B2  [Dev] -> button:Tap to hide
+39 B2  [Dev] -> button:Done, everyone's seen
+40 N0 Night 1 -> button:Start the night (Jev)
+41 N1  [Riya] -> button:I'm Riya (Jev)
+42 N2  [Riya] -> button:Tap to see your night job (Jev)
+43 N2  [Riya] -> button:Tap to hide (Jev)
+44 N2  [Riya] -> button:Tap to see your night job
+45 N2  [Riya] -> button:Tap to hide (Jev)
+46 N2  [Riya] -> button:Tap to see your night job
+47 N2  [Riya] -> button:Tap to hide (Jev)
+48 N2  [Riya] -> button:Tap to see your night job
+49 N2  [Riya] -> button:Arjun
+50 N2  [Riya] -> button:Done, pass to Arjun
+51 N1  [Arjun] -> button:Menu (Jev)
+52 menu  [Arjun] -> menuitem:Players
+53 dialog:Players Players -> button:Done (Jev)
+54 N1  [Arjun] -> button:Menu (Jev)
+55 menu  [Arjun] -> menuitem:Players
+56 dialog:Players Players -> button:Done (Jev)
+57 N1  [Arjun] -> button:Menu (Jev)
+58 menu  [Arjun] -> menuitem:Players
+59 dialog:Players Players -> macro:leave
+60 dialog:Dev has to leave? Players -> button:Dev leaves
+61 dialog:Players Players -> button:Done
+62 N1  [Arjun] -> button:I'm Arjun
+63 N2  [Arjun] -> button:Tap to see your night job
+64 N2  [Arjun] -> button:Riya
+65 N2  [Arjun] -> button:Done, pass to Meena
+66 N1  [Meena] -> button:I'm Meena
+67 N2  [Meena] -> button:Tap to see your night job
+68 N2  [Meena] -> button:Arjun
+69 N2  [Meena] -> button:Done, pass to Kabir
+70 N1  [Kabir] -> button:I'm Kabir
+71 N2  [Kabir] -> button:Tap to see your night job
+72 N2  [Kabir] -> button:Zoya
+73 N2  [Kabir] -> button:Done, pass to Zoya
+74 N1  [Zoya] -> button:I'm Zoya
+75 N2  [Zoya] -> button:Tap to see your night job
+76 N2  [Zoya] -> button:Meena
+77 N2  [Zoya] -> button:Done, night over
+78 N3 Night over. -> button:Read the morning
+79 M1 Morning, day 1 -> button:Start talking
+80 Y1 Day 1 · Talk it over -> button:Time to vote
+81 V1  -> action:wait2000
+82 V1  -> action:wait2000
+83 V2 Who got the most fingers? -> button:It's a tie
+84 V2t Tap everyone who is tied -> button:Riya
+85 V2t Tap everyone who is tied -> button:Arjun
+86 V2t Tap everyone who is tied -> button:Point again: Riya or Arjun
+87 V1  -> action:wait2000
+88 V1  -> action:wait2000
+89 V2 Who got the most fingers? -> button:Riya
+90 V2 Who got the most fingers? -> button:Vote Riya out
+91 V4 Riya is out. -> button:See who won
+92 V4 Riya is out. -> button:See who won
+93 G1 The Village wins! -> button:End for tonight
+94 dialog:End for tonight? The Village wins! -> button:End for tonight
+95 G2 Tonight's Mafia -> button:← Home
+96 home Pocket Game Night -> done

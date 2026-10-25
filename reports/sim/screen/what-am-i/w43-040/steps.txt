@@ -1,0 +1,393 @@
+1 home Pocket Game Night -> button:Host a gameTambola, Impostor, Secret Words or What (Jev)
+2 picker What shall we play? -> button:What Am I?Phone on your forehead, the room gives c (Jev)
+3 S1 Who's playing? -> macro:names
+4 S1 Who's playing? -> button:Next (Jev)
+5 S2 Words and time -> radio:Mix of all · 714 words (Jev)
+6 S2 Words and time -> radio:Mix of all · 714 words (Jev)
+7 S2 Words and time -> macro:choices
+8 S2 Words and time -> button:Start with these words
+9 S3 Read this aloud -> button:First turn (Jev)
+10 T1 Alexandrapetrova, you're guessing -> button:Pause (Jev)
+11 dialog:Paused Paused -> button:← Home (game saved) (Jev)
+12 home Pocket Game Night -> button:What Am I? · Round 1 · Alexandrapetrova's turnAlex (Jev)
+13 dialog:Paused Paused -> button:Carry on playing (Jev)
+14 T1 Alexandrapetrova, you're guessing -> button:Pause (Jev)
+15 dialog:Paused Paused -> button:← Home (game saved) (Jev)
+16 home Pocket Game Night -> button:What Am I? · Round 1 · Alexandrapetrova's turnAlex (Jev)
+17 dialog:Paused Paused -> button:Carry on playing
+18 T1 Alexandrapetrova, you're guessing -> button:I'm Alexandrapetrova: start
+19 T2  -> action:countdown
+20 T3 Potato [0:58] -> motion:pass
+21 T3 Rice [0:55] -> motion:got
+22 T3 Coffee [0:52] -> action:hide
+23 dialog:Paused Paused -> button:Carry on playing (Jev)
+24 T2  -> action:countdown
+25 T3 Butter [0:50] -> motion:pass
+26 T3 Cake [0:47] -> motion:got
+27 T3 Chocolate [0:44] -> motion:got
+28 T3 Appam [0:41] -> motion:pass
+29 T3 Payasam [0:38] -> mark:got
+30 T3 Ice cream [0:36] -> action:wait3000
+31 T3 Ice cream [0:32] -> motion:got
+32 T3 Sugarcane [0:29] -> motion:pass
+33 T3 Garlic [0:26] -> action:wait3000
+34 T3 Garlic [0:22] -> motion:got
+35 T3 Jam [0:19] -> action:wait3000
+36 T3 Jam [0:14] -> motion:got
+37 T3 Paneer [0:11] -> motion:got
+38 T3 Coconut [0:09] -> action:wait3000
+39 T3 Coconut [0:04] -> motion:pass
+40 T3 Pizza [0:01] -> motion:pass
+41 T4 Time's up! Alexandrapetrova got 8 -> button:Pause (Jev)
+42 dialog:Paused Paused -> button:Carry on playing
+43 T4 Time's up! Alexandrapetrova got 8 -> button:Pause (Jev)
+44 dialog:Paused Paused -> button:Carry on playing
+45 T4 Time's up! Alexandrapetrova got 8 -> button:Save score
+46 T1 Bhagyashreemani, you're guessing -> button:I'm Bhagyashreemani: start
+47 T2  -> action:countdown
+48 T3 Chapati [0:58] -> mark:got
+49 T3 Vada [0:56] -> motion:got
+50 T3 Dosa [0:53] -> motion:got
+51 T3 Tea [0:50] -> motion:got
+52 T3 Cauliflower [0:47] -> mark:got
+53 T3 Murukku [0:44] -> motion:pass
+54 T3 Pani puri [0:41] -> mark:got
+55 T3 Pickle [0:39] -> action:wait3000
+56 T3 Pickle [0:35] -> action:hide
+57 dialog:Paused Paused -> button:Carry on playing
+58 T2  -> action:countdown
+59 T3 Pakoda [0:32] -> mark:pass
+60 T3 Juice [0:30] -> action:wait3000
+61 T3 Juice [0:26] -> button:Pause
+62 dialog:Paused Paused -> button:Carry on playing
+63 T2  -> action:countdown
+64 T3 Samosa [0:23] -> mark:pass
+65 T3 Kulfi [0:21] -> motion:pass
+66 T3 Biryani [0:18] -> motion:got
+67 T3 Cucumber [0:15] -> action:wait3000
+68 T3 Cucumber [0:11] -> motion:got
+69 T3 Paratha [0:08] -> action:hide
+70 dialog:Paused Paused -> button:Carry on playing
+71 T2  -> action:countdown
+72 T3 Jackfruit [0:06] -> action:hide
+73 dialog:Paused Paused -> button:Carry on playing
+74 T2  -> action:countdown
+75 T3 Fried rice [0:03] -> mark:got
+76 T3 Cabbage [0:01] -> mark:pass
+77 T4 Time's up! Bhagyashreemani got 9 -> button:Save score
+78 T1 Chandrashekharan, you're guessing -> button:I'm Chandrashekharan: start
+79 T2  -> action:countdown
+80 T3 Sweet corn [0:58] -> motion:pass
+81 T3 Laddu [0:55] -> motion:pass
+82 T3 Dhokla [0:52] -> motion:got
+83 T3 Orange [0:49] -> action:reload
+84 dialog:Paused Paused -> button:Carry on playing
+85 T2  -> action:countdown
+86 T3 Watermelon [0:47] -> motion:pass
+87 T3 Poha [0:44] -> motion:pass
+88 T3 Tomato [0:41] -> motion:got
+89 T3 Dal [0:38] -> mark:pass
+90 T3 Milk [0:36] -> motion:got
+91 T3 Ghee [0:33] -> motion:got
+92 T3 Onion [0:30] -> motion:pass
+93 T3 Cotton candy [0:27] -> action:wait3000
+94 T3 Cotton candy [0:23] -> motion:got
+95 T3 Guava [0:20] -> motion:got
+96 T3 Biscuit [0:17] -> motion:got
+97 T3 Lassi [0:14] -> mark:got
+98 T3 Halwa [0:11] -> mark:got
+99 T3 Bread [0:09] -> motion:got
+100 T3 Chole bhature [0:06] -> motion:got
+101 T3 Buttermilk [0:03] -> motion:pass
+102 T4 Time's up! Chandrashekharan got 11 -> button:Save score
+103 T4 Time's up! Chandrashekharan got 11 -> button:Save score
+104 T1 Dhananjayapillai, you're guessing -> button:I'm Dhananjayapillai: start
+105 T2  -> action:countdown
+106 T3 Noodles [0:58] -> action:wait3000
+107 T3 Noodles [0:54] -> motion:pass
+108 T3 Pasta [0:51] -> mark:pass
+109 T3 Chilli [0:49] -> mark:got
+110 T3 Brinjal [0:46] -> mark:got
+111 T3 Ladies finger [0:43] -> motion:got
+112 T3 Curd [0:41] -> motion:pass
+113 T3 Modak [0:38] -> motion:pass
+114 T3 Pav bhaji [0:35] -> motion:got
+115 T3 Pumpkin [0:32] -> motion:pass
+116 T3 Momos [0:29] -> motion:pass
+117 T3 Pomegranate [0:26] -> motion:pass
+118 T3 Pineapple [0:23] -> motion:got
+119 T3 Banana [0:20] -> motion:got
+120 T3 Rajma [0:17] -> action:hide
+121 dialog:Paused Paused -> button:Carry on playing
+122 T2  -> action:countdown
+123 T3 Mango [0:15] -> motion:pass
+124 T3 Drumstick [0:12] -> mark:pass
+125 T3 Grapes [0:09] -> motion:got
+126 T3 Lemon [0:06] -> mark:got
+127 T3 French fries [0:04] -> motion:got
+128 T3 Carrot [0:01] -> mark:pass
+129 T4 Time's up! Dhananjayapillai got 8 -> button:Save score
+130 T1 Ekaterinavolkova, you're guessing -> button:Someone else goes first
+131 dialog:Players Ekaterinavolkova, you're guessing -> macro:join
+132 T1 Ekaterinavolkova, you're guessing -> button:I'm Ekaterinavolkova: start
+133 T2  -> action:countdown
+134 T3 Idli [0:58] -> action:wait3000
+135 T3 Idli [0:54] -> motion:pass
+136 T3 Popcorn [0:51] -> mark:got
+137 T3 Peanuts [0:49] -> motion:got
+138 T3 Upma [0:46] -> motion:got
+139 T3 Burger [0:43] -> motion:pass
+140 T3 Mysore pak [0:40] -> motion:got
+141 T3 Rasgulla [0:37] -> motion:pass
+142 T3 Apple [0:34] -> mark:pass
+143 T3 Rasam [0:31] -> mark:got
+144 T3 Sambar [0:29] -> action:wait3000
+145 T3 Sambar [0:25] -> motion:got
+146 T3 Sandwich [0:22] -> motion:pass
+147 T3 Jalebi [0:19] -> action:wait3000
+148 T3 Jalebi [0:15] -> mark:got
+149 T3 Bitter gourd [0:12] -> mark:got
+150 T3 Gulab jamun [0:10] -> motion:got
+151 T3 Honey [0:07] -> motion:pass
+152 T3 Coffee [0:04] -> mark:pass
+153 T3 Pickle [0:01] -> mark:got
+154 T4 Time's up! Ekaterinavolkova got 9 -> button:Save score
+155 R1 Round 1 done. Round 2 next. -> action:hide
+156 dialog:Paused Paused -> button:Carry on playing
+157 R1 Round 1 done. Round 2 next. -> button:Round 2
+158 T1 Alexandrapetrova, you're guessing -> button:I'm Alexandrapetrova: start
+159 T2  -> action:countdown
+160 T3 Juice [0:58] -> motion:pass
+161 T3 Paratha [0:55] -> motion:got
+162 T3 Jackfruit [0:52] -> motion:got
+163 T3 Orange [0:49] -> motion:pass
+164 T3 Rajma [0:46] -> mark:got
+165 T3 Taking bitter medicine [0:44] -> motion:pass
+166 T3 Zookeeper [0:41] -> motion:pass
+167 T3 Shooting an arrow [0:38] -> mark:got
+168 T3 Scuba diver [0:35] -> motion:got
+169 T3 Gardener [0:33] -> motion:pass
+170 T3 Accountant [0:30] -> motion:got
+171 T3 Rahul Dravid [0:27] -> mark:pass
+172 T3 Independence Day [0:24] -> motion:got
+173 T3 Somersault [0:21] -> motion:pass
+174 T3 Jumping in puddles [0:18] -> motion:pass
+175 T3 Snake [0:15] -> motion:got
+176 T3 Kanyakumari [0:12] -> motion:got
+177 T3 Man of the match [0:09] -> motion:pass
+178 T3 Plate [0:06] -> mark:got
+179 T3 Jasprit Bumrah [0:04] -> mark:got
+180 T3 Television [0:01] -> motion:got
+181 T4 Time's up! Alexandrapetrova got 11 -> button:Save score
+182 T1 Bhagyashreemani, you're guessing -> button:Menu
+183 menu Bhagyashreemani, you're guessing -> menuitem:Players
+184 dialog:Players Bhagyashreemani, you're guessing -> macro:join
+185 dialog:Players Bhagyashreemani, you're guessing -> macro:leave
+186 dialog:Om has to leave? Bhagyashreemani, you're guessing -> button:Om leaves
+187 dialog:Players Bhagyashreemani, you're guessing -> button:Done
+188 T1 Bhagyashreemani, you're guessing -> button:I'm Bhagyashreemani: start
+189 T2  -> action:countdown
+190 T3 Milkha Singh [0:58] -> mark:got
+191 T3 Juggling [0:56] -> mark:pass
+192 T3 Lata Mangeshkar [0:53] -> mark:pass
+193 T3 Church [0:51] -> motion:pass
+194 T3 Statue game [0:48] -> motion:got
+195 T3 Gas stove [0:45] -> motion:pass
+196 T3 Eagle [0:42] -> mark:pass
+197 T3 Slipping on wet floor [0:39] -> mark:pass
+198 T3 Qutub Minar [0:37] -> mark:pass
+199 T3 Fish [0:34] -> motion:got
+200 T3 Ant [0:31] -> mark:pass
+201 T3 Whistle [0:29] -> mark:got
+202 T3 Wicket [0:26] -> motion:pass
+203 T3 Nail cutter [0:23] -> motion:got
+204 T3 Receptionist [0:20] -> motion:got
+205 T3 Jellyfish [0:17] -> motion:got
+206 T3 Watering plants [0:14] -> motion:pass
+207 T3 Cricket umpire [0:11] -> motion:pass
+208 T3 Push-ups [0:08] -> mark:pass
+209 T3 Swan [0:06] -> motion:got
+210 T3 Shaving a beard [0:03] -> motion:pass
+211 T4 Time's up! Bhagyashreemani got 8 -> button:Save score
+212 T4 Time's up! Bhagyashreemani got 8 -> button:Save score
+213 T1 Chandrashekharan, you're guessing -> button:I'm Chandrashekharan: start
+214 T2  -> action:countdown
+215 T3 Buddha Purnima [0:58] -> motion:pass
+216 T3 Howzat [0:55] -> motion:pass
+217 T3 SP Balasubrahmanyam [0:52] -> mark:pass
+218 T3 Long jump [0:50] -> mark:got
+219 T3 Air conditioner [0:47] -> motion:got
+220 T3 Singer [0:44] -> motion:got
+221 T3 AR Rahman [0:41] -> motion:got
+222 T3 Cheering for your team [0:38] -> motion:pass
+223 T3 Riding a bicycle [0:35] -> action:wait3000
+224 T3 Riding a bicycle [0:31] -> mark:pass
+225 T3 Hammer [0:29] -> mark:pass
+226 T3 Tailor [0:26] -> motion:got
+227 T3 Dumbbells [0:23] -> motion:got
+228 T3 Hurdles [0:20] -> motion:got
+229 T3 Photographer [0:17] -> motion:pass
+230 T3 Mirror [0:14] -> motion:got
+231 T3 Sweater [0:11] -> mark:pass
+232 T3 Hiccups [0:09] -> motion:pass
+233 T3 Tiffin box [0:06] -> action:wait3000
+234 T3 Tiffin box [0:02] -> action:wait3000
+235 T4 Time's up! Chandrashekharan got 8 -> button:Save score
+236 T1 Dhananjayapillai, you're guessing -> button:I'm Dhananjayapillai: start
+237 T2  -> action:countdown
+238 T3 Rabindranath Tagore [0:58] -> mark:pass
+239 T3 Walking on tiptoe [0:56] -> action:hide
+240 dialog:Paused Paused -> button:Carry on playing
+241 T2  -> action:countdown
+242 T3 Wide ball [0:53] -> mark:got
+243 T3 Iron box [0:51] -> motion:pass
+244 T3 Lifting weights [0:48] -> motion:got
+245 T3 Boxing [0:45] -> action:wait3000
+246 T3 Boxing [0:41] -> motion:got
+247 T3 Opening a tight jar [0:38] -> mark:got
+248 T3 YouTuber [0:35] -> action:wait3000
+249 T3 YouTuber [0:31] -> action:hide
+250 dialog:Paused Paused -> button:Carry on playing
+251 T2  -> action:countdown
+252 T3 Toss [0:29] -> motion:got
+253 T3 Kapil Dev [0:26] -> mark:pass
+254 T3 Red Fort [0:23] -> mark:got
+255 T3 Aquarium [0:21] -> action:wait3000
+256 T3 Aquarium [0:17] -> motion:got
+257 T3 Walking a dog [0:14] -> motion:got
+258 T3 Pigeon [0:11] -> motion:pass
+259 T3 Bodybuilder [0:08] -> motion:pass
+260 T3 Cuckoo [0:05] -> mark:pass
+261 T3 Blowing a balloon [0:02] -> action:hide
+262 dialog:Paused Paused -> button:Carry on playing
+263 T2  -> action:countdown
+264 T4 Time's up! Dhananjayapillai got 8 -> button:Save score
+265 T4 Time's up! Dhananjayapillai got 8 -> button:Save score
+266 T1 Ekaterinavolkova, you're guessing -> button:I'm Ekaterinavolkova: start
+267 T2  -> action:countdown
+268 T3 Pyramids [0:58] -> action:hide
+269 dialog:Paused Paused -> button:End Ekaterinavolkova's turn now
+270 dialog:End Ekaterinavolkova's turn now? Paused -> button:End Ekaterinavolkova's turn now
+271 T4 Turn ended early. Ekaterinavolkova got 0 -> button:Save score
+272 R1 Round 2 done. Round 3 next. -> button:End the game
+273 dialog:End the game? Round 2 done. Round 3 next. -> button:End the game
+274 G1 Alexandrapetrova and Chandrashekharan share the win with 19! -> button:Play again
+275 T1 Alexandrapetrova, you're guessing -> button:I'm Alexandrapetrova: start
+276 T2  -> action:countdown
+277 T3 Midnight snacking [0:58] -> motion:pass
+278 T3 Librarian [0:55] -> motion:got
+279 T3 CV Raman [0:52] -> action:wait3000
+280 T3 CV Raman [0:48] -> motion:got
+281 T3 Relay race [0:45] -> motion:pass
+282 T3 Dustbin [0:42] -> motion:got
+283 T3 Kicking a football [0:39] -> motion:pass
+284 T3 Virender Sehwag [0:36] -> mark:pass
+285 T3 Christmas [0:34] -> mark:got
+286 T3 Annual day [0:31] -> action:wait3000
+287 T3 Annual day [0:27] -> motion:pass
+288 T3 Owl [0:24] -> mark:got
+289 T3 Rat trap [0:22] -> motion:got
+290 T3 Bihu [0:19] -> action:wait3000
+291 T3 Bihu [0:15] -> motion:pass
+292 T3 Fan [0:12] -> motion:got
+293 T3 Cartoonist [0:09] -> motion:got
+294 T3 Terrace [0:06] -> motion:pass
+295 T3 Knitting a sweater [0:03] -> motion:pass
+296 T4 Time's up! Alexandrapetrova got 8 -> button:Save score
+297 T4 Time's up! Alexandrapetrova got 8 -> button:Save score
+298 T1 Bhagyashreemani, you're guessing -> button:I'm Bhagyashreemani: start
+299 T2  -> action:countdown
+300 T3 Playing the flute [0:58] -> motion:got
+301 T3 Judo [0:55] -> motion:got
+302 T3 Koala [0:52] -> motion:got
+303 T3 Lion [0:49] -> mark:got
+304 T3 Rowing a boat [0:47] -> mark:got
+305 T3 Mosquito [0:44] -> motion:got
+306 T3 Island [0:41] -> mark:got
+307 T3 Lemon and spoon race [0:39] -> motion:got
+308 T3 Inventor [0:36] -> motion:got
+309 T3 Actor [0:33] -> action:wait3000
+310 T3 Actor [0:29] -> motion:got
+311 T3 Driving a car [0:26] -> motion:got
+312 T3 Wi-Fi [0:23] -> motion:pass
+313 T3 Boundary [0:20] -> motion:pass
+314 T3 Darjeeling [0:17] -> action:wait3000
+315 T3 Darjeeling [0:13] -> motion:got
+316 T3 Pressure cooker [0:10] -> mark:got
+317 T3 Wrestling [0:07] -> motion:pass
+318 T3 Volleyball [0:04] -> motion:pass
+319 T3 Snoring [0:01] -> motion:got
+320 T4 Time's up! Bhagyashreemani got 13 -> button:Save score
+321 T1 Chandrashekharan, you're guessing -> button:I'm Chandrashekharan: start
+322 T2  -> action:countdown
+323 T3 Skipping [0:58] -> motion:got
+324 T3 Flight attendant [0:55] -> mark:pass
+325 T3 Sunil Gavaskar [0:53] -> mark:pass
+326 T3 Shampoo [0:50] -> action:wait3000
+327 T3 Shampoo [0:46] -> motion:pass
+328 T3 Pyjamas [0:43] -> mark:got
+329 T3 Hawa Mahal [0:41] -> motion:got
+330 T3 Cupboard [0:38] -> mark:got
+331 T3 Lizard [0:35] -> motion:got
+332 T3 Kabaddi [0:32] -> motion:pass
+333 T3 Starfish [0:29] -> mark:got
+334 T3 Remote [0:27] -> motion:pass
+335 T3 Referee [0:24] -> motion:pass
+336 T3 Wolf [0:21] -> mark:got
+337 T3 Gym trainer [0:18] -> action:hide
+338 dialog:Paused Paused -> button:End Chandrashekharan's turn now
+339 dialog:End Chandrashekharan's turn now? Paused -> button:End Chandrashekharan's turn now
+340 T4 Turn ended early. Chandrashekharan got 7 -> button:Save score
+341 T1 Dhananjayapillai, you're guessing -> button:I'm Dhananjayapillai: start
+342 T2  -> action:countdown
+343 T3 Astronaut [0:58] -> motion:got
+344 T3 Chappal stand [0:55] -> action:wait3000
+345 T3 Chappal stand [0:51] -> mark:pass
+346 T3 Fashion designer [0:49] -> motion:got
+347 T3 Seeing a cockroach [0:46] -> motion:got
+348 T3 Mother's Day [0:43] -> motion:pass
+349 T3 Sofa [0:40] -> action:wait3000
+350 T3 Sofa [0:35] -> mark:got
+351 T3 Shankar Mahadevan [0:33] -> mark:got
+352 T3 Blanket [0:30] -> action:wait3000
+353 T3 Blanket [0:26] -> mark:got
+354 T3 Snooker [0:24] -> motion:pass
+355 T3 APJ Abdul Kalam [0:21] -> mark:got
+356 T3 Measuring tape [0:18] -> motion:got
+357 T3 Rhino [0:15] -> motion:pass
+358 T3 Firefighter [0:12] -> action:wait3000
+359 T3 Firefighter [0:08] -> motion:got
+360 T3 Aishwarya Rai [0:05] -> motion:got
+361 T3 Making a phone call [0:02] -> mark:pass
+362 T4 Time's up! Dhananjayapillai got 10 -> button:Save score
+363 T4 Time's up! Dhananjayapillai got 10 -> button:Save score
+364 T1 Ekaterinavolkova, you're guessing -> button:I'm Ekaterinavolkova: start
+365 T2  -> action:countdown
+366 T3 Changing a tyre [0:58] -> mark:got
+367 T3 Cow [0:56] -> action:wait3000
+368 T3 Cow [0:51] -> mark:pass
+369 T3 Ganesh Chaturthi [0:49] -> mark:pass
+370 T3 Bus stand [0:46] -> motion:got
+371 T3 Climbing a tree [0:43] -> motion:pass
+372 T3 Hockey [0:40] -> mark:pass
+373 T3 Temple [0:38] -> motion:got
+374 T3 Walking on hot sand [0:35] -> motion:pass
+375 T3 Shot put [0:32] -> mark:got
+376 T3 Great Wall of China [0:29] -> mark:got
+377 T3 Hima Das [0:27] -> action:wait3000
+378 T3 Hima Das [0:23] -> motion:pass
+379 T3 Volcano [0:20] -> motion:got
+380 T3 Putting on a saree [0:17] -> mark:pass
+381 T3 Elephant [0:14] -> mark:got
+382 T3 Cashier [0:12] -> mark:got
+383 T3 Woodpecker [0:09] -> motion:got
+384 T3 Lifeguard [0:06] -> motion:got
+385 T3 Fisherman [0:03] -> motion:pass
+386 T4 Time's up! Ekaterinavolkova got 10 -> button:Save score
+387 T4 Time's up! Ekaterinavolkova got 10 -> button:Save score
+388 R1 Round 1 done. Round 2 next. -> button:End the game
+389 dialog:End the game? Round 1 done. Round 2 next. -> button:End the game
+390 G1 Bhagyashreemani wins with 13! -> button:End for tonight
+391 dialog:End for tonight? Bhagyashreemani wins with 13! -> button:End for tonight
+392 G2 Tonight's What Am I? -> button:← Home
+393 home Pocket Game Night -> done

@@ -1,0 +1,72 @@
+{
+ "seed": "w43-014",
+ "config": {
+  "seed": "w43-014",
+  "index": 13,
+  "persona": "grandparent",
+  "width": 812,
+  "height": 375,
+  "players": [
+   "Riya",
+   "Arjun",
+   "Meena",
+   "Kabir",
+   "Zoya",
+   "Dev"
+  ],
+  "games": 2,
+  "reloadAt": [
+   43,
+   117
+  ],
+  "hideAt": [
+   54
+  ],
+  "leave": false,
+  "join": false,
+  "endEarly": false,
+  "pause": true,
+  "larger": false
+ },
+ "byJev": true,
+ "findings": [],
+ "steps": 320,
+ "jevDecisions": 35,
+ "finished": true,
+ "screens": [
+  "B1",
+  "B2",
+  "menu",
+  "dialog:Deal again?",
+  "N0",
+  "N1",
+  "N2",
+  "N3",
+  "M1",
+  "Y1",
+  "V1",
+  "V2",
+  "V2t",
+  "V4",
+  "dialog:Paused",
+  "G1",
+  "dialog:End for tonight?",
+  "G2",
+  "home"
+ ],
+ "games": 1,
+ "nights": 5,
+ "votes": 4,
+ "reloads": 0,
+ "roomChecks": 117,
+ "rolesKnown": 6,
+ "flags": [
+  {
+   "step": 28,
+   "screen": "dialog:Deal again?",
+   "jevChoice": "Deal again",
+   "probability": 0.8,
+   "mainButton": "Keep these roles"
+  }
+ ]
+}

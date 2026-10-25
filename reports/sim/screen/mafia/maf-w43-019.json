@@ -1,0 +1,78 @@
+{
+ "seed": "w43-019",
+ "config": {
+  "seed": "w43-019",
+  "index": 18,
+  "persona": "first-time-host",
+  "width": 812,
+  "height": 375,
+  "players": [
+   "Riya",
+   "Arjun",
+   "Meena",
+   "Kabir",
+   "Zoya",
+   "Dev",
+   "Om",
+   "Sunita",
+   "Neha",
+   "Imran",
+   "Tara"
+  ],
+  "games": 2,
+  "reloadAt": [
+   32,
+   91
+  ],
+  "hideAt": [
+   35
+  ],
+  "leave": true,
+  "join": false,
+  "endEarly": false,
+  "pause": true,
+  "larger": false
+ },
+ "byJev": true,
+ "findings": [
+  {
+   "kind": "privacy",
+   "step": 84,
+   "screen": "N1",
+   "detail": "a night screen names Tara (not the player it is passed to)"
+  }
+ ],
+ "steps": 544,
+ "jevDecisions": 35,
+ "finished": true,
+ "screens": [
+  "B1",
+  "menu",
+  "S4",
+  "B2",
+  "N0",
+  "N1",
+  "dialog:Players",
+  "dialog:Tara has to leave?",
+  "N2",
+  "dialog:Paused",
+  "N3",
+  "M1",
+  "Y1",
+  "V1",
+  "V2",
+  "V4",
+  "V2t",
+  "G1",
+  "dialog:End for tonight?",
+  "G2",
+  "home"
+ ],
+ "games": 1,
+ "nights": 11,
+ "votes": 8,
+ "reloads": 0,
+ "roomChecks": 215,
+ "rolesKnown": 11,
+ "flags": []
+}

@@ -1,0 +1,74 @@
+{
+ "seed": "w43-015",
+ "config": {
+  "seed": "w43-015",
+  "index": 14,
+  "persona": "ten-year-old",
+  "width": 390,
+  "height": 844,
+  "players": [
+   "Riya",
+   "Arjun",
+   "Meena",
+   "Kabir",
+   "Zoya",
+   "Dev",
+   "Om",
+   "Sunita"
+  ],
+  "games": 2,
+  "reloadAt": [
+   23,
+   142
+  ],
+  "hideAt": [
+   52
+  ],
+  "leave": true,
+  "join": true,
+  "endEarly": false,
+  "pause": false,
+  "larger": true
+ },
+ "byJev": true,
+ "findings": [],
+ "steps": 326,
+ "jevDecisions": 35,
+ "finished": true,
+ "screens": [
+  "B1",
+  "B2",
+  "menu",
+  "dialog:Deal again?",
+  "N0",
+  "N1",
+  "N2",
+  "N3",
+  "M1",
+  "Y1",
+  "V1",
+  "V2",
+  "V4",
+  "G1",
+  "dialog:Players",
+  "dialog:Sunita has to leave?",
+  "dialog:End for tonight?",
+  "G2",
+  "home"
+ ],
+ "games": 1,
+ "nights": 5,
+ "votes": 4,
+ "reloads": 0,
+ "roomChecks": 117,
+ "rolesKnown": 8,
+ "flags": [
+  {
+   "step": 8,
+   "screen": "dialog:Deal again?",
+   "jevChoice": "Deal again",
+   "probability": 0.77,
+   "mainButton": "Keep these roles"
+  }
+ ]
+}

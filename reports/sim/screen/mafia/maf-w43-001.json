@@ -1,0 +1,63 @@
+{
+ "seed": "w43-001",
+ "config": {
+  "seed": "w43-001",
+  "index": 0,
+  "persona": "first-time-host",
+  "width": 360,
+  "height": 640,
+  "players": [
+   "Riya",
+   "Arjun",
+   "Meena",
+   "Kabir",
+   "Zoya",
+   "Dev"
+  ],
+  "games": 1,
+  "reloadAt": [
+   35,
+   142
+  ],
+  "hideAt": [
+   53
+  ],
+  "leave": false,
+  "join": true,
+  "endEarly": false,
+  "pause": false,
+  "larger": false
+ },
+ "byJev": true,
+ "findings": [],
+ "steps": 134,
+ "jevDecisions": 35,
+ "finished": true,
+ "screens": [
+  "B1",
+  "menu",
+  "S4",
+  "B2",
+  "N0",
+  "N1",
+  "dialog:Players",
+  "N2",
+  "N3",
+  "M1",
+  "Y1",
+  "V1",
+  "V2",
+  "V4",
+  "G1",
+  "dialog:End for tonight?",
+  "G2",
+  "home"
+ ],
+ "games": 1,
+ "nights": 5,
+ "votes": 2,
+ "reloads": 1,
+ "roomChecks": 70,
+ "rolesKnown": 6,
+ "flags": []
+}
