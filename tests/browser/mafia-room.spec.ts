@@ -1,9 +1,9 @@
 // Mafia section 06, the room and the host (C2; scenarios version 1.1): MAF-050 to MAF-055 and MAF-090 (where-lines) on
-// screen, with items 2, 3, 11 to 13. The screens are built (lane-k); MAF-055 needs Home's row (`needsMafiaCardOrHomeRow`).
+// screen, with items 2, 3, 11 to 13. The screens are built (lane-k); MAF-055 needs Home's row.
 // Helpers: mafia.ts.
 import { expect, test, type Page } from './fixtures';
 import {
-  needsMafiaCardOrHomeRow, button, byId, exactly, fromMenu, heading, mainButton, menuButton, menuItem, openFlow, roomDump, tap, toMorning, TZ,
+  button, byId, exactly, fromMenu, heading, mainButton, menuButton, menuItem, openFlow, roomDump, tap, toMorning, TZ,
 } from './mafia';
 
 test.use({ timezoneId: TZ });
@@ -192,7 +192,6 @@ test('MAF-054 Version 1.2 B: once the toast has gone (its 10 s), G1 shows "Who w
 });
 
 test('MAF-055 / MAF-091: "← Home" leaves the game unfinished; Home\'s row reads the where-line and resumes', async ({ page }) => {
-  needsMafiaCardOrHomeRow('MAF-055 home row');
   await openFlow(page, 'night2-meena');
   await fromMenu(page, 'Home (game is saved)');
   const row = page.getByTestId('unfinished-games').filter({ hasText: /Mafia/ });

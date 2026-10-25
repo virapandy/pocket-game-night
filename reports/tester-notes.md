@@ -206,3 +206,8 @@ Merged origin/main (PGN_PORT per lane: lane-a 4174). Lane A area: 129 of 132 pas
 - New flows: `night1-dev`, `night3-meena`, `night3-dev`, `police-nobody-left` (6 players, night 6, Dev first).
 - Local runs on a busy Mac: 3 workers took 25 min for 40 browser tests; several 30 s timeouts ("setting up page",
   `page.reload`) and the rule properties' 120 s timeouts are load, not bugs; check against the automation run.
+
+## Lane g (25 October): Mafia card and Home line tests
+- Removed every `needsMafiaCardOrHomeRow` call (9 mafia-setup, MAF-055); the helper in tests/browser/mafia.ts is now unused.
+- Host line now "Tambola, Impostor, Secret Words, What Am I? or Mafia on this phone" in secret-words-a-home (SWD-001/WAI-001) and what-am-i-setup (WAI-001). No other test counts picker cards (the SWD-001 picker test checks three named cards only; still valid).
+- Android on main-less build: 12 fail only for the missing card/line; 154 pass (mafia-setup, mafia-room, secret-words-a-home, what-am-i-setup, impostor-setup).

@@ -26,9 +26,9 @@ async function toS2(page: Page, names = NAMES) {
 }
 
 test.describe('WAI-001: picking What Am I?', () => {
-  test('Home\'s "Host a game" names What Am I? last, after " or "; the picker shows its card after Secret Words\', same size as the others', async ({ page }) => {
+  test('Home\'s "Host a game" names What Am I? before the last game, Mafia ("What Am I? or Mafia"); the picker shows its card after Secret Words\', same size as the others', async ({ page }) => {
     await openApp(page);
-    await expect(hostAGame(page)).toContainText(/Secret Words or What Am I\?/);
+    await expect(hostAGame(page)).toContainText(/Secret Words, What Am I\? or Mafia on this phone$/);
     await toPicker(page);
     await expect(card(page)).toContainText('Phone on your forehead, the room gives clues · One phone, passed round · 2–20 players');
     const cards = page.getByRole('button', { name: /^(Tambola|Impostor|Secret Words|What Am I\?)/ });
