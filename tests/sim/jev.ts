@@ -81,21 +81,35 @@ export function makeBudget(opts: { cap?: number; runLimit?: number; usedAlready?
     try { before = Number(JSON.parse(readFileSync(file, 'utf8'))[week] ?? 0) || 0; } catch { before = 0; }
   }
   let run = 0;
+  /** Decisions of this run already added to the file. */
+  let written = 0;
   let stoppedBy: Budget['stoppedBy'] = null;
   const runLimit = opts.runLimit ?? Infinity;
+  /** The file's count for this week, or null when the file cannot be read right now. */
+  const readWeek = (): { all: Record<string, number>; value: number } | null => {
+    if (!file || !existsSync(file)) return { all: {}, value: 0 };
+    try { const all = JSON.parse(readFileSync(file, 'utf8')); return { all, value: Number(all[week] ?? 0) || 0 }; } catch { return null; }
+  };
+  // Several runs may share the file at once (a rules sim and a screen sim, or Playwright workers): each adds only its own
+  // new decisions to what the file holds now, and never rewrites a file it could not read (25 October 2026: two runs side
+  // by side each wrote their own total, and a half-written file once wiped the earlier weeks).
   const save = () => {
     if (!file) return;
-    let all: Record<string, number> = {};
-    try { if (existsSync(file)) all = JSON.parse(readFileSync(file, 'utf8')); } catch { all = {}; }
-    all[week] = before + run;
+    const now = readWeek();
+    if (!now) return; // try again at the next decision
+    now.all[week] = now.value + (run - written);
+    written = run;
+    before = Number(now.all[week]) - run;
     mkdirSync(dirname(file), { recursive: true });
-    writeFileSync(file, JSON.stringify(all, null, 1));
+    writeFileSync(file, JSON.stringify(now.all, null, 1));
   };
+  const refresh = () => { if (!file) return; const now = readWeek(); if (now) before = now.value - written; };
   return {
     cap,
     used: () => before + run,
     left: () => Math.max(0, Math.min(cap - before - run, runLimit - run)),
     take(n: number) {
+      refresh();
       if (before + run + n > cap) { stoppedBy = 'weekly cap'; return false; }
       if (run + n > runLimit) { stoppedBy = 'run limit'; return false; }
       run += n;

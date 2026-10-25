@@ -192,7 +192,8 @@ export async function playMafEvening(page: Page, cfg: MafConfig, opts: { jev?: J
         if (near && !/Mafia caught/i.test(near[0])) add('privacy', step, screen, `"${near[0]}" (${p} is ${roles[p]}, not shown)`);
       }
       if (['N0', 'N1', 'N3'].includes(screen) && !s.dialog) {
-        const named = cfg.players.filter((p) => p.toLowerCase() !== (s.passName ?? '').toLowerCase() && new RegExp(`\\b${esc(p)}\\b`, 'i').test(dump.replace(/^label:.*$/gm, '')));
+        // The leave toast ("Dev left · Undo", MAF-052) names the leaver by design; it is no night pick.
+        const named = cfg.players.filter((p) => p.toLowerCase() !== (s.passName ?? '').toLowerCase() && new RegExp(`\\b${esc(p)}\\b`, 'i').test(dump.replace(/^label:.*$/gm, '').replace(/\b\S+ left · Undo\b/g, '')));
         if (named.length) add('privacy', step, screen, `a night screen names ${named.join(', ')} (not the player it is passed to)`);
       }
       void ROLE_WORD;

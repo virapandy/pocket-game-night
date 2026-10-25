@@ -7,7 +7,7 @@ import { startMatch } from '../../src/engine';
 import { isoWeek, makeBudget, makeJev, WEEKLY_CAP, type ChoiceAnswer, type JevRequest, type Transport } from './jev';
 import { decideAll, disagreement, jevQuestion, optionsFor, type Chooser, type Situation } from './player';
 import { playGame, runMany, summaryText, PERSONAS } from './mass';
-import { mkdtempSync } from 'node:fs';
+import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -200,6 +200,22 @@ describe('PLT-113: Jev spending is capped at 50,000 decisions a week', () => {
     await runMany({ games: 3, prefix: 'plt-113-week', jev, jevShare: 1 });
     expect(log).toEqual([]);
     expect(makeBudget({ cap: 10, file, now: nextMonday }).left()).toBe(10);
+  });
+
+  it('two runs sharing the file at once add up, keep the other weeks, and stop together at the cap', () => {
+    const file = `${mkdtempSync(`${tmpdir()}/jev-usage-`)}/usage.json`;
+    writeFileSync(file, JSON.stringify({ '2026-W39': 5 }));
+    const at = Date.UTC(2026, 8, 28, 9);
+    const a = makeBudget({ cap: 10, file, now: at }), b = makeBudget({ cap: 10, file, now: at });
+    expect(a.take(3)).toBe(true);
+    expect(b.take(4)).toBe(true);
+    expect(a.take(2)).toBe(true);
+    expect(JSON.parse(readFileSync(file, 'utf8'))).toEqual({ '2026-W39': 5, '2026-W40': 9 });
+    expect(b.take(2)).toBe(false);
+    expect(a.used()).toBe(9);
+    expect(b.take(1)).toBe(true);
+    expect(a.take(1)).toBe(false);
+    expect(JSON.parse(readFileSync(file, 'utf8'))['2026-W40']).toBe(10);
   });
 });
 
