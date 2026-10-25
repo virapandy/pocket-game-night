@@ -7,6 +7,8 @@
 //   - on every room screen (every screen but B2, N2 and G1/G2 after game over) the page's text, accessible names, title and
 //     live regions never put a role (or "Not Mafia") next to the name of a player who is in or has left; hold none of the private parts (`private-word`, `job-line`, `night-names`, `result-line`); and on N0, N1 and
 //     N3 name nobody but the player the phone is passed to (no night pick);
+//   - Version 1.2 (25 October): N2's names look the same for every role (none greyed, name-only accessible names, tags "you"
+//     and "out" only), and G1 shows no role while "Game ended · Undo" is up (both checked; nothing expects greyed names);
 //   - the truth the check uses is what the deal screens showed each player (B2's role word), so a "Deal again" is followed;
 //   - nothing stuck: a way on on every screen but the countdown, no screen for more than 30 steps, no unknown screen;
 //   - at most one main button, nothing sideways, no console error; a reload keeps every saved move.
@@ -49,7 +51,8 @@ function dealFor(players: string[], seed: string): Record<string, Role> {
 }
 
 interface Opt { key: string; label: string; idx: number; main: boolean; kind: string; inNames: boolean; pressed: string | null }
-interface Snap { h1: string[]; ids: string[]; dialog: string | null; menuOpen: boolean; opts: Opt[]; mains: number; scrollX: boolean; body: string; passName: string | null; privateWord: string | null; resultLine: string | null; mainLabel: string | null; mainDisabled: boolean; privateParts: string[] }
+interface Snap { h1: string[]; ids: string[]; dialog: string | null; menuOpen: boolean; opts: Opt[]; mains: number; scrollX: boolean; body: string; passName: string | null; privateWord: string | null; resultLine: string | null; mainLabel: string | null; mainDisabled: boolean; privateParts: string[];
+  nightNames: { aria: string | null; text: string; disabled: boolean; look: string; pressed: boolean }[]; gameEndedToast: boolean }
 async function snapshot(page: Page): Promise<Snap> {
   const s = await page.evaluate(() => {
     const vis = (el: Element) => { const r = el.getBoundingClientRect(); return r.width > 0 && r.height > 0 && ((el as any).checkVisibility ? (el as any).checkVisibility({ visibilityProperty: true }) : true); };
@@ -81,6 +84,10 @@ async function snapshot(page: Page): Promise<Snap> {
       body: norm(document.body.innerText).slice(0, 300), passName: t('pass-name'), privateWord: t('private-word'), resultLine: t('result-line'),
       mainLabel: mainEls[0] ? norm(mainEls[0].textContent) : null, mainDisabled: !!mainEls[0] && ((mainEls[0] as HTMLButtonElement).disabled || mainEls[0].getAttribute('aria-disabled') === 'true'),
       privateParts: ['private-word', 'job-line', 'night-names', 'result-line'].filter((id) => document.querySelector(`[data-testid="${id}"]`)),
+      nightNames: Array.from(document.querySelectorAll('[data-testid="night-names"] button, [data-testid="night-names"] [role="button"]')).map((b) => ({
+        aria: b.getAttribute('aria-label'), text: norm(b.textContent), disabled: (b as HTMLButtonElement).disabled || b.getAttribute('aria-disabled') === 'true',
+        look: (() => { const c = getComputedStyle(b); return `${c.opacity}|${c.color}|${c.backgroundColor}|${c.borderColor}`; })(), pressed: b.getAttribute('aria-pressed') === 'true' })),
+      gameEndedToast: /Game ended/.test(document.body.innerText) && !!Array.from(document.querySelectorAll('[role="status"], [aria-live], [data-testid="undo-toast"], [data-testid="toast"]')).find((e) => /Game ended/.test(e.textContent ?? '') && /Undo/.test(e.textContent ?? '')),
     };
   }) as Snap;
   const seen = new Map<string, number>();
@@ -178,7 +185,26 @@ export async function playMafEvening(page: Page, cfg: MafConfig, opts: { jev?: J
       if (m) { const p = cfg.players.find((x) => x.toLowerCase() === m[1]!.toLowerCase()); if (p) shownOut.add(p); }
       if (screen === 'V4') { const h = /^(.+?) is out\.$/i.exec(s.h1[0] ?? ''); const p = h && cfg.players.find((x) => x.toLowerCase() === h[1]!.toLowerCase()); if (p) shownOut.add(p); }
     }
-    const room = !['B2', 'N2', 'G1', 'G2', 'home', 'picker', 'history', 'unknown'].includes(screen) && !gameOver;
+    // Version 1.2 change A (MAF-022 to MAF-026): N2's names look the same for every role: none greyed or disabled, the same
+    // look apart from the selected one, an accessible name that is the player's name only, and no tag but "you" and "out".
+    if (screen === 'N2' && s.nightNames.length) {
+      const bad: string[] = [];
+      for (const b0 of s.nightNames) {
+        const b = { ...b0, text: b0.text.replace(/^[✓✔]\s*/, '') }; // the selected name's tick is the selection, not a tag
+        const name = cfg.players.concat(['Imran']).find((p) => b.text.toLowerCase().startsWith(p.toLowerCase()));
+        if (b.disabled) bad.push(`${b.text} greyed or disabled`);
+        if (!name) { bad.push(`"${b.text}" is no player`); continue; }
+        if (b.aria !== null && b.aria.trim().toLowerCase() !== name.toLowerCase()) bad.push(`"${name}" is read as "${b.aria}"`);
+        const tag = b.text.slice(name.length).replace(/[()·\s]/g, ' ').trim().toLowerCase();
+        if (tag && !['you', 'out'].includes(tag)) bad.push(`"${name}" carries the tag "${tag}"`);
+      }
+      const looks = new Set(s.nightNames.filter((b) => !b.pressed).map((b) => b.look));
+      if (looks.size > 1) bad.push(`unpicked names look different (${looks.size} looks)`);
+      if (bad.length) add('privacy', step, screen, `N2 names not the same for every role (Version 1.2 A): ${bad.slice(0, 3).join('; ')}`);
+    }
+    // Version 1.2 change B (MAF-054): while "Game ended · Undo" shows on G1, no role anywhere; G1 is a room screen until then.
+    const room = (!['B2', 'N2', 'G1', 'G2', 'home', 'picker', 'history', 'unknown'].includes(screen) && !gameOver) || (screen === 'G1' && s.gameEndedToast);
+    if (screen === 'G1' && s.gameEndedToast && /who was who/i.test(s.body)) add('privacy', step, screen, '"Who was who" shows while the "Game ended · Undo" toast is up (Version 1.2 B)');
     if (room) {
       res.roomChecks++;
       res.rolesKnown = Math.max(res.rolesKnown, Object.keys(roles).length);

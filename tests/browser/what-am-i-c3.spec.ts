@@ -10,7 +10,7 @@ import {
 import {
   SIDEWAYS, TZ, UPRIGHT, byId, button, chipNames, every16, firstWords, flash, heading, listChips, mainButton, marks, moves, now,
   onlyNight, pauseButton, runToTimeUp, saveScore, scheduleOrientation, shownWord, startNight, startTurn, tap, tapAt, tapMark,
-  text, theWord, toast, toWord,
+  text, textOf, theWord, toast, toWord,
 } from './what-am-i';
 
 test.use({ timezoneId: TZ, viewport: SIDEWAYS });
@@ -253,6 +253,38 @@ test.describe('WAI-023: time up', () => {
     const m = (await moves(page)).filter((x) => x.type === 'got' || x.type === 'timeUp');
     expect(m).toEqual([{ type: 'got', word: idOf(w) }, { type: 'timeUp' }]);
   });
+
+  // Found by the screen simulations of 25 October 2026 (reports/sim-what-am-i.md, finding 1): a mark whose 600 ms flash ends
+  // on the very millisecond the turn time runs out left a blank screen with nothing to tap. The flash ends at the time-up
+  // moment: the mark stands and T4 "Time's up!" opens with lists, count and saved moves that agree (item 14, WAI-030).
+  for (const last of ['Pass', 'Got it'] as const) {
+    test(`a ${last} whose flash ends on the same millisecond as time up: T4 "Time's up!" opens with the right lists and count (WAI-023, Version 1.1 item 14, WAI-030)`, async ({ page }) => {
+      await startNight(page, { seed: 'flash-ends-at-time-up', pack: 'Food', players: ['Riya', 'Arjun'], turnTime: 30 });
+      const t3 = await toWord(page);
+      const [first] = await marks(page, 'G'); // a Got it first, so both lists are checked
+      const second = await shownWord(page);
+      // The second mark at t = 29,400 ms of T3: its 600 ms flash ends at exactly 30,000 ms, the turn time.
+      await page.clock.runFor(t3 + 29_400 - (await now(page)));
+      expect((await now(page)) - t3).toBe(29_400);
+      await tapAt(page, 406, last === 'Pass' ? 90 : 300);
+      await page.clock.runFor(600);
+      await page.clock.runFor(2000);
+      await expect(heading(page, `Time's up! Riya got ${last === 'Pass' ? 1 : 2}`)).toBeVisible();
+      await expect(mainButton(page)).toHaveText('Save score');
+      // Whether the next word gets its zero-length moment on screen (and is passed by time up) is not pinned by the
+      // scenarios at this exact millisecond: either way the lists, the count and the saved moves must agree.
+      const m = (await moves(page)).filter((x) => ['got', 'pass', 'timeUp'].includes(x.type));
+      expect(m.slice(0, 2)).toEqual([{ type: 'got', word: idOf(first!) }, { type: last === 'Pass' ? 'pass' : 'got', word: idOf(second) }]);
+      expect(m).toHaveLength(3);
+      expect(m[2]!.type).toBe('timeUp');
+      const timeUpWord = (m[2] as { word?: string }).word;
+      const passedAtTimeUp = timeUpWord ? [textOf(timeUpWord)] : [];
+      expect(await chipNames(page, 'Got it')).toEqual(last === 'Pass' ? [first] : [first, second]);
+      const passed = await chipNames(page, 'Passed');
+      expect(passed.slice(0, last === 'Pass' ? 1 : 0)).toEqual(last === 'Pass' ? [second] : []);
+      expect(passed.slice(last === 'Pass' ? 1 : 0)).toEqual(passedAtTimeUp);
+    });
+  }
 });
 
 test.describe('WAI-030 / WAI-031: fixing, saving and Undo on screen', () => {
