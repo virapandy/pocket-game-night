@@ -66,3 +66,5 @@ Phase: Mafia 1
 Opened from S1, S2, S3 and the menu. h1 "How to play"; the seven steps of `guide.md` "How to play", in short lines; the rules box
 of MAF-003; and the line "Saw someone's screen? Keep it to yourself and carry on. Before the first night, Deal again instead."
 (MF15). It never names a player or a role holder (as IMP-072). Main "Done" → the screen it was opened from, unchanged.
+
+**Version 1.4 (product owner, 26 October; owner away)** (item 7; class C1): How to play gains one line (`mf.s4.4`): **"Need to stop during someone's turn? Let them finish, or close the app: the game is saved."** The rest of item 7 is no change: no Home on the role card, the night job and the countdown is kept by design (MAF-055). Tests: `tests/browser/mafia-v14.spec.ts`.

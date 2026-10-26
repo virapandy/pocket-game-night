@@ -198,6 +198,33 @@ describe('MAF-062 fun lines and MAF-064 tonight\'s summary (the facts, items 15 
     expect(night.summary).toEqual({ players: 9, games: 3, mostMafia: { player: 'Arjun', games: 2 }, spotter: null });
     expect(night.tally).toEqual({ village: 0, mafia: 0 });
   });
+  // Version 1.4 item 4 (product owner, 26 October): "Arjun was Mafia in 2 games" counts only games that have ended (won,
+  // or ended with no winner), never a game that can still go on; the games and players counts stay as item 15 says.
+  it('MAF-064 Version 1.4 item 4: "was Mafia in N games" counts only ended games; a game still going on never counts', () => {
+    const g = new GameNight({ deals: { 1: EXAMPLE_DEAL, 2: EXAMPLE_DEAL, 3: EXAMPLE_DEAL } });   // Arjun and Zoya Mafia every game
+    g.must({ type: 'start', players: NINE, mafiaCount: 2 }).must({ type: 'endGame' });
+    g.must({ type: 'start', players: NINE, mafiaCount: 2 });
+    // Game 2 dealt, not over: Arjun was Mafia in 1 ended game only.
+    expect(readMafiaNight(savedOf(g)).summary, 'game 2 still going on (just dealt)').toEqual({ players: 9, games: 2, mostMafia: null, spotter: null });
+    for (const p of NINE) g.must({ type: 'seen', player: p });
+    g.must({ type: 'startNight', night: 1 });
+    expect(readMafiaNight(savedOf(g)).summary, 'game 2 still going on (night 1)').toEqual({ players: 9, games: 2, mostMafia: null, spotter: null });
+    g.must({ type: 'endGame' });   // ended with no winner: now it counts
+    expect(readMafiaNight(savedOf(g)).summary, 'game 2 ended with no winner').toEqual({ players: 9, games: 2, mostMafia: { player: 'Arjun', games: 2 }, spotter: null });
+    g.must({ type: 'start', players: NINE, mafiaCount: 2 });
+    // Game 3 started: counted in "games" (item 15), not in "was Mafia in".
+    expect(readMafiaNight(savedOf(g)).summary, 'game 3 still going on').toEqual({ players: 9, games: 3, mostMafia: { player: 'Arjun', games: 2 }, spotter: null });
+  });
+  it('MAF-064 Version 1.4 item 4: game 1 won and game 2 still going on, Arjun Mafia in both: no "was Mafia in" line (flows "game2-night1-kabir", "game2-morning1")', () => {
+    for (const name of ['game2-night1-kabir', 'game2-morning1']) {
+      const night = readMafiaNight(savedFlow(FLOWS.find((f) => f.name === name)!));
+      // Arjun Mafia in game 1 (won by the Village) and in game 2 (going on): one ended game, so no line.
+      expect(night.summary.mostMafia, name).toBeNull();
+      expect(night.summary.games, `${name}: games started (item 15)`).toBe(2);
+      expect(night.summary.players, name).toBe(9);
+      expect(night.tally, name).toEqual({ village: 1, mafia: 0 });
+    }
+  });
   it('"players" counts everyone dealt in any game tonight (an added player too)', () => {
     const g = exampleNight();
     g.must({ type: 'addNext', name: 'Imran' }).must({ type: 'endGame' });

@@ -37,6 +37,8 @@ height never tells a watcher the role (as IMP-012). The role text is in the page
 
 **Version 1.1** (item 20): **MAF-011:** every role card has **2 lines under the role word plus 1 empty line**, so all cards are the same height. MAF-015's partner text replaces line 1 only. Its variants: one partner out "Zoya is out. You're the only Mafia left."; partner left "Zoya has left. You're the only Mafia left."; with M = 3 or 4: the partners still in first, "You and Dev are the Mafia. Zoya is out." / "You, Dev and Om are the Mafia. Zoya is out." / "You and Om are the Mafia. Zoya and Dev are out."; all others out or left: "Zoya and Dev are out. You're the only Mafia left." (names in seat order; "left" for leavers, "out" for out players, "Zoya is out and Dev has left." when mixed). "Not Riya? ← Back" in D5 returns to the screen it came from.
 
+**Version 1.4 (product owner, 26 October; owner away)** (item 6; class C1, words for weak-English readers): the Mafia card's line 2 (`mf.b2-mafia.6`) reads **"At night, you pick who is out. By day, act like a Villager."** ("goes out" can read as "goes outside"). Every card keeps item 20's layout and height.
+
 ## MAF-012: First time? What this role means
 Status: approved, owner, 2026-10-25 (version 1.1, MF18)
 Phase: Mafia 1
@@ -47,6 +49,8 @@ also hide with the role. Mafia: "Your side wins when the Mafia are as many as ev
 person." · "If you protect the Mafia's pick, nobody goes out." Police: "Your side wins when every Mafia is out." · "At night,
 check one person." · "You choose whether to tell the room what you found." Villager: "Your side wins when every Mafia is out." ·
 "At night, pick who you think is Mafia. Only you see it." · "By day, listen, ask questions and vote." Records nothing.
+
+**Version 1.4 (product owner, 26 October; owner away)** (item 6; class C1): the Mafia's second line (`mf.b2-first-time.2`) reads **"At night, pick who is out."**
 
 ## MAF-013: Wrong person, double taps, interruptions during the deal
 Status: approved, owner, 2026-10-25 (version 1.1, MF18)

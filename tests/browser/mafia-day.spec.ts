@@ -66,10 +66,10 @@ test('MAF-031 item 23: the timer shows 2:00, 1:59 after 1 s, never 0:00; "Time\'
   await expect(heading(page, 'Day 1 · Talk it over')).toBeVisible();
 });
 
-test('MAF-032: the countdown heading, "3", "2", "1", "Point!", no menu and no Pause; then the picker opens by itself', async ({ page }) => {
+test('MAF-032 / Version 1.4 item 6: the countdown heading, "3", "2", "1", "Point!", no menu and no Pause; then the picker opens by itself', async ({ page }) => {
   await toDay1(page);
   await tap(page, mainButton(page));
-  await expect(byId(page, 'countdown-heading')).toHaveText(exactly('Everyone in, point at who you think is Mafia.'));
+  await expect(byId(page, 'countdown-heading')).toHaveText(exactly('Everyone still playing: point at who you think is Mafia.'));
   await expect(byId(page, 'countdown-number')).toHaveText(exactly('3'));
   await expect(page.getByRole('button', { name: 'Menu', exact: true })).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Pause', exact: true })).toHaveCount(0);

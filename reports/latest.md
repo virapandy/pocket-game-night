@@ -1,4 +1,39 @@
 # Test report
+Commit tested: 05f6e82 (main, the 1.6.1 app; lane-m2 = main + these tests)   Date: 2026-10-26
+Result: RED (expected: tests first for Mafia Version 1.4, the 1.6.2 point release)
+Run: see below (Quick verify on lane-m2 at this push)
+Local: npm test 65 files, 1191 of 1193 passed (2 known load timeouts, both pass alone); build ok; browser mafia-v14,
+mafia-deal-night, mafia-day, mafia-why, mafia-walk, mafia-c3 on Android and iPhone, 3 workers: 127 passed, 49 failed
+(48 are the new or updated Version 1.4 checks, 24 per phone; 1 load flake, below).
+
+## What changed (tests and specs only)
+- specs/mafia/: a "Version 1.4" paragraph on MAF-006, MAF-011, MAF-012, MAF-023 (also 0.95), MAF-026, MAF-032, MAF-055 (by design,
+  no change), MAF-060, MAF-064, MAF-091; README: a Version 1.4 section and the canonical strings; api.md: `mostMafia` counts ended
+  games only. The orchestrator's calls of 26 October marked confirmed; the Test role's five open Mafia rows of 25 October in
+  docs/test-questions.md marked confirmed (product owner, 26 October).
+- New tests/browser/mafia-v14.spec.ts (Mafia area). Updated to the new words (nothing loosened): mafia-deal-night (MAF-011,
+  MAF-022 to MAF-026, ghost guess; MAF-028 now requires N3 on resume), mafia-day (MAF-032), mafia-why (Villager lines; the P7 frame
+  walk now also checks the Villager's new line), mafia-walk (the leak check also looks for "who is out").
+- tests/games/mafia/saved.test.ts: two MAF-064 Version 1.4 item 4 tests.
+
+## Failing (real bugs only: Version 1.4 not built yet)
+- MAF-011 / MAF-012 (item 6): Mafia card still "At night, you pick who goes out. …"; First time? not yet "At night, pick who is out."
+- MAF-023 / MAF-026 (items 3, 6): N2 still "At the end we'll see if you were right.", "MAFIA · Pick who goes out tonight. …",
+  "YOU'RE OUT · Ghost guess: who's Mafia? Pick one."; the frame and fit checks behind them run once the words change (checked with
+  the old words: every frame equal and every line fits, both phones).
+- MAF-032 (item 6): countdown still "Everyone in, point at who you think is Mafia."
+- MAF-006 (item 7): How to play has no "Need to stop during someone's turn? …" line.
+- MAF-060 (item 5): on G1 "Change players or roles" and "← Home" are pinned (move 0 px while the page moves 184 to 908 px);
+  "Play again" and "End for tonight" are already pinned as asked.
+
+Already hold on 1.6.1 (the tests pin them): MAF-091 item 2 (resume after the last pick opens N3) and MAF-064 item 4.
+
+## Flaky or setup problems (not for the Build workspace)
+- mafia-c3 "MAF-023 to MAF-026 Version 1.2 A and 1.3 …" failed once on Android with 3 workers under taskpolicy -b (Done appeared
+  during the tap); passes alone. Two rule properties timed out at 120 s in the full npm test; pass alone.
+
+---
+
 Commit tested: b529c7c (lane-r2 rebased on main 2a5e5f4, the 1.6.0 release)   Date: 2026-10-26
 Result: GREEN
 Run: https://github.com/virapandy/pocket-game-night/actions/runs/40292906979 (Quick verify on lane-r2 at 5603138: success)

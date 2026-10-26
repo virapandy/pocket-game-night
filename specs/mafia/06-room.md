@@ -58,3 +58,5 @@ Status: approved, owner, 2026-10-25 (version 1.1, MF18)
 Phase: Mafia 1
 "← Home" and "Home (game is saved)" open Home with the game night unfinished (MAF-091). From a night screen they are in the menu
 only (N0, N1, N3); from a private screen there is no way to Home except hiding the app.
+
+**Version 1.4 (product owner, 26 October; owner away)** (item 7): no Home on the role card, the night job and the countdown is **kept, by design** (a private screen never leads to a screen the room can see; the countdown lasts 6 s and has "Not yet"; the "Done" that appears a moment after a pick is MF1's 4-second rule). No change, so no new test.

@@ -343,7 +343,7 @@
       "name": "Mafia: rules, screens, saved game nights, stories (every Mafia browser file, no other game's)",
       "lane": "shared",
       "paths": ["src/games/mafia/**", "content/mafia/**", "docs/games/mafia/stories.csv", "tests/browser/mafia.ts", "tests/browser/mafia-*.spec.ts", "tests/games/mafia/flows.ts", "tests/games/mafia/oracle.ts", "tests/fixtures/mafia-saved-nights-v1.json"],
-      "specs": ["mafia-c3.spec.ts", "mafia-setup.spec.ts", "mafia-deal-night.spec.ts", "mafia-day.spec.ts", "mafia-room.spec.ts", "mafia-results.spec.ts", "mafia-usability.spec.ts", "mafia-walk.spec.ts", "mafia-why.spec.ts"]
+      "specs": ["mafia-c3.spec.ts", "mafia-setup.spec.ts", "mafia-deal-night.spec.ts", "mafia-day.spec.ts", "mafia-room.spec.ts", "mafia-results.spec.ts", "mafia-usability.spec.ts", "mafia-walk.spec.ts", "mafia-why.spec.ts", "mafia-v14.spec.ts"]
     },
     {
       "name": "A changed browser spec runs itself (matched by the automation by file name)",

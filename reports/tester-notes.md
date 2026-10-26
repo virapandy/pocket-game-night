@@ -259,3 +259,18 @@ Merged origin/main (PGN_PORT per lane: lane-a 4174). Lane A area: 129 of 132 pas
 - Three mafia-c3.spec.ts Version 1.2 tests were changed for 1.3 (docs/test-questions.md row, 26 October).
 - Open (no test depends): Doctor's own name the night after self-protect; re-tap of the selected name while a why-line
   shows; the result line after hide/show following a why-line.
+
+## 26 October: Mafia Version 1.4 (1.6.2), tests first (lane-m2, from main 05f6e82)
+- New `tests/browser/mafia-v14.spec.ts` (in areas.json's Mafia area): item 6 words (card, First time?, N2 job lines, ghost
+  guess, countdown), item 3 Villager result line, item 7 How to play line (from S2 and from N0's menu with Larger text),
+  item 2 resume at N3 (flow, reload after the last Done, game 2), item 5 G1 pins (4 sizes + a live "End the game" G1).
+- N2 walks (night 1: every role; night 3: ghost guesses and the lone Mafia) read every frame in one `page.evaluate`: with
+  `count()/isVisible()/boundingBox()` per box the walks ran past 90 s under taskpolicy -b. Mechanics checked with the old
+  strings on 1.6.1: frames equal and every line fits on both phones.
+- G1 "pinned" = same y (±1 px), wholly on screen and uncovered at the top and the end of a G1 longer than the screen;
+  "scrolls with the page" = moves as much as h2 "Who was who". On 1.6.1 all four G1 buttons are pinned.
+- Item 2 (N3 on resume) and item 4 (ended games only) already hold on 1.6.1: their tests pass, they pin the behaviour.
+- Old wording updated (not loosened) in mafia-deal-night, mafia-day, mafia-why (also asks the Villager's new line inside the
+  P7 frame walk) and mafia-walk (the leak regex now also looks for "who is out"). MAF-028's resume check is no longer
+  conditional (item 2).
+- The Test role's Mafia rows of 25 October in docs/test-questions.md are marked confirmed (product owner, handover 26 October).

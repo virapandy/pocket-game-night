@@ -17,6 +17,8 @@ players or roles", "End for tonight", "← Home"; main "Play again". The page ma
 
 **Version 1.2 (owner, 25 October)** (privacy change B, see MAF-054): after "End the game", G1 shows no h2 "Who was who", no role, no "What happened each night" and no fun lines while the toast "Game ended · Undo" is showing; they appear once the toast has gone.
 
+**Version 1.4 (product owner, 26 October; owner away)** (item 5; class C2): on G1 **"Play again" (main) and "End for tonight" stay pinned** (carry on and stop, guideline 47a); **"Change players or roles" and "← Home" scroll with the page** (46a). The tester's reading: pinned = the same place on the screen, wholly on screen and uncovered, at the top and at the end of a G1 longer than the screen; scrolls with the page = moves by as much as "Who was who" does. Tests: `tests/browser/mafia-v14.spec.ts`.
+
 ## MAF-061: Play again and changes
 Status: approved, owner, 2026-10-25 (version 1.1, MF18)
 Phase: Mafia 1
@@ -57,3 +59,5 @@ and D9).
 **Version 1.1** (item 15): **Games** (MAF-064): every game started tonight, including ended-early and cut short by End for tonight; the Village–Mafia tally counts only games with a winner. MAF-063's "This game won't count." means "won't count for the Village or the Mafia": the line becomes "Tonight's score stays in History. This game won't count for either side."
 
 **Version 1.1** (item 29): **MAF-064:** G2's menu item "Delete tonight's games" opens D9 as in Secret Words (same words, "games" for Mafia).
+
+**Version 1.4 (product owner, 26 October; owner away)** (item 4): G2's counts stay as item 15 says (games started; players dealt). **"Arjun was Mafia in 2 games" counts only games that have ended** (won, or ended with no winner), never a game that can still go on (already built, 05a7851; pinned in `tests/games/mafia/saved.test.ts` and `tests/browser/mafia-walk.spec.ts`).

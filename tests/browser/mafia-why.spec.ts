@@ -77,11 +77,11 @@ test('MAF-026 / MAF-022 Version 1.3: a Villager taps their own name: "That\'s yo
   expect(await selected(page), 'selects nothing').toEqual([]);
   await page.clock.runFor(4100);
   await expect(mainButton(page), 'no pick yet: Done stays hidden after 4000 ms').toBeHidden();
-  await tapPick(page, 'Om', "You think it's Om. At the end we'll see if you were right.");
+  await tapPick(page, 'Om', "You think it's Om. The best Mafia spotter is named at the end.");
   await expect(mainButton(page)).toBeVisible();
   await tapWhy(page, 'Riya', 'Riya', WHY.you);
   await expect(nameButton(page, 'Om')).toHaveAttribute('aria-pressed', 'true');
-  await tapPick(page, 'Sunita', "You think it's Sunita. At the end we'll see if you were right.");
+  await tapPick(page, 'Sunita', "You think it's Sunita. The best Mafia spotter is named at the end.");
   const before = (await records(page)).length;
   await tap(page, mainButton(page));
   const after = await records(page);
@@ -337,13 +337,14 @@ test('MAF-P7 Version 1.3: every role\'s N2 has the same boxes and sizes with and
     const frames: { what: string; f: Frame; why: boolean; picked: boolean }[] = [];
     await openFlow(page, 'night1-start', { viewport });
     await tap(page, mainButton(page));
-    frames.push(...await roleFrames(page, 'Riya', 'Arjun', [{ name: 'Riya', line: WHY.you }]));
+    // Version 1.4 item 3: the Villager's result line is the new, longer one; it too must fit the same box.
+    frames.push(...await roleFrames(page, 'Riya', 'Arjun', [{ name: 'Riya', line: WHY.you }], "You think it's Arjun. The best Mafia spotter is named at the end."));
     await tap(page, mainButton(page));
     frames.push(...await roleFrames(page, 'Arjun', 'Kabir', [{ name: 'Zoya', line: WHY.partner('Zoya') }, { name: 'Arjun', line: WHY.you }]));
     await tap(page, mainButton(page));
     frames.push(...await roleFrames(page, 'Meena', 'Meena', []));
     await tap(page, mainButton(page));
-    frames.push(...await roleFrames(page, 'Kabir', 'Zoya', [{ name: 'Kabir', line: WHY.you }]));
+    frames.push(...await roleFrames(page, 'Kabir', 'Zoya', [{ name: 'Kabir', line: WHY.you }], "You think it's Zoya. The best Mafia spotter is named at the end."));
     await tap(page, mainButton(page));
     frames.push(...await roleFrames(page, 'Zoya', 'Kabir', [{ name: 'Arjun', line: WHY.partner('Arjun') }]));
     await tap(page, mainButton(page));
@@ -381,9 +382,9 @@ test('MAF-022 Version 1.3 (orchestrator, 26 October): re-tapping the picked name
   await openFlow(page, 'night1-start');
   await tap(page, mainButton(page));
   await openJob(page, 'Riya');
-  await tapPick(page, 'Om', "You think it's Om. At the end we'll see if you were right.");
+  await tapPick(page, 'Om', "You think it's Om. The best Mafia spotter is named at the end.");
   await tapWhy(page, 'Riya', 'Riya', WHY.you);
-  await reTap(page, 'Om', "You think it's Om. At the end we'll see if you were right.");
+  await reTap(page, 'Om', "You think it's Om. The best Mafia spotter is named at the end.");
   await openFlow(page, 'night3-meena');
   await openJob(page, 'Meena');
   await tapPick(page, 'Sunita', 'Sunita is protected tonight.');
@@ -406,7 +407,7 @@ test('MAF-022 Version 1.3 (orchestrator, 26 October): after "Tap to hide" and sh
   await tap(page, button(page, 'Tap to see your night job').or(button(page, 'Tap to see')));
   await expect(byId(page, 'night-names')).toBeVisible();
   await expect(byId(page, 'result-line'), 'no pick: the result line is empty').toHaveText(/^\s*$/);
-  await tapPick(page, 'Om', "You think it's Om. At the end we'll see if you were right.");
+  await tapPick(page, 'Om', "You think it's Om. The best Mafia spotter is named at the end.");
   await page.clock.runFor(4100);
   await tap(page, mainButton(page));
   await openJob(page, 'Arjun');

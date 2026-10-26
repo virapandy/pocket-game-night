@@ -2,10 +2,12 @@
 // 1. MAF-016 (MAF-P2), MAF-063, MAF-064: after "Play again", End for tonight in the middle of game 2 must not reveal any
 //    role from game 2 on Tonight's summary (G2): game 2 isn't over ("Oops, keep playing" returns to it), so its players
 //    are still in. "Arjun was Mafia in 2 games" counts game 2's deal: a leak. (How many games and players G2 counts is
-//    MAF-064 item 15's call, not tested here: see docs/test-questions.md.)
-// 2. MAF-060, MAF-080, UX guideline 46a: G1 scrolls as one page with only the main button pinned; every night's line and
-//    the tally can be reached and nothing sits under the pinned buttons; while more is below, a visible "More below" cue
-//    shows (the What Am I? pattern, orchestrator 25 October).
+//    MAF-064 item 15's call, not tested here: see docs/test-questions.md. Version 1.4 item 4 confirms: counts as item 15;
+//    "was Mafia in N games" counts ended games only, also pinned in tests/games/mafia/saved.test.ts.)
+// 2. MAF-060, MAF-080, UX guideline 46a: G1 scrolls as one page (Version 1.4 item 5: "Play again" and "End for tonight"
+//    pinned, the other two scroll with it, tested in mafia-v14.spec.ts); every night's line and the tally can be reached
+//    and nothing sits under the pinned buttons; while more is below, a visible "More below" cue shows (the What Am I?
+//    pattern, orchestrator 25 October).
 // 3. MAF-051, MAF-080: the Players sheet after adding a name: no control is covered (the "Done" bar covered the name box).
 // 4. MAF-014 / MAF-011 (orchestrator's call, second walk, privacy hygiene): "Someone saw my role" tapped while the role
 //    shows hides it at once: behind "Deal again?" the card is back to hidden and nothing of the role is in the page.
@@ -220,7 +222,7 @@ test('MAF-014 / MAF-011: "Someone saw my role" while Arjun\'s role shows: behind
   await expect(byId(page, 'private-word'), 'the role word has gone behind the dialog').toHaveCount(0);
   await expect(byId(page, 'private-block'), 'the role block has gone behind the dialog').toHaveCount(0);
   const html = await page.evaluate(() => document.body.innerHTML + ' ' + document.body.textContent);
-  for (const bad of [/\bMAFIA\b/, /You and Zoya are the Mafia/i, /At night, you pick who goes out/i]) {
+  for (const bad of [/\bMAFIA\b/, /You and Zoya are the Mafia/i, /At night, you pick who goes out/i, /At night, you pick who is out/i]) {
     expect(html, `while "Deal again?" shows, ${bad} is not in the page`).not.toMatch(bad);
   }
   await expect(pad(page), 'the card is back to hidden behind the dialog').toHaveText(exactly('Tap to see'));

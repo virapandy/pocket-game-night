@@ -42,6 +42,25 @@ N2 C3 in look (MAF-P7: same frame whether or not a line shows); never on a room 
 tester's reading are under MAF-022 in [03-night.md](03-night.md); the rules give the reason as `job.names[].why`
 ([api.md](api.md)). Tests: `tests/browser/mafia-why.spec.ts`, `tests/games/mafia/why.test.ts`.
 
+## Version 1.4 (product owner, 26 October 2026; owner away): the walk's wording and answers
+For the 1.6.2 point release (`docs/games/mafia/scenarios.md`, "Version 1.4"; strings in `docs/games/mafia/text.csv`). Wins over
+Versions 1.1 to 1.3 and the text they name; no rule changes. Class C1 for the wording, C2 for item 5. Each item is a "Version 1.4"
+paragraph on the scenario it names:
+1. MAF-023: the worked example's rng first value is 0.95 (index 1, Om, stands).
+2. MAF-091: after the night's last pick and before "Read the morning", a resume opens N3 ("Night over.").
+3. MAF-026: the Villager's result line "You think it's Zoya. The best Mafia spotter is named at the end."
+4. MAF-064: G2's counts as item 15; "Arjun was Mafia in 2 games" counts only games that have ended.
+5. MAF-060: G1 pins "Play again" and "End for tonight"; "Change players or roles" and "← Home" scroll with the page.
+6. Words for weak-English readers: "At night, you pick who is out. By day, act like a Villager." (MAF-011); "At night, pick who
+   is out." (MAF-012); "MAFIA · Pick who is out tonight. Zoya will see your pick." / "MAFIA · Pick who is out tonight." (MAF-023);
+   "YOU'RE OUT · Your guess: who is Mafia? Pick one." (MAF-026); "Everyone still playing: point at who you think is Mafia."
+   (MAF-032). Story jokes: the product owner's edition of `stories.md` (no test here beyond MAF-037's).
+7. MAF-055: no Home on the role card, the night job and the countdown, by design (no change); MAF-006: How to play gains "Need to
+   stop during someone's turn? Let them finish, or close the app: the game is saved."
+8. Role names in other languages: later, not in 1.6.x.
+MAF-P7 and MAF-P2 hold for every new N2 line. Tests: `tests/browser/mafia-v14.spec.ts` (new), the older tests updated to the new
+words, `tests/games/mafia/saved.test.ts` (item 4).
+
 ## Version 1.1 items that apply to every section
 
 The other items (4 to 32) are copied into the scenarios they name. Item numbers as in `docs/games/mafia/scenarios.md`.
@@ -83,15 +102,16 @@ by MAF-H2): Mafia **Arjun** and **Zoya**; Doctor **Meena**; Police **Dev**; Vill
 | Who's playing? | h1 "Who's playing?"; "Mafia needs at least 5 players."; "Up to 16 players."; "Riya is already playing. Add an initial, like Riya S."; toast "Kabir removed · Undo"; small text link "How to play"; quiet "← Back"; main "Next" | h1; `role="alert"`; toast; buttons | MAF-002 |
 | Roles | h1 "Roles for 9 players"; "Mafia: 2" with buttons "−" "+" (names "Fewer Mafia", "More Mafia"); "We suggest 2 for 9 players."; "Doctor: 1", "Police: 1", "Villagers: 5"; 5 players: "With 5 players: 1 Mafia and 4 Villagers. Doctor and Police join at 6."; rules box (MAF-003); small text link "How to play"; quiet "← Back"; main "Give everyone a role" | h1; lines; buttons; main | MAF-003 |
 | Read this aloud | h1 "Read this aloud"; card text (MAF-005); quiet "← Back"; small text link "How to play"; main "Pass the phone round" | h1; paragraph; buttons | MAF-005 |
+| How to play | h1 "How to play"; the seven steps; the rules box; "Saw someone's screen? Keep it to yourself and carry on. Before the first night, Deal again instead."; "Need to stop during someone's turn? Let them finish, or close the app: the game is saved." (Version 1.4); main "Done" | h1; paragraphs; main | MAF-006 |
 | Deal pass | "Player 2 of 9"; "Pass the phone to"; RIYA; "Everyone else, look away!"; main "I'm Riya" | `deal-progress`; `pass-name`; paragraph; main | MAF-010 |
-| Role card | "Player 2 of 9"; RIYA; quiet "Tap instead"; pad "Hold here to see your role" (tap mode "Tap to see" / "Tap to hide"); role lines (MAF-011); quiet "First time? What this role means"; "Not Riya? ← Back"; quiet "Someone saw my role"; main "Done, pass to Arjun" / "Done, everyone's seen" / in D5 "Done, back to the day" | as IMP-010 | MAF-011–014 |
+| Role card (Version 1.4: Mafia line 2 "At night, you pick who is out. By day, act like a Villager."; First time? "At night, pick who is out.") | "Player 2 of 9"; RIYA; quiet "Tap instead"; pad "Hold here to see your role" (tap mode "Tap to see" / "Tap to hide"); role lines (MAF-011); quiet "First time? What this role means"; "Not Riya? ← Back"; quiet "Someone saw my role"; main "Done, pass to Arjun" / "Done, everyone's seen" / in D5 "Done, back to the day" | as IMP-010 | MAF-011–014 |
 | Night begins | h1 "Night 1"; "Pass the phone round once more. Everyone does the same: tap to see your night job, pick one name, tap Done, pass it on."; "Keep your face still!"; main "Start the night" | h1; paragraphs; main | MAF-020 |
 | Night pass | "Night 1 · 3 of 9"; "Pass the phone to"; MEENA; "Everyone else, look away!"; out player: "You're out: pick who you think is Mafia."; main "I'm Meena" | `night-progress`; `pass-name`; paragraphs; main | MAF-021 |
-| Night job | "Night 1"; MEENA; pad "Tap to see your night job" / "Tap to hide"; job line and result line (MAF-022–026); "Not Meena? ← Back"; main "Done, pass to Kabir" / last "Done, night over" | `night-progress`; `pass-name`; button; `job-line`; `night-names`; `result-line`; main | MAF-022 |
-| Night over | h1 "Night over."; "Host, take the phone and read the morning aloud."; main "Read the morning" | h1; paragraph; main | MAF-028 |
+| Night job | "Night 1"; MEENA; pad "Tap to see your night job" / "Tap to hide"; job line and result line (MAF-022–026; Version 1.4: Mafia "MAFIA · Pick who is out tonight. Zoya will see your pick." / alone "MAFIA · Pick who is out tonight."; Villager result "You think it's Zoya. The best Mafia spotter is named at the end."; out "YOU'RE OUT · Your guess: who is Mafia? Pick one."); "Not Meena? ← Back"; main "Done, pass to Kabir" / last "Done, night over" | `night-progress`; `pass-name`; button; `job-line`; `night-names`; `result-line`; main | MAF-022 |
+| Night over | h1 "Night over."; "Host, take the phone and read the morning aloud."; main "Read the morning"; also where a resume after the night's last pick opens (Version 1.4) | h1; paragraph; main | MAF-028, MAF-091 |
 | Morning | h1 "Morning, day 1"; the story; role line "Kabir was a Villager." / "Kabir was MAFIA!"; count line "8 players left · Mafia caught: 0 of 2"; quiet "See my role again", "End the game", "← Home"; main "Start talking" / "See who won" | h1; `story`; `role-line`; `count-line`; buttons | MAF-030 |
 | Day | h1 "Day 1 · Talk it over"; h2 "Who's still in"; out players "Kabir · Villager · out night 1"; "Out players: watch quietly, no hints!"; quiet "See my role again"; small text link "Start a 2-minute timer" / "Stop timer"; `day-timer` "1:59"; "Time's up!"; quiet "← Home"; main "Time to vote" | h1; h2; list; small lines; buttons | MAF-031 |
-| Countdown | heading "Everyone in, point at who you think is Mafia."; "3", "2", "1", "Point!"; quiet "Not yet" | `countdown-heading`; `countdown-number`; button | MAF-032 |
+| Countdown | heading "Everyone still playing: point at who you think is Mafia." (Version 1.4); "3", "2", "1", "Point!"; quiet "Not yet" | `countdown-heading`; `countdown-number`; button | MAF-032 |
 | Picker | h1 "Who got the most fingers?"; name buttons; "Not sure?"; text buttons "It's a tie", "Count again", "Nobody today"; quiet "← Back to talking"; main "Vote out" (disabled) / "Vote Kabir out" | as IMP-031 | MAF-033 |
 | Tie | h1 "Tap everyone who is tied"; "Not a tie"; main "Point again: Kabir or Om"; re-vote "Still a tie"; second tie h1 "Still a tie. Nobody is out today."; quiet "← Home"; main "Start night 2" | as IMP-032 | MAF-034 |
 | Nobody today | dialog "Nobody out today?"; "Nobody goes out today. Straight to night 2."; "Nobody today" / "Back to the vote" (main) | dialog | MAF-035 |
@@ -102,7 +122,7 @@ by MAF-H2): Mafia **Arjun** and **Zoya**; Doctor **Meena**; Police **Dev**; Vill
 | Paused | dialog "Paused"; where-line; "Tap Carry on when everyone's back."; main "Carry on" | dialog | MAF-050 |
 | End the game | dialog "End this game with no winner?"; "Everyone's role will be shown."; "End the game" / "Keep playing" (main); toast "Game ended · Undo" | dialog; toast | MAF-054 |
 | End for tonight | dialog "End for tonight?"; "Tonight's score stays in History." / mid-game "Tonight's score stays in History. This game won't count."; "End for tonight" / "Keep playing" (main) | dialog | MAF-063 |
-| Game over | h1 "The Village wins!" + "Every Mafia is out." / "The Mafia win!" + "They're as many as everyone else." / "Game ended. No winner."; leaver line "Kabir had to leave."; h2 "Who was who"; rows "Arjun · Mafia · voted out day 2"; quiet "What happened each night"; fun lines (MAF-062); "Tonight: Village 2 · Mafia 1"; quiet "Change players or roles", "End for tonight", "← Home"; main "Play again" | h1; small lines; h2; list; buttons | MAF-060–062 |
+| Game over | h1 "The Village wins!" + "Every Mafia is out." / "The Mafia win!" + "They're as many as everyone else." / "Game ended. No winner."; leaver line "Kabir had to leave."; h2 "Who was who"; rows "Arjun · Mafia · voted out day 2"; quiet "What happened each night"; fun lines (MAF-062); "Tonight: Village 2 · Mafia 1"; quiet "Change players or roles", "End for tonight", "← Home"; main "Play again" (Version 1.4: "Play again" and "End for tonight" pinned, the other two scroll with the page) | h1; small lines; h2; list; buttons | MAF-060–062 |
 | Tonight's summary | h1 "Tonight's Mafia"; "9 players · 3 games"; "Village 2 · Mafia 1"; "Arjun was Mafia in 2 games"; "Best Mafia spotter tonight: Om"; quiet "Oops, keep playing", "← Home"; main "Play something else" | h1; small lines; buttons | MAF-064 |
 | Where-line | "Night 2 · Meena's turn with the phone" · "Morning, day 2" · "Day 2 · talking" · "Day 2 · vote" · "Game over, game 2" | `where-line` | MAF-090 |
 | Menu | "How to play", "Players", "See my role again", "Deal again", "Pause", "Home (game is saved)", "End the game", "End for tonight", "Settings", "History" (only those that apply, this order) | menu items | MAF-053 |

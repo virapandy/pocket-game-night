@@ -260,7 +260,7 @@ type Why =
   turn's `check`, earlier checks still read `checked` and every other name that is in reads `checkDone`.
 - A Police with nobody left to check: every name has a `why` as above (no `checkDone`); the screen still shows "Nobody left
   to check." for any tap (Version 1.2 A).
-- **Orchestrator's decision, 26 October (for the product owner to confirm):** the Doctor's own name on the night right
+- **Orchestrator's decision, 26 October (confirmed by the product owner, 26 October):** the Doctor's own name on the night right
   after they protected themselves (`lastNight` and `selfUsed` both fit) is `selfUsed`.
 - `why` is in the player's own view only (inside `job`); the room view is unchanged (MAF-P2). Like `allowed`, it is never
   shown until that name is tapped.
@@ -294,7 +294,7 @@ type Why =
 - `ghost`: among out players dealt `villager` or `doctor`, the one whose ghost guesses named a `mafia` most often, at least 1
   (ties: seat order).
 - `summary.players` = players dealt in any game tonight; `games` = games started (item 15); `mostMafia` = the player dealt
-  `mafia` in the most games, at least 2 (ties: seat order of the first game they played); `spotter` = most spotter nights
+  `mafia` in the most **ended** games (won, or ended with no winner; never a game still going on, Version 1.4 item 4), at least 2 (ties: seat order of the first game they played); `spotter` = most spotter nights
   over all games, at least 2.
 - A game night replays exactly from its saved setup and moves (MAF-093): `replay(mafiaRules, saved.setup, saved.records)`
   gives the same state, and `readMafiaNight` of the replay equals that of the original.

@@ -24,14 +24,14 @@ test('MAF-010: the deal pass screen: "Player 1 of 9", "Pass the phone to", RIYA,
   await expect(mainButton(page)).toHaveText(exactly("I'm Riya"));
 });
 
-test('MAF-011 item 20: each role card\'s words; every card the same height', async ({ page }) => {
+test('MAF-011 item 20 / Version 1.4 item 6: each role card\'s words; every card the same height', async ({ page }) => {
   await openDeal(page, NINE, { deals: { 1: EXAMPLE_DEAL } });
   const cards: Record<string, string[]> = {
     Riya: ['VILLAGER', 'You have no night power.', 'By day, talk, watch and find the Mafia.'],
-    Arjun: ['MAFIA', 'You and Zoya are the Mafia.', 'At night, you pick who goes out. By day, act like a Villager.'],
+    Arjun: ['MAFIA', 'You and Zoya are the Mafia.', 'At night, you pick who is out. By day, act like a Villager.'],
     Meena: ['DOCTOR', 'At night, pick someone to protect from the Mafia.', 'Yourself once a game. Never the same person two nights running.'],
     Kabir: ['VILLAGER', 'You have no night power.', 'By day, talk, watch and find the Mafia.'],
-    Zoya: ['MAFIA', 'You and Arjun are the Mafia.', 'At night, you pick who goes out. By day, act like a Villager.'],
+    Zoya: ['MAFIA', 'You and Arjun are the Mafia.', 'At night, you pick who is out. By day, act like a Villager.'],
     Dev: ['POLICE', 'At night, check one person.', 'The phone tells only you: Mafia or Not Mafia.'],
   };
   const heights: number[] = [];
@@ -143,15 +143,15 @@ async function jobTurn(page: Page, who: string, job: string, taps: [string, stri
   await tap(page, mainButton(page));
 }
 
-test('MAF-022 to MAF-026: every role\'s job line and result line on night 1 of the example', async ({ page }) => {
+test('MAF-022 to MAF-026 / Version 1.4 items 3 and 6: every role\'s job line and result line on night 1 of the example', async ({ page }) => {
   await openFlow(page, 'night1-start');
   await tap(page, mainButton(page));
   await jobTurn(page, 'Riya', "VILLAGER · Who do you think is Mafia? Think, then pick. Only you see this.",
-    [['Arjun', "You think it's Arjun. At the end we'll see if you were right."]], 'Done, pass to Arjun');
-  await jobTurn(page, 'Arjun', 'MAFIA · Pick who goes out tonight. Zoya will see your pick.', [['Kabir', 'Kabir. Zoya can agree or change it.']], 'Done, pass to Meena');
+    [['Arjun', "You think it's Arjun. The best Mafia spotter is named at the end."]], 'Done, pass to Arjun');
+  await jobTurn(page, 'Arjun', 'MAFIA · Pick who is out tonight. Zoya will see your pick.', [['Kabir', 'Kabir. Zoya can agree or change it.']], 'Done, pass to Meena');
   await jobTurn(page, 'Meena', 'DOCTOR · Pick someone to protect tonight.', [['Om', 'Om is protected tonight.'], ['Meena', 'You are protected tonight.']], 'Done, pass to Kabir');
   await jobTurn(page, 'Kabir', "VILLAGER · Who do you think is Mafia? Think, then pick. Only you see this.",
-    [['Zoya', "You think it's Zoya. At the end we'll see if you were right."]], 'Done, pass to Zoya');
+    [['Zoya', "You think it's Zoya. The best Mafia spotter is named at the end."]], 'Done, pass to Zoya');
   await jobTurn(page, 'Zoya', "MAFIA · Arjun's pick: KABIR. Tap Kabir to agree, or pick someone else.",
     [['Om', "Om. If the Mafia's picks differ, the phone picks one of them at random."], ['Kabir', 'Kabir. You agree.']], 'Done, pass to Dev');
   // Police: the first name tapped is the check; its answer shows in the result line only (MAF-025). Version 1.2 A (owner,
@@ -167,7 +167,7 @@ test('MAF-022 to MAF-026: every role\'s job line and result line on night 1 of t
 test('MAF-022 Version 1.2 A: no name is greyed for any role; names read as the name only; tags "you" only (Arjun sees Zoya as any name)', async ({ page }) => {
   await openFlow(page, 'night1-start');
   await tap(page, mainButton(page));
-  await jobTurn(page, 'Riya', "VILLAGER · Who do you think is Mafia? Think, then pick. Only you see this.", [['Om', "You think it's Om. At the end we'll see if you were right."]], 'Done, pass to Arjun');
+  await jobTurn(page, 'Riya', "VILLAGER · Who do you think is Mafia? Think, then pick. Only you see this.", [['Om', "You think it's Om. The best Mafia spotter is named at the end."]], 'Done, pass to Arjun');
   await tap(page, button(page, "I'm Arjun"));
   await tap(page, button(page, 'Tap to see your night job'));
   const names = byId(page, 'night-names').getByRole('button');
@@ -180,7 +180,7 @@ test('MAF-022 Version 1.2 A: no name is greyed for any role; names read as the n
   await expect(page.getByRole('button', { name: /can't pick/ })).toHaveCount(0);
 });
 
-test('MAF-026 / MAF-021: a player who is out: the pass screen line and the ghost guess', async ({ page }) => {
+test('MAF-026 / MAF-021 / Version 1.4 item 6: a player who is out: the pass screen line and the ghost guess', async ({ page }) => {
   await openFlow(page, 'night2-meena');
   await tap(page, button(page, "I'm Meena"));
   await tap(page, button(page, 'Tap to see your night job'));
@@ -191,7 +191,7 @@ test('MAF-026 / MAF-021: a player who is out: the pass screen line and the ghost
   await expect(page.getByText(exactly("You're out: pick who you think is Mafia."))).toBeVisible();
   await tap(page, button(page, "I'm Kabir"));
   await tap(page, button(page, 'Tap to see your night job'));
-  await expect(byId(page, 'job-line')).toHaveText(exactly("YOU'RE OUT · Ghost guess: who's Mafia? Pick one."));
+  await expect(byId(page, 'job-line')).toHaveText(exactly("YOU'RE OUT · Your guess: who is Mafia? Pick one."));
   await tap(page, nameButton(page, 'Zoya'));
   await expect(byId(page, 'result-line')).toHaveText(exactly('Your guess: Zoya.'));
 });
@@ -214,12 +214,12 @@ test('MAF-022 product owner 10: "Tap to hide" empties the job, names and result;
   await expect(mainButton(page)).toBeVisible();
 });
 
-test('MAF-028: Night over: "Host, take the phone and read the morning aloud."; "Read the morning" opens the morning', async ({ page }) => {
+test('MAF-028 / MAF-091 Version 1.4 item 2: Night over: "Host, take the phone and read the morning aloud."; "Read the morning" opens the morning', async ({ page }) => {
   await openFlow(page, 'morning1');
-  if (await heading(page, 'Night over.').isVisible().catch(() => false)) {
-    await expect(page.getByText(exactly('Host, take the phone and read the morning aloud.'))).toBeVisible();
-    await expect(mainButton(page)).toHaveText(exactly('Read the morning'));
-  }
+  // Version 1.4 item 2 (product owner, 26 October): a resume after the night's last pick opens N3, never M1.
+  await expect(heading(page, 'Night over.')).toBeVisible();
+  await expect(page.getByText(exactly('Host, take the phone and read the morning aloud.'))).toBeVisible();
+  await expect(mainButton(page)).toHaveText(exactly('Read the morning'));
   await toMorning(page);
   await expect(heading(page, 'Morning, day 1')).toBeVisible();
 });

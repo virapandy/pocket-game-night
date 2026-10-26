@@ -21,6 +21,8 @@ V2, V4, G1; the countdown and the tie screens resume at V2 with nothing selected
 
 **Version 1.1** (item 22): **MAF-091:** after a recorded `tie`, the game resumes at **V3** (the tied players); V3s and V4 resume as themselves, V4 with the role line shown at once.
 
+**Version 1.4 (product owner, 26 October; owner away)** (item 2; answers the Test role's row of 25 October): after the night's last pick and before "Read the morning", a resume opens **N3** ("Night over.", where-line "Night 2 · over", "Welcome back."), so the phone goes back to the host before the morning shows; never M1. Tests: `tests/browser/mafia-v14.spec.ts`, `mafia-deal-night.spec.ts` (MAF-028).
+
 ## MAF-092: Coming back the next day
 Status: approved, owner, 2026-10-25 (version 1.1, MF18)
 Phase: Mafia 1

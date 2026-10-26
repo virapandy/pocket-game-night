@@ -35,6 +35,8 @@ during the countdown → Day (timer state kept). Then the picker opens by itself
 
 **Version 1.1** (item 2): **Countdown (V1)** has no menu and no Pause; a leave can't start there. MAF-052's "by day" list is **M1, Y1, V2, V2t, V3, V3s, V4**. MAF-050's Pause list is B1, N0, N1, N3, M1, Y1, V2, V2t, V3, V3s, V4 and G1.
 
+**Version 1.4 (product owner, 26 October; owner away)** (item 6; class C1): the countdown heading (`mf.v1.1`) reads **"Everyone still playing: point at who you think is Mafia."**
+
 ## MAF-033: Who got the most fingers?
 Status: approved, owner, 2026-10-25 (version 1.1, MF18)
 Phase: Mafia 1
