@@ -5,7 +5,7 @@
 // a valid code and, on a board phone, only after "Open the map here".
 import { useId, useState } from 'react';
 import type { Preferences, SavedGameStore } from '../../../engine';
-import { BlocksRoot, QuietButton, Screen, ScrollArea } from '../../../blocks';
+import { BlocksRoot, QuietButton, Screen, ScrollArea, keepNames } from '../../../blocks';
 import { parseMapCode, WORDS } from '../rules';
 import {
   endNight, homeRowLine, isNight, lastNight, loadNight, resumeCardLine, startNewText, unfinishedNight, whereLine, type Night,
@@ -202,7 +202,7 @@ export function nightRow(saved: Night, card: boolean): { line: string; where: st
 export function NightRowButton({ row, className, testId, onClick }: { row: { line: string; where: string; label: string }; className: string; testId?: string; onClick: () => void }) {
   return (
     <button type="button" className={className} aria-label={row.label} onClick={onClick} {...(testId ? { 'data-testid': testId } : {})}>
-      <span className="sw-row-line">{row.line}</span>
+      <span className="sw-row-line">{keepNames(row.line)}</span>
       <span className="sw-row-where" data-testid="where-line">
         {row.where}
       </span>
@@ -277,14 +277,14 @@ export function SavedMapRow({ keys, onOpen }: { keys: Preferences; onOpen: (map:
   if (now - map.savedAt <= SIX_HOURS) {
     return (
       <button type="button" className="home-row" data-testid="saved-map" onClick={open}>
-        <span>{`Secret Words map ${shown(map.code)} · Tap to open`}</span>
+        <span>{keepNames(`Secret Words map ${shown(map.code)} · Tap to open`)}</span>
         <span aria-hidden="true">›</span>
       </button>
     );
   }
   return (
     <div className="home-row saved-tickets" data-testid="saved-map">
-      <span className="saved-tickets-text">{`Secret Words map ${shown(map.code)}`}</span>
+      <span className="saved-tickets-text">{keepNames(`Secret Words map ${shown(map.code)}`)}</span>
       <span className="saved-tickets-buttons">
         <button type="button" className="button button-quiet" onClick={open}>
           Open

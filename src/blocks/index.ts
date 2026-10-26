@@ -7,3 +7,4 @@ export { HideMainButton, MainButton, OptionButton, QuietButton } from './buttons
 export { Toast, useToast, type ToastState } from './toast';
 export { Dialog, Sheet, useBackCloses } from './overlays';
 export { BlocksRoot, Screen, ScreenContent, ScrollArea } from './screen';
+export { keepNames } from './names';

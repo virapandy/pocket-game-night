@@ -1,7 +1,7 @@
 // R1 Round over, G1 Game over and G2 Tonight's summary (lane W4): WAI-032, WAI-033, WAI-060 to WAI-064. They get their frame
 // (menu, Pause, dialogs, toasts) from Frame.tsx through `StepProps`.
 import { useState } from 'react';
-import { QuietButton, Screen, ScrollArea } from '../../../blocks';
+import { QuietButton, Screen, ScrollArea, keepNames } from '../../../blocks';
 import { joinNames, wordById } from '../rules';
 import type { StepProps } from './Frame';
 import { CuedScroll, GameMenu, HomeButton, Main, Scoreboard, WaiDialog } from './parts';
@@ -120,7 +120,7 @@ export function SummaryScreen(p: StepProps) {
         </div>
       </header>
       <ScrollArea>
-        <h1 className="pgn-title">Tonight's What Am I?</h1>
+        <h1 className="pgn-title">{keepNames("Tonight's What Am I?")}</h1>
         <p className="wai-body">{`${plural(t.players.length, 'player', 'players')} · ${plural(t.games, 'game', 'games')} · ${words(t.got)} got`}</p>
         <p className="wai-body wai-strong">{wins}</p>
         {best && <p className="wai-body">{best}</p>}

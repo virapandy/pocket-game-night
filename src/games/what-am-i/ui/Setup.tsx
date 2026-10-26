@@ -182,7 +182,7 @@ const HOLDS: readonly { hold: Hold; label: string; line: string }[] = [
   { hold: 'hand', label: "In the guesser's hand", line: 'Forehead or chest; the guesser moves it to answer.' },
   {
     hold: 'free',
-    label: 'Hands-free',
+    label: 'Stand the phone up',
     line: 'The phone stands behind the guesser; one clue giver taps to answer. Good for grandparents and small children.',
   },
 ];
@@ -314,7 +314,7 @@ export function readAloudText(c: Choices): string {
       : 'Got it? Move the phone down. Stuck? Move it up to pass.';
   return (
     'One of us holds the phone on their forehead or chest, screen to the room. Everyone else gives clues: talk, act, make ' +
-    `the noise, but never say the word. ${answer} Passing is free. Marked wrong? Fix it when time's up. You have ` +
+    `the noise, but never say the word. ${answer} Passing is free. A word in the wrong list? Fix it when time's up. You have ` +
     `${c.time} seconds. Play as many rounds as you like; tap End the game to see who got the most.`
   );
 }
@@ -354,7 +354,7 @@ const HOW_TO_PLAY = [
   'One player guesses. They hold the phone on their forehead or chest, screen facing the room.',
   'Everyone else gives clues: talk, act, make the noise. Never say the word.',
   'Got it? Phone down. Stuck? Phone up to pass. Passing is free.',
-  'Hands-free: stand the phone behind the guesser; a clue giver taps the bottom for Got it, the top to pass.',
+  'Or stand the phone up behind the guesser; a clue giver taps the bottom for Got it, the top to pass.',
   "When time's up, fix any word marked wrong, then save the score.",
   'One point for each word you got. Passing costs nothing.',
   'The room decides if a clue broke the rules.',

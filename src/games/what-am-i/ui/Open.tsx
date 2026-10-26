@@ -1,6 +1,6 @@
 // What Am I? outside its own screens (lane W2): Home's unfinished row (WAI-090, WAI-091), the shared Start new dialog
 // (WAI-001, Version 1.1 item 41) and a past game night in History (WAI-092).
-import { BlocksRoot, QuietButton, Screen, ScreenContent } from '../../../blocks';
+import { BlocksRoot, QuietButton, Screen, ScreenContent, keepNames } from '../../../blocks';
 import type { SavedGame } from '../../../engine';
 import { joinNames } from '../rules';
 import { historyTitle, loadNight } from './night';
@@ -11,7 +11,7 @@ import './wai.css';
 export function NightRowButton({ row, onClick }: { row: { line1: string; line2: string }; onClick: () => void }) {
   return (
     <button type="button" className="wai-night-row" onClick={onClick}>
-      <span className="wai-row-line">{row.line1}</span>
+      <span className="wai-row-line">{keepNames(row.line1)}</span>
       <span className="wai-row-more">{row.line2}</span>
     </button>
   );
@@ -52,7 +52,7 @@ export function PastNight({ saved, onBack, onPlayAgain }: { saved: SavedGame; on
           <header className="wai-bar">
             <QuietButton onClick={onBack}>← Back</QuietButton>
           </header>
-          <h1 className="pgn-title">{historyTitle(saved) ?? 'What Am I?'}</h1>
+          <h1 className="pgn-title">{keepNames(historyTitle(saved) ?? 'What Am I?')}</h1>
           <p className="wai-small">{dateTime(saved.createdAt)}</p>
           {s && s.past.length > 0 && <p className="wai-body">{joinNames(playersOf(s.past))}</p>}
           {s && (

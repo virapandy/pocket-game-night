@@ -1,6 +1,7 @@
 // History (PLT-007 to PLT-013, PLT-025): past games, newest first, kept only on this phone; deleting a past
 // game with undo for 5 seconds, clearing all history, and the tally a deleted game is taken out of.
 import { useEffect, useState } from 'react';
+import { keepNames } from '../blocks';
 import { inTally, type SavedGame } from '../engine';
 import { mafia } from '../games/mafia';
 import { games, secretWords, whatAmI } from './games';
@@ -163,7 +164,7 @@ export function History({
               return (
                 <li key={g.id}>
                   <button type="button" className="history-row" data-testid="history-game" onClick={() => onOpen(g.id)}>
-                    <span className="history-title">{secretWords.isNight(g) ? secretWords.historyTitle(g) : whatAmI.historyTitle(g)}</span>
+                    <span className="history-title">{keepNames((secretWords.isNight(g) ? secretWords.historyTitle(g) : whatAmI.historyTitle(g)) ?? '')}</span>
                     <span>
                       {dateTime(g.createdAt)}
                       {session ? ` · ${session}` : ''}
@@ -177,7 +178,7 @@ export function History({
             return (
               <li key={g.id}>
                 <button type="button" className="history-row" data-testid="history-game" onClick={() => onOpen(g.id)}>
-                  <span className="history-title">{'rounds' in d ? `${game.info.title} · ${d.result}` : game.info.title}</span>
+                  <span className="history-title">{keepNames('rounds' in d ? `${game.info.title} · ${d.result}` : game.info.title)}</span>
                   <span>
                     {dateTime(g.createdAt)}
                     {session ? ` · ${session}` : ''}
