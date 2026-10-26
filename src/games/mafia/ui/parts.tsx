@@ -417,6 +417,15 @@ export function MoreBelow({ box, watch, inline }: { box: HTMLElement | null; wat
       clearTimeout(later);
     };
   }, [box, check, watch]);
+  // `inline` keeps its strip even with no cue (an empty line), so the box never changes height as the cue comes and goes:
+  // what scrolls with the page moves exactly as far as the page (Version 1.4 item 5), on WebKit too.
+  if (inline && (!at || !box || covered)) {
+    return (
+      <div className="maf-more maf-more-inline" aria-hidden="true" style={{ visibility: 'hidden' }}>
+        {'\u00a0'}
+      </div>
+    );
+  }
   if (!at || !box || covered) return null;
   if (inline) {
     return (

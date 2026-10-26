@@ -64,7 +64,8 @@ function statusOf(v: MafiaView, p: string): string {
   return v.left.includes(p) ? D.g1.left : D.g1.inToEnd;
 }
 
-/** MAF-060: Game over. The list scrolls; the quiet buttons and the main button stay put below it (never under it). */
+/** MAF-060: Game over. The list scrolls, with "Change players or roles" and "← Home" at its end; "End for tonight" and the
+ * main button stay put below it (never under it). */
 export function G1({ ctx }: { ctx: RoomCtx }) {
   const v = ctx.view;
   const [each, setEach] = useState(false);
@@ -127,12 +128,15 @@ export function G1({ ctx }: { ctx: RoomCtx }) {
         {tally.village + tally.mafia > 0 && (
           <p className="maf-small">{D.g1.tally(tally.village, tally.mafia)}</p>
         )}
+        {/* Version 1.4 item 5: these two scroll with the page; "End for tonight" and "Play again" stay pinned. */}
+        <div className="maf-quiet-row">
+          <Quiet onClick={ctx.changePlayers}>{D.g1.change}</Quiet>
+          <Quiet onClick={ctx.home}>{T.home}</Quiet>
+        </div>
       </div>
       <MoreBelow box={box} watch={`${each}:${ctx.endUndo}`} inline />
-      <div className="maf-quiet-row">
-        <Quiet onClick={ctx.changePlayers}>{D.g1.change}</Quiet>
+      <div className="maf-quiet-row maf-g1-pinned">
         <Quiet onClick={ctx.askEndTonight}>{D.g1.endTonight}</Quiet>
-        <Quiet onClick={ctx.home}>{T.home}</Quiet>
       </div>
       <Main onClick={ctx.playAgain}>{D.g1.again}</Main>
     </div>

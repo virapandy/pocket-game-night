@@ -226,6 +226,14 @@
 @media (orientation: landscape) and (max-height: 600px) {
   .maf .pgn-main:not(.pgn-main-inline) { width: min(358px, calc(50% - var(--pgn-gutter))); }
 }
+/* MAF-060 Version 1.4 item 5: on a short landscape screen the pinned "End for tonight" sits in the foot, left of the main
+   button (the foot is kept free for it, so nothing scrolls under it), leaving the list more room. */
+@media (orientation: landscape) and (max-height: 600px) {
+  .maf-g1 > .maf-g1-pinned {
+    position: fixed; z-index: 5; left: max(var(--pgn-gutter), env(safe-area-inset-left)); bottom: max(var(--pgn-gutter), env(safe-area-inset-bottom));
+    height: var(--pgn-main-h); width: calc(50% - 2 * var(--pgn-gutter)); align-items: center; flex-wrap: nowrap;
+  }
+}
 
 /* Home's row and the Start new dialog (MAF-001, MAF-091) */
 .maf-night-row {

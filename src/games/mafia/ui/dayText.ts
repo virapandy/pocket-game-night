@@ -50,7 +50,7 @@ export const D = {
   },
   // mf.v1.*
   v1: {
-    heading: "Everyone in, point at who you think is Mafia.",
+    heading: "Everyone still playing: point at who you think is Mafia.",
     only: (names: readonly string[]) => `Point only at ${orList(names)}`,
     steps: ["3", "2", "1", "Point!"],
     notYet: "Not yet",

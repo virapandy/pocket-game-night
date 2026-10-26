@@ -43,7 +43,7 @@ export const P = {
 
 /** MAF-011: the role word (in capitals by CSS) and the two lines under it; the Mafia's line 1 is the partner line. */
 export const CARD: Record<Role, { word: string; lines: [string, string] }> = {
-  mafia: { word: 'Mafia', lines: ['', 'At night, you pick who goes out. By day, act like a Villager.'] },
+  mafia: { word: 'Mafia', lines: ['', 'At night, you pick who is out. By day, act like a Villager.'] },
   doctor: { word: 'Doctor', lines: ['At night, pick someone to protect from the Mafia.', 'Yourself once a game. Never the same person two nights running.'] },
   police: { word: 'Police', lines: ['At night, check one person.', 'The phone tells only you: Mafia or Not Mafia.'] },
   villager: { word: 'Villager', lines: ['You have no night power.', 'By day, talk, watch and find the Mafia.'] },
@@ -51,7 +51,7 @@ export const CARD: Record<Role, { word: string; lines: [string, string] }> = {
 
 /** MAF-012: "First time? What this role means", three lines per role. */
 export const FIRST_TIME: Record<Role, [string, string, string]> = {
-  mafia: ['Your side wins when the Mafia are as many as everyone else.', 'At night, pick who goes out.', 'By day, join in and point at others. Stay calm!'],
+  mafia: ['Your side wins when the Mafia are as many as everyone else.', 'At night, pick who is out.', 'By day, join in and point at others. Stay calm!'],
   doctor: ['Your side wins when every Mafia is out.', 'At night, protect one person.', "If you protect the Mafia's pick, nobody goes out."],
   police: ['Your side wins when every Mafia is out.', 'At night, check one person.', 'You choose whether to tell the room what you found.'],
   villager: ['Your side wins when every Mafia is out.', 'At night, pick who you think is Mafia. Only you see it.', 'By day, listen, ask questions and vote.'],
@@ -80,14 +80,14 @@ export function partnerLine(partners: readonly string[], out: readonly string[],
 /** N2 job lines (MAF-023 to MAF-026); the role word is upper case in the text itself (text.csv). */
 export const JOB = {
   mafiaFirst: (see: readonly string[]) =>
-    see.length > 0 ? `MAFIA · Pick who goes out tonight. ${andList(see)} will see your pick.` : 'MAFIA · Pick who goes out tonight.',
+    see.length > 0 ? `MAFIA · Pick who is out tonight. ${andList(see)} will see your pick.` : 'MAFIA · Pick who is out tonight.',
   /** "MAFIA · Arjun's pick: KABIR. Tap Kabir to agree, or pick someone else." in three parts (KABIR in capitals by CSS). */
   mafiaLater: (by: string, target: string) => [`MAFIA · ${by}'s pick: `, target, `. Tap ${target} to agree, or pick someone else.`] as const,
   doctor: 'DOCTOR · Pick someone to protect tonight.',
   police: 'POLICE · Pick someone to check.',
   policeNone: 'POLICE · Nobody left to check.',
   villager: 'VILLAGER · Who do you think is Mafia? Think, then pick. Only you see this.',
-  ghost: "YOU'RE OUT · Ghost guess: who's Mafia? Pick one.",
+  ghost: "YOU'RE OUT · Your guess: who is Mafia? Pick one.",
 } as const;
 
 /** N2 result lines (MAF-023 to MAF-026). */
@@ -100,7 +100,7 @@ export const RESULT = {
   police: (pick: string, mafia: boolean) => (mafia ? `${pick}: MAFIA.` : `${pick}: Not Mafia.`),
   /** Version 1.2 A: a Police with nobody left to check taps any name. */
   policeNone: 'Nobody left to check.',
-  villager: (pick: string) => `You think it's ${pick}. At the end we'll see if you were right.`,
+  villager: (pick: string) => `You think it's ${pick}. The best Mafia spotter is named at the end.`,
   ghost: (pick: string) => `Your guess: ${pick}.`,
 } as const;
 

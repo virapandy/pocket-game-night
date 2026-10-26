@@ -251,6 +251,7 @@ export function HowToPlay({ onDone }: { onDone: () => void }) {
         </ol>
         <RulesBox />
         <p className="maf-body">{T.s4.peek}</p>
+        <p className="maf-body">{T.s4.stop}</p>
       </ScreenContent>
       <Main onClick={onDone}>{T.s4.done}</Main>
     </Screen>

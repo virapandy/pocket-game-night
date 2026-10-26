@@ -64,6 +64,7 @@ export const T = {
       'Game over: every role is shown, with what happened each night. Play again with new roles.',
     ],
     peek: "Saw someone's screen? Keep it to yourself and carry on. Before the first night, Deal again instead.",
+    stop: "Need to stop during someone's turn? Let them finish, or close the app: the game is saved.",
     done: 'Done',
   },
   // Where-lines (MAF-090, item 3)
