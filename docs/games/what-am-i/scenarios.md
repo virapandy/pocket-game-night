@@ -1,6 +1,6 @@
-# What Am I?: scenarios (version 1.3, approved 24 October 2026)
+# What Am I?: scenarios (version 1.4, 26 October 2026; 1.3 approved 24 October, 1.4 product owner's calls)
 
-Status: **version 1.3 approved by the owner, 24 October 2026** ("Approved: What Am I? scenarios version 1.3. Hand them to the tester."). Read each scenario together with the "Version 1.1", "1.2" and "1.3" sections, which win over the text they name.
+Status: **version 1.3 approved by the owner, 24 October 2026** ("Approved: What Am I? scenarios version 1.3. Hand them to the tester."). Read each scenario together with the "Version 1.1" to "1.4" sections: a later one wins over an earlier one and over the text it names.
 `words.md` and the What Am I? decisions in `docs/decisions.md` (WA1–WA10 and the rows of 23 October). Written to
 `docs/spec-rules.md`. Before approval: the two-reader check (rule 12), then the owner. After approval the tester copies each
 section into `specs/what-am-i/` (file names in the headings) and writes tests. Build only after Secret Words is released
@@ -20,6 +20,30 @@ in 04).
 - **R3. Mix of all lists a word once** even when it sits in two packs (Bat, Swimming): 724 words with non-veg on, 714 off (edition 1 after the second Jev check).
 - **R4. A player who leaves keeps their points on the scoreboard,** marked "(left)", and is never the winner unless they
   rejoin (a leaver can't share the win).
+
+## Version 1.4: the release candidates' walk list and the away calls (product owner, 26 October; owner away) → a 1.5.x point release
+**Wins over Versions 1.1 to 1.3 and the text they name.** Product owner's calls (wording and screen detail); no rule changes.
+C1 for wording, C2 for item 2.
+1. **Calls made while the owner was away: confirmed** (`docs/test-questions.md`, 25 October rows): the rule API fields; the
+   edition saved with a game night, refused reorders, tie order, a night without its seed refused; **a word never comes back
+   within the same turn**; G1's "Change players or words" path.
+2. **Which half is Got it (WAI-020):** T3 shows two small lines (15 px; 19 px with Larger text), in both holds: **"Pass"**
+   centred directly under the top small line, and **"Got it"** centred 8 px above the bottom edge of the screen as the room reads
+   it (after any WAI-024 turn). They are text, not buttons; a tap on them counts for their marking area (as `time-left`). The
+   word's fit size (WAI-020 / 1.1 item 23, 96 px down to 40 px) is computed for the space left between them; at 568 × 320 the
+   longest word still fits at 40 px. Basis: the 1.5.0 and 1.5.1 player walks (some); ours (no outside source checked).
+3. **Words for weak-English readers:**
+   - "Hands-free" → **"Stand the phone up"** everywhere on screen: S2's option (its small line unchanged); T1's quiet buttons
+     "Stand the phone up for Riya" / "Riya will hold it"; the hold line "Stand the phone up (Riya's choice)"; Read this aloud's
+     hands-free sentence starts "Or stand the phone up behind the guesser; …". The `free` hold keeps its name in code.
+   - "Top so far" → "Riya: 14 in all · the most so far"; a shared top "Most so far: Arjun and Meena 12" (1.3 item 3).
+   - "Marked wrong? Tap a word to move it." → **"A word in the wrong list? Tap it to move it."**; Read this aloud's "Marked
+     wrong? Fix it when time's up." → "A word in the wrong list? Fix it when time's up."
+   - "Read this aloud" **stays**: the same heading in four games (word guidelines A1, one word per idea).
+4. **Kept, by design:** taps in the 1.4 s after a mark are ignored (the "Got it!" / "Pass" flash shows the mark counted; a second
+   tap must not mark the next word); "Answer by moving the phone?" has no Home (it's one question before the turn; Back returns
+   to T1, build answers item 17); a word hidden by a pause or a reload comes back later without a message (saying it would show
+   the word to the next guesser).
 
 ## Version 1.1: the two-reader check (coder-reader and tester-reader, 23 October)
 **Every item below wins over the earlier text of the scenario it names.** Items marked C3 are rules; the rest are screens.
