@@ -1,8 +1,8 @@
 # What Am I?: 03 A turn (marking rules C3; screens C2)
 
-Copied from `docs/games/what-am-i/scenarios.md` version 1.3 (approved by the owner, 24 October 2026). Each scenario
-carries the Version 1.1, 1.2 and 1.3 items that name it, word for word; a later version wins over earlier text in the
-same scenario (1.3 over 1.2 over 1.1 over the body). Terms, canonical strings and test hooks: [README.md](README.md);
+Copied from `docs/games/what-am-i/scenarios.md` version 1.3 (approved by the owner, 24 October 2026) with Version 1.4 (product owner, 26 October 2026). Each scenario
+carries the Version 1.1 to 1.4 items that name it, word for word; a later version wins over earlier text in the
+same scenario (1.4 over 1.3 over 1.2 over 1.1 over the body). Terms, canonical strings and test hooks: [README.md](README.md);
 the exact rule API and browser hooks the tests use: [api.md](api.md).
 
 ### WAI-012 The pass screen
@@ -24,6 +24,11 @@ current length); the tip line (WAI-011); quiet "Someone else goes first", "← H
 
 **Version 1.2** (wins over the text above, and over Version 1.1):
 1.2 item 3: **Score line** "Round 1 · player 1 of 6" (was "turn 1 of 6"; walks mixed "turn" and "round"); same k and n as Version 1.1 item 31.
+
+**Version 1.4** (product owner, 26 October 2026; wins over the text above, and over Versions 1.1 to 1.3):
+1.4 item 3: "Hands-free" → **"Stand the phone up"** everywhere on screen: S2's option (its small line unchanged); T1's quiet buttons
+   "Stand the phone up for Riya" / "Riya will hold it"; the hold line "Stand the phone up (Riya's choice)"; Read this aloud's
+   hands-free sentence starts "Or stand the phone up behind the guesser; …". The `free` hold keeps its name in code.
 
 ### WAI-013 Motion permission and the motion question
 Status: approved · Phase: What Am I? 1
@@ -49,11 +54,20 @@ Motion needs hand hold and Settings "Answer by moving the phone" on (default on)
 **Version 1.2** (wins over the text above, and over Version 1.1):
 1.2 item 14: **Motion off by choice** (distracted host): T0's paragraph ends "You can change this in Settings."
 
+**Version 1.4** (product owner, 26 October 2026; wins over the text above, and over Versions 1.1 to 1.3):
+1.4 item 4 (kept, by design): "Answer by moving the phone?" has no Home (it's one question before the turn; Back returns to T1,
+   build answers item 17).
+
 ### WAI-014 Hands-free for one player
 Status: approved · Phase: What Am I? 1
 "Hands-free for Riya" on T1 switches T1 to the hands-free layout for Riya now and on her later turns in this game, recording
 `setHold { player: 'Riya', hold: 'free' }`; "Riya will hold it" does the reverse. A player's override ends with the game (Play
 again starts from S2's hold). Nothing else changes.
+
+**Version 1.4** (product owner, 26 October 2026; wins over the text above, and over Versions 1.1 to 1.3):
+1.4 item 3: "Hands-free" → **"Stand the phone up"** everywhere on screen: S2's option (its small line unchanged); T1's quiet buttons
+   "Stand the phone up for Riya" / "Riya will hold it"; the hold line "Stand the phone up (Riya's choice)"; Read this aloud's
+   hands-free sentence starts "Or stand the phone up behind the guesser; …". The `free` hold keeps its name in code.
 
 ### WAI-015 Someone else goes first
 Status: approved · Phase: What Am I? 1
@@ -114,6 +128,16 @@ side at each short edge (where hands grip).
    unchanged).
 1.3 item 9: **T3 sizes** (distracted host, guest): `time-left` 28 px bold; the pack name 18 px (22 px with Larger text).
 
+**Version 1.4** (product owner, 26 October 2026; wins over the text above, and over Versions 1.1 to 1.3):
+1.4 item 2: **Which half is Got it (WAI-020):** T3 shows two small lines (15 px; 19 px with Larger text), in both holds: **"Pass"**
+   centred directly under the top small line, and **"Got it"** centred 8 px above the bottom edge of the screen as the room reads
+   it (after any WAI-024 turn). They are text, not buttons; a tap on them counts for their marking area (as `time-left`). The
+   word's fit size (WAI-020 / 1.1 item 23, 96 px down to 40 px) is computed for the space left between them; at 568 × 320 the
+   longest word still fits at 40 px. Basis: the 1.5.0 and 1.5.1 player walks (some); ours (no outside source checked).
+Tester's reading for the tests: "directly under" = the label's top within 16 px below the top line's bottom, nothing between;
+   "centred" = its centre within 2 px of the screen's centre line (as the room reads it); neither label overlaps the word, the
+   pack name, `time-left` or the Pause button, at every size, in both holds, with Larger text and after a WAI-024 turn.
+
 ### WAI-021 Marking
 Status: approved · Phase: What Am I? 1
 - **Got it:** a tap in the bottom marking area, or (motion on) θ − θ₀ ≤ −40° held for 150 ms. **Pass:** a tap in the top
@@ -153,6 +177,10 @@ Status: approved · Phase: What Am I? 1
 1.2 item 8: **θ₀ only when steady** (critic 1): θ₀ is set from [2500, 3000) ms of T2 only if every event there is within 10 of their mean
    and |mean| < 35. Otherwise θ₀ is set from the first 500 ms span of T3 whose events are all within 10 of their mean; until then
    motion marks are ignored (taps work).
+
+**Version 1.4** (product owner, 26 October 2026; wins over the text above, and over Versions 1.1 to 1.3):
+1.4 item 4 (kept, by design): taps in the 1.4 s after a mark are ignored (the "Got it!" / "Pass" flash shows the mark counted; a
+   second tap must not mark the next word).
 
 ### WAI-022 Sounds and vibration
 Status: approved · Phase: What Am I? 1

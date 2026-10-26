@@ -1,8 +1,8 @@
-# What Am I?: scenarios (version 1.3, approved by the owner, 24 October 2026)
+# What Am I?: scenarios (version 1.3, approved by the owner, 24 October 2026; Version 1.4, product owner, 26 October 2026)
 
-Copied from `docs/games/what-am-i/scenarios.md` (version 1.3), the binding contract, split into one file per section as its
-headings name (05 and 08 are not used). **Each scenario carries, word for word, the Version 1.1, 1.2 and 1.3 items that name
-it; a later version wins over earlier text in the same scenario (1.3 over 1.2 over 1.1 over the body).** The version
+Copied from `docs/games/what-am-i/scenarios.md` (version 1.3 with its Version 1.4 section), the binding contract, split into one file per section as its
+headings name (05 and 08 are not used). **Each scenario carries, word for word, the Version 1.1 to 1.4 items that name
+it; a later version wins over earlier text in the same scenario (1.4 over 1.3 over 1.2 over 1.1 over the body).** The version
 sections below are kept whole as well, for the items that touch every screen (Terms, the guard, the hooks). Where an older
 canonical string below differs from a scenario's version item, the version item wins (for example T3's top line, R1's h1,
 "End Riya's turn now", the sound tip, the Paused body).
@@ -45,6 +45,38 @@ in 04).
 - **R3. Mix of all lists a word once** even when it sits in two packs (Bat, Swimming): 724 words with non-veg on, 714 off (edition 1 after the second Jev check).
 - **R4. A player who leaves keeps their points on the scoreboard,** marked "(left)", and is never the winner unless they
   rejoin (a leaver can't share the win).
+
+## Version 1.4: the release candidates' walk list and the away calls (product owner, 26 October; owner away) → a 1.5.x point release
+**Wins over Versions 1.1 to 1.3 and the text they name.** Product owner's calls (wording and screen detail); no rule changes.
+C1 for wording, C2 for item 2.
+1. **Calls made while the owner was away: confirmed** (`docs/test-questions.md`, 25 October rows): the rule API fields; the
+   edition saved with a game night, refused reorders, tie order, a night without its seed refused; **a word never comes back
+   within the same turn**; G1's "Change players or words" path.
+2. **Which half is Got it (WAI-020):** T3 shows two small lines (15 px; 19 px with Larger text), in both holds: **"Pass"**
+   centred directly under the top small line, and **"Got it"** centred 8 px above the bottom edge of the screen as the room reads
+   it (after any WAI-024 turn). They are text, not buttons; a tap on them counts for their marking area (as `time-left`). The
+   word's fit size (WAI-020 / 1.1 item 23, 96 px down to 40 px) is computed for the space left between them; at 568 × 320 the
+   longest word still fits at 40 px. Basis: the 1.5.0 and 1.5.1 player walks (some); ours (no outside source checked).
+3. **Words for weak-English readers:**
+   - "Hands-free" → **"Stand the phone up"** everywhere on screen: S2's option (its small line unchanged); T1's quiet buttons
+     "Stand the phone up for Riya" / "Riya will hold it"; the hold line "Stand the phone up (Riya's choice)"; Read this aloud's
+     hands-free sentence starts "Or stand the phone up behind the guesser; …". The `free` hold keeps its name in code.
+   - "Top so far" → "Riya: 14 in all · the most so far"; a shared top "Most so far: Arjun and Meena 12" (1.3 item 3).
+   - "Marked wrong? Tap a word to move it." → **"A word in the wrong list? Tap it to move it."**; Read this aloud's "Marked
+     wrong? Fix it when time's up." → "A word in the wrong list? Fix it when time's up."
+   - "Read this aloud" **stays**: the same heading in four games (word guidelines A1, one word per idea).
+4. **Kept, by design:** taps in the 1.4 s after a mark are ignored (the "Got it!" / "Pass" flash shows the mark counted; a second
+   tap must not mark the next word); "Answer by moving the phone?" has no Home (it's one question before the turn; Back returns
+   to T1, build answers item 17); a word hidden by a pause or a reload comes back later without a message (saying it would show
+   the word to the next guesser).
+
+**Tester's readings for the tests** (26 October; asked in `docs/test-questions.md`, the product owner to confirm):
+- Item 3, How to play: Read this aloud's card (WAI-005) has no "Hands-free" in it; the sentence that starts "Hands-free: stand the
+  phone behind the guesser; …" is How to play's line 4. It reads "Or stand the phone up behind the guesser; a clue giver taps the
+  bottom for Got it, the top to pass." WAI-005's hands-free sentences stay as they are.
+- Item 3, T4's totals line: one player ahead reads like the shared top: "Riya: 9 in all · Most so far: Arjun 14".
+- Item 2: "directly under" = the "Pass" label's top within 16 px below the top line's bottom; "centred" = within 2 px of the
+  centre line as the room reads the screen; neither label overlaps the word, the pack name, `time-left` or Pause.
 
 ## Version 1.1: the two-reader check (coder-reader and tester-reader, 23 October)
 **Every item below wins over the earlier text of the scenario it names.** Items marked C3 are rules; the rest are screens.
@@ -301,14 +333,14 @@ Plurals: "1 word" / "2 words"; "1 turn" / "2 turns"; "1 game" / "2 games"; "6 pl
 | Picker card | "What Am I?" · "Phone on your forehead, the room gives clues · One phone, passed round · 2–20 players" | button, name starts "What Am I?" | WAI-001 |
 | Home unfinished row | line 1 "What Am I? · Round 2 · Arjun's turn"; line 2 "Riya, Arjun +4 · 8:05 pm · Tap to resume" | inside `unfinished-games` | WAI-091 |
 | Who's playing? | h1 "Who's playing?"; small line "Players take turns in this order. Drag a name to move it."; "What Am I? needs at least 2 players."; "Up to 20 players."; Impostor's duplicate message "Riya is already playing. Add an initial, like Riya S."; toast "Kabir removed · Undo" | h1; small line; `role="alert"`; toast | WAI-002 |
-| Words and time | h1 "Words and time"; h2 "Which words?", "Time for each turn", "How to hold the phone"; line under Mix of all "Words from every pack."; time line "30 s for small kids, 90 s for grandparents"; hold lines (WAI-003); switches "Include non-veg food (chicken, fish, egg)", "Sounds"; sound line on "So the guesser knows a word counted." / off "The guesser won't know a word counted."; line "Ready as it is, or change anything above."; main "Start with these words" / from R1 "Carry on playing" | h1; h2; radio groups; switches; main | WAI-003 |
+| Words and time | h1 "Words and time"; h2 "Which words?", "Time for each turn", "How to hold the phone"; line under Mix of all "Words from every pack."; time line "30 s for small kids, 90 s for grandparents"; hold options "In the guesser's hand" / "Stand the phone up" (Version 1.4 item 3; was "Hands-free") with their lines (WAI-003); switches "Include non-veg food (chicken, fish, egg)", "Sounds"; sound line on "So the guesser knows a word counted." / off "The guesser won't know a word counted."; line "Ready as it is, or change anything above."; main "Start with these words" / from R1 "Carry on playing" | h1; h2; radio groups; switches; main | WAI-003 |
 | Pack option | "<Pack> · <n> words" (e.g. "Animals · 93 words"; "Mix of all · 714 words") | radio label | WAI-003 |
-| Read this aloud | h1 "Read this aloud"; the card text of WAI-005; main "First turn" | h1; paragraph; main | WAI-005 |
-| Pass screen | h1 "Riya, you're guessing"; hold line, rule line, score line, tip line (WAI-011); quiet "Someone else goes first", "Hands-free for Riya" / "Riya will hold it", "Players (6) ›", "← Home (game saved)"; main "I'm Riya: start" / "Start Riya's turn" | h1; small lines; quiet buttons; main | WAI-011 |
+| Read this aloud | h1 "Read this aloud"; the card text of WAI-005 ("A word in the wrong list? Fix it when time's up.", Version 1.4 item 3); main "First turn" | h1; paragraph; main | WAI-005 |
+| Pass screen | h1 "Riya, you're guessing"; hold line, rule line, score line, tip line (WAI-011); quiet "Someone else goes first", "Stand the phone up for Riya" / "Riya will hold it" (Version 1.4 item 3), "← Home (game saved)" (no "Players (6) ›", Version 1.1 item 50); hold line "Stand the phone up (Riya's choice)"; main "I'm Riya: start" / "Start Riya's turn" | h1; small lines; quiet buttons; main | WAI-011 |
 | Motion question | h1 "Answer by moving the phone?"; "Move the phone down for Got it, up for Pass. Your phone will ask once."; quiet "Use taps instead"; main "Yes, move the phone"; toast "Tap bottom: Got it · Tap top: Pass" | h1; paragraph; buttons; toast | WAI-013 |
 | Countdown | "3", "2", "1"; line "Put it on your forehead or chest!" / hands-free "Riya, don't turn round!" | `countdown`; small line | WAI-016 |
-| Word screen | top line "Give clues. Don't say the word!" / hands-free "Clue givers: tap bottom for Got it, top for Pass."; the word; pack name; time "0:34"; flashes "Got it!" / "Pass"; button "Pause" | small line; `the-word`; small line; `time-left`; `mark-flash`; button | WAI-020 |
-| Time's up | h1 "Time's up! Riya got 5"; h2 "Got it", "Passed"; word buttons "Owl" / moved "Owl ↺"; lines "Marked wrong? Tap a word to move it.", "Next: Arjun" / last of round "Next: round over"; quiet "← Home (game saved)"; main "Save score"; toast "Riya: 5 saved · Undo" | h1; h2; buttons; small lines; main; `undo-toast` | WAI-030, 031 |
+| Word screen | top line "Give clues. Don't say the word!" / hands-free "Clue givers: tap bottom for Got it, top for Pass."; the word; pack name; time "0:34"; labels "Pass" (under the top line) and "Got it" (8 px above the bottom edge), 15 px / 19 px Larger text (Version 1.4 item 2); flashes "Got it!" / "Pass"; button "Pause" | small line; `the-word`; small line; `time-left`; two small lines (text, not buttons); `mark-flash`; button | WAI-020 |
+| Time's up | h1 "Time's up! Riya got 5"; h2 "Got it", "Passed"; word buttons "Owl" / moved "Owl ↺"; totals line "Riya: 9 in all · Most so far: Arjun 14" / "Riya: 14 in all · the most so far" / "Most so far: Arjun and Meena 12" (Version 1.4 item 3); lines "A word in the wrong list? Tap it to move it." (Version 1.4 item 3), "Next: Arjun" / last of round "Next: round over"; quiet "← Home (game saved)"; main "Save score"; toast "Riya: 5 saved · Undo" | h1; h2; buttons; small lines; main; `undo-toast` | WAI-030, 031 |
 | Round over | h1 "Round 1 done"; scoreboard rows "Arjun 7 (1 turn)"; line "Words nobody got: Penguin, Zebra"; small line "Play as many rounds as you like; tap End the game to see who got the most."; quiet "Players (6) ›", "Change players or words", "End the game", "← Home (game saved)"; main "Round 2" | h1; `scoreboard` list; small lines; buttons | WAI-033 |
 | Paused | dialog "Paused"; where-line; "The word is hidden. Tap Carry on playing when you're ready."; quiet "End Riya's turn now", "← Home (game saved)"; main "Carry on playing" | dialog | WAI-040 |
 | Skip | dialog "End Riya's turn now?"; "Words marked so far still count."; "End Riya's turn now" / "Carry on playing" (main) | dialog | WAI-043 |

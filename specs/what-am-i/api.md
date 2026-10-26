@@ -43,10 +43,10 @@ The `notes` column stays out. The tests compare the file with the CSV row for ro
 ```ts
 { gameId: 'what-am-i', seeds: { words: string }, config: { edition?: number; testWords?: WaiWord[] } }
 ```
-**WAI-010 (orchestrator's call, 25 October 2026):** `seeds.words` is required: a setup without it (or with an empty or
+**WAI-010 (orchestrator's call, 25 October 2026; confirmed by the product owner, 26 October):** `seeds.words` is required: a setup without it (or with an empty or
 non-text value) is refused, that is `startMatch` (the rules' `setup`) throws.
 
-**Word-list editions (WAI-092, orchestrator's call, 25 October 2026, `docs/test-questions.md`):** the app starts every new
+**Word-list editions (WAI-092, orchestrator's call, 25 October 2026, `docs/test-questions.md`; confirmed by the product owner, 26 October):** the app starts every new
 game night with `config.edition = whatAmIEdition`, so the saved night records the edition it was played with. The rules use
 only words with `edition <= config.edition` that were not retired by then (`retired_in` null or greater than
 `config.edition`); a saved night with no `edition` is treated as edition 1. So a night saved under edition 1 replays word for
@@ -72,7 +72,7 @@ type Choices = { pack: Pack | 'mix'; time: 30 | 60 | 90; hold: 'hand' | 'free'; 
 { type: 'setChoices'; choices: Choices } | { type: 'setPlayers'; players: string[] }
 { type: 'endGame' } | { type: 'endEvening' }
 ```
-**WAI-010, no word twice in a turn (orchestrator's call, 25 October 2026, owner away; for the product owner to confirm in
+**WAI-010, no word twice in a turn (orchestrator's call, 25 October 2026, owner away; confirmed by the product owner, 26 October,
 `docs/test-questions.md`):** a word never comes back within the same turn. "Shown in this turn" means marked Got it or Pass
 in it (a word hidden by a pause is not shown, so it can still come back, as Duck does in Version 1.1 item 6). When every
 eligible word has been shown in the open turn (only possible with a tiny list, such as the WAI-H7 lists), there is no next
@@ -131,7 +131,7 @@ interface Tonight {
   got: number;                  // Got it over every saved turn of tonight's ended games
   wins: { player: string; wins: number }[];   // most first, ties in turn order; only players with a win
   best: { players: string[]; got: number } | null;   // most Got it tonight (ties: every one, in turn order)
-  //  "turn order" (WAI-061, WAI-064; orchestrator's call, 25 October 2026): the current (last game's) turn order, then
+  //  "turn order" (WAI-061, WAI-064; orchestrator's call, 25 October 2026; confirmed 26 October): the current (last game's) turn order, then
   //  everyone not in it (leavers, players not in the last game) in the order of their first saved turn tonight
 }
 ```

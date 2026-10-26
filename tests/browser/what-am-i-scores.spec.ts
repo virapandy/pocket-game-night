@@ -24,7 +24,7 @@ test.describe('WAI-030: Time\'s up', () => {
     await expect(heading(page, 'Passed')).toBeVisible();
     expect(await chipNames(page, 'Got it')).toEqual([w[0], w[2]]);
     expect(await chipNames(page, 'Passed')).toEqual([w[1], want[3]]);
-    await expect(text(page, 'Marked wrong? Tap a word to move it.')).toBeVisible();
+    await expect(text(page, 'A word in the wrong list? Tap it to move it.')).toBeVisible(); // Version 1.4 item 3
     await expect(text(page, 'Next: Arjun')).toBeVisible();
     await expect(button(page, '← Home (game saved)')).toBeVisible();
     await expect(pauseButton(page)).toBeVisible();
@@ -58,32 +58,32 @@ test.describe('WAI-030: Time\'s up', () => {
     expect((await moves(page)).filter((m) => m.type === 'fix')).toHaveLength(2);
   });
 
-  test('Version 1.3 item 3: the totals line under the h1: "Riya: 2 in all · Top so far", later "Arjun: 1 in all · Top: Riya 2", then Meena with 0 still "Top: Riya 2"', async ({ page }) => {
+  test('Version 1.3 item 3 / 1.4 item 3: the totals line under the h1: "Riya: 2 in all · the most so far", later "Arjun: 1 in all · Most so far: Riya 2", then Meena with 0 still "Most so far: Riya 2"', async ({ page }) => {
     await startNight(page, { seed: 't4-top', players: THREE, turnTime: 30 });
     await playTurn(page, 'GG');
-    await expect(text(page, 'Riya: 2 in all · Top so far')).toBeVisible();
+    await expect(text(page, 'Riya: 2 in all · the most so far')).toBeVisible();
     await saveScore(page);
     await playTurn(page, 'G');
-    await expect(text(page, 'Arjun: 1 in all · Top: Riya 2')).toBeVisible();
+    await expect(text(page, 'Arjun: 1 in all · Most so far: Riya 2')).toBeVisible(); // tester's reading of 1.4 item 3 (README, Version 1.4)
     await saveScore(page);
     await playTurn(page, '');
-    await expect(text(page, 'Meena: 0 in all · Top: Riya 2')).toBeVisible();
+    await expect(text(page, 'Meena: 0 in all · Most so far: Riya 2')).toBeVisible();
   });
 
-  test('tied at the top counts as top (product owner, 25 October, item 25): Riya 2, then Meena 2: "Meena: 2 in all · Top so far"', async ({ page }) => {
+  test('tied at the top counts as top (product owner, 25 October, item 25): Riya 2, then Meena 2: "Meena: 2 in all · the most so far" (Version 1.4 item 3)', async ({ page }) => {
     await startNight(page, { seed: 't4-top-tie', players: THREE, turnTime: 30 });
     await playTurn(page, 'GG'); await saveScore(page);
     await playTurn(page, ''); await saveScore(page);
     await playTurn(page, 'GG');
-    await expect(text(page, 'Meena: 2 in all · Top so far')).toBeVisible();
+    await expect(text(page, 'Meena: 2 in all · the most so far')).toBeVisible();
   });
 
-  test('Version 1.3 item 3: a shared top names both: "Meena: 0 in all · Top: Riya and Arjun 2"', async ({ page }) => {
+  test('Version 1.3 item 3 / 1.4 item 3: a shared top names both: "Meena: 0 in all · Most so far: Riya and Arjun 2"', async ({ page }) => {
     await startNight(page, { seed: 't4-top-2', players: THREE, turnTime: 30 });
     await playTurn(page, 'GG'); await saveScore(page);
     await playTurn(page, 'GG'); await saveScore(page);
     await playTurn(page, '');
-    await expect(text(page, 'Meena: 0 in all · Top: Riya and Arjun 2')).toBeVisible();
+    await expect(text(page, 'Meena: 0 in all · Most so far: Riya and Arjun 2')).toBeVisible();
   });
 
   test('Version 1.1 item 24: 25 words: chips 44 px tall with 8 px gaps in one scroll container; the h1, small lines and main button stay on screen', async ({ page }) => {
@@ -99,7 +99,7 @@ test.describe('WAI-030: Time\'s up', () => {
     const s = await scroller.evaluate((e) => ({ sh: e.scrollHeight, ch: e.clientHeight }));
     expect(s.sh).toBeGreaterThan(s.ch);
     await chips.nth(24).scrollIntoViewIfNeeded();
-    for (const l of [heading(page, /^Time's up! Riya got 25/), text(page, 'Marked wrong? Tap a word to move it.'), mainButton(page)]) {
+    for (const l of [heading(page, /^Time's up! Riya got 25/), text(page, 'A word in the wrong list? Tap it to move it.'), mainButton(page)]) {
       const b = await box(l);
       expect(b.y).toBeGreaterThanOrEqual(0);
       expect(b.y + b.height).toBeLessThanOrEqual(844);
@@ -139,11 +139,11 @@ test.describe('WAI-031: Save score and the Undo toast', () => {
     await expect(toast(page)).toHaveCount(0);
   });
 
-  test('another recorded move (Hands-free for Arjun) takes the toast away: the turn is locked', async ({ page }) => {
+  test('another recorded move (Stand the phone up for Arjun, Version 1.4 item 3) takes the toast away: the turn is locked', async ({ page }) => {
     await startNight(page, { seed: 'toast-2', players: THREE, turnTime: 30 });
     await playTurn(page, 'G');
     await saveScore(page);
-    await tap(page, button(page, 'Hands-free for Arjun'));
+    await tap(page, button(page, 'Stand the phone up for Arjun'));
     await expect(toast(page)).toHaveCount(0);
   });
 

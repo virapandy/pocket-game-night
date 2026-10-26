@@ -259,3 +259,16 @@ Merged origin/main (PGN_PORT per lane: lane-a 4174). Lane A area: 129 of 132 pas
 - Three mafia-c3.spec.ts Version 1.2 tests were changed for 1.3 (docs/test-questions.md row, 26 October).
 - Open (no test depends): Doctor's own name the night after self-protect; re-tap of the selected name while a why-line
   shows; the result line after hide/show following a why-line.
+
+## 26 October: What Am I? Version 1.4 and game names on one line, tests first (lane-t2, from main 05f6e82)
+- Specs: Version 1.4 items copied into WAI-003, 005, 006, 012, 013, 014, 020, 021, 030, 040, 090 and the README (section
+  kept whole, canonical rows updated); api.md's away calls marked confirmed. New platform scenario **PLT-303** (game names
+  never break; `specs/platform/05-home-and-buttons.md`).
+- New: `what-am-i-v14.spec.ts` (T3 labels at 5 sizes × 2 holds × Larger text, taps on the labels, after a WAI-024 turn; no
+  "Hands-free" on any screen) and `game-names-one-line.spec.ts` (Home, Join, picker, G2 header, History; 4 sizes). Both in
+  `areas.json`. Labels are found by exact text, excluding `mark-flash` and `mark-live`.
+- Changed to the 1.4 text: helper `chooseOnS2` and the sim runner ("Stand the phone up"), setup (S2 radio, Read this aloud,
+  How to play line 4), turn (T1 buttons and hold line), scores (T4 lines). Until the build changes, every test that picks the
+  standing hold through S2 fails at the radio (also one test in `what-am-i-c3.spec.ts`): expected.
+- Two readings await the product owner (`docs/test-questions.md`, 26 October): How to play line 4 vs Read this aloud, and
+  "Most so far: Arjun 14" for one player ahead.

@@ -1,8 +1,8 @@
 # What Am I?: 01 Setup
 
-Copied from `docs/games/what-am-i/scenarios.md` version 1.3 (approved by the owner, 24 October 2026). Each scenario
-carries the Version 1.1, 1.2 and 1.3 items that name it, word for word; a later version wins over earlier text in the
-same scenario (1.3 over 1.2 over 1.1 over the body). Terms, canonical strings and test hooks: [README.md](README.md);
+Copied from `docs/games/what-am-i/scenarios.md` version 1.3 (approved by the owner, 24 October 2026) with Version 1.4 (product owner, 26 October 2026). Each scenario
+carries the Version 1.1 to 1.4 items that name it, word for word; a later version wins over earlier text in the
+same scenario (1.4 over 1.3 over 1.2 over 1.1 over the body). Terms, canonical strings and test hooks: [README.md](README.md);
 the exact rule API and browser hooks the tests use: [api.md](api.md).
 
 ### WAI-001 Picking What Am I?
@@ -68,6 +68,11 @@ Every choice starts from the last-used values on this phone (pack, time, hold, b
 1.3 item 4: **S2 order** (grandparent, distracted host: the hold choice was buried under nine packs): "Time for each turn", then "How to
    hold the phone", then "Which words?", then the two switches.
 
+**Version 1.4** (product owner, 26 October 2026; wins over the text above, and over Versions 1.1 to 1.3):
+1.4 item 3: "Hands-free" → **"Stand the phone up"** everywhere on screen: S2's option (its small line unchanged); T1's quiet buttons
+   "Stand the phone up for Riya" / "Riya will hold it"; the hold line "Stand the phone up (Riya's choice)"; Read this aloud's
+   hands-free sentence starts "Or stand the phone up behind the guesser; …". The `free` hold keeps its name in code.
+
 ### WAI-004 Starting a game
 Status: approved · Phase: What Am I? 1
 When this is the first What Am I? game of tonight, "Start with these words" opens Read this aloud (WAI-005) and records
@@ -88,6 +93,10 @@ it, the top to pass." Fits without scrolling at every size with Larger text off.
 1.2 item 12: **Do Not Disturb** (critic 7): Read this aloud ends with the sentence "Tip: turn on Do Not Disturb so messages don't buzz."
     A notification banner or a system dialog over the page (battery saver, a permission prompt) does not pause the turn; only
     the page being hidden does (WAI-040).
+
+**Version 1.4** (product owner, 26 October 2026; wins over the text above, and over Versions 1.1 to 1.3):
+1.4 item 3: "Marked wrong? Tap a word to move it." → **"A word in the wrong list? Tap it to move it."**; Read this aloud's "Marked
+   wrong? Fix it when time's up." → "A word in the wrong list? Fix it when time's up."
 
 ### WAI-006 How to play
 Status: approved · Phase: What Am I? 1
@@ -111,3 +120,13 @@ the room" etc.); main "Done" → the screen it was opened from, unchanged.
 **Version 1.3** (wins over the text above, and over Versions 1.1 and 1.2):
 1.3 item 7: **How to play, scoring and judging** (uncle): after line 5: "One point for each word you got. Passing costs nothing." and
    "The room decides if a clue broke the rules."
+
+**Version 1.4** (product owner, 26 October 2026; wins over the text above, and over Versions 1.1 to 1.3):
+1.4 item 3: "Hands-free" → **"Stand the phone up"** everywhere on screen: S2's option (its small line unchanged); T1's quiet buttons
+   "Stand the phone up for Riya" / "Riya will hold it"; the hold line "Stand the phone up (Riya's choice)"; Read this aloud's
+   hands-free sentence starts "Or stand the phone up behind the guesser; …". The `free` hold keeps its name in code.
+Tester's reading (26 October, in `docs/test-questions.md` for the product owner): Read this aloud's card (WAI-005) has no
+   "Hands-free" in it; the only on-screen sentence that starts "Hands-free" and goes on "stand the phone … behind the guesser; …"
+   is How to play's line 4 (1.1 item 42). So line 4 reads **"Or stand the phone up behind the guesser; a clue giver taps the
+   bottom for Got it, the top to pass."**, and WAI-005's hands-free sentences stay as they are.
+

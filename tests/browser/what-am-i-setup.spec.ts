@@ -235,7 +235,7 @@ test.describe('WAI-003: Words and time', () => {
     await tap(page, mainButton(page));
     await expect(radio(page, /^Jobs · 94 words/)).toHaveAttribute('aria-checked', 'true');
     await expect(radio(page, '90 s')).toHaveAttribute('aria-checked', 'true');
-    await expect(radio(page, /^Hands-free/)).toHaveAttribute('aria-checked', 'true');
+    await expect(radio(page, /^Stand the phone up/)).toHaveAttribute('aria-checked', 'true'); // Version 1.4 item 3 (was "Hands-free")
     await expect(switchNamed(page, 'Include non-veg food (chicken, fish, egg)')).toHaveAttribute('aria-checked', 'true');
     await expect(switchNamed(page, 'Sounds')).toHaveAttribute('aria-checked', 'false');
     await tap(page, button(page, '← Back'));
@@ -256,7 +256,7 @@ test.describe('WAI-004 / WAI-005: starting, and Read this aloud', () => {
   test('the card in hand hold, 60 s, ending with the Do Not Disturb tip (Version 1.2 item 12)', async ({ page }) => {
     await startNight(page, { seed: 'card', stopAt: 'S3' });
     const card = page.getByText(/^One of us holds the phone/);
-    await expect(card).toContainText('One of us holds the phone on their forehead or chest, screen to the room. Everyone else gives clues: talk, act, make the noise, but never say the word. Got it? Move the phone down. Stuck? Move it up to pass. Passing is free. Marked wrong? Fix it when time\'s up. You have 60 seconds. Play as many rounds as you like; tap End the game to see who got the most.');
+    await expect(card).toContainText('One of us holds the phone on their forehead or chest, screen to the room. Everyone else gives clues: talk, act, make the noise, but never say the word. Got it? Move the phone down. Stuck? Move it up to pass. Passing is free. A word in the wrong list? Fix it when time\'s up. You have 60 seconds. Play as many rounds as you like; tap End the game to see who got the most.');
     // "ends with the sentence": the last sentence read aloud, in the card or on its own line after it
     const all = (await page.getByRole('main').innerText()).replace(/\s+/g, ' ');
     const at = all.indexOf('see who got the most.');
@@ -296,7 +296,8 @@ test.describe('WAI-006: How to play', () => {
     'One player guesses. They hold the phone on their forehead or chest, screen facing the room.',
     'Everyone else gives clues: talk, act, make the noise. Never say the word.',
     'Got it? Phone down. Stuck? Phone up to pass. Passing is free.',
-    'Hands-free: stand the phone behind the guesser; a clue giver taps the bottom for Got it, the top to pass.',
+    // Version 1.4 item 3 ("Hands-free" → "Stand the phone up"; tester's reading in specs/what-am-i/README.md, Version 1.4)
+    'Or stand the phone up behind the guesser; a clue giver taps the bottom for Got it, the top to pass.',
     "When time's up, fix any word marked wrong, then save the score.",
   ];
   const AFTER_5 = [
