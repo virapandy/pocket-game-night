@@ -9,7 +9,7 @@ import { QuietButton } from '../../../blocks';
 import type { MafiaPlayerView, Role } from '../rules';
 import type { RoomCtx } from './ctx';
 import { Main, MoreBelow, NAME_GUARD_MS } from './parts';
-import { CARD, FIRST_TIME, JOB, P, RESULT, partnerLine } from './privateText';
+import { CARD, FIRST_TIME, JOB, P, RESULT, WHY, partnerLine, whyLine } from './privateText';
 import './private.css';
 
 const NIGHT_GUARD_MS = 4000;
@@ -430,6 +430,13 @@ function nightSlots(players: readonly string[], m: number): Slot[] {
         RESULT.policeNone,
         RESULT.villager(a),
         RESULT.ghost(a),
+        // Version 1.3 (MF21): the why-lines count towards the result line's height (the longest name, a two-digit night).
+        WHY.out(a),
+        WHY.partner(a),
+        WHY.lastNight(a),
+        WHY.selfUsed,
+        WHY.checked(a, 99, false),
+        WHY.checkDone(a, false),
       ],
     },
   ];
@@ -440,6 +447,8 @@ function N2({ ctx }: { ctx: RoomCtx }) {
   const [shown, setShown] = useState(false);
   const [firstAt, setFirstAt] = useState<number | null>(null);
   const [pick, setPick] = useState<string | null>(null);
+  // Version 1.3 (MF21): the private why-line, until the next tap on a name; gone when the job is hidden.
+  const [why, setWhy] = useState<string | null>(null);
   const [, tick] = useState(0);
   const [namesBox, setNamesBox] = useState<HTMLDivElement | null>(null);
   const nameRef = useRef<HTMLParagraphElement>(null);
@@ -457,7 +466,10 @@ function N2({ ctx }: { ctx: RoomCtx }) {
   }, [firstAt]);
   // MAF-022: 60 s with no touch anywhere hides the job (the pick is kept).
   useEffect(() => {
-    if (!shown) return;
+    if (!shown) {
+      setWhy(null);
+      return;
+    }
     let timer = setTimeout(() => setShown(false), IDLE_HIDE_MS);
     const touched = () => {
       clearTimeout(timer);
@@ -541,15 +553,27 @@ function N2({ ctx }: { ctx: RoomCtx }) {
     }
   }
 
-  /** Version 1.2 A: a tap on a name the role may not pick does nothing; the Police's first allowed tap is the check. */
-  const tapName = (name: string, allowed: boolean) => {
-    if (job.kind === 'police') {
-      if (none) return setPick(name);
-      if (job.check || !allowed) return;
-      ctx.play({ type: 'check', player, target: name });
+  if (why !== null) result = why;
+
+  /**
+   * Version 1.2 A: a tap on a name the role may not pick selects nothing; Version 1.3: it shows why in the result line.
+   * The Police's first allowed tap is the check.
+   */
+  const tapName = (n: (typeof job.names)[number]) => {
+    if (job.kind === 'police' && none) {
+      setWhy(null);
+      return setPick(n.player);
+    }
+    if (!n.allowed) {
+      setWhy(n.why ? whyLine(n.player, n.why, job.check) || null : null);
       return;
     }
-    if (allowed) setPick(name);
+    setWhy(null);
+    if (job.kind === 'police') {
+      if (!job.check) ctx.play({ type: 'check', player, target: n.player });
+      return;
+    }
+    setPick(n.player);
   };
 
   const done = () => {
@@ -597,7 +621,7 @@ function N2({ ctx }: { ctx: RoomCtx }) {
                   className={chosen === n.player ? 'maf-nb maf-nb-on' : 'maf-nb'}
                   aria-pressed={chosen === n.player}
                   aria-label={n.player}
-                  onClick={() => tapName(n.player, n.allowed)}
+                  onClick={() => tapName(n)}
                 >
                   <span className="maf-nb-name">
                     {chosen === n.player && <span aria-hidden="true">✓ </span>}

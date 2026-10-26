@@ -2,7 +2,7 @@
 import { createRng } from '../../../engine';
 import storiesJson from '../../../../content/mafia/stories.json';
 import editionsJson from './story-editions.json';
-import type { Game, JobKind, MafiaState, NightJob, Role, Side } from './types';
+import type { Game, JobKind, MafiaState, NightJob, Role, Side, Why } from './types';
 
 export interface Story { readonly id: string; readonly kind: 'out' | 'saved'; readonly text: string }
 export const STORIES: readonly Story[] = storiesJson as Story[];
@@ -109,6 +109,36 @@ export function allowedNames(g: Game, player: string): string[] {
   }
 }
 
+/** This Police's checks on nights before tonight, with the night of each. */
+function earlierChecks(g: Game, player: string): Map<string, number> {
+  const out = new Map<string, number>();
+  for (const n of g.nights) {
+    for (const p of n.picks) if (p.kind === 'police' && p.player === player && p.target !== null && !out.has(p.target)) out.set(p.target, n.night);
+  }
+  return out;
+}
+
+/** Version 1.3 (MF21): the first reason that applies for each name `player` may not pick (null when allowed). */
+function whyMaker(g: Game, player: string, kind: JobKind): (name: string, allowed: boolean) => Why | null {
+  const used = kind === 'doctor' && selfUsed(g, player);
+  const last = kind === 'doctor' ? protectedLastNight(g) : null;
+  const checks = kind === 'police' ? earlierChecks(g, player) : null;
+  const done = kind === 'police' && pendingCheck(g, player) !== null;
+  return (name, allowed) => {
+    if (allowed) return null;
+    if (name === player && kind !== 'doctor') return { kind: 'you' };
+    if (isOut(g, name)) return { kind: 'out' };
+    if (kind === 'mafia' && g.roles[name] === 'mafia') return { kind: 'partner' };
+    // Owner, 26 October: on the Doctor's own name "used" wins over "last night".
+    if (kind === 'doctor' && name === player && used) return { kind: 'selfUsed' };
+    if (kind === 'doctor' && name === last) return { kind: 'lastNight' };
+    const night = checks?.get(name);
+    if (night !== undefined) return { kind: 'checked', night, mafia: g.roles[name] === 'mafia' };
+    if (done) return { kind: 'checkDone' };
+    return null;
+  };
+}
+
 /**
  * N2's job (item 4): every player dealt, not left, not leaving tonight. Version 1.2 A: the tags are the same for every role
  * ("you" on the own name, "out" on players who are out); only `allowed` follows the role.
@@ -116,10 +146,12 @@ export function allowedNames(g: Game, player: string): string[] {
 export function nightJob(g: Game, player: string): NightJob {
   const kind = jobKind(g, player);
   const allowed = new Set(allowedNames(g, player));
+  const whyNot = whyMaker(g, player, kind);
   const names = g.players.filter((p) => !hasLeft(g, p) && !g.leaving.includes(p)).map((p) => ({
     player: p,
     allowed: allowed.has(p),
     tags: p === player ? ['you'] : isOut(g, p) ? ['out'] : [],
+    why: whyNot(p, allowed.has(p)),
   }));
   const pending = kind === 'police' ? pendingCheck(g, player) : null;
   const check = pending === null ? null : { player: pending, mafia: g.roles[pending] === 'mafia' };
