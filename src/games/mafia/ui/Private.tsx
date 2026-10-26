@@ -204,6 +204,11 @@ function RoleCard({
     });
   };
 
+  // MAF-011/014: a dialog, Paused or Players covering the screen hides the role for good; it needs a new tap.
+  useEffect(() => {
+    if (ctx.covered && shown) hideRef.current(false);
+  }, [ctx.covered, shown]);
+
   // IMP-018: scrolling, zooming or the page left: the block goes at once (the room frame handles the app hidden).
   useEffect(() => {
     if (!shown) return;

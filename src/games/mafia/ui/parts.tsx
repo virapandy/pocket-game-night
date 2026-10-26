@@ -1,6 +1,6 @@
 // Mafia's room frame pieces (MAF-050 to MAF-055, MAF-090): the guarded main button (Terms "Guard"), the Pause icon and
 // "··· Menu", the Paused cover with the where-line, a dialog, the Players sheet (IMP-079 strings), and the 10 s undo toast.
-import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type FormEvent, type ReactNode } from 'react';
+import { useCallback, useContext, useEffect, useId, useLayoutEffect, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { HideMainButton, MainButton, QuietButton, useBackCloses, type ToastState } from '../../../blocks';
 import { T } from './text';
 
@@ -379,6 +379,7 @@ const MORE = 'More below ↓';
  * tap on it scrolls the box on). `box` null: the screen has no such box now.
  */
 export function MoreBelow({ box, watch, inline }: { box: HTMLElement | null; watch?: unknown; inline?: boolean }) {
+  const covered = useContext(HideMainButton);
   const [at, setAt] = useState<{ left: number; width: number; bottom: number } | null>(null);
   const check = useCallback(() => {
     if (!box || !box.isConnected) return setAt(null);
@@ -416,7 +417,7 @@ export function MoreBelow({ box, watch, inline }: { box: HTMLElement | null; wat
       clearTimeout(later);
     };
   }, [box, check, watch]);
-  if (!at || !box) return null;
+  if (!at || !box || covered) return null;
   if (inline) {
     return (
       <div
