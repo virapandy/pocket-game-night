@@ -2,7 +2,9 @@
 Commit tested: 05f6e82 (app), lane-t2   Date: 2026-10-26
 Result: RED (tests first: What Am I? scenarios Version 1.4 and PLT-303, written before the build; expected to fail until the lane builds them)
 
-Automation: quick verify on lane-t2 (named in the orchestrator's hand-back).
+Automation: Quick verify run 40357631372 on lane-t2 at 8a79792: rule tests 1191 passed, smoke 17 passed; the changed-area
+browser run reached 493 of 534 tests and was cancelled at the job's time limit (the area map now pulls in History and App
+shell sets with PLT-303). Its 20 failures are all the expected ones listed below; nothing else failed.
 
 ## Layers
 - Rule tests (`npm test`): 1190 of 1191 pass; the one failure is a timeout under load (below), passes alone (3 of 3).
