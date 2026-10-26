@@ -246,3 +246,16 @@ Merged origin/main (PGN_PORT per lane: lane-a 4174). Lane A area: 129 of 132 pas
   records, before any pick, how many names are cut off below and whether the cue shows, and expects both the same for every role
   and the cue shown when names are cut off (on 1.6.0: 3 names cut off at 320 × 568, no cue). Helpers `clipState`, `moreBelowCue`
   in mafia.ts. V3 (the re-vote, tied players only) isn't covered: no flow has enough tied players to overflow.
+
+## 26 October: Mafia Version 1.3 (MF21), N2's private why-line, tests first (lane-r2, from main a7dffe3)
+- New `tests/browser/mafia-why.spec.ts` (in areas.json's Mafia area) and `tests/games/mafia/why.test.ts`; new flow
+  `night2-dev-riya-checked` (Dev checked Riya, Not Mafia, on night 1; night 2 at Dev's turn) in flows.ts.
+- The rules supply the reason: `job.names[].why` (api.md); the screen maps it to `text.csv` `mf.n2-why.1–7`.
+- `private-live` already exists on N2 on 1.6.0 (aria-live polite): the P2 test requires the why-line inside it and in no
+  other live region. Visible copies are found as the deepest element holding the whole line, 2 × 2 px or more.
+- P7 frame: every role's N2, before and after a pick, with and without a why-line, night 1 and night 3, 320 and 390 wide,
+  plus Larger text at 320; boxes ±1 px; the result line's text range may poke 1–2 px past its box on WebKit (allowed 3 px).
+  On 1.6.0, with the line checks taken out, all frames were already equal on both phones (mechanics checked).
+- Three mafia-c3.spec.ts Version 1.2 tests were changed for 1.3 (docs/test-questions.md row, 26 October).
+- Open (no test depends): Doctor's own name the night after self-protect; re-tap of the selected name while a why-line
+  shows; the result line after hide/show following a why-line.

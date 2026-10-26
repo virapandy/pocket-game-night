@@ -242,12 +242,19 @@ async function openJob(page: Page, who: string) {
   await tap(page, button(page, 'Tap to see your night job'));
   await expect(byId(page, 'night-names')).toBeVisible();
 }
-/** A tap on a name the role may not pick: nothing visible changes (Version 1.2 A), the main button does not appear. */
+/**
+ * A tap on a name the role may not pick: the names box (selection, looks, tags) and the main button stay exactly as they
+ * were (Version 1.2 A). Version 1.3 (owner, 26 October; MF21) wins over 1.2 A's "the result line stays": the result line
+ * now holds the private why-line (each exact text: tests/browser/mafia-why.spec.ts).
+ */
+const WHY_LINE = /^\s*(That's you\. Pick someone else\.|.+ is out\. Pick someone else\.|.+ is Mafia too\. Pick someone else\.|You protected .+ last night\. Pick someone else\.|You've already protected yourself once\. Pick someone else\.|You checked .+ on night \d+: (Mafia|Not Mafia)\. Pick someone else\.|Tonight's check is done: .+ is (MAFIA|Not Mafia)\.)\s*$/i;
 async function tapDoesNothing(page: Page, who: string, name: string) {
   const before = await n2State(page);
   await nameButton(page, name).click({ force: true });
   await page.clock.runFor(300);
-  expect(await n2State(page), `${who} taps ${name}`).toEqual(before);
+  const after = await n2State(page);
+  expect({ names: after.names, main: after.main }, `${who} taps ${name}: names box and main button unchanged`).toEqual({ names: before.names, main: before.main });
+  await expect(byId(page, 'result-line'), `${who} taps ${name}: a why-line (Version 1.3)`).toHaveText(WHY_LINE);
 }
 
 test('MAF-022 to MAF-026 Version 1.2 A / MAF-P7: every role sees the same names box: none greyed, same look, same tags, names read as the name only', async ({ page }) => {
@@ -290,7 +297,7 @@ test('MAF-022 to MAF-026 Version 1.2 A / MAF-P7: every role sees the same names 
   for (const s of seen) expect(s.looks, `${s.who}: the same look as ${seen[0]!.who}`).toEqual(seen[0]!.looks);
 });
 
-test('MAF-023 to MAF-026 Version 1.2 A: a tap on a name the role may not pick does nothing (partners, "you", used, last night\'s, out, earlier checks)', async ({ page }) => {
+test('MAF-023 to MAF-026 Version 1.2 A and 1.3: a tap on a name the role may not pick changes no pick, look or Done, only a why-line (partners, "you", used, last night\'s, out, earlier checks)', async ({ page }) => {
   test.slow();
   // Night 1: Riya (Villager) taps herself; Arjun (Mafia) taps himself and his partner Zoya, before and after a real pick.
   await openFlow(page, 'night1-start');
@@ -329,9 +336,9 @@ test('MAF-023 to MAF-026 Version 1.2 A: a tap on a name the role may not pick do
   await expect(byId(page, 'night-names')).not.toContainText(/mafia/i);
   await tap(page, nameButton(page, 'Sunita'));
   await expect(byId(page, 'result-line')).toHaveText(exactly('Sunita: Not Mafia.'));
-  // After the check, another name does nothing either (Version 1.2 A and C).
+  // After the check, another name changes no pick either (Version 1.2 A and C); the line says so (Version 1.3).
   await tapDoesNothing(page, 'Dev', 'Riya');
-  await expect(byId(page, 'result-line')).toHaveText(exactly('Sunita: Not Mafia.'));
+  await expect(byId(page, 'result-line')).toHaveText(exactly("Tonight's check is done: Sunita is Not Mafia."));
 });
 
 test('MAF-025 Version 1.2 A: a Police with nobody left to check still taps a name: no name greyed, Done only after a tap, "Nobody left to check."', async ({ page }) => {
@@ -360,7 +367,8 @@ async function sameCheckAgain(page: Page, how: string) {
   await expect(nameButton(page, 'Zoya')).toHaveAttribute('aria-pressed', 'true');
   await nameButton(page, 'Riya').click({ force: true });
   await page.clock.runFor(300);
-  await expect(byId(page, 'result-line'), `${how}: no second check`).toHaveText(exactly('Zoya: MAFIA.'));
+  // No second check: the line says tonight's check is done (Version 1.3, owner 26 October; was "Zoya: MAFIA." under 1.2 C).
+  await expect(byId(page, 'result-line'), `${how}: no second check`).toHaveText(exactly("Tonight's check is done: Zoya is MAFIA."));
   await expect(nameButton(page, 'Riya')).not.toHaveAttribute('aria-pressed', 'true');
 }
 

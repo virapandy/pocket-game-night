@@ -29,6 +29,19 @@ The owner approved three privacy changes on 25 October ("do all as recommended";
 - **C. The Police's first tap is saved at once** (MAF-025): the move `check` (api.md); after a reload, hiding the app or
   Back the Police sees the same answer and cannot check another name that night.
 
+## Version 1.3 (owner, 26 October 2026; MF21): why a name can't be picked
+For a 1.6.x point release (`docs/games/mafia/scenarios.md`, "Version 1.3"). It wins over Version 1.2 A's "a tap on a name
+the role may not pick does nothing": on N2 such a tap **selects nothing** and puts one private line in `result-line`, the
+same box, size and place for every role, until the next tap on any name; Done's conditions don't change; nothing is
+recorded; no sound or vibration. Seven lines, the first that applies (`text.csv` `mf.n2-why.1` to `.7`): "That's you. Pick
+someone else." · "Kabir is out. Pick someone else." · "Zoya is Mafia too. Pick someone else." · "You protected Om last
+night. Pick someone else." · "You've already protected yourself once. Pick someone else." · "You checked Zoya on night 1:
+Mafia. Pick someone else." (/ Not Mafia) · "Tonight's check is done: Zoya is MAFIA." (/ Not Mafia; the checked name stays
+selected). Each fits the result-line box (build answers item 7: the longest variant counts towards its height). Class C2,
+N2 C3 in look (MAF-P7: same frame whether or not a line shows); never on a room screen (MAF-P2). The full text and the
+tester's reading are under MAF-022 in [03-night.md](03-night.md); the rules give the reason as `job.names[].why`
+([api.md](api.md)). Tests: `tests/browser/mafia-why.spec.ts`, `tests/games/mafia/why.test.ts`.
+
 ## Version 1.1 items that apply to every section
 
 The other items (4 to 32) are copied into the scenarios they name. Item numbers as in `docs/games/mafia/scenarios.md`.
