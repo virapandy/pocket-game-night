@@ -1,6 +1,6 @@
 import { Fragment, useCallback, useEffect, useRef, useState, type ReactNode, type RefObject } from 'react';
 import { useRegisterSW } from 'virtual:pwa-register/react';
-import { BlocksRoot, useTapGuard } from '../blocks';
+import { BlocksRoot, keepNames, useTapGuard } from '../blocks';
 import { makePlayerReport, makeReport, type Preferences, type Report, type ReportSubject, type SavedGame } from '../engine';
 import { games, hostGames, impostor, phoneGames, secretWords, tambola, whatAmI, type GameId, type HostGameId, type PhoneGameId } from './games';
 import { secretWordsShowingNight } from '../games/secret-words';
@@ -544,10 +544,10 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
             joinNote={impostor.joinNote}
             joinMore={
               <>
-                <p className="note">{secretWords.joinLine}</p>
+                <p className="note">{keepNames(secretWords.joinLine)}</p>
                 {/* Version 1.2 item 1: after the other games' lines. */}
                 <p className="note" data-testid="join-line-what-am-i">
-                  {whatAmI.joinLine}
+                  {keepNames(whatAmI.joinLine)}
                 </p>
                 <button
                   type="button"
@@ -896,11 +896,11 @@ function Home({
       <div className="home-choices">
         <button type="button" className="choice-card home-card" onClick={onHost}>
           <span className="choice-card-title">Host a game</span>
-          <span className="choice-card-text">{listOr(hostGames.map((g) => g.info.title))} on this phone</span>
+          <span className="choice-card-text">{keepNames(`${listOr(hostGames.map((g) => g.info.title))} on this phone`)}</span>
         </button>
         <button type="button" className="choice-card home-card" onClick={() => onTickets('join')}>
           <span className="choice-card-title">Join a game</span>
-          <span className="choice-card-text">Tambola ticket or Secret Words map from the host</span>
+          <span className="choice-card-text">{keepNames('Tambola ticket or Secret Words map from the host')}</span>
         </button>
       </div>
 
@@ -956,7 +956,7 @@ function Home({
               const stale = id !== 'impostor' && now - g.updatedAt > TWELVE_HOURS;
               return (
                 <li key={g.id} className="unfinished-row">
-                  <p className="unfinished-line">{unfinishedText(g)}</p>
+                  <p className="unfinished-line">{keepNames(unfinishedText(g))}</p>
                   {stale ? (
                     <>
                       <p className="note">Left more than 12 hours ago. What should happen to it?</p>
@@ -1127,7 +1127,7 @@ function PickGame({
               else onPick(g.info.id);
             }}
           >
-            <span className="choice-card-title">{g.info.title}</span>
+            <span className="choice-card-title">{keepNames(g.info.title)}</span>
             <span className="choice-card-text">
               <Tagline text={g.info.tagline} />
             </span>

@@ -405,6 +405,8 @@ export function TurnFlow(p: StepProps) {
             <p className="wai-turn-line">
               {hold === 'free' ? 'Clue givers: tap bottom for Got it, top for Pass.' : "Everyone else: give clues. Don't say the word!"}
             </p>
+            {/* Version 1.4 item 2: which half is which; text, not buttons (a tap on them marks as their half does) */}
+            <p className="wai-half-label">Pass</p>
             <div className="wai-word-area">
               {id !== null && <FitWord text={wordText(s, id)} turned={turned} />}
             </div>
@@ -412,6 +414,7 @@ export function TurnFlow(p: StepProps) {
             <p className="wai-time" data-testid="time-left">
               {timeLeftText(T, elapsed())}
             </p>
+            <p className="wai-half-label wai-half-got">Got it</p>
           </>
         )}
         {flash && (
@@ -494,7 +497,7 @@ function PassScreen({
         {free ? (
           <>
             <p className="wai-small">{`Stand the phone behind ${player}, facing the room. ${player}, don't turn round!`}</p>
-            {ownChoice && <p className="wai-small">{`Hands-free (${player}'s choice)`}</p>}
+            {ownChoice && <p className="wai-small">{`Stand the phone up (${player}'s choice)`}</p>}
             <div className="wai-drawings wai-pass-drawings">
               <Drawing kind="behind" alt="Phone standing behind a seated player, facing the room" />
             </div>
@@ -518,7 +521,7 @@ function PassScreen({
         )}
         <div className="wai-pass-buttons">
           <QuietButton onClick={() => p.act({ type: 'setHold', player, hold: free ? 'hand' : 'free' })}>
-            {free ? `${player} will hold it` : `Hands-free for ${player}`}
+            {free ? `${player} will hold it` : `Stand the phone up for ${player}`}
           </QuietButton>
           <QuietButton onClick={() => setChooser(true)}>Someone else goes first</QuietButton>
         </div>
@@ -673,14 +676,14 @@ function FitWord({ text, turned }: { text: string; turned: false | 1 | -1 }) {
 
 // ---------------------------------------------------------------- T4 (WAI-030, WAI-031; Version 1.3 item 3)
 
-/** "Riya: 9 in all · Top: Arjun 14" / "Riya: 14 in all · Top so far" / "Top: Arjun and Meena 12". */
+/** "Riya: 9 in all · Most so far: Arjun 14" / "Riya: 14 in all · the most so far" (Version 1.4 item 3). */
 export function totalsLine(s: WaiState, player: string, got: number): string {
   const mine = (s.scores[player]?.score ?? 0) + got;
   const others = s.order.filter((q) => q !== player);
   const top = Math.max(0, ...others.map((q) => s.scores[q]?.score ?? 0));
-  if (others.length === 0 || mine >= top) return `${player}: ${mine} in all · Top so far`;
+  if (others.length === 0 || mine >= top) return `${player}: ${mine} in all · the most so far`;
   const leaders = others.filter((q) => (s.scores[q]?.score ?? 0) === top);
-  return `${player}: ${mine} in all · Top: ${joinNames(leaders)} ${top}`;
+  return `${player}: ${mine} in all · Most so far: ${joinNames(leaders)} ${top}`;
 }
 
 export function TurnEnd(p: StepProps) {
@@ -730,7 +733,7 @@ export function TurnEnd(p: StepProps) {
       </CuedScroll>
       {/* Sideways, these two lines sit beside the main button, so the lists keep the height (walk, 25 October). */}
       <div className="wai-review-foot">
-        <p className="wai-small">Marked wrong? Tap a word to move it.</p>
+        <p className="wai-small">A word in the wrong list? Tap it to move it.</p>
         <p className="wai-small">{next ? `Next: ${next}` : 'Next: round over'}</p>
       </div>
       <Main

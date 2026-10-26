@@ -1,5 +1,6 @@
 // G2 the summary (SWD-060, 128) and D9 "Delete tonight's games" (SWD-065).
 import { useState } from 'react';
+import { keepNames } from '../../../../blocks';
 import type { SecretWordsState } from '../../rules';
 import { SwMain, useGuard, useTapWait } from '../shared/guard';
 import { GameMenu, SwDialog } from '../shared/parts';
@@ -37,7 +38,7 @@ export function Summary({
           <GameMenu groups={[[{ label: "Delete tonight's games", onSelect: () => setDeleting(true) }]]} />
         </div>
       </div>
-      <h1 className="sw-h1">Tonight's Secret Words</h1>
+      <h1 className="sw-h1">{keepNames("Tonight's Secret Words")}</h1>
       <p data-testid="summary-line">{summaryLine(played)}</p>
       <p className="sw-strong" data-testid="tally">
         {tallyLine(state)}
