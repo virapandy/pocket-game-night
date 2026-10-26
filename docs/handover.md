@@ -1,6 +1,14 @@
 # Handover: start here
 
 ## Now: status and what's next (product owner, updated 22 October 2026)
+**Product owner's answers, 26 October (Mafia and shared):** (1) **Home screenshot approved** (five-game Host line, tests 969234a):
+approve the baselines. One C1 follow-up for every game: keep each game's name on one line ("What Am I?" breaks after "Am" at
+812 × 375): join the words of a game name with no-break spaces. (2) **Calls made while the owner was away, Mafia: all confirmed**,
+answers in `docs/test-questions.md` (rows of 25–26 October). (3) **Mafia walk list → scenarios Version 1.4** (wording for
+weak-English readers, the Villager's result line, G1's pinned buttons, resume at N3, "Mafia in N games" counts ended games
+only, a How to play line; **no Home on private screens and the countdown, by design**), for a **1.6.2 point release**: tester
+first, one coder lane, the reviewer checks MAF-P7; strings in `docs/games/mafia/text.csv`. The What Am I? items (its walk list,
+"which half means Got it", its away calls) are for the What Am I? product-owner helper.
 **Build answers ready (product owner helper, 25 October):** before handing a What Am I? or Mafia question back to the owner, check `docs/games/what-am-i/build-answers.md` (42 answers + lane split) and `docs/games/mafia/build-answers.md` (35 answers + lane split + one item for the owner: the Police reload gap); give both files to each tester and coder with their scenario IDs.
 **Owner away (25 October): every game moves on without waiting for the owner** ("make progress without waiting for me… same goes for What Am I also"). The orchestrator runs a product-owner helper in VS Code for each game (Mafia and What Am I?), and starts every other helper (UX designer, player, critic, jev-design, simulations) from VS Code only. Product-owner helpers decide wording, screen detail and ambiguity themselves and record it; they hold for the owner any rule change, a release to families, loosening a test, project-rule edits and paid services. Mafia's notes: the section "Mafia: notes for the product-owner helper in VS Code".
 **What Am I? scenarios version 1.3 approved (owner, 24 October): hand them to the tester now.** The tester copies `docs/games/what-am-i/scenarios.md` into `specs/what-am-i/` by its section headings (01-setup, 02-words, 03-turn, 04-scores, 06-interruptions, 07-results, 09-usability, 10-lifecycle; 05 and 08 unused), with each scenario's Version 1.1–1.3 items written into it, and writes failing tests from them, C3 first (02, 03 marking rules, 04, 07), using the test hooks WAI-H1 to H11 (+H1b). Words: `docs/games/what-am-i/words.csv` (726). The build lanes follow Secret Words' release, as the roadmap says. A short-lived tester in its own Test lane, alongside Secret Words.

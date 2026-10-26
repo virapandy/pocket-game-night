@@ -1,6 +1,6 @@
-# Mafia: scenarios (version 1.3, 26 October 2026; 1.1 approved 25 October, 1.2 and 1.3 confirmed 26 October)
+# Mafia: scenarios (version 1.4, 26 October 2026; 1.1 approved 25 October, 1.2 and 1.3 confirmed 26 October, 1.4 product owner's calls)
 
-Status: **version 1.1 approved by the owner, 25 October 2026** ("Approved: Mafia scenarios version 1.1, including your calls on the same names for every role at night and on leaving during the night or the deal. Hand them to the orchestrator."). Read each scenario together with Versions 1.1, 1.2 and 1.3: a later version wins over an earlier one and over the text it names. Every "Status: draft" line below reads "approved". Written to `docs/spec-rules.md` from `screen-map.md` draft 4, `guide.md`, `lifecycle.md`,
+Status: **version 1.1 approved by the owner, 25 October 2026** ("Approved: Mafia scenarios version 1.1, including your calls on the same names for every role at night and on leaving during the night or the deal. Hand them to the orchestrator."). Read each scenario together with Versions 1.1 to 1.4: a later version wins over an earlier one and over the text it names. Every "Status: draft" line below reads "approved". Written to `docs/spec-rules.md` from `screen-map.md` draft 4, `guide.md`, `lifecycle.md`,
 `stories.csv` edition 1.2 and decisions MF1–MF15 (`docs/decisions.md`). Before approval: the two-reader check (rule 12), then
 the owner. After approval the tester copies each section into `specs/mafia/` (file names in the headings) and writes tests.
 Mafia may be tested and built alongside What Am I?, and is **released after it** (owner, 24 October; roadmap).
@@ -11,6 +11,33 @@ Change classes (`docs/change-sop.md`): the deal and its seed, the night rules an
 and the stories file = **C3** (tests first: sections 02, 03, 05, 10); screens = C1/C2.
 
 ---
+
+## Version 1.4: answers and the walk's wording (product owner, 26 October; owner away) → a 1.6.x point release
+**Wins over Versions 1.1 to 1.3 and the text they name.** Product owner's calls (wording, screen detail, readings of approved
+rules); no rule changes. Class C1 for the wording, C2 for item 5.
+1. **MAF-023 worked example:** the rng's first value for `mafia-example:1:night1` is **0.95** (first 32-bit value / 2³²), not
+   0.62; index 1, Om, stands.
+2. **MAF-091:** after the night's last pick and before "Read the morning", a resume opens **N3** ("Night over."), so the phone goes
+   back to the host before the morning shows.
+3. **MAF-026, the Villager's result line** (`mf.n2-villager.2`): **"You think it's Zoya. The best Mafia spotter is named at the
+   end."** (the old line promised something G1 doesn't show).
+4. **MAF-064:** G2's counts stay as Version 1.1 item 15 says; **"Arjun was Mafia in 2 games" counts only games that have ended**
+   (won, or ended with no winner), never a game that can still go on.
+5. **MAF-060, G1's pinned buttons:** "Play again" (main) and "End for tonight" stay pinned (carry on and stop, guideline 47a);
+   "Change players or roles" and "← Home" scroll with the page (46a).
+6. **Words for weak-English readers** (the 1.6.0 player walk's list): "goes out" can read as "goes outside":
+   - `mf.b2-mafia.6` → "At night, you pick who is out. By day, act like a Villager."; `mf.b2-first-time.2` → "At night, pick who
+     is out."; `mf.n2-mafia.1` → "MAFIA · Pick who is out tonight. Zoya will see your pick."; `mf.n2-mafia.2` → "MAFIA · Pick who
+     is out tonight."; S3's card "…then we talk and vote someone out." stays.
+   - "Ghost guess": `mf.n2-villager.3` → "YOU'RE OUT · Your guess: who is Mafia? Pick one."
+   - "Everyone in": `mf.v1.1` → "Everyone still playing: point at who you think is Mafia."
+   - Story jokes the walk named: the product-owner helper picks them from the walk report and rewrites or retires them under
+     `docs/games/mafia/stories.md` rules (edition 1.3), keeping at least 10 of each kind.
+7. **No Home on the role card, the night job and the countdown: kept, by design.** A private screen never leads to a screen the
+   room can see (MAF-055; Impostor's deal, shipped since 1.3.0 without a report); the countdown lasts 6 s and has "Not yet". The
+   "Done" that appears a moment after a pick is the 4-second rule that keeps every role's turn the same length (MF1). How to
+   play gains one line (`mf.s4.4`): "Need to stop during someone's turn? Let them finish, or close the app: the game is saved."
+8. **Role names in Tamil (or any language): later**, with a language setting for every game; not in 1.6.x (owner's list).
 
 ## Version 1.3: why a name can't be picked (owner, 26 October; MF21) → a 1.6.x point release
 **Wins over Version 1.2 A's "a tap on a name the role may not pick does nothing".** Class C2, but N2 is C3 in look (MAF-P7): the
