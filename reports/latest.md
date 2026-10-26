@@ -1,7 +1,7 @@
 # Test report
 Commit tested: 7bd3dfa (lane-r2: the coder's Mafia Version 1.3 why-line on main a7dffe3 + the tests)   Date: 2026-10-26
-Result: RUN_RESULT
-Run: RUN_LINE
+Result: GREEN
+Run: https://github.com/virapandy/pocket-game-night/actions/runs/40281415194 (Quick verify on lane-r2 at 4514dc7: success)
 Local: why.test.ts and saved.test.ts 46 passed; build ok; browser mafia-why + mafia-c3, Android and iPhone, 3 workers: 56 passed.
 
 ## What changed (tests and specs only, after the reviewer's three gaps)
