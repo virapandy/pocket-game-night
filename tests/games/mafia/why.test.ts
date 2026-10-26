@@ -85,10 +85,9 @@ describe('MAF-022 to MAF-026 Version 1.3: `why` on later nights (out players, th
     expect(g.room.turn.player).toBe('Arjun');
     expect(whys(g), 'Arjun (Mafia)').toEqual(want({ Arjun: YOU, Kabir: OUT, Om: OUT, Zoya: PARTNER }));
     g.must(NIGHT_2[0]);
-    // Meena (Doctor) protected herself on night 1: her own name is the (open) case "last night" and "used" both fit.
-    const meena = whys(g);
-    expect([LAST, USED], 'Meena\'s own name: lastNight or selfUsed (open)').toContainEqual(meena.Meena);
-    expect({ ...meena, Meena: null }, 'Meena (Doctor), other names').toEqual(want({ Kabir: OUT, Om: OUT }));
+    // Meena (Doctor) protected herself on night 1: "last night" and "used" both fit her own name; selfUsed wins
+    // (orchestrator's decision, 26 October).
+    expect(whys(g), 'Meena (Doctor)').toEqual(want({ Meena: USED, Kabir: OUT, Om: OUT }));
     g.must(NIGHT_2[1]);
     expect(whys(g), 'Kabir (out: a ghost guess)').toEqual(want({ Kabir: YOU, Om: OUT }));
     g.must(NIGHT_2[2]);
@@ -153,7 +152,7 @@ describe('MAF-022 to MAF-026 Version 1.3: `why` on later nights (out players, th
 
 /** The reason the scenario gives (first that applies), from what the views say and what happened this game. */
 interface History { game: number; doctorPicks: Record<number, string | null>; checks: { player: string; night: number }[]; checkedThisTurn: boolean; turn: string }
-function oracleWhy(room: any, me: any, j: any, player: string, name: string, h: History, roleOf: (p: string) => string): any | 'open' {
+function oracleWhy(room: any, me: any, j: any, player: string, name: string, h: History, roleOf: (p: string) => string): any {
   const outs = new Set((room.out as any[]).map((o) => o.player));
   const ghost = outs.has(player);
   const role = me.role;
@@ -164,9 +163,8 @@ function oracleWhy(room: any, me: any, j: any, player: string, name: string, h: 
   if (role === 'doctor') {
     const last = h.doctorPicks[room.round - 1];
     const used = Object.values(h.doctorPicks).includes(player);
-    if (name === player && last === player) return 'open';
+    if (name === player && used) return USED;   // wins over lastNight (orchestrator's decision, 26 October)
     if (name === last) return LAST;
-    if (name === player && used) return USED;
   }
   if (role === 'police') {
     const c = h.checks.find((x) => x.player === name && x.night < room.round);
@@ -195,7 +193,6 @@ describe('MAF-022 Version 1.3: `why` for 120 random game nights', () => {
             expect(n, `${where} sees ${n.player}`).toHaveProperty('why');
             if (n.allowed) { expect(n.why, `${where} sees ${n.player} (allowed)`).toBeNull(); continue; }
             const w = oracleWhy(room, v.me, v.job, player, n.player, h, (p) => pv(p).me?.role);
-            if (w === 'open') { expect([LAST, USED], `${where} sees themselves (open)`).toContainEqual(n.why); continue; }
             expect(w, `${where} sees ${n.player}: not allowed, so the scenario has a reason`).toBeDefined();
             expect(n.why, `${where} sees ${n.player}`).toEqual(w);
           }

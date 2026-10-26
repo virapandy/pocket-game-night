@@ -1,4 +1,30 @@
 # Test report
+Commit tested: 7bd3dfa (lane-r2: the coder's Mafia Version 1.3 why-line on main a7dffe3 + the tests)   Date: 2026-10-26
+Result: RUN_RESULT
+Run: RUN_LINE
+Local: why.test.ts and saved.test.ts 46 passed; build ok; browser mafia-why + mafia-c3, Android and iPhone, 3 workers: 56 passed.
+
+## What changed (tests and specs only, after the reviewer's three gaps)
+- The orchestrator's four calls of 26 October are now in specs/mafia/03-night.md (MAF-022 Version 1.3) and api.md, replacing
+  "(open)": the Doctor's own name gets the Doctor's lines; `selfUsed` wins over `lastNight`; re-tapping the picked name brings
+  back its line; shown again after a hide, the result line shows the current pick's line. The two docs/test-questions.md rows
+  are answered, for the product owner to confirm.
+- why.test.ts: the Doctor's own name the night after self-protect must be `selfUsed` (before: either was accepted).
+- mafia-why.spec.ts: three new tests (re-tap for Villager, Doctor and Police, with no second check recorded; hide and show,
+  with and without a pick; the Doctor's own name on night 2 after self-protect).
+
+## Failing (real bugs only)
+None.
+
+## Flaky or setup problems (not for the Build workspace)
+None in this round.
+
+## Notes for the owner (plain English)
+- The private "why" line on the night screen works for all seven cases on both phones, and the screen keeps the same shape
+  for every role. Four small choices the orchestrator made are waiting for the product owner's OK (docs/test-questions.md).
+
+---
+## Previous report
 Commit tested: a7dffe3 (main, Mafia 1.6.0 app; lane-r2 adds only these tests)   Date: 2026-10-26
 Result: RED, as intended: tests written first for Mafia Version 1.3 (MF21), N2's private why-line, before the build
 Run: https://github.com/virapandy/pocket-game-night/actions/runs/40279719571 (Quick verify on lane-r2 at f403c9d: failure, as

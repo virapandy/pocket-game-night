@@ -62,14 +62,14 @@ player's pass screen with "Welcome back." and nothing recorded for them.
    - Police, any other name after tonight's check: **"Tonight's check is done: Zoya is MAFIA."** / "…: Zoya is Not Mafia." (the tonight's answer again; the checked name stays selected).
 3. Names in capitals by CSS only (as the build answers' item 20). Each line fits the result-line box as sized by build answers item 7 (the longest variant counts towards that height). Strings join `text.csv` as `mf.n2-why.1` to `.7`.
 
-**Version 1.3, the tester's reading** (Test role, 26 October; the tests follow it; points marked (open) are in `docs/test-questions.md` and no test depends on them):
-- "The player's own name (any role)" is the reason only when being themselves is what stops the pick: a Doctor who is in may pick themselves, so the Doctor's own name gets the Doctor's reasons ("You've already protected yourself once. …"); a player who is out (any role) tapping their own name gets "That's you. …".
+**Version 1.3, the tester's reading** (Test role, 26 October; the tests follow it; the orchestrator's decisions of 26 October are marked, for the product owner to confirm in `docs/test-questions.md`):
+- **Orchestrator's decision, 26 October:** "The player's own name (any role)" is the reason only when being themselves is what stops the pick: a Doctor who is in may pick themselves, so the Doctor's own name gets the Doctor's reasons ("You've already protected yourself once. …"); a player who is out (any role) tapping their own name gets "That's you. …".
 - The answer words of line 6 are "Mafia" / "Not Mafia" as written; line 7's "MAFIA" may be capitals in the DOM or by CSS (tests match case-insensitively, as for "Zoya: MAFIA.").
 - Screen readers: the line is announced on N2 only, through a polite live region of N2 (the result line or one inside N2); it is never in a room screen's text, labels or live regions, and the name buttons' accessible names stay the name only (Version 1.2 A).
 - After "Tap to hide", 60 s or IMP-018's triggers, the result line is empty (MAF-022), so no why-line shows while the job is hidden.
-- (open) The Doctor's own name on the night right after they protected themselves: both "last night" and "used" apply.
-- (open) A tap on the already-selected name while a why-line shows (item 7 "changes nothing" vs "until the next tap on any name").
-- (open) What the result line shows when the job is shown again after a hide that followed a why-line.
+- **Orchestrator's decision, 26 October:** the Doctor's own name on the night right after they protected themselves (both "last night" and "used" apply) reads "You've already protected yourself once. Pick someone else." (`selfUsed` wins over `lastNight`).
+- **Orchestrator's decision, 26 October:** a tap on the already-selected name while a why-line shows brings back that pick's result line (the pick stays; nothing is recorded).
+- **Orchestrator's decision, 26 October:** when the job is shown again after a hide that followed a why-line, the result line shows the current pick's line (empty when nothing is picked).
 - Not changed: a Police with nobody left to check (Version 1.2 A): any name tap is the tap Done needs and shows "Nobody left to check.".
 
 ## MAF-023: Mafia at night
