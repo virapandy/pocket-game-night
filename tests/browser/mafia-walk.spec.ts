@@ -15,7 +15,7 @@
 // Flows: tests/games/mafia/flows.ts ("game2-night1-kabir", "game2-morning1", "game1-over", "morning1"). Helpers: mafia.ts.
 import { expect, test, type Locator, type Page } from './fixtures';
 import {
-  button, byId, clipState, exactly, fromMenu, heading, mainButton, moreBelowCue, NINE, openFlow, pad, roomDump, tap, toMorning, TZ, waitGuards,
+  button, byId, clipState, exactly, fromMenu, heading, mainButton, moreBelowCue, nameButton, NINE, openFlow, pad, roomDump, tap, toMorning, TZ, waitGuards,
 } from './mafia';
 
 test.use({ timezoneId: TZ });
@@ -271,4 +271,135 @@ for (const o of [{ vp: { width: 320, height: 568 }, larger: false }, { vp: { wid
     await page.evaluate(() => { for (const el of Array.from(document.querySelectorAll<HTMLElement>('body *'))) el.scrollTop = 0; window.scrollTo(0, 0); });
     await expectCueWhenNamesBelow(page, 'V2t');
   });
+}
+
+// ---- 6. Privacy tidy-ups (reviewer): a covered role stays hidden; no "More below" cue above a cover ----
+
+/** Role text still held by the page's role slots: `private-word` and every `.maf-measure` (the hidden measuring copy). */
+async function roleSlots(page: Page): Promise<{ word: string; measure: string[] }> {
+  return page.evaluate(() => ({
+    word: Array.from(document.querySelectorAll('[data-testid="private-word"]')).map((e) => e.textContent ?? '').join('|'),
+    measure: Array.from(document.querySelectorAll('.maf-measure')).map((e) => (e.textContent ?? '') + ' ' + (e.innerHTML ?? '')),
+  }));
+}
+const ROLE_TEXT = /\b(Mafia|Doctor|Police|Villager)\b/i;
+/** "More below" cues that show on the screen outside the open cover (not inside a dialog, and nothing is on top of them). */
+async function cuesAboveCover(page: Page): Promise<string[]> {
+  return page.evaluate(() => {
+    const out: string[] = [];
+    for (const el of Array.from(document.querySelectorAll<HTMLElement>('body *'))) {
+      if (el.children.length > 0 || !/More below/i.test(el.textContent ?? '')) continue;
+      if (el.closest('[role="dialog"]')) continue;
+      const r = el.getBoundingClientRect();
+      const s = getComputedStyle(el);
+      if (r.width === 0 || r.height === 0 || s.visibility === 'hidden' || s.display === 'none' || parseFloat(s.opacity) === 0) continue;
+      const was = el.style.pointerEvents;
+      el.style.pointerEvents = 'auto';   // the cue ignores taps; for the look-up it must be hittable, so a cue above the cover is found
+      const hit = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+      el.style.pointerEvents = was;
+      // The cue ignores taps (pointer-events: none), so the hit is whatever is under it: covered only by a dialog or a full-screen overlay.
+      let covered = false;
+      for (let a: Element | null = hit; a && a !== document.body; a = a.parentElement) {
+        const ar = a.getBoundingClientRect();
+        if (a.getAttribute('role') === 'dialog' || (getComputedStyle(a).position === 'fixed' && ar.width >= innerWidth * 0.9 && ar.height >= innerHeight * 0.9)) { covered = true; break; }
+      }
+      if (hit && (el === hit || el.contains(hit)) && !covered) out.push(`"${(el.textContent ?? '').trim()}" at y ${Math.round(r.top)}`);
+    }
+    return out;
+  });
+}
+
+const COVERS = ['Paused', 'Players'] as const;
+async function openCover(page: Page, cover: string): Promise<Locator> {
+  if (cover === 'Paused') {
+    await tap(page, page.getByRole('button', { name: 'Pause', exact: true }));
+    const d = page.getByRole('dialog');
+    await expect(d.getByText(exactly('Paused'))).toBeVisible();
+    return d;
+  }
+  if (cover === 'Players') {
+    await fromMenu(page, 'Players');
+    const d = page.getByRole('dialog').last();
+    await expect(d).toBeVisible();
+    return d;
+  }
+  await fromMenu(page, 'End for tonight');
+  const d = page.getByRole('dialog').filter({ hasText: 'End for tonight?' });
+  await expect(d).toBeVisible();
+  return d;
+}
+async function closeCover(page: Page, cover: string, d: Locator) {
+  if (cover === 'Paused') await tap(page, d.getByRole('button', { name: 'Carry on', exact: true }));
+  else if (cover === 'Players') await tap(page, d.getByRole('button', { name: /^(Done|Close)$/ }).first());
+  else await tap(page, d.getByRole('button', { name: /^(Keep playing|Cancel|Back|Oops, keep playing)$/ }).first());
+  await expect(d).toHaveCount(0);
+}
+
+// B2 and N2 have no Pause or Menu (specs/mafia/06-room.md: "No menu on B2, N2"), so a cover can't open over a showing role.
+// The reachable moment is the next pass screen (B1, N1) right after a role was shown: nothing of it may linger.
+for (const cover of COVERS) {
+  for (const where of ['B1', 'N1'] as const) {
+    test(`MAF-050 / MAF-051 / MAF-011 / MAF-P2: after Arjun's role showed (tap to see), ${cover} over the next pass screen (${where}): private-word and .maf-measure hold no role, and after it closes no role comes back by itself`, async ({ page }) => {
+      if (where === 'B1') {
+        await openFlow(page, 'deal-arjun');
+        await tap(page, button(page, "I'm Arjun"));
+        await tap(page, button(page, 'Tap instead'));
+        await tap(page, pad(page));
+        await expect(byId(page, 'private-word')).toHaveText(exactly('MAFIA'));
+        await tap(page, pad(page));   // hide it again, as dealTurn does
+        await tap(page, button(page, 'Done, pass to Meena'));
+        await expect(byId(page, 'pass-name')).toHaveText(exactly('Meena'));
+      } else {
+        await openFlow(page, 'night1-meena');
+        await tap(page, button(page, "I'm Meena"));
+        await tap(page, button(page, 'Tap to see your night job'));
+        await expect(page.getByText(/DOCTOR/i).first()).toBeVisible();
+        await tap(page, nameButton(page, 'Riya'));
+        await page.clock.runFor(4100);
+        await tap(page, mainButton(page));
+        await expect(byId(page, 'pass-name')).not.toHaveText(exactly('Meena'));
+      }
+      const d = await openCover(page, cover);
+      await waitGuards(page, 600);
+      let slots = await roleSlots(page);
+      expect(slots.word, `while ${cover} is open, private-word holds no role`).not.toMatch(ROLE_TEXT);
+      expect(slots.measure.join(' '), `while ${cover} is open, .maf-measure holds no role text`).not.toMatch(ROLE_TEXT);
+      await closeCover(page, cover, d);
+      await waitGuards(page, 5000);
+      slots = await roleSlots(page);
+      expect(slots.word, 'after the cover closes, no role comes back by itself').not.toMatch(ROLE_TEXT);
+      expect(slots.measure.join(' '), 'after the cover closes, .maf-measure holds no role').not.toMatch(ROLE_TEXT);
+      await expect(byId(page, 'private-word')).toHaveCount(0);
+    });
+  }
+}
+
+const CUE_COVERS = ['Paused', 'Players', 'End for tonight'] as const;
+for (const cover of CUE_COVERS) {
+  for (const where of ['V2'] as const) {   // N2 has no Pause or Menu, so no cover can open over it
+    test(`MAF-080 / MAF-033: no "More below" cue shows above ${cover} opened over ${where} (320×568)`, async ({ page }) => {
+      const viewport = { width: 320, height: 568 };
+      if (where === 'V2') {
+        await openFlow(page, 'morning1', { viewport });
+        await toMorning(page);
+        await tap(page, mainButton(page));
+        await tap(page, mainButton(page));
+        await page.clock.runFor(5000);
+        await expect(heading(page, 'Who got the most fingers?')).toBeVisible();
+      } else {
+        await openFlow(page, 'night1-meena', { viewport });
+        await tap(page, button(page, "I'm Meena"));
+        await tap(page, button(page, 'Tap to see your night job'));
+      }
+      await waitGuards(page, 600);
+      // Precondition (else the test proves nothing): without a cover, the cue shows here.
+      await expect(moreBelowCue(page).first(), `${where} at 320×568 shows its cue before any cover`).toBeVisible({ timeout: 2000 });
+      // The detector itself sees the cue when nothing covers it.
+      expect((await cuesAboveCover(page)).length, 'without a cover the cue is detected').toBeGreaterThan(0);
+      const d = await openCover(page, cover);
+      await waitGuards(page, 600);
+      expect(await cuesAboveCover(page), `${cover} open over ${where}: a "More below" cue shows above it`).toEqual([]);
+      await closeCover(page, cover, d);
+    });
+  }
 }

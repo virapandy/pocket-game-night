@@ -235,3 +235,10 @@ Earlier report (e55f749, run 40136323734) follows.
 - Every Mafia screen is now checked for real, except the parts that need the Mafia card on "What shall we play?" and Home's
   row, which wait for What Am I?. One thing to fix: on a small phone held sideways, the main button on the night screen is
   too wide; it should sit in the bottom right.
+
+## Lane-f2 Mafia privacy tidy-ups (tests/browser/mafia-walk.spec.ts, section 6)
+Local, both phones, built from the lane-f2 head: 14 new tests pass, `npm test` 1182 pass. None fail now.
+- B2 and N2 have no Pause or Menu (specs/mafia/06-room.md), so a cover cannot open over a showing role. The role tests
+  therefore open Paused and Players over the next pass screen (B1, N1) after the role was shown and hidden: private-word and
+  .maf-measure hold no role, and none comes back after the cover closes.
+- "More below" above a cover: tested over V2 only (Paused, Players, End for tonight); N2 has no cover to open.
