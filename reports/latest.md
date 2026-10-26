@@ -1,4 +1,20 @@
 # Test report
+Commit tested: b529c7c (lane-r2 rebased on main 2a5e5f4, the 1.6.0 release)   Date: 2026-10-26
+Result: GREEN locally; quick verify on the pushed branch is named in the line below once it has finished
+Run: see the next line
+Local: npm test 65 files, 1191 passed; build ok; browser mafia-*, home-and-buttons, secret-words-a-home (Home and picker), Android and iPhone, 3 workers: 390 passed.
+
+## What changed
+- Rebase only. reports/latest.md conflicts were kept on both sides, newest first (the older reports follow below). No app-code conflicts.
+
+## Failing (real bugs only)
+None.
+
+## Flaky or setup problems (not for the Build workspace)
+None.
+
+---
+
 Commit tested: 7bd3dfa (lane-r2: the coder's Mafia Version 1.3 why-line on main a7dffe3 + the tests)   Date: 2026-10-26
 Result: GREEN
 Run: https://github.com/virapandy/pocket-game-night/actions/runs/40281415194 (Quick verify on lane-r2 at 4514dc7: success)
