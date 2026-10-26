@@ -1,7 +1,7 @@
 # Test report
 Commit tested: 05f6e82 (main, the 1.6.1 app; lane-m2 = main + these tests)   Date: 2026-10-26
 Result: RED (expected: tests first for Mafia Version 1.4, the 1.6.2 point release)
-Run: see below (Quick verify on lane-m2 at this push)
+Run: https://github.com/virapandy/pocket-game-night/actions/runs/40352034960 (Quick verify on lane-m2 at 17fb2c8: failure as expected; Android 107 passed, 24 failed, exactly the Version 1.4 checks listed below; the mafia-c3 flake did not recur)
 Local: npm test 65 files, 1191 of 1193 passed (2 known load timeouts, both pass alone); build ok; browser mafia-v14,
 mafia-deal-night, mafia-day, mafia-why, mafia-walk, mafia-c3 on Android and iPhone, 3 workers: 127 passed, 49 failed
 (48 are the new or updated Version 1.4 checks, 24 per phone; 1 load flake, below).
