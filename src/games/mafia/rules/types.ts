@@ -141,9 +141,19 @@ export interface MafiaView {
   next: string[];
 }
 
+/** Version 1.3 (MF21): why a name can't be picked, for N2's private line (`mf.n2-why.1` to `.7`). */
+export type Why =
+  | { kind: 'you' }
+  | { kind: 'out' }
+  | { kind: 'partner' }
+  | { kind: 'lastNight' }
+  | { kind: 'selfUsed' }
+  | { kind: 'checked'; night: number; mafia: boolean }
+  | { kind: 'checkDone' };
+
 export interface NightJob {
   kind: JobKind;
-  names: { player: string; allowed: boolean; tags: string[] }[];
+  names: { player: string; allowed: boolean; tags: string[]; why: Why | null }[];
   /** Police: this turn's check once made (Version 1.2 C); else null. */
   check: { player: string; mafia: boolean } | null;
   latest: { by: string; target: string } | null;

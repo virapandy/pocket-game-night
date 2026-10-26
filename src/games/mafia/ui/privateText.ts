@@ -1,7 +1,7 @@
 // The words of Mafia's deal and night screens (B1, B2, D5, N0–N3), from docs/games/mafia/text.csv (keys mf.b1.*, mf.b2*,
 // mf.d5.*, mf.n0.* to mf.n3.*) and specs/mafia/02-deal.md and 03-night.md (version 1.1). Names are written as typed; a name
 // in capitals (RIYA, "Arjun's pick: KABIR") is upper case by CSS only.
-import type { Role } from '../rules';
+import type { Role, Why } from '../rules';
 
 /** "Zoya", "Zoya and Dev", "Zoya, Dev and Om". */
 export const andList = (names: readonly string[]) =>
@@ -103,3 +103,27 @@ export const RESULT = {
   villager: (pick: string) => `You think it's ${pick}. At the end we'll see if you were right.`,
   ghost: (pick: string) => `Your guess: ${pick}.`,
 } as const;
+
+/** Version 1.3 (MF21): why a name can't be picked, N2's private result line (text.csv `mf.n2-why.1` to `.7`). */
+export const WHY = {
+  you: "That's you. Pick someone else.",
+  out: (name: string) => `${name} is out. Pick someone else.`,
+  partner: (name: string) => `${name} is Mafia too. Pick someone else.`,
+  lastNight: (name: string) => `You protected ${name} last night. Pick someone else.`,
+  selfUsed: "You've already protected yourself once. Pick someone else.",
+  checked: (name: string, night: number, mafia: boolean) => `You checked ${name} on night ${night}: ${mafia ? 'Mafia' : 'Not Mafia'}. Pick someone else.`,
+  checkDone: (name: string, mafia: boolean) => `Tonight's check is done: ${name} is ${mafia ? 'MAFIA' : 'Not Mafia'}.`,
+} as const;
+
+/** The line for a name tapped with this reason; `check` is tonight's check (for `checkDone`). */
+export function whyLine(name: string, why: Why, check: { player: string; mafia: boolean } | null): string {
+  switch (why.kind) {
+    case 'you': return WHY.you;
+    case 'out': return WHY.out(name);
+    case 'partner': return WHY.partner(name);
+    case 'lastNight': return WHY.lastNight(name);
+    case 'selfUsed': return WHY.selfUsed;
+    case 'checked': return WHY.checked(name, why.night, why.mafia);
+    case 'checkDone': return check ? WHY.checkDone(check.player, check.mafia) : '';
+  }
+}
