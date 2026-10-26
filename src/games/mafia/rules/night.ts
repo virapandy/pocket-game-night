@@ -129,7 +129,7 @@ function whyMaker(g: Game, player: string, kind: JobKind): (name: string, allowe
     if (name === player && kind !== 'doctor') return { kind: 'you' };
     if (isOut(g, name)) return { kind: 'out' };
     if (kind === 'mafia' && g.roles[name] === 'mafia') return { kind: 'partner' };
-    // Owner, 26 October: on the Doctor's own name "used" wins over "last night".
+    // Orchestrator's call, 26 October (owner away); product owner to confirm: on the Doctor's own name "used" wins over "last night".
     if (kind === 'doctor' && name === player && used) return { kind: 'selfUsed' };
     if (kind === 'doctor' && name === last) return { kind: 'lastNight' };
     const night = checks?.get(name);
