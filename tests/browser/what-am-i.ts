@@ -1,4 +1,4 @@
-// What Am I? browser helpers (scenarios version 1.3, approved 24 October 2026; specs/what-am-i/, hooks in
+// What Am I? browser helpers (scenarios version 1.3, approved 24 October 2026, with Version 1.4 of 26 October; specs/what-am-i/, hooks in
 // specs/what-am-i/api.md). Every name, text and test id comes from the scenarios (Canonical strings and the Version 1.1 to
 // 1.3 items, which win over older strings). Words and their order come from the scenarios' own algorithm
 // (tests/games/what-am-i/oracle.ts), so a test knows each word T3 will show for a seed (WAI-H1b).
@@ -235,7 +235,7 @@ export async function startNight(page: Page, o: NightOptions = {}) {
 }
 export async function chooseOnS2(page: Page, o: NightOptions) {
   if (o.turnTime) await radio(page, `${o.turnTime} s`).click();
-  if (o.hold) await radio(page, o.hold === 'hand' ? "In the guesser's hand" : 'Hands-free').click();
+  if (o.hold) await radio(page, o.hold === 'hand' ? "In the guesser's hand" : 'Stand the phone up').click();
   if (o.nonveg !== undefined) await setSwitch(page, 'Include non-veg food (chicken, fish, egg)', o.nonveg);
   if (o.sounds !== undefined) await setSwitch(page, 'Sounds', o.sounds);
   if (o.pack) await radio(page, packLabel(o.pack, o.nonveg ?? false)).click();

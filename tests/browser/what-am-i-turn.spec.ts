@@ -25,7 +25,8 @@ test.describe('WAI-012: the pass screen', () => {
     await expect(text(page, 'Hold the phone on your forehead or chest, screen facing the room.')).toBeVisible();
     await expect(text(page, 'Phone down: Got it · Phone up: Pass')).toBeVisible();
     await expect(text(page, 'Round 1 · player 1 of 6')).toBeVisible();
-    for (const q of ['Hands-free for Riya', 'Someone else goes first', '← Home (game saved)']) await expect(button(page, q)).toBeVisible();
+    // "Stand the phone up for Riya": Version 1.4 item 3 (was "Hands-free for Riya")
+    for (const q of ['Stand the phone up for Riya', 'Someone else goes first', '← Home (game saved)']) await expect(button(page, q)).toBeVisible();
     await expect(pauseButton(page)).toBeVisible();
     await expect(button(page, 'Menu')).toBeVisible();
     await expect(page.getByRole('button', { name: /^Players \(/ })).toHaveCount(0);
@@ -66,7 +67,7 @@ test.describe('WAI-012: the pass screen', () => {
     await expect(text(page, 'One clue giver taps: bottom half Got it · top half Pass')).toBeVisible();
     await expect(button(page, 'Riya will hold it')).toBeVisible();
     await expect(mainButton(page)).toHaveText("Start Riya's turn");
-    await expect(text(page, "Hands-free (Riya's choice)")).toHaveCount(0);
+    await expect(text(page, "Stand the phone up (Riya's choice)")).toHaveCount(0); // Version 1.4 item 3
   });
 
   test('Version 1.1 item 31 / Version 1.2 item 3: "player k of n" counts saved turns this round plus current players still to play', async ({ page }) => {
@@ -231,11 +232,11 @@ test.describe('WAI-013: motion permission and the motion question (Version 1.1 i
 });
 
 test.describe('WAI-014 / WAI-015: hold for one player, someone else goes first', () => {
-  test('"Hands-free for Riya" records setHold, shows the hands-free T1 with "Hands-free (Riya\'s choice)"; kept on her next turn; "Riya will hold it" reverses', async ({ page }) => {
+  test('"Stand the phone up for Riya" (Version 1.4 item 3) records setHold, shows the hands-free T1 with "Stand the phone up (Riya\'s choice)"; kept on her next turn; "Riya will hold it" reverses', async ({ page }) => {
     await startNight(page, { seed: 'hold', players: TWO, turnTime: 30 });
-    await tap(page, button(page, 'Hands-free for Riya'));
+    await tap(page, button(page, 'Stand the phone up for Riya'));
     await expect(mainButton(page)).toHaveText("Start Riya's turn");
-    await expect(text(page, "Hands-free (Riya's choice)")).toBeVisible();
+    await expect(text(page, "Stand the phone up (Riya's choice)")).toBeVisible();
     expect((await moves(page)).at(-1)).toEqual({ type: 'setHold', player: 'Riya', hold: 'free' });
     await saveTurns(page, 2); // round 1 over (WAI-033): Round 2 → Riya's T1
     await tap(page, mainButton(page));

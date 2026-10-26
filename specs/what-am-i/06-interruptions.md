@@ -1,8 +1,8 @@
 # What Am I?: 06 Interruptions and people (C2)
 
-Copied from `docs/games/what-am-i/scenarios.md` version 1.3 (approved by the owner, 24 October 2026). Each scenario
-carries the Version 1.1, 1.2 and 1.3 items that name it, word for word; a later version wins over earlier text in the
-same scenario (1.3 over 1.2 over 1.1 over the body). Terms, canonical strings and test hooks: [README.md](README.md);
+Copied from `docs/games/what-am-i/scenarios.md` version 1.3 (approved by the owner, 24 October 2026) with Version 1.4 (product owner, 26 October 2026). Each scenario
+carries the Version 1.1 to 1.4 items that name it, word for word; a later version wins over earlier text in the
+same scenario (1.4 over 1.3 over 1.2 over 1.1 over the body). Terms, canonical strings and test hooks: [README.md](README.md);
 the exact rule API and browser hooks the tests use: [api.md](api.md).
 
 ### WAI-040 Pause
@@ -30,6 +30,10 @@ left kept; the hidden word goes to the end of the queue unshown (R2). "← Home 
 **Version 1.3** (wins over the text above, and over Versions 1.1 and 1.2):
 1.3 item 8: **Paused says the clock stopped** (distracted host): the cover's body reads "The clock is stopped and the word is hidden.
    Tap Carry on playing when you're ready."
+
+**Version 1.4** (product owner, 26 October 2026; wins over the text above, and over Versions 1.1 to 1.3):
+1.4 item 4 (kept, by design): a word hidden by a pause or a reload comes back later without a message (saying it would show the
+   word to the next guesser).
 
 ### WAI-041 Players during a game
 Status: approved · Phase: What Am I? 1

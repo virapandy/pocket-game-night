@@ -1,8 +1,8 @@
 # What Am I?: 04 End of a turn and scores (C3)
 
-Copied from `docs/games/what-am-i/scenarios.md` version 1.3 (approved by the owner, 24 October 2026). Each scenario
-carries the Version 1.1, 1.2 and 1.3 items that name it, word for word; a later version wins over earlier text in the
-same scenario (1.3 over 1.2 over 1.1 over the body). Terms, canonical strings and test hooks: [README.md](README.md);
+Copied from `docs/games/what-am-i/scenarios.md` version 1.3 (approved by the owner, 24 October 2026) with Version 1.4 (product owner, 26 October 2026). Each scenario
+carries the Version 1.1 to 1.4 items that name it, word for word; a later version wins over earlier text in the
+same scenario (1.4 over 1.3 over 1.2 over 1.1 over the body). Terms, canonical strings and test hooks: [README.md](README.md);
 the exact rule API and browser hooks the tests use: [api.md](api.md).
 
 ### WAI-030 Time's up screen
@@ -23,6 +23,14 @@ h1's count updates.
 1.3 item 3: **Who's ahead, during play** (10-year-old, uncle): T4 gains the small line under the h1 "Riya: 9 in all · Top: Arjun 14"
    (after this turn's count, before saving; when Riya is top: "Riya: 14 in all · Top so far"; a shared top: "Top: Arjun and Meena
    12"). The menu gains "Scores" (after "Players"), opening a sheet with R1's scoreboard and "Done".
+
+**Version 1.4** (product owner, 26 October 2026; wins over the text above, and over Versions 1.1 to 1.3):
+1.4 item 3: "Top so far" → "Riya: 14 in all · the most so far"; a shared top "Most so far: Arjun and Meena 12" (1.3 item 3).
+1.4 item 3: "Marked wrong? Tap a word to move it." → **"A word in the wrong list? Tap it to move it."**; Read this aloud's "Marked
+   wrong? Fix it when time's up." → "A word in the wrong list? Fix it when time's up."
+Tester's reading (26 October, in `docs/test-questions.md` for the product owner): the shared top's "Top:" becomes "Most so far:",
+   so one player ahead reads the same way: "Riya: 9 in all · Most so far: Arjun 14"; Riya top (or tied top, build answers
+   item 25): "Riya: 14 in all · the most so far"; a shared top: "Meena: 0 in all · Most so far: Riya and Arjun 2".
 
 ### WAI-031 Save score, and Undo
 Status: approved · Phase: What Am I? 1

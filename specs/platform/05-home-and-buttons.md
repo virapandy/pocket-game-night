@@ -79,3 +79,16 @@ Then it hears the verdict's first line, such as "Top Line: ✓ Riya" or "Early F
 And the live region is never seen: it takes no space, covers nothing and sits above nothing on the calling screen
 (TAM-123)
 
+
+## PLT-303: A game's name never breaks across lines
+Status: decided, product owner, 2026-10-26 (`docs/handover.md`, answers of 26 October (1): "keep each game's name on one line
+('What Am I?' breaks after 'Am' at 812 × 375): join the words of a game name with no-break spaces"; C1, every game)
+Phase: every phase
+The game names are "Tambola", "Impostor", "Secret Words", "What Am I?" and "Mafia".
+Given any screen that shows a game's name: Home (the "Host a game" line, the unfinished-games rows, "Join a game"'s lines),
+the picker "What shall we play?" (each card), History (each row and a past game's title) and a game's own headers (titles
+such as "Tonight's What Am I?" and "Tonight's Secret Words")
+Then every word of each game name sits on the same line: the name may move to the next line as a whole, but never splits
+between its words (the words are joined with no-break spaces, U+00A0)
+And this holds at 320 × 568, 360 × 640, 568 × 320 and 812 × 375
+Tests: `tests/browser/game-names-one-line.spec.ts`.

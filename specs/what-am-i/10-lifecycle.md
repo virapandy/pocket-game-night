@@ -1,8 +1,8 @@
 # What Am I?: 10 Lifecycle (saved data C3)
 
-Copied from `docs/games/what-am-i/scenarios.md` version 1.3 (approved by the owner, 24 October 2026). Each scenario
-carries the Version 1.1, 1.2 and 1.3 items that name it, word for word; a later version wins over earlier text in the
-same scenario (1.3 over 1.2 over 1.1 over the body). Terms, canonical strings and test hooks: [README.md](README.md);
+Copied from `docs/games/what-am-i/scenarios.md` version 1.3 (approved by the owner, 24 October 2026) with Version 1.4 (product owner, 26 October 2026). Each scenario
+carries the Version 1.1 to 1.4 items that name it, word for word; a later version wins over earlier text in the
+same scenario (1.4 over 1.3 over 1.2 over 1.1 over the body). Terms, canonical strings and test hooks: [README.md](README.md);
 the exact rule API and browser hooks the tests use: [api.md](api.md).
 
 ### WAI-090 Where-line
@@ -19,6 +19,12 @@ on Home's unfinished row (line 1 there uses "What Am I? · Round 2 · Arjun's tu
 **Version 1.2** (wins over the text above, and over Version 1.1):
 1.2 item 15: **Home row for a paused turn** (distracted host): line 1 uses the where-line: "What Am I? · Round 2 · Arjun guessing, 34 s
     left"; tapping it opens the Paused cover, where "Carry on playing" counts 3, 2, 1 and shows a new word with that time.
+
+**Version 1.4** (product owner, 26 October 2026; wins over the text above, and over Versions 1.1 to 1.3):
+1.4 item 3: "Top so far" → "Riya: 14 in all · the most so far"; a shared top "Most so far: Arjun and Meena 12" (1.3 item 3).
+Tester's reading (26 October, in `docs/test-questions.md` for the product owner): the shared top's "Top:" becomes "Most so far:",
+   so one player ahead reads the same way: "Riya: 9 in all · Most so far: Arjun 14"; Riya top (or tied top, build answers
+   item 25): "Riya: 14 in all · the most so far"; a shared top: "Meena: 0 in all · Most so far: Riya and Arjun 2".
 
 ### WAI-091 Resume
 Status: approved · Phase: What Am I? 1

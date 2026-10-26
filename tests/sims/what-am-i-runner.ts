@@ -378,7 +378,7 @@ function scripted(screen: string, s: Snap, cfg: WaiConfig, plan: Plan, r: Rng, s
       plan.started = true;
       plan.seenThisTurn.clear();
       if (!plan.someoneElse && r.chance(0.08)) { plan.someoneElse = true; return by(/^Someone else goes first$/) ?? main!; }
-      if (!plan.holdSwap && r.chance(0.08)) { plan.holdSwap = true; return by(/^(Hands-free for|.* will hold it$)/) ?? main!; }
+      if (!plan.holdSwap && r.chance(0.08)) { plan.holdSwap = true; return by(/^(Stand the phone up for|.* will hold it$)/) ?? main!; }
       if ((!plan.leaveDone || !plan.joinDone) && r.chance(0.3)) return by(/^Menu$/) ?? main!;
       return main ?? 'action:escape';
     }
@@ -489,7 +489,7 @@ async function act(page: Page, action: string, s: Snap, cfg: WaiConfig, res: Wai
     case 'macro:choices': {
       const radio = (name: string | RegExp) => page.getByRole('radio', { name: typeof name === 'string' ? new RegExp(`^${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`) : name }).first();
       await radio(`${cfg.turnTime} s`).click({ timeout: 3000 });
-      await radio(cfg.hold === 'hand' ? "In the guesser's hand" : 'Hands-free').click({ timeout: 3000 });
+      await radio(cfg.hold === 'hand' ? "In the guesser's hand" : 'Stand the phone up').click({ timeout: 3000 });
       const sw = async (name: string, on: boolean) => { const x = page.getByRole('switch', { name, exact: true }); if ((await x.getAttribute('aria-checked')) !== String(on)) await x.click(); };
       await sw('Include non-veg food (chicken, fish, egg)', cfg.nonveg);
       await sw('Sounds', cfg.sounds);

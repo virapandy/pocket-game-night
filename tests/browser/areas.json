@@ -221,7 +221,8 @@
         "layout.spec.ts",
         "setup-layout.spec.ts",
         "lifecycle.spec.ts",
-        "impostor-journeys.spec.ts"
+        "impostor-journeys.spec.ts",
+        "game-names-one-line.spec.ts"
       ]
     },
     {
@@ -242,7 +243,7 @@
       "name": "History",
       "lane": "shared",
       "paths": ["src/app/History.tsx"],
-      "specs": ["history.spec.ts", "lifecycle.spec.ts", "format-1.spec.ts", "after-the-game.spec.ts", "impostor-privacy.spec.ts", "impostor-saved-evenings.spec.ts", "impostor-scoring.spec.ts"]
+      "specs": ["history.spec.ts", "lifecycle.spec.ts", "format-1.spec.ts", "after-the-game.spec.ts", "impostor-privacy.spec.ts", "impostor-saved-evenings.spec.ts", "impostor-scoring.spec.ts", "game-names-one-line.spec.ts"]
     },
     {
       "name": "Sessions and tally screens",
@@ -337,7 +338,7 @@
       "name": "What Am I?: rules, screens, saved game nights, word list (every What Am I? browser file; written before the build, expected to fail until window.__waiTest exists)",
       "lane": "shared",
       "paths": ["src/games/what-am-i/**", "content/what-am-i/**", "docs/games/what-am-i/words.csv", "tests/browser/what-am-i.ts", "tests/browser/what-am-i-*.spec.ts", "tests/games/what-am-i/oracle.ts"],
-      "specs": ["what-am-i-c3.spec.ts", "what-am-i-setup.spec.ts", "what-am-i-turn.spec.ts", "what-am-i-scores.spec.ts", "what-am-i-interruptions.spec.ts", "what-am-i-results.spec.ts", "what-am-i-usability.spec.ts", "what-am-i-lifecycle.spec.ts", "what-am-i-marks-in-flight.spec.ts"]
+      "specs": ["what-am-i-c3.spec.ts", "what-am-i-setup.spec.ts", "what-am-i-turn.spec.ts", "what-am-i-scores.spec.ts", "what-am-i-interruptions.spec.ts", "what-am-i-results.spec.ts", "what-am-i-usability.spec.ts", "what-am-i-lifecycle.spec.ts", "what-am-i-marks-in-flight.spec.ts", "what-am-i-v14.spec.ts", "game-names-one-line.spec.ts"]
     },
     {
       "name": "Mafia: rules, screens, saved game nights, stories (every Mafia browser file, no other game's)",
