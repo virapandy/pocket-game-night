@@ -111,7 +111,7 @@ four balance runs (convention table fair, `jev-results-2026-10-23.md`); evidence
 `screen-map.md` draft 4, findings into a "Version 1.2" section of `scenarios.md`; (2) answer the tester's and coder's questions
 on the scenarios: wording, screen detail and ambiguity are the helper's call (record each in "Version 1.2"); (3) when the engine
 exists, the Jev simulated player against it (`tests/tools/jev-design/sim-mafia.ts`, `--no-nobody`, product budget 30,000 a week).
-**Waiting for the owner (25 October):** the Police reload gap,  "For the owner" item 1 (recommended: save the Police's first tap at once; built as approved until answered).
+**Waiting for the owner (25 October):** the Police reload gap, `docs/games/mafia/build-answers.md` "For the owner" item 1 (recommended: save the Police's first tap at once; built as approved until answered).
 **Hold for the owner (never decide):** anything that changes how the game is played (a rule, a role, counts, who wins), releasing
 to families, loosening or deleting a test, project-rule edits, paid services, and Mafia's release before What Am I?. List them
 at the top of this section.
