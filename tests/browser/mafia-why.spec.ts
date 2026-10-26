@@ -367,3 +367,59 @@ test('MAF-P7 Version 1.3: with Larger text at 320 × 568 the longest lines fit, 
   frames.push(...await roleFrames(page, 'Dev', 'Zoya', [{ name: 'Riya', line: WHY.checked('Riya', 1, false) }, { name: 'Meena', line: WHY.checkDone('Zoya', true) }], 'Zoya: MAFIA.'));
   allSame(frames, '320 × 568, Larger text');
 });
+
+// ---- The orchestrator's decisions of 26 October (specs/mafia/03-night.md, MAF-022 Version 1.3; for the product owner) ----
+
+/** A tap on the already-selected name: that pick's line comes back; the pick stays; nothing is recorded. */
+async function reTap(page: Page, name: string, line: string) {
+  const moves = (await records(page)).length;
+  await tapPick(page, name, line);
+  expect((await records(page)).length, `re-tap ${name}: nothing is recorded`).toBe(moves);
+}
+
+test('MAF-022 Version 1.3 (orchestrator, 26 October): re-tapping the picked name after a why-line brings back that pick\'s line (Villager, Doctor, Police)', async ({ page }) => {
+  await openFlow(page, 'night1-start');
+  await tap(page, mainButton(page));
+  await openJob(page, 'Riya');
+  await tapPick(page, 'Om', "You think it's Om. At the end we'll see if you were right.");
+  await tapWhy(page, 'Riya', 'Riya', WHY.you);
+  await reTap(page, 'Om', "You think it's Om. At the end we'll see if you were right.");
+  await openFlow(page, 'night3-meena');
+  await openJob(page, 'Meena');
+  await tapPick(page, 'Sunita', 'Sunita is protected tonight.');
+  await tapWhy(page, 'Meena', 'Riya', WHY.lastNight('Riya'));
+  await reTap(page, 'Sunita', 'Sunita is protected tonight.');
+  await openFlow(page, 'night1-dev');
+  await openJob(page, 'Dev');
+  await tapPick(page, 'Zoya', 'Zoya: MAFIA.');
+  await tapWhy(page, 'Dev', 'Riya', WHY.checkDone('Zoya', true));
+  await reTap(page, 'Zoya', 'Zoya: MAFIA.');
+  expect((await records(page)).filter((m) => m.type === 'check'), 'one check only').toHaveLength(1);
+});
+
+test('MAF-022 Version 1.3 (orchestrator, 26 October): after "Tap to hide" and showing the job again, the result line shows the current pick\'s line, or nothing without a pick', async ({ page }) => {
+  await openFlow(page, 'night1-start');
+  await tap(page, mainButton(page));
+  await openJob(page, 'Riya');
+  await tapWhy(page, 'Riya', 'Riya', WHY.you);
+  await tap(page, button(page, 'Tap to hide'));
+  await tap(page, button(page, 'Tap to see your night job').or(button(page, 'Tap to see')));
+  await expect(byId(page, 'night-names')).toBeVisible();
+  await expect(byId(page, 'result-line'), 'no pick: the result line is empty').toHaveText(/^\s*$/);
+  await tapPick(page, 'Om', "You think it's Om. At the end we'll see if you were right.");
+  await page.clock.runFor(4100);
+  await tap(page, mainButton(page));
+  await openJob(page, 'Arjun');
+  await tapPick(page, 'Kabir', 'Kabir. Zoya can agree or change it.');
+  await tapWhy(page, 'Arjun', 'Zoya', WHY.partner('Zoya'));
+  await tap(page, button(page, 'Tap to hide'));
+  await tap(page, button(page, 'Tap to see your night job').or(button(page, 'Tap to see')));
+  await expect(byId(page, 'result-line'), 'the pick\'s line, not the why-line').toHaveText(exactly('Kabir. Zoya can agree or change it.'));
+  await expect(nameButton(page, 'Kabir')).toHaveAttribute('aria-pressed', 'true');
+});
+
+test('MAF-024 Version 1.3 (orchestrator, 26 October): the night after the Doctor protected themselves, their own name reads "You\'ve already protected yourself once."', async ({ page }) => {
+  await openFlow(page, 'night2-meena');
+  await openJob(page, 'Meena');
+  await tapWhy(page, 'Meena', 'Meena', WHY.selfUsed);
+});

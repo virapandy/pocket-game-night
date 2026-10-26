@@ -255,13 +255,13 @@ type Why =
   | { kind: 'checkDone' };                            // mf.n2-why.7: Police (in), any other name after this turn's check (answer in job.check)
 ```
 - `you` is for the player's own name whenever they may not pick it, except a **Doctor who is in**: being themselves never
-  stops a Doctor, so the Doctor's own name gets `lastNight` or `selfUsed` (tester's reading, specs/mafia/03-night.md).
+  stops a Doctor, so the Doctor's own name gets `selfUsed` (orchestrator's decision, 26 October, specs/mafia/03-night.md).
 - `checked` comes from the Police's earlier nights of this game (a `check`, or a `nightPick` saved before 1.2); after this
   turn's `check`, earlier checks still read `checked` and every other name that is in reads `checkDone`.
 - A Police with nobody left to check: every name has a `why` as above (no `checkDone`); the screen still shows "Nobody left
   to check." for any tap (Version 1.2 A).
-- **(open)** The Doctor's own name on the night right after they protected themselves (`lastNight` and `selfUsed` both fit):
-  either is accepted; no test depends on which.
+- **Orchestrator's decision, 26 October (for the product owner to confirm):** the Doctor's own name on the night right
+  after they protected themselves (`lastNight` and `selfUsed` both fit) is `selfUsed`.
 - `why` is in the player's own view only (inside `job`); the room view is unchanged (MAF-P2). Like `allowed`, it is never
   shown until that name is tapped.
 
