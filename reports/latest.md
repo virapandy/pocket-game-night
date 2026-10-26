@@ -1,7 +1,8 @@
 # Test report
 Commit tested: a7dffe3 (main, Mafia 1.6.0 app; lane-r2 adds only these tests)   Date: 2026-10-26
 Result: RED, as intended: tests written first for Mafia Version 1.3 (MF21), N2's private why-line, before the build
-Run: RUN_PLACEHOLDER
+Run: https://github.com/virapandy/pocket-game-night/actions/runs/40279719571 (Quick verify on lane-r2 at f403c9d: failure, as
+intended: rule tests 64 of 65 files passed, only the new why.test.ts failed (7 tests), so the browser steps did not run)
 Local: npm test 65 files, 1191 tests: 1183 passed, 7 failed (all new, why.test.ts), 1 setup timeout (secret-words privacy
 property under low priority; passes alone). Build ok. Browser mafia-why + mafia-c3, Android and iPhone, 3 workers: 24 passed,
 26 failed (13 per phone, all new or changed for 1.3).
