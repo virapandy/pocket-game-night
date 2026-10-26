@@ -203,3 +203,22 @@ export async function box(l: Locator) {
   if (!b) throw new Error('not on screen');
   return b;
 }
+
+// ---- "More below ↓" scroll cue (player walks of 25 October; the What Am I? pattern, orchestrator's call) ----
+/** The visible scroll cue: "More below" (the arrow may differ). */
+export const moreBelowCue = (page: Page) => page.getByText(/More below/i);
+/**
+ * How the element sits: 'shown' when wholly inside the screen and every box that clips it; 'below' when part of it is
+ * cut off at the bottom (by the screen or a scroll box); 'above' when cut off at the top.
+ */
+export const clipState = (l: Locator) => l.evaluate((el) => {
+  const r = el.getBoundingClientRect();
+  let top = 0, bottom = window.innerHeight;
+  for (let a = el.parentElement; a && a !== document.documentElement; a = a.parentElement) {
+    const s = getComputedStyle(a);
+    if (s.overflowY !== 'visible') { const c = a.getBoundingClientRect(); top = Math.max(top, c.top); bottom = Math.min(bottom, c.bottom); }
+  }
+  if (r.bottom > bottom + 1) return 'below';
+  if (r.top < top - 1) return 'above';
+  return 'shown';
+});

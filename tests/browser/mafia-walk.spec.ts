@@ -9,10 +9,13 @@
 // 3. MAF-051, MAF-080: the Players sheet after adding a name: no control is covered (the "Done" bar covered the name box).
 // 4. MAF-014 / MAF-011 (orchestrator's call, second walk, privacy hygiene): "Someone saw my role" tapped while the role
 //    shows hides it at once: behind "Deal again?" the card is back to hidden and nothing of the role is in the page.
+// 5. MAF-033 / MAF-034 / MAF-080 (orchestrator's call, third walk): the vote picker (V2, and V2t "Tap everyone who is
+//    tied") shows a visible "More below" cue whenever a name is cut off below; N2's names box: tests/browser/mafia-c3.spec.ts
+//    (MAF-P7 frame comparison).
 // Flows: tests/games/mafia/flows.ts ("game2-night1-kabir", "game2-morning1", "game1-over", "morning1"). Helpers: mafia.ts.
 import { expect, test, type Locator, type Page } from './fixtures';
 import {
-  button, byId, exactly, fromMenu, heading, mainButton, NINE, openFlow, pad, roomDump, tap, toMorning, TZ, waitGuards,
+  button, byId, clipState, exactly, fromMenu, heading, mainButton, moreBelowCue, NINE, openFlow, pad, roomDump, tap, toMorning, TZ, waitGuards,
 } from './mafia';
 
 test.use({ timezoneId: TZ });
@@ -226,3 +229,46 @@ test('MAF-014 / MAF-011: "Someone saw my role" while Arjun\'s role shows: behind
   await expect(byId(page, 'private-word'), 'back on the card, the role stays hidden').toHaveCount(0);
   await expect(pad(page)).toHaveText(exactly('Tap to see'));
 });
+
+// ---- 5. The vote picker: a "More below" cue whenever a name is cut off below (MAF-033, MAF-034, MAF-080; third walk) ----
+
+const IN_DAY_1 = NINE.filter((p) => p !== 'Kabir');
+/** Each player's name button on the picker: where it sits ('shown', 'below', 'above'). */
+async function pickerNames(page: Page): Promise<Record<string, string>> {
+  const out: Record<string, string> = {};
+  for (const p of IN_DAY_1) out[p] = await clipState(button(page, p));
+  return out;
+}
+async function expectCueWhenNamesBelow(page: Page, where: string) {
+  await waitGuards(page, 600);
+  const at = await pickerNames(page);
+  const below = Object.keys(at).filter((p) => at[p] === 'below');
+  if (below.length) {
+    await expect(moreBelowCue(page).first(), `${where}: ${below.join(', ')} cut off below but no "More below" cue`).toBeVisible({ timeout: 2000 });
+  } else {
+    await expect(moreBelowCue(page), `${where}: every name shows, so no cue`).toBeHidden();
+  }
+  return below;
+}
+
+for (const o of [{ vp: { width: 320, height: 568 }, larger: false }, { vp: { width: 320, height: 568 }, larger: true }, { vp: { width: 568, height: 320 }, larger: false }]) {
+  test(`MAF-033 / MAF-034 / MAF-080 at ${o.vp.width}×${o.vp.height}${o.larger ? ', Larger text' : ''}: the vote picker and the tie picker show "More below" while a name is cut off below`, async ({ page }) => {
+    await openFlow(page, 'morning1', { viewport: o.vp, larger: o.larger });
+    await toMorning(page);
+    await tap(page, mainButton(page));
+    await expect(heading(page, 'Day 1 · Talk it over')).toBeVisible();
+    await tap(page, mainButton(page));
+    await page.clock.runFor(5000);
+    await expect(heading(page, 'Who got the most fingers?')).toBeVisible();
+    const v2 = await expectCueWhenNamesBelow(page, 'V2');
+    if (v2.length) {
+      // Brought into view, the last name shows and the cue goes once nothing is cut off below.
+      await button(page, IN_DAY_1[IN_DAY_1.length - 1]!).evaluate((el) => el.scrollIntoView({ block: 'end' }));
+      await expectCueWhenNamesBelow(page, 'V2 scrolled to the last name');
+    }
+    await tap(page, button(page, "It's a tie"));
+    await expect(heading(page, 'Tap everyone who is tied')).toBeVisible();
+    await page.evaluate(() => { for (const el of Array.from(document.querySelectorAll<HTMLElement>('body *'))) el.scrollTop = 0; window.scrollTo(0, 0); });
+    await expectCueWhenNamesBelow(page, 'V2t');
+  });
+}

@@ -241,3 +241,8 @@ Merged origin/main (PGN_PORT per lane: lane-a 4174). Lane A area: 129 of 132 pas
   once (no `private-word`/`private-block`, no role lines in the page behind "Deal again?"). Not in the scenario text; the test
   says so in its comment. On 1.6.0 the role word stays in the page behind the dialog.
 - Local `npm test` under taskpolicy -b: property tests (mafia stories, secret-words privacy) hit their 120 s timeouts; alone they pass.
+- Third walk (orchestrator's call): a "More below" cue on V2 / V2t whenever a name is cut off below (mafia-walk.spec.ts,
+  320 × 568 with and without Larger text, 568 × 320) and on N2's names box: the MAF-P7 frame test in mafia-c3.spec.ts now also
+  records, before any pick, how many names are cut off below and whether the cue shows, and expects both the same for every role
+  and the cue shown when names are cut off (on 1.6.0: 3 names cut off at 320 × 568, no cue). Helpers `clipState`, `moreBelowCue`
+  in mafia.ts. V3 (the re-vote, tied players only) isn't covered: no flow has enough tied players to overflow.

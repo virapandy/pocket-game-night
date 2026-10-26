@@ -5,7 +5,7 @@
 import { expect, test, type Page } from './fixtures';
 import {
   EXAMPLE_DEAL, NINE, box, button, byId, dealAll, dealTurn, exactly, heading, mainButton, nameButton,
-  nightNames, openFlow, pad, playNight, roomDump, tap, openDeal, toMorning, TZ,
+  nightNames, openFlow, pad, playNight, roomDump, tap, openDeal, toMorning, TZ, clipState, moreBelowCue, waitGuards,
 } from './mafia';
 import { hideApp, showApp } from './secret-words-b';
 import { oracleDeal, oracleStory, storyText, STORIES, type Role } from '../games/mafia/oracle';
@@ -87,12 +87,17 @@ test('MAF-P7: every role\'s night job (N2) has the same elements in the same ord
     await openDeal(page, NINE, { deals: { 1: EXAMPLE_DEAL }, viewport });
     await dealAll(page);
     await tap(page, mainButton(page));
-    const frames: { who: string; order: string[]; sizes: Record<string, number>; names: number; buttonHeights: number[]; lineHeight: number }[] = [];
+    const frames: { who: string; order: string[]; sizes: Record<string, number>; names: number; buttonHeights: number[]; lineHeight: number; below: number; cue: boolean }[] = [];
     // Night 1 order: Riya (Villager), Arjun (Mafia), Meena (Doctor), Kabir, Zoya (Mafia), Dev (Police), …: the first six cover every role.
     const picks: Record<string, string> = { Riya: 'Arjun', Arjun: 'Kabir', Meena: 'Meena', Kabir: 'Zoya', Zoya: 'Kabir', Dev: 'Zoya' };
     for (const who of Object.keys(picks)) {
       await tap(page, button(page, `I'm ${who}`));
       await tap(page, button(page, 'Tap to see your night job'));
+      // "More below" cue (orchestrator's call, third walk; MAF-P7): before any pick, with the names box as it opens.
+      await waitGuards(page, 600);
+      let below = 0;
+      for (let i = 0; i < await nightNames(page).count(); i++) if ((await clipState(nightNames(page).nth(i))) === 'below') below++;
+      const cue = await moreBelowCue(page).first().isVisible().catch(() => false);
       await tap(page, nameButton(page, picks[who]!));
       await page.clock.runFor(4100);
       await expect(mainButton(page)).toBeVisible();
@@ -103,7 +108,7 @@ test('MAF-P7: every role\'s night job (N2) has the same elements in the same ord
       sizes.pad = Math.round((await box(pad(page))).height);
       const buttonHeights = await nightNames(page).evaluateAll((els) => els.map((e) => Math.round(e.getBoundingClientRect().height)));
       const lineHeight = await byId(page, 'job-line').evaluate((e) => parseFloat(getComputedStyle(e).lineHeight) || parseFloat(getComputedStyle(e).fontSize) * 1.2);
-      frames.push({ who, order, sizes, names: await nightNames(page).count(), buttonHeights, lineHeight });
+      frames.push({ who, order, sizes, names: await nightNames(page).count(), buttonHeights, lineHeight, below, cue });
       await tap(page, mainButton(page));
     }
     const first = frames[0]!;
@@ -116,6 +121,10 @@ test('MAF-P7: every role\'s night job (N2) has the same elements in the same ord
       // Product owner, 25 October (P7 sameness wins): job and result boxes at least 2 lines tall, equal for every role.
       expect(f.sizes['job-line']!, `${f.who}: job line at least 2 lines`).toBeGreaterThanOrEqual(2 * f.lineHeight - 1);
       expect(f.sizes['result-line']!, `${f.who}: result line at least 2 lines`).toBeGreaterThanOrEqual(2 * f.lineHeight - 1);
+      // The "More below" cue (orchestrator, third walk): the same for every role, and shown whenever names are cut off below.
+      expect(f.below, `${f.who}: names cut off below at ${viewport.width}, same as ${first.who}`).toBe(first.below);
+      expect(f.cue, `${f.who}: "More below" cue the same as ${first.who}'s at ${viewport.width}`).toBe(first.cue);
+      expect(f.cue, `${f.who}: ${f.below} names cut off below at ${viewport.width}, "More below" cue shown`).toBe(f.below > 0);
     }
   }
 });
