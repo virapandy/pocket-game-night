@@ -249,3 +249,10 @@ mf.menu.11,History,Menu,MAF-053,
 mf.history.1,Mafia · 9:10 pm · 9 players · The Village won · 3 nights,History,MAF-093,yes
 mf.history.2,The Mafia won,History,MAF-093,yes
 mf.history.3,Game ended,History,MAF-093,yes
+mf.n2-why.1,That's you. Pick someone else.,"N2 night job, result line",MAF-022 (Version 1.3),yes
+mf.n2-why.2,Kabir is out. Pick someone else.,"N2 night job, result line",MAF-022 (Version 1.3),yes
+mf.n2-why.3,Zoya is Mafia too. Pick someone else.,"N2 night job, result line",MAF-022 (Version 1.3),yes
+mf.n2-why.4,You protected Om last night. Pick someone else.,"N2 night job, result line",MAF-022 (Version 1.3),yes
+mf.n2-why.5,You've already protected yourself once. Pick someone else.,"N2 night job, result line",MAF-022 (Version 1.3),yes
+mf.n2-why.6,You checked Zoya on night 1: Mafia. Pick someone else.,"N2 night job, result line",MAF-022 (Version 1.3),yes
+mf.n2-why.7,Tonight's check is done: Zoya is MAFIA.,"N2 night job, result line",MAF-022 (Version 1.3),yes

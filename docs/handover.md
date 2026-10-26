@@ -111,7 +111,11 @@ four balance runs (convention table fair, `jev-results-2026-10-23.md`); evidence
 `screen-map.md` draft 4, findings into a "Version 1.2" section of `scenarios.md`; (2) answer the tester's and coder's questions
 on the scenarios: wording, screen detail and ambiguity are the helper's call (record each in "Version 1.2"); (3) when the engine
 exists, the Jev simulated player against it (`tests/tools/jev-design/sim-mafia.ts`, `--no-nobody`, product budget 30,000 a week).
-**Waiting for the owner (25 October):** the Police reload gap, `docs/games/mafia/build-answers.md` "For the owner" item 1 (recommended: save the Police's first tap at once; built as approved until answered).
+**Answered (owner, 26 October):** the Police reload gap → MF19, the check saved at the first tap, as built (5596bd1); Version
+1.2 A (no greyed names) confirmed as MF20. **New for a 1.6.x point release (MF21, scenarios Version 1.3):** a tap on a name the
+role may not pick puts a private "why" line in N2's result line ("That's you. Pick someone else.", "Zoya is Mafia too. Pick
+someone else.", …; seven strings, `text.csv` keys `mf.n2-why.1–7`). Tester writes the tests first; one coder lane; the reviewer
+checks every role's N2 stays the same frame (MAF-P7). It never holds 1.6.0 (release rule: stuck or privacy only).
 **Hold for the owner (never decide):** anything that changes how the game is played (a rule, a role, counts, who wins), releasing
 to families, loosening or deleting a test, project-rule edits, paid services, and Mafia's release before What Am I?. List them
 at the top of this section.

@@ -1,6 +1,6 @@
-# Mafia: scenarios (version 1.1, approved 25 October 2026)
+# Mafia: scenarios (version 1.3, 26 October 2026; 1.1 approved 25 October, 1.2 and 1.3 confirmed 26 October)
 
-Status: **version 1.1 approved by the owner, 25 October 2026** ("Approved: Mafia scenarios version 1.1, including your calls on the same names for every role at night and on leaving during the night or the deal. Hand them to the orchestrator."). Read each scenario together with "Version 1.1", which wins over the text it names. Every "Status: draft" line below reads "approved". Written to `docs/spec-rules.md` from `screen-map.md` draft 4, `guide.md`, `lifecycle.md`,
+Status: **version 1.1 approved by the owner, 25 October 2026** ("Approved: Mafia scenarios version 1.1, including your calls on the same names for every role at night and on leaving during the night or the deal. Hand them to the orchestrator."). Read each scenario together with Versions 1.1, 1.2 and 1.3: a later version wins over an earlier one and over the text it names. Every "Status: draft" line below reads "approved". Written to `docs/spec-rules.md` from `screen-map.md` draft 4, `guide.md`, `lifecycle.md`,
 `stories.csv` edition 1.2 and decisions MF1–MF15 (`docs/decisions.md`). Before approval: the two-reader check (rule 12), then
 the owner. After approval the tester copies each section into `specs/mafia/` (file names in the headings) and writes tests.
 Mafia may be tested and built alongside What Am I?, and is **released after it** (owner, 24 October; roadmap).
@@ -11,6 +11,37 @@ Change classes (`docs/change-sop.md`): the deal and its seed, the night rules an
 and the stories file = **C3** (tests first: sections 02, 03, 05, 10); screens = C1/C2.
 
 ---
+
+## Version 1.3: why a name can't be picked (owner, 26 October; MF21) → a 1.6.x point release
+**Wins over Version 1.2 A's "a tap on a name the role may not pick does nothing".** Class C2, but N2 is C3 in look (MAF-P7): the
+reviewer checks every role's N2 stays the same frame.
+1. On N2, a tap on a name the role may not pick **selects nothing** and puts one line in `result-line` (the same box, size and
+   place for every role), replacing what was there until the next tap on any name. Done's conditions don't change. Nothing is
+   recorded; no sound or vibration (MAF-082).
+2. The line, the first that applies:
+   - the player's own name (any role): **"That's you. Pick someone else."**
+   - a player who is out (any role, ghost guesses included): **"Kabir is out. Pick someone else."**
+   - Mafia, a partner: **"Zoya is Mafia too. Pick someone else."**
+   - Doctor, last night's pick: **"You protected Om last night. Pick someone else."**
+   - Doctor, themselves after using it: **"You've already protected yourself once. Pick someone else."**
+   - Police, a player checked on an earlier night: **"You checked Zoya on night 1: Mafia. Pick someone else."** / "…: Not Mafia. …"
+   - Police, any other name after tonight's check: **"Tonight's check is done: Zoya is MAFIA."** / "…: Zoya is Not Mafia."
+     (the tonight's answer again; the checked name stays selected).
+3. Names in capitals by CSS only (as the build answers' item 20). Each line fits the result-line box as sized by build answers
+   item 7 (the longest variant counts towards that height). Strings join `text.csv` as `mf.n2-why.1` to `.7`.
+
+## Version 1.2: privacy changes as built (25 October, commit 5596bd1; owner confirmed 26 October, MF19 and MF20)
+**Wins over Version 1.1 and the text it names.** Recorded here from the build, which made them first. The product-owner
+clarifications of 25 October (`build-answers.md`, 35 items) also belong to this version and are binding.
+- **A. The same names box for every role (MAF-022 to MAF-026, MAF-P7; replaces 1.1 item 4):** no name is greyed or disabled;
+  every name looks and reads the same for every role; the only tags are "you" and "out", the same for every role; a tap on a name
+  the role may not pick picks nothing (Version 1.3 adds the line that says why); every role needs one name tap, including a Police
+  with nobody left to check, whose result line reads "Nobody left to check.".
+- **B. No roles under the End-game Undo (MAF-054, MAF-060):** while the toast "Game ended · Undo" shows, G1 hides Who was who, the
+  roles, the night lines and the fun lines.
+- **C. The Police's check is saved at the first tap (MAF-025; MF19):** a new move `check { player, target }` is recorded at the
+  Police's first tap; only that name can be picked after it; a reload, a hide or Back keep it; saved nights without `check` still
+  replay.
 
 ## Version 1.1: the two-reader check (coder-reader and tester-reader, 25 October)
 **Every item below wins over the earlier text of the scenario it names.** C3 items are rules; the rest are screens. Items marked
