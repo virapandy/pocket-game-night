@@ -431,6 +431,7 @@ function nightSlots(players: readonly string[], m: number): Slot[] {
         RESULT.villager(a),
         RESULT.ghost(a),
         // Version 1.3 (MF21): the why-lines count towards the result line's height (the longest name, a two-digit night).
+        WHY.you,
         WHY.out(a),
         WHY.partner(a),
         WHY.lastNight(a),
