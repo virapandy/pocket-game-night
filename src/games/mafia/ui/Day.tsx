@@ -13,7 +13,7 @@ import { QuietButton } from "../../../blocks";
 import type { MafiaView } from "../rules";
 import type { RoomCtx } from "./ctx";
 import { D } from "./dayText";
-import { Main, Question, TextLink } from "./parts";
+import { Main, MoreBelow, Question, TextLink } from "./parts";
 import { T } from "./text";
 
 const countLine = (v: MafiaView) =>
@@ -265,22 +265,26 @@ function Names({
   selected: readonly string[];
   onPick: (p: string) => void;
 }) {
+  const [box, setBox] = useState<HTMLDivElement | null>(null);
   return (
-    <div className="maf-names-box maf-vote-names">
-      {names.map((p) => (
-        <button
-          key={p}
-          type="button"
-          className={
-            selected.includes(p) ? "pgn-option pgn-selected" : "pgn-option"
-          }
-          aria-pressed={selected.includes(p)}
-          onClick={() => onPick(p)}
-        >
-          {p}
-        </button>
-      ))}
-    </div>
+    <>
+      <div ref={setBox} className="maf-names-box maf-vote-names">
+        {names.map((p) => (
+          <button
+            key={p}
+            type="button"
+            className={
+              selected.includes(p) ? "pgn-option pgn-selected" : "pgn-option"
+            }
+            aria-pressed={selected.includes(p)}
+            onClick={() => onPick(p)}
+          >
+            {p}
+          </button>
+        ))}
+      </div>
+      <MoreBelow box={box} watch={names.join("|")} />
+    </>
   );
 }
 

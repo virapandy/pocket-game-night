@@ -2,11 +2,11 @@
 // Tonight's summary (MAF-063, MAF-064). The facts come from the saved game night as History reads it (readMafiaNight).
 // Strings: ./dayText.ts.
 import { useState, type ReactNode } from "react";
-import { QuietButton, ScrollArea } from "../../../blocks";
+import { QuietButton } from "../../../blocks";
 import type { MafiaNightGame, MafiaView } from "../rules";
 import type { RoomCtx } from "./ctx";
 import { D } from "./dayText";
-import { Main } from "./parts";
+import { Main, MoreBelow } from "./parts";
 import { T } from "./text";
 
 function Quiet({
@@ -68,6 +68,7 @@ function statusOf(v: MafiaView, p: string): string {
 export function G1({ ctx }: { ctx: RoomCtx }) {
   const v = ctx.view;
   const [each, setEach] = useState(false);
+  const [box, setBox] = useState<HTMLDivElement | null>(null);
   const night = ctx.night();
   const g = night?.games[v.game - 1];
   const title =
@@ -87,7 +88,7 @@ export function G1({ ctx }: { ctx: RoomCtx }) {
   const tally = night?.tally ?? v.tally;
   return (
     <div className="maf-column maf-results maf-g1">
-      <ScrollArea>
+      <div ref={setBox} className="pgn-scroll">
         <h1 className="pgn-title">{title}</h1>
         {line && <p className="maf-body">{line}</p>}
         {leavers.length > 0 && (
@@ -126,7 +127,8 @@ export function G1({ ctx }: { ctx: RoomCtx }) {
         {tally.village + tally.mafia > 0 && (
           <p className="maf-small">{D.g1.tally(tally.village, tally.mafia)}</p>
         )}
-      </ScrollArea>
+      </div>
+      <MoreBelow box={box} watch={`${each}:${ctx.endUndo}`} inline />
       <div className="maf-quiet-row">
         <Quiet onClick={ctx.changePlayers}>{D.g1.change}</Quiet>
         <Quiet onClick={ctx.askEndTonight}>{D.g1.endTonight}</Quiet>

@@ -254,6 +254,7 @@ export function PlayersSheet({
   const [text, setText] = useState('');
   const [message, setMessage] = useState<string | null>(null);
   const field = useRef<HTMLInputElement>(null);
+  const [added, setAdded] = useState(0);
   useEscape(!covered, onDone);
   useBackCloses(true, onDone);
   const submit = (e: FormEvent) => {
@@ -265,9 +266,32 @@ export function PlayersSheet({
     if (refused === null) {
       setText('');
       if (field.current) field.current.value = '';
+      setAdded((n) => n + 1);
     }
     field.current?.focus();
   };
+  // MAF-051 / MAF-080: after an add the list is a row longer; keep the name box on screen, clear of the pinned "Done".
+  useLayoutEffect(() => {
+    if (added === 0) return;
+    const fit = () => {
+      const el = field.current;
+      const sheet = el?.closest<HTMLElement>('.pgn-sheet');
+      if (!el || !sheet) return;
+      const r = el.getBoundingClientRect();
+      const done = sheet.querySelector<HTMLElement>('.pgn-main');
+      const limit = Math.min(window.innerHeight, done ? done.getBoundingClientRect().top : window.innerHeight) - 8;
+      const top = sheet.getBoundingClientRect().top + 8;
+      if (r.bottom > limit) sheet.scrollTop += r.bottom - limit;
+      else if (r.top < top) sheet.scrollTop -= top - r.top;
+    };
+    fit();
+    const raf = requestAnimationFrame(fit);
+    const later = setTimeout(fit, 300);
+    return () => {
+      cancelAnimationFrame(raf);
+      clearTimeout(later);
+    };
+  }, [added]);
   return (
     <>
       <div className="pgn-sheet maf-sheet" role="dialog" aria-modal="true" aria-labelledby={id} inert={covered}>
@@ -342,4 +366,71 @@ export function useUndoToast(): [ToastState | null, (text: string, undo?: () => 
   }, []);
   const clear = useCallback(() => setToast(null), []);
   return [toast, show, clear];
+}
+
+// ---- "More below ↓" (player walks of 25 October; the What Am I? pattern): a cue at the foot of a box that scrolls ----
+
+const MORE = 'More below ↓';
+
+/**
+ * While part of `box` (or anything in it) is cut off below, a "More below ↓" cue sits at the foot of what shows of it.
+ * Over the box (default): drawn fixed, so the box's layout never changes (MAF-P7: the same for every role), and taps
+ * pass through it to the name under it. `inline`: a strip of its own just below the box (G1, so it covers no line and a
+ * tap on it scrolls the box on). `box` null: the screen has no such box now.
+ */
+export function MoreBelow({ box, watch, inline }: { box: HTMLElement | null; watch?: unknown; inline?: boolean }) {
+  const [at, setAt] = useState<{ left: number; width: number; bottom: number } | null>(null);
+  const check = useCallback(() => {
+    if (!box || !box.isConnected) return setAt(null);
+    const r = box.getBoundingClientRect();
+    const bottom = Math.min(r.bottom, window.innerHeight);
+    const left = box.scrollHeight - box.clientHeight - box.scrollTop > 4;
+    let cut = false;
+    for (const c of Array.from(box.children)) {
+      const cr = c.getBoundingClientRect();
+      if (cr.height > 0 && cr.bottom > bottom + 1) {
+        cut = true;
+        break;
+      }
+    }
+    const next = left || cut ? { left: r.left, width: r.width, bottom } : null;
+    setAt((cur) =>
+      cur === next || (cur && next && cur.left === next.left && cur.width === next.width && cur.bottom === next.bottom) ? cur : next,
+    );
+  }, [box]);
+  useLayoutEffect(check);
+  useEffect(() => {
+    if (!box) return;
+    const ro = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(check);
+    ro?.observe(box);
+    for (const c of Array.from(box.children)) ro?.observe(c);
+    box.addEventListener('scroll', check, { passive: true });
+    window.addEventListener('resize', check);
+    window.addEventListener('scroll', check, { passive: true });
+    const later = setTimeout(check, 400);
+    return () => {
+      ro?.disconnect();
+      box.removeEventListener('scroll', check);
+      window.removeEventListener('resize', check);
+      window.removeEventListener('scroll', check);
+      clearTimeout(later);
+    };
+  }, [box, check, watch]);
+  if (!at || !box) return null;
+  if (inline) {
+    return (
+      <div
+        className="maf-more maf-more-inline"
+        aria-hidden="true"
+        onClick={() => box.scrollBy({ top: Math.max(48, box.clientHeight * 0.6), behavior: 'smooth' })}
+      >
+        {MORE}
+      </div>
+    );
+  }
+  return (
+    <div className="maf-more" aria-hidden="true" style={{ left: `${at.left}px`, width: `${at.width}px`, top: `${at.bottom}px` }}>
+      {MORE}
+    </div>
+  );
 }

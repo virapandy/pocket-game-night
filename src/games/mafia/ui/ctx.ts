@@ -35,6 +35,8 @@ export interface RoomCtx {
   readonly changePlayers: () => void;
   /** The Paused cover is open (the day timer stops while it is, MAF-031). */
   readonly paused: boolean;
+  /** A dialog, Paused or the Players sheet covers the screen (MAF-014: B2 then keeps nothing of a role in the page). */
+  readonly covered: boolean;
   /** This screen was opened by a resume or a reload ("Welcome back." showing): V4 shows its role line at once (item 22). */
   readonly resumed: boolean;
   /** Version 1.2 B: the toast "Game ended · Undo" is showing (G1 shows no role until it has gone). */

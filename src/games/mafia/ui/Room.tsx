@@ -284,6 +284,7 @@ export function MafiaRoom({
     },
     changePlayers,
     paused,
+    covered: paused || players || dialog !== null,
     resumed: welcome,
     endUndo: !!toast?.undo && match.state.undo?.kind === 'endGame',
     lastMove: match.records[match.records.length - 1]?.move ?? null,

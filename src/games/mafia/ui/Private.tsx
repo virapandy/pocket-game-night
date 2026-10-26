@@ -8,7 +8,7 @@ import { flushSync } from 'react-dom';
 import { QuietButton } from '../../../blocks';
 import type { MafiaPlayerView, Role } from '../rules';
 import type { RoomCtx } from './ctx';
-import { Main, NAME_GUARD_MS } from './parts';
+import { Main, MoreBelow, NAME_GUARD_MS } from './parts';
 import { CARD, FIRST_TIME, JOB, P, RESULT, partnerLine } from './privateText';
 import './private.css';
 
@@ -44,7 +44,7 @@ interface Slot {
  * The tallest variant of each slot, measured off screen at the width of the measurer's parent. Returns the measurer (put
  * it inside the same column as the real lines) and the heights in px (empty until measured).
  */
-function useSlotHeights(slots: readonly Slot[], key: string): [ReactNode, readonly number[]] {
+function useSlotHeights(slots: readonly Slot[], key: string, live = true): [ReactNode, readonly number[]] {
   const inner = useRef<HTMLDivElement>(null);
   const [heights, setHeights] = useState<readonly number[]>([]);
   const measure = useCallback(() => {
@@ -53,15 +53,16 @@ function useSlotHeights(slots: readonly Slot[], key: string): [ReactNode, readon
     const hs = Array.from(el.children).map((g) => Math.max(0, ...Array.from(g.children).map((c) => Math.ceil(c.getBoundingClientRect().height))));
     setHeights((prev) => (prev.length === hs.length && prev.every((h, i) => h === hs[i]) ? prev : hs));
   }, []);
-  useLayoutEffect(measure, [measure, key]);
+  useLayoutEffect(measure, [measure, key, live]);
   useEffect(() => {
     const el = inner.current;
     if (!el || typeof ResizeObserver === 'undefined') return;
     const ro = new ResizeObserver(() => measure());
     ro.observe(el);
     return () => ro.disconnect();
-  }, [measure]);
-  const node = (
+  }, [measure, live]);
+  // Not `live` (a dialog covers the card, MAF-014): no card text in the page; the last heights are kept.
+  const node = !live ? null : (
     <div className="maf-measure" aria-hidden="true">
       <div ref={inner}>
         {slots.map((s, i) => (
@@ -178,7 +179,7 @@ function RoleCard({
   useFitName(nameRef, player);
 
   const v = ctx.view;
-  const [measure, h] = useSlotHeights(cardSlots(v.players, v.mafiaCount), `${v.players.join('|')}:${v.mafiaCount}`);
+  const [measure, h] = useSlotHeights(cardSlots(v.players, v.mafiaCount), `${v.players.join('|')}:${v.mafiaCount}`, !ctx.covered);
 
   /** Hides the block in this same event (IMP-018); a release after 500 ms, or any tap-mode hide, brings "Done, …". */
   const hide = (release: boolean) => {
@@ -271,7 +272,7 @@ function RoleCard({
             {P.tapInstead}
           </QuietButton>
         </div>
-        {shown && (
+        {shown && !ctx.covered && (
           <div className="maf-layer" onContextMenu={stop} onDragStart={stop}>
             <div className="maf-block" data-testid="private-block" draggable={false}>
               <p className="maf-card-word maf-caps" data-testid="private-word">
@@ -311,12 +312,22 @@ function RoleCard({
           {!held ? (
             <QuietButton onClick={onBack}>{P.notMe(player)}</QuietButton>
           ) : (
-            onSomeoneSaw && <QuietButton onClick={onSomeoneSaw}>{P.someoneSaw}</QuietButton>
+            onSomeoneSaw && (
+              <QuietButton
+                onClick={() => {
+                  // MAF-014 / MAF-011: the role goes at once, before "Deal again?" opens over the card.
+                  hide(false);
+                  onSomeoneSaw();
+                }}
+              >
+                {P.someoneSaw}
+              </QuietButton>
+            )
           )}
         </div>
         {measure}
         <div className="maf-sr" data-testid="private-live" aria-live="polite">
-          {shown ? [card.word.toUpperCase(), line1, line2, ...(first ? extra : [])].join(' ') : ''}
+          {shown && !ctx.covered ? [card.word.toUpperCase(), line1, line2, ...(first ? extra : [])].join(' ') : ''}
         </div>
       </div>
       {ready && <Main onClick={onDone}>{doneLabel}</Main>}
@@ -425,6 +436,7 @@ function N2({ ctx }: { ctx: RoomCtx }) {
   const [firstAt, setFirstAt] = useState<number | null>(null);
   const [pick, setPick] = useState<string | null>(null);
   const [, tick] = useState(0);
+  const [namesBox, setNamesBox] = useState<HTMLDivElement | null>(null);
   const nameRef = useRef<HTMLParagraphElement>(null);
   useFitName(nameRef, t?.player);
   const v = ctx.view;
@@ -571,7 +583,7 @@ function N2({ ctx }: { ctx: RoomCtx }) {
             <p className="maf-n2-line maf-n2-job" data-testid="job-line" style={fixed(h[0])}>
               {jobLine}
             </p>
-            <div className="maf-n2-names" data-testid="night-names">
+            <div ref={setNamesBox} className="maf-n2-names" data-testid="night-names">
               {job.names.map((n) => (
                 // Version 1.2 A: every name looks and reads the same for every role; tags are "you" and "out" only.
                 <button
@@ -590,6 +602,7 @@ function N2({ ctx }: { ctx: RoomCtx }) {
                 </button>
               ))}
             </div>
+            <MoreBelow box={namesBox} watch={player} />
             <p className="maf-n2-line maf-n2-result" data-testid="result-line" style={fixed(h[1])}>
               {result}
             </p>

@@ -118,8 +118,10 @@ function readNight(saved: unknown): MafiaNight | null {
     };
   });
   const players = new Set(s.games.flatMap((g) => g.players)).size;
-  const mostMafia = mostOver(s.games, (g, p) => (g.roles[p] === 'mafia' ? 1 : 0), 2);
-  const spotter = mostOver(s.games, (g, p) => spotterNights(g).get(p)?.nights ?? 0, 2);
+  // MAF-016 (MAF-P2): role-based lines count only games that are over; a game still going keeps its roles secret.
+  const over = s.games.filter((g) => g.step === 'gameOver');
+  const mostMafia = mostOver(over, (g, p) => (g.roles[p] === 'mafia' ? 1 : 0), 2);
+  const spotter = mostOver(over, (g, p) => spotterNights(g).get(p)?.nights ?? 0, 2);
   return {
     seeds: { roles: s.seed }, ended: s.ended, keep: s.games.some((g) => g.started), games, tally,
     summary: {

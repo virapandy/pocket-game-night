@@ -244,3 +244,13 @@
 .maf-dialog-title { font-size: 1.35rem; font-weight: 800; line-height: 1.25; }
 .maf-equal { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .maf-equal > .pgn-quiet { padding: 6px 10px; line-height: 1.25; }
+
+/* "More below ↓" (player walks of 25 October; What Am I?'s cue). Over a names box: fixed at the foot of what shows of it,
+   never taking taps (a name half under it still picks). On G1: a strip of its own under the list, so it covers no line;
+   a tap on it scrolls the list on. */
+.maf-more {
+  position: fixed; z-index: 8; box-sizing: border-box; transform: translateY(-100%); padding: 8px 0 0; text-align: center;
+  font-size: var(--pgn-small); font-weight: 700; line-height: 1.2; color: var(--accent); pointer-events: none;
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--bg) 60%, transparent), var(--bg) 45%);
+}
+.maf-more.maf-more-inline { position: static; flex: none; transform: none; padding: 0; margin-top: -6px; background: none; pointer-events: auto; cursor: pointer; }
