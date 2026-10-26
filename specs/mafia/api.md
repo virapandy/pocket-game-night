@@ -229,7 +229,7 @@ nothing that differs with the roles (MAF-P2: the tests compare room views across
   checks: { player: string; mafia: boolean }[]; }   // this Police's checks this game, in order; [] for everyone else
 interface NightJob {
   kind: 'mafia' | 'doctor' | 'police' | 'villager' | 'ghost';   // ghost: the player is out
-  names: { player: string; allowed: boolean; tags: string[] }[];  // item 4: every player dealt, not left, not leaving tonight, seat order
+  names: { player: string; allowed: boolean; tags: string[]; why: Why | null }[];  // item 4: every player dealt, not left, not leaving tonight, seat order
   check: { player: string; mafia: boolean } | null;   // police: this turn's check once made (Version 1.2 C); else null
   latest: { by: string; target: string } | null;   // mafia: the latest Mafia pick so far tonight (item 9); else null
   see: string[];                 // mafia: the Mafia who are in and still to take their turn tonight, night order; else []
@@ -241,6 +241,29 @@ screen's only use of the role: a tap on a name not allowed does nothing (Version
 player whose turn it is, `["out"]` for a player who is out, `[]` for everyone else, whatever the role (so `tags` never
 says who is allowed). No "Mafia", "used", "protected last night" or Police answer tag; the Police's answers are in
 `checks` and `job.check` only. A Police job never holds the answer of a player not yet checked.
+
+**`why` (Version 1.3, owner 26 October, MF21): the reason a name can't be picked**, for N2's private line. `null` exactly
+when `allowed` is true; otherwise the first that applies, in this order:
+```ts
+type Why =
+  | { kind: 'you' }                                   // mf.n2-why.1: the player's own name (see the Doctor below)
+  | { kind: 'out' }                                   // mf.n2-why.2: a player who is out (ghost guesses included)
+  | { kind: 'partner' }                               // mf.n2-why.3: Mafia (in), another mafia dealt this game
+  | { kind: 'lastNight' }                             // mf.n2-why.4: Doctor (in), the player they picked on night r − 1
+  | { kind: 'selfUsed' }                              // mf.n2-why.5: Doctor (in), themselves after protecting themselves this game
+  | { kind: 'checked'; night: number; mafia: boolean }  // mf.n2-why.6: Police (in), checked on night `night` of this game, its answer
+  | { kind: 'checkDone' };                            // mf.n2-why.7: Police (in), any other name after this turn's check (answer in job.check)
+```
+- `you` is for the player's own name whenever they may not pick it, except a **Doctor who is in**: being themselves never
+  stops a Doctor, so the Doctor's own name gets `lastNight` or `selfUsed` (tester's reading, specs/mafia/03-night.md).
+- `checked` comes from the Police's earlier nights of this game (a `check`, or a `nightPick` saved before 1.2); after this
+  turn's `check`, earlier checks still read `checked` and every other name that is in reads `checkDone`.
+- A Police with nobody left to check: every name has a `why` as above (no `checkDone`); the screen still shows "Nobody left
+  to check." for any tap (Version 1.2 A).
+- **(open)** The Doctor's own name on the night right after they protected themselves (`lastNight` and `selfUsed` both fit):
+  either is accepted; no test depends on which.
+- `why` is in the player's own view only (inside `job`); the room view is unchanged (MAF-P2). Like `allowed`, it is never
+  shown until that name is tapped.
 
 ## The game night (`readMafiaNight`)
 ```ts

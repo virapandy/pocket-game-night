@@ -16,6 +16,7 @@ something there is wrong or impossible, write it in `docs/test-questions.md`; do
 | `saved.test.ts` | MAF-093, IMP-096/097, the fixture `tests/fixtures/mafia-saved-nights-v1.json` (never edit), every flow of `flows.ts` (MAF-H6), MAF-062/064 facts, `readTestSeeds` |
 | `editions.test.ts` | MAF-037 / MAF-093 frozen story editions (`config.edition`, `mafiaStoryEditions`, a 1.2 night replays the same when `stories.json` gains ids), MAF-H2 (no role seed is refused) |
 | `leaves.test.ts` | MAF-052 the leave's `when` (N0 night leave vs V3s/V4 day leave, night 1, phase match), no Undo for a leave that ends the night, no Deal again while someone leaves tonight, `leaving` |
+| `why.test.ts` | Version 1.3 (owner, 26 October; MF21): `job.names[].why`, the reason a name can't be picked (null exactly when allowed; the first that applies), the worked example's three nights, a Not Mafia check, nobody left to check, 120 random game nights |
 | `../../contract/mafia.test.ts` | the shared contract suite (PLT-100 onwards) |
 
 `oracle.ts` holds the scenarios' own algorithms (the deal with streaks, night order, the Mafia's random choice with
@@ -29,7 +30,7 @@ a straightforward build they take a minute or two in all.
 
 Browser checks: `tests/browser/mafia-c3.spec.ts` (MAF-P2 across two deals, MAF-P7 frame, the deal and story on screen,
 resume), then the screens: `mafia-setup` (01), `mafia-deal-night` (02, 03), `mafia-day` (04), `mafia-room` (06),
-`mafia-results` (07), `mafia-usability` (09). All are marked `aheadOfMafiaScreens` (expected to fail) until the screens
+`mafia-results` (07), `mafia-usability` (09), `mafia-why` (Version 1.3: N2's private why-line, MAF-P7 frame, MAF-P2). All are marked `aheadOfMafiaScreens` (expected to fail) until the screens
 exist; `PGN_IGNORE_AHEAD=1` runs them as real checks on a lane branch. Test ids they look for: `deal-progress`,
 `night-progress`, `pass-name`, `private-block`, `private-word`, `job-line`, `night-names`, `result-line`, `story`,
 `role-line`, `count-line`, `where-line`, `countdown-heading`, `countdown-number`, `day-timer`, `main-button`,

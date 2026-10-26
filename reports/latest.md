@@ -1,4 +1,40 @@
 # Test report
+Commit tested: a7dffe3 (main, Mafia 1.6.0 app; lane-r2 adds only these tests)   Date: 2026-10-26
+Result: RED, as intended: tests written first for Mafia Version 1.3 (MF21), N2's private why-line, before the build
+Run: RUN_PLACEHOLDER
+Local: npm test 65 files, 1191 tests: 1183 passed, 7 failed (all new, why.test.ts), 1 setup timeout (secret-words privacy
+property under low priority; passes alone). Build ok. Browser mafia-why + mafia-c3, Android and iPhone, 3 workers: 24 passed,
+26 failed (13 per phone, all new or changed for 1.3).
+
+## What changed (tests and specs only)
+- specs/mafia/03-night.md: Version 1.3 copied word for word under MAF-022, a short per-role line under MAF-023 to MAF-026,
+  and the tester's reading. README: a Version 1.3 section. api.md: `job.names[].why` (the reason, null exactly when allowed).
+- New `tests/games/mafia/why.test.ts` (7 tests) and `tests/browser/mafia-why.spec.ts` (10 tests per phone); new flow
+  `night2-dev-riya-checked`. Three Version 1.2 tests in mafia-c3.spec.ts now expect the 1.3 line (docs/test-questions.md).
+
+## Failing (expected until the build; for the coder)
+- MAF-022 V1.3 (why.test.ts, all 7): expected `why` on every `job.names` entry (api.md), got no such field.
+- MAF-022/023/024/025/026 V1.3 (mafia-why.spec.ts, 6 line tests and the sound test): expected each `mf.n2-why` line in
+  `result-line`, got "" (or "Zoya: MAFIA." unchanged for the Police after the check).
+- MAF-082 / MAF-P2 V1.3 (mafia-why.spec.ts): expected the line in `result-line` and `private-live`, got nothing (fails at the first tap).
+- MAF-P7 V1.3 (mafia-why.spec.ts, two frame tests): fail at the first why tap (no line); frames are already equal without lines.
+- MAF-023 to 026 V1.2 A and 1.3, MAF-025 V1.2 C reload and app hidden (mafia-c3.spec.ts): expected a why-line / "Tonight's
+  check is done: Zoya is MAFIA.", got "" / "Zoya: MAFIA.".
+
+## Flaky or setup problems (not for the Build workspace)
+- tests/games/secret-words/privacy.test.ts 10,000-game property times out under `taskpolicy -b` with the whole suite; passes alone.
+
+## Notes for the owner (plain English)
+- On the night screen, tapping a name you can't pick will say why, privately, in the line under the names. Tests for all
+  seven lines are written; they fail until the coder builds it. Three small wording questions are in docs/test-questions.md
+  (for example: a Doctor who already protected themselves gets "You've already protected yourself once." on their own name,
+  not "That's you.").
+
+---
+## Previous report
+
+---
+
 Commit tested: 8171b43 (rc-2026-10-26, Mafia release candidate), baselines refreshed on lane-s2   Date: 2026-10-26
 Result: baseline refresh only, see Run below
 Complete run that failed: https://github.com/virapandy/pocket-game-night/actions/runs/40275176056 (only `screens.spec.ts:246`
