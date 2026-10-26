@@ -227,3 +227,17 @@ Merged origin/main (PGN_PORT per lane: lane-a 4174). Lane A area: 129 of 132 pas
 - Removed every `needsMafiaCardOrHomeRow` call (9 mafia-setup, MAF-055); the helper in tests/browser/mafia.ts is now unused.
 - Host line now "Tambola, Impostor, Secret Words, What Am I? or Mafia on this phone" in secret-words-a-home (SWD-001/WAI-001) and what-am-i-setup (WAI-001). No other test counts picker cards (the SWD-001 picker test checks three named cards only; still valid).
 - Android on main-less build: 12 fail only for the missing card/line; 154 pass (mafia-setup, mafia-room, secret-words-a-home, what-am-i-setup, impostor-setup).
+
+## 25 October: Mafia player-walk fixes, tests first (lane-q2, from main 34e40de)
+- `tests/browser/mafia-walk.spec.ts` (in the Mafia area of areas.json). New flows `game2-night1-kabir` and `game2-morning1`
+  (game 1 over, game 2 with `DEAL_2_ARJUN`: Arjun Mafia again) in tests/games/mafia/flows.ts, with step checks in saved.test.ts.
+- The G1 "More below" cue isn't in any Mafia scenario: the orchestrator asked for the What Am I? pattern; the test matches
+  /More below/i. No What Am I? test checks that cue either (it was added by a coder walk fix, 28470b8).
+- G1's scroll window is `.pgn-scroll`, 293 px at 360 × 640 after a resume; lines are reachable and nothing sits under the
+  pinned buttons on 1.6.0: only the cue is missing. The G1 tests use expect.soft for the cue and one-scroll checks so one run
+  reports all of them.
+- G2 counts (games, players) follow item 15; only the role leak is tested (docs/test-questions.md row).
+- MAF-014 / MAF-011 (orchestrator's call, second walk): "Someone saw my role" tapped while the role shows must hide it at
+  once (no `private-word`/`private-block`, no role lines in the page behind "Deal again?"). Not in the scenario text; the test
+  says so in its comment. On 1.6.0 the role word stays in the page behind the dialog.
+- Local `npm test` under taskpolicy -b: property tests (mafia stories, secret-words privacy) hit their 120 s timeouts; alone they pass.

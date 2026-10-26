@@ -23,6 +23,21 @@ type Move = Record<string, unknown> & { type: string };
 const seenAll = (players: readonly string[]): Move[] => players.map((player) => ({ type: 'seen', player }));
 const picks = (list: [string, string | null][]): Move[] => list.map(([player, target]) => ({ type: 'nightPick', player, target }));
 
+/**
+ * Game 2's deal for the player-walk privacy flows (lane-q, 25 October): Arjun is Mafia again (with Om); Doctor Sunita;
+ * Police Neha. So "Arjun was Mafia in 2 games" (MAF-064) is true only if the unfinished game 2 is counted.
+ */
+export const DEAL_2_ARJUN: Record<string, Role> = {
+  Riya: 'villager', Arjun: 'mafia', Meena: 'villager', Kabir: 'villager', Zoya: 'villager', Dev: 'villager', Om: 'mafia',
+  Sunita: 'doctor', Neha: 'police',
+};
+/** Game 2, night 1 (order Arjun … Riya): the Mafia pick Kabir; the Doctor protects herself; Neha checks Arjun. Kabir is out. */
+export const G2_NIGHT_1 = picks([
+  ['Arjun', 'Kabir'], ['Meena', 'Arjun'], ['Kabir', 'Om'], ['Zoya', 'Arjun'], ['Dev', 'Om'], ['Om', 'Kabir'],
+  ['Sunita', 'Sunita'], ['Neha', 'Arjun'], ['Riya', 'Arjun'],
+]);
+const GAME_2_START: Move[] = [{ type: 'start', players: NINE, mafiaCount: 2 }, ...seenAll(NINE), { type: 'startNight', night: 1 }];
+
 // ---- The MAF-040 worked example, game 1 (Village wins on day 3) ----
 /** Night 1, order Riya … Neha: Arjun and Zoya pick Kabir; the Doctor (Meena) protects herself; Dev checks Zoya. Kabir is out. */
 export const NIGHT_1 = picks([
@@ -121,6 +136,10 @@ export const FLOWS: Flow[] = [
     deals: { 1: SIX_DEAL }, moves: policeNobodyLeft() },
   { name: 'day1-left-neha', what: 'Y1: day 1, Neha has left by day (Neha · left)', deals: { 1: EXAMPLE_DEAL },
     moves: [...g1(idx(NIGHT_1[8]!) + 1), { type: 'leave', player: 'Neha' }] },
+  { name: 'game2-night1-kabir', what: 'N1: game 1 over (Village won), game 2 dealt (Arjun Mafia again), night 1, Kabir\'s turn (3 of 9)',
+    deals: { 1: EXAMPLE_DEAL, 2: DEAL_2_ARJUN }, moves: [...GAME_1, ...GAME_2_START, ...G2_NIGHT_1.slice(0, 2)] },
+  { name: 'game2-morning1', what: 'N3 then M1: game 1 over, game 2 night 1 over (Kabir out), Arjun Mafia again',
+    deals: { 1: EXAMPLE_DEAL, 2: DEAL_2_ARJUN }, moves: [...GAME_1, ...GAME_2_START, ...G2_NIGHT_1] },
 ];
 
 export function flow(name: string): Flow {

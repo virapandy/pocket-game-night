@@ -176,6 +176,8 @@ describe('MAF-H6 every flow the browser tests open replays through the rules', (
     expect(stepOf('left-neha-ended')).toMatchObject({ step: 'gameOver', winner: null, left: ['Neha'] });
     expect(stepOf('day3')).toMatchObject({ step: 'day', round: 3, morning: { out: 'Meena' }, caught: 1 });
     expect(stepOf('worked-example-ended')).toMatchObject({ step: 'gameOver', winner: null, morning: { out: 'Om' } });
+    expect(stepOf('game2-night1-kabir')).toMatchObject({ step: 'night', round: 1, game: 2, turn: { player: 'Kabir', i: 3, of: 9 }, tally: { village: 1, mafia: 0 } });
+    expect(stepOf('game2-morning1')).toMatchObject({ step: 'day', round: 1, game: 2, morning: { out: 'Kabir' } });
   });
 });
 
