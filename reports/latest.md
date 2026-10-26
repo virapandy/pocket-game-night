@@ -1,4 +1,18 @@
 # Test report
+Commit tested: 8171b43 (rc-2026-10-26, Mafia release candidate), baselines refreshed on lane-s2   Date: 2026-10-26
+Result: baseline refresh only, see Run below
+Complete run that failed: https://github.com/virapandy/pocket-game-night/actions/runs/40275176056 (only `screens.spec.ts:246`
+"player: Home with tickets more than 6 hours old" at 360x640, 390x844, 812x375 on Android).
+Cause, confirmed from that run's diff images: the Host line now names five games ("..., What Am I? or Mafia on this phone", MAF-001).
+At 390x844 the Host line is the only difference; at 360x640 and 812x375 the longer line wraps onto an extra line, so the cards
+and rows below it move down by one line (same text, same wording, shifted only). No other change.
+Refreshed (Android only, nothing else touched): `player-home-saved-tickets-{360x640,390x844,812x375}-android-linux.png`
+from Screenshots run https://github.com/virapandy/pocket-game-night/actions/runs/40277824693 on lane-s2, and the three
+`-android-darwin.png` copies made locally. NOT YET APPROVED: for the product owner's release review.
+
+---
+## Previous report
+# Test report
 Commit tested: dafd5b2 (lane-g = main 04dc177 + Mafia card tests + the coder's card), rebased 2026-10-25
 Result: GREEN
 Run: https://github.com/virapandy/pocket-game-night/actions/runs/40215754323 (Quick verify on lane-g: success)
