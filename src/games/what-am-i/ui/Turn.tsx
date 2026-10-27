@@ -635,7 +635,10 @@ function RoomFrame({ turned, onTap, onPause, children }: { turned: false | 1 | -
   );
 }
 
-/** WAI-020, Version 1.1 item 23: the largest size from 96 px down to 40 px (2 px steps) at which the word fits in 2 lines. */
+/**
+ * WAI-020, Version 1.1 item 23: the largest size from 96 px down to 40 px (2 px steps) at which the word fits in 2 lines; at
+ * 40 px a word that still doesn't fit breaks anywhere (filling 2 lines, not 3, on a narrow phone).
+ */
 function FitWord({ text, turned }: { text: string; turned: false | 1 | -1 }) {
   const el = useRef<HTMLHeadingElement>(null);
   const [fit, setFit] = useState<{ size: number; anywhere: boolean }>({ size: 96, anywhere: false });
@@ -648,6 +651,7 @@ function FitWord({ text, turned }: { text: string; turned: false | 1 | -1 }) {
       for (let size = 96; size >= 40; size -= 2) {
         h.style.fontSize = `${size}px`;
         h.style.overflowWrap = 'normal';
+        h.style.wordBreak = 'normal';
         const lh = size * 1.1;
         const lines = Math.round(h.offsetHeight / lh);
         if (lines <= 2 && h.scrollWidth <= h.clientWidth + 1 && (h.offsetHeight <= room || size === 40)) {
@@ -667,7 +671,7 @@ function FitWord({ text, turned }: { text: string; turned: false | 1 | -1 }) {
       ref={el}
       className="wai-the-word"
       data-testid="the-word"
-      style={{ fontSize: `${fit.size}px`, overflowWrap: fit.anywhere ? 'anywhere' : 'normal' }}
+      style={{ fontSize: `${fit.size}px`, overflowWrap: fit.anywhere ? 'anywhere' : 'normal', wordBreak: fit.anywhere ? 'break-all' : 'normal' }}
     >
       {text}
     </h1>
