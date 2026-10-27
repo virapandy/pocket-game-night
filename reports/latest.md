@@ -1,7 +1,7 @@
 # Test report
 Commit tested: lane-t2 rebased on main 8eafba0 (Mafia 1.4) with the coder's 17f1c6f   Date: 2026-10-27
-Result: PENDING quick verify (local checks green; see Run)
-Run: (filled in below once quick verify finishes)
+Result: GREEN
+Run: https://github.com/virapandy/pocket-game-night/actions/runs/40453281741 (Quick verify on lane-t2 at 0b78642: success)
 Local: npm test 65 files, 1193 of 1193 passed; build ok; browser on Android, 3 workers, files what-am-i-v14, game-names-one-line,
 what-am-i-setup, -turn, -scores, -c3, secret-words-a-home, mafia-v14, mafia-results: 225 passed, 0 failed. iPhone left to automation.
 Changes this round (tests and specs only): rebase onto main (areas.json keeps main's entries plus this lane's two files; reports kept
