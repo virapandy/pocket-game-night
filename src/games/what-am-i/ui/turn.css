@@ -44,8 +44,15 @@
 .pgn-larger .wai-half-label { font-size: 19px; }
 .wai-room-frame .wai-half-got { margin-bottom: -4px; }
 .wai-room-frame.wai-room-wide .wai-half-got { margin-bottom: -2px; }
-/* Sideways the word needs every pixel between the labels (the longest word at 40 px with Larger text, 568 × 320). */
+/* Sideways the word needs every pixel between the labels (the longest word at 40 px with Larger text, 568 × 320): tighter
+   lines around it. */
 .wai-room-wide { gap: 2px; }
+.wai-room-wide .wai-turn-line { line-height: 1.1; }
+.wai-room-wide .wai-half-label { line-height: 1.1; }
+.wai-room-wide .wai-pack { line-height: 1; }
+.wai-room-frame.wai-room-wide .wai-half-got { margin-top: 3px; }
+/* Upright the word may use the side margins too (the longest word in 2 lines at 40 px at 320 wide). */
+.wai-room-frame:not(.wai-room-wide) .wai-word-area { width: calc(100% + 16px); margin: 0 -8px; }
 .wai-room-pause {
   position: absolute; top: 16px; right: 16px; z-index: 3; box-sizing: border-box; width: 48px; height: 48px; padding: 0;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font: inherit; font-size: 11px;

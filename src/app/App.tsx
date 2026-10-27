@@ -544,10 +544,10 @@ function Screens({ onReport, routeName }: { onReport: (subject: ReportSubject) =
             joinNote={impostor.joinNote}
             joinMore={
               <>
-                <p className="note">{keepNames(secretWords.joinLine)}</p>
+                <p className="note">{secretWords.joinLine}</p>
                 {/* Version 1.2 item 1: after the other games' lines. */}
                 <p className="note" data-testid="join-line-what-am-i">
-                  {keepNames(whatAmI.joinLine)}
+                  {whatAmI.joinLine}
                 </p>
                 <button
                   type="button"
@@ -1127,7 +1127,7 @@ function PickGame({
               else onPick(g.info.id);
             }}
           >
-            <span className="choice-card-title">{keepNames(g.info.title)}</span>
+            <span className="choice-card-title">{g.info.title}</span>
             <span className="choice-card-text">
               <Tagline text={g.info.tagline} />
             </span>
