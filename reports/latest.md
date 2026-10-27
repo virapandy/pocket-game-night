@@ -1,4 +1,14 @@
 # Test report
+Commit tested: d62e089 (rc-2026-10-27)   Date: 2026-10-27
+Result: baselines refreshed; verdict is quick verify on lane-s3 (below)
+Complete run 40455489894 failed only screens.spec.ts:246 (Home with tickets more than 6 hours old) at 360 x 640 and 812 x 375, Android.
+The diff images show only the Host line wrapping differently (PLT-303 keeps game names on one line: "Tambola, Impostor," / "Secret Words, What Am I? or" / "Mafia on this phone");
+at 360 x 640 the line count is unchanged (three), at 812 x 375 the Host card is one line taller, so the Join card and the ticket row sit a few pixels lower. Nothing else differs.
+New pictures (360 x 640 and 812 x 375; 390 x 844 unchanged): Linux from Screenshots run 40458566868 on lane-s3, Mac taken locally. **Not yet approved**, for the product owner.
+
+---
+
+# Test report
 Commit tested: lane-t2 rebased on main 8eafba0 (Mafia 1.4) with the coder's 17f1c6f   Date: 2026-10-27
 Result: GREEN
 Run: https://github.com/virapandy/pocket-game-night/actions/runs/40453281741 (Quick verify on lane-t2 at 0b78642: success)
