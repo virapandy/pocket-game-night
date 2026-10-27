@@ -89,6 +89,6 @@ Given any screen that shows a game's name: Home (the "Host a game" line, the unf
 the picker "What shall we play?" (each card), History (each row and a past game's title) and a game's own headers (titles
 such as "Tonight's What Am I?" and "Tonight's Secret Words")
 Then every word of each game name sits on the same line: the name may move to the next line as a whole, but never splits
-between its words (the words are joined with no-break spaces, U+00A0)
+between its words (held on one line: it never breaks across lines)
 And this holds at 320 × 568, 360 × 640, 568 × 320 and 812 × 375
 Tests: `tests/browser/game-names-one-line.spec.ts`.
